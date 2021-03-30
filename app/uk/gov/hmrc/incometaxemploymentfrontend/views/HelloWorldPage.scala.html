@@ -1,0 +1,10 @@
+@import uk.gov.hmrc.incometaxemploymentfrontend.config.AppConfig
+
+@this(layout: Layout)
+
+@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@layout(pageTitle = Some("income-tax-employment-frontend")) {
+    <h1 class="govuk-heading-xl">income-tax-employment-frontend</h1>
+    <p class="govuk-body">@{messages("service.text")}</p>
+}
