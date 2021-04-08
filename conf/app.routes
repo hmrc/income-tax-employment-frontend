@@ -2,6 +2,17 @@
 
 ->         /govuk-frontend          govuk.Routes
 ->         /hmrc-frontend           hmrcfrontend.Routes
-GET        /hello-world             uk.gov.hmrc.incometaxemploymentfrontend.controllers.HelloWorldController.helloWorld
-GET        /language/:lang          uk.gov.hmrc.incometaxemploymentfrontend.controllers.LanguageSwitchController.switchToLanguage(lang: String)
+
 GET        /assets/*file            controllers.Assets.versioned(path = "/public", file: Asset)
+
+GET        /sign-out                                       controllers.SignOutController.signOut()
+
+GET        /error/you-need-to-sign-up                      controllers.errors.IndividualAuthErrorController.show
+
+GET        /error/wrong-tax-year                        controllers.errors.TaxYearErrorController.show
+
+GET        /error/not-authorised-to-use-service         controllers.errors.UnauthorisedUserErrorController.show
+
+GET        /error/you-need-agent-services-account       controllers.errors.YouNeedAgentServicesController.show
+
+GET        /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
