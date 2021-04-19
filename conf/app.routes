@@ -5,7 +5,7 @@
 
 GET        /assets/*file            controllers.Assets.versioned(path = "/public", file: Asset)
 
-GET        /sign-out                                       controllers.SignOutController.signOut()
+GET        /sign-out                                       controllers.SignOutController.signOut(isAgent: Boolean)
 
 GET        /error/you-need-to-sign-up                      controllers.errors.IndividualAuthErrorController.show
 
