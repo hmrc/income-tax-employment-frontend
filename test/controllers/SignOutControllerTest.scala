@@ -34,7 +34,7 @@ class SignOutControllerTest extends UnitTestWithApp with DefaultAwaitTimeout {
 
         val request = FakeRequest("GET", "/sign-out")
 
-        val responseF = controller.signOut()(request)
+        val responseF = controller.signOut(false)(request)
 
         "return status code 303" in {
           status(responseF) shouldBe SEE_OTHER

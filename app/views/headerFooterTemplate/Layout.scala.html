@@ -36,7 +36,8 @@
         taxYear: Option[Int] =  None,
         hasErrors: Boolean = false,
         showSignOut: Boolean = true,
-        timeout: Boolean = true
+        timeout: Boolean = true,
+        isAgent: Boolean = false
 )(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @scripts = {
@@ -52,7 +53,7 @@
     @hmrcHeader(
         serviceName = Some(messages("service.name")),
         serviceUrl = Some(appConfig.incomeTaxSubmissionStartUrl(taxYear.getOrElse(appConfig.defaultTaxYear))),
-        signOutUrl = if(showSignOut) Some(controllers.routes.SignOutController.signOut().url) else None
+        signOutUrl = if(showSignOut) Some(controllers.routes.SignOutController.signOut(isAgent).url) else None
     )
 }
 
@@ -60,7 +61,7 @@
     @contentBlock
 
     <div>
-        @getHelpLink(appConfig.contactUrl, messages("common.help.getHelpWithThisPage"))
+        @getHelpLink(appConfig.contactUrl(isAgent), messages("common.help.getHelpWithThisPage"))
     </div>
 }
 
@@ -69,7 +70,7 @@
     headBlock = Some(head(headBlock, timeout)),
     headerBlock = Some(headerBlock),
     scriptsBlock = Some(scripts),
-    beforeContentBlock = Some(beforeBodyContent(backLink)),
+    beforeContentBlock = Some(beforeBodyContent(backLink, isAgent)),
     footerBlock = Some(hmrcStandardFooter())
 )(content)
 

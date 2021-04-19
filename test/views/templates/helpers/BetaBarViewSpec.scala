@@ -35,7 +35,8 @@ class BetaBarViewSpec extends ViewTest {
       "use appConfig.feedbackUrl in the beta banner link" which {
 
         implicit val appConfig: AppConfig = new MockAppConfig().config
-        lazy val view = betaBar()(fakeRequest, messages, appConfig)
+        implicit val isAgent: Boolean = false
+        lazy val view = betaBar(isAgent)(fakeRequest, messages, appConfig)
 
         implicit lazy val document: Document = Jsoup.parse(view.body)
 
