@@ -27,8 +27,8 @@ import javax.inject.Inject
 class SignOutController @Inject()(val mcc: MessagesControllerComponents,
                                   appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
 
-  def signOut(): Action[AnyContent] = Action { _ =>
-    Redirect(appConfig.signOutUrl, Map("continue" -> Seq(appConfig.feedbackSurveyUrl)))
+  def signOut(isAgent: Boolean): Action[AnyContent] = Action { _ =>
+    Redirect(appConfig.signOutUrl, Map("continue" -> Seq(appConfig.feedbackSurveyUrl(isAgent))))
   }
 
 }
