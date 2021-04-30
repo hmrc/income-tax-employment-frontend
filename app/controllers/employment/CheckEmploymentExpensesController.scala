@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.employment
 
 import common.SessionValues.EXPENSES_CYA
 import config.AppConfig
@@ -31,7 +31,7 @@ import javax.inject.Inject
 class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAction,
                                                   checkEmploymentExpensesView: CheckEmploymentExpensesView,
                                                   implicit val appConfig: AppConfig,
-                                                  implicit val mcc: MessagesControllerComponents,
+                                                  implicit val mcc: MessagesControllerComponents
                                                   ) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int): Action[AnyContent] = authorisedAction { implicit user =>
@@ -43,5 +43,4 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
       case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
     }
   }
-
 }
