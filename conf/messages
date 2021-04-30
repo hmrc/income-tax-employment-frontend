@@ -82,3 +82,22 @@ timeout.button = Sign in
 
 taxYear-error-template.paragraph.1 = You can only enter information for the 2021 to 2022 tax year.
 taxYear-error-template.paragraph.2 = Check that you’ve entered the correct web address.
+
+employment.expenses.title = Check employment expenses
+employment.expenses.heading = Check employment expenses
+employment.expenses.caption = Employment for 6 April {0} to 5 April {1}
+employment.expenses.inset.text.individual = You cannot update your employment details until 6 April {0}.
+employment.expenses.inset.text.agent = You cannot update your client`s employment expenses until 6 April {0}.
+
+employment.expenses.expense.type.business-travel = Amount for business travel and subsistence expenses
+employment.expenses.expense.type.flat-rate-job = Uniform, work cloths and tools (Flat rate expenses)
+employment.expenses.expense.type.professional-subscriptions = Professional fees and subscriptions
+employment.expenses.expense.type.other-and-capital-allowances = Other expenses and capital allowances
+employment.expenses.expense.type.job = Job expenses
+employment.expenses.expense.type.hotel-and-meal = Hotel and meal expenses
+employment.expenses.expense.type.vehicle = Vehicle expense
+employment.expenses.expense.type.mileage-allowance = Mileage allowance relief
+
+
+employment.expenses.sub-heading.individual = Your employment expenses are based on the information we already hold about you. This is a total of expenses from all employment in the tax year.
+employment.expenses.sub-heading.agent = Your client`s employment expenses are based on information we already hold about them. This is a total of expenses from all employment in the tax year.
