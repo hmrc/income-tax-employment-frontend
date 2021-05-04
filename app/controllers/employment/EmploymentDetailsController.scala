@@ -19,7 +19,7 @@ package controllers.employment
   import common.SessionValues
   import config.AppConfig
   import controllers.predicates.AuthorisedAction
-  import models.{EmployerModel, EmploymentModel, GetEmploymentDataModel, PayModel, User}
+  import models.GetEmploymentDataModel
   import play.api.i18n.I18nSupport
   import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
   import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -39,7 +39,6 @@ package controllers.employment
     def show(taxYear: Int): Action[AnyContent] = authAction { implicit user =>
 
       val employmentDetails: Option[GetEmploymentDataModel] = getModelFromSession[GetEmploymentDataModel](SessionValues.EMPLOYMENT_DATA)
-      //val employmentDetails: Option[GetEmploymentDataModel] = Some(getEmploymentDataModel)
 
       employmentDetails match {
         case Some(empModel) => Ok(employmentDetailsView(empModel, taxYear))
@@ -47,9 +46,6 @@ package controllers.employment
       }
 
     }
-    val payModel: PayModel = PayModel(111.4, 1000.00, Some(10000000), "Monthly", "14/83/2022", None, None)
-    val employerModel: EmployerModel = EmployerModel(Some("#Lon"), "Londis LTD 2020 PLC Company")
-    val employmentModel: EmploymentModel = EmploymentModel(None, None, Some(true), Some(false), Some("1990-07-14"), None, None, None, None, employerModel, payModel)
-    val getEmploymentDataModel: GetEmploymentDataModel = GetEmploymentDataModel("Today", None, None, None, employmentModel)
+
 
   }
