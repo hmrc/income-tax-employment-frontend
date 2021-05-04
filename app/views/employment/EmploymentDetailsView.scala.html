@@ -22,6 +22,7 @@
 @import utils.ViewUtils.convertBoolToYesOrNo
 @import utils.ViewUtils.dateFormatter
 
+
 @this(
         layout: Layout,
         formWithCSRF: FormWithCSRF,
@@ -57,7 +58,7 @@
 
         def isCompanyDirector(isCompanyDirector:Option[Boolean], directorCeasedDate:Option[String]): Option[String] ={
             if(isCompanyDirector.getOrElse(false)){
-                dateFormatter(directorCeasedDate.getOrElse("bad date"))
+                directorCeasedDate.map(dateFormatter).flatten
             }else{
                 None
             }
