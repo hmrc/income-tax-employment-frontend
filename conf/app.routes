@@ -15,4 +15,6 @@ GET        /error/not-authorised-to-use-service         controllers.errors.Unaut
 
 GET        /error/you-need-agent-services-account       controllers.errors.YouNeedAgentServicesController.show
 
+GET        /:taxYear/check-your-employment-details  controllers.employment.EmploymentDetailsController.show(taxYear: Int)
+
 GET        /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)

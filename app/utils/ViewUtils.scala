@@ -22,6 +22,12 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 
 object ViewUtils {
 
+  private val gbpCurrencySymbol = "£"
+
+  def bigDecimalCurrency(bigDecimal: BigDecimal): String = {
+    gbpCurrencySymbol + f"$bigDecimal%1.2f".replace(".00", "")
+  }
+
   def summaryListRow(key: HtmlContent,
                      value: HtmlContent,
                      keyClasses: String= "govuk-!-width-one-third",
@@ -29,6 +35,7 @@ object ViewUtils {
                      actionClasses: String = "govuk-!-width-one-third",
                      actions: Seq[(Call, String, Option[String])]): SummaryListRow = {
     SummaryListRow(
+
       key = Key(
         content = key,
         classes = keyClasses

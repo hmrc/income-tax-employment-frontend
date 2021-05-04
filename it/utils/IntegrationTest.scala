@@ -52,7 +52,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   implicit val actorSystem: ActorSystem = ActorSystem()
   implicit val materializer: Materializer = ActorMaterializer()
 
-  val startUrl = s"http://localhost:$port/income-through-software/return/personal-income"
+  val startUrl = s"http://localhost:$port/income-through-software/return/employment-income"
 
   def await[T](awaitable: Awaitable[T]): T = Await.result(awaitable, Duration.Inf)
 
