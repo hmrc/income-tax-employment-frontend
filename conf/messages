@@ -91,8 +91,8 @@ employment.employmentDetails.title.agent = Check your client’s employment deta
 
 employment.employmentDetails.caption = Employment for 6 April {0} to 5 April {1}
 
-employment.employmentDetails.content.individual = Your employment details are based on the information HMRC already hold about you.
-employment.employmentDetails.content.agent = Your client’s employment details are based on the information HMRC already hold about you.
+employment.employmentDetails.content.individual = Your employment details are based on the information we already hold about you.
+employment.employmentDetails.content.agent = Your client’s employment details are based on the information we already hold about you.
 
 employment.employmentDetails.insetText.individual = You cannot update your employment details until 6 April {0}.
 employment.employmentDetails.insetText.agent = You cannot update your client’s employment details until 6 April {0}.
