@@ -50,8 +50,8 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
     val h1ExpectedIndividual = "Check your employment details"
     val titleExpectedIndividual = "Check your employment details"
     val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val contentExpectedAgent = "Your client’s employment details are based on the information HMRC already hold about you."
-    val contentExpectedIndividual = "Your employment details are based on the information HMRC already hold about you."
+    val contentExpectedAgent = "Your client’s employment details are based on the information we already hold about you."
+    val contentExpectedIndividual = "Your employment details are based on the information we already hold about you."
     val insetTextExpectedAgent = s"You cannot update your client’s employment details until 6 April $taxYear."
     val insetTextExpectedIndividual = s"You cannot update your employment details until 6 April $taxYear."
 
@@ -67,7 +67,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
     val employeeFieldValue1 = "Londis LTD 2020 PLC Company"
     val employeeFieldValue2 = "#Lon"
     val employeeFieldValue3 = "Yes"
-    val employeeFieldValue4 = "14/07/1990"
+    val employeeFieldValue4 = "14 July 1990"
     val employeeFieldValue5 = "No"
     val employeeFieldValue6 = "£111.40"
     val employeeFieldValue7 = "£1000"
@@ -77,7 +77,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
   object FullModel {
     val payModel: PayModel = PayModel(111.4, 1000.00, Some(10000000), "Monthly", "14/83/2022", None, None)
     val employerModel: EmployerModel = EmployerModel(Some("#Lon"), "Londis LTD 2020 PLC Company")
-    val employmentModel: EmploymentModel = EmploymentModel(None, None, Some(true), Some(false), Some("14/07/1990"), None, None, None, None, employerModel, payModel)
+    val employmentModel: EmploymentModel = EmploymentModel(None, None, Some(true), Some(false), Some("1990-07-14"), None, None, None, None, employerModel, payModel)
     val getEmploymentDataModel: GetEmploymentDataModel = GetEmploymentDataModel("Today", None, None, None, employmentModel)
   }
 
@@ -85,6 +85,20 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
     val payModel: PayModel = PayModel(111.4, 1000.00, None, "Monthly", "14/83/2022", None, None)
     val employerModel: EmployerModel = EmployerModel(None, "Londis LTD 2020 PLC Company")
     val employmentModel: EmploymentModel = EmploymentModel(None, None, None, None, None, None, None, None, None, employerModel, payModel)
+    val getEmploymentDataModel: GetEmploymentDataModel = GetEmploymentDataModel("Today", None, None, None, employmentModel)
+  }
+
+  object SomeModelWithBadDate {
+    val payModel: PayModel = PayModel(111.4, 1000.00, None, "Monthly", "14/83/2022", None, None)
+    val employerModel: EmployerModel = EmployerModel(None, "Londis LTD 2020 PLC Company")
+    val employmentModel: EmploymentModel = EmploymentModel(None, None, Some(true), None, Some("1bad date"), None, None, None, None, employerModel, payModel)
+    val getEmploymentDataModel: GetEmploymentDataModel = GetEmploymentDataModel("Today", None, None, None, employmentModel)
+  }
+
+  object SomeModelWithValidDate {
+    val payModel: PayModel = PayModel(111.4, 1000.00, None, "Monthly", "14/83/2022", None, None)
+    val employerModel: EmployerModel = EmployerModel(None, "Londis LTD 2020 PLC Company")
+    val employmentModel: EmploymentModel = EmploymentModel(None, None, Some(false), None, Some("1990-07-14"), None, None, None, None, employerModel, payModel)
     val getEmploymentDataModel: GetEmploymentDataModel = GetEmploymentDataModel("Today", None, None, None, employmentModel)
   }
 
@@ -203,6 +217,92 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
         }
       }
 
+      "return an action when some model with invalid date is in session" when {
+
+        val sessionCookie: String = PlaySessionCookieBaker.bakeSessionCookie(Map[String, String](
+          SessionValues.EMPLOYMENT_DATA -> Json.prettyPrint(
+            Json.toJson(SomeModelWithBadDate.getEmploymentDataModel)
+          )
+        ))
+
+        lazy val result: WSResponse = {
+          authoriseIndividual()
+          await(wsClient.url(checkEmploymentDetailsUrl)
+            .withHttpHeaders(HeaderNames.COOKIE -> sessionCookie, "Csrf-Token" -> "nocheck").get())
+        }
+
+        "return an OK(200) status" in {
+          result.status shouldBe OK
+        }
+
+        "has the correct content" in {
+          lazy implicit val document = Jsoup.parse(result.body)
+
+          assertTitle(s"Check your employment details - $serviceName - $govUkExtension")
+          element(headingSelector).text() shouldBe Content.h1ExpectedIndividual
+          element(subHeadingSelector).text() shouldBe Content.captionExpected
+
+          element(contentTextSelector).text() shouldBe Content.contentExpectedIndividual
+          element(insetTextSelector).text() shouldBe Content.insetTextExpectedIndividual
+
+          elements(summaryListRowFieldNameSelector(1)).text shouldBe Content.employeeFieldName1
+          elements(summaryListRowFieldAmountSelector(1)).text shouldBe Content.employeeFieldValue1
+
+          elements(summaryListRowFieldNameSelector(2)).text shouldBe Content.employeeFieldName3
+          elements(summaryListRowFieldAmountSelector(2)).text shouldBe Content.employeeFieldValue3
+
+          elements(summaryListRowFieldNameSelector(3)).text shouldBe Content.employeeFieldName6
+          elements(summaryListRowFieldAmountSelector(3)).text shouldBe Content.employeeFieldValue6
+
+          elements(summaryListRowFieldNameSelector(4)).text shouldBe Content.employeeFieldName7
+          elements(summaryListRowFieldAmountSelector(4)).text shouldBe Content.employeeFieldValue7
+
+        }
+      }
+
+      "return an action when some model with company director as no and valid date data is in session" when {
+
+        val sessionCookie: String = PlaySessionCookieBaker.bakeSessionCookie(Map[String, String](
+          SessionValues.EMPLOYMENT_DATA -> Json.prettyPrint(
+            Json.toJson(SomeModelWithValidDate.getEmploymentDataModel)
+          )
+        ))
+
+        lazy val result: WSResponse = {
+          authoriseIndividual()
+          await(wsClient.url(checkEmploymentDetailsUrl)
+            .withHttpHeaders(HeaderNames.COOKIE -> sessionCookie, "Csrf-Token" -> "nocheck").get())
+        }
+
+        "return an OK(200) status" in {
+          result.status shouldBe OK
+        }
+
+        "has the correct content" in {
+          lazy implicit val document = Jsoup.parse(result.body)
+
+          assertTitle(s"Check your employment details - $serviceName - $govUkExtension")
+          element(headingSelector).text() shouldBe Content.h1ExpectedIndividual
+          element(subHeadingSelector).text() shouldBe Content.captionExpected
+
+          element(contentTextSelector).text() shouldBe Content.contentExpectedIndividual
+          element(insetTextSelector).text() shouldBe Content.insetTextExpectedIndividual
+
+          elements(summaryListRowFieldNameSelector(1)).text shouldBe Content.employeeFieldName1
+          elements(summaryListRowFieldAmountSelector(1)).text shouldBe Content.employeeFieldValue1
+
+          elements(summaryListRowFieldNameSelector(2)).text shouldBe Content.employeeFieldName3
+          elements(summaryListRowFieldAmountSelector(2)).text shouldBe "No"
+
+          elements(summaryListRowFieldNameSelector(3)).text shouldBe Content.employeeFieldName6
+          elements(summaryListRowFieldAmountSelector(3)).text shouldBe Content.employeeFieldValue6
+
+          elements(summaryListRowFieldNameSelector(4)).text shouldBe Content.employeeFieldName7
+          elements(summaryListRowFieldAmountSelector(4)).text shouldBe Content.employeeFieldValue7
+
+        }
+      }
+
       "returns an action when auth call fails" which {
         lazy val result: WSResponse = {
           authoriseIndividualUnauthorized()
@@ -302,6 +402,90 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
       }
 
       "return an action when minimum data is in session" when {
+
+        val sessionCookie: String = PlaySessionCookieBaker.bakeSessionCookie(Map[String, String](
+          SessionValues.EMPLOYMENT_DATA -> Json.prettyPrint(
+            Json.toJson(MinModel.getEmploymentDataModel)
+          ),
+          SessionValues.CLIENT_MTDITID -> "1234567890",
+          SessionValues.CLIENT_NINO -> "AA123456A"
+        ))
+
+        lazy val result: WSResponse = {
+          authoriseAgent()
+          await(wsClient.url(checkEmploymentDetailsUrl)
+            .withHttpHeaders(HeaderNames.COOKIE -> sessionCookie, "Csrf-Token" -> "nocheck").get())
+        }
+
+        "return an OK(200) status" in {
+          result.status shouldBe OK
+        }
+
+        "has the correct minimum content" in {
+          lazy implicit val document = Jsoup.parse(result.body)
+
+          assertTitle(s"Check your client’s employment details - $serviceName - $govUkExtension")
+          element(headingSelector).text() shouldBe Content.h1ExpectedAgent
+          element(subHeadingSelector).text() shouldBe Content.captionExpected
+
+          element(contentTextSelector).text() shouldBe Content.contentExpectedAgent
+          element(insetTextSelector).text() shouldBe Content.insetTextExpectedAgent
+
+          elements(summaryListRowFieldNameSelector(1)).text shouldBe Content.employeeFieldName1
+          elements(summaryListRowFieldAmountSelector(1)).text shouldBe Content.employeeFieldValue1
+
+          elements(summaryListRowFieldNameSelector(2)).text shouldBe Content.employeeFieldName6
+          elements(summaryListRowFieldAmountSelector(2)).text shouldBe Content.employeeFieldValue6
+
+          elements(summaryListRowFieldNameSelector(3)).text shouldBe Content.employeeFieldName7
+          elements(summaryListRowFieldAmountSelector(3)).text shouldBe Content.employeeFieldValue7
+
+        }
+      }
+
+      "return an action when some model with invalid date is in session" when {
+
+        val sessionCookie: String = PlaySessionCookieBaker.bakeSessionCookie(Map[String, String](
+          SessionValues.EMPLOYMENT_DATA -> Json.prettyPrint(
+            Json.toJson(MinModel.getEmploymentDataModel)
+          ),
+          SessionValues.CLIENT_MTDITID -> "1234567890",
+          SessionValues.CLIENT_NINO -> "AA123456A"
+        ))
+
+        lazy val result: WSResponse = {
+          authoriseAgent()
+          await(wsClient.url(checkEmploymentDetailsUrl)
+            .withHttpHeaders(HeaderNames.COOKIE -> sessionCookie, "Csrf-Token" -> "nocheck").get())
+        }
+
+        "return an OK(200) status" in {
+          result.status shouldBe OK
+        }
+
+        "has the correct minimum content" in {
+          lazy implicit val document = Jsoup.parse(result.body)
+
+          assertTitle(s"Check your client’s employment details - $serviceName - $govUkExtension")
+          element(headingSelector).text() shouldBe Content.h1ExpectedAgent
+          element(subHeadingSelector).text() shouldBe Content.captionExpected
+
+          element(contentTextSelector).text() shouldBe Content.contentExpectedAgent
+          element(insetTextSelector).text() shouldBe Content.insetTextExpectedAgent
+
+          elements(summaryListRowFieldNameSelector(1)).text shouldBe Content.employeeFieldName1
+          elements(summaryListRowFieldAmountSelector(1)).text shouldBe Content.employeeFieldValue1
+
+          elements(summaryListRowFieldNameSelector(2)).text shouldBe Content.employeeFieldName6
+          elements(summaryListRowFieldAmountSelector(2)).text shouldBe Content.employeeFieldValue6
+
+          elements(summaryListRowFieldNameSelector(3)).text shouldBe Content.employeeFieldName7
+          elements(summaryListRowFieldAmountSelector(3)).text shouldBe Content.employeeFieldValue7
+
+        }
+      }
+
+      "return an action when some model with company director as no and valid date  is in session" when {
 
         val sessionCookie: String = PlaySessionCookieBaker.bakeSessionCookie(Map[String, String](
           SessionValues.EMPLOYMENT_DATA -> Json.prettyPrint(

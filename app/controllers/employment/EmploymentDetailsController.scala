@@ -47,9 +47,9 @@ package controllers.employment
       }
 
     }
-    val payModel : PayModel = PayModel(111.4,1000.00, Some(10000000), "Monthly", "14/83/2022", None, None)
-    val employerModel : EmployerModel = EmployerModel(Some("#Lon"), "Londis LTD 2020 PLC Company")
-    val employmentModel:EmploymentModel = EmploymentModel(None, None, Some(true), Some(true), Some("14/07/1990"), None, None, None, None, employerModel, payModel)
-    val getEmploymentDataModel:GetEmploymentDataModel = GetEmploymentDataModel("Today", None, None, None, employmentModel)
+    val payModel: PayModel = PayModel(111.4, 1000.00, Some(10000000), "Monthly", "14/83/2022", None, None)
+    val employerModel: EmployerModel = EmployerModel(Some("#Lon"), "Londis LTD 2020 PLC Company")
+    val employmentModel: EmploymentModel = EmploymentModel(None, None, Some(true), Some(false), Some("1990-07-14"), None, None, None, None, employerModel, payModel)
+    val getEmploymentDataModel: GetEmploymentDataModel = GetEmploymentDataModel("Today", None, None, None, employmentModel)
 
   }

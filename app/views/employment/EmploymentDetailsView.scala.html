@@ -19,6 +19,8 @@
 @import views.html.templates.helpers.Heading
 @import utils.ViewUtils.summaryListRow
 @import utils.ViewUtils.bigDecimalCurrency
+@import utils.ViewUtils.convertBoolToYesOrNo
+@import utils.ViewUtils.dateFormatter
 
 @this(
         layout: Layout,
@@ -28,8 +30,6 @@
         govukSummaryList: GovukSummaryList,
         govukInsetText: GovukInsetText
 )
-
-
 @(employmentDataModel: GetEmploymentDataModel, taxYear: Int)(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
 
 @headingForUse = @{
@@ -54,22 +54,21 @@
     }
 
     @{
-        
 
-        def convertBoolToYesOrNo(employmentField: Option[Boolean]) : Option[String] = {
-            employmentField.map{
-                case true => "Yes"
-                case false => "No"
+        def isCompanyDirector(isCompanyDirector:Option[Boolean], directorCeasedDate:Option[String]): Option[String] ={
+            if(isCompanyDirector.getOrElse(false)){
+                dateFormatter(directorCeasedDate.getOrElse("bad date"))
+            }else{
+                None
             }
         }
 
         val employmentDetails = employmentDataModel.employment
 
-
         val employerName: (String, Option[String]) = ("employer", Some(employmentDetails.employer.employerName))
         val payeRef: (String, Option[String]) = ("payeRef", employmentDetails.employer.employerRef)
         val companyDirector: (String, Option[String]) = ("companyDirector", convertBoolToYesOrNo(employmentDetails.companyDirector))
-        val directorCeasedDate :(String, Option[String]) = ("directorCeasedDate", employmentDetails.directorshipCeasedDate)
+        val directorCeasedDate :(String, Option[String]) = ("directorCeasedDate", isCompanyDirector(employmentDetails.companyDirector, employmentDetails.directorshipCeasedDate))
         val closeCompany: (String, Option[String]) = ("closeCompany", convertBoolToYesOrNo(employmentDetails.closeCompany))
         val payReceived: (String, Option[String]) = ("payReceived", Some(bigDecimalCurrency(employmentDetails.pay.taxablePayToDate)))
         val totalTaxToDate: (String, Option[String]) = ("totalTaxToDate", Some(bigDecimalCurrency(employmentDetails.pay.totalTaxToDate)))
@@ -95,7 +94,3 @@
 
     }
 }
-
-
-
-
