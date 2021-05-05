@@ -1,0 +1,87 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.headerFooterTemplate.Layout
+@import views.html.templates.helpers.ErrorSummary
+@import views.html.templates.helpers.Button
+@import views.html.templates.helpers.InputRadio
+@import views.html.templates.helpers.Heading
+@import utils.ViewUtils.summaryListRow
+@import views.html.templates.helpers.BigDecimalCurrency
+@import views.html.templates.helpers.Link
+
+
+@this(
+        layout: Layout,
+        button: Button,
+        heading: Heading,
+        govukSummaryList: GovukSummaryList,
+        govukInsetText: GovukInsetText,
+        bigDecimalCurrency: BigDecimalCurrency,
+        link: Link,
+)
+
+@(taxYear: Int, expenseModel: GetEmploymentExpensesModel)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+
+@layout(pageTitle = messages("employment.expenses.title"), taxYear = Some(taxYear), isAgent = user.isAgent) {
+    @heading(
+        messages("employment.expenses.heading"),
+        Some(messages(s"employment.expenses.caption", (taxYear - 1).toString, taxYear.toString)),
+        "govuk-!-margin-bottom-3"
+    )
+
+    <p class="govuk-body">@messages(s"employment.expenses.sub-heading.${if(user.isAgent) "agent" else "individual"}")</p>
+
+    @{
+        govukInsetText(InsetText(
+            content = Text(messages(s"employment.expenses.inset.text.${if(user.isAgent) "agent" else "individual"}", taxYear.toString))
+        ))
+    }
+
+    @{
+        val expenses: Option[ExpensesType] = expenseModel.expenses
+
+        def toSummaryListRow(key: String, amountOpt: Option[BigDecimal]): Option[SummaryListRow] = {
+            amountOpt.map { amount =>
+                summaryListRow(
+                    HtmlContent(key),
+                    HtmlContent(bigDecimalCurrency(amount.toString())),
+                    keyClasses = "govuk-!-width-two-thirds",
+                    actions = Seq()
+                )
+            }
+        }
+
+        expenses.map { expense =>
+            govukSummaryList(
+                SummaryList(
+                    Seq(
+                        toSummaryListRow(messages("employment.expenses.expense.type.business-travel"), expense.businessTravelCosts),
+                        toSummaryListRow(messages("employment.expenses.expense.type.job"), expense.jobExpenses),
+                        toSummaryListRow(messages("employment.expenses.expense.type.flat-rate-job"), expense.flatRateJobExpenses),
+                        toSummaryListRow(messages("employment.expenses.expense.type.professional-subscriptions"), expense.professionalSubscriptions),
+                        toSummaryListRow(messages("employment.expenses.expense.type.hotel-and-meal"), expense.hotelAndMealExpenses),
+                        toSummaryListRow(messages("employment.expenses.expense.type.other-and-capital-allowances"), expense.otherAndCapitalAllowances),
+                        toSummaryListRow(messages("employment.expenses.expense.type.vehicle"), expense.vehicleExpenses),
+                        toSummaryListRow(messages("employment.expenses.expense.type.mileage-allowance"), expense.mileageAllowanceRelief),
+                    ).collect { case Some(summaryListRow) => summaryListRow }
+                )
+            )
+        }
+
+    }
+
+}
