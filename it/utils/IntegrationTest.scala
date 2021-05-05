@@ -52,7 +52,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   implicit val actorSystem: ActorSystem = ActorSystem()
   implicit val materializer: Materializer = ActorMaterializer()
 
-  val startUrl = s"http://localhost:$port/income-through-software/return/personal-income"
+  val startUrl = s"http://localhost:$port/income-through-software/return/employment-income"
 
   def await[T](awaitable: Awaitable[T]): T = Await.result(awaitable, Duration.Inf)
 
@@ -70,6 +70,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "microservice.services.income-tax-interest.port" -> wiremockPort.toString,
     "microservice.services.income-tax-gift-aid.host" -> wiremockHost,
     "microservice.services.income-tax-gift-aid.port" -> wiremockPort.toString,
+    "view-and-change.baseUrl" -> s"http://$wiremockHost:$wiremockPort",
     "signIn.url" -> s"/auth-login-stub/gg-sign-in",
   )
 
