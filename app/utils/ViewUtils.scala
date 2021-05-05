@@ -26,12 +26,6 @@ import java.util.Locale
 
 object ViewUtils {
 
-  private val gbpCurrencySymbol = "£"
-
-  def bigDecimalCurrency(bigDecimal: BigDecimal): String = {
-    gbpCurrencySymbol + f"$bigDecimal%1.2f".replace(".00", "")
-  }
-
   def convertBoolToYesOrNo(employmentField: Option[Boolean])(implicit messages: Messages) : Option[String] = {
     employmentField.map{
       case true => messages("common.yes")
