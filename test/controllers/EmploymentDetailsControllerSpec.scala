@@ -66,7 +66,7 @@ class EmploymentDetailsControllerSpec extends UnitTestWithApp {
         val result: Future[Result] = controller.show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe "/overview"
+        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)
       }
     }
   }

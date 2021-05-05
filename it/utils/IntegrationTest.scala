@@ -70,6 +70,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "microservice.services.income-tax-interest.port" -> wiremockPort.toString,
     "microservice.services.income-tax-gift-aid.host" -> wiremockHost,
     "microservice.services.income-tax-gift-aid.port" -> wiremockPort.toString,
+    "view-and-change.baseUrl" -> s"http://$wiremockHost:$wiremockPort",
     "signIn.url" -> s"/auth-login-stub/gg-sign-in",
   )
 
