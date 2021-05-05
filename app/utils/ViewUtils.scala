@@ -16,11 +16,32 @@
 
 package utils
 
+import play.api.i18n.Messages
 import play.api.mvc.Call
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 object ViewUtils {
+
+  def convertBoolToYesOrNo(employmentField: Option[Boolean])(implicit messages: Messages) : Option[String] = {
+    employmentField.map{
+      case true => messages("common.yes")
+      case false => messages("common.no")
+    }
+  }
+
+  def dateFormatter(date: String): Option[String] = {
+    try{
+          Some(LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.UK))
+            .format(DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.UK)))
+    }
+    catch {
+      case _: Exception => None
+    }
+  }
 
   def summaryListRow(key: HtmlContent,
                      value: HtmlContent,
@@ -29,6 +50,7 @@ object ViewUtils {
                      actionClasses: String = "govuk-!-width-one-third",
                      actions: Seq[(Call, String, Option[String])]): SummaryListRow = {
     SummaryListRow(
+
       key = Key(
         content = key,
         classes = keyClasses

@@ -83,6 +83,29 @@ timeout.button = Sign in
 taxYear-error-template.paragraph.1 = You can only enter information for the 2021 to 2022 tax year.
 taxYear-error-template.paragraph.2 = Check that you’ve entered the correct web address.
 
+employment.employmentDetails.heading.individual = Check your employment details
+employment.employmentDetails.heading.agent = Check your client’s employment details
+
+employment.employmentDetails.title.individual = Check your employment details
+employment.employmentDetails.title.agent = Check your client’s employment details
+
+employment.employmentDetails.caption = Employment for 6 April {0} to 5 April {1}
+
+employment.employmentDetails.content.individual = Your employment details are based on the information we already hold about you.
+employment.employmentDetails.content.agent = Your client’s employment details are based on the information we already hold about you.
+
+employment.employmentDetails.insetText.individual = You cannot update your employment details until 6 April {0}.
+employment.employmentDetails.insetText.agent = You cannot update your client’s employment details until 6 April {0}.
+
+employment.employmentDetails.employer =  Employer
+employment.employmentDetails.payeRef =  PAYE reference
+employment.employmentDetails.companyDirector =  Company director
+employment.employmentDetails.directorCeasedDate =  Director role end date
+employment.employmentDetails.closeCompany =  Close company
+employment.employmentDetails.payReceived =  Pay received
+employment.employmentDetails.totalTaxToDate =  UK tax taken from pay
+employment.employmentDetails.tipsAndOtherPayments =  Payments not on your P60
+
 employment.expenses.title = Check employment expenses
 employment.expenses.heading = Check employment expenses
 employment.expenses.caption = Employment for 6 April {0} to 5 April {1}
