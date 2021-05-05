@@ -15,6 +15,10 @@ GET        /error/wrong-tax-year                            controllers.errors.T
 
 GET        /error/not-authorised-to-use-service             controllers.errors.UnauthorisedUserErrorController.show
 
+GET        /:taxYear/check-your-employment-details  controllers.employment.EmploymentDetailsController.show(taxYear: Int)
+
+GET        /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
+
 GET        /error/you-need-agent-services-account           controllers.errors.YouNeedAgentServicesController.show
 
-GET        /language/:lang                                  controllers.LanguageSwitchController.switchToLanguage(lang: String)
+
