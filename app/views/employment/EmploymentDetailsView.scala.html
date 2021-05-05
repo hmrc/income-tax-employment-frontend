@@ -17,8 +17,8 @@
 @import views.html.headerFooterTemplate.Layout
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Heading
+@import views.html.templates.helpers.BigDecimalCurrency
 @import utils.ViewUtils.summaryListRow
-@import utils.ViewUtils.bigDecimalCurrency
 @import utils.ViewUtils.convertBoolToYesOrNo
 @import utils.ViewUtils.dateFormatter
 
@@ -28,11 +28,13 @@
         formWithCSRF: FormWithCSRF,
         button: Button,
         heading: Heading,
+        bigDecimalCurrency: BigDecimalCurrency,
         govukSummaryList: GovukSummaryList,
         govukInsetText: GovukInsetText
 )
 @(employmentDataModel: GetEmploymentDataModel, taxYear: Int)(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
 
+@import views.html.templates.helpers.BigDecimalCurrency
 @headingForUse = @{
     messages(s"employment.employmentDetails.heading.${if(user.isAgent) "agent" else "individual"}")
 }
@@ -71,9 +73,10 @@
         val companyDirector: (String, Option[String]) = ("companyDirector", convertBoolToYesOrNo(employmentDetails.companyDirector))
         val directorCeasedDate :(String, Option[String]) = ("directorCeasedDate", isCompanyDirector(employmentDetails.companyDirector, employmentDetails.directorshipCeasedDate))
         val closeCompany: (String, Option[String]) = ("closeCompany", convertBoolToYesOrNo(employmentDetails.closeCompany))
-        val payReceived: (String, Option[String]) = ("payReceived", Some(bigDecimalCurrency(employmentDetails.pay.taxablePayToDate)))
-        val totalTaxToDate: (String, Option[String]) = ("totalTaxToDate", Some(bigDecimalCurrency(employmentDetails.pay.totalTaxToDate)))
-        val tipsAndOtherPaymentsAmount: (String, Option[String]) = ("tipsAndOtherPayments", employmentDetails.pay.tipsAndOtherPayments.map(bigDecimalCurrency))
+        val payReceived: (String, Option[String]) = ("payReceived", Some(bigDecimalCurrency(employmentDetails.pay.taxablePayToDate.toString).toString))
+        val totalTaxToDate: (String, Option[String]) = ("totalTaxToDate", Some(bigDecimalCurrency(employmentDetails.pay.totalTaxToDate.toString).toString))
+        val tipsAndOtherPaymentsAmount: (String, Option[String]) = ("tipsAndOtherPayments", employmentDetails.pay.tipsAndOtherPayments
+                .map(amount => bigDecimalCurrency(amount.toString).toString))
 
         val employmentDataFields = List(employerName, payeRef, companyDirector, directorCeasedDate, closeCompany,
             payReceived, totalTaxToDate, tipsAndOtherPaymentsAmount)
