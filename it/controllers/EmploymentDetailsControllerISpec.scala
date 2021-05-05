@@ -64,42 +64,44 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
     val employeeFieldName7 = "UK tax taken from pay"
     val employeeFieldName8 = "Payments not on your P60"
 
-    val employeeFieldValue1 = "Londis LTD 2020 PLC Company"
-    val employeeFieldValue2 = "#Lon"
+    val employeeFieldValue1 = "maggie"
+    val employeeFieldValue2 = "223/AB12399"
     val employeeFieldValue3 = "Yes"
-    val employeeFieldValue4 = "14 July 1990"
+    val employeeFieldValue4 = "12 February 2020"
     val employeeFieldValue5 = "No"
-    val employeeFieldValue6 = "£111.40"
-    val employeeFieldValue7 = "£1000"
-    val employeeFieldValue8 = "£10000000"
+    val employeeFieldValue6 = "£34234.15"
+    val employeeFieldValue7 = "£6782.92"
+    val employeeFieldValue8 = "£67676"
   }
 
   object FullModel {
-    val payModel: PayModel = PayModel(111.4, 1000.00, Some(10000000), "Monthly", "14/83/2022", None, None)
-    val employerModel: EmployerModel = EmployerModel(Some("#Lon"), "Londis LTD 2020 PLC Company")
-    val employmentModel: EmploymentModel = EmploymentModel(None, None, Some(true), Some(false), Some("1990-07-14"), None, None, None, None, employerModel, payModel)
-    val getEmploymentDataModel: GetEmploymentDataModel = GetEmploymentDataModel("Today", None, None, None, employmentModel)
+    val payModel: PayModel = PayModel(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
+    val employerModel: EmployerModel = EmployerModel(Some("223/AB12399"), "maggie")
+    val employmentModel: EmploymentModel = EmploymentModel(Some("1002"), Some("123456789999"), Some(true), Some(false), Some("2020-02-12"),
+      Some("2019-04-21"), Some("2020-03-11"), Some(false), Some(false), employerModel, payModel)
+    val getEmploymentDataModel: GetEmploymentDataModel = GetEmploymentDataModel("2020-01-04T05:01:01Z", Some("CUSTOMER"),
+      Some("2020-04-04T01:01:01Z"), Some("2020-04-04T01:01:01Z"), employmentModel)
   }
 
   object MinModel {
-    val payModel: PayModel = PayModel(111.4, 1000.00, None, "Monthly", "14/83/2022", None, None)
-    val employerModel: EmployerModel = EmployerModel(None, "Londis LTD 2020 PLC Company")
+    val payModel: PayModel = PayModel(34234.15, 6782.92, None, "CALENDAR MONTHLY", "2020-04-23", None, None)
+    val employerModel: EmployerModel = EmployerModel(None, "maggie")
     val employmentModel: EmploymentModel = EmploymentModel(None, None, None, None, None, None, None, None, None, employerModel, payModel)
-    val getEmploymentDataModel: GetEmploymentDataModel = GetEmploymentDataModel("Today", None, None, None, employmentModel)
+    val getEmploymentDataModel: GetEmploymentDataModel = GetEmploymentDataModel("2020-01-04T05:01:01Z", None, None, None, employmentModel)
   }
 
-  object SomeModelWithBadDate {
-    val payModel: PayModel = PayModel(111.4, 1000.00, None, "Monthly", "14/83/2022", None, None)
-    val employerModel: EmployerModel = EmployerModel(None, "Londis LTD 2020 PLC Company")
-    val employmentModel: EmploymentModel = EmploymentModel(None, None, Some(true), None, Some("1bad date"), None, None, None, None, employerModel, payModel)
-    val getEmploymentDataModel: GetEmploymentDataModel = GetEmploymentDataModel("Today", None, None, None, employmentModel)
+  object SomeModelWithInvalidDate  {
+    val payModel: PayModel = PayModel(34234.15, 6782.92, None, "CALENDAR MONTHLY", "2020-04-23", None, None)
+    val employerModel: EmployerModel = EmployerModel(None, "maggie")
+    val employmentModel: EmploymentModel = EmploymentModel(None, None, Some(true), None, Some("14/07/1990"), None, None, None, None, employerModel, payModel)
+    val getEmploymentDataModel: GetEmploymentDataModel = GetEmploymentDataModel("2020-01-04T05:01:01Z", None, None, None, employmentModel)
   }
 
-  object SomeModelWithValidDate {
-    val payModel: PayModel = PayModel(111.4, 1000.00, None, "Monthly", "14/83/2022", None, None)
-    val employerModel: EmployerModel = EmployerModel(None, "Londis LTD 2020 PLC Company")
-    val employmentModel: EmploymentModel = EmploymentModel(None, None, Some(false), None, Some("1990-07-14"), None, None, None, None, employerModel, payModel)
-    val getEmploymentDataModel: GetEmploymentDataModel = GetEmploymentDataModel("Today", None, None, None, employmentModel)
+  object SomeModelWithValidDate  {
+    val payModel: PayModel = PayModel(34234.15, 6782.92, None, "CALENDAR MONTHLY", "2020-04-23", None, None)
+    val employerModel: EmployerModel = EmployerModel(None, "maggie")
+    val employmentModel: EmploymentModel = EmploymentModel(None, None, Some(false), None, Some("2020-02-12"), None, None, None, None, employerModel, payModel)
+    val getEmploymentDataModel: GetEmploymentDataModel = GetEmploymentDataModel("2020-01-04T05:01:01Z", None, None, None, employmentModel)
   }
 
 
@@ -221,7 +223,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
 
         val sessionCookie: String = PlaySessionCookieBaker.bakeSessionCookie(Map[String, String](
           SessionValues.EMPLOYMENT_DATA -> Json.prettyPrint(
-            Json.toJson(SomeModelWithBadDate.getEmploymentDataModel)
+            Json.toJson(SomeModelWithInvalidDate.getEmploymentDataModel)
           )
         ))
 
@@ -447,7 +449,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
 
         val sessionCookie: String = PlaySessionCookieBaker.bakeSessionCookie(Map[String, String](
           SessionValues.EMPLOYMENT_DATA -> Json.prettyPrint(
-            Json.toJson(MinModel.getEmploymentDataModel)
+            Json.toJson(SomeModelWithInvalidDate.getEmploymentDataModel)
           ),
           SessionValues.CLIENT_MTDITID -> "1234567890",
           SessionValues.CLIENT_NINO -> "AA123456A"
@@ -463,7 +465,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
           result.status shouldBe OK
         }
 
-        "has the correct minimum content" in {
+        "has the correct content" in {
           lazy implicit val document = Jsoup.parse(result.body)
 
           assertTitle(s"Check your client’s employment details - $serviceName - $govUkExtension")
@@ -476,11 +478,14 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
           elements(summaryListRowFieldNameSelector(1)).text shouldBe Content.employeeFieldName1
           elements(summaryListRowFieldAmountSelector(1)).text shouldBe Content.employeeFieldValue1
 
-          elements(summaryListRowFieldNameSelector(2)).text shouldBe Content.employeeFieldName6
-          elements(summaryListRowFieldAmountSelector(2)).text shouldBe Content.employeeFieldValue6
+          elements(summaryListRowFieldNameSelector(2)).text shouldBe Content.employeeFieldName3
+          elements(summaryListRowFieldAmountSelector(2)).text shouldBe Content.employeeFieldValue3
 
-          elements(summaryListRowFieldNameSelector(3)).text shouldBe Content.employeeFieldName7
-          elements(summaryListRowFieldAmountSelector(3)).text shouldBe Content.employeeFieldValue7
+          elements(summaryListRowFieldNameSelector(3)).text shouldBe Content.employeeFieldName6
+          elements(summaryListRowFieldAmountSelector(3)).text shouldBe Content.employeeFieldValue6
+
+          elements(summaryListRowFieldNameSelector(4)).text shouldBe Content.employeeFieldName7
+          elements(summaryListRowFieldAmountSelector(4)).text shouldBe Content.employeeFieldValue7
 
         }
       }
@@ -489,7 +494,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
 
         val sessionCookie: String = PlaySessionCookieBaker.bakeSessionCookie(Map[String, String](
           SessionValues.EMPLOYMENT_DATA -> Json.prettyPrint(
-            Json.toJson(MinModel.getEmploymentDataModel)
+            Json.toJson(SomeModelWithValidDate.getEmploymentDataModel)
           ),
           SessionValues.CLIENT_MTDITID -> "1234567890",
           SessionValues.CLIENT_NINO -> "AA123456A"
@@ -505,7 +510,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
           result.status shouldBe OK
         }
 
-        "has the correct minimum content" in {
+        "has the correct content" in {
           lazy implicit val document = Jsoup.parse(result.body)
 
           assertTitle(s"Check your client’s employment details - $serviceName - $govUkExtension")
@@ -518,11 +523,14 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
           elements(summaryListRowFieldNameSelector(1)).text shouldBe Content.employeeFieldName1
           elements(summaryListRowFieldAmountSelector(1)).text shouldBe Content.employeeFieldValue1
 
-          elements(summaryListRowFieldNameSelector(2)).text shouldBe Content.employeeFieldName6
-          elements(summaryListRowFieldAmountSelector(2)).text shouldBe Content.employeeFieldValue6
+          elements(summaryListRowFieldNameSelector(2)).text shouldBe Content.employeeFieldName3
+          elements(summaryListRowFieldAmountSelector(2)).text shouldBe "No"
 
-          elements(summaryListRowFieldNameSelector(3)).text shouldBe Content.employeeFieldName7
-          elements(summaryListRowFieldAmountSelector(3)).text shouldBe Content.employeeFieldValue7
+          elements(summaryListRowFieldNameSelector(3)).text shouldBe Content.employeeFieldName6
+          elements(summaryListRowFieldAmountSelector(3)).text shouldBe Content.employeeFieldValue6
+
+          elements(summaryListRowFieldNameSelector(4)).text shouldBe Content.employeeFieldName7
+          elements(summaryListRowFieldAmountSelector(4)).text shouldBe Content.employeeFieldValue7
 
         }
       }
