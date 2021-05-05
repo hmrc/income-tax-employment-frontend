@@ -24,7 +24,9 @@ case class GetEmploymentDataModel(
                                    customerAdded: Option[String],
                                    dateIgnored: Option[String],
                                    employment: EmploymentModel
-                                 )
+                                 ){
+  def asJsonString: String = Json.toJson(this).toString()
+}
 
 object GetEmploymentDataModel {
   implicit val formats: OFormat[GetEmploymentDataModel] = Json.format[GetEmploymentDataModel]
