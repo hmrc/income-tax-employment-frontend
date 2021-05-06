@@ -1,5 +1,5 @@
 service.name = Update and submit an Income Tax Return
-service.text = Dyma'ch gwasanaeth newydd
+service.text = This is your new service
 
 service.govUkExtension = GOV.UK
 
@@ -93,8 +93,8 @@ employment.employmentDetails.title.agent = Check your client’s employment deta
 
 employment.employmentDetails.caption = Employment for 6 April {0} to 5 April {1}
 
-employment.employmentDetails.content.individual = Your employment details are based on the information HMRC already hold about you.
-employment.employmentDetails.content.agent = Your client’s employment details are based on the information HMRC already hold about you.
+employment.employmentDetails.content.individual = Your employment details are based on the information we already hold about you.
+employment.employmentDetails.content.agent = Your client’s employment details are based on the information we already hold about them.
 
 employment.employmentDetails.insetText.individual = You cannot update your employment details until 6 April {0}.
 employment.employmentDetails.insetText.agent = You cannot update your client’s employment details until 6 April {0}.
@@ -106,7 +106,8 @@ employment.employmentDetails.directorCeasedDate =  Director role end date
 employment.employmentDetails.closeCompany =  Close company
 employment.employmentDetails.payReceived =  Pay received
 employment.employmentDetails.totalTaxToDate =  UK tax taken from pay
-employment.employmentDetails.tipsAndOtherPayments =  Payments not on your P60
+employment.employmentDetails.tipsAndOtherPayments.individual =  Payments not on your P60
+employment.employmentDetails.tipsAndOtherPayments.agent =  Payments not on P60
 
 employment.expenses.title.individual = Check your employment expenses
 employment.expenses.title.agent = Check your client’s employment expenses
