@@ -108,11 +108,11 @@ employment.employmentDetails.payReceived =  Pay received
 employment.employmentDetails.totalTaxToDate =  UK tax taken from pay
 employment.employmentDetails.tipsAndOtherPayments =  Payments not on your P60
 
-employment.expenses.title = Check employment expenses
-employment.expenses.heading = Check employment expenses
+employment.expenses.title.individual = Check your employment expenses
+employment.expenses.title.agent = Check your client’s employment expenses
 employment.expenses.caption = Employment for 6 April {0} to 5 April {1}
-employment.expenses.inset.text.individual = You cannot update your employment details until 6 April {0}.
-employment.expenses.inset.text.agent = You cannot update your client`s employment expenses until 6 April {0}.
+employment.expenses.inset.text.individual = You cannot update your employment expenses until 6 April {0}.
+employment.expenses.inset.text.agent = You cannot update your client’s employment expenses until 6 April {0}.
 
 employment.expenses.expense.type.business-travel = Amount for business travel and subsistence expenses
 employment.expenses.expense.type.flat-rate-job = Uniform, work cloths and tools (Flat rate expenses)
@@ -125,7 +125,7 @@ employment.expenses.expense.type.mileage-allowance = Mileage allowance relief
 
 
 employment.expenses.sub-heading.individual = Your employment expenses are based on the information we already hold about you. This is a total of expenses from all employment in the tax year.
-employment.expenses.sub-heading.agent = Your client`s employment expenses are based on information we already hold about them. This is a total of expenses from all employment in the tax year.
+employment.expenses.sub-heading.agent = Your client’s employment expenses are based on information we already hold about them. This is a total of expenses from all employment in the tax year.
 
 checkYourBenefits.title = Check employment benefits
 checkYourBenefits.heading = Check employment benefits
