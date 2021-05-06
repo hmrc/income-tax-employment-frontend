@@ -81,13 +81,13 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewTe
         "has the correct content" in {
           lazy implicit val document = Jsoup.parse(result.body)
 
-          assertTitle(s"Check employment expenses - $serviceName - $govUkExtension")
-          element(headingSelector).text() shouldBe "Check employment expenses"
+          assertTitle(s"Check your employment expenses - $serviceName - $govUkExtension")
+          element(headingSelector).text() shouldBe "Check your employment expenses"
           element(subHeadingSelector).text() shouldBe s"Employment for 6 April ${taxYear-1} to 5 April $taxYear"
 
           element(contentSelector).text() shouldBe "Your employment expenses are based on the information we already hold about you. This is a total of expenses from all employment in the tax year."
 
-          element(insetTextSelector).text() shouldBe s"You cannot update your employment details until 6 April $taxYear."
+          element(insetTextSelector).text() shouldBe s"You cannot update your employment expenses until 6 April $taxYear."
 
           elements(summaryListRowFieldNameSelector(1)).text shouldBe "Amount for business travel and subsistence expenses"
           elements(summaryListRowFieldAmountSelector(1)).text shouldBe "£1"
@@ -176,13 +176,13 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewTe
         "has the correct content" in {
           lazy implicit val document = Jsoup.parse(result.body)
 
-          assertTitle(s"Check employment expenses - $serviceName - $govUkExtension")
-          element(headingSelector).text() shouldBe "Check employment expenses"
+          assertTitle(s"Check your client’s employment expenses - $serviceName - $govUkExtension")
+          element(headingSelector).text() shouldBe "Check your client’s employment expenses"
           element(subHeadingSelector).text() shouldBe s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
 
-          element(contentSelector).text() shouldBe "Your client`s employment expenses are based on information we already hold about them. This is a total of expenses from all employment in the tax year."
+          element(contentSelector).text() shouldBe "Your client’s employment expenses are based on information we already hold about them. This is a total of expenses from all employment in the tax year."
 
-          element(insetTextSelector).text() shouldBe s"You cannot update your client`s employment expenses until 6 April $taxYear."
+          element(insetTextSelector).text() shouldBe s"You cannot update your client’s employment expenses until 6 April $taxYear."
 
           elements(summaryListRowFieldNameSelector(1)).text shouldBe "Amount for business travel and subsistence expenses"
           elements(summaryListRowFieldAmountSelector(1)).text shouldBe "£1"
