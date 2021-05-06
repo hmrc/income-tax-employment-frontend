@@ -36,9 +36,9 @@
 
 @(taxYear: Int, expenseModel: GetEmploymentExpensesModel)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = messages("employment.expenses.title"), taxYear = Some(taxYear), isAgent = user.isAgent) {
+@layout(pageTitle = messages(s"employment.expenses.title.${if(user.isAgent) "agent" else "individual"}"), taxYear = Some(taxYear), isAgent = user.isAgent) {
     @heading(
-        messages("employment.expenses.heading"),
+        messages(s"employment.expenses.title.${if(user.isAgent) "agent" else "individual"}"),
         Some(messages(s"employment.expenses.caption", (taxYear - 1).toString, taxYear.toString)),
         "govuk-!-margin-bottom-3"
     )
