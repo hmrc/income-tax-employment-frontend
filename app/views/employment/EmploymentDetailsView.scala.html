@@ -67,8 +67,8 @@
         val closeCompany: (String, Option[String]) = ("closeCompany", convertBoolToYesOrNo(employmentDetails.closeCompany))
         val payReceived: (String, Option[String]) = ("payReceived", Some(bigDecimalCurrency(employmentDetails.pay.taxablePayToDate.toString).toString))
         val totalTaxToDate: (String, Option[String]) = ("totalTaxToDate", Some(bigDecimalCurrency(employmentDetails.pay.totalTaxToDate.toString).toString))
-        val tipsAndOtherPaymentsAmount: (String, Option[String]) = ("tipsAndOtherPayments", employmentDetails.pay.tipsAndOtherPayments
-                .map(amount => bigDecimalCurrency(amount.toString).toString))
+        val tipsAndOtherPaymentsAmount: (String, Option[String]) = (s"tipsAndOtherPayments.${if(user.isAgent) "agent" else "individual"}",
+        employmentDetails.pay.tipsAndOtherPayments.map(amount => bigDecimalCurrency(amount.toString).toString))
 
         val employmentDataFields = List(employerName, payeRef, directorCeasedDate, closeCompany,
             payReceived, totalTaxToDate, tipsAndOtherPaymentsAmount)
