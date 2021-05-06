@@ -87,7 +87,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val titleAgent = "Check your client’s employment benefits"
     val headingIndividual = "Check your employment benefits"
     val headingAgent = "Check your client’s employment benefits"
-    val caption = "Employments to charity for 6 April 2021 to 5 April 2022"
+    val caption = "Employment for 6 April 2021 to 5 April 2022"
     val p1Individual = "Your employment benefits are based on the information we already hold about you."
     val p1Agent = "Your client’s employment benefits are based on the information we already hold about them."
     val p2Individual = s"You cannot update your employment benefits until 6 April $defaultTaxYear."
@@ -150,6 +150,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
         titleCheck(ExpectedResults.titleIndividual)
+        captionCheck(ExpectedResults.caption)
         h1Check(ExpectedResults.headingIndividual)
         textOnPageCheck(ExpectedResults.p1Individual, Selectors.p1)
         textOnPageCheck(ExpectedResults.p2Individual, Selectors.p2)
