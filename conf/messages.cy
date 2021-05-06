@@ -1,5 +1,5 @@
 service.name = Update and submit an Income Tax Return
-service.text = Dyma'ch gwasanaeth newydd
+service.text = This is your new service
 
 service.govUkExtension = GOV.UK
 
@@ -93,8 +93,8 @@ employment.employmentDetails.title.agent = Check your client’s employment deta
 
 employment.employmentDetails.caption = Employment for 6 April {0} to 5 April {1}
 
-employment.employmentDetails.content.individual = Your employment details are based on the information HMRC already hold about you.
-employment.employmentDetails.content.agent = Your client’s employment details are based on the information HMRC already hold about you.
+employment.employmentDetails.content.individual = Your employment details are based on the information we already hold about you.
+employment.employmentDetails.content.agent = Your client’s employment details are based on the information we already hold about you.
 
 employment.employmentDetails.insetText.individual = You cannot update your employment details until 6 April {0}.
 employment.employmentDetails.insetText.agent = You cannot update your client’s employment details until 6 April {0}.
@@ -127,8 +127,10 @@ employment.expenses.expense.type.mileage-allowance = Mileage allowance relief
 employment.expenses.sub-heading.individual = Your employment expenses are based on the information we already hold about you. This is a total of expenses from all employment in the tax year.
 employment.expenses.sub-heading.agent = Your client`s employment expenses are based on information we already hold about them. This is a total of expenses from all employment in the tax year.
 
-checkYourBenefits.title = Check employment benefits
-checkYourBenefits.heading = Check employment benefits
+checkYourBenefits.title.individual = Check your employment benefits
+checkYourBenefits.title.agent = Check your client’s employment benefits
+checkYourBenefits.heading.individual = Check your employment benefits
+checkYourBenefits.heading.agent = Check your client’s employment benefits
 checkYourBenefits.p1.individual = Your employment benefits are based on the information we already hold about you.
 checkYourBenefits.p1.agent = Your client’s employment benefits are based on the information we already hold about them.
 checkYourBenefits.p2.individual = You cannot update your employment benefits until 6 April {0}.

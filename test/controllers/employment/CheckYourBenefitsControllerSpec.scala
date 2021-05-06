@@ -22,7 +22,7 @@ import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import utils.UnitTestWithApp
-import views.html.CheckYourBenefitsView
+import views.html.employment.CheckYourBenefitsView
 
 import scala.concurrent.Future
 

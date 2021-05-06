@@ -32,9 +32,9 @@
 
 @(taxYear: Int, benefitsModel: EmploymentBenefitsModel)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
-@headingForUse = @{messages("checkYourBenefits.heading")}
+@headingForUse = @{messages(s"checkYourBenefits.heading.${if(user.isAgent) "agent" else "individual"}")}
 
-@titleForUse = @{messages("checkYourBenefits.title")}
+@titleForUse = @{messages(s"checkYourBenefits.heading.${if(user.isAgent) "agent" else "individual"}")}
 
 @bigDecimalToCurrency(amount: BigDecimal) = @{
     s"${bigDecimalCurrency(amount.toString)}"
