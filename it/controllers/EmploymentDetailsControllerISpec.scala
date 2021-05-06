@@ -57,21 +57,19 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
 
     val employeeFieldName1 = "Employer"
     val employeeFieldName2 = "PAYE reference"
-    val employeeFieldName3 = "Company director"
-    val employeeFieldName4 = "Director role end date"
-    val employeeFieldName5 = "Close company"
-    val employeeFieldName6 = "Pay received"
-    val employeeFieldName7 = "UK tax taken from pay"
-    val employeeFieldName8 = "Payments not on your P60"
+    val employeeFieldName3 = "Director role end date"
+    val employeeFieldName4 = "Close company"
+    val employeeFieldName5 = "Pay received"
+    val employeeFieldName6 = "UK tax taken from pay"
+    val employeeFieldName7 = "Payments not on your P60"
 
     val employeeFieldValue1 = "maggie"
     val employeeFieldValue2 = "223/AB12399"
-    val employeeFieldValue3 = "Yes"
-    val employeeFieldValue4 = "12 February 2020"
-    val employeeFieldValue5 = "No"
-    val employeeFieldValue6 = "£34234.15"
-    val employeeFieldValue7 = "£6782.92"
-    val employeeFieldValue8 = "£67676"
+    val employeeFieldValue3 = "12 February 2020"
+    val employeeFieldValue4 = "No"
+    val employeeFieldValue5 = "£34234.15"
+    val employeeFieldValue6 = "£6782.92"
+    val employeeFieldValue7 = "£67676"
   }
 
   object FullModel {
@@ -94,13 +92,6 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
     val payModel: PayModel = PayModel(34234.15, 6782.92, None, "CALENDAR MONTHLY", "2020-04-23", None, None)
     val employerModel: EmployerModel = EmployerModel(None, "maggie")
     val employmentModel: EmploymentModel = EmploymentModel(None, None, Some(true), None, Some("14/07/1990"), None, None, None, None, employerModel, payModel)
-    val getEmploymentDataModel: GetEmploymentDataModel = GetEmploymentDataModel("2020-01-04T05:01:01Z", None, None, None, employmentModel)
-  }
-
-  object SomeModelWithValidDate  {
-    val payModel: PayModel = PayModel(34234.15, 6782.92, None, "CALENDAR MONTHLY", "2020-04-23", None, None)
-    val employerModel: EmployerModel = EmployerModel(None, "maggie")
-    val employmentModel: EmploymentModel = EmploymentModel(None, None, Some(false), None, Some("2020-02-12"), None, None, None, None, employerModel, payModel)
     val getEmploymentDataModel: GetEmploymentDataModel = GetEmploymentDataModel("2020-01-04T05:01:01Z", None, None, None, employmentModel)
   }
 
@@ -173,9 +164,6 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
           elements(summaryListRowFieldNameSelector(7)).text shouldBe Content.employeeFieldName7
           elements(summaryListRowFieldAmountSelector(7)).text shouldBe Content.employeeFieldValue7
 
-          elements(summaryListRowFieldNameSelector(8)).text shouldBe Content.employeeFieldName8
-          elements(summaryListRowFieldAmountSelector(8)).text shouldBe Content.employeeFieldValue8
-
         }
       }
 
@@ -210,11 +198,11 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
           elements(summaryListRowFieldNameSelector(1)).text shouldBe Content.employeeFieldName1
           elements(summaryListRowFieldAmountSelector(1)).text shouldBe Content.employeeFieldValue1
 
-          elements(summaryListRowFieldNameSelector(2)).text shouldBe Content.employeeFieldName6
-          elements(summaryListRowFieldAmountSelector(2)).text shouldBe Content.employeeFieldValue6
+          elements(summaryListRowFieldNameSelector(2)).text shouldBe Content.employeeFieldName5
+          elements(summaryListRowFieldAmountSelector(2)).text shouldBe Content.employeeFieldValue5
 
-          elements(summaryListRowFieldNameSelector(3)).text shouldBe Content.employeeFieldName7
-          elements(summaryListRowFieldAmountSelector(3)).text shouldBe Content.employeeFieldValue7
+          elements(summaryListRowFieldNameSelector(3)).text shouldBe Content.employeeFieldName6
+          elements(summaryListRowFieldAmountSelector(3)).text shouldBe Content.employeeFieldValue6
 
         }
       }
@@ -250,57 +238,11 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
           elements(summaryListRowFieldNameSelector(1)).text shouldBe Content.employeeFieldName1
           elements(summaryListRowFieldAmountSelector(1)).text shouldBe Content.employeeFieldValue1
 
-          elements(summaryListRowFieldNameSelector(2)).text shouldBe Content.employeeFieldName3
-          elements(summaryListRowFieldAmountSelector(2)).text shouldBe Content.employeeFieldValue3
+          elements(summaryListRowFieldNameSelector(2)).text shouldBe Content.employeeFieldName5
+          elements(summaryListRowFieldAmountSelector(2)).text shouldBe Content.employeeFieldValue5
 
           elements(summaryListRowFieldNameSelector(3)).text shouldBe Content.employeeFieldName6
           elements(summaryListRowFieldAmountSelector(3)).text shouldBe Content.employeeFieldValue6
-
-          elements(summaryListRowFieldNameSelector(4)).text shouldBe Content.employeeFieldName7
-          elements(summaryListRowFieldAmountSelector(4)).text shouldBe Content.employeeFieldValue7
-
-        }
-      }
-
-      "return an action when some model with company director as no and valid date data is in session" when {
-
-        val sessionCookie: String = PlaySessionCookieBaker.bakeSessionCookie(Map[String, String](
-          SessionValues.EMPLOYMENT_DATA -> Json.prettyPrint(
-            Json.toJson(SomeModelWithValidDate.getEmploymentDataModel)
-          )
-        ))
-
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          await(wsClient.url(checkEmploymentDetailsUrl)
-            .withHttpHeaders(HeaderNames.COOKIE -> sessionCookie, "Csrf-Token" -> "nocheck").get())
-        }
-
-        "return an OK(200) status" in {
-          result.status shouldBe OK
-        }
-
-        "has the correct content" in {
-          lazy implicit val document = Jsoup.parse(result.body)
-
-          assertTitle(s"Check your employment details - $serviceName - $govUkExtension")
-          element(headingSelector).text() shouldBe Content.h1ExpectedIndividual
-          element(subHeadingSelector).text() shouldBe Content.captionExpected
-
-          element(contentTextSelector).text() shouldBe Content.contentExpectedIndividual
-          element(insetTextSelector).text() shouldBe Content.insetTextExpectedIndividual
-
-          elements(summaryListRowFieldNameSelector(1)).text shouldBe Content.employeeFieldName1
-          elements(summaryListRowFieldAmountSelector(1)).text shouldBe Content.employeeFieldValue1
-
-          elements(summaryListRowFieldNameSelector(2)).text shouldBe Content.employeeFieldName3
-          elements(summaryListRowFieldAmountSelector(2)).text shouldBe "No"
-
-          elements(summaryListRowFieldNameSelector(3)).text shouldBe Content.employeeFieldName6
-          elements(summaryListRowFieldAmountSelector(3)).text shouldBe Content.employeeFieldValue6
-
-          elements(summaryListRowFieldNameSelector(4)).text shouldBe Content.employeeFieldName7
-          elements(summaryListRowFieldAmountSelector(4)).text shouldBe Content.employeeFieldValue7
 
         }
       }
@@ -397,9 +339,6 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
           elements(summaryListRowFieldNameSelector(7)).text shouldBe Content.employeeFieldName7
           elements(summaryListRowFieldAmountSelector(7)).text shouldBe Content.employeeFieldValue7
 
-          elements(summaryListRowFieldNameSelector(8)).text shouldBe Content.employeeFieldName8
-          elements(summaryListRowFieldAmountSelector(8)).text shouldBe Content.employeeFieldValue8
-
         }
       }
 
@@ -436,11 +375,11 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
           elements(summaryListRowFieldNameSelector(1)).text shouldBe Content.employeeFieldName1
           elements(summaryListRowFieldAmountSelector(1)).text shouldBe Content.employeeFieldValue1
 
-          elements(summaryListRowFieldNameSelector(2)).text shouldBe Content.employeeFieldName6
-          elements(summaryListRowFieldAmountSelector(2)).text shouldBe Content.employeeFieldValue6
+          elements(summaryListRowFieldNameSelector(2)).text shouldBe Content.employeeFieldName5
+          elements(summaryListRowFieldAmountSelector(2)).text shouldBe Content.employeeFieldValue5
 
-          elements(summaryListRowFieldNameSelector(3)).text shouldBe Content.employeeFieldName7
-          elements(summaryListRowFieldAmountSelector(3)).text shouldBe Content.employeeFieldValue7
+          elements(summaryListRowFieldNameSelector(3)).text shouldBe Content.employeeFieldName6
+          elements(summaryListRowFieldAmountSelector(3)).text shouldBe Content.employeeFieldValue6
 
         }
       }
@@ -478,63 +417,14 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
           elements(summaryListRowFieldNameSelector(1)).text shouldBe Content.employeeFieldName1
           elements(summaryListRowFieldAmountSelector(1)).text shouldBe Content.employeeFieldValue1
 
-          elements(summaryListRowFieldNameSelector(2)).text shouldBe Content.employeeFieldName3
-          elements(summaryListRowFieldAmountSelector(2)).text shouldBe Content.employeeFieldValue3
+          elements(summaryListRowFieldNameSelector(2)).text shouldBe Content.employeeFieldName5
+          elements(summaryListRowFieldAmountSelector(2)).text shouldBe Content.employeeFieldValue5
 
           elements(summaryListRowFieldNameSelector(3)).text shouldBe Content.employeeFieldName6
           elements(summaryListRowFieldAmountSelector(3)).text shouldBe Content.employeeFieldValue6
 
-          elements(summaryListRowFieldNameSelector(4)).text shouldBe Content.employeeFieldName7
-          elements(summaryListRowFieldAmountSelector(4)).text shouldBe Content.employeeFieldValue7
-
         }
       }
-
-      "return an action when some model with company director as no and valid date  is in session" when {
-
-        val sessionCookie: String = PlaySessionCookieBaker.bakeSessionCookie(Map[String, String](
-          SessionValues.EMPLOYMENT_DATA -> Json.prettyPrint(
-            Json.toJson(SomeModelWithValidDate.getEmploymentDataModel)
-          ),
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.CLIENT_NINO -> "AA123456A"
-        ))
-
-        lazy val result: WSResponse = {
-          authoriseAgent()
-          await(wsClient.url(checkEmploymentDetailsUrl)
-            .withHttpHeaders(HeaderNames.COOKIE -> sessionCookie, "Csrf-Token" -> "nocheck").get())
-        }
-
-        "return an OK(200) status" in {
-          result.status shouldBe OK
-        }
-
-        "has the correct content" in {
-          lazy implicit val document = Jsoup.parse(result.body)
-
-          assertTitle(s"Check your client’s employment details - $serviceName - $govUkExtension")
-          element(headingSelector).text() shouldBe Content.h1ExpectedAgent
-          element(subHeadingSelector).text() shouldBe Content.captionExpected
-
-          element(contentTextSelector).text() shouldBe Content.contentExpectedAgent
-          element(insetTextSelector).text() shouldBe Content.insetTextExpectedAgent
-
-          elements(summaryListRowFieldNameSelector(1)).text shouldBe Content.employeeFieldName1
-          elements(summaryListRowFieldAmountSelector(1)).text shouldBe Content.employeeFieldValue1
-
-          elements(summaryListRowFieldNameSelector(2)).text shouldBe Content.employeeFieldName3
-          elements(summaryListRowFieldAmountSelector(2)).text shouldBe "No"
-
-          elements(summaryListRowFieldNameSelector(3)).text shouldBe Content.employeeFieldName6
-          elements(summaryListRowFieldAmountSelector(3)).text shouldBe Content.employeeFieldValue6
-
-          elements(summaryListRowFieldNameSelector(4)).text shouldBe Content.employeeFieldName7
-          elements(summaryListRowFieldAmountSelector(4)).text shouldBe Content.employeeFieldValue7
-
-        }
-      }
-
       "returns an action when auth call fails" which {
         lazy val result: WSResponse = {
           authoriseAgentUnauthorized()
