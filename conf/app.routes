@@ -7,6 +7,8 @@ GET        /assets/*file                                    controllers.Assets.v
 
 GET        /:taxYear/check-your-employment-expenses         controllers.employment.CheckEmploymentExpensesController.show(taxYear: Int)
 
+GET        /:taxYear/check-your-employment-benefits         controllers.employment.CheckYourBenefitsController.show(taxYear: Int)
+
 GET        /sign-out                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
 GET        /error/you-need-to-sign-up                       controllers.errors.IndividualAuthErrorController.show
