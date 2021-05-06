@@ -50,7 +50,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
     val h1ExpectedIndividual = "Check your employment details"
     val titleExpectedIndividual = "Check your employment details"
     val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val contentExpectedAgent = "Your client’s employment details are based on the information we already hold about you."
+    val contentExpectedAgent = "Your client’s employment details are based on the information we already hold about them."
     val contentExpectedIndividual = "Your employment details are based on the information we already hold about you."
     val insetTextExpectedAgent = s"You cannot update your client’s employment details until 6 April $taxYear."
     val insetTextExpectedIndividual = s"You cannot update your employment details until 6 April $taxYear."
@@ -61,7 +61,8 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
     val employeeFieldName4 = "Close company"
     val employeeFieldName5 = "Pay received"
     val employeeFieldName6 = "UK tax taken from pay"
-    val employeeFieldName7 = "Payments not on your P60"
+    val employeeFieldName7Individual = "Payments not on your P60"
+    val employeeFieldName7Agent = "Payments not on P60"
 
     val employeeFieldValue1 = "maggie"
     val employeeFieldValue2 = "223/AB12399"
@@ -161,7 +162,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
           elements(summaryListRowFieldNameSelector(6)).text shouldBe Content.employeeFieldName6
           elements(summaryListRowFieldAmountSelector(6)).text shouldBe Content.employeeFieldValue6
 
-          elements(summaryListRowFieldNameSelector(7)).text shouldBe Content.employeeFieldName7
+          elements(summaryListRowFieldNameSelector(7)).text shouldBe Content.employeeFieldName7Individual
           elements(summaryListRowFieldAmountSelector(7)).text shouldBe Content.employeeFieldValue7
 
         }
@@ -336,7 +337,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewTestHelp
           elements(summaryListRowFieldNameSelector(6)).text shouldBe Content.employeeFieldName6
           elements(summaryListRowFieldAmountSelector(6)).text shouldBe Content.employeeFieldValue6
 
-          elements(summaryListRowFieldNameSelector(7)).text shouldBe Content.employeeFieldName7
+          elements(summaryListRowFieldNameSelector(7)).text shouldBe Content.employeeFieldName7Agent
           elements(summaryListRowFieldAmountSelector(7)).text shouldBe Content.employeeFieldValue7
 
         }
