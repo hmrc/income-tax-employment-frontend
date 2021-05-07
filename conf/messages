@@ -86,10 +86,7 @@ taxYear-error-template.paragraph.2 = Check that you’ve entered the correct web
 employment.employmentDetails.heading.individual = Check your employment details
 employment.employmentDetails.heading.agent = Check your client’s employment details
 
-employment.employmentDetails.title.individual = Check your employment details
-employment.employmentDetails.title.agent = Check your client’s employment details
-
-employment.employmentDetails.caption = Employment for 6 April {0} to 5 April {1}
+employment.caption = Employment for 6 April {0} to 5 April {1}
 
 employment.employmentDetails.content.individual = Your employment details are based on the information we already hold about you.
 employment.employmentDetails.content.agent = Your client’s employment details are based on the information we already hold about them.
@@ -109,7 +106,6 @@ employment.employmentDetails.tipsAndOtherPayments.agent =  Payments not on P60
 
 employment.expenses.title.individual = Check your employment expenses
 employment.expenses.title.agent = Check your client’s employment expenses
-employment.expenses.caption = Employment for 6 April {0} to 5 April {1}
 employment.expenses.inset.text.individual = You cannot update your employment expenses until 6 April {0}.
 employment.expenses.inset.text.agent = You cannot update your client’s employment expenses until 6 April {0}.
 
@@ -126,8 +122,10 @@ employment.expenses.expense.type.mileage-allowance = Mileage allowance relief
 employment.expenses.sub-heading.individual = Your employment expenses are based on the information we already hold about you. This is a total of expenses from all employment in the tax year.
 employment.expenses.sub-heading.agent = Your client’s employment expenses are based on information we already hold about them. This is a total of expenses from all employment in the tax year.
 
-checkYourBenefits.title = Check employment benefits
-checkYourBenefits.heading = Check employment benefits
+checkYourBenefits.title.individual = Check your employment benefits
+checkYourBenefits.title.agent = Check your client’s employment benefits
+checkYourBenefits.heading.individual = Check your employment benefits
+checkYourBenefits.heading.agent = Check your client’s employment benefits
 checkYourBenefits.p1.individual = Your employment benefits are based on the information we already hold about you.
 checkYourBenefits.p1.agent = Your client’s employment benefits are based on the information we already hold about them.
 checkYourBenefits.p2.individual = You cannot update your employment benefits until 6 April {0}.

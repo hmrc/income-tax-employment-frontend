@@ -39,14 +39,10 @@
     messages(s"employment.employmentDetails.heading.${if(user.isAgent) "agent" else "individual"}")
 }
 
-@titleForUse = @{
-    messages(s"employment.employmentDetails.title.${if(user.isAgent) "agent" else "individual"}")
-}
 
+@layout(pageTitle = headingForUse, taxYear = Some(taxYear), isAgent = user.isAgent) {
 
-@layout(pageTitle = titleForUse, taxYear = Some(taxYear), isAgent = user.isAgent) {
-
-    @heading(headingForUse, Some(messages("employment.employmentDetails.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
+    @heading(headingForUse, Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
 
     <p class="govuk-body">@messages(s"employment.employmentDetails.content.${if(user.isAgent) "agent" else "individual"}")</p>
 
