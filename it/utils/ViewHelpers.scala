@@ -164,7 +164,7 @@ trait ViewHelpers { self: AnyWordSpec with Matchers =>
       }
       s"has a link to change the language" in {
         document().select(".hmrc-language-select__list-item > a").attr("href") shouldBe
-          s"/income-through-software/return/personal-income/language/${linkLanguage(otherLanguage).toLowerCase}"
+          s"/income-through-software/return/employment-income/language/${linkLanguage(otherLanguage).toLowerCase}"
       }
     }
   }
