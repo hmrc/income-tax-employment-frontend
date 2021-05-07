@@ -32,9 +32,9 @@
 
 @(taxYear: Int, benefitsModel: EmploymentBenefitsModel)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
-@headingForUse = @{messages("checkYourBenefits.heading")}
+@headingForUse = @{messages(s"checkYourBenefits.heading.${if(user.isAgent) "agent" else "individual"}")}
 
-@titleForUse = @{messages("checkYourBenefits.title")}
+@titleForUse = @{messages(s"checkYourBenefits.heading.${if(user.isAgent) "agent" else "individual"}")}
 
 @bigDecimalToCurrency(amount: BigDecimal) = @{
     s"${bigDecimalCurrency(amount.toString)}"
@@ -46,7 +46,7 @@
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear)) {
 
-    @heading(headingForUse, Some(messages("employments.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-5")
+    @heading(headingForUse, Some(messages("common.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-5")
 
     <p class="govuk-body">@messages(s"checkYourBenefits.p1.${if(user.isAgent) "agent" else "individual"}")</p>
 
