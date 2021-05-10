@@ -37,7 +37,7 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
     val tryAnother = "#main-content > div > div > p:nth-child(3)"
 
   }
-     val url = s"http://localhost:9317/income-through-software/return/employment-income/error/you-need-client-authorisation"
+     val url = s"http://localhost:$port/income-through-software/return/employment-income/error/you-need-client-authorisation"
 
   "calling GET" when {
     "an individual" should {
