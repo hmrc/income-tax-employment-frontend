@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.employment
 
 import common.SessionValues
-import controllers.employment.EmploymentDetailsController
 import models.{EmployerModel, EmploymentModel, GetEmploymentDataModel, PayModel}
 import play.api.http.Status._
 import play.api.mvc.Result
 import utils.UnitTestWithApp
 import views.html.employment.EmploymentDetailsView
-
 
 import scala.concurrent.Future
 
