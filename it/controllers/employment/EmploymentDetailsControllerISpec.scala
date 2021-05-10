@@ -77,7 +77,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
     val insetTextExpectedAgent = s"You cannot update your client’s employment details until 6 April $taxYear."
     val insetTextExpectedIndividual = s"You cannot update your employment details until 6 April $taxYear."
 
-    val employeeFieldName1 = "Welsh Employer"
+    val employeeFieldName1 = "Employer"
     val employeeFieldName2 = "PAYE reference"
     val employeeFieldName3 = "Director role end date"
     val employeeFieldName4 = "Close company"

@@ -77,7 +77,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val insetTextExpectedAgent = s"You cannot update your client’s employment expenses until 6 April $taxYear."
     val insetTextExpectedIndividual = s"You cannot update your employment expenses until 6 April $taxYear."
 
-    val fieldNames = List("Amount for business travel and subsistence expenses Welsh",
+    val fieldNames = List("Amount for business travel and subsistence expenses",
       "Job expenses",
       "Uniform, work cloths and tools (Flat rate expenses)",
       "Professional fees and subscriptions",
