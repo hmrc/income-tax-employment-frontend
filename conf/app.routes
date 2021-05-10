@@ -15,6 +15,8 @@ GET        /error/you-need-to-sign-up                       controllers.errors.I
 
 GET        /error/wrong-tax-year                            controllers.errors.TaxYearErrorController.show
 
+GET        /error/you-need-client-authorisation              controllers.errors.AgentAuthErrorController.show
+
 GET        /error/not-authorised-to-use-service             controllers.errors.UnauthorisedUserErrorController.show
 
 GET        /:taxYear/check-your-employment-details  controllers.employment.EmploymentDetailsController.show(taxYear: Int)
