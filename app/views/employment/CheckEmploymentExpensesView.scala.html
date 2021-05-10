@@ -15,9 +15,7 @@
  *@
 
 @import views.html.headerFooterTemplate.Layout
-@import views.html.templates.helpers.ErrorSummary
 @import views.html.templates.helpers.Button
-@import views.html.templates.helpers.InputRadio
 @import views.html.templates.helpers.Heading
 @import utils.ViewUtils.summaryListRow
 @import views.html.templates.helpers.BigDecimalCurrency
@@ -39,7 +37,7 @@
 @layout(pageTitle = messages(s"employment.expenses.title.${if(user.isAgent) "agent" else "individual"}"), taxYear = Some(taxYear), isAgent = user.isAgent) {
     @heading(
         messages(s"employment.expenses.title.${if(user.isAgent) "agent" else "individual"}"),
-        Some(messages(s"employment.expenses.caption", (taxYear - 1).toString, taxYear.toString)),
+        Some(messages(s"employment.caption", (taxYear - 1).toString, taxYear.toString)),
         "govuk-!-margin-bottom-3"
     )
 

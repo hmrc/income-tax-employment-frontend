@@ -24,7 +24,7 @@ import play.api.libs.json.Json
 import play.api.test.DefaultAwaitTimeout
 import play.api.test.Helpers.header
 import utils.UnitTestWithApp
-import views.html.expenses.CheckEmploymentExpensesView
+import views.html.employment.CheckEmploymentExpensesView
 
 class CheckEmploymentExpensesControllerTest extends UnitTestWithApp with DefaultAwaitTimeout {
 

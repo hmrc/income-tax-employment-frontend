@@ -31,8 +31,6 @@ common.error.self-assessment.paragraph.1.2 = Self Assessment: general enquiries 
 common.error.self-assessment.paragraph.1.3 = to speak to someone about your income tax.
 common.caption = Employment for 6 April {0} to 5 April {1}
 
-employments.caption = Employments for 6 April {0} to 5 April {1}
-
 common.currency.hint = For example, £600 or £193.54
 
 error.summary.title = There is a problem
@@ -89,10 +87,7 @@ taxYear-error-template.paragraph.2 = Check that you’ve entered the correct web
 employment.employmentDetails.heading.individual = Check your employment details
 employment.employmentDetails.heading.agent = Check your client’s employment details
 
-employment.employmentDetails.title.individual = Check your employment details
-employment.employmentDetails.title.agent = Check your client’s employment details
-
-employment.employmentDetails.caption = Employment for 6 April {0} to 5 April {1}
+employment.caption = Employment for 6 April {0} to 5 April {1}
 
 employment.employmentDetails.content.individual = Your employment details are based on the information we already hold about you.
 employment.employmentDetails.content.agent = Your client’s employment details are based on the information we already hold about them.
@@ -112,7 +107,6 @@ employment.employmentDetails.tipsAndOtherPayments.agent =  Payments not on P60
 
 employment.expenses.title.individual = Check your employment expenses
 employment.expenses.title.agent = Check your client’s employment expenses
-employment.expenses.caption = Employment for 6 April {0} to 5 April {1}
 employment.expenses.inset.text.individual = You cannot update your employment expenses until 6 April {0}.
 employment.expenses.inset.text.agent = You cannot update your client’s employment expenses until 6 April {0}.
 
