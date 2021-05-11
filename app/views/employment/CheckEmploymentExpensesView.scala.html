@@ -20,7 +20,8 @@
 @import utils.ViewUtils.summaryListRow
 @import views.html.templates.helpers.BigDecimalCurrency
 @import views.html.templates.helpers.Link
-
+@import models.employment.EmploymentExpenses
+@import models.employment.Expenses
 
 @this(
         layout: Layout,
@@ -32,7 +33,7 @@
         link: Link,
 )
 
-@(taxYear: Int, expenseModel: GetEmploymentExpensesModel)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, employmentExpenses: EmploymentExpenses)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = messages(s"employment.expenses.title.${if(user.isAgent) "agent" else "individual"}"), taxYear = Some(taxYear), isAgent = user.isAgent) {
     @heading(
@@ -50,7 +51,7 @@
     }
 
     @{
-        val expenses: Option[ExpensesType] = expenseModel.expenses
+        val expenses: Option[Expenses] = employmentExpenses.expenses
 
         def toSummaryListRow(key: String, amountOpt: Option[BigDecimal]): Option[SummaryListRow] = {
             amountOpt.map { amount =>

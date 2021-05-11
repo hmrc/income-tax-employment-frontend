@@ -16,10 +16,9 @@
 
 package controllers.employment
 
-import common.SessionValues.EXPENSES_CYA
+import common.SessionValues.EMPLOYMENT_PRIOR_SUB
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
-import models.GetEmploymentExpensesModel
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -27,6 +26,7 @@ import utils.SessionHelper
 import views.html.employment.CheckEmploymentExpensesView
 
 import javax.inject.Inject
+import models.employment.{AllEmploymentData, EmploymentExpenses}
 
 class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAction,
                                                   checkEmploymentExpensesView: CheckEmploymentExpensesView,
@@ -36,7 +36,9 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
 
   def show(taxYear: Int): Action[AnyContent] = authorisedAction { implicit user =>
 
-    val priorExpensesData: Option[GetEmploymentExpensesModel] = getModelFromSession[GetEmploymentExpensesModel](EXPENSES_CYA)
+    val priorExpensesData: Option[EmploymentExpenses] = getModelFromSession[AllEmploymentData](EMPLOYMENT_PRIOR_SUB).flatMap{
+      data => data.hmrcExpenses
+    }
 
     priorExpensesData match {
       case Some(expenses) => Ok(checkEmploymentExpensesView(taxYear, expenses))

@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-package common
+package models.employment
 
-object SessionValues {
-  val CLIENT_MTDITID = "ClientMTDID"
-  val CLIENT_NINO = "ClientNino"
+import play.api.libs.json.{Json, OFormat}
 
-  val DIVIDENDS_PRIOR_SUB = "DIVIDENDS_PRIOR_SUB"
-  val INTEREST_PRIOR_SUB = "INTEREST_PRIOR_SUB"
-  val GIFT_AID_PRIOR_SUB = "GIFT_AID_PRIOR_SUB"
-  val EMPLOYMENT_PRIOR_SUB = "EMPLOYMENT_PRIOR_SUB"
+case class EmploymentBenefits(submittedOn: String,
+                              benefits: Option[Benefits])
 
-  val DIVIDENDS_CYA = "DIVIDENDS_CYA"
-  val INTEREST_CYA = "INTEREST_CYA"
-  val GIFT_AID_CYA = "GIFT_AID_CYA"
-  val EMPLOYMENT_CYA = "EMPLOYMENT_CYA"
-
-  val TAX_YEAR = "TAX_YEAR"
+object EmploymentBenefits {
+  implicit val formats: OFormat[EmploymentBenefits] = Json.format[EmploymentBenefits]
 }

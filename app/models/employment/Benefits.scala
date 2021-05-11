@@ -14,44 +14,43 @@
  * limitations under the License.
  */
 
-package models
+package models.employment
 
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.{OFormat, __}
 
-case class EmploymentBenefitsModel(
-                                    accommodation: Option[BigDecimal] = None,
-                                    assets: Option[BigDecimal] = None,
-                                    assetTransfer: Option[BigDecimal] = None,
-                                    beneficialLoan: Option[BigDecimal] = None,
-                                    car: Option[BigDecimal] = None,
-                                    carFuel: Option[BigDecimal] = None,
-                                    educationalServices: Option[BigDecimal] = None,
-                                    entertaining: Option[BigDecimal] = None,
-                                    expenses: Option[BigDecimal] = None,
-                                    medicalInsurance: Option[BigDecimal] = None,
-                                    telephone: Option[BigDecimal] = None,
-                                    service: Option[BigDecimal] = None,
-                                    taxableExpenses: Option[BigDecimal] = None,
-                                    van: Option[BigDecimal] = None,
-                                    vanFuel: Option[BigDecimal] = None,
-                                    mileage: Option[BigDecimal] = None,
-                                    nonQualifyingRelocationExpenses: Option[BigDecimal] = None,
-                                    nurseryPlaces: Option[BigDecimal] = None,
-                                    otherItems: Option[BigDecimal] = None,
-                                    paymentsOnEmployeesBehalf: Option[BigDecimal] = None,
-                                    personalIncidentalExpenses: Option[BigDecimal] = None,
-                                    qualifyingRelocationExpenses: Option[BigDecimal] = None,
-                                    employerProvidedProfessionalSubscriptions: Option[BigDecimal] = None,
-                                    employerProvidedServices: Option[BigDecimal] = None,
-                                    incomeTaxPaidByDirector: Option[BigDecimal] = None,
-                                    travelAndSubsistence: Option[BigDecimal] = None,
-                                    vouchersAndCreditCards: Option[BigDecimal] = None,
-                                    nonCash: Option[BigDecimal] = None
-                        ){
+case class Benefits(accommodation: Option[BigDecimal] = None,
+                    assets: Option[BigDecimal] = None,
+                    assetTransfer: Option[BigDecimal] = None,
+                    beneficialLoan: Option[BigDecimal] = None,
+                    car: Option[BigDecimal] = None,
+                    carFuel: Option[BigDecimal] = None,
+                    educationalServices: Option[BigDecimal] = None,
+                    entertaining: Option[BigDecimal] = None,
+                    expenses: Option[BigDecimal] = None,
+                    medicalInsurance: Option[BigDecimal] = None,
+                    telephone: Option[BigDecimal] = None,
+                    service: Option[BigDecimal] = None,
+                    taxableExpenses: Option[BigDecimal] = None,
+                    van: Option[BigDecimal] = None,
+                    vanFuel: Option[BigDecimal] = None,
+                    mileage: Option[BigDecimal] = None,
+                    nonQualifyingRelocationExpenses: Option[BigDecimal] = None,
+                    nurseryPlaces: Option[BigDecimal] = None,
+                    otherItems: Option[BigDecimal] = None,
+                    paymentsOnEmployeesBehalf: Option[BigDecimal] = None,
+                    personalIncidentalExpenses: Option[BigDecimal] = None,
+                    qualifyingRelocationExpenses: Option[BigDecimal] = None,
+                    employerProvidedProfessionalSubscriptions: Option[BigDecimal] = None,
+                    employerProvidedServices: Option[BigDecimal] = None,
+                    incomeTaxPaidByDirector: Option[BigDecimal] = None,
+                    travelAndSubsistence: Option[BigDecimal] = None,
+                    vouchersAndCreditCards: Option[BigDecimal] = None,
+                    nonCash: Option[BigDecimal] = None){
+
 
   val vehicleDetailsPopulated: Boolean =
-   car.isDefined || carFuel.isDefined || van.isDefined || vanFuel.isDefined || mileage.isDefined
+    car.isDefined || carFuel.isDefined || van.isDefined || vanFuel.isDefined || mileage.isDefined
 
   val accommodationDetailsPopulated: Boolean =
     accommodation.isDefined || nonQualifyingRelocationExpenses.isDefined || qualifyingRelocationExpenses.isDefined
@@ -75,7 +74,7 @@ case class EmploymentBenefitsModel(
     assets.isDefined || assetTransfer.isDefined
 }
 
-object EmploymentBenefitsModel {
+object Benefits {
   val firstSetOfFields: OFormat[(Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal],
     Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal],
     Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal],
@@ -115,7 +114,7 @@ object EmploymentBenefitsModel {
       (__ \ "nonCash").formatNullable[BigDecimal]
     ).tupled
 
-  implicit val format: OFormat[EmploymentBenefitsModel] = {
+  implicit val format: OFormat[Benefits] = {
     (firstSetOfFields and secondSetOfFields).apply({
       case (
         (accommodation, assets, assetTransfer, beneficialLoan, car, carFuel, educationalServices, entertaining,
@@ -124,7 +123,7 @@ object EmploymentBenefitsModel {
         (employerProvidedProfessionalSubscriptions, employerProvidedServices, incomeTaxPaidByDirector, travelAndSubsistence,
         vouchersAndCreditCards, nonCash)
         ) =>
-        EmploymentBenefitsModel(
+        Benefits(
           accommodation, assets, assetTransfer, beneficialLoan, car, carFuel, educationalServices, entertaining, expenses,
           medicalInsurance, telephone, service, taxableExpenses, van, vanFuel, mileage, nonQualifyingRelocationExpenses,
           nurseryPlaces, otherItems, paymentsOnEmployeesBehalf, personalIncidentalExpenses, qualifyingRelocationExpenses,
