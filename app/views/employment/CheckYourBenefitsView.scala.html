@@ -19,6 +19,8 @@
 @import views.html.templates.helpers.Heading
 @import views.html.templates.helpers.BigDecimalCurrency
 @import utils.ViewUtils.summaryListRow
+@import models.employment.EmploymentBenefits
+@import models.employment.Benefits
 
 @this(
     layout: Layout,
@@ -30,7 +32,7 @@
     govukInsetText: GovukInsetText,
 )
 
-@(taxYear: Int, benefitsModel: EmploymentBenefitsModel)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, benefits: Benefits)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @headingForUse = @{messages(s"checkYourBenefits.heading.${if(user.isAgent) "agent" else "individual"}")}
 
@@ -56,24 +58,24 @@
         ))
     }
 
-    @if(benefitsModel.vehicleDetailsPopulated){
+    @if(benefits.vehicleDetailsPopulated){
         <p class="govuk-label--m">@messages("checkYourBenefits.vehicleHeader")</p>
         @{
             val rows: Seq[SummaryListRow] = Seq(
-                benefitsModel.car.map{
-                BigDecimal => showRows("checkYourBenefits.companyCar", benefitsModel.car)
+                benefits.car.map{
+                BigDecimal => showRows("checkYourBenefits.companyCar", benefits.car)
                 },
-                benefitsModel.carFuel.map{
-                BigDecimal => showRows("checkYourBenefits.fuelForCompanyCar", benefitsModel.carFuel)
+                benefits.carFuel.map{
+                BigDecimal => showRows("checkYourBenefits.fuelForCompanyCar", benefits.carFuel)
                 },
-                benefitsModel.van.map{
-                BigDecimal => showRows("checkYourBenefits.companyVan", benefitsModel.van)
+                benefits.van.map{
+                BigDecimal => showRows("checkYourBenefits.companyVan", benefits.van)
                 },
-                benefitsModel.vanFuel.map{
-                BigDecimal => showRows("checkYourBenefits.fuelForCompanyVan", benefitsModel.vanFuel)
+                benefits.vanFuel.map{
+                BigDecimal => showRows("checkYourBenefits.fuelForCompanyVan", benefits.vanFuel)
                 },
-                benefitsModel.mileage.map{
-                BigDecimal => showRows("checkYourBenefits.mileageBenefit", benefitsModel.mileage)
+                benefits.mileage.map{
+                BigDecimal => showRows("checkYourBenefits.mileageBenefit", benefits.mileage)
                 }
             ).flatten
 
@@ -81,18 +83,18 @@
         }
     }
 
-    @if(benefitsModel.accommodationDetailsPopulated){
+    @if(benefits.accommodationDetailsPopulated){
         <p class="govuk-label--m">@messages("checkYourBenefits.accommodationHeader")</p>
         @{
             val rows: Seq[SummaryListRow] = Seq(
-                benefitsModel.accommodation.map{
-                BigDecimal => showRows("checkYourBenefits.accommodation", benefitsModel.accommodation)
+                benefits.accommodation.map{
+                BigDecimal => showRows("checkYourBenefits.accommodation", benefits.accommodation)
                 },
-                benefitsModel.qualifyingRelocationExpenses.map{
-                BigDecimal => showRows("checkYourBenefits.qualifyingRelocationCosts", benefitsModel.qualifyingRelocationExpenses)
+                benefits.qualifyingRelocationExpenses.map{
+                BigDecimal => showRows("checkYourBenefits.qualifyingRelocationCosts", benefits.qualifyingRelocationExpenses)
                 },
-                benefitsModel.nonQualifyingRelocationExpenses.map{
-                BigDecimal => showRows("checkYourBenefits.nonQualifyingRelocationCosts", benefitsModel.nonQualifyingRelocationExpenses)
+                benefits.nonQualifyingRelocationExpenses.map{
+                BigDecimal => showRows("checkYourBenefits.nonQualifyingRelocationCosts", benefits.nonQualifyingRelocationExpenses)
                 }
             ).flatten
 
@@ -100,18 +102,18 @@
         }
     }
 
-    @if(benefitsModel.travelDetailsPopulated){
+    @if(benefits.travelDetailsPopulated){
         <p class="govuk-label--m">@messages("checkYourBenefits.travelHeader")</p>
         @{
             val rows: Seq[SummaryListRow] = Seq(
-                benefitsModel.travelAndSubsistence.map{
-                BigDecimal => showRows("checkYourBenefits.travelAndSubsistence", benefitsModel.travelAndSubsistence)
+                benefits.travelAndSubsistence.map{
+                BigDecimal => showRows("checkYourBenefits.travelAndSubsistence", benefits.travelAndSubsistence)
                 },
-                benefitsModel.personalIncidentalExpenses.map{
-                BigDecimal => showRows("checkYourBenefits.personalCosts", benefitsModel.personalIncidentalExpenses)
+                benefits.personalIncidentalExpenses.map{
+                BigDecimal => showRows("checkYourBenefits.personalCosts", benefits.personalIncidentalExpenses)
                 },
-                benefitsModel.entertaining.map{
-                BigDecimal => showRows("checkYourBenefits.entertainment", benefitsModel.entertaining)
+                benefits.entertaining.map{
+                BigDecimal => showRows("checkYourBenefits.entertainment", benefits.entertaining)
                 }
             ).flatten
 
@@ -119,21 +121,21 @@
         }
     }
 
-    @if(benefitsModel.utilitiesDetailsPopulated){
+    @if(benefits.utilitiesDetailsPopulated){
         <p class="govuk-label--m">@messages("checkYourBenefits.utilitiesHeader")</p>
         @{
             val rows: Seq[SummaryListRow] = Seq(
-                benefitsModel.telephone.map{
-                BigDecimal => showRows("checkYourBenefits.telephone", benefitsModel.telephone)
+                benefits.telephone.map{
+                BigDecimal => showRows("checkYourBenefits.telephone", benefits.telephone)
                 },
-                benefitsModel.employerProvidedServices.map{
-                BigDecimal => showRows("checkYourBenefits.servicesProvided", benefitsModel.employerProvidedServices)
+                benefits.employerProvidedServices.map{
+                BigDecimal => showRows("checkYourBenefits.servicesProvided", benefits.employerProvidedServices)
                 },
-                benefitsModel.employerProvidedProfessionalSubscriptions.map{
-                BigDecimal => showRows("checkYourBenefits.profSubscriptions", benefitsModel.employerProvidedProfessionalSubscriptions)
+                benefits.employerProvidedProfessionalSubscriptions.map{
+                BigDecimal => showRows("checkYourBenefits.profSubscriptions", benefits.employerProvidedProfessionalSubscriptions)
                 },
-                benefitsModel.service.map{
-                BigDecimal => showRows("checkYourBenefits.otherServices", benefitsModel.service)
+                benefits.service.map{
+                BigDecimal => showRows("checkYourBenefits.otherServices", benefits.service)
                 }
             ).flatten
 
@@ -141,21 +143,21 @@
         }
     }
 
-    @if(benefitsModel.medicalDetailsPopulated){
+    @if(benefits.medicalDetailsPopulated){
         <p class="govuk-label--m">@messages("checkYourBenefits.medicalHeader")</p>
         @{
             val rows: Seq[SummaryListRow] = Seq(
-                benefitsModel.medicalInsurance.map{
-                BigDecimal => showRows("checkYourBenefits.medicalIns", benefitsModel.medicalInsurance)
+                benefits.medicalInsurance.map{
+                BigDecimal => showRows("checkYourBenefits.medicalIns", benefits.medicalInsurance)
                 },
-                benefitsModel.nurseryPlaces.map{
-                BigDecimal => showRows("checkYourBenefits.nursery", benefitsModel.nurseryPlaces)
+                benefits.nurseryPlaces.map{
+                BigDecimal => showRows("checkYourBenefits.nursery", benefits.nurseryPlaces)
                 },
-                benefitsModel.beneficialLoan.map{
-                BigDecimal => showRows("checkYourBenefits.beneficialLoans", benefitsModel.beneficialLoan)
+                benefits.beneficialLoan.map{
+                BigDecimal => showRows("checkYourBenefits.beneficialLoans", benefits.beneficialLoan)
                 },
-                benefitsModel.educationalServices.map{
-                BigDecimal => showRows("checkYourBenefits.educational", benefitsModel.educationalServices)
+                benefits.educationalServices.map{
+                BigDecimal => showRows("checkYourBenefits.educational", benefits.educationalServices)
                 }
             ).flatten
 
@@ -163,15 +165,15 @@
         }
     }
 
-    @if(benefitsModel.incomeTaxDetailsPopulated){
+    @if(benefits.incomeTaxDetailsPopulated){
         <p class="govuk-label--m">@messages("checkYourBenefits.incomeTaxHeader")</p>
         @{
             val rows: Seq[SummaryListRow] = Seq(
-                benefitsModel.incomeTaxPaidByDirector.map{
-                BigDecimal => showRows("checkYourBenefits.incomeTaxPaid", benefitsModel.incomeTaxPaidByDirector)
+                benefits.incomeTaxPaidByDirector.map{
+                BigDecimal => showRows("checkYourBenefits.incomeTaxPaid", benefits.incomeTaxPaidByDirector)
                 },
-                benefitsModel.paymentsOnEmployeesBehalf.map{
-                BigDecimal => showRows("checkYourBenefits.incurredCostsPaid", benefitsModel.paymentsOnEmployeesBehalf)
+                benefits.paymentsOnEmployeesBehalf.map{
+                BigDecimal => showRows("checkYourBenefits.incurredCostsPaid", benefits.paymentsOnEmployeesBehalf)
                 }
             ).flatten
 
@@ -179,24 +181,24 @@
         }
     }
 
-    @if(benefitsModel.reimbursedDetailsPopulated){
+    @if(benefits.reimbursedDetailsPopulated){
         <p class="govuk-label--m">@messages("checkYourBenefits.reimbursedHeader")</p>
         @{
             val rows: Seq[SummaryListRow] = Seq(
-                benefitsModel.expenses.map{
-                BigDecimal => showRows("checkYourBenefits.nonTaxable", benefitsModel.expenses)
+                benefits.expenses.map{
+                BigDecimal => showRows("checkYourBenefits.nonTaxable", benefits.expenses)
                 },
-                benefitsModel.taxableExpenses.map{
-                BigDecimal => showRows("checkYourBenefits.taxableCosts", benefitsModel.taxableExpenses)
+                benefits.taxableExpenses.map{
+                BigDecimal => showRows("checkYourBenefits.taxableCosts", benefits.taxableExpenses)
                 },
-                benefitsModel.vouchersAndCreditCards.map{
-                BigDecimal => showRows("checkYourBenefits.vouchers", benefitsModel.vouchersAndCreditCards)
+                benefits.vouchersAndCreditCards.map{
+                BigDecimal => showRows("checkYourBenefits.vouchers", benefits.vouchersAndCreditCards)
                 },
-                benefitsModel.nonCash.map{
-                BigDecimal => showRows("checkYourBenefits.nonCash", benefitsModel.nonCash)
+                benefits.nonCash.map{
+                BigDecimal => showRows("checkYourBenefits.nonCash", benefits.nonCash)
                 },
-                benefitsModel.otherItems.map{
-                BigDecimal => showRows("checkYourBenefits.otherBenefits", benefitsModel.otherItems)
+                benefits.otherItems.map{
+                BigDecimal => showRows("checkYourBenefits.otherBenefits", benefits.otherItems)
                 }
             ).flatten
 
@@ -204,15 +206,15 @@
         }
     }
 
-    @if(benefitsModel.assetsDetailsPopulated){
+    @if(benefits.assetsDetailsPopulated){
         <p class="govuk-label--m">@messages("checkYourBenefits.assetsHeader")</p>
         @{
             val rows: Seq[SummaryListRow] = Seq(
-                benefitsModel.assets.map{
-                BigDecimal => showRows("checkYourBenefits.assets", benefitsModel.assets)
+                benefits.assets.map{
+                BigDecimal => showRows("checkYourBenefits.assets", benefits.assets)
                 },
-                benefitsModel.assetTransfer.map{
-                BigDecimal => showRows("checkYourBenefits.assetTransfers", benefitsModel.assetTransfer)
+                benefits.assetTransfer.map{
+                BigDecimal => showRows("checkYourBenefits.assetTransfers", benefits.assetTransfer)
                 }
             ).flatten
 

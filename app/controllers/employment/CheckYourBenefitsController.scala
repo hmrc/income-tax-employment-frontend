@@ -16,10 +16,9 @@
 
 package controllers.employment
 
-import common.SessionValues.BENEFITS_CYA
+import common.SessionValues.EMPLOYMENT_PRIOR_SUB
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
-import models.EmploymentBenefitsModel
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -27,6 +26,7 @@ import utils.SessionHelper
 import views.html.employment.CheckYourBenefitsView
 
 import javax.inject.Inject
+import models.employment.{AllEmploymentData, Benefits}
 
 
 class CheckYourBenefitsController @Inject()(
@@ -36,9 +36,13 @@ class CheckYourBenefitsController @Inject()(
                                              checkYourBenefitsView: CheckYourBenefitsView
                                            ) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int): Action[AnyContent] = authorisedAction { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction { implicit user =>
 
-    val priorBenefitsData: Option[EmploymentBenefitsModel] = getModelFromSession[EmploymentBenefitsModel](BENEFITS_CYA)
+    val priorBenefitsData: Option[Benefits] = getModelFromSession[AllEmploymentData](EMPLOYMENT_PRIOR_SUB).flatMap{
+      data =>
+        data.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId)).flatMap(_.employmentBenefits).flatMap(_.benefits)
+    }
+
     priorBenefitsData match {
       case Some(benefits) => Ok(checkYourBenefitsView(taxYear, benefits))
       case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)) //This will be changed to serve its own page as part of SASS-669

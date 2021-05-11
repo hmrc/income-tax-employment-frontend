@@ -17,8 +17,9 @@
 package controllers.employment
 
 import common.SessionValues
-import models.{EmployerModel, EmploymentModel, GetEmploymentDataModel, PayModel}
+import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
 import play.api.http.Status._
+import play.api.libs.json.Json
 import play.api.mvc.Result
 import utils.UnitTestWithApp
 import views.html.employment.EmploymentDetailsView
@@ -28,12 +29,34 @@ import scala.concurrent.Future
 class EmploymentDetailsControllerSpec extends UnitTestWithApp {
 
   object FullModel {
-    val payModel: PayModel = PayModel(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
-    val employerModel: EmployerModel = EmployerModel(Some("223/AB12399"), "maggie")
-    val employmentModel: EmploymentModel = EmploymentModel(Some("1002"), Some("123456789999"), Some(true), Some(false), Some("2020-02-12"),
-      Some("2019-04-21"), Some("2020-03-11"), Some(false), Some(false), employerModel, payModel)
-    val getEmploymentDataModel: GetEmploymentDataModel = GetEmploymentDataModel("2020-01-04T05:01:01Z", Some("CUSTOMER"),
-      Some("2020-04-04T01:01:01Z"), Some("2020-04-04T01:01:01Z"), employmentModel)
+    val allData: AllEmploymentData = AllEmploymentData(
+      hmrcEmploymentData = Seq(
+        EmploymentSource(
+          employmentId = "223/AB12399",
+          employerName = "maggie",
+          employerRef = Some("223/AB12399"),
+          payrollId = Some("123456789999"),
+          startDate = Some("2019-04-21"),
+          cessationDate = Some("2020-03-11"),
+          dateIgnored = Some("2020-04-04T01:01:01Z"),
+          submittedOn = Some("2020-01-04T05:01:01Z"),
+          employmentData = Some(EmploymentData(
+            submittedOn = ("2020-02-12"),
+            employmentSequenceNumber = Some("123456789999"),
+            companyDirector = Some(true),
+            closeCompany = Some(false),
+            directorshipCeasedDate = Some("2020-02-12"),
+            occPen = Some(false),
+            disguisedRemuneration = Some(false),
+            pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
+          )),
+          None
+        )
+      ),
+      hmrcExpenses = None,
+      customerEmploymentData = Seq(),
+      customerExpenses = None
+    )
   }
 
   lazy val controller = new EmploymentDetailsController()(
@@ -44,15 +67,18 @@ class EmploymentDetailsControllerSpec extends UnitTestWithApp {
   )
 
   val taxYear = mockAppConfig.defaultTaxYear
+  val employmentId = "223/AB12399"
 
   ".show" should {
 
     "return a result when GetEmploymentDataModel is in Session" which {
 
       s"has an OK($OK) status" in new TestWithAuth {
-        val result: Future[Result] = controller.show(taxYear)(fakeRequest.withSession(
+        val result: Future[Result] = controller.show(taxYear, employmentId = employmentId)(fakeRequest.withSession(
           SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.EMPLOYMENT_DATA -> FullModel.getEmploymentDataModel.asJsonString))
+          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(
+            Json.toJson(FullModel.allData)
+          )))
 
         status(result) shouldBe OK
       }
@@ -61,7 +87,7 @@ class EmploymentDetailsControllerSpec extends UnitTestWithApp {
     "redirect the User to the Overview page no data in session" which {
 
       s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth{
-        val result: Future[Result] = controller.show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
+        val result: Future[Result] = controller.show(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
 
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)

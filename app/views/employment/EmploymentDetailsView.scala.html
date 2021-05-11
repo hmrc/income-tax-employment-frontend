@@ -21,7 +21,7 @@
 @import utils.ViewUtils.summaryListRow
 @import utils.ViewUtils.convertBoolToYesOrNo
 @import utils.ViewUtils.dateFormatter
-
+@import models.employment.EmploymentData
 
 @this(
         layout: Layout,
@@ -32,7 +32,7 @@
         govukSummaryList: GovukSummaryList,
         govukInsetText: GovukInsetText
 )
-@(employmentDataModel: GetEmploymentDataModel, taxYear: Int)(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
+@(employerNameData: String, employerRefData: Option[String], employmentDetails: Option[EmploymentData], taxYear: Int)(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
 
 
 @headingForUse = @{
@@ -54,19 +54,16 @@
 
     @{
 
-
-        val employmentDetails = employmentDataModel.employment
-
-        val employerName: (String, Option[String]) = ("employer", Some(employmentDetails.employer.employerName))
-        val payeRef: (String, Option[String]) = ("payeRef", employmentDetails.employer.employerRef)
-        val directorCeasedDate :(String, Option[String]) = ("directorCeasedDate", employmentDetails.directorshipCeasedDate.flatMap(dateFormatter))
-        val closeCompany: (String, Option[String]) = ("closeCompany", convertBoolToYesOrNo(employmentDetails.closeCompany))
-        val payReceived: (String, Option[String]) = ("payReceived", Some(bigDecimalCurrency(employmentDetails.pay.taxablePayToDate.toString).toString))
-        val totalTaxToDate: (String, Option[String]) = ("totalTaxToDate", Some(bigDecimalCurrency(employmentDetails.pay.totalTaxToDate.toString).toString))
+        val employerName: (String, Option[String]) = ("employer", Some(employerNameData))
+        val payeRef: (String, Option[String]) = ("payeRef", employerRefData)
+        val directorCeasedDate :(String, Option[String]) = ("directorCeasedDate", employmentDetails.flatMap(_.directorshipCeasedDate.flatMap(dateFormatter)))
+        val closeCompany: (String, Option[String]) = ("closeCompany", convertBoolToYesOrNo(employmentDetails.flatMap(_.closeCompany)))
+        val payReceived: (String, Option[String]) = ("payReceived", employmentDetails.map(e => bigDecimalCurrency(e.pay.taxablePayToDate.toString).toString))
+        val totalTaxToDate: (String, Option[String]) = ("totalTaxToDate", employmentDetails.map(e => bigDecimalCurrency(e.pay.totalTaxToDate.toString).toString))
         val tipsAndOtherPaymentsAmount: (String, Option[String]) = (s"tipsAndOtherPayments.${if(user.isAgent) "agent" else "individual"}",
-        employmentDetails.pay.tipsAndOtherPayments.map(amount => bigDecimalCurrency(amount.toString).toString))
+            employmentDetails.flatMap(_.pay.tipsAndOtherPayments.map(amount => bigDecimalCurrency(amount.toString).toString)))
 
-        val employmentDataFields = List(employerName, payeRef, directorCeasedDate, closeCompany,
+    val employmentDataFields = List(employerName, payeRef, directorCeasedDate, closeCompany,
             payReceived, totalTaxToDate, tipsAndOtherPaymentsAmount)
 
         govukSummaryList(
