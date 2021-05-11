@@ -210,7 +210,7 @@ class AuthorisedActionSpec extends UnitTest {
           mockAuthReturnException(AuthException)
           auth.agentAuthentication(block)(fakeRequestWithMtditidAndNino, emptyHeaderCarrier)
         }
-        status(result) shouldBe UNAUTHORIZED
+        status(result) shouldBe SEE_OTHER
       }
 
     }
