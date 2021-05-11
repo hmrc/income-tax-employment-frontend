@@ -16,36 +16,41 @@
 
 package controllers.employment
 
-  import common.SessionValues
-  import config.AppConfig
-  import controllers.predicates.AuthorisedAction
-  import models.GetEmploymentDataModel
-  import play.api.i18n.I18nSupport
-  import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-  import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-  import utils.SessionHelper
-  import views.html.employment.EmploymentDetailsView
+import common.SessionValues
+import config.AppConfig
+import controllers.predicates.AuthorisedAction
+import models.employment.{AllEmploymentData, EmploymentSource}
+import play.api.i18n.I18nSupport
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.SessionHelper
+import views.html.employment.EmploymentDetailsView
 
-  import javax.inject.Inject
+import javax.inject.Inject
 
-  class EmploymentDetailsController @Inject()(
-                                                   implicit val cc: MessagesControllerComponents,
-                                                   authAction: AuthorisedAction,
-                                                   employmentDetailsView: EmploymentDetailsView,
-                                                   implicit val appConfig: AppConfig
-                                                 ) extends FrontendController(cc) with I18nSupport with SessionHelper {
+class EmploymentDetailsController @Inject()(
+                                             implicit val cc: MessagesControllerComponents,
+                                             authAction: AuthorisedAction,
+                                             employmentDetailsView: EmploymentDetailsView,
+                                             implicit val appConfig: AppConfig
+                                           ) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
 
-    def show(taxYear: Int): Action[AnyContent] = authAction { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction { implicit user =>
 
-      val employmentDetails: Option[GetEmploymentDataModel] = getModelFromSession[GetEmploymentDataModel](SessionValues.EMPLOYMENT_DATA)
-
-      employmentDetails match {
-        case Some(empModel) => Ok(employmentDetailsView(empModel, taxYear))
-        case _ => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+    val source: Option[EmploymentSource] = {
+      getModelFromSession[AllEmploymentData](SessionValues.EMPLOYMENT_PRIOR_SUB).flatMap {
+        data =>
+          data.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId))
       }
-
     }
 
+    source match {
+      case Some(source) =>
+        val (name,ref,data) = (source.employerName, source.employerRef, source.employmentData)
+        Ok(employmentDetailsView(name, ref, data, taxYear))
 
+      case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+    }
   }
+}

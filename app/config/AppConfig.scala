@@ -32,7 +32,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
   private lazy val signInOrigin = servicesConfig.getString("appName")
   lazy val signInUrl: String = s"$signInBaseUrl?continue=$signInContinueUrl&origin=$signInOrigin"
 
-  lazy val defaultTaxYear: Int = servicesConfig.getInt(ConfigKeys.defaultTaxYear)
+  def defaultTaxYear: Int = servicesConfig.getInt(ConfigKeys.defaultTaxYear)
 
   def incomeTaxSubmissionBaseUrl: String = servicesConfig.getString(ConfigKeys.incomeTaxSubmissionFrontend) +
     servicesConfig.getString("microservice.services.income-tax-submission-frontend.context")
@@ -81,7 +81,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
   lazy val timeoutDialogTimeout: Int = servicesConfig.getInt("timeoutDialogTimeout")
   lazy val timeoutDialogCountdown: Int = servicesConfig.getInt("timeoutDialogCountdown")
 
-  lazy val taxYearErrorFeature: Boolean = servicesConfig.getBoolean("taxYearErrorFeatureSwitch")
+  def taxYearErrorFeature: Boolean = servicesConfig.getBoolean("taxYearErrorFeatureSwitch")
 
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
