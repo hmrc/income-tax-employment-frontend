@@ -378,7 +378,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           SessionValues.TAX_YEAR -> defaultTaxYear.toString,
           SessionValues.CLIENT_NINO -> "AA123456A",
           SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(employmentData(filteredBenefits)))
+          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(employmentData(fullBenefits)))
         ))
 
           lazy val result: WSResponse = {

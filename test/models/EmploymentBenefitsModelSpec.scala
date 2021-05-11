@@ -17,6 +17,7 @@
 package models
 
 import com.codahale.metrics.SharedMetricRegistries
+import models.employment.Benefits
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.libs.json.{JsValue, Json}
 import utils.UnitTest
@@ -26,7 +27,7 @@ class EmploymentBenefitsModelSpec extends UnitTest {
 
   val amount: BigDecimal = 100
 
-  val model: EmploymentBenefitsModel = EmploymentBenefitsModel(
+  val model: Benefits = Benefits(
         Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
         Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
         Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount)
@@ -70,7 +71,7 @@ class EmploymentBenefitsModelSpec extends UnitTest {
     }
 
     "parse from Json" in {
-      jsonModel.as[EmploymentBenefitsModel] mustBe model
+      jsonModel.as[Benefits] mustBe model
     }
   }
 

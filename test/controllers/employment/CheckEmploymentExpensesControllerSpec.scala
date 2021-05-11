@@ -25,7 +25,7 @@ import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import play.api.test.Helpers.header
 import utils.UnitTestWithApp
-import views.html.expenses.CheckEmploymentExpensesView
+import views.html.employment.CheckEmploymentExpensesView
 
 import scala.concurrent.Future
 
