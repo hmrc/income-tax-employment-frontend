@@ -26,7 +26,7 @@ import utils.SessionHelper
 import views.html.employment.CheckYourBenefitsView
 
 import javax.inject.Inject
-import models.employment.{AllEmploymentData, Benefits, EmploymentBenefits}
+import models.employment.{AllEmploymentData, Benefits}
 
 
 class CheckYourBenefitsController @Inject()(
