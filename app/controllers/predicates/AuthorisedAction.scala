@@ -123,7 +123,7 @@ class AuthorisedAction @Inject()(
             Redirect(appConfig.signInUrl)
           case ex: AuthorisationException =>
             logger.info(s"[AuthorisedAction][agentAuthentication] - Agent does not have delegated authority for Client.")
-            Unauthorized(agentAuthErrorPage())
+            Redirect(controllers.errors.routes.AgentAuthErrorController.show())
         }
       case (mtditid, nino) =>
         logger.info(s"[AuthorisedAction][agentAuthentication] - Agent does not have session key values. " +
