@@ -19,6 +19,7 @@ package controllers.employment
 import common.SessionValues.EMPLOYMENT_PRIOR_SUB
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
+import models.employment.{AllEmploymentData, Benefits}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -26,7 +27,6 @@ import utils.SessionHelper
 import views.html.employment.CheckYourBenefitsView
 
 import javax.inject.Inject
-import models.employment.{AllEmploymentData, Benefits}
 
 
 class CheckYourBenefitsController @Inject()(
