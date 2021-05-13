@@ -17,7 +17,7 @@
 package controllers.employment
 
 import common.SessionValues
-import helpers.{PlaySessionCookieBaker, ViewTestHelper}
+import helpers.PlaySessionCookieBaker
 import models.employment.{AllEmploymentData, EmploymentData, EmploymentExpenses, EmploymentSource, Expenses, Pay}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -25,14 +25,68 @@ import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.{WSClient, WSResponse}
-import utils.IntegrationTest
+import utils.{IntegrationTest, ViewHelpers}
 
-class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewTestHelper {
+
+class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers {
 
   lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
+  val taxYear = 2022
+  val url =
+    s"http://localhost:$port/income-through-software/return/employment-income/$taxYear/check-your-employment-expenses"
 
-  private val taxYear = 2022
-  private val checkExpensesUrl = startUrl + s"/$taxYear/check-your-employment-expenses"
+  val headingSelector = "#main-content > div > div > header > h1"
+  val subHeadingSelector = "#main-content > div > div > header > p"
+  val contentSelector = "#main-content > div > div > p"
+  val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
+  val summaryListSelector = "#main-content > div > div > dl"
+
+  object ContentEN {
+    val h1ExpectedAgent = "Check your client’s employment expenses"
+    val titleExpectedAgent = "Check your client’s employment expenses"
+    val h1ExpectedIndividual = "Check your employment expenses"
+    val titleExpectedIndividual = "Check your employment expenses"
+    val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val contentExpectedAgent = "Your client’s employment expenses are based on information we already hold about them. " +
+      "This is a total of expenses from all employment in the tax year."
+    val contentExpectedIndividual = "Your employment expenses are based on the information we already hold about you. " +
+      "This is a total of expenses from all employment in the tax year."
+    val insetTextExpectedAgent = s"You cannot update your client’s employment expenses until 6 April $taxYear."
+    val insetTextExpectedIndividual = s"You cannot update your employment expenses until 6 April $taxYear."
+
+    val fieldNames = List("Amount for business travel and subsistence expenses",
+      "Job expenses",
+      "Uniform, work cloths and tools (Flat rate expenses)",
+      "Professional fees and subscriptions",
+      "Hotel and meal expenses",
+      "Other expenses and capital allowances",
+      "Vehicle expense",
+      "Mileage allowance relief")
+  }
+
+  object ContentCY {
+    val h1ExpectedAgent = "Check your client’s employment expenses"
+    val titleExpectedAgent = "Check your client’s employment expenses"
+    val h1ExpectedIndividual = "Check your employment expenses"
+    val titleExpectedIndividual = "Check your employment expenses"
+    val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val contentExpectedAgent: String = "Your client’s employment expenses are based on information we already hold about them. " +
+      "This is a total of expenses from all employment in the tax year."
+    val contentExpectedIndividual: String = "Your employment expenses are based on the information we already hold about you. " +
+      "This is a total of expenses from all employment in the tax year."
+    val insetTextExpectedAgent = s"You cannot update your client’s employment expenses until 6 April $taxYear."
+    val insetTextExpectedIndividual = s"You cannot update your employment expenses until 6 April $taxYear."
+
+    val fieldNames = List("Amount for business travel and subsistence expenses",
+      "Job expenses",
+      "Uniform, work cloths and tools (Flat rate expenses)",
+      "Professional fees and subscriptions",
+      "Hotel and meal expenses",
+      "Other expenses and capital allowances",
+      "Vehicle expense",
+      "Mileage allowance relief")
+  }
+
 
   val expenses: Expenses = Expenses(Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7), Some(8))
   val employmentExpenses: EmploymentExpenses = EmploymentExpenses(
@@ -69,189 +123,261 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewTe
     customerExpenses = None
   )
 
-  val headingSelector = "#main-content > div > div > header > h1"
-  val subHeadingSelector = "#main-content > div > div > header > p"
-  val contentSelector = "#main-content > div > div > p"
-  val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
-  val summaryListSelector = "#main-content > div > div > dl"
 
   private def summaryListRowFieldNameSelector(i: Int) = s"#main-content > div > div > dl > div:nth-child($i) > dt"
+
   private def summaryListRowFieldAmountSelector(i: Int) = s"#main-content > div > div > dl > div:nth-child($i) > dd"
 
-  "as an individual" when {
+  "as an individual in English" when {
 
     ".show" should {
 
-      "returns an action without data in session" which {
-        val expectedRedirectBody = "something"
-        lazy val result: WSResponse = {
-          stubGet(s"/income-through-software/return/$taxYear/view", OK, expectedRedirectBody)
-          authoriseIndividual()
-          await(wsClient.url(checkExpensesUrl).get())
-        }
-
-        "has an OK(200) status" in {
-          result.status shouldBe OK
-          result.body shouldBe expectedRedirectBody
-        }
-
-      }
       "returns an action when data is in session" which {
-        val sessionCookie: String = PlaySessionCookieBaker.bakeSessionCookie(Map[String, String](
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(
-            Json.toJson(allData)
-          )
+
+        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
+          SessionValues.TAX_YEAR -> taxYear.toString,
+          SessionValues.CLIENT_NINO -> "AA123456A",
+          SessionValues.CLIENT_MTDITID -> "1234567890",
+          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(allData))
         ))
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          await(wsClient.url(checkExpensesUrl)
-            .withHttpHeaders(HeaderNames.COOKIE -> sessionCookie, "Csrf-Token" -> "nocheck").get())
+          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
         }
 
-        "has an OK(200) status" in {
-          result.status shouldBe OK
-        }
 
-        "has the correct content" in {
-          lazy implicit val document:Document = Jsoup.parse(result.body)
+        implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-          assertTitle(s"Check your employment expenses - $serviceName - $govUkExtension")
-          element(headingSelector).text() shouldBe "Check your employment expenses"
-          element(subHeadingSelector).text() shouldBe s"Employment for 6 April ${taxYear-1} to 5 April $taxYear"
+        titleCheck(ContentEN.titleExpectedIndividual)
+        h1Check(ContentEN.h1ExpectedIndividual)
+        captionCheck(ContentEN.captionExpected)
 
-          element(contentSelector).text() shouldBe "Your employment expenses are based on the information we already hold about you. This is a total of expenses from all employment in the tax year."
+        textOnPageCheck(ContentEN.contentExpectedIndividual, contentSelector)
+        textOnPageCheck(ContentEN.insetTextExpectedIndividual, insetTextSelector)
 
-          element(insetTextSelector).text() shouldBe s"You cannot update your employment expenses until 6 April $taxYear."
+        textOnPageCheck(ContentEN.fieldNames(0), summaryListRowFieldNameSelector(1))
+        textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
 
-          elements(summaryListRowFieldNameSelector(1)).text shouldBe "Amount for business travel and subsistence expenses"
-          elements(summaryListRowFieldAmountSelector(1)).text shouldBe "£1"
+        textOnPageCheck(ContentEN.fieldNames(1), summaryListRowFieldNameSelector(2))
+        textOnPageCheck("£2", summaryListRowFieldAmountSelector(2))
 
-          elements(summaryListRowFieldNameSelector(2)).text shouldBe "Job expenses"
-          elements(summaryListRowFieldAmountSelector(2)).text shouldBe "£2"
+        textOnPageCheck(ContentEN.fieldNames(2), summaryListRowFieldNameSelector(3))
+        textOnPageCheck("£3", summaryListRowFieldAmountSelector(3))
 
-          elements(summaryListRowFieldNameSelector(3)).text shouldBe "Uniform, work cloths and tools (Flat rate expenses)"
-          elements(summaryListRowFieldAmountSelector(3)).text shouldBe "£3"
 
-          elements(summaryListRowFieldNameSelector(4)).text shouldBe "Professional fees and subscriptions"
-          elements(summaryListRowFieldAmountSelector(4)).text shouldBe "£4"
+        textOnPageCheck(ContentEN.fieldNames(3), summaryListRowFieldNameSelector(4))
+        textOnPageCheck("£4", summaryListRowFieldAmountSelector(4))
 
-          elements(summaryListRowFieldNameSelector(5)).text shouldBe "Hotel and meal expenses"
-          elements(summaryListRowFieldAmountSelector(5)).text shouldBe "£5"
+        textOnPageCheck(ContentEN.fieldNames(4), summaryListRowFieldNameSelector(5))
+        textOnPageCheck("£5", summaryListRowFieldAmountSelector(5))
 
-          elements(summaryListRowFieldNameSelector(6)).text shouldBe "Other expenses and capital allowances"
-          elements(summaryListRowFieldAmountSelector(6)).text shouldBe "£6"
+        textOnPageCheck(ContentEN.fieldNames(5), summaryListRowFieldNameSelector(6))
+        textOnPageCheck("£6", summaryListRowFieldAmountSelector(6))
 
-          elements(summaryListRowFieldNameSelector(7)).text shouldBe "Vehicle expense"
-          elements(summaryListRowFieldAmountSelector(7)).text shouldBe "£7"
+        textOnPageCheck(ContentEN.fieldNames(6), summaryListRowFieldNameSelector(7))
+        textOnPageCheck("£7", summaryListRowFieldAmountSelector(7))
 
-          elements(summaryListRowFieldNameSelector(8)).text shouldBe "Mileage allowance relief"
-          elements(summaryListRowFieldAmountSelector(8)).text shouldBe "£8"
-        }
+        textOnPageCheck(ContentEN.fieldNames(7), summaryListRowFieldNameSelector(8))
+        textOnPageCheck("£8", summaryListRowFieldAmountSelector(8))
 
+        welshToggleCheck(ENGLISH)
       }
-      "returns an action when auth call fails" which {
-        lazy val result: WSResponse = {
-          authoriseIndividualUnauthorized()
-          await(wsClient.url(checkExpensesUrl).get())
-        }
-        "has an UNAUTHORIZED(401) status" in {
-          result.status shouldBe UNAUTHORIZED
-        }
-      }
+    }
 
+    "returns an action when auth call fails" which {
+      lazy val result: WSResponse = {
+        authoriseIndividualUnauthorized()
+        await(wsClient.url(url).get())
+      }
+      "has an UNAUTHORIZED(401) status" in {
+        result.status shouldBe UNAUTHORIZED
+      }
     }
   }
 
-  "as an agent" when {
+  "as an agent in English" when {
 
     ".show" should {
 
-      "returns an action without data in session" which {
-        val expectedRedirectBody = "something"
-        lazy val result: WSResponse = {
-          stubGet(s"/income-through-software/return/$taxYear/view", OK, expectedRedirectBody)
-          lazy val sessionCookie: String = PlaySessionCookieBaker.bakeSessionCookie(Map[String, String](
-            SessionValues.CLIENT_MTDITID -> "1234567890",
-            SessionValues.CLIENT_NINO -> "AA123456A"
-          ))
-
-          authoriseAgent()
-          await(wsClient.url(checkExpensesUrl)
-            .withHttpHeaders(HeaderNames.COOKIE -> sessionCookie)
-            .get())
-        }
-
-        "has an OK(200) status" in {
-          result.status shouldBe OK
-          result.body shouldBe expectedRedirectBody
-        }
-
-      }
       "returns an action when data is in session" which {
-        val sessionCookie: String = PlaySessionCookieBaker.bakeSessionCookie(Map[String, String](
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(
-            Json.toJson(allData)
-          ),
+
+        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
+          SessionValues.TAX_YEAR -> taxYear.toString,
+          SessionValues.CLIENT_NINO -> "AA123456A",
           SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.CLIENT_NINO -> "AA123456A"
+          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(allData))
         ))
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          await(wsClient.url(checkExpensesUrl)
-            .withHttpHeaders(HeaderNames.COOKIE -> sessionCookie, "Csrf-Token" -> "nocheck").get())
+          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
         }
 
-        "has an OK(200) status" in {
-          result.status shouldBe OK
-        }
 
-        "has the correct content" in {
-          lazy implicit val document = Jsoup.parse(result.body)
+        implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-          assertTitle(s"Check your client’s employment expenses - $serviceName - $govUkExtension")
-          element(headingSelector).text() shouldBe "Check your client’s employment expenses"
-          element(subHeadingSelector).text() shouldBe s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+        titleCheck(ContentEN.titleExpectedAgent)
+        h1Check(ContentEN.h1ExpectedAgent)
+        captionCheck(ContentEN.captionExpected)
 
-          element(contentSelector).text() shouldBe "Your client’s employment expenses are based on information we already hold about them. This is a total of expenses from all employment in the tax year."
+        textOnPageCheck(ContentEN.contentExpectedAgent, contentSelector)
+        textOnPageCheck(ContentEN.insetTextExpectedAgent, insetTextSelector)
 
-          element(insetTextSelector).text() shouldBe s"You cannot update your client’s employment expenses until 6 April $taxYear."
+        textOnPageCheck(ContentEN.fieldNames(0), summaryListRowFieldNameSelector(1))
+        textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
 
-          elements(summaryListRowFieldNameSelector(1)).text shouldBe "Amount for business travel and subsistence expenses"
-          elements(summaryListRowFieldAmountSelector(1)).text shouldBe "£1"
+        textOnPageCheck(ContentEN.fieldNames(1), summaryListRowFieldNameSelector(2))
+        textOnPageCheck("£2", summaryListRowFieldAmountSelector(2))
 
-          elements(summaryListRowFieldNameSelector(2)).text shouldBe "Job expenses"
-          elements(summaryListRowFieldAmountSelector(2)).text shouldBe "£2"
+        textOnPageCheck(ContentEN.fieldNames(2), summaryListRowFieldNameSelector(3))
+        textOnPageCheck("£3", summaryListRowFieldAmountSelector(3))
 
-          elements(summaryListRowFieldNameSelector(3)).text shouldBe "Uniform, work cloths and tools (Flat rate expenses)"
-          elements(summaryListRowFieldAmountSelector(3)).text shouldBe "£3"
 
-          elements(summaryListRowFieldNameSelector(4)).text shouldBe "Professional fees and subscriptions"
-          elements(summaryListRowFieldAmountSelector(4)).text shouldBe "£4"
+        textOnPageCheck(ContentEN.fieldNames(3), summaryListRowFieldNameSelector(4))
+        textOnPageCheck("£4", summaryListRowFieldAmountSelector(4))
 
-          elements(summaryListRowFieldNameSelector(5)).text shouldBe "Hotel and meal expenses"
-          elements(summaryListRowFieldAmountSelector(5)).text shouldBe "£5"
+        textOnPageCheck(ContentEN.fieldNames(4), summaryListRowFieldNameSelector(5))
+        textOnPageCheck("£5", summaryListRowFieldAmountSelector(5))
 
-          elements(summaryListRowFieldNameSelector(6)).text shouldBe "Other expenses and capital allowances"
-          elements(summaryListRowFieldAmountSelector(6)).text shouldBe "£6"
+        textOnPageCheck(ContentEN.fieldNames(5), summaryListRowFieldNameSelector(6))
+        textOnPageCheck("£6", summaryListRowFieldAmountSelector(6))
 
-          elements(summaryListRowFieldNameSelector(7)).text shouldBe "Vehicle expense"
-          elements(summaryListRowFieldAmountSelector(7)).text shouldBe "£7"
+        textOnPageCheck(ContentEN.fieldNames(6), summaryListRowFieldNameSelector(7))
+        textOnPageCheck("£7", summaryListRowFieldAmountSelector(7))
 
-          elements(summaryListRowFieldNameSelector(8)).text shouldBe "Mileage allowance relief"
-          elements(summaryListRowFieldAmountSelector(8)).text shouldBe "£8"
-        }
+        textOnPageCheck(ContentEN.fieldNames(7), summaryListRowFieldNameSelector(8))
+        textOnPageCheck("£8", summaryListRowFieldAmountSelector(8))
 
+        welshToggleCheck(ENGLISH)
       }
-      "returns an action when auth call fails" which {
+    }
+
+    "returns an action when auth call fails" which {
+      lazy val result: WSResponse = {
+        authoriseAgentUnauthorized()
+        await(wsClient.url(url).get())
+      }
+      "has an UNAUTHORIZED(401) status" in {
+        result.status shouldBe UNAUTHORIZED
+      }
+    }
+  }
+
+  "as an individual in Welsh" when {
+
+    ".show" should {
+
+      "returns an action when data is in session" which {
+
+        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
+          SessionValues.TAX_YEAR -> taxYear.toString,
+          SessionValues.CLIENT_NINO -> "AA123456A",
+          SessionValues.CLIENT_MTDITID -> "1234567890",
+          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(allData))
+        ))
+
         lazy val result: WSResponse = {
-          authoriseAgentUnauthorized()
-          await(wsClient.url(checkExpensesUrl).get())
+          authoriseIndividual()
+          await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
+            HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
         }
-        "has an UNAUTHORIZED(401) status" in {
-          result.status shouldBe UNAUTHORIZED
+
+
+        implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+        titleCheck(ContentCY.titleExpectedIndividual)
+        h1Check(ContentCY.h1ExpectedIndividual)
+        captionCheck(ContentCY.captionExpected)
+
+        textOnPageCheck(ContentCY.contentExpectedIndividual, contentSelector)
+        textOnPageCheck(ContentCY.insetTextExpectedIndividual, insetTextSelector)
+
+        textOnPageCheck(ContentCY.fieldNames(0), summaryListRowFieldNameSelector(1))
+        textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
+
+        textOnPageCheck(ContentCY.fieldNames(1), summaryListRowFieldNameSelector(2))
+        textOnPageCheck("£2", summaryListRowFieldAmountSelector(2))
+
+        textOnPageCheck(ContentCY.fieldNames(2), summaryListRowFieldNameSelector(3))
+        textOnPageCheck("£3", summaryListRowFieldAmountSelector(3))
+
+
+        textOnPageCheck(ContentCY.fieldNames(3), summaryListRowFieldNameSelector(4))
+        textOnPageCheck("£4", summaryListRowFieldAmountSelector(4))
+
+        textOnPageCheck(ContentCY.fieldNames(4), summaryListRowFieldNameSelector(5))
+        textOnPageCheck("£5", summaryListRowFieldAmountSelector(5))
+
+        textOnPageCheck(ContentCY.fieldNames(5), summaryListRowFieldNameSelector(6))
+        textOnPageCheck("£6", summaryListRowFieldAmountSelector(6))
+
+        textOnPageCheck(ContentCY.fieldNames(6), summaryListRowFieldNameSelector(7))
+        textOnPageCheck("£7", summaryListRowFieldAmountSelector(7))
+
+        textOnPageCheck(ContentCY.fieldNames(7), summaryListRowFieldNameSelector(8))
+        textOnPageCheck("£8", summaryListRowFieldAmountSelector(8))
+
+        welshToggleCheck(WELSH)
+      }
+    }
+  }
+
+  "as an agent in Welsh" when {
+
+    ".show" should {
+
+      "returns an action when data is in session" which {
+
+        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
+          SessionValues.TAX_YEAR -> taxYear.toString,
+          SessionValues.CLIENT_NINO -> "AA123456A",
+          SessionValues.CLIENT_MTDITID -> "1234567890",
+          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(allData))
+        ))
+
+        lazy val result: WSResponse = {
+          authoriseAgent()
+          await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
+            HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
         }
+
+
+        implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+        titleCheck(ContentCY.titleExpectedAgent)
+        h1Check(ContentCY.h1ExpectedAgent)
+        captionCheck(ContentCY.captionExpected)
+
+        textOnPageCheck(ContentCY.contentExpectedAgent, contentSelector)
+        textOnPageCheck(ContentCY.insetTextExpectedAgent, insetTextSelector)
+
+        textOnPageCheck(ContentCY.fieldNames(0), summaryListRowFieldNameSelector(1))
+        textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
+
+        textOnPageCheck(ContentCY.fieldNames(1), summaryListRowFieldNameSelector(2))
+        textOnPageCheck("£2", summaryListRowFieldAmountSelector(2))
+
+        textOnPageCheck(ContentCY.fieldNames(2), summaryListRowFieldNameSelector(3))
+        textOnPageCheck("£3", summaryListRowFieldAmountSelector(3))
+
+
+        textOnPageCheck(ContentCY.fieldNames(3), summaryListRowFieldNameSelector(4))
+        textOnPageCheck("£4", summaryListRowFieldAmountSelector(4))
+
+        textOnPageCheck(ContentCY.fieldNames(4), summaryListRowFieldNameSelector(5))
+        textOnPageCheck("£5", summaryListRowFieldAmountSelector(5))
+
+        textOnPageCheck(ContentCY.fieldNames(5), summaryListRowFieldNameSelector(6))
+        textOnPageCheck("£6", summaryListRowFieldAmountSelector(6))
+
+        textOnPageCheck(ContentCY.fieldNames(6), summaryListRowFieldNameSelector(7))
+        textOnPageCheck("£7", summaryListRowFieldAmountSelector(7))
+
+        textOnPageCheck(ContentCY.fieldNames(7), summaryListRowFieldNameSelector(8))
+        textOnPageCheck("£8", summaryListRowFieldAmountSelector(8))
+
+        welshToggleCheck(WELSH)
       }
     }
   }
