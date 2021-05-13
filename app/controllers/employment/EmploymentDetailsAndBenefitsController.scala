@@ -24,19 +24,20 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
-import views.html.employment.EmploymentDetailsView
+import views.html.employment.EmploymentDetailsAndBenefitsView
 
 import javax.inject.Inject
 
-class EmploymentDetailsController @Inject()(
-                                             implicit val cc: MessagesControllerComponents,
-                                             authAction: AuthorisedAction,
-                                             employmentDetailsView: EmploymentDetailsView,
-                                             implicit val appConfig: AppConfig
-                                           ) extends FrontendController(cc) with I18nSupport with SessionHelper {
+class EmploymentDetailsAndBenefitsController @Inject()(
+                                                        implicit val cc: MessagesControllerComponents,
+                                                        authAction: AuthorisedAction,
+                                                        employmentDetailsAndBenefitsView: EmploymentDetailsAndBenefitsView,
+                                                        implicit val appConfig: AppConfig
+                                                      ) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction { implicit user =>
+
 
     val source: Option[EmploymentSource] = {
       getModelFromSession[AllEmploymentData](SessionValues.EMPLOYMENT_PRIOR_SUB).flatMap {
@@ -47,10 +48,10 @@ class EmploymentDetailsController @Inject()(
 
     source match {
       case Some(source) =>
-        val (name,ref,data) = (source.employerName, source.employerRef, source.employmentData)
-        Ok(employmentDetailsView(name, ref, data, taxYear))
-
+        val (name, benefitsIsDefined) = (source.employerName, source.employmentBenefits.isDefined)
+        Ok(employmentDetailsAndBenefitsView(name, employmentId, benefitsIsDefined, taxYear))
       case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
     }
   }
+
 }

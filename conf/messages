@@ -33,6 +33,13 @@ common.caption = Employment for 6 April {0} to 5 April {1}
 
 common.currency.hint = For example, £600 or £193.54
 
+common.employmentDetails = Employment details
+common.employmentDetailsAndBenefits = Employment details and benefits
+common.benefits = Benefits
+
+common.status.updated = Updated
+common.status.cannotUpdate = Cannot update
+
 error.summary.title = There is a problem
 
 not-found-template.title = Page not found
@@ -83,6 +90,11 @@ timeout.button = Sign in
 
 taxYear-error-template.paragraph.1 = You can only enter information for the 2021 to 2022 tax year.
 taxYear-error-template.paragraph.2 = Check that you’ve entered the correct web address.
+
+employment.employmentInfo.p1.individual = You cannot update your employment information until 6 April {0}.
+employment.employmentInfo.p1.agent = You cannot update your client’s employment information until 6 April {0}.
+
+employment.employmentInfo.buttonText = Return to employment summary
 
 employment.employmentDetails.heading.individual = Check your employment details
 employment.employmentDetails.heading.agent = Check your client’s employment details
