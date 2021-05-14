@@ -17,7 +17,7 @@
 package models.mongo
 
 import models.employment.AllEmploymentData
-import org.joda.time.LocalDateTime
+import org.joda.time.{DateTime, DateTimeZone, LocalDateTime}
 import play.api.libs.json.{OFormat, OWrites, Reads, __}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
 
@@ -26,7 +26,7 @@ case class UserData(sessionId: String,
                     nino: String,
                     taxYear: Int,
                     employment: Option[AllEmploymentData] = None,
-                    lastUpdated: LocalDateTime = LocalDateTime.now)
+                    lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC))
 
 object UserData {
 
@@ -41,7 +41,7 @@ object UserData {
         (__ \ "nino").read[String] and
         (__ \ "taxYear").read[Int] and
         (__ \ "employment").readNullable[AllEmploymentData] and
-          (__ \ "lastUpdated").read(MongoJodaFormats.localDateTimeReads)
+          (__ \ "lastUpdated").read(MongoJodaFormats.dateTimeReads)
       ) (UserData.apply _)
   }
 
@@ -54,7 +54,7 @@ object UserData {
         (__ \ "nino").write[String] and
         (__ \ "taxYear").write[Int] and
         (__ \ "employment").writeNullable[AllEmploymentData] and
-        (__ \ "lastUpdated").write(MongoJodaFormats.localDateTimeWrites)
+        (__ \ "lastUpdated").write(MongoJodaFormats.dateTimeWrites)
       ) (unlift(UserData.unapply))
   }
 }
