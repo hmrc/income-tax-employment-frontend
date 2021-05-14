@@ -1,5 +1,5 @@
 service.name = Update and submit an Income Tax Return
-service.text = This is your new service
+service.text = Dyma'ch gwasanaeth newydd
 
 service.govUkExtension = GOV.UK
 
