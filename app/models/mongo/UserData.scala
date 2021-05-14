@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models;
+package models.mongo
 
 import models.employment.AllEmploymentData
 import org.joda.time.LocalDateTime

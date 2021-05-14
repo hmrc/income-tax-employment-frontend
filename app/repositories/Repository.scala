@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package common
+package repositories
 
-object SessionValues {
-  val CLIENT_MTDITID = "ClientMTDID"
-  val CLIENT_NINO = "ClientNino"
+import org.mongodb.scala.bson.conversions.Bson
+import org.mongodb.scala.model.Filters.{and, equal}
+import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 
-  val DIVIDENDS_PRIOR_SUB = "DIVIDENDS_PRIOR_SUB"
-  val INTEREST_PRIOR_SUB = "INTEREST_PRIOR_SUB"
-  val GIFT_AID_PRIOR_SUB = "GIFT_AID_PRIOR_SUB"
-
-  val DIVIDENDS_CYA = "DIVIDENDS_CYA"
-  val INTEREST_CYA = "INTEREST_CYA"
-  val GIFT_AID_CYA = "GIFT_AID_CYA"
-
-  val TAX_YEAR = "TAX_YEAR"
+trait Repository {
+  def filter(sessionId: String, mtdItId: String, nino: String, taxYear: Int): Bson = and(
+    equal("sessionId", toBson(sessionId)),
+    equal("mtdItId", toBson(mtdItId)),
+    equal("nino", toBson(nino)),
+    equal("taxYear", toBson(taxYear))
+  )
 }

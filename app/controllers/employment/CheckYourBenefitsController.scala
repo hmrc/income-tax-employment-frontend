@@ -20,32 +20,38 @@ import common.SessionValues.EMPLOYMENT_PRIOR_SUB
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.employment.CheckYourBenefitsView
-
 import javax.inject.Inject
 import models.employment.{AllEmploymentData, Benefits}
+import services.IncomeTaxUserDataService
+
+import scala.concurrent.ExecutionContext
 
 
-class CheckYourBenefitsController @Inject()(
-                                             authorisedAction: AuthorisedAction,
-                                             val mcc: MessagesControllerComponents,
-                                             implicit val appConfig: AppConfig,
-                                             checkYourBenefitsView: CheckYourBenefitsView
-                                           ) extends FrontendController(mcc) with I18nSupport with SessionHelper {
+class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
+                                            val mcc: MessagesControllerComponents,
+                                            implicit val appConfig: AppConfig,
+                                            checkYourBenefitsView: CheckYourBenefitsView,
+                                            incomeTaxUserDataService: IncomeTaxUserDataService,
+                                            implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
 
-    val priorBenefitsData: Option[Benefits] = getModelFromSession[AllEmploymentData](EMPLOYMENT_PRIOR_SUB).flatMap{
-      data =>
-        data.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId)).flatMap(_.employmentBenefits).flatMap(_.benefits)
+    def result(allEmploymentData: AllEmploymentData): Result = {
+
+      val benefits: Option[Benefits] = {
+        allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId)).flatMap(_.employmentBenefits).flatMap(_.benefits)
+      }
+
+      benefits match {
+        case Some(benefits) => Ok(checkYourBenefitsView(taxYear, benefits))
+        case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)) //This will be changed to serve its own page as part of SASS-669
+      }
     }
 
-    priorBenefitsData match {
-      case Some(benefits) => Ok(checkYourBenefitsView(taxYear, benefits))
-      case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)) //This will be changed to serve its own page as part of SASS-669
-    }
+    incomeTaxUserDataService.findUserData(user, taxYear, result)
   }
 }

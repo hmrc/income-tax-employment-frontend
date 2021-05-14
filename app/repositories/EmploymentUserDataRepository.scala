@@ -16,13 +16,19 @@
 
 package repositories
 
+import java.util.concurrent.TimeUnit
+
 import com.mongodb.client.model.ReturnDocument
 import com.mongodb.client.model.Updates.set
-import javax.inject.{Inject, Named, Singleton}
+import config.AppConfig
+import javax.inject.{Inject, Singleton}
 import models.User
-import models.mongo.UserData
+import models.mongo.{EmploymentUserData, UserData}
 import org.joda.time.LocalDateTime
-import org.mongodb.scala.model.FindOneAndUpdateOptions
+import org.mongodb.scala.bson.conversions.Bson
+import org.mongodb.scala.model.Filters.{and, equal}
+import org.mongodb.scala.model.Indexes.{ascending, compoundIndex}
+import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions, IndexModel, IndexOptions}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
@@ -31,20 +37,37 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class IncomeTaxUserDataRepository @Inject()(@Named("incomeTaxUserData") mongo: MongoComponent)
-                                           (implicit ec: ExecutionContext) extends PlayMongoRepository[UserData](
+class EmploymentUserDataRepository @Inject()(mongo: MongoComponent, appConfig: AppConfig)(implicit ec: ExecutionContext
+) extends PlayMongoRepository[EmploymentUserData](
   mongoComponent = mongo,
-  collectionName = "userData",
-  domainFormat   = UserData.formats,
-  indexes        = Seq(),
-  replaceIndexes = false
+  collectionName = "employmentUserData",
+  domainFormat   = EmploymentUserData.formats,
+  indexes        = EmploymentUserDataIndexes.indexes(appConfig)
 ) with Repository {
 
-  def find[T](user: User[T], taxYear: Int): Future[Option[UserData]] = {
+  def find[T](user: User[T], taxYear: Int): Future[Option[EmploymentUserData]] = {
     collection.findOneAndUpdate(
       filter = filter(user.sessionId,user.mtditid,user.nino,taxYear),
       update = set("lastUpdated", toBson(LocalDateTime.now())(MongoJodaFormats.localDateTimeWrites)),
       options = FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
     ).toFutureOption()
   }
+}
+
+private object EmploymentUserDataIndexes {
+
+  private val lookUpIndex: Bson = compoundIndex(
+    ascending("sessionId"),
+    ascending("mtdItId"),
+    ascending("nino"),
+    ascending("taxYear")
+  )
+
+  def indexes(appConfig: AppConfig): Seq[IndexModel] = {
+    Seq(
+      IndexModel(lookUpIndex, IndexOptions().unique(true)),
+      IndexModel(ascending("lastUpdated"), IndexOptions().expireAfter(appConfig.mongoTTL, TimeUnit.MINUTES))
+    )
+  }
+
 }
