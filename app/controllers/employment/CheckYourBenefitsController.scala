@@ -16,7 +16,6 @@
 
 package controllers.employment
 
-import common.SessionValues.EMPLOYMENT_PRIOR_SUB
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import play.api.i18n.I18nSupport

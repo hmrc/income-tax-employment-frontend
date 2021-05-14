@@ -16,7 +16,6 @@
 
 package controllers.employment
 
-import common.SessionValues
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import models.employment.{AllEmploymentData, EmploymentSource}
