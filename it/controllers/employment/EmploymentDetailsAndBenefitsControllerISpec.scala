@@ -98,7 +98,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           dateIgnored = Some("2020-04-04T01:01:01Z"),
           submittedOn = Some("2020-01-04T05:01:01Z"),
           employmentData = Some(EmploymentData(
-            submittedOn = ("2020-02-12"),
+            submittedOn = "2020-02-12",
             employmentSequenceNumber = Some("123456789999"),
             companyDirector = Some(true),
             closeCompany = Some(false),
@@ -121,7 +121,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
     ".show" should {
 
-      "return an action with benefits status Cannot update when no benefits data is in session" which {
+      "render the page where the status for benefits is Cannot Update when there is no Benefits data in session" which {
 
         lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
           SessionValues.TAX_YEAR -> taxYear.toString,
@@ -145,7 +145,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         textOnPageCheck(ContentEN.p1ExpectedIndividual, p1Selector)
 
         "has an employment details section" which {
-          linkCheck(ContentEN.fieldNames(0), employmentDetailsLinkSelector, employmentDetailsUrl)
+          linkCheck(ContentEN.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl)
           textOnPageCheck("Updated", taskListRowFieldAmountSelector(1))
         }
 
@@ -158,7 +158,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         welshToggleCheck(ENGLISH)
       }
 
-      "return an action with benefits status Updated when benefits data is in session" which {
+      "render the page where the status for benefits is Updated when there is Benefits data in session" which {
 
         lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
           SessionValues.TAX_YEAR -> taxYear.toString,
@@ -182,7 +182,6 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         textOnPageCheck(ContentEN.p1ExpectedIndividual, p1Selector)
 
         "has an employment details section" which {
-          linkCheck(ContentEN.fieldNames(0), employmentDetailsLinkSelector, employmentDetailsUrl)
           textOnPageCheck("Updated", taskListRowFieldAmountSelector(1))
         }
 
@@ -197,7 +196,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
       }
     }
 
-    "returns an action when auth call fails" which {
+    "render Unauthorised user error page" which {
       lazy val result: WSResponse = {
         authoriseIndividualUnauthorized()
         await(wsClient.url(url).get())
@@ -212,7 +211,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
     ".show" should {
 
-      "return an action with benefits status Cannot update when no benefits data is in session" which {
+      "render the page where the status for benefits is Cannot Update when there is no Benefits data in session in session" which {
 
         lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
           SessionValues.TAX_YEAR -> taxYear.toString,
@@ -236,7 +235,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         textOnPageCheck(ContentEN.p1ExpectedAgent, p1Selector)
 
         "has an employment details section" which {
-          linkCheck(ContentEN.fieldNames(0), employmentDetailsLinkSelector, employmentDetailsUrl)
+          linkCheck(ContentEN.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl)
           textOnPageCheck("Updated", taskListRowFieldAmountSelector(1))
         }
 
@@ -250,7 +249,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         welshToggleCheck(ENGLISH)
       }
 
-      "return an action with benefits status Updated when benefits data is in session" which {
+      "render the page where the status for benefits is Updated when there is Benefits data in session" which {
 
         lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
           SessionValues.TAX_YEAR -> taxYear.toString,
@@ -274,7 +273,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         textOnPageCheck(ContentEN.p1ExpectedAgent, p1Selector)
 
         "has an employment details section" which {
-          linkCheck(ContentEN.fieldNames(0), employmentDetailsLinkSelector, employmentDetailsUrl)
+          linkCheck(ContentEN.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl)
           textOnPageCheck("Updated", taskListRowFieldAmountSelector(1))
         }
 
@@ -289,7 +288,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
       }
     }
 
-    "returns an action when auth call fails" which {
+    "render Unauthorised user error page" which {
       lazy val result: WSResponse = {
         authoriseAgentUnauthorized()
         await(wsClient.url(url).get())
@@ -304,7 +303,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
     ".show" should {
 
-      "return an action with benefits status Cannot update when no benefits data is in session" which {
+      "render the page where the status for benefits is Cannot Update when there is no Benefits data in session" which {
 
         lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
           SessionValues.TAX_YEAR -> taxYear.toString,
@@ -329,7 +328,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         textOnPageCheck(ContentCY.p1ExpectedIndividual, p1Selector)
 
         "has an employment details section" which {
-          linkCheck(ContentCY.fieldNames(0), employmentDetailsLinkSelector, employmentDetailsUrl)
+          linkCheck(ContentCY.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl)
           textOnPageCheck("Updated", taskListRowFieldAmountSelector(1))
         }
 
@@ -343,7 +342,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         welshToggleCheck(WELSH)
       }
 
-      "return an action with benefits status Updated when benefits data is in session" which {
+      "render the page where the status for benefits is Updated when there is Benefits data in session" which {
 
         lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
           SessionValues.TAX_YEAR -> taxYear.toString,
@@ -368,7 +367,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         textOnPageCheck(ContentCY.p1ExpectedIndividual, p1Selector)
 
         "has an employment details section" which {
-          linkCheck(ContentCY.fieldNames(0), employmentDetailsLinkSelector, employmentDetailsUrl)
+          linkCheck(ContentCY.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl)
           textOnPageCheck("Updated", taskListRowFieldAmountSelector(1))
         }
 
@@ -388,7 +387,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
     ".show" should {
 
-      "return an action with benefits status Cannot update when no benefits data is in session" which {
+      "render the page where the status for benefits is Cannot Update when there is no Benefits data in session" which {
 
         lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
           SessionValues.TAX_YEAR -> taxYear.toString,
@@ -413,7 +412,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         textOnPageCheck(ContentCY.p1ExpectedAgent, p1Selector)
 
         "has an employment details section" which {
-          linkCheck(ContentCY.fieldNames(0), employmentDetailsLinkSelector, employmentDetailsUrl)
+          linkCheck(ContentCY.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl)
           textOnPageCheck("Updated", taskListRowFieldAmountSelector(1))
         }
 
@@ -427,7 +426,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         welshToggleCheck(WELSH)
       }
 
-      "return an action with benefits status Updated when benefits data is in session" which {
+      "render the page where the status for benefits is Updated when there is Benefits data in session" which {
 
         lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
           SessionValues.TAX_YEAR -> taxYear.toString,
@@ -453,7 +452,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         textOnPageCheck(ContentCY.p1ExpectedAgent, p1Selector)
 
         "has an employment details section" which {
-          linkCheck(ContentCY.fieldNames(0), employmentDetailsLinkSelector, employmentDetailsUrl)
+          linkCheck(ContentCY.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl)
           textOnPageCheck("Updated", taskListRowFieldAmountSelector(1))
         }
 

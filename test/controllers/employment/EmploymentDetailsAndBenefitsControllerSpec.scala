@@ -41,7 +41,7 @@ class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp {
           dateIgnored = Some("2020-04-04T01:01:01Z"),
           submittedOn = Some("2020-01-04T05:01:01Z"),
           employmentData = Some(EmploymentData(
-            submittedOn = ("2020-02-12"),
+            submittedOn = "2020-02-12",
             employmentSequenceNumber = Some("123456789999"),
             companyDirector = Some(true),
             closeCompany = Some(false),
@@ -66,12 +66,12 @@ class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp {
     mockAppConfig
   )
 
-  val taxYear = mockAppConfig.defaultTaxYear
-  val employmentId = "223/AB12399"
+  val taxYear:Int = mockAppConfig.defaultTaxYear
+  val employmentId:String = "223/AB12399"
 
   ".show" should {
 
-    "return a result when GetEmploymentDataModel is in Session" which {
+    "render Employment And Benefits page when GetEmploymentDataModel is in Session" which {
 
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = controller.show(taxYear, employmentId = employmentId)(fakeRequest.withSession(
