@@ -23,12 +23,11 @@ import com.mongodb.client.model.Updates.set
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import models.User
-import models.mongo.{EmploymentUserData, UserData}
+import models.mongo.EmploymentUserData
 import org.joda.time.LocalDateTime
 import org.mongodb.scala.bson.conversions.Bson
-import org.mongodb.scala.model.Filters.{and, equal}
 import org.mongodb.scala.model.Indexes.{ascending, compoundIndex}
-import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions, IndexModel, IndexOptions}
+import org.mongodb.scala.model.{FindOneAndUpdateOptions, IndexModel, IndexOptions}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
