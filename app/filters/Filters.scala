@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package models
+package filters
 
-import play.api.mvc.{Request, WrappedRequest}
+import com.google.inject.Inject
+import play.api.http.DefaultHttpFilters
+import uk.gov.hmrc.play.bootstrap.frontend.filters.FrontendFilters
 
-case class User[T](mtditid: String, arn: Option[String], nino: String, sessionId: String)(implicit request: Request[T]) extends WrappedRequest[T](request) {
-  def isAgent: Boolean = arn.nonEmpty
-}
+class Filters @Inject()(sessionIdFilter: SessionIdFilter,
+                        frontendFilters: FrontendFilters)
+  extends DefaultHttpFilters(frontendFilters.filters :+ sessionIdFilter: _*)
