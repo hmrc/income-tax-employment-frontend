@@ -5,6 +5,10 @@
 
 GET        /assets/*file                                    controllers.Assets.versioned(path = "/public", file: Asset)
 
+GET        /:taxYear/employer-details-and-benefits          controllers.employment.EmploymentDetailsAndBenefitsController.show(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/check-your-employment-details          controllers.employment.EmploymentDetailsController.show(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/check-your-employment-expenses         controllers.employment.CheckEmploymentExpensesController.show(taxYear: Int)
 
 GET        /:taxYear/check-your-employment-benefits         controllers.employment.CheckYourBenefitsController.show(taxYear: Int, employmentId: String)
@@ -19,9 +23,7 @@ GET        /error/you-need-client-authorisation              controllers.errors.
 
 GET        /error/not-authorised-to-use-service             controllers.errors.UnauthorisedUserErrorController.show
 
-GET        /:taxYear/check-your-employment-details  controllers.employment.EmploymentDetailsController.show(taxYear: Int, employmentId: String)
-
-GET        /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
+GET        /language/:lang                                  controllers.LanguageSwitchController.switchToLanguage(lang: String)
 
 GET        /error/you-need-agent-services-account           controllers.errors.YouNeedAgentServicesController.show
 
