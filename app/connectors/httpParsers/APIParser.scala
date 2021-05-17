@@ -27,12 +27,12 @@ trait APIParser {
   val parserName : String
   val service : String
 
-  def logMessage(response:HttpResponse): Option[String] ={
-    Some(s"[$parserName][read] Received ${response.status} from $service API. Body:${response.body}")
+  def logMessage(response:HttpResponse): String ={
+    s"[$parserName][read] Received ${response.status} from $service API. Body:${response.body}"
   }
 
   def badSuccessJsonFromAPI[Response]: Either[APIErrorModel, Response] = {
-    pagerDutyLog(BAD_SUCCESS_JSON_FROM_API, Some(s"[$parserName][read] Invalid Json from $service API."))
+    pagerDutyLog(BAD_SUCCESS_JSON_FROM_API, s"[$parserName][read] Invalid Json from $service API.")
     Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))
   }
 
@@ -50,7 +50,7 @@ trait APIParser {
         case (Some(apiError), _) => Left(APIErrorModel(status, apiError))
         case (_, Some(apiErrors)) => Left(APIErrorModel(status, apiErrors))
         case _ =>
-          pagerDutyLog(UNEXPECTED_RESPONSE_FROM_API, Some(s"[$parserName][read] Unexpected Json from $service API."))
+          pagerDutyLog(UNEXPECTED_RESPONSE_FROM_API, s"[$parserName][read] Unexpected Json from $service API.")
           Left(APIErrorModel(status, APIErrorBodyModel.parsingError))
       }
     } catch {

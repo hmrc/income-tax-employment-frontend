@@ -20,22 +20,32 @@ import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.GetEmploymentsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.employment.EmploymentSummaryView
 
 import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 
 class EmploymentSummaryController @Inject()(
-                                               implicit val cc: MessagesControllerComponents,
+                                               implicit val mcc: MessagesControllerComponents,
                                                authAction: AuthorisedAction,
                                                implicit val appConfig: AppConfig,
                                                employmentSummaryView: EmploymentSummaryView,
-                                             ) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                               getEmploymentsService: GetEmploymentsService
+                                             ) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int) : Action[AnyContent] = authAction { implicit user =>
-    val employments = Seq("employment1", "employment2")
-    Ok(employmentSummaryView(taxYear, employments))
+  implicit val executionContext: ExecutionContext = mcc.executionContext
+
+  def show(taxYear: Int) : Action[AnyContent] = authAction.async { implicit user =>
+    val employments = Seq("employment1")
+    getEmploymentsService.getEmployments(user.nino, taxYear)(hc.copy().withExtraHeaders("mtditid" -> user.mtditid)).map {
+      case Right(Some(listOfEmployments)) => Ok(employmentSummaryView(taxYear, employments))
+      case Right(None) => Ok(employmentSummaryView(taxYear, employments))
+      case Left(apiErrorModel) => Status(apiErrorModel.status)(apiErrorModel.toJson)
+    }
+
   }
 
 

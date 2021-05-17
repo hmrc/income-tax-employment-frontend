@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package utils
+package services
 
-import play.api.Logging
+import connectors.GetEmploymentsConnector
+import connectors.httpParsers.GetEmploymentsHttpParser.GetEmploymentsResponse
+import uk.gov.hmrc.http.HeaderCarrier
 
-object PagerDutyHelper extends Logging {
+import javax.inject.Inject
+import scala.concurrent.Future
 
-  object PagerDutyKeys extends Enumeration {
-    val BAD_SUCCESS_JSON_FROM_API: PagerDutyKeys.Value = Value
-    val SERVICE_UNAVAILABLE_FROM_API: PagerDutyKeys.Value = Value
-    val INTERNAL_SERVER_ERROR_FROM_API: PagerDutyKeys.Value = Value
-    val UNEXPECTED_RESPONSE_FROM_API: PagerDutyKeys.Value = Value
-    val FOURXX_RESPONSE_FROM_API: PagerDutyKeys.Value = Value
-  }
+class GetEmploymentsService @Inject()(getEmploymentsConnector: GetEmploymentsConnector){
 
-  def pagerDutyLog(pagerDutyKey: PagerDutyKeys.Value, otherDetail: String): Unit = {
-    logger.error(s"$pagerDutyKey ${otherDetail}")
+  def getEmployments(nino: String, taxYear: Int)(implicit hc:HeaderCarrier): Future[GetEmploymentsResponse] = {
+    getEmploymentsConnector.getEmployments(nino, taxYear)
   }
 
 }
