@@ -54,6 +54,7 @@ trait Formatters {
           .bind(key, data)
           .map(_.replace(",", ""))
           .map(_.replace("£", ""))
+          .map(_.replaceAll("""\s""", ""))
           .flatMap {
             case s if s.isEmpty => Left(Seq(FormError(key, requiredKey, args)))
             case s if !s.matches(validNumeric) => Left(Seq(FormError(key, nonNumericKey, args)))
