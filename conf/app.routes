@@ -23,7 +23,11 @@ GET        /error/you-need-client-authorisation              controllers.errors.
 
 GET        /error/not-authorised-to-use-service             controllers.errors.UnauthorisedUserErrorController.show
 
-GET        /language/:lang                                  controllers.LanguageSwitchController.switchToLanguage(lang: String)
+GET        /:taxYear/employment-summary                    controllers.employment.EmploymentSummaryController.show(taxYear: Int)
+
+GET        /:taxYear/check-your-employment-details  controllers.employment.EmploymentDetailsController.show(taxYear: Int, employmentId: String)
+
+GET        /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
 
 GET        /error/you-need-agent-services-account           controllers.errors.YouNeedAgentServicesController.show
 
