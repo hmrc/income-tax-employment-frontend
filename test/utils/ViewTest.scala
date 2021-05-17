@@ -172,6 +172,18 @@ trait ViewTest extends UnitTest with GuiceOneAppPerSuite {
     }
   }
 
+  def checkMessagesAreUnique(msgFile : Map[String, String], exclusionKeys: Set[String]){
+    val msgKeys = msgFile.keys
+      .filter( keys => !exclusionKeys.contains(keys))
+      .toSet
+    val msgVals = msgFile.filterKeys(msgKeys)
+      .values
+      .toList
+      .distinct
+
+    msgVals.length shouldBe msgKeys.size
+  }
+
   def welshToggleCheck(activeLanguage: String)(implicit document: Document): Unit = {
     val otherLanguage = if (activeLanguage == "English") "Welsh" else "English"
 

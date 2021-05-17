@@ -1,9 +1,8 @@
 service.name = Update and submit an Income Tax Return
-service.text = This is your new service
+service.text = Dyma'ch gwasanaeth newydd
 
 service.govUkExtension = GOV.UK
 
-error.browser.title.prefix = Error:
 betaBar.beta = beta
 betaBar.banner.message.1 = This is a new service – your
 betaBar.banner.message.2 = feedback
@@ -19,6 +18,7 @@ common.aDifferentAmount = A different amount
 common.enterAmount = Enter amount
 common.remove = Remove
 common.account = account
+common.use = use
 common.account-details = account details
 common.opensInNewWindowOrTab = (opens in new tab)
 common.help.getHelpWithThisPage = Get help with this page
@@ -26,10 +26,11 @@ common.error.errorKey = Error:
 common.error.invalid_number = Enter an amount using numbers 0 to 9
 common.error.amountMaxLimit = Enter an amount less than £100,000,000,000
 common.error.invalid_currency_format = Enter the amount in the correct format
+
 common.error.self-assessment.paragraph.1.1 = If the web address is correct or you selected a link or button, you can use
 common.error.self-assessment.paragraph.1.2 = Self Assessment: general enquiries (opens in new tab)
-common.error.self-assessment.paragraph.1.3 = to speak to someone about your income tax.
-common.caption = Employment for 6 April {0} to 5 April {1}
+common.error.self-assessment.paragraph.1.3 = to speak to someone about your income tax
+common.error.self-assessment.paragraph.1.3a = to speak to someone about your income tax.
 
 common.currency.hint = For example, £600 or £193.54
 
@@ -42,30 +43,23 @@ common.status.cannotUpdate = Cannot update
 
 error.summary.title = There is a problem
 
-not-found-template.title = Page not found
 not-found-template.heading = Page not found
 not-found-template.paragraph.1 = If you typed the web address, check it is correct.
 not-found-template.paragraph.2 = If you used ‘copy and paste’ to enter the web address, check you copied the full address.
 
-internal-server-error-template.title = Sorry, there is a problem with the service
-internal-server-error-template.heading = Sorry, there is a problem with the service
-internal-server-error-template.paragraph.1 = Try again later.
-
-service-unavailable-error-template.title = Sorry, the service is unavailable
 service-unavailable-error-template.heading = Sorry, the service is unavailable
 service-unavailable-error-template.paragraph.1 = You will be able to use this service later.
 
+internal-server-error-template.heading = Sorry, there is a problem with the service
+internal-server-error-template.paragraph.1 = Try again later.
+
+error.unauthorised-user.heading = You are not authorised to use this service
+
 error-template.paragraph.1.1 = You can also:
+error-template.paragraph.1.1a = You can:
 error-template.paragraph.1.2 = go to the
 error-template.paragraph.1.3 = Income Tax home page (opens in new tab)
 error-template.paragraph.1.4 = for more information
-error-template.paragraph.2.1 = use
-error-template.paragraph.2.2 = Self Assessment: general enquiries (opens in new tab)
-error-template.paragraph.2.3 = to speak to someone about your income tax
-
-error.unauthorised-user.title = You are not authorised to use this service
-error.unauthorised-user.heading = You are not authorised to use this service
-error.unauthorised-user.paragraph.1.1 = You can:
 
 error.agent.title = There’s a problem
 error.agent.paragraph1 = You cannot view this client’s information. Your client needs to
@@ -75,14 +69,9 @@ error.agent.paragraph4 = Try another client’s details.
 
 error.unauthorised.title = You cannot view this page
 error.unauthorised.1 = You need to
-error.unauthorised.2 = sign up for Making Tax Digital for Income Tax
+error.unauthorised.2 = create an agent services account
+error.unauthorised.2a = sign up for Making Tax Digital for Income Tax
 error.unauthorised.3 = before you can view this page.
-
-youNeedAgentServices.title = You cannot view this page
-youNeedAgentServices.heading = You cannot view this page
-youNeedAgentServices.p1 = You need to
-youNeedAgentServices.p2 = create an agent services account
-youNeedAgentServices.p3 = before you can view this page.
 
 timeout.heading = For your security, we signed you out
 timeout.p1 = We did not save your answers.
@@ -135,8 +124,6 @@ employment.expenses.expense.type.mileage-allowance = Mileage allowance relief
 employment.expenses.sub-heading.individual = Your employment expenses are based on the information we already hold about you. This is a total of expenses from all employment in the tax year.
 employment.expenses.sub-heading.agent = Your client’s employment expenses are based on information we already hold about them. This is a total of expenses from all employment in the tax year.
 
-checkYourBenefits.title.individual = Check your employment benefits
-checkYourBenefits.title.agent = Check your client’s employment benefits
 checkYourBenefits.heading.individual = Check your employment benefits
 checkYourBenefits.heading.agent = Check your client’s employment benefits
 checkYourBenefits.p1.individual = Your employment benefits are based on the information we already hold about you.

@@ -20,7 +20,7 @@
 @this(layout: Layout, heading: Heading)
 @()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = messages("not-found-template.title")) {
+@layout(pageTitle = messages("not-found-template.heading")) {
     @heading(messages("not-found-template.heading"), None, "govuk-!-margin-bottom-5", "xl")
 
     <div class="govuk-body">
@@ -31,7 +31,7 @@
             @messages("common.error.self-assessment.paragraph.1.1")
             <a target="_blank" id=govuk-self-assessment-link href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment"
                class="govuk-link">@messages("common.error.self-assessment.paragraph.1.2")</a>
-            @messages("common.error.self-assessment.paragraph.1.3")
+            @messages("common.error.self-assessment.paragraph.1.3a")
         </p>
     </div>
 
