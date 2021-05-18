@@ -42,19 +42,14 @@ class EmploymentSummaryController @Inject()(
 
   def show(taxYear: Int) : Action[AnyContent] = authAction { implicit user =>
 
-    val fakeEmployments = Seq(EmploymentSource("wan", "Mishima Zaibatsu", None, None, None, None, None, None, None, None),
-      EmploymentSource("too", "Boots", None, None, None, None, None, None, None, None)
-    )
-    val fakeBenefits = Seq(EmploymentExpenses(None, None, None), EmploymentExpenses(None, None, None))
-
     val source: Option[AllEmploymentData] = getModelFromSession[AllEmploymentData](SessionValues.EMPLOYMENT_PRIOR_SUB)
     if(source.isDefined) {
-      val list1 = source.get.hmrcEmploymentData ++ source.get.customerEmploymentData
-      val bool = if(source.get.hmrcExpenses.isDefined || source.get.customerExpenses.isDefined) true else false
-      if (list1.length == 1) {
-        Ok(singleEmploymentSummaryView(taxYear, list1.head, bool))
+      val listOfEmployments = source.get.hmrcEmploymentData ++ source.get.customerEmploymentData
+      val doExpensesExist = if(source.get.hmrcExpenses.isDefined || source.get.customerExpenses.isDefined) true else false
+      if (listOfEmployments.length == 1) {
+        Ok(singleEmploymentSummaryView(taxYear, listOfEmployments.head, doExpensesExist))
       } else {
-        Ok(multipleEmploymentsSummaryView(taxYear, list1, bool))
+        Ok(multipleEmploymentsSummaryView(taxYear, listOfEmployments, doExpensesExist))
       }
     } else {
       Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
