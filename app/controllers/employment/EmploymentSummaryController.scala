@@ -16,14 +16,16 @@
 
 package controllers.employment
 
+import common.SessionValues
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
+import models.employment.{AllEmploymentData, EmploymentExpenses, EmploymentSource}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.GetEmploymentsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
-import views.html.employment.EmploymentSummaryView
+import views.html.employment.SingleEmploymentSummaryView
+import views.html.employment.MultipleEmploymentsSummaryView
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
@@ -32,21 +34,31 @@ class EmploymentSummaryController @Inject()(
                                                implicit val mcc: MessagesControllerComponents,
                                                authAction: AuthorisedAction,
                                                implicit val appConfig: AppConfig,
-                                               employmentSummaryView: EmploymentSummaryView,
-                                               getEmploymentsService: GetEmploymentsService
+                                               singleEmploymentSummaryView: SingleEmploymentSummaryView,
+                                               multipleEmploymentsSummaryView: MultipleEmploymentsSummaryView
                                              ) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   implicit val executionContext: ExecutionContext = mcc.executionContext
 
-  def show(taxYear: Int) : Action[AnyContent] = authAction.async { implicit user =>
-    val employments = Seq("employment1")
-    getEmploymentsService.getEmployments(user.nino, taxYear)(hc.copy().withExtraHeaders("mtditid" -> user.mtditid)).map {
-      case Right(Some(listOfEmployments)) => Ok(employmentSummaryView(taxYear, employments))
-      case Right(None) => Ok(employmentSummaryView(taxYear, employments))
-      case Left(apiErrorModel) => Status(apiErrorModel.status)(apiErrorModel.toJson)
+  def show(taxYear: Int) : Action[AnyContent] = authAction { implicit user =>
+
+    val fakeEmployments = Seq(EmploymentSource("wan", "Mishima Zaibatsu", None, None, None, None, None, None, None, None),
+      EmploymentSource("too", "Boots", None, None, None, None, None, None, None, None)
+    )
+    val fakeBenefits = Seq(EmploymentExpenses(None, None, None), EmploymentExpenses(None, None, None))
+
+    val source: Option[AllEmploymentData] = getModelFromSession[AllEmploymentData](SessionValues.EMPLOYMENT_PRIOR_SUB)
+    if(source.isDefined) {
+      val list1 = source.get.hmrcEmploymentData ++ source.get.customerEmploymentData
+      val bool = if(source.get.hmrcExpenses.isDefined || source.get.customerExpenses.isDefined) true else false
+      if (list1.length == 1) {
+        Ok(singleEmploymentSummaryView(taxYear, list1.head, bool))
+      } else {
+        Ok(multipleEmploymentsSummaryView(taxYear, list1, bool))
+      }
+    } else {
+      Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
     }
-
   }
-
 
 }

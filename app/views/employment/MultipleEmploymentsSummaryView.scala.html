@@ -22,6 +22,7 @@
 @import utils.ViewUtils.convertBoolToYesOrNo
 @import utils.ViewUtils.dateFormatter
 @import models.employment.EmploymentData
+@import models.employment.EmploymentSource
 
 @this(
     layout: Layout,
@@ -32,7 +33,7 @@
     govukSummaryList: GovukSummaryList,
     govukInsetText: GovukInsetText
 )
-@(taxYear: Int, employments: Seq[String])(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, employments: Seq[EmploymentSource], expensesExist: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @headingForUse = @{
     messages(s"employment.employmentSummary.heading.${if(user.isAgent) "agent" else "individual"}")
@@ -52,21 +53,21 @@
 </li>
 }
 
-@employmentList(employments: Seq[String]) = {
+@employmentList(employments: Seq[EmploymentSource]) = {
     @if(employments.isEmpty){
         <p>temp</p>
     }else{
         <div class="govuk-form-group">
             <ul class="hmrc-add-to-a-list hmrc-add-to-a-list--short">
-                @employments.map { (employment:String) =>
-                    @employmentRow(employment, controllers.employment.routes.EmploymentDetailsController.show(taxYear, employment))
+                @employments.map { (employment:EmploymentSource) =>
+                    @employmentRow(employment.employerName, controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employment.employmentId))
                 }
             </ul>
         </div>
     }
 }
 
-@expensesList(state: String) = {
+@expensesList() = {
 <div class="govuk-form-group">
     <ul class="hmrc-add-to-a-list hmrc-add-to-a-list--short">
         <li class="hmrc-add-to-a-list__contents">
@@ -77,7 +78,7 @@
                 </a>
             </span>
             <span class="hmrc-add-to-a-list__change">
-                @state
+                @if(expensesExist){ @messages("common.update") }else{ @messages("common.status.cannotUpdate")}
             </span>
         </li>
     </ul>
@@ -97,7 +98,7 @@
     @employmentList(employments)
     <p class="govuk-label--m">@messages("employment.expenses.label")</p>
     <p class="govuk-body">@messages(s"employment.expenses.subheading")</p>
-    @expensesList("Updated")
+    @expensesList()
 
 }
 
