@@ -39,7 +39,10 @@ class IncomeTaxUserDataService @Inject()(incomeTaxUserDataRepository: IncomeTaxU
                   (implicit ec: ExecutionContext): Future[Result] = {
     incomeTaxUserDataRepository.find(user, taxYear).map {
       case Some(UserData(_,_,_,_,Some(employmentData),_)) => result(employmentData)
-      case _ => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      case _ =>
+        logger.info(s"[IncomeTaxUserDataService][findUserData] " +
+          s"No employment data found for user. SessionId: ${user.sessionId}")
+        Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
     }
   }
 }

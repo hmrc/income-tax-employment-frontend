@@ -28,9 +28,9 @@ trait MockIncomeTaxUserDataRepository extends MockFactory {
 
   val mockRepository: IncomeTaxUserDataRepository = mock[IncomeTaxUserDataRepository]
 
-  def mockFind(user:User[_], taxYear: Int, userData: UserData): CallHandler2[User[_], Int, Future[Option[UserData]]] = {
+  def mockFind(taxYear: Int, userData: UserData): CallHandler2[User[_], Int, Future[Option[UserData]]] = {
     (mockRepository.find(_: User[_],_: Int))
-      .expects(user, taxYear)
+      .expects(*, taxYear)
       .returns(Future.successful(Some(userData)))
       .anyNumberOfTimes()
   }

@@ -43,14 +43,7 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
   )
 
   val taxYear = 2022
-  val expenses: Expenses = Expenses(
-    Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7), Some(8)
-  )
-  val employmentExpenses: EmploymentExpenses = EmploymentExpenses(
-    submittedOn = None,
-    totalExpenses = None,
-    expenses = Some(expenses)
-  )
+
   val allData: AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(
       EmploymentSource(
