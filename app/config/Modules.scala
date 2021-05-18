@@ -18,8 +18,7 @@ package config
 
 import com.google.inject.AbstractModule
 import common.UUID
-import repositories.{EmploymentUserDataRepository, EmploymentUserDataRepositoryImpl, IncomeTaxUserDataRepository, IncomeTaxUserDataRepositoryImpl}
-import uk.gov.hmrc.mongo.MongoComponent
+import repositories.{IncomeTaxUserDataRepository, IncomeTaxUserDataRepositoryImpl}
 
 class Modules extends AbstractModule {
 
