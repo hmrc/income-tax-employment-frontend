@@ -313,7 +313,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
         }
 
-        "return only the relevant data on the page when only certain data items are in session" which {
+        "return only the relevant data on the page when only certain data items are in mongo" which {
 
           lazy val result: WSResponse = {
             authoriseIndividual()
@@ -552,7 +552,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           welshToggleCheck(WELSH)
         }
 
-        "return only the relevant data on the page when only certain data items are in session" which {
+        "return only the relevant data on the page when only certain data items are in mongo" which {
 
           lazy val result: WSResponse = {
             authoriseIndividual()

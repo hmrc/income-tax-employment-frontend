@@ -40,15 +40,6 @@
         isAgent: Boolean = false
 )(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@scripts = {
-    <script src='@controllers.routes.Assets.versioned("lib/govuk-frontend/govuk/all.js")'></script>
-    <script src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
-    <script src='@controllers.routes.Assets.versioned("javascripts/application.min.js")'></script>
-    <script>window.GOVUKFrontend.initAll();</script>
-    <script>window.HMRCFrontend.initAll();</script>
-    @scriptsBlock.map(x => x)
-}
-
 @headerBlock = {
     @hmrcHeader(
         serviceName = Some(messages("service.name")),
@@ -65,13 +56,24 @@
     </div>
 }
 
+@footerBlock = {
+    @hmrcStandardFooter()
+
+    <script src='@controllers.routes.Assets.versioned("lib/govuk-frontend/govuk/all.js")'></script>
+    <script src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
+    <script src='@controllers.routes.Assets.versioned("javascripts/application.min.js")'></script>
+    <script>window.GOVUKFrontend.initAll();</script>
+    <script>window.HMRCFrontend.initAll();</script>
+    @scriptsBlock.map(x => x)
+}
+
 @govukLayout(
     pageTitle = Some((if(hasErrors) messages("error.browser.title.prefix") + " " else "") + pageTitle + " - " + messages("service.name") + " - " + messages("service.govUkExtension")),
     headBlock = Some(head(headBlock, timeout)),
     headerBlock = Some(headerBlock),
-    scriptsBlock = Some(scripts),
+    scriptsBlock = None,
     beforeContentBlock = Some(beforeBodyContent(backLink, isAgent)),
-    footerBlock = Some(hmrcStandardFooter())
+    footerBlock = Some(footerBlock)
 )(content)
 
 

@@ -18,14 +18,14 @@ package controllers.employment
 
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
+import javax.inject.Inject
+import models.employment.{AllEmploymentData, Benefits}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.IncomeTaxUserDataService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.employment.CheckYourBenefitsView
-import javax.inject.Inject
-import models.employment.{AllEmploymentData, Benefits}
-import services.IncomeTaxUserDataService
 
 import scala.concurrent.ExecutionContext
 

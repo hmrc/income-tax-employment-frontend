@@ -134,7 +134,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
     ".show" should {
 
-      "returns an action when data is in session" which {
+      "returns an action when data is in mongo" which {
 
         lazy val result: WSResponse = {
           authoriseIndividual()
@@ -209,7 +209,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
     ".show" should {
 
-      "returns an action when data is in session" which {
+      "returns an action when data is in mongo" which {
 
         lazy val result: WSResponse = {
           authoriseAgent()
@@ -270,7 +270,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
     ".show" should {
 
-      "returns an action when data is in session" which {
+      "returns an action when data is in mongo" which {
 
         lazy val result: WSResponse = {
           authoriseIndividual()
@@ -323,7 +323,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
     ".show" should {
 
-      "returns an action when data is in session" which {
+      "returns an action when data is in mongo" which {
 
         lazy val result: WSResponse = {
           authoriseAgent()

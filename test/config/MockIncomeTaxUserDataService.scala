@@ -18,11 +18,9 @@ package config
 
 import models.User
 import models.employment.AllEmploymentData
-import models.mongo.UserData
-import org.scalamock.handlers.{CallHandler2, CallHandler4}
+import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
 import play.api.mvc.Result
-import repositories.IncomeTaxUserDataRepository
 import services.IncomeTaxUserDataService
 
 import scala.concurrent.{ExecutionContext, Future}

@@ -253,7 +253,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
         result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
       }
 
-      "return a filtered list on page when minimum data is in session" which {
+      "return a filtered list on page when minimum data is in mongo" which {
 
         lazy val result: WSResponse = {
           authoriseIndividual()
@@ -286,7 +286,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
 
-      "return an action when some model with invalid date is in session" when {
+      "return an action when some model with invalid date is in mongo" when {
 
         lazy val result: WSResponse = {
           authoriseIndividual()
@@ -378,7 +378,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
       }
 
-      "return a filtered list on page when minimum data is in session" which {
+      "return a filtered list on page when minimum data is in mongo" which {
 
         lazy val result: WSResponse = {
           authoriseAgent()
@@ -411,7 +411,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
 
-      "return an action when some model with invalid date is in session" when {
+      "return an action when some model with invalid date is in mongo" when {
 
         lazy val result: WSResponse = {
           authoriseAgent()
@@ -505,7 +505,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
       }
 
-      "return a filtered list on page when minimum data is in session" which {
+      "return a filtered list on page when minimum data is in mongo" which {
 
         lazy val result: WSResponse = {
           authoriseIndividual()
@@ -540,7 +540,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
 
-      "return an action when some model with invalid date is in session" when {
+      "return an action when some model with invalid date is in mongo" when {
 
         lazy val result: WSResponse = {
           authoriseIndividual()
@@ -623,7 +623,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
       }
 
-      "return a filtered list on page when minimum data is in session" which {
+      "return a filtered list on page when minimum data is in mongo" which {
 
         lazy val result: WSResponse = {
           authoriseAgent()

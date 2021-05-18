@@ -19,15 +19,15 @@ package controllers.employment
 import common.SessionValues
 import config.MockIncomeTaxUserDataService
 import controllers.Assets.{Ok, Redirect}
-import models.employment._
+import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
 import play.api.http.Status._
 import play.api.mvc.Result
 import utils.UnitTestWithApp
-import views.html.employment.CheckYourBenefitsView
+import views.html.employment.EmploymentDetailsAndBenefitsView
 
 import scala.concurrent.Future
 
-class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockIncomeTaxUserDataService{
+class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp with MockIncomeTaxUserDataService {
 
   object FullModel {
     val allData: AllEmploymentData = AllEmploymentData(
@@ -51,10 +51,7 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockIncomeTax
             disguisedRemuneration = Some(false),
             pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
           )),
-          Some(EmploymentBenefits(
-            submittedOn = "2020-02-12",
-            benefits = Some(allBenefits)
-          ))
+          None
         )
       ),
       hmrcExpenses = None,
@@ -63,58 +60,32 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockIncomeTax
     )
   }
 
-  val allBenefits: Benefits = Benefits(
-    car = Some(1.23),
-    carFuel = Some(2.00),
-    van = Some(3.00),
-    vanFuel = Some(4.00),
-    mileage = Some(5.00),
-    accommodation = Some(6.00),
-    qualifyingRelocationExpenses = Some(7.00),
-    nonQualifyingRelocationExpenses = Some(8.00),
-    travelAndSubsistence = Some(9.00),
-    personalIncidentalExpenses = Some(10.00),
-    entertaining = Some(11.00),
-    telephone = Some(12.00),
-    employerProvidedServices = Some(13.00),
-    employerProvidedProfessionalSubscriptions = Some(14.00),
-    service = Some(15.00),
-    medicalInsurance = Some(16.00),
-    nurseryPlaces = Some(17.00),
-    beneficialLoan = Some(18.00),
-    educationalServices = Some(19.00),
-    incomeTaxPaidByDirector = Some(20.00),
-    paymentsOnEmployeesBehalf = Some(21.00),
-    expenses = Some(22.00),
-    taxableExpenses = Some(23.00),
-    vouchersAndCreditCards = Some(24.00),
-    nonCash = Some(25.00),
-    otherItems = Some(26.00),
-    assets = Some(27.00),
-    assetTransfer = Some(280000.00)
-  )
+  lazy val view = app.injector.instanceOf[EmploymentDetailsAndBenefitsView]
 
-  lazy val view = app.injector.instanceOf[CheckYourBenefitsView]
-
-  lazy val controller = new CheckYourBenefitsController(
-    authorisedAction,
+  lazy val controller = new EmploymentDetailsAndBenefitsController()(
     mockMessagesControllerComponents,
-    mockAppConfig,
+    authorisedAction,
     view,
+    mockAppConfig,
     mockService,
     ec
   )
 
-  val taxYear: Int = mockAppConfig.defaultTaxYear
-  val employmentId = "223/AB12399"
+  val taxYear:Int = mockAppConfig.defaultTaxYear
+  val employmentId:String = "223/AB12399"
 
   ".show" should {
 
-    "return a result when all data is in Session" which {
+    "render Employment And Benefits page when GetEmploymentDataModel is in mongo" which {
 
       s"has an OK($OK) status" in new TestWithAuth {
+
+        val name: String = FullModel.allData.hmrcEmploymentData.head.employerName
+        val employmentId: String = FullModel.allData.hmrcEmploymentData.head.employmentId
+        val benefitsIsDefined: Boolean = FullModel.allData.hmrcEmploymentData.head.employmentBenefits.isDefined
+
         val result: Future[Result] = {
-          mockFind(taxYear,Ok(view(taxYear, FullModel.allData.hmrcEmploymentData.head.employmentBenefits.get.benefits.get)))
+          mockFind(taxYear,Ok(view(name, employmentId, benefitsIsDefined, taxYear)))
           controller.show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))
@@ -133,7 +104,7 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockIncomeTax
         }
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe "/overview"
+        redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)
       }
     }
   }
