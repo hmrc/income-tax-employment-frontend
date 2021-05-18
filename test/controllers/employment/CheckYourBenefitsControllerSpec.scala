@@ -17,16 +17,17 @@
 package controllers.employment
 
 import common.SessionValues
-import models.employment.{AllEmploymentData, Benefits, EmploymentBenefits, EmploymentData, EmploymentSource, Pay}
+import config.MockIncomeTaxUserDataService
+import controllers.Assets.{Ok, Redirect}
+import models.employment._
 import play.api.http.Status._
-import play.api.libs.json.Json
 import play.api.mvc.Result
 import utils.UnitTestWithApp
 import views.html.employment.CheckYourBenefitsView
 
 import scala.concurrent.Future
 
-class CheckYourBenefitsControllerSpec extends UnitTestWithApp {
+class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockIncomeTaxUserDataService{
 
   object FullModel {
     val allData: AllEmploymentData = AllEmploymentData(
@@ -93,11 +94,15 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp {
     assetTransfer = Some(280000.00)
   )
 
+  lazy val view = app.injector.instanceOf[CheckYourBenefitsView]
+
   lazy val controller = new CheckYourBenefitsController(
     authorisedAction,
     mockMessagesControllerComponents,
     mockAppConfig,
-    app.injector.instanceOf[CheckYourBenefitsView]
+    view,
+    mockService,
+    ec
   )
 
   val taxYear: Int = mockAppConfig.defaultTaxYear
@@ -108,10 +113,12 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp {
     "return a result when all data is in Session" which {
 
       s"has an OK($OK) status" in new TestWithAuth {
-        val result: Future[Result] = controller.show(taxYear, employmentId)(fakeRequest.withSession(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(FullModel.allData))
-        ))
+        val result: Future[Result] = {
+          mockFind(taxYear,Ok(view(taxYear, FullModel.allData.hmrcEmploymentData.head.employmentBenefits.get.benefits.get)))
+          controller.show(taxYear, employmentId)(fakeRequest.withSession(
+            SessionValues.TAX_YEAR -> taxYear.toString
+          ))
+        }
 
         status(result) shouldBe OK
       }
@@ -120,7 +127,10 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp {
     "redirect the User to the Overview page no data in session" which {
 
       s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth{
-        val result: Future[Result] = controller.show(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
+        val result: Future[Result] = {
+          mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+          controller.show(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
+        }
 
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe "/overview"

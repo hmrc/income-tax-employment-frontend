@@ -16,19 +16,17 @@
 
 package controllers.employment
 
-import common.SessionValues
-import helpers.PlaySessionCookieBaker
-import models.employment.{AllEmploymentData, EmploymentData, EmploymentExpenses, EmploymentSource, Expenses, Pay}
+import models.employment._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.scalatest.BeforeAndAfterEach
 import play.api.http.HeaderNames
 import play.api.http.Status._
-import play.api.libs.json.Json
 import play.api.libs.ws.{WSClient, WSResponse}
 import utils.{IntegrationTest, ViewHelpers}
 
 
-class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers {
+class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach {
 
   lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
   val taxYear = 2022
@@ -123,6 +121,10 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     customerExpenses = None
   )
 
+  override def beforeEach(): Unit = {
+    await(repo.collection.drop().toFuture())
+    await(repo.ensureIndexes)
+  }
 
   private def summaryListRowFieldNameSelector(i: Int) = s"#main-content > div > div > dl > div:nth-child($i) > dt"
 
@@ -134,18 +136,11 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "returns an action when data is in session" which {
 
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(allData))
-        ))
-
         lazy val result: WSResponse = {
           authoriseIndividual()
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+          addUserData(userData(allData,taxYear),repo,taxYear,fakeRequest)
+          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
-
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
@@ -183,6 +178,20 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
         welshToggleCheck(ENGLISH)
       }
+
+      "redirect to overview page when theres no expenses" in {
+
+        lazy val result: WSResponse = {
+          authoriseIndividual()
+          addUserData(userData(allData.copy(hmrcExpenses = None),taxYear),repo,taxYear,fakeRequest)
+          await(wsClient.url(url).withHttpHeaders(
+            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
+          ).withFollowRedirects(false).get())
+        }
+
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+      }
     }
 
     "returns an action when auth call fails" which {
@@ -202,18 +211,11 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "returns an action when data is in session" which {
 
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(allData))
-        ))
-
         lazy val result: WSResponse = {
           authoriseAgent()
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+          addUserData(userData(allData,taxYear),repo,taxYear,fakeRequest)
+          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
-
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
@@ -270,17 +272,11 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "returns an action when data is in session" which {
 
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(allData))
-        ))
-
         lazy val result: WSResponse = {
           authoriseIndividual()
+          addUserData(userData(allData,taxYear),repo,taxYear,fakeRequest)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-            HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
 
@@ -329,17 +325,11 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "returns an action when data is in session" which {
 
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(allData))
-        ))
-
         lazy val result: WSResponse = {
           authoriseAgent()
+          addUserData(userData(allData,taxYear),repo,taxYear,fakeRequest)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-            HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
 

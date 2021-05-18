@@ -17,7 +17,7 @@
 package models.mongo
 
 import models.employment.AllEmploymentData
-import org.joda.time.{DateTime, DateTimeZone, LocalDateTime}
+import org.joda.time.{DateTime, DateTimeZone}
 import play.api.libs.json.{OFormat, OWrites, Reads, __}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
 

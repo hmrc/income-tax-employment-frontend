@@ -27,7 +27,7 @@ import models.mongo.EmploymentUserData
 import org.joda.time.LocalDateTime
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model.Indexes.{ascending, compoundIndex}
-import org.mongodb.scala.model.{FindOneAndUpdateOptions, IndexModel, IndexOptions}
+import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions, IndexModel, IndexOptions}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
@@ -36,13 +36,13 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EmploymentUserDataRepository @Inject()(mongo: MongoComponent, appConfig: AppConfig)(implicit ec: ExecutionContext
+class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig: AppConfig)(implicit ec: ExecutionContext
 ) extends PlayMongoRepository[EmploymentUserData](
   mongoComponent = mongo,
   collectionName = "employmentUserData",
   domainFormat   = EmploymentUserData.formats,
   indexes        = EmploymentUserDataIndexes.indexes(appConfig)
-) with Repository {
+) with Repository with EmploymentUserDataRepository {
 
   def find[T](user: User[T], taxYear: Int): Future[Option[EmploymentUserData]] = {
     collection.findOneAndUpdate(
@@ -50,6 +50,14 @@ class EmploymentUserDataRepository @Inject()(mongo: MongoComponent, appConfig: A
       update = set("lastUpdated", toBson(LocalDateTime.now())(MongoJodaFormats.localDateTimeWrites)),
       options = FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
     ).toFutureOption()
+  }
+
+  def update(employmentUserData: EmploymentUserData): Future[Boolean] = {
+    collection.findOneAndReplace(
+      filter = filter(employmentUserData.sessionId,employmentUserData.mtdItId,employmentUserData.nino,employmentUserData.taxYear),
+      replacement = employmentUserData,
+      options = FindOneAndReplaceOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
+    ).toFutureOption().map(_.isDefined)
   }
 }
 
@@ -64,9 +72,14 @@ private object EmploymentUserDataIndexes {
 
   def indexes(appConfig: AppConfig): Seq[IndexModel] = {
     Seq(
-      IndexModel(lookUpIndex, IndexOptions().unique(true)),
-      IndexModel(ascending("lastUpdated"), IndexOptions().expireAfter(appConfig.mongoTTL, TimeUnit.MINUTES))
+      IndexModel(lookUpIndex, IndexOptions().unique(true).name("UserDataLookupIndex")),
+      IndexModel(ascending("lastUpdated"), IndexOptions().expireAfter(appConfig.mongoTTL, TimeUnit.MINUTES).name("UserDataTTL"))
     )
   }
+}
 
+trait EmploymentUserDataRepository {
+
+  def find[T](user: User[T], taxYear: Int): Future[Option[EmploymentUserData]]
+  def update(employmentUserData: EmploymentUserData): Future[Boolean]
 }

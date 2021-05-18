@@ -18,12 +18,16 @@ package config
 
 import com.google.inject.AbstractModule
 import common.UUID
+import repositories.{EmploymentUserDataRepository, EmploymentUserDataRepositoryImpl, IncomeTaxUserDataRepository, IncomeTaxUserDataRepositoryImpl}
+import uk.gov.hmrc.mongo.MongoComponent
 
 class Modules extends AbstractModule {
 
   override def configure(): Unit = {
     bind(classOf[AppConfig]).asEagerSingleton()
     bind(classOf[UUID]).toInstance(UUID())
+    bind(classOf[IncomeTaxUserDataRepository]).to(classOf[IncomeTaxUserDataRepositoryImpl]).asEagerSingleton()
+
   }
 
 }

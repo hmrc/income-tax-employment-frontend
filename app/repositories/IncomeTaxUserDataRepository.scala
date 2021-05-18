@@ -21,8 +21,8 @@ import com.mongodb.client.model.Updates.set
 import javax.inject.{Inject, Named, Singleton}
 import models.User
 import models.mongo.UserData
-import org.joda.time.LocalDateTime
-import org.mongodb.scala.model.FindOneAndUpdateOptions
+import org.joda.time.{DateTime, DateTimeZone}
+import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
@@ -31,20 +31,34 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class IncomeTaxUserDataRepository @Inject()(@Named("incomeTaxUserData") mongo: MongoComponent)
-                                           (implicit ec: ExecutionContext) extends PlayMongoRepository[UserData](
+class IncomeTaxUserDataRepositoryImpl @Inject()(@Named("incomeTaxUserData") mongo: MongoComponent)
+                                               (implicit ec: ExecutionContext) extends PlayMongoRepository[UserData](
   mongoComponent = mongo,
   collectionName = "userData",
   domainFormat   = UserData.formats,
   indexes        = Seq(),
   replaceIndexes = false
-) with Repository {
+) with Repository with IncomeTaxUserDataRepository {
 
   def find[T](user: User[T], taxYear: Int): Future[Option[UserData]] = {
     collection.findOneAndUpdate(
       filter = filter(user.sessionId,user.mtditid,user.nino,taxYear),
-      update = set("lastUpdated", toBson(LocalDateTime.now())(MongoJodaFormats.localDateTimeWrites)),
+      update = set("lastUpdated", toBson(DateTime.now(DateTimeZone.UTC))(MongoJodaFormats.dateTimeWrites)),
       options = FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
     ).toFutureOption()
   }
+
+  def update(userData: UserData): Future[Boolean] = {
+    collection.findOneAndReplace(
+      filter = filter(userData.sessionId,userData.mtdItId,userData.nino,userData.taxYear),
+      replacement = userData,
+      options = FindOneAndReplaceOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
+    ).toFutureOption().map(_.isDefined)
+  }
+}
+
+trait IncomeTaxUserDataRepository {
+
+  def find[T](user: User[T], taxYear: Int): Future[Option[UserData]]
+  def update(userData: UserData): Future[Boolean]
 }

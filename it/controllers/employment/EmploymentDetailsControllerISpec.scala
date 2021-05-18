@@ -16,14 +16,11 @@
 
 package controllers.employment
 
-import common.SessionValues
-import helpers.PlaySessionCookieBaker
 import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status._
-import play.api.libs.json.Json
 import play.api.libs.ws.{WSClient, WSResponse}
 import utils.{IntegrationTest, ViewHelpers}
 
@@ -199,18 +196,11 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "return a fully populated page when all the fields are populated" which {
 
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(FullModel.allData))
-        ))
-
         lazy val result: WSResponse = {
           authoriseIndividual()
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+          addUserData(userData(FullModel.allData,taxYear),repo,taxYear,fakeRequest)
+          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
-
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
@@ -247,23 +237,30 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
       }
 
-      "return a filtered list on page when minimum data is in session" which {
-
-        val sessionCookie: String = PlaySessionCookieBaker.bakeSessionCookie(Map[String, String](
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(
-            Json.toJson(MinModel.miniData)
-          )
-        ))
+      "redirect to overview page when theres no details" in {
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          await(wsClient.url(url)
-            .withHttpHeaders(HeaderNames.COOKIE -> sessionCookie, "Csrf-Token" -> "nocheck").get())
+          addUserData(userData(
+            FullModel.allData.copy(hmrcEmploymentData = Seq.empty)
+            ,taxYear),repo,taxYear,fakeRequest)
+          await(wsClient.url(url).withHttpHeaders(
+            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
+          ).withFollowRedirects(false).get())
         }
 
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+      }
+
+      "return a filtered list on page when minimum data is in session" which {
+
+        lazy val result: WSResponse = {
+          authoriseIndividual()
+          addUserData(userData(MinModel.miniData,taxYear),repo,taxYear,fakeRequest)
+          await(wsClient.url(url)
+            .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+        }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
@@ -291,19 +288,11 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "return an action when some model with invalid date is in session" when {
 
-        val sessionCookie: String = PlaySessionCookieBaker.bakeSessionCookie(Map[String, String](
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(
-            Json.toJson(SomeModelWithInvalidData.invalidData)
-          )
-        ))
-
         lazy val result: WSResponse = {
           authoriseIndividual()
+          addUserData(userData(SomeModelWithInvalidData.invalidData,taxYear),repo,taxYear,fakeRequest)
           await(wsClient.url(url)
-            .withHttpHeaders(HeaderNames.COOKIE -> sessionCookie, "Csrf-Token" -> "nocheck").get())
+            .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -348,18 +337,11 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "return a fully populated page when all the fields are populated" which {
 
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(FullModel.allData))
-        ))
-
         lazy val result: WSResponse = {
           authoriseAgent()
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+          addUserData(userData(FullModel.allData,taxYear),repo,taxYear,fakeRequest)
+          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
-
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
@@ -398,21 +380,12 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "return a filtered list on page when minimum data is in session" which {
 
-        val sessionCookie: String = PlaySessionCookieBaker.bakeSessionCookie(Map[String, String](
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(
-            Json.toJson(MinModel.miniData)
-          )
-        ))
-
         lazy val result: WSResponse = {
           authoriseAgent()
+          addUserData(userData(MinModel.miniData,taxYear),repo,taxYear,fakeRequest)
           await(wsClient.url(url)
-            .withHttpHeaders(HeaderNames.COOKIE -> sessionCookie, "Csrf-Token" -> "nocheck").get())
+            .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
-
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
@@ -440,19 +413,11 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "return an action when some model with invalid date is in session" when {
 
-        val sessionCookie: String = PlaySessionCookieBaker.bakeSessionCookie(Map[String, String](
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(
-            Json.toJson(SomeModelWithInvalidData.invalidData)
-          )
-        ))
-
         lazy val result: WSResponse = {
           authoriseAgent()
+          addUserData(userData(SomeModelWithInvalidData.invalidData,taxYear),repo,taxYear,fakeRequest)
           await(wsClient.url(url)
-            .withHttpHeaders(HeaderNames.COOKIE -> sessionCookie, "Csrf-Token" -> "nocheck").get())
+            .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -497,17 +462,11 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "return a fully populated page when all the fields are populated" which {
 
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(FullModel.allData))
-        ))
-
         lazy val result: WSResponse = {
           authoriseIndividual()
+          addUserData(userData(FullModel.allData,taxYear),repo,taxYear,fakeRequest)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-            HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
 
@@ -548,17 +507,12 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "return a filtered list on page when minimum data is in session" which {
 
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(MinModel.miniData))
-        ))
-
         lazy val result: WSResponse = {
           authoriseIndividual()
+          addUserData(userData(MinModel.miniData,taxYear),repo,taxYear,fakeRequest)
+
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-            HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
 
@@ -588,17 +542,12 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "return an action when some model with invalid date is in session" when {
 
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(SomeModelWithInvalidData.invalidData))
-        ))
-
         lazy val result: WSResponse = {
           authoriseIndividual()
+          addUserData(userData(SomeModelWithInvalidData.invalidData,taxYear),repo,taxYear,fakeRequest)
+
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-            HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -632,17 +581,11 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "return a fully populated page when all the fields are populated" which {
 
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(FullModel.allData))
-        ))
-
         lazy val result: WSResponse = {
           authoriseAgent()
+          addUserData(userData(FullModel.allData,taxYear),repo,taxYear,fakeRequest)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-            HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -682,17 +625,11 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "return a filtered list on page when minimum data is in session" which {
 
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(MinModel.miniData))
-        ))
-
         lazy val result: WSResponse = {
           authoriseAgent()
+          addUserData(userData(MinModel.miniData,taxYear),repo,taxYear,fakeRequest)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-            HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -703,7 +640,6 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         textOnPageCheck(ContentCY.contentExpectedAgent, contentTextSelector)
         textOnPageCheck(ContentCY.insetTextExpectedAgent, insetTextSelector)
-
 
         textOnPageCheck(ContentCY.employeeFieldName1, summaryListRowFieldNameSelector(1))
         textOnPageCheck(ContentValues.employeeFieldValue1, summaryListRowFieldAmountSelector(1))
@@ -721,17 +657,11 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "return an action when some model with invalid date is in session" when {
 
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(SomeModelWithInvalidData.invalidData))
-        ))
-
         lazy val result: WSResponse = {
           authoriseAgent()
+          addUserData(userData(SomeModelWithInvalidData.invalidData,taxYear),repo,taxYear,fakeRequest)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-            HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)

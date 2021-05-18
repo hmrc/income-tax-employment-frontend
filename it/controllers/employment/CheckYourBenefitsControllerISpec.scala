@@ -16,55 +16,21 @@
 
 package controllers.employment
 
-import common.SessionValues
-import helpers.PlaySessionCookieBaker
-import models.employment.{AllEmploymentData, Benefits, EmploymentBenefits, EmploymentData, EmploymentSource, Pay}
+import models.employment._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.scalatest.BeforeAndAfterEach
 import play.api.http.HeaderNames
-import play.api.libs.json.Json
+import play.api.http.Status._
 import play.api.libs.ws.{WSClient, WSResponse}
 import utils.{IntegrationTest, ViewHelpers}
 
-class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers {
+class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach {
 
   lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
   val defaultTaxYear = 2022
   val url =
     s"http://localhost:$port/income-through-software/return/employment-income/$defaultTaxYear/check-your-employment-benefits?employmentId=001"
-
-    def employmentData(testBenefits: Benefits): AllEmploymentData = AllEmploymentData(
-      hmrcEmploymentData = Seq(
-        EmploymentSource(
-          employmentId = "001",
-          employerName = "maggie",
-          employerRef = Some("223/AB12399"),
-          payrollId = Some("123456789999"),
-          startDate = Some("2019-04-21"),
-          cessationDate = Some("2020-03-11"),
-          dateIgnored = Some("2020-04-04T01:01:01Z"),
-          submittedOn = Some("2020-01-04T05:01:01Z"),
-          employmentData = Some(EmploymentData(
-            submittedOn = "2020-02-12",
-            employmentSequenceNumber = Some("123456789999"),
-            companyDirector = Some(true),
-            closeCompany = Some(false),
-            directorshipCeasedDate = Some("2020-02-12"),
-            occPen = Some(false),
-            disguisedRemuneration = Some(false),
-            pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
-          )),
-          Some(EmploymentBenefits(
-            submittedOn = "2020-02-12",
-            benefits = Some(testBenefits)
-          ))
-        )
-      ),
-      hmrcExpenses = None,
-      customerEmploymentData = Seq(),
-      customerExpenses = None
-    )
-
   val fullBenefits: Benefits = Benefits(
     car = Some(1.23),
     carFuel = Some(2.00),
@@ -95,12 +61,48 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     assets = Some(27.00),
     assetTransfer = Some(280000.00)
   )
-
   val filteredBenefits: Benefits = Benefits(
     van = Some(3.00),
     vanFuel = Some(4.00),
     mileage = Some(5.00),
   )
+
+  def employmentData(testBenefits: Option[Benefits]): AllEmploymentData = AllEmploymentData(
+    hmrcEmploymentData = Seq(
+      EmploymentSource(
+        employmentId = "001",
+        employerName = "maggie",
+        employerRef = Some("223/AB12399"),
+        payrollId = Some("123456789999"),
+        startDate = Some("2019-04-21"),
+        cessationDate = Some("2020-03-11"),
+        dateIgnored = Some("2020-04-04T01:01:01Z"),
+        submittedOn = Some("2020-01-04T05:01:01Z"),
+        employmentData = Some(EmploymentData(
+          submittedOn = "2020-02-12",
+          employmentSequenceNumber = Some("123456789999"),
+          companyDirector = Some(true),
+          closeCompany = Some(false),
+          directorshipCeasedDate = Some("2020-02-12"),
+          occPen = Some(false),
+          disguisedRemuneration = Some(false),
+          pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
+        )),
+        Some(EmploymentBenefits(
+          submittedOn = "2020-02-12",
+          benefits = testBenefits
+        ))
+      )
+    ),
+    hmrcExpenses = None,
+    customerEmploymentData = Seq(),
+    customerExpenses = None
+  )
+
+  override def beforeEach(): Unit = {
+    await(repo.collection.drop().toFuture())
+    await(repo.ensureIndexes)
+  }
 
   private def fieldNameSelector(section: Int, row: Int) = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dt"
 
@@ -209,23 +211,17 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val assetTransfers = "Asset transfers"
   }
 
-
   "in english" when {
     "calling GET" when {
 
       "an individual" should {
 
-      "return a fully populated page when all the fields are populated" which {
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> defaultTaxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(employmentData(fullBenefits)))
-        ))
+        "return a fully populated page when all the fields are populated" which {
 
           lazy val result: WSResponse = {
             authoriseIndividual()
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+            addUserData(userData(employmentData(Some(fullBenefits)), defaultTaxYear), repo, defaultTaxYear, fakeRequest)
+            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck").get())
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -303,17 +299,26 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           welshToggleCheck(ENGLISH)
         }
 
-      "return only the relevant data on the page when only certain data items are in session" which {
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> defaultTaxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(employmentData(filteredBenefits)))
-        ))
+        "redirect to overview page when theres no benefits" in {
 
           lazy val result: WSResponse = {
             authoriseIndividual()
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+            addUserData(userData(employmentData(None), defaultTaxYear), repo, defaultTaxYear, fakeRequest)
+            await(wsClient.url(url).withHttpHeaders(
+              HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck"
+            ).withFollowRedirects(false).get())
+          }
+
+          result.status shouldBe SEE_OTHER
+          result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+        }
+
+        "return only the relevant data on the page when only certain data items are in session" which {
+
+          lazy val result: WSResponse = {
+            authoriseIndividual()
+            addUserData(userData(employmentData(Some(filteredBenefits)), defaultTaxYear), repo, defaultTaxYear, fakeRequest)
+            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck").get())
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -373,17 +378,12 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "an agent" should {
 
-      "return a fully populated page when all the fields are populated" which {
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> defaultTaxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(employmentData(fullBenefits)))
-        ))
+        "return a fully populated page when all the fields are populated" which {
 
           lazy val result: WSResponse = {
             authoriseAgent()
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+            addUserData(userData(employmentData(Some(fullBenefits)), defaultTaxYear), repo, defaultTaxYear, fakeRequest)
+            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck").get())
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -469,16 +469,11 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       "an individual" should {
 
         "return a fully populated page when all the fields are populated" which {
-          lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-            SessionValues.TAX_YEAR -> defaultTaxYear.toString,
-            SessionValues.CLIENT_NINO -> "AA123456A",
-            SessionValues.CLIENT_MTDITID -> "1234567890",
-            SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(employmentData(fullBenefits)))
-          ))
 
           lazy val result: WSResponse = {
             authoriseIndividual()
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck",
+            addUserData(userData(employmentData(Some(fullBenefits)), defaultTaxYear), repo, defaultTaxYear, fakeRequest)
+            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck",
               HeaderNames.ACCEPT_LANGUAGE -> "cy").get())
           }
 
@@ -558,16 +553,11 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "return only the relevant data on the page when only certain data items are in session" which {
-          lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-            SessionValues.TAX_YEAR -> defaultTaxYear.toString,
-            SessionValues.CLIENT_NINO -> "AA123456A",
-            SessionValues.CLIENT_MTDITID -> "1234567890",
-            SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(employmentData(filteredBenefits)))
-          ))
 
           lazy val result: WSResponse = {
             authoriseIndividual()
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck",
+            addUserData(userData(employmentData(Some(filteredBenefits)), defaultTaxYear), repo, defaultTaxYear, fakeRequest)
+            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck",
               HeaderNames.ACCEPT_LANGUAGE -> "cy").get())
           }
 
@@ -629,16 +619,11 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       "an agent" should {
 
         "return a fully populated page when all the fields are populated" which {
-          lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-            SessionValues.TAX_YEAR -> defaultTaxYear.toString,
-            SessionValues.CLIENT_NINO -> "AA123456A",
-            SessionValues.CLIENT_MTDITID -> "1234567890",
-            SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(employmentData(fullBenefits)))
-          ))
 
           lazy val result: WSResponse = {
             authoriseAgent()
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck",
+            addUserData(userData(employmentData(Some(fullBenefits)), defaultTaxYear), repo, defaultTaxYear, fakeRequest)
+            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck",
               HeaderNames.ACCEPT_LANGUAGE -> "cy").get())
           }
 
