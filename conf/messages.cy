@@ -14,6 +14,7 @@ common.no = No
 common.continue = Continue
 common.saveAndContinue = Save and continue
 common.change = Change
+common.update = Update
 common.aDifferentAmount = A different amount
 common.enterAmount = Enter amount
 common.remove = Remove
@@ -84,6 +85,12 @@ employment.employmentInfo.p1.individual = You cannot update your employment info
 employment.employmentInfo.p1.agent = You cannot update your client’s employment information until 6 April {0}.
 
 employment.employmentInfo.buttonText = Return to employment summary
+employment.employmentSummary.heading.individual = Check your employments
+employment.employmentSummary.heading.agent = Check your client’s employments
+employment.employmentSummary.content.individual = Your employment information is based on the information we already hold about you.
+employment.employmentSummary.content.agent = Your client’s employment information based on the information we already hold about them.
+employment.expenses.label = Expenses
+employment.expenses.subheading = This is a total of all employment in the tax year.
 
 employment.employmentDetails.heading.individual = Check your employment details
 employment.employmentDetails.heading.agent = Check your client’s employment details
