@@ -44,7 +44,7 @@ govukInsetText: GovukInsetText
     <ul class="hmrc-add-to-a-list hmrc-add-to-a-list--short">
         <li class="hmrc-add-to-a-list__contents">
             <span class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light">
-                <a class="govuk-link" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+                <a class="govuk-link" href="@controllers.employment.routes.EmploymentDetailsController.show(taxYear, employment.employmentId)">
                 Employment Details
                 </a>
             </span>
@@ -54,7 +54,7 @@ govukInsetText: GovukInsetText
         </li>
         <li class="hmrc-add-to-a-list__contents">
             <span class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light">
-                <a class="govuk-link" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+                <a class="govuk-link" href="@controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employment.employmentId)">
                 Benefits
                 </a>
             </span>
@@ -64,7 +64,7 @@ govukInsetText: GovukInsetText
         </li>
         <li class="hmrc-add-to-a-list__contents">
             <span class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light">
-                <a class="govuk-link" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+                <a class="govuk-link" href="@controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)">
                 Expenses
                 </a>
             </span>
