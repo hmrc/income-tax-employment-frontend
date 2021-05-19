@@ -68,7 +68,7 @@
 }
 
 @govukLayout(
-    pageTitle = Some((if(hasErrors) messages("error.browser.title.prefix") + " " else "") + pageTitle + " - " + messages("service.name") + " - " + messages("service.govUkExtension")),
+    pageTitle = Some((if(hasErrors) messages("common.error.errorKey") + " " else "") + pageTitle + " - " + messages("service.name") + " - " + messages("service.govUkExtension")),
     headBlock = Some(head(headBlock, timeout)),
     headerBlock = Some(headerBlock),
     scriptsBlock = None,
