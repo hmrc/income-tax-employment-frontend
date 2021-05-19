@@ -22,7 +22,6 @@ import utils.ViewTest
 
 class MessagesSpec extends ViewTest with GuiceOneAppPerSuite {
 
-  lazy val allLanguages: Map[String, Map[String, String]] = app.injector.instanceOf[MessagesApi].messages
   val exclusionKeys = Set(
     "global.error.badRequest400.title",
     "global.error.badRequest400.heading",
@@ -32,19 +31,38 @@ class MessagesSpec extends ViewTest with GuiceOneAppPerSuite {
     "global.error.pageNotFound404.message",
     "global.error.InternalServerError500.title",
     "global.error.InternalServerError500.heading",
-    "global.error.InternalServerError500.message"
+    "global.error.InternalServerError500.message",
+    "betaBar.banner.message.1",
+    "betaBar.banner.message.2",
+    "betaBar.banner.message.3"
   )
+
+  lazy val allLanguages: Map[String, Map[String, String]] = app.injector.instanceOf[MessagesApi].messages
+
+  val defaults = allLanguages("default")
+  val welsh = allLanguages("cy")
+
 
   "the messages file must have welsh translations" should {
     "check all keys in the default file other than those in the exclusion list has a corresponding translation" in {
-      val defaults = allLanguages("default")
-      val welsh = allLanguages("cy")
-
       defaults.keys.foreach(
         key =>
           if (!exclusionKeys.contains(key))
           {welsh.keys should contain(key)}
       )
+    }
+  }
+
+  "the english messages file" should {
+    "have no duplicate messages(values)" in {
+      checkMessagesAreUnique(defaults, exclusionKeys)
+
+    }
+  }
+
+  "the welsh messages file" should {
+    "have no duplicate messages(values)" in {
+      checkMessagesAreUnique(welsh, exclusionKeys)
     }
   }
 }
