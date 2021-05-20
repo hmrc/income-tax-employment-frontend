@@ -30,7 +30,7 @@ trait MockIncomeTaxUserDataService extends MockFactory {
   val mockService: IncomeTaxUserDataService = mock[IncomeTaxUserDataService]
 
   def mockFind(taxYear: Int, result: Result): CallHandler4[User[_], Int, AllEmploymentData => Result, ExecutionContext, Future[Result]] = {
-    (mockService.findUserData(_: User[_],_: Int, _: AllEmploymentData => Result)(_: ExecutionContext))
+    (mockService.findUserData(_: User[_],_: Int)(_: AllEmploymentData => Result)(_: ExecutionContext))
       .expects(*, taxYear, *, *)
       .returns(Future.successful(result))
       .anyNumberOfTimes()

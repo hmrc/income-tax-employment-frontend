@@ -40,8 +40,7 @@ class EmploymentDetailsAndBenefitsController @Inject()(implicit val cc: Messages
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
 
-    def result(allEmploymentData: AllEmploymentData): Result = {
-
+    incomeTaxUserDataService.findUserData(user, taxYear){ allEmploymentData =>
       val source: Option[EmploymentSource] = {
         allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId))
       }
@@ -53,7 +52,5 @@ class EmploymentDetailsAndBenefitsController @Inject()(implicit val cc: Messages
         case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
-
-    incomeTaxUserDataService.findUserData(user, taxYear, result)
   }
 }

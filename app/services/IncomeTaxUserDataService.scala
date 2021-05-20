@@ -35,8 +35,7 @@ class IncomeTaxUserDataService @Inject()(incomeTaxUserDataRepository: IncomeTaxU
                                          implicit private val appConfig: AppConfig,
                                          val messagesApi: MessagesApi) extends Logging {
 
-  def findUserData(user: User[_], taxYear: Int, result: AllEmploymentData => Result)
-                  (implicit ec: ExecutionContext): Future[Result] = {
+  def findUserData(user: User[_], taxYear: Int)(result: AllEmploymentData => Result)(implicit ec: ExecutionContext): Future[Result] = {
     incomeTaxUserDataRepository.find(user, taxYear).map {
       case Some(UserData(_,_,_,_,Some(employmentData),_)) => result(employmentData)
       case _ =>

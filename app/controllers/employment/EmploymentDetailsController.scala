@@ -51,6 +51,6 @@ class EmploymentDetailsController @Inject()(implicit val cc: MessagesControllerC
       }
     }
 
-    incomeTaxUserDataService.findUserData(user, taxYear, result)
+    incomeTaxUserDataService.findUserData(user, taxYear)(result)
   }
 }

@@ -48,7 +48,7 @@ class IncomeTaxUserDataServiceSpec extends UnitTest with MockIncomeTaxUserDataRe
       val response = service.findUserData(
         User(mtditid = "1234567890", arn = None, nino = "AA123456A", sessionId = "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81"),
         taxYear,
-        result
+      )(result
       )
 
       status(response) shouldBe OK
@@ -60,7 +60,7 @@ class IncomeTaxUserDataServiceSpec extends UnitTest with MockIncomeTaxUserDataRe
       val response = service.findUserData(
         User(mtditid = "1234567890", arn = None, nino = "AA123456A", sessionId = "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81"),
         taxYear,
-        result
+      )( result
       )
 
       status(response) shouldBe SEE_OTHER

@@ -37,15 +37,15 @@ class SessionIdFilter(override val mat: Materializer,
     this(mat, UUID.randomUUID(), ec, cb)
   }
 
-  override def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = {
+  override def apply(requestToResult: (RequestHeader) => Future[Result])(header: RequestHeader): Future[Result] = {
 
     lazy val sessionId: String = s"session-$uuid"
 
-    if (rh.session.get(SessionKeys.sessionId).isEmpty) {
+    if (header.session.get(SessionKeys.sessionId).isEmpty) {
 
       val cookies: String = {
-        val session: Session = rh.session + (SessionKeys.sessionId -> sessionId)
-        val cookies: Traversable[Cookie] = rh.cookies ++ Seq(cookieBaker.encodeAsCookie(session))
+        val session: Session = header.session + (SessionKeys.sessionId -> sessionId)
+        val cookies: Traversable[Cookie] = header.cookies ++ Seq(cookieBaker.encodeAsCookie(session))
         Cookies.encodeCookieHeader(cookies.toSeq)
       }
 
@@ -54,9 +54,9 @@ class SessionIdFilter(override val mat: Materializer,
         HeaderNames.COOKIE -> cookies
       )
 
-      f(rh.withHeaders(headers)).map(_.addingToSession(SessionKeys.sessionId -> sessionId)(rh.withHeaders(headers)))
+      requestToResult(header.withHeaders(headers)).map(_.addingToSession(SessionKeys.sessionId -> sessionId)(header.withHeaders(headers)))
     } else {
-      f(rh)
+      requestToResult(header)
     }
   }
 }

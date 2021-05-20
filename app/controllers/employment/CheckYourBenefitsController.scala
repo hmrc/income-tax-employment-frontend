@@ -39,8 +39,7 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
 
-    def result(allEmploymentData: AllEmploymentData): Result = {
-
+    incomeTaxUserDataService.findUserData(user, taxYear){ allEmploymentData =>
       val benefits: Option[Benefits] = {
         allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId)).flatMap(_.employmentBenefits).flatMap(_.benefits)
       }
@@ -50,7 +49,5 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
         case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)) //This will be changed to serve its own page as part of SASS-669
       }
     }
-
-    incomeTaxUserDataService.findUserData(user, taxYear, result)
   }
 }

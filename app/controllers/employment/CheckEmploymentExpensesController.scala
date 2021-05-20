@@ -19,9 +19,8 @@ package controllers.employment
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import javax.inject.Inject
-import models.employment.AllEmploymentData
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.IncomeTaxUserDataService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
@@ -38,13 +37,10 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
 
   def show(taxYear: Int): Action[AnyContent] = authorisedAction.async { implicit user =>
 
-    def result(allEmploymentData: AllEmploymentData): Result = {
+    incomeTaxUserDataService.findUserData(user, taxYear)(allEmploymentData =>
       allEmploymentData.hmrcExpenses match {
-        case Some(expenses) => Ok(checkEmploymentExpensesView(taxYear, expenses))
-        case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-      }
-    }
-
-    incomeTaxUserDataService.findUserData(user, taxYear, result)
+      case Some(expenses) => Ok(checkEmploymentExpensesView(taxYear, expenses))
+      case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+    })
   }
 }
