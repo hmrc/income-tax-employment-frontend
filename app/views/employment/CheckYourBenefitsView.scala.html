@@ -17,15 +17,14 @@
 @import views.html.headerFooterTemplate.Layout
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Heading
-@import views.html.templates.helpers.BigDecimalCurrency
 @import utils.ViewUtils.summaryListRow
 @import models.employment.EmploymentBenefits
 @import models.employment.Benefits
+@import utils.ViewUtils.bigDecimalCurrency
 
 @this(
     layout: Layout,
     formWithCSRF: FormWithCSRF,
-    bigDecimalCurrency: BigDecimalCurrency,
     button: Button,
     heading: Heading,
     govukSummaryList: GovukSummaryList,
@@ -38,12 +37,9 @@
 
 @titleForUse = @{messages(s"checkYourBenefits.heading.${if(user.isAgent) "agent" else "individual"}")}
 
-@bigDecimalToCurrency(amount: BigDecimal) = @{
-    s"${bigDecimalCurrency(amount.toString)}"
-}
 
 @showRows(item: String, value: Option[BigDecimal]) = @{
-    summaryListRow(HtmlContent(messages(item)),HtmlContent(bigDecimalToCurrency(value.getOrElse(0))),actions = Seq(), keyClasses="govuk-!-width-two-thirds")
+    summaryListRow(HtmlContent(messages(item)),HtmlContent(bigDecimalCurrency(value.getOrElse("0").toString).getOrElse("")),actions = Seq(), keyClasses="govuk-!-width-two-thirds")
 }
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear)) {
