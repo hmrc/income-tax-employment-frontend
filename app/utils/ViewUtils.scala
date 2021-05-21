@@ -20,9 +20,11 @@ import play.api.i18n.Messages
 import play.api.mvc.Call
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
+
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import scala.util.Try
 
 object ViewUtils {
 
@@ -68,5 +70,11 @@ object ViewUtils {
         classes = actionClasses
       ))
     )
+  }
+
+  def bigDecimalCurrency(value: String, currencySymbol: String = "£"): String = {
+    Try(BigDecimal(value))
+      .map(amount => currencySymbol + f"$amount%1.2f".replace(".00", ""))
+      .getOrElse("")
   }
 }
