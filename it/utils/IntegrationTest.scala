@@ -18,22 +18,30 @@ package utils
 
 import akka.actor.ActorSystem
 import akka.stream.{ActorMaterializer, Materializer}
+import common.SessionValues
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
-import helpers.WireMockHelper
+import helpers.{PlaySessionCookieBaker, WireMockHelper}
 import models.User
+import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
+import models.mongo.UserData
+import org.joda.time.DateTime
+import org.scalatest
 import org.scalatest.BeforeAndAfterAll
+import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.mvc.{AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
+import play.api.test.FakeRequest
 import play.api.{Application, Environment, Mode}
+import repositories.IncomeTaxUserDataRepositoryImpl
 import services.AuthService
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
-import uk.gov.hmrc.auth.core.{AffinityGroup, ConfidenceLevel, Enrolment, EnrolmentIdentifier, Enrolments}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 import views.html.authErrorPages.AgentAuthErrorPageView
 
 import scala.concurrent.duration.Duration
@@ -41,10 +49,9 @@ import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
 
 trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSuite with WireMockHelper with BeforeAndAfterAll {
 
-  val nino = "A123456A"
+  val nino = "AA123456A"
   val mtditid = "1234567890"
-
-  implicit lazy val user: User[AnyContent] = new User[AnyContent](mtditid, None, nino)
+  val sessionId = "sessionId-eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"
 
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid)
@@ -147,6 +154,62 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
       Enrolment("HMRC-MTD-IT", Seq(EnrolmentIdentifier("UTR", "1234567890")), "Activated", None),
       Enrolment("HMRC-NI", Seq(EnrolmentIdentifier("NINO", "AA123456A")), "Activated", None)
     )) and Some(AffinityGroup.Individual) and ConfidenceLevel.L200
+  )
+
+  def playSessionCookies(taxYear: Int): String = PlaySessionCookieBaker.bakeSessionCookie(Map(
+    SessionValues.TAX_YEAR -> taxYear.toString,
+    SessionKeys.sessionId -> sessionId,
+    SessionValues.CLIENT_NINO -> "AA123456A",
+    SessionValues.CLIENT_MTDITID -> "1234567890"
+  ))
+
+  def userData(allData: AllEmploymentData, taxYear: Int): UserData = UserData(sessionId, mtditid, nino, taxYear, Some(
+    AllEmploymentData(
+      allData.hmrcEmploymentData,
+      allData.hmrcExpenses,
+      allData.customerEmploymentData,
+      allData.customerExpenses
+    )
+  ))
+
+  def addUserData(userData: UserData, repo: IncomeTaxUserDataRepositoryImpl, taxYear: Int, fakeRequest: FakeRequest[_]): scalatest.Assertion ={
+    await(repo.update(userData))
+    val data = await(repo.find(User(mtditid,None,nino,sessionId)(fakeRequest),taxYear))
+    data.map(_.copy(lastUpdated = DateTime.parse("2021-05-17T14:01:52.634Z"))) mustBe Some(
+      userData.copy(lastUpdated = DateTime.parse("2021-05-17T14:01:52.634Z"))
+    )
+  }
+
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  lazy val repo: IncomeTaxUserDataRepositoryImpl = app.injector.instanceOf[IncomeTaxUserDataRepositoryImpl]
+
+  lazy val employmentsModel: AllEmploymentData = AllEmploymentData(
+    hmrcEmploymentData = Seq(
+      EmploymentSource(
+        employmentId = "001",
+        employerName = "maggie",
+        employerRef = Some("223/AB12399"),
+        payrollId = Some("123456789999"),
+        startDate = Some("2019-04-21"),
+        cessationDate = Some("2020-03-11"),
+        dateIgnored = Some("2020-04-04T01:01:01Z"),
+        submittedOn = Some("2020-01-04T05:01:01Z"),
+        employmentData = Some(EmploymentData(
+          submittedOn = ("2020-02-12"),
+          employmentSequenceNumber = Some("123456789999"),
+          companyDirector = Some(true),
+          closeCompany = Some(false),
+          directorshipCeasedDate = Some("2020-02-12"),
+          occPen = Some(false),
+          disguisedRemuneration = Some(false),
+          pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
+        )),
+        None
+      )
+    ),
+    hmrcExpenses = None,
+    customerEmploymentData = Seq(),
+    customerExpenses = None
   )
 
 }

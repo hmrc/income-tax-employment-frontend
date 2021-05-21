@@ -37,7 +37,7 @@ class TaxYearActionSpec extends UnitTest {
     "return a Right(request)" when {
 
       "the tax year is within range of allowed years, and matches that in session if the feature switch is on" in {
-        lazy val userRequest = User("1234567890", None, "AA123456A")(
+        lazy val userRequest = User("1234567890", None, "AA123456A",sessionId)(
           fakeRequest.withSession(SessionValues.TAX_YEAR -> validTaxYear.toString)
         )
 
@@ -52,7 +52,7 @@ class TaxYearActionSpec extends UnitTest {
       }
 
       "the tax year is equal to the session value if the feature switch is off" in {
-        lazy val userRequest = User("1234567890", None, "AA123456A")(
+        lazy val userRequest = User("1234567890", None, "AA123456A",sessionId)(
           fakeRequest.withSession(SessionValues.TAX_YEAR -> (validTaxYear + 1).toString)
         )
 
@@ -66,7 +66,7 @@ class TaxYearActionSpec extends UnitTest {
       }
 
       "the tax year is different to the session value if the reset variable input is false" in {
-        lazy val userRequest = User("1234567890", None, "AA123456A")(
+        lazy val userRequest = User("1234567890", None, "AA123456A",sessionId)(
           fakeRequest.withSession(SessionValues.TAX_YEAR -> (validTaxYear).toString)
         )
 
@@ -84,7 +84,7 @@ class TaxYearActionSpec extends UnitTest {
     "return a Left(result)" when {
 
       "the tax year is different from that in session and the feature switch is off" which {
-        lazy val userRequest = User("1234567890", None, "AA123456A")(
+        lazy val userRequest = User("1234567890", None, "AA123456A",sessionId)(
           fakeRequest.withSession(SessionValues.TAX_YEAR ->validTaxYear.toString)
         )
 
@@ -110,7 +110,7 @@ class TaxYearActionSpec extends UnitTest {
       }
 
       "the tax year is outside of the allowed limit while the feature switch is on" which {
-        lazy val userRequest = User("1234567890", None, "AA123456A")(
+        lazy val userRequest = User("1234567890", None, "AA123456A",sessionId)(
           fakeRequest.withSession(SessionValues.TAX_YEAR -> validTaxYear.toString)
         )
 

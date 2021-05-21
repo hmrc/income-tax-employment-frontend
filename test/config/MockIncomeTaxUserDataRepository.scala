@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package utils
+package config
 
-import common.SessionValues
 import models.User
-import play.api.mvc.Result
+import models.mongo.UserData
+import org.scalamock.handlers.CallHandler2
+import org.scalamock.scalatest.MockFactory
+import repositories.IncomeTaxUserDataRepository
 
-trait InterestSessionHelper extends SessionHelper {
+import scala.concurrent.Future
 
-  implicit class BetterResult(result: Result) {
+trait MockIncomeTaxUserDataRepository extends MockFactory {
 
-    def clearSessionData()(implicit user: User[_]): Result = {
-      result.removingFromSession(
-        SessionValues.INTEREST_CYA,
-        SessionValues.INTEREST_PRIOR_SUB
-      )
-    }
+  val mockRepository: IncomeTaxUserDataRepository = mock[IncomeTaxUserDataRepository]
 
+  def mockFind(taxYear: Int, userData: UserData): CallHandler2[User[_], Int, Future[Option[UserData]]] = {
+    (mockRepository.find(_: User[_],_: Int))
+      .expects(*, taxYear)
+      .returns(Future.successful(Some(userData)))
+      .anyNumberOfTimes()
   }
-
 }

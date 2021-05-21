@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package utils
+package repositories
 
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.test.FakeRequest
+import org.mongodb.scala.bson.conversions.Bson
+import org.mongodb.scala.model.Filters.{and, equal}
+import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 
-import scala.concurrent.ExecutionContext
-
-trait UnitTestWithApp extends UnitTest with GuiceOneAppPerSuite {
-
-  implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
-
-  implicit lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
-
+trait Repository {
+  def filter(sessionId: String, mtdItId: String, nino: String, taxYear: Int): Bson = and(
+    equal("sessionId", toBson(sessionId)),
+    equal("mtdItId", toBson(mtdItId)),
+    equal("nino", toBson(nino)),
+    equal("taxYear", toBson(taxYear))
+  )
 }

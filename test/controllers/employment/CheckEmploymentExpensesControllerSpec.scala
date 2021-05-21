@@ -17,34 +17,33 @@
 package controllers.employment
 
 import common.SessionValues
+import config.MockIncomeTaxUserDataService
 import controllers.Assets._
-import models.employment.{AllEmploymentData, EmploymentData, EmploymentExpenses, EmploymentSource, Expenses, Pay}
+import models.employment._
 import play.api.http.HeaderNames.LOCATION
-import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsEmpty, Result}
-import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import play.api.test.Helpers.header
+import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import utils.UnitTestWithApp
 import views.html.employment.CheckEmploymentExpensesView
 
 import scala.concurrent.Future
 
-class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with DefaultAwaitTimeout {
+class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with DefaultAwaitTimeout with MockIncomeTaxUserDataService{
+
+  lazy val view: CheckEmploymentExpensesView = app.injector.instanceOf[CheckEmploymentExpensesView]
 
   lazy val controller = new CheckEmploymentExpensesController(
     authorisedAction,
-    app.injector.instanceOf[CheckEmploymentExpensesView],
+    view,
+    mockService,
     mockAppConfig,
-    mockMessagesControllerComponents
+    mockMessagesControllerComponents,
+    ec
   )
 
   val taxYear = 2022
-  val expenses: Expenses = Expenses(Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7), Some(8))
-  val employmentExpenses: EmploymentExpenses = EmploymentExpenses(
-    submittedOn = None,
-    totalExpenses = None,
-    expenses = Some(expenses)
-  )
+
   val allData: AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(
       EmploymentSource(
@@ -77,8 +76,11 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
   "calling show() as an individual" should {
 
     "return status code 303 with correct Location header" when {
-      "there is no expenses data in session" in new TestWithAuth {
-        val responseF: Future[Result] = controller.show(taxYear)(fakeRequest)
+      "there is no expenses data in the database" in new TestWithAuth {
+        val responseF: Future[Result] = {
+          mockFind(taxYear,Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+          controller.show(taxYear)(fakeRequest)
+        }
 
         status(responseF) shouldBe SEE_OTHER
         header(LOCATION, responseF) shouldBe Some(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear))
@@ -86,19 +88,19 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
     }
 
     "return status code 200 with correct content" when {
-      "there is expenses data in session" in new TestWithAuth {
+      "there is expenses data in the database" in new TestWithAuth {
 
         val request: FakeRequest[AnyContentAsEmpty.type] =
           fakeRequest.withSession(
-            SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(
-              Json.toJson(allData)
-            ),
             SessionValues.TAX_YEAR -> taxYear.toString,
             SessionValues.CLIENT_MTDITID -> "1234567890",
             SessionValues.CLIENT_NINO -> "AA123456A"
           )
 
-        val responseF: Future[Result] = controller.show(taxYear)(request)
+        val responseF: Future[Result] = {
+          mockFind(taxYear,Ok(view(taxYear, allData.hmrcExpenses.get)))
+          controller.show(taxYear)(request)
+        }
 
         status(responseF) shouldBe OK
       }
@@ -109,8 +111,11 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
   "calling show() as an agent" should {
 
     "return status code 303 with correct Location header" when {
-      "there is no expenses data in session" in new TestWithAuth(isAgent = true) {
-        val responseF: Future[Result] = controller.show(taxYear)(fakeRequestWithMtditidAndNino)
+      "there is no expenses data in the database" in new TestWithAuth(isAgent = true) {
+        val responseF: Future[Result] = {
+          mockFind(taxYear,Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+          controller.show(taxYear)(fakeRequestWithMtditidAndNino)
+        }
 
         status(responseF) shouldBe SEE_OTHER
         header(LOCATION, responseF) shouldBe Some(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear))
@@ -118,15 +123,13 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
     }
 
     "return status code 200 with correct content" when {
-      "there is expenses data in session" in new TestWithAuth(isAgent = true) {
-        val request: FakeRequest[AnyContentAsEmpty.type] =
-          fakeRequestWithMtditidAndNino.withSession(
-            SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(
-              Json.toJson(allData)
-            )
-          )
+      "there is expenses data in the database" in new TestWithAuth(isAgent = true) {
+        val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequestWithMtditidAndNino
 
-        val responseF: Future[Result] = controller.show(taxYear)(request)
+        val responseF: Future[Result] = {
+          mockFind(taxYear,Ok(view(taxYear, allData.hmrcExpenses.get)))
+          controller.show(taxYear)(request)
+        }
 
         status(responseF) shouldBe OK
       }

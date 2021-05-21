@@ -16,41 +16,41 @@
 
 package controllers.employment
 
-import common.SessionValues
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import models.employment.{AllEmploymentData, EmploymentSource}
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.employment.EmploymentDetailsView
-
 import javax.inject.Inject
+import services.IncomeTaxUserDataService
 
-class EmploymentDetailsController @Inject()(
-                                             implicit val cc: MessagesControllerComponents,
-                                             authAction: AuthorisedAction,
-                                             employmentDetailsView: EmploymentDetailsView,
-                                             implicit val appConfig: AppConfig
-                                           ) extends FrontendController(cc) with I18nSupport with SessionHelper {
+import scala.concurrent.ExecutionContext
+
+class EmploymentDetailsController @Inject()(implicit val cc: MessagesControllerComponents,
+                                            authAction: AuthorisedAction,
+                                            employmentDetailsView: EmploymentDetailsView,
+                                            implicit val appConfig: AppConfig,
+                                            incomeTaxUserDataService: IncomeTaxUserDataService,
+                                            implicit val ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
 
-    val source: Option[EmploymentSource] = {
-      getModelFromSession[AllEmploymentData](SessionValues.EMPLOYMENT_PRIOR_SUB).flatMap {
-        data =>
-          data.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId))
+    def result(allEmploymentData: AllEmploymentData): Result = {
+
+      val source: Option[EmploymentSource] = allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId))
+
+      source match {
+        case Some(source) =>
+          val (name, ref, data) = (source.employerName, source.employerRef, source.employmentData)
+          Ok(employmentDetailsView(name, ref, data, taxYear))
+        case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
 
-    source match {
-      case Some(source) =>
-        val (name,ref,data) = (source.employerName, source.employerRef, source.employmentData)
-        Ok(employmentDetailsView(name, ref, data, taxYear))
-
-      case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-    }
+    incomeTaxUserDataService.findUserData(user, taxYear)(result)
   }
 }

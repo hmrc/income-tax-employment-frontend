@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-package utils
+package filters
 
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.test.FakeRequest
+import com.google.inject.Inject
+import play.api.http.DefaultHttpFilters
+import uk.gov.hmrc.play.bootstrap.frontend.filters.FrontendFilters
 
-import scala.concurrent.ExecutionContext
-
-trait UnitTestWithApp extends UnitTest with GuiceOneAppPerSuite {
-
-  implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  implicit lazy val messages: Messages = messagesApi.preferred(FakeRequest())
-
-  implicit lazy val ec: ExecutionContext = ExecutionContext.Implicits.global
-
-}
+class Filters @Inject()(sessionIdFilter: SessionIdFilter,
+                        frontendFilters: FrontendFilters)
+  extends DefaultHttpFilters(frontendFilters.filters :+ sessionIdFilter: _*)

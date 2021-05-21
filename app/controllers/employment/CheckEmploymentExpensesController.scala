@@ -16,33 +16,31 @@
 
 package controllers.employment
 
-import common.SessionValues.EMPLOYMENT_PRIOR_SUB
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
+import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.IncomeTaxUserDataService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.employment.CheckEmploymentExpensesView
 
-import javax.inject.Inject
-import models.employment.{AllEmploymentData, EmploymentExpenses}
+import scala.concurrent.ExecutionContext
 
 class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAction,
                                                   checkEmploymentExpensesView: CheckEmploymentExpensesView,
+                                                  incomeTaxUserDataService: IncomeTaxUserDataService,
                                                   implicit val appConfig: AppConfig,
-                                                  implicit val mcc: MessagesControllerComponents
-                                                  ) extends FrontendController(mcc) with I18nSupport with SessionHelper {
+                                                  implicit val mcc: MessagesControllerComponents,
+                                                  implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int): Action[AnyContent] = authorisedAction { implicit user =>
+  def show(taxYear: Int): Action[AnyContent] = authorisedAction.async { implicit user =>
 
-    val priorExpensesData: Option[EmploymentExpenses] = getModelFromSession[AllEmploymentData](EMPLOYMENT_PRIOR_SUB).flatMap{
-      data => data.hmrcExpenses
-    }
-
-    priorExpensesData match {
+    incomeTaxUserDataService.findUserData(user, taxYear)(allEmploymentData =>
+      allEmploymentData.hmrcExpenses match {
       case Some(expenses) => Ok(checkEmploymentExpensesView(taxYear, expenses))
       case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-    }
+    })
   }
 }

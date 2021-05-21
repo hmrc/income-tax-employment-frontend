@@ -17,15 +17,14 @@
 package controllers.predicates
 
 import common.SessionValues
-import common.SessionValues.{DIVIDENDS_CYA, DIVIDENDS_PRIOR_SUB, EMPLOYMENT_CYA,
-  EMPLOYMENT_PRIOR_SUB, GIFT_AID_CYA, GIFT_AID_PRIOR_SUB, INTEREST_CYA, INTEREST_PRIOR_SUB, TAX_YEAR}
+import common.SessionValues._
 import config.AppConfig
 import controllers.Assets.Redirect
+import javax.inject.Inject
 import models.User
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
-import javax.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -52,8 +51,8 @@ class TaxYearAction @Inject()(taxYear: Int, missingTaxYearReset: Boolean)(
             Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
               .addingToSession(TAX_YEAR -> taxYear.toString)
               .removingFromSession(
-                DIVIDENDS_CYA, INTEREST_CYA, GIFT_AID_CYA, EMPLOYMENT_CYA,
-                DIVIDENDS_PRIOR_SUB, INTEREST_PRIOR_SUB, GIFT_AID_PRIOR_SUB, EMPLOYMENT_PRIOR_SUB
+                DIVIDENDS_CYA, INTEREST_CYA, GIFT_AID_CYA,
+                DIVIDENDS_PRIOR_SUB, INTEREST_PRIOR_SUB, GIFT_AID_PRIOR_SUB
               )
           )
         }
