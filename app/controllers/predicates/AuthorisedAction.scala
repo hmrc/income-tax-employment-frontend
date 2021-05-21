@@ -16,6 +16,8 @@
 
 package controllers.predicates
 
+import java.util.UUID.randomUUID
+
 import common.{EnrolmentIdentifiers, EnrolmentKeys, SessionValues}
 import config.AppConfig
 import models.User
@@ -30,8 +32,9 @@ import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import views.html.authErrorPages.AgentAuthErrorPageView
-
 import javax.inject.Inject
+import uk.gov.hmrc.http.logging.SessionId
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthorisedAction @Inject()(
@@ -77,7 +80,7 @@ class AuthorisedAction @Inject()(
 
         (optionalMtdItId, optionalNino) match {
           case (Some(mtdItId), Some(nino)) =>
-            block(User(mtdItId, None, nino))
+            block(User(mtdItId, None, nino, hc.sessionId.getOrElse(SessionId(randomUUID.toString)).value))
           case (_, None) =>
             logger.info(s"[AuthorisedAction][individualAuthentication] - No active session. Redirecting to ${appConfig.signInUrl}")
             Future.successful(Redirect(appConfig.signInUrl))
@@ -112,7 +115,7 @@ class AuthorisedAction @Inject()(
 
             enrolmentGetIdentifierValue(EnrolmentKeys.Agent, EnrolmentIdentifiers.agentReference, enrolments) match {
               case Some(arn) =>
-                block(User(mtdItId, Some(arn), nino))
+                block(User(mtdItId, Some(arn), nino, hc.sessionId.getOrElse(SessionId(randomUUID.toString)).value))
               case None =>
                 logger.info("[AuthorisedAction][agentAuthentication] Agent with no HMRC-AS-AGENT enrolment. Rendering unauthorised view.")
                 Future.successful(Redirect(controllers.errors.routes.YouNeedAgentServicesController.show()))

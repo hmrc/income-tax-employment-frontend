@@ -17,16 +17,17 @@
 package controllers.employment
 
 import common.SessionValues
+import config.MockIncomeTaxUserDataService
+import controllers.Assets.{Ok, Redirect}
 import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
 import play.api.http.Status._
-import play.api.libs.json.Json
 import play.api.mvc.Result
 import utils.UnitTestWithApp
 import views.html.employment.EmploymentDetailsAndBenefitsView
 
 import scala.concurrent.Future
 
-class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp {
+class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp with MockIncomeTaxUserDataService {
 
   object FullModel {
     val allData: AllEmploymentData = AllEmploymentData(
@@ -59,11 +60,15 @@ class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp {
     )
   }
 
+  lazy val view = app.injector.instanceOf[EmploymentDetailsAndBenefitsView]
+
   lazy val controller = new EmploymentDetailsAndBenefitsController()(
     mockMessagesControllerComponents,
     authorisedAction,
-    app.injector.instanceOf[EmploymentDetailsAndBenefitsView],
-    mockAppConfig
+    view,
+    mockAppConfig,
+    mockService,
+    ec
   )
 
   val taxYear:Int = mockAppConfig.defaultTaxYear
@@ -71,23 +76,32 @@ class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp {
 
   ".show" should {
 
-    "render Employment And Benefits page when GetEmploymentDataModel is in Session" which {
+    "render Employment And Benefits page when GetEmploymentDataModel is in mongo" which {
 
       s"has an OK($OK) status" in new TestWithAuth {
-        val result: Future[Result] = controller.show(taxYear, employmentId = employmentId)(fakeRequest.withSession(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(
-            Json.toJson(FullModel.allData)
-          )))
+
+        val name: String = FullModel.allData.hmrcEmploymentData.head.employerName
+        val employmentId: String = FullModel.allData.hmrcEmploymentData.head.employmentId
+        val benefitsIsDefined: Boolean = FullModel.allData.hmrcEmploymentData.head.employmentBenefits.isDefined
+
+        val result: Future[Result] = {
+          mockFind(taxYear,Ok(view(name, employmentId, benefitsIsDefined, taxYear)))
+          controller.show(taxYear, employmentId)(fakeRequest.withSession(
+            SessionValues.TAX_YEAR -> taxYear.toString
+          ))
+        }
 
         status(result) shouldBe OK
       }
     }
 
-    "redirect the User to the Overview page no data in session" which {
+    "redirect the User to the Overview page no data in mongo" which {
 
       s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth{
-        val result: Future[Result] = controller.show(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
+        val result: Future[Result] = {
+          mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+          controller.show(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
+        }
 
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)

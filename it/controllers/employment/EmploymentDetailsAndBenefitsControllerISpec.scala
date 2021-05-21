@@ -16,14 +16,11 @@
 
 package controllers.employment
 
-import common.SessionValues
-import helpers.PlaySessionCookieBaker
-import models.employment.{AllEmploymentData, Benefits, EmploymentBenefits, EmploymentData, EmploymentSource, Pay}
+import models.employment._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status._
-import play.api.libs.json.Json
 import play.api.libs.ws.{WSClient, WSResponse}
 import utils.{IntegrationTest, ViewHelpers}
 
@@ -121,20 +118,13 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
     ".show" should {
 
-      "render the page where the status for benefits is Cannot Update when there is no Benefits data in session" which {
-
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(fullModel(None))
-          )))
+      "render the page where the status for benefits is Cannot Update when there is no Benefits data in mongo" which {
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+          addUserData(userData(fullModel(None),taxYear),repo,taxYear,fakeRequest)
+          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
-
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
@@ -158,20 +148,26 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         welshToggleCheck(ENGLISH)
       }
 
-      "render the page where the status for benefits is Updated when there is Benefits data in session" which {
-
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z",Some(BenefitsModel)))
-          )))))
+      "redirect when there is no data" in {
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+          addUserData(userData(fullModel(None).copy(hmrcEmploymentData = Seq()),taxYear),repo,taxYear,fakeRequest)
+          await(wsClient.url(url).withHttpHeaders(
+            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
+          ).withFollowRedirects(false).get())
         }
 
+        result.status shouldBe SEE_OTHER
+      }
+
+      "render the page where the status for benefits is Updated when there is Benefits data in mongo" which {
+
+        lazy val result: WSResponse = {
+          authoriseIndividual()
+          addUserData(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z",Some(BenefitsModel)))),taxYear),repo,taxYear,fakeRequest)
+          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+        }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
@@ -211,20 +207,13 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
     ".show" should {
 
-      "render the page where the status for benefits is Cannot Update when there is no Benefits data in session in session" which {
-
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(fullModel(None)
-        ))))
+      "render the page where the status for benefits is Cannot Update when there is no Benefits data in mongo" which {
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+          addUserData(userData(fullModel(None),taxYear),repo,taxYear,fakeRequest)
+          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
-
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
@@ -249,18 +238,12 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         welshToggleCheck(ENGLISH)
       }
 
-      "render the page where the status for benefits is Updated when there is Benefits data in session" which {
-
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z",Some(BenefitsModel))
-          ))))))
+      "render the page where the status for benefits is Updated when there is Benefits data in mongo" which {
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+          addUserData(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z",Some(BenefitsModel)))),taxYear),repo,taxYear,fakeRequest)
+          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
 
@@ -303,19 +286,13 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
     ".show" should {
 
-      "render the page where the status for benefits is Cannot Update when there is no Benefits data in session" which {
-
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(fullModel(None)
-          ))))
+      "render the page where the status for benefits is Cannot Update when there is no Benefits data in mongo" which {
 
         lazy val result: WSResponse = {
           authoriseIndividual()
+          addUserData(userData(fullModel(None),taxYear),repo,taxYear,fakeRequest)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-            HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
 
@@ -342,19 +319,13 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         welshToggleCheck(WELSH)
       }
 
-      "render the page where the status for benefits is Updated when there is Benefits data in session" which {
-
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z",Some(BenefitsModel))
-          ))))))
+      "render the page where the status for benefits is Updated when there is Benefits data in mongo" which {
 
         lazy val result: WSResponse = {
           authoriseIndividual()
+          addUserData(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z",Some(BenefitsModel)))),taxYear),repo,taxYear,fakeRequest)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-            HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
 
@@ -387,19 +358,13 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
     ".show" should {
 
-      "render the page where the status for benefits is Cannot Update when there is no Benefits data in session" which {
-
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(fullModel(None)))))
-
+      "render the page where the status for benefits is Cannot Update when there is no Benefits data in mongo" which {
 
         lazy val result: WSResponse = {
           authoriseAgent()
+          addUserData(userData(fullModel(None),taxYear),repo,taxYear,fakeRequest)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-            HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
+            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
 
@@ -426,22 +391,15 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         welshToggleCheck(WELSH)
       }
 
-      "render the page where the status for benefits is Updated when there is Benefits data in session" which {
-
-        lazy val playSessionCookies = PlaySessionCookieBaker.bakeSessionCookie(Map(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> "1234567890",
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(Json.toJson(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z",Some(BenefitsModel))
-          ))))))
-
+      "render the page where the status for benefits is Updated when there is Benefits data in mongo" which {
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-            HeaderNames.COOKIE -> playSessionCookies, "Csrf-Token" -> "nocheck").get())
-        }
 
+          addUserData(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z",Some(BenefitsModel)))),taxYear),repo,taxYear,fakeRequest)
+          await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
+            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+        }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 

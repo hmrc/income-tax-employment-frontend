@@ -23,6 +23,8 @@ import common.{EnrolmentIdentifiers, EnrolmentKeys, SessionValues}
 import config.{AppConfig, MockAppConfig}
 import controllers.predicates.AuthorisedAction
 import models.User
+import models.employment.{AllEmploymentData, EmploymentData, EmploymentExpenses, EmploymentSource, Expenses, Pay}
+import models.mongo.UserData
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
@@ -31,10 +33,10 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.mvc._
 import play.api.test.{FakeRequest, Helpers}
 import services.AuthService
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
@@ -62,7 +64,7 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val fakeRequestWithMtditidAndNino: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
     SessionValues.CLIENT_MTDITID -> "1234567890",
-    SessionValues.CLIENT_NINO -> "A123456A"
+    SessionValues.CLIENT_NINO -> "AA123456A"
   )
   val fakeRequestWithNino: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
     SessionValues.CLIENT_NINO -> "AA123456A"
@@ -77,7 +79,7 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
   val agentAuthErrorPageView: AgentAuthErrorPageView = app.injector.instanceOf[AgentAuthErrorPageView]
 
   implicit lazy val mockMessagesControllerComponents: MessagesControllerComponents = Helpers.stubMessagesControllerComponents()
-  implicit lazy val user: User[AnyContent] = new User[AnyContent]("1234567890", None, "AA123456A")(fakeRequest)
+  implicit lazy val user: User[AnyContent] = new User[AnyContent]("1234567890", None, "AA123456A", sessionId)(fakeRequest)
 
   val authorisedAction = new AuthorisedAction(mockAppConfig, agentAuthErrorPageView)(mockAuthService, stubMessagesControllerComponents())
 
@@ -138,5 +140,53 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
       .expects(*, *, *, *)
       .returning(Future.failed(exception))
   }
+
+  val sessionId: String = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"
+
+  val userData: UserData = UserData(
+    "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81",
+    "1234567890",
+    "AA123456A",
+    2022,
+    Some(employmentsModel)
+  )
+
+  lazy val employmentsModel: AllEmploymentData = AllEmploymentData(
+    hmrcEmploymentData = Seq(
+      EmploymentSource(
+        employmentId = "001",
+        employerName = "maggie",
+        employerRef = Some("223/AB12399"),
+        payrollId = Some("123456789999"),
+        startDate = Some("2019-04-21"),
+        cessationDate = Some("2020-03-11"),
+        dateIgnored = Some("2020-04-04T01:01:01Z"),
+        submittedOn = Some("2020-01-04T05:01:01Z"),
+        employmentData = Some(EmploymentData(
+          submittedOn = ("2020-02-12"),
+          employmentSequenceNumber = Some("123456789999"),
+          companyDirector = Some(true),
+          closeCompany = Some(false),
+          directorshipCeasedDate = Some("2020-02-12"),
+          occPen = Some(false),
+          disguisedRemuneration = Some(false),
+          pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
+        )),
+        None
+      )
+    ),
+    hmrcExpenses = Some(employmentExpenses),
+    customerEmploymentData = Seq(),
+    customerExpenses = None
+  )
+
+  val expenses: Expenses = Expenses(
+    Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7), Some(8)
+  )
+  val employmentExpenses: EmploymentExpenses = EmploymentExpenses(
+    submittedOn = None,
+    totalExpenses = None,
+    expenses = Some(expenses)
+  )
 
 }
