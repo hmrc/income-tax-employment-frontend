@@ -1,5 +1,5 @@
 service.name = Update and submit an Income Tax Return
-service.text = Dyma'ch gwasanaeth newydd
+service.text = This is your new service
 
 service.govUkExtension = GOV.UK
 
@@ -28,10 +28,13 @@ common.error.invalid_number = Enter an amount using numbers 0 to 9
 common.error.amountMaxLimit = Enter an amount less than £100,000,000,000
 common.error.invalid_currency_format = Enter the amount in the correct format
 
+
 common.error.self-assessment.paragraph.1.1 = If the web address is correct or you selected a link or button, you can use
 common.error.self-assessment.paragraph.1.2 = Self Assessment: general enquiries (opens in new tab)
 common.error.self-assessment.paragraph.1.3 = to speak to someone about your income tax
 common.error.self-assessment.paragraph.1.3a = to speak to someone about your income tax.
+
+common.return.overview.buttonText = Return to overview
 
 common.currency.hint = For example, £600 or £193.54
 
@@ -85,20 +88,23 @@ employment.employmentInfo.p1.individual = You cannot update your employment info
 employment.employmentInfo.p1.agent = You cannot update your client’s employment information until 6 April {0}.
 
 employment.employmentInfo.buttonText = Return to employment summary
-employment.employmentSummary.heading.individual = Check your employments
-employment.employmentSummary.heading.agent = Check your client’s employments
+employment.employmentSummary.heading = Employment
 employment.employmentSummary.content.individual = Your employment information is based on the information we already hold about you.
-employment.employmentSummary.content.agent = Your client’s employment information based on the information we already hold about them.
+employment.employmentSummary.content.agent = Your client’s employment information is based on the information we already hold about them.
 employment.expenses.label = Expenses
-employment.expenses.subheading = This is a total of all employment in the tax year.
+employment.employment.details.label = Employment Details
+employment.expenses.subheading = This is a total of expenses from all employment in the tax year.
 
 employment.employmentDetails.heading.individual = Check your employment details
 employment.employmentDetails.heading.agent = Check your client’s employment details
 
 employment.caption = Employment for 6 April {0} to 5 April {1}
 
-employment.employmentDetails.content.individual = Your employment details are based on the information we already hold about you.
-employment.employmentDetails.content.agent = Your client’s employment details are based on the information we already hold about them.
+employment.employmentInformation.content.individual = Your employment details are based on the information we already hold about you.
+employment.employmentInformation.content.agent = Your client’s employment details are based on the information we already hold about them.
+
+employment.employmentDetails.content.individual = Your employment details are based on the details we already hold about you.
+employment.employmentDetails.content.agent = Your client’s employment details are based on the details we already hold about them.
 
 employment.employmentDetails.insetText.individual = You cannot update your employment details until 6 April {0}.
 employment.employmentDetails.insetText.agent = You cannot update your client’s employment details until 6 April {0}.

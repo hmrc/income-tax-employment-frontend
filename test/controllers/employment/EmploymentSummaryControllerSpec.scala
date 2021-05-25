@@ -17,105 +17,91 @@
 package controllers.employment
 
 import common.SessionValues
-import controllers.Assets.SEE_OTHER
+import config.MockIncomeTaxUserDataService
+import controllers.Assets.{Ok, Redirect, SEE_OTHER}
 import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
 import play.api.http.Status.OK
-import play.api.libs.json.Json
 import play.api.mvc.Result
 import utils.UnitTestWithApp
 import views.html.employment.{MultipleEmploymentsSummaryView, SingleEmploymentSummaryView}
 
 import scala.concurrent.Future
 
-class EmploymentSummaryControllerSpec extends UnitTestWithApp {
+class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockIncomeTaxUserDataService {
 
   object FullModel {
+
+    val employmentSource1 = EmploymentSource(
+      employmentId = "223/AB12399",
+      employerName = "Mishima Zaibatsu",
+      employerRef = Some("223/AB12399"),
+      payrollId = Some("123456789999"),
+      startDate = Some("2019-04-21"),
+      cessationDate = Some("2020-03-11"),
+      dateIgnored = Some("2020-04-04T01:01:01Z"),
+      submittedOn = Some("2020-01-04T05:01:01Z"),
+      employmentData = Some(EmploymentData(
+        submittedOn = "2020-02-12",
+        employmentSequenceNumber = Some("123456789999"),
+        companyDirector = Some(true),
+        closeCompany = Some(false),
+        directorshipCeasedDate = Some("2020-02-12"),
+        occPen = Some(false),
+        disguisedRemuneration = Some(false),
+        pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
+      )),
+      None
+    )
+
+    val employmentSource2 = EmploymentSource(
+      employmentId = "223/AB12399",
+      employerName = "Violet Systems",
+      employerRef = Some("223/AB12399"),
+      payrollId = Some("123456789999"),
+      startDate = Some("2019-04-21"),
+      cessationDate = Some("2020-03-11"),
+      dateIgnored = Some("2020-04-04T01:01:01Z"),
+      submittedOn = Some("2020-01-04T05:01:01Z"),
+      employmentData = Some(EmploymentData(
+        submittedOn = "2020-02-12",
+        employmentSequenceNumber = Some("123456789999"),
+        companyDirector = Some(true),
+        closeCompany = Some(false),
+        directorshipCeasedDate = Some("2020-02-12"),
+        occPen = Some(false),
+        disguisedRemuneration = Some(false),
+        pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
+      )),
+      None
+    )
+
     val oneEmploymentSourceData: AllEmploymentData = AllEmploymentData(
-      hmrcEmploymentData = Seq(
-        EmploymentSource(
-          employmentId = "223/AB12399",
-          employerName = "Mishima Zaibatsu",
-          employerRef = Some("223/AB12399"),
-          payrollId = Some("123456789999"),
-          startDate = Some("2019-04-21"),
-          cessationDate = Some("2020-03-11"),
-          dateIgnored = Some("2020-04-04T01:01:01Z"),
-          submittedOn = Some("2020-01-04T05:01:01Z"),
-          employmentData = Some(EmploymentData(
-            submittedOn = "2020-02-12",
-            employmentSequenceNumber = Some("123456789999"),
-            companyDirector = Some(true),
-            closeCompany = Some(false),
-            directorshipCeasedDate = Some("2020-02-12"),
-            occPen = Some(false),
-            disguisedRemuneration = Some(false),
-            pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
-          )),
-          None
-        )
-      ),
+      hmrcEmploymentData = Seq(employmentSource1),
       hmrcExpenses = None,
       customerEmploymentData = Seq(),
       customerExpenses = None
     )
 
     val multipleEmploymentSourcesData: AllEmploymentData = AllEmploymentData(
-      hmrcEmploymentData = Seq(
-        EmploymentSource(
-          employmentId = "223/AB12399",
-          employerName = "Violet Systems",
-          employerRef = Some("223/AB12399"),
-          payrollId = Some("123456789999"),
-          startDate = Some("2019-04-21"),
-          cessationDate = Some("2020-03-11"),
-          dateIgnored = Some("2020-04-04T01:01:01Z"),
-          submittedOn = Some("2020-01-04T05:01:01Z"),
-          employmentData = Some(EmploymentData(
-            submittedOn = "2020-02-12",
-            employmentSequenceNumber = Some("123456789999"),
-            companyDirector = Some(true),
-            closeCompany = Some(false),
-            directorshipCeasedDate = Some("2020-02-12"),
-            occPen = Some(false),
-            disguisedRemuneration = Some(false),
-            pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
-          )),
-          None
-        )
-      ),
+      hmrcEmploymentData = Seq(employmentSource1, employmentSource2),
       hmrcExpenses = None,
-      customerEmploymentData = Seq(EmploymentSource(
-        employmentId = "223/AB12398",
-        employerName = "G-Corp",
-        employerRef = Some("223/AB12399"),
-        payrollId = Some("123456789999"),
-        startDate = Some("2019-04-21"),
-        cessationDate = Some("2020-03-11"),
-        dateIgnored = Some("2020-04-04T01:01:01Z"),
-        submittedOn = Some("2020-01-04T05:01:01Z"),
-        employmentData = Some(EmploymentData(
-          submittedOn = "2020-02-12",
-          employmentSequenceNumber = Some("123456789999"),
-          companyDirector = Some(true),
-          closeCompany = Some(false),
-          directorshipCeasedDate = Some("2020-02-12"),
-          occPen = Some(false),
-          disguisedRemuneration = Some(false),
-          pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
-        )),
-        None
-      )),
+      customerEmploymentData = Seq(),
       customerExpenses = None
     )
   }
+
+  lazy val singleView = app.injector.instanceOf[SingleEmploymentSummaryView]
+  lazy val multipleView = app.injector.instanceOf[MultipleEmploymentsSummaryView]
 
   lazy val controller = new EmploymentSummaryController()(
     mockMessagesControllerComponents,
     authorisedAction,
     mockAppConfig,
-    app.injector.instanceOf[SingleEmploymentSummaryView],
-    app.injector.instanceOf[MultipleEmploymentsSummaryView]
+    singleView,
+    multipleView,
+    mockIncomeTaxUserDataService
   )
+
 
   val taxYear:Int = mockAppConfig.defaultTaxYear
 
@@ -123,30 +109,29 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp {
 
     "render single employment summary view when there is only one employment" which {
       s"has an OK($OK) status" in new TestWithAuth {
-        val result: Future[Result] = controller.show(taxYear)(fakeRequest.withSession(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(
-            Json.toJson(FullModel.oneEmploymentSourceData)
-          )))
+        mockFind(taxYear, Ok(singleView(taxYear, FullModel.employmentSource1, false)))
+
+        val result: Future[Result] = controller.show(taxYear)(fakeRequest)
         status(result) shouldBe OK
         bodyOf(result).contains("Mishima Zaibatsu") shouldBe true
       }
     }
+
     "render multiple employment summary view when there are two employments" which {
       s"has an OK($OK) status" in new TestWithAuth {
-        val result: Future[Result] = controller.show(taxYear)(fakeRequest.withSession(
-          SessionValues.TAX_YEAR -> taxYear.toString,
-          SessionValues.EMPLOYMENT_PRIOR_SUB -> Json.prettyPrint(
-            Json.toJson(FullModel.multipleEmploymentSourcesData)
-          )))
+        mockFind(taxYear, Ok(multipleView(taxYear, Seq(FullModel.employmentSource1, FullModel.employmentSource2), false)))
+
+        val result: Future[Result] = controller.show(taxYear)(fakeRequest)
         status(result) shouldBe OK
         bodyOf(result).contains("Violet Systems") shouldBe true
-        bodyOf(result).contains("G-Corp") shouldBe true
       }
     }
+
     "redirect the User to the Overview page no data in session" which {
 
       s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth{
+        mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+
         val result: Future[Result] = controller.show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
 
         status(result) shouldBe SEE_OTHER

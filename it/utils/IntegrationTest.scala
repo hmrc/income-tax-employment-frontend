@@ -156,14 +156,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     SessionValues.CLIENT_MTDITID -> "1234567890"
   ))
 
-  def userData(allData: AllEmploymentData): IncomeTaxUserData = IncomeTaxUserData(Some(
-    AllEmploymentData(
-      allData.hmrcEmploymentData,
-      allData.hmrcExpenses,
-      allData.customerEmploymentData,
-      allData.customerExpenses
-    )
-  ))
+  def userData(allData: AllEmploymentData): IncomeTaxUserData = IncomeTaxUserData(Some(allData))
 
   def userDataStub(userData: IncomeTaxUserData, nino: String, taxYear: Int): StubMapping ={
 

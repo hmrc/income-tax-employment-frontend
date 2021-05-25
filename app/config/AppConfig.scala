@@ -50,8 +50,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
   private lazy val vcBaseUrl: String = servicesConfig.getString(ConfigKeys.viewAndChangeBaseUrl)
   def viewAndChangeEnterUtrUrl: String = s"$vcBaseUrl/report-quarterly/income-and-expenses/view/agents/client-utr"
 
-  def incomeTaxEmploymentBaseUrl: String = servicesConfig.baseUrl("income-tax-employment")
-
   lazy private val appUrl: String = servicesConfig.getString("microservice.url")
   lazy private val contactFrontEndUrl = {
     val contactUrl = servicesConfig.baseUrl("contact-frontend")

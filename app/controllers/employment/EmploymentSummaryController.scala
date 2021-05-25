@@ -16,16 +16,14 @@
 
 package controllers.employment
 
-import common.SessionValues
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
-import models.employment.{AllEmploymentData, EmploymentExpenses, EmploymentSource}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.IncomeTaxUserDataService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
-import views.html.employment.SingleEmploymentSummaryView
-import views.html.employment.MultipleEmploymentsSummaryView
+import views.html.employment.{MultipleEmploymentsSummaryView, SingleEmploymentSummaryView}
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
@@ -35,24 +33,25 @@ class EmploymentSummaryController @Inject()(
                                                authAction: AuthorisedAction,
                                                implicit val appConfig: AppConfig,
                                                singleEmploymentSummaryView: SingleEmploymentSummaryView,
-                                               multipleEmploymentsSummaryView: MultipleEmploymentsSummaryView
+                                               multipleEmploymentsSummaryView: MultipleEmploymentsSummaryView,
+                                               incomeTaxUserDataService: IncomeTaxUserDataService
                                              ) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   implicit val executionContext: ExecutionContext = mcc.executionContext
 
-  def show(taxYear: Int) : Action[AnyContent] = authAction { implicit user =>
+  def show(taxYear: Int) : Action[AnyContent] = authAction.async { implicit user =>
 
-    val source: Option[AllEmploymentData] = getModelFromSession[AllEmploymentData](SessionValues.EMPLOYMENT_PRIOR_SUB)
-    if(source.isDefined) {
-      val listOfEmployments = source.get.hmrcEmploymentData ++ source.get.customerEmploymentData
-      val doExpensesExist = if(source.get.hmrcExpenses.isDefined || source.get.customerExpenses.isDefined) true else false
-      if (listOfEmployments.length == 1) {
-        Ok(singleEmploymentSummaryView(taxYear, listOfEmployments.head, doExpensesExist))
+    incomeTaxUserDataService.findUserData(user, taxYear) { allEmploymentData =>
+
+      val doExpensesExist = allEmploymentData.hmrcExpenses.isDefined
+
+      if(allEmploymentData.hmrcEmploymentData.isEmpty) {
+        Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      } else if(allEmploymentData.hmrcEmploymentData.size == 1) {
+        Ok(singleEmploymentSummaryView(taxYear, allEmploymentData.hmrcEmploymentData.head, doExpensesExist))
       } else {
-        Ok(multipleEmploymentsSummaryView(taxYear, listOfEmployments, doExpensesExist))
+        Ok(multipleEmploymentsSummaryView(taxYear, allEmploymentData.hmrcEmploymentData, doExpensesExist))
       }
-    } else {
-      Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
     }
   }
 
