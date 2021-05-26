@@ -29,7 +29,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
   lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
   val taxYear = 2022
   val url =
-    s"http://localhost:$port/income-through-software/return/employment-income/$taxYear/check-your-employment-details?employmentId=001"
+    s"http://localhost:$port/income-through-software/return/employment-income/$taxYear/check-employment-details?employmentId=001"
 
   val headingSelector = "#main-content > div > div > header > h1"
   val captionSelector = "#main-content > div > div > header > p"

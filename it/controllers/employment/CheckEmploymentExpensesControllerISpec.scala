@@ -31,7 +31,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
   val taxYear = 2022
   val url =
-    s"http://localhost:$port/income-through-software/return/employment-income/$taxYear/check-your-employment-expenses"
+    s"http://localhost:$port/income-through-software/return/employment-income/$taxYear/check-employment-expenses"
 
   val headingSelector = "#main-content > div > div > header > h1"
   val subHeadingSelector = "#main-content > div > div > header > p"
