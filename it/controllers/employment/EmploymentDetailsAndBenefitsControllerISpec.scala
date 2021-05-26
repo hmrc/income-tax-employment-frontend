@@ -45,8 +45,8 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
   private def taskListRowFieldAmountSelector(i: Int) = s"#main-content > div > div > ul > li:nth-child($i) > span.hmrc-status-tag"
 
-  private val employmentDetailsUrl = "/income-through-software/return/employment-income/2022/check-your-employment-details?employmentId=001"
-  private val employmentBenefitsUrl = "/income-through-software/return/employment-income/2022/check-your-employment-benefits?employmentId=001"
+  private val employmentDetailsUrl = "/income-through-software/return/employment-income/2022/check-employment-details?employmentId=001"
+  private val employmentBenefitsUrl = "/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=001"
 
   object ContentEN {
     val h1Expected = "maggie"
