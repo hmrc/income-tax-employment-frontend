@@ -99,11 +99,6 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     customerExpenses = None
   )
 
-  override def beforeEach(): Unit = {
-    await(repo.collection.drop().toFuture())
-    await(repo.ensureIndexes)
-  }
-
   private def fieldNameSelector(section: Int, row: Int) = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dt"
 
   private def fieldAmountSelector(section: Int, row: Int) = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dd"
@@ -220,7 +215,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           lazy val result: WSResponse = {
             authoriseIndividual()
-            addUserData(userData(employmentData(Some(fullBenefits)), defaultTaxYear), repo, defaultTaxYear, fakeRequest)
+            userDataStub(userData(employmentData(Some(fullBenefits))),nino,defaultTaxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck").get())
           }
 
@@ -303,7 +298,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           lazy val result: WSResponse = {
             authoriseIndividual()
-            addUserData(userData(employmentData(None), defaultTaxYear), repo, defaultTaxYear, fakeRequest)
+            userDataStub(userData(employmentData(None)),nino,defaultTaxYear)
             await(wsClient.url(url).withHttpHeaders(
               HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck"
             ).withFollowRedirects(false).get())
@@ -317,7 +312,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           lazy val result: WSResponse = {
             authoriseIndividual()
-            addUserData(userData(employmentData(Some(filteredBenefits)), defaultTaxYear), repo, defaultTaxYear, fakeRequest)
+            userDataStub(userData(employmentData(Some(filteredBenefits))),nino,defaultTaxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck").get())
           }
 
@@ -382,7 +377,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           lazy val result: WSResponse = {
             authoriseAgent()
-            addUserData(userData(employmentData(Some(fullBenefits)), defaultTaxYear), repo, defaultTaxYear, fakeRequest)
+            userDataStub(userData(employmentData(Some(fullBenefits))),nino,defaultTaxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck").get())
           }
 
@@ -472,7 +467,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           lazy val result: WSResponse = {
             authoriseIndividual()
-            addUserData(userData(employmentData(Some(fullBenefits)), defaultTaxYear), repo, defaultTaxYear, fakeRequest)
+            userDataStub(userData(employmentData(Some(fullBenefits))),nino,defaultTaxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck",
               HeaderNames.ACCEPT_LANGUAGE -> "cy").get())
           }
@@ -556,7 +551,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           lazy val result: WSResponse = {
             authoriseIndividual()
-            addUserData(userData(employmentData(Some(filteredBenefits)), defaultTaxYear), repo, defaultTaxYear, fakeRequest)
+            userDataStub(userData(employmentData(Some(filteredBenefits))),nino,defaultTaxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck",
               HeaderNames.ACCEPT_LANGUAGE -> "cy").get())
           }
@@ -622,7 +617,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           lazy val result: WSResponse = {
             authoriseAgent()
-            addUserData(userData(employmentData(Some(fullBenefits)), defaultTaxYear), repo, defaultTaxYear, fakeRequest)
+            userDataStub(userData(employmentData(Some(fullBenefits))),nino,defaultTaxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck",
               HeaderNames.ACCEPT_LANGUAGE -> "cy").get())
           }

@@ -16,19 +16,28 @@
 
 package services
 
-import config.MockIncomeTaxUserDataRepository
+import config.{AppConfig, ErrorHandler, MockIncomeTaxUserDataConnector}
 import models.User
 import models.employment.AllEmploymentData
 import play.api.i18n.MessagesApi
 import play.api.mvc.Result
 import utils.UnitTest
 import controllers.Assets._
+import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 
-class IncomeTaxUserDataServiceSpec extends UnitTest with MockIncomeTaxUserDataRepository{
+class IncomeTaxUserDataServiceSpec extends UnitTest with MockIncomeTaxUserDataConnector{
+
+  val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
+  val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
+  val internalServerErrorTemplate: InternalServerErrorTemplate = app.injector.instanceOf[InternalServerErrorTemplate]
+  val mockMessagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  val mockFrontendAppConfig: AppConfig = app.injector.instanceOf[AppConfig]
+
+  val errorHandler = new ErrorHandler(internalServerErrorTemplate, serviceUnavailableTemplate, mockMessagesApi, notFoundTemplate)(mockFrontendAppConfig)
 
   val messages: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  val service: IncomeTaxUserDataService = new IncomeTaxUserDataService(mockRepository,mockAppConfig,messages)
+  val service: IncomeTaxUserDataService = new IncomeTaxUserDataService(mockUserDataConnector,mockAppConfig,messages,errorHandler)
 
   val taxYear = 2022
 
@@ -43,10 +52,10 @@ class IncomeTaxUserDataServiceSpec extends UnitTest with MockIncomeTaxUserDataRe
 
     "return the ok result" in {
 
-      mockFind(taxYear,userData)
+      mockFind(nino, taxYear, userData)
 
       val response = service.findUserData(
-        User(mtditid = "1234567890", arn = None, nino = "AA123456A", sessionId = "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81"),
+        User(mtditid = "1234567890", arn = None, nino = nino, sessionId = "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81"),
         taxYear,
       )(result
       )
@@ -55,10 +64,10 @@ class IncomeTaxUserDataServiceSpec extends UnitTest with MockIncomeTaxUserDataRe
     }
     "return the a redirect when no data" in {
 
-      mockFind(taxYear,userData.copy(employment = None))
+      mockFind(nino, taxYear,userData.copy(employment = None))
 
       val response = service.findUserData(
-        User(mtditid = "1234567890", arn = None, nino = "AA123456A", sessionId = "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81"),
+        User(mtditid = "1234567890", arn = None, nino = nino, sessionId = "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81"),
         taxYear,
       )( result
       )

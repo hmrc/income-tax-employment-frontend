@@ -22,9 +22,8 @@ import com.codahale.metrics.SharedMetricRegistries
 import common.{EnrolmentIdentifiers, EnrolmentKeys, SessionValues}
 import config.{AppConfig, MockAppConfig}
 import controllers.predicates.AuthorisedAction
-import models.User
+import models.{User, IncomeTaxUserData}
 import models.employment.{AllEmploymentData, EmploymentData, EmploymentExpenses, EmploymentSource, Expenses, Pay}
-import models.mongo.UserData
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
@@ -143,11 +142,9 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
 
   val sessionId: String = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"
 
-  val userData: UserData = UserData(
-    "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81",
-    "1234567890",
-    "AA123456A",
-    2022,
+  val nino = "AA123456A"
+
+  val userData: IncomeTaxUserData = IncomeTaxUserData(
     Some(employmentsModel)
   )
 

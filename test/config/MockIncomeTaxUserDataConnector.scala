@@ -16,22 +16,23 @@
 
 package config
 
-import models.User
-import models.mongo.UserData
-import org.scalamock.handlers.CallHandler2
+import connectors.IncomeTaxUserDataConnector
+import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
+import models.IncomeTaxUserData
+import org.scalamock.handlers.CallHandler3
 import org.scalamock.scalatest.MockFactory
-import repositories.IncomeTaxUserDataRepository
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-trait MockIncomeTaxUserDataRepository extends MockFactory {
+trait MockIncomeTaxUserDataConnector extends MockFactory {
 
-  val mockRepository: IncomeTaxUserDataRepository = mock[IncomeTaxUserDataRepository]
+  val mockUserDataConnector: IncomeTaxUserDataConnector = mock[IncomeTaxUserDataConnector]
 
-  def mockFind(taxYear: Int, userData: UserData): CallHandler2[User[_], Int, Future[Option[UserData]]] = {
-    (mockRepository.find(_: User[_],_: Int))
-      .expects(*, taxYear)
-      .returns(Future.successful(Some(userData)))
+  def mockFind(nino: String, taxYear: Int, userData: IncomeTaxUserData): CallHandler3[String, Int, HeaderCarrier, Future[IncomeTaxUserDataResponse]] = {
+    (mockUserDataConnector.getUserData(_: String,_: Int)(_: HeaderCarrier))
+      .expects(nino, taxYear, *)
+      .returns(Future.successful(Right(userData)))
       .anyNumberOfTimes()
   }
 }

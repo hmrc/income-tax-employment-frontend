@@ -16,32 +16,35 @@
 
 package services
 
-import config.AppConfig
+import config.{AppConfig, ErrorHandler}
+import connectors.IncomeTaxUserDataConnector
 import controllers.Assets.Redirect
 import javax.inject.{Inject, Singleton}
 import models.employment.AllEmploymentData
-import models.User
-import models.mongo.UserData
+import models.{IncomeTaxUserData, User}
 import play.api.Logging
 import play.api.i18n.MessagesApi
-import play.api.mvc.Result
-import repositories.IncomeTaxUserDataRepository
+import play.api.mvc.{Request, Result}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
 
 @Singleton
-class IncomeTaxUserDataService @Inject()(incomeTaxUserDataRepository: IncomeTaxUserDataRepository,
+class IncomeTaxUserDataService @Inject()(incomeTaxUserDataConnector: IncomeTaxUserDataConnector,
                                          implicit private val appConfig: AppConfig,
-                                         val messagesApi: MessagesApi) extends Logging {
+                                         val messagesApi: MessagesApi,
+                                         errorHandler: ErrorHandler) extends Logging {
 
-  def findUserData(user: User[_], taxYear: Int)(result: AllEmploymentData => Result)(implicit ec: ExecutionContext): Future[Result] = {
-    incomeTaxUserDataRepository.find(user, taxYear).map {
-      case Some(UserData(_,_,_,_,Some(employmentData),_)) => result(employmentData)
-      case _ =>
-        logger.info(s"[IncomeTaxUserDataService][findUserData] " +
-          s"No employment data found for user. SessionId: ${user.sessionId}")
+  def findUserData(user: User[_], taxYear: Int)(result: AllEmploymentData => Result)
+                  (implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Result] = {
+
+    incomeTaxUserDataConnector.getUserData(user.nino, taxYear)(hc.withExtraHeaders("mtditid" -> user.mtditid)).map {
+      case Right(IncomeTaxUserData(Some(employmentData))) => result(employmentData)
+      case Right(IncomeTaxUserData(None)) =>
+        logger.info(s"[IncomeTaxUserDataService][findUserData] No employment data found for user. SessionId: ${user.sessionId}")
         Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      case Left(error) => errorHandler.handleError(error.status)
     }
   }
 }
