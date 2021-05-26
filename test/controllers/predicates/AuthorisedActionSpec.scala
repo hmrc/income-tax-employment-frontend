@@ -35,7 +35,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class AuthorisedActionSpec extends UnitTest {
 
   val auth: AuthorisedAction = authorisedAction
-  val nino: String = "AA123456A"
 
   ".enrolmentGetIdentifierValue" should {
 

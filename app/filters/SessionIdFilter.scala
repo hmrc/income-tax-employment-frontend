@@ -21,8 +21,9 @@ import java.util.UUID
 import akka.stream.Materializer
 import com.google.inject.Inject
 import play.api.http.HeaderNames
-import play.api.mvc.{SessionCookieBaker, _}
+import play.api.mvc._
 import uk.gov.hmrc.http.{SessionKeys, HeaderNames => HMRCHeaderNames}
+import play.api.mvc.SessionCookieBaker
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -50,6 +51,7 @@ class SessionIdFilter(override val mat: Materializer,
       }
 
       val headers = Headers(
+        "sessionId" -> sessionId,
         HMRCHeaderNames.xSessionId -> sessionId,
         HeaderNames.COOKIE -> cookies
       )

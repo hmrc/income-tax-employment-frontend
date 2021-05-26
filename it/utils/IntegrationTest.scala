@@ -18,25 +18,23 @@ package utils
 
 import akka.actor.ActorSystem
 import akka.stream.{ActorMaterializer, Materializer}
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import common.SessionValues
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import helpers.{PlaySessionCookieBaker, WireMockHelper}
-import models.User
+import models.IncomeTaxUserData
 import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
-import models.mongo.UserData
-import org.joda.time.DateTime
-import org.scalatest
 import org.scalatest.BeforeAndAfterAll
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
+import play.api.test.Helpers.OK
 import play.api.{Application, Environment, Mode}
-import repositories.IncomeTaxUserDataRepositoryImpl
 import services.AuthService
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.~
@@ -71,12 +69,8 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "income-tax-submission-frontend.url" -> s"http://$wiremockHost:$wiremockPort",
     "microservice.services.auth.host" -> wiremockHost,
     "microservice.services.auth.port" -> wiremockPort.toString,
-    "microservice.services.income-tax-dividends.host" -> wiremockHost,
-    "microservice.services.income-tax-dividends.port" -> wiremockPort.toString,
-    "microservice.services.income-tax-interest.host" -> wiremockHost,
-    "microservice.services.income-tax-interest.port" -> wiremockPort.toString,
-    "microservice.services.income-tax-gift-aid.host" -> wiremockHost,
-    "microservice.services.income-tax-gift-aid.port" -> wiremockPort.toString,
+    "microservice.services.income-tax-submission.host" -> wiremockHost,
+    "microservice.services.income-tax-submission.port" -> wiremockPort.toString,
     "view-and-change.baseUrl" -> s"http://$wiremockHost:$wiremockPort",
     "signIn.url" -> s"/auth-login-stub/gg-sign-in",
   )
@@ -163,7 +157,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     SessionValues.CLIENT_MTDITID -> "1234567890"
   ))
 
-  def userData(allData: AllEmploymentData, taxYear: Int): UserData = UserData(sessionId, mtditid, nino, taxYear, Some(
+  def userData(allData: AllEmploymentData): IncomeTaxUserData = IncomeTaxUserData(Some(
     AllEmploymentData(
       allData.hmrcEmploymentData,
       allData.hmrcExpenses,
@@ -172,16 +166,14 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     )
   ))
 
-  def addUserData(userData: UserData, repo: IncomeTaxUserDataRepositoryImpl, taxYear: Int, fakeRequest: FakeRequest[_]): scalatest.Assertion ={
-    await(repo.update(userData))
-    val data = await(repo.find(User(mtditid,None,nino,sessionId)(fakeRequest),taxYear))
-    data.map(_.copy(lastUpdated = DateTime.parse("2021-05-17T14:01:52.634Z"))) mustBe Some(
-      userData.copy(lastUpdated = DateTime.parse("2021-05-17T14:01:52.634Z"))
-    )
+  def userDataStub(userData: IncomeTaxUserData, nino: String, taxYear: Int): StubMapping ={
+
+    stubGetWithHeadersCheck(
+      s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,
+      Json.toJson(userData).toString(),("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
   }
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  lazy val repo: IncomeTaxUserDataRepositoryImpl = app.injector.instanceOf[IncomeTaxUserDataRepositoryImpl]
 
   lazy val employmentsModel: AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(

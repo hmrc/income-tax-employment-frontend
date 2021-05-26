@@ -18,10 +18,11 @@ package config
 
 import models.User
 import models.employment.AllEmploymentData
-import org.scalamock.handlers.CallHandler4
+import org.scalamock.handlers.CallHandler6
 import org.scalamock.scalatest.MockFactory
-import play.api.mvc.Result
+import play.api.mvc.{Request, Result}
 import services.IncomeTaxUserDataService
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -29,9 +30,10 @@ trait MockIncomeTaxUserDataService extends MockFactory {
 
   val mockService: IncomeTaxUserDataService = mock[IncomeTaxUserDataService]
 
-  def mockFind(taxYear: Int, result: Result): CallHandler4[User[_], Int, AllEmploymentData => Result, ExecutionContext, Future[Result]] = {
-    (mockService.findUserData(_: User[_],_: Int)(_: AllEmploymentData => Result)(_: ExecutionContext))
-      .expects(*, taxYear, *, *)
+  def mockFind(taxYear: Int, result: Result):
+  CallHandler6[User[_], Int, AllEmploymentData => Result, Request[_], HeaderCarrier, ExecutionContext, Future[Result]] = {
+    (mockService.findUserData(_: User[_],_: Int)(_: AllEmploymentData => Result)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+      .expects(*, taxYear, *, *, *, *)
       .returns(Future.successful(result))
       .anyNumberOfTimes()
   }

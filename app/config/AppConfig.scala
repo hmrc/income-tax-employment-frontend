@@ -35,6 +35,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
 
   def defaultTaxYear: Int = servicesConfig.getInt(ConfigKeys.defaultTaxYear)
 
+  lazy val incomeTaxSubmissionBEBaseUrl: String = servicesConfig.baseUrl("income-tax-submission") + "/income-tax-submission-service"
+
   def incomeTaxSubmissionBaseUrl: String = servicesConfig.getString(ConfigKeys.incomeTaxSubmissionFrontend) +
     servicesConfig.getString("microservice.services.income-tax-submission-frontend.context")
 
@@ -81,7 +83,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
 
   lazy val timeoutDialogTimeout: Int = servicesConfig.getInt("timeoutDialogTimeout")
   lazy val timeoutDialogCountdown: Int = servicesConfig.getInt("timeoutDialogCountdown")
-
 
   //Mongo config
   lazy val encryptionKey: String = servicesConfig.getString("mongodb.encryption.key")
