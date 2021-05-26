@@ -135,7 +135,7 @@ class AuthorisedAction @Inject()(
               case Some(arn) =>
 
                 sessionId.fold {
-                  logger.info(s"[AuthorisedAction][individualAuthentication] - No session id in request")
+                  logger.info(s"[AuthorisedAction][agentAuthentication] - No session id in request")
                   Future(Redirect(appConfig.signInUrl))
                 } { sessionId =>
                   block(User(mtdItId, Some(arn), nino, sessionId))
