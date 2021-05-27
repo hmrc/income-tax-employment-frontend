@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package connectors
+package models
 
-import uk.gov.hmrc.http.{HttpReads, HttpResponse}
+import models.employment.AllEmploymentData
+import play.api.libs.json.{Json, OFormat}
 
-trait RawResponseReads {
+case class IncomeTaxUserData(employment: Option[AllEmploymentData] = None)
 
-  implicit val httpReads: HttpReads[HttpResponse] = new HttpReads[HttpResponse] {
-    override def read(method: String, url: String, response: HttpResponse) = response
-  }
-
+object IncomeTaxUserData {
+  implicit val formats: OFormat[IncomeTaxUserData] = Json.format[IncomeTaxUserData]
 }

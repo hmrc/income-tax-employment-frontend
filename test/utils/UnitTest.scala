@@ -22,9 +22,8 @@ import com.codahale.metrics.SharedMetricRegistries
 import common.{EnrolmentIdentifiers, EnrolmentKeys, SessionValues}
 import config.{AppConfig, MockAppConfig}
 import controllers.predicates.AuthorisedAction
-import models.User
+import models.{IncomeTaxUserData, User}
 import models.employment.{AllEmploymentData, EmploymentData, EmploymentExpenses, EmploymentSource, Expenses, Pay}
-import models.mongo.UserData
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
@@ -39,6 +38,7 @@ import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.logging.SessionId
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.authErrorPages.AgentAuthErrorPageView
 
@@ -61,15 +61,18 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
 
   def await[T](awaitable: Awaitable[T]): T = Await.result(awaitable, Duration.Inf)
 
-  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  val sessionId: String = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"
+
+  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withHeaders("X-Session-ID" -> sessionId)
   val fakeRequestWithMtditidAndNino: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
     SessionValues.CLIENT_MTDITID -> "1234567890",
     SessionValues.CLIENT_NINO -> "AA123456A"
-  )
+  ).withHeaders("X-Session-ID" -> sessionId)
   val fakeRequestWithNino: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
     SessionValues.CLIENT_NINO -> "AA123456A"
   )
-  implicit val emptyHeaderCarrier: HeaderCarrier = HeaderCarrier()
+  implicit val headerCarrierWithSession: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sessionId)))
+  val emptyHeaderCarrier: HeaderCarrier = HeaderCarrier()
 
   implicit val mockAppConfig: AppConfig = new MockAppConfig().config
   implicit val mockControllerComponents: ControllerComponents = Helpers.stubControllerComponents()
@@ -81,7 +84,7 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
   implicit lazy val mockMessagesControllerComponents: MessagesControllerComponents = Helpers.stubMessagesControllerComponents()
   implicit lazy val user: User[AnyContent] = new User[AnyContent]("1234567890", None, "AA123456A", sessionId)(fakeRequest)
 
-  val authorisedAction = new AuthorisedAction(mockAppConfig, agentAuthErrorPageView)(mockAuthService, stubMessagesControllerComponents())
+  val authorisedAction = new AuthorisedAction(mockAppConfig)(mockAuthService, stubMessagesControllerComponents())
 
   def status(awaitable: Future[Result]): Int = await(awaitable).header.status
 
@@ -141,13 +144,9 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
       .returning(Future.failed(exception))
   }
 
-  val sessionId: String = "eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"
+  val nino = "AA123456A"
 
-  val userData: UserData = UserData(
-    "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81",
-    "1234567890",
-    "AA123456A",
-    2022,
+  val userData: IncomeTaxUserData = IncomeTaxUserData(
     Some(employmentsModel)
   )
 

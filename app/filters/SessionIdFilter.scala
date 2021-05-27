@@ -21,8 +21,9 @@ import java.util.UUID
 import akka.stream.Materializer
 import com.google.inject.Inject
 import play.api.http.HeaderNames
-import play.api.mvc.{SessionCookieBaker, _}
+import play.api.mvc._
 import uk.gov.hmrc.http.{SessionKeys, HeaderNames => HMRCHeaderNames}
+import play.api.mvc.SessionCookieBaker
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -37,26 +38,29 @@ class SessionIdFilter(override val mat: Materializer,
     this(mat, UUID.randomUUID(), ec, cb)
   }
 
-  override def apply(requestToResult: (RequestHeader) => Future[Result])(header: RequestHeader): Future[Result] = {
+  override def apply(requestToResult: (RequestHeader) => Future[Result])(request: RequestHeader): Future[Result] = {
 
     lazy val sessionId: String = s"session-$uuid"
 
-    if (header.session.get(SessionKeys.sessionId).isEmpty) {
+    if (request.session.get(SessionKeys.sessionId).isEmpty) {
 
       val cookies: String = {
-        val session: Session = header.session + (SessionKeys.sessionId -> sessionId)
-        val cookies: Traversable[Cookie] = header.cookies ++ Seq(cookieBaker.encodeAsCookie(session))
+        val session: Session = request.session + (SessionKeys.sessionId -> sessionId)
+        val cookies: Traversable[Cookie] = request.cookies ++ Seq(cookieBaker.encodeAsCookie(session))
         Cookies.encodeCookieHeader(cookies.toSeq)
       }
 
+      val originalRequestHeaders = request.headers.remove(HeaderNames.COOKIE).headers
+
       val headers = Headers(
+        "sessionId" -> sessionId,
         HMRCHeaderNames.xSessionId -> sessionId,
         HeaderNames.COOKIE -> cookies
-      )
+      ).add(originalRequestHeaders: _*)
 
-      requestToResult(header.withHeaders(headers)).map(_.addingToSession(SessionKeys.sessionId -> sessionId)(header.withHeaders(headers)))
+      requestToResult(request.withHeaders(headers)).map(_.addingToSession(SessionKeys.sessionId -> sessionId)(request.withHeaders(headers)))
     } else {
-      requestToResult(header)
+      requestToResult(request)
     }
   }
 }

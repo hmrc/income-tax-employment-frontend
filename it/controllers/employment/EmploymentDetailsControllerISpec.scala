@@ -198,7 +198,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          addUserData(userData(FullModel.allData,taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(FullModel.allData),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
@@ -241,9 +241,9 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          addUserData(userData(
+          userDataStub(userData(
             FullModel.allData.copy(hmrcEmploymentData = Seq.empty)
-            ,taxYear),repo,taxYear,fakeRequest)
+          ),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
           ).withFollowRedirects(false).get())
@@ -257,7 +257,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          addUserData(userData(MinModel.miniData,taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(MinModel.miniData),nino,taxYear)
           await(wsClient.url(url)
             .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -290,7 +290,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          addUserData(userData(SomeModelWithInvalidData.invalidData,taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(SomeModelWithInvalidData.invalidData),nino,taxYear)
           await(wsClient.url(url)
             .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -339,7 +339,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          addUserData(userData(FullModel.allData,taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(FullModel.allData),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
@@ -382,7 +382,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          addUserData(userData(MinModel.miniData,taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(MinModel.miniData),nino,taxYear)
           await(wsClient.url(url)
             .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -415,7 +415,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          addUserData(userData(SomeModelWithInvalidData.invalidData,taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(SomeModelWithInvalidData.invalidData),nino,taxYear)
           await(wsClient.url(url)
             .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -464,7 +464,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          addUserData(userData(FullModel.allData,taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(FullModel.allData),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -509,7 +509,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          addUserData(userData(MinModel.miniData,taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(MinModel.miniData),nino,taxYear)
 
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
@@ -544,7 +544,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          addUserData(userData(SomeModelWithInvalidData.invalidData,taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(SomeModelWithInvalidData.invalidData),nino,taxYear)
 
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
@@ -583,7 +583,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          addUserData(userData(FullModel.allData,taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(FullModel.allData),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -627,7 +627,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          addUserData(userData(MinModel.miniData,taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(MinModel.miniData),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -659,7 +659,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          addUserData(userData(SomeModelWithInvalidData.invalidData,taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(SomeModelWithInvalidData.invalidData),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
