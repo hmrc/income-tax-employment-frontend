@@ -31,18 +31,13 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.{affinityGroup, allEnrolment
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
-import views.html.authErrorPages.AgentAuthErrorPageView
 import javax.inject.Inject
-import uk.gov.hmrc.http.logging.SessionId
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AuthorisedAction @Inject()(
-                                  appConfig: AppConfig,
-                                  val agentAuthErrorPage: AgentAuthErrorPageView
-                                )(
-                                  implicit val authService: AuthService,
-                                  val mcc: MessagesControllerComponents
+class AuthorisedAction @Inject()(appConfig: AppConfig)
+                                (implicit val authService: AuthService,
+                                 val mcc: MessagesControllerComponents
                                 ) extends ActionBuilder[User, AnyContent] with I18nSupport {
 
   implicit val executionContext: ExecutionContext = mcc.executionContext

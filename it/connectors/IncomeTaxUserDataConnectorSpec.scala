@@ -16,7 +16,6 @@
 
 package connectors
 
-import com.github.tomakehurst.wiremock.http.HttpHeader
 import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData}
 import play.api.http.Status._
@@ -30,7 +29,7 @@ import scala.concurrent.duration.Duration
 
 class IncomeTaxUserDataConnectorSpec extends IntegrationTest{
 
-  lazy val connector = app.injector.instanceOf[IncomeTaxUserDataConnector]
+  lazy val connector: IncomeTaxUserDataConnector = app.injector.instanceOf[IncomeTaxUserDataConnector]
 
   val taxYear = 2022
 
@@ -41,7 +40,7 @@ class IncomeTaxUserDataConnectorSpec extends IntegrationTest{
       "submission returns a 204" in {
 
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", NO_CONTENT,
-        "{}",("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
+          "{}", ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
 
         val result: IncomeTaxUserDataResponse = Await.result(connector.getUserData(nino, taxYear), Duration.Inf)
         result shouldBe Right(IncomeTaxUserData())
@@ -50,12 +49,14 @@ class IncomeTaxUserDataConnectorSpec extends IntegrationTest{
       "submission returns a 200" in {
 
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,
-        Json.toJson(userData(employmentsModel)).toString(),("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
+          Json.toJson(userData(employmentsModel)).toString(), ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
 
         val result: IncomeTaxUserDataResponse = Await.result(connector.getUserData(nino, taxYear), Duration.Inf)
         result shouldBe Right(userData(employmentsModel))
       }
+    }
 
+    "Return an error result" when {
       "submission returns a 200 but invalid json" in {
 
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,

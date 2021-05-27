@@ -118,8 +118,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
                   stubbedRetrieval: Future[_],
                   acceptedConfidenceLevel: Seq[ConfidenceLevel] = Seq.empty[ConfidenceLevel]
                 ): AuthorisedAction = new AuthorisedAction(
-    appConfig,
-    agentAuthErrorPage
+    appConfig
   )(
     authService(stubbedRetrieval, if (acceptedConfidenceLevel.nonEmpty) {
       acceptedConfidenceLevel
