@@ -18,15 +18,12 @@ package config
 
 import com.google.inject.AbstractModule
 import common.UUID
-import repositories.{IncomeTaxUserDataRepository, IncomeTaxUserDataRepositoryImpl}
 
 class Modules extends AbstractModule {
 
   override def configure(): Unit = {
     bind(classOf[AppConfig]).asEagerSingleton()
     bind(classOf[UUID]).toInstance(UUID())
-    bind(classOf[IncomeTaxUserDataRepository]).to(classOf[IncomeTaxUserDataRepositoryImpl]).asEagerSingleton()
-
   }
 
 }

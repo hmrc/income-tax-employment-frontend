@@ -122,7 +122,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          addUserData(userData(fullModel(None),taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(fullModel(None)),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
@@ -152,7 +152,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          addUserData(userData(fullModel(None).copy(hmrcEmploymentData = Seq()),taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(fullModel(None).copy(hmrcEmploymentData = Seq())),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
           ).withFollowRedirects(false).get())
@@ -165,7 +165,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          addUserData(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z",Some(BenefitsModel)))),taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z",Some(BenefitsModel))))),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
@@ -211,7 +211,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          addUserData(userData(fullModel(None),taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(fullModel(None)),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
@@ -242,7 +242,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          addUserData(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z",Some(BenefitsModel)))),taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z",Some(BenefitsModel))))),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
@@ -290,7 +290,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          addUserData(userData(fullModel(None),taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(fullModel(None)),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -323,7 +323,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          addUserData(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z",Some(BenefitsModel)))),taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z",Some(BenefitsModel))))),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -362,7 +362,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          addUserData(userData(fullModel(None),taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(fullModel(None)),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -396,7 +396,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         lazy val result: WSResponse = {
           authoriseAgent()
 
-          addUserData(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z",Some(BenefitsModel)))),taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z",Some(BenefitsModel))))),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }

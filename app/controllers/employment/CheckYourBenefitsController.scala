@@ -19,9 +19,9 @@ package controllers.employment
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import javax.inject.Inject
-import models.employment.{AllEmploymentData, Benefits}
+import models.employment.Benefits
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.IncomeTaxUserDataService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper

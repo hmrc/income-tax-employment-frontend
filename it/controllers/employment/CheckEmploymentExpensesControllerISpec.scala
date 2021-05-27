@@ -121,11 +121,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     customerExpenses = None
   )
 
-  override def beforeEach(): Unit = {
-    await(repo.collection.drop().toFuture())
-    await(repo.ensureIndexes)
-  }
-
   private def summaryListRowFieldNameSelector(i: Int) = s"#main-content > div > div > dl > div:nth-child($i) > dt"
 
   private def summaryListRowFieldAmountSelector(i: Int) = s"#main-content > div > div > dl > div:nth-child($i) > dd"
@@ -138,7 +133,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          addUserData(userData(allData,taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(allData),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
@@ -183,7 +178,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          addUserData(userData(allData.copy(hmrcExpenses = None),taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(allData.copy(hmrcExpenses = None)),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
           ).withFollowRedirects(false).get())
@@ -213,7 +208,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          addUserData(userData(allData,taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(allData),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
@@ -274,7 +269,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          addUserData(userData(allData,taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(allData),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -327,7 +322,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          addUserData(userData(allData,taxYear),repo,taxYear,fakeRequest)
+          userDataStub(userData(allData),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
