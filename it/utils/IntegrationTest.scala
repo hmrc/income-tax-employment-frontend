@@ -106,7 +106,6 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   val defaultAcceptedConfidenceLevels = Seq(
     ConfidenceLevel.L200,
-    ConfidenceLevel.L300,
     ConfidenceLevel.L500
   )
 

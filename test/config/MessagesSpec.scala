@@ -62,6 +62,38 @@ class MessagesSpec extends ViewTest with GuiceOneAppPerSuite {
 
   "the welsh messages file" should {
     "have no duplicate messages(values)" in {
+
+//      val x = defaults.filterNot(x => welsh.contains(x._1)).toSeq.sortBy(_._1)
+//
+//      x.map{
+//        println(_)
+//      }
+//
+//      val y = welsh.filterNot(x => defaults.contains(x._1)).toSeq.sortBy(_._1)
+//
+//      y.map{
+//        println(_)
+//      }
+
+      val xx: Seq[(String, String)] = welsh.toSeq.sortBy(_._2)
+      val yy = defaults.toSeq.sortBy(_._1).toMap.keys.toSeq.sorted
+
+//      (0 to 100) map {
+//        x =>
+//          println("welsh " +  xx(x) + " : english " + yy(x))
+//
+//
+//      }
+
+//      val xxx = welsh.toSeq.sortBy(_._2).toMap.values.toSeq.sorted
+      val yyy = defaults.toSeq.sortBy(_._2).toMap.values.toSeq.sorted
+
+      (0 to 100) map {
+        x =>
+          println(s"welsh ${xx(x)._2}")
+//          println("english " +  yyy(x) + " : " + yy(x))
+      }
+
       checkMessagesAreUnique(welsh, exclusionKeys)
     }
   }
