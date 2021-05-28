@@ -101,7 +101,7 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockIncomeTax
     mockMessagesControllerComponents,
     mockAppConfig,
     view,
-    mockService,
+    mockIncomeTaxUserDataService,
     ec
   )
 

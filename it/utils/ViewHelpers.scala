@@ -16,6 +16,7 @@
 
 package utils
 
+import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -60,8 +61,8 @@ trait ViewHelpers { self: AnyWordSpec with Matchers =>
     }
   }
 
-  def textOnPageCheck(text: String, selector: String)(implicit document: () => Document): Unit = {
-    s"have text on the screen of '$text'" in {
+  def textOnPageCheck(text: String, selector: String, additionalTestText: String = "")(implicit document: () => Document): Unit = {
+    s"have text on the screen of '$text' $additionalTestText" in {
       document().select(selector).text() shouldBe text
     }
   }
@@ -106,10 +107,8 @@ trait ViewHelpers { self: AnyWordSpec with Matchers =>
 
   def linkCheck(text: String, selector: String, href: String)(implicit document: () => Document): Unit = {
     s"have a $text link" which {
-      s"has the text '$text'" in {
+      s"has the text '$text' and a href to '$href'" in {
         document().select(selector).text() shouldBe text
-      }
-      s"has a href to '$href'" in {
         document().select(selector).attr("href") shouldBe href
       }
     }

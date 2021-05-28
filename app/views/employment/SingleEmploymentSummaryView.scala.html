@@ -1,0 +1,102 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.headerFooterTemplate.Layout
+@import views.html.templates.helpers.Button
+@import views.html.templates.helpers.Heading
+@import models.employment.EmploymentSource
+
+@this(
+        layout: Layout,
+        formWithCSRF: FormWithCSRF,
+        button: Button,
+        heading: Heading,
+        govukSummaryList: GovukSummaryList,
+        govukInsetText: GovukInsetText,
+        govUkButton: GovukButton
+)
+@(taxYear: Int, employment: EmploymentSource, expensesExist: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+
+@headingForUse = @{
+    employment.employerName
+}
+
+@employmentTable(employment: EmploymentSource) = {
+<div class="govuk-form-group">
+    <ul class="hmrc-add-to-a-list hmrc-add-to-a-list--short">
+        <li class="hmrc-add-to-a-list__contents">
+            <span class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light">
+                @employment.employmentData.map{ _ =>
+                    <a class="govuk-link" href="@controllers.employment.routes.EmploymentDetailsController.show(taxYear, employment.employmentId)">
+                    @messages("common.employmentDetails")
+                    </a>
+                }.getOrElse{@messages("common.employmentDetails")}
+            </span>
+            <span class="hmrc-add-to-a-list__change">
+                @if(employment.employmentData.isDefined){ @messages("common.status.updated") }else{ @messages("common.status.cannotUpdate")}
+            </span>
+        </li>
+        <li class="hmrc-add-to-a-list__contents">
+            <span class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light">
+                @employment.employmentBenefits.map{ _ =>
+                    <a class="govuk-link" href="@controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employment.employmentId)">
+                    @messages("common.benefits")
+                    </a>
+                }.getOrElse{@messages("common.benefits")}
+            </span>
+            <span class="hmrc-add-to-a-list__change">
+                @if(employment.employmentBenefits.isDefined){ @messages("common.status.updated") }else{ @messages("common.status.cannotUpdate")}
+            </span>
+        </li>
+        <li class="hmrc-add-to-a-list__contents">
+            <span class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light">
+                @if(expensesExist) {
+                    <a class="govuk-link" href="@controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)">
+                    @messages("employment.expenses.label")
+                    </a>
+                } else {@messages("employment.expenses.label")}
+            </span>
+            <span class="hmrc-add-to-a-list__change">
+                @if(expensesExist){ @messages("common.status.updated") }else{ @messages("common.status.cannotUpdate")}
+            </span>
+        </li>
+    </ul>
+</div>
+}
+
+@layout(pageTitle = headingForUse, taxYear = Some(taxYear), isAgent = user.isAgent) {
+
+    @heading(headingForUse, Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
+
+    <p class="govuk-body">@messages(s"employment.employmentSummary.content.${if(user.isAgent) "agent" else "individual"}")</p>
+
+    @govukInsetText(InsetText(
+        content = Text(messages(s"employment.employmentInfo.p1.${if(user.isAgent) "agent" else "individual"}", taxYear.toString))
+    ))
+
+    @employmentTable(employment)
+
+    @govUkButton(Button(
+        attributes = Map("id" -> "returnToOverviewPageBtn"),
+        preventDoubleClick = true,
+        content = Text(messages("common.return.overview.buttonText")),
+        classes = "govuk-button",
+        href = Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+    ))
+}
+@{
+// $COVERAGE-OFF$
+}
