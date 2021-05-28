@@ -30,7 +30,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
   val defaultTaxYear = 2022
   val url =
-    s"http://localhost:$port/income-through-software/return/employment-income/$defaultTaxYear/check-your-employment-benefits?employmentId=001"
+    s"http://localhost:$port/income-through-software/return/employment-income/$defaultTaxYear/check-employment-benefits?employmentId=001"
   val fullBenefits: Benefits = Benefits(
     car = Some(1.23),
     carFuel = Some(2.00),
