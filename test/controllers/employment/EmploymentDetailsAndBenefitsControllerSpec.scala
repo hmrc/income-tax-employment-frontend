@@ -67,7 +67,7 @@ class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp with Mo
     authorisedAction,
     view,
     mockAppConfig,
-    mockService,
+    mockIncomeTaxUserDataService,
     ec
   )
 

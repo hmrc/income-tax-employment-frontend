@@ -36,7 +36,7 @@ class EmploymentDetailsControllerSpec extends UnitTestWithApp with MockIncomeTax
     authorisedAction,
     view,
     mockAppConfig,
-    mockService,
+    mockIncomeTaxUserDataService,
     ec
   )
   val taxYear = mockAppConfig.defaultTaxYear

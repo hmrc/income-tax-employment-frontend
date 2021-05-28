@@ -47,22 +47,31 @@ class MessagesSpec extends ViewTest with GuiceOneAppPerSuite {
     "check all keys in the default file other than those in the exclusion list has a corresponding translation" in {
       defaults.keys.foreach(
         key =>
-          if (!exclusionKeys.contains(key))
-          {welsh.keys should contain(key)}
+          if (!exclusionKeys.contains(key)) {
+            welsh.keys should contain(key)
+          }
       )
     }
   }
 
   "the english messages file" should {
     "have no duplicate messages(values)" in {
-      checkMessagesAreUnique(defaults, exclusionKeys)
+      val messages: List[(String, String)] = defaults.filter(entry => !exclusionKeys.contains(entry._1)).toList
+
+      val result = checkMessagesAreUnique(messages, messages, Set())
+
+      result shouldBe Set()
 
     }
   }
 
   "the welsh messages file" should {
     "have no duplicate messages(values)" in {
-      checkMessagesAreUnique(welsh, exclusionKeys)
+      val messages: List[(String, String)] = welsh.filter(entry => !exclusionKeys.contains(entry._1)).toList
+
+      val result = checkMessagesAreUnique(messages, messages, Set())
+
+      result shouldBe Set()
     }
   }
 }
