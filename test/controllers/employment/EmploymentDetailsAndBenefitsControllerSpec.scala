@@ -18,12 +18,12 @@ package controllers.employment
 
 import common.SessionValues
 import config.MockIncomeTaxUserDataService
-import controllers.Assets.{Ok, Redirect}
 import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
 import play.api.http.Status._
 import play.api.mvc.Result
 import utils.UnitTestWithApp
 import views.html.employment.EmploymentDetailsAndBenefitsView
+import play.api.mvc.Results.{Ok, Redirect}
 
 import scala.concurrent.Future
 

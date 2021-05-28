@@ -167,3 +167,17 @@ checkYourBenefits.otherBenefits = Other benefits
 checkYourBenefits.assetsHeader = Assets and asset transfers
 checkYourBenefits.assets = Assets
 checkYourBenefits.assetTransfers = Asset transfers
+
+
+global.error.badRequest400.title = 1111111111111111111 g
+global.error.badRequest400.heading = 11111111111111111 g   777
+global.error.badRequest400.message = 11111111111111111 g   77
+global.error.pageNotFound404.title = 11111111111111111 g   7
+global.error.pageNotFound404.heading = 111111111111111 g
+global.error.pageNotFound404.message = 111111111111111 g   77
+global.error.InternalServerError500.title = 1111111111 g
+global.error.InternalServerError500.heading = 11111111 g  77
+global.error.InternalServerError500.message = 11111111 g
+betaBar.banner.message.1 = 111111111111111111111111111 g
+betaBar.banner.message.2 = 111111111111111111111111111 g 7
+betaBar.banner.message.3 = 111111111111111111111111111 g   77
