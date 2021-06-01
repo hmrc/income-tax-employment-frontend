@@ -3,3 +3,16 @@ $hmrc-assets-path: "/income-through-software/return/employment-income/assets/lib
 
 @import "lib/govuk-frontend/govuk/all";
 @import "lib/hmrc-frontend/hmrc/all";
+
+.hmrc-language-select {
+  @include govuk-media-query($from: desktop) {
+    float: right;
+  }
+}
+
+.js-hidden {
+  display: none;
+}
+.js-enabled .js-hidden {
+  display: block;
+}
