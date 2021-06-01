@@ -17,7 +17,7 @@ object AppDependencies {
     "org.jsoup"               %  "jsoup"                    % "1.13.1"                % Test,
     "com.typesafe.play"       %% "play-test"                % current                 % Test,
     "org.scalatestplus.play"  %% "scalatestplus-play"       % "5.1.0"                 % "test, it",
-    "com.github.tomakehurst"  %  "wiremock-jre8"            % "2.27.2"                % "test, it",
+    "com.github.tomakehurst"  %  "wiremock-jre8"            % "2.28.0"                % "test, it",
     "org.scalamock"           %% "scalamock"                % "5.1.0"                 % Test,
     "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-28"  % "0.50.0"                % "test, it"
   )
