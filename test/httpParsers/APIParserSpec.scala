@@ -43,7 +43,7 @@ class APIParserSpec extends UnitTest {
   "FakeParser" should {
     "log the correct message" in {
       val result = FakeParser.logMessage(httpResponse())
-      result shouldBe Some(
+      result shouldBe (
         """[TestParser][read] Received 500 from service API. Body:{
           |  "failures" : [ {
           |    "code" : "SERVICE_UNAVAILABLE",

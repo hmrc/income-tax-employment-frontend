@@ -172,16 +172,17 @@ trait ViewTest extends UnitTest with GuiceOneAppPerSuite {
     }
   }
 
-  def checkMessagesAreUnique(msgFile : Map[String, String], exclusionKeys: Set[String]){
-    val msgKeys = msgFile.keys
-      .filter( keys => !exclusionKeys.contains(keys))
-      .toSet
-    val msgVals = msgFile.filterKeys(msgKeys)
-      .values
-      .toList
-      .distinct
+  def checkMessagesAreUnique(initial: List[(String, String)], keysToExplore: List[(String, String)], result: Set[String]): Set[String] = {
+      keysToExplore match {
+        case Nil => result
+        case head :: tail =>
+          val (currentMessageKey, currentMessage) = (head._1, head._2)
+          val duplicate = initial.collect {
+            case (messageKey, message) if currentMessageKey != messageKey && currentMessage == message => currentMessageKey
+          }.toSet
 
-    msgVals.length shouldBe msgKeys.size
+          checkMessagesAreUnique(initial, tail, duplicate ++ result)
+      }
   }
 
   def welshToggleCheck(activeLanguage: String)(implicit document: Document): Unit = {

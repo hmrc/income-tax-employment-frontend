@@ -17,7 +17,6 @@
 package utils
 
 import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, Materializer}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import common.SessionValues
 import config.AppConfig
@@ -55,7 +54,6 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid)
 
   implicit val actorSystem: ActorSystem = ActorSystem()
-  implicit val materializer: Materializer = ActorMaterializer()
 
   val startUrl = s"http://localhost:$port/income-through-software/return/employment-income"
 
@@ -155,14 +153,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     SessionValues.CLIENT_MTDITID -> "1234567890"
   ))
 
-  def userData(allData: AllEmploymentData): IncomeTaxUserData = IncomeTaxUserData(Some(
-    AllEmploymentData(
-      allData.hmrcEmploymentData,
-      allData.hmrcExpenses,
-      allData.customerEmploymentData,
-      allData.customerExpenses
-    )
-  ))
+  def userData(allData: AllEmploymentData): IncomeTaxUserData = IncomeTaxUserData(Some(allData))
 
   def userDataStub(userData: IncomeTaxUserData, nino: String, taxYear: Int): StubMapping ={
 

@@ -7,11 +7,11 @@ GET        /assets/*file                                    controllers.Assets.v
 
 GET        /:taxYear/employer-details-and-benefits          controllers.employment.EmploymentDetailsAndBenefitsController.show(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/check-your-employment-details          controllers.employment.EmploymentDetailsController.show(taxYear: Int, employmentId: String)
+GET        /:taxYear/check-employment-details               controllers.employment.EmploymentDetailsController.show(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/check-your-employment-expenses         controllers.employment.CheckEmploymentExpensesController.show(taxYear: Int)
+GET        /:taxYear/check-employment-expenses              controllers.employment.CheckEmploymentExpensesController.show(taxYear: Int)
 
-GET        /:taxYear/check-your-employment-benefits         controllers.employment.CheckYourBenefitsController.show(taxYear: Int, employmentId: String)
+GET        /:taxYear/check-employment-benefits              controllers.employment.CheckYourBenefitsController.show(taxYear: Int, employmentId: String)
 
 GET        /sign-out                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
@@ -23,7 +23,9 @@ GET        /error/you-need-client-authorisation              controllers.errors.
 
 GET        /error/not-authorised-to-use-service             controllers.errors.UnauthorisedUserErrorController.show
 
-GET        /language/:lang                                  controllers.LanguageSwitchController.switchToLanguage(lang: String)
+GET        /:taxYear/employment-summary                    controllers.employment.EmploymentSummaryController.show(taxYear: Int)
+
+GET        /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
 
 GET        /error/you-need-agent-services-account           controllers.errors.YouNeedAgentServicesController.show
 
