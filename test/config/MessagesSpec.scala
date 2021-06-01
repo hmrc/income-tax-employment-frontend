@@ -34,7 +34,9 @@ class MessagesSpec extends ViewTest with GuiceOneAppPerSuite {
     "global.error.InternalServerError500.message",
     "betaBar.banner.message.1",
     "betaBar.banner.message.2",
-    "betaBar.banner.message.3"
+    "betaBar.banner.message.3",
+    "language.day.plural",
+    "language.day.singular"
   )
 
   lazy val allLanguages: Map[String, Map[String, String]] = app.injector.instanceOf[MessagesApi].messages
@@ -67,6 +69,7 @@ class MessagesSpec extends ViewTest with GuiceOneAppPerSuite {
 
   "the welsh messages file" should {
     "have no duplicate messages(values)" in {
+
       val messages: List[(String, String)] = welsh.filter(entry => !exclusionKeys.contains(entry._1)).toList
 
       val result = checkMessagesAreUnique(messages, messages, Set())

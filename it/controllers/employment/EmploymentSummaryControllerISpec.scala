@@ -68,6 +68,19 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
         welshToggleCheck(ENGLISH)
       }
 
+      "redirect when there is no data" which {
+        lazy val result: WSResponse = {
+          authoriseIndividual()
+          userDataStub(IncomeTaxUserData(Some(AllEmploymentData(Seq(),None,Seq(employmentSource),None))), nino, taxYear)
+          await(wsClient.url(url).withFollowRedirects(false)
+            .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+        }
+
+        "status OK" in {
+          result.status shouldBe SEE_OTHER
+        }
+      }
+
       "return single employment summary view when there is only one employment with Expenses and Benefits" which {
         lazy val result: WSResponse = {
           authoriseIndividual()

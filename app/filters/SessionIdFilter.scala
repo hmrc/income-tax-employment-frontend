@@ -24,18 +24,19 @@ import play.api.http.HeaderNames
 import play.api.mvc._
 import uk.gov.hmrc.http.{SessionKeys, HeaderNames => HMRCHeaderNames}
 import play.api.mvc.SessionCookieBaker
-
+import play.api.mvc.CookieHeaderEncoding
 import scala.concurrent.{ExecutionContext, Future}
 
 class SessionIdFilter(override val mat: Materializer,
                       uuid: => UUID,
                       implicit val ec: ExecutionContext,
-                      val cookieBaker: SessionCookieBaker
+                      val cookieBaker: SessionCookieBaker,
+                      cookieHeaderEncoding: CookieHeaderEncoding
                      ) extends Filter {
 
   @Inject
-  def this(mat: Materializer, ec: ExecutionContext, cb: SessionCookieBaker) {
-    this(mat, UUID.randomUUID(), ec, cb)
+  def this(mat: Materializer, ec: ExecutionContext, cb: SessionCookieBaker, cookieHeaderEncoding: CookieHeaderEncoding) {
+    this(mat, UUID.randomUUID(), ec, cb, cookieHeaderEncoding)
   }
 
   override def apply(requestToResult: (RequestHeader) => Future[Result])(request: RequestHeader): Future[Result] = {
@@ -47,7 +48,7 @@ class SessionIdFilter(override val mat: Materializer,
       val cookies: String = {
         val session: Session = request.session + (SessionKeys.sessionId -> sessionId)
         val cookies: Traversable[Cookie] = request.cookies ++ Seq(cookieBaker.encodeAsCookie(session))
-        Cookies.encodeCookieHeader(cookies.toSeq)
+        cookieHeaderEncoding.encodeCookieHeader(cookies.toSeq)
       }
 
       val originalRequestHeaders = request.headers.remove(HeaderNames.COOKIE).headers
