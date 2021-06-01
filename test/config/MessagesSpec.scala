@@ -34,7 +34,9 @@ class MessagesSpec extends ViewTest with GuiceOneAppPerSuite {
     "global.error.InternalServerError500.message",
     "betaBar.banner.message.1",
     "betaBar.banner.message.2",
-    "betaBar.banner.message.3"
+    "betaBar.banner.message.3",
+    "language.day.plural",
+    "language.day.singular"
   )
 
   lazy val allLanguages: Map[String, Map[String, String]] = app.injector.instanceOf[MessagesApi].messages
@@ -47,15 +49,20 @@ class MessagesSpec extends ViewTest with GuiceOneAppPerSuite {
     "check all keys in the default file other than those in the exclusion list has a corresponding translation" in {
       defaults.keys.foreach(
         key =>
-          if (!exclusionKeys.contains(key))
-          {welsh.keys should contain(key)}
+          if (!exclusionKeys.contains(key)) {
+            welsh.keys should contain(key)
+          }
       )
     }
   }
 
   "the english messages file" should {
     "have no duplicate messages(values)" in {
-      checkMessagesAreUnique(defaults, exclusionKeys)
+      val messages: List[(String, String)] = defaults.filter(entry => !exclusionKeys.contains(entry._1)).toList
+
+      val result = checkMessagesAreUnique(messages, messages, Set())
+
+      result shouldBe Set()
 
     }
   }
@@ -63,38 +70,11 @@ class MessagesSpec extends ViewTest with GuiceOneAppPerSuite {
   "the welsh messages file" should {
     "have no duplicate messages(values)" in {
 
-//      val x = defaults.filterNot(x => welsh.contains(x._1)).toSeq.sortBy(_._1)
-//
-//      x.map{
-//        println(_)
-//      }
-//
-//      val y = welsh.filterNot(x => defaults.contains(x._1)).toSeq.sortBy(_._1)
-//
-//      y.map{
-//        println(_)
-//      }
+      val messages: List[(String, String)] = welsh.filter(entry => !exclusionKeys.contains(entry._1)).toList
 
-      val xx: Seq[(String, String)] = welsh.toSeq.sortBy(_._2)
-      val yy = defaults.toSeq.sortBy(_._1).toMap.keys.toSeq.sorted
+      val result = checkMessagesAreUnique(messages, messages, Set())
 
-//      (0 to 100) map {
-//        x =>
-//          println("welsh " +  xx(x) + " : english " + yy(x))
-//
-//
-//      }
-
-//      val xxx = welsh.toSeq.sortBy(_._2).toMap.values.toSeq.sorted
-      val yyy = defaults.toSeq.sortBy(_._2).toMap.values.toSeq.sorted
-
-      (0 to 100) map {
-        x =>
-          println(s"welsh ${xx(x)._2}")
-//          println("english " +  yyy(x) + " : " + yy(x))
-      }
-
-      checkMessagesAreUnique(welsh, exclusionKeys)
+      result shouldBe Set()
     }
   }
 }

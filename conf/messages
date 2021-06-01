@@ -14,6 +14,7 @@ common.no = No
 common.continue = Continue
 common.saveAndContinue = Save and continue
 common.change = Change
+common.update = Update
 common.aDifferentAmount = A different amount
 common.enterAmount = Enter amount
 common.remove = Remove
@@ -32,6 +33,8 @@ common.error.self-assessment.paragraph.1.1 = If the web address is correct or yo
 common.error.self-assessment.paragraph.1.2 = Self Assessment: general enquiries (opens in new tab)
 common.error.self-assessment.paragraph.1.3 = to speak to someone about your income tax
 common.error.self-assessment.paragraph.1.3a = to speak to someone about your income tax.
+
+common.return.overview.buttonText = Return to overview
 
 common.currency.hint = For example, £600 or £193.54
 
@@ -85,14 +88,23 @@ employment.employmentInfo.p1.individual = You cannot update your employment info
 employment.employmentInfo.p1.agent = You cannot update your client’s employment information until 6 April {0}.
 
 employment.employmentInfo.buttonText = Return to employment summary
+employment.employmentSummary.heading = Employment
+employment.employmentSummary.content.individual = Your employment information is based on the information we already hold about you.
+employment.employmentSummary.content.agent = Your client’s employment information is based on the information we already hold about them.
+employment.expenses.label = Expenses
+employment.employment.details.label = Employment Details
+employment.expenses.subheading = This is a total of expenses from all employment in the tax year.
 
 employment.employmentDetails.heading.individual = Check your employment details
 employment.employmentDetails.heading.agent = Check your client’s employment details
 
 employment.caption = Employment for 6 April {0} to 5 April {1}
 
-employment.employmentDetails.content.individual = Your employment details are based on the information we already hold about you.
-employment.employmentDetails.content.agent = Your client’s employment details are based on the information we already hold about them.
+employment.employmentInformation.content.individual = Your employment details are based on the information we already hold about you.
+employment.employmentInformation.content.agent = Your client’s employment details are based on the information we already hold about them.
+
+employment.employmentDetails.content.individual = Your employment details are based on the details we already hold about you.
+employment.employmentDetails.content.agent = Your client’s employment details are based on the details we already hold about them.
 
 employment.employmentDetails.insetText.individual = You cannot update your employment details until 6 April {0}.
 employment.employmentDetails.insetText.agent = You cannot update your client’s employment details until 6 April {0}.
