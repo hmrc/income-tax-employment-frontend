@@ -28,14 +28,13 @@ import views.html.employment.{MultipleEmploymentsSummaryView, SingleEmploymentSu
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class EmploymentSummaryController @Inject()(
-                                               implicit val mcc: MessagesControllerComponents,
-                                               authAction: AuthorisedAction,
-                                               implicit val appConfig: AppConfig,
-                                               singleEmploymentSummaryView: SingleEmploymentSummaryView,
-                                               multipleEmploymentsSummaryView: MultipleEmploymentsSummaryView,
-                                               incomeTaxUserDataService: IncomeTaxUserDataService
-                                             ) extends FrontendController(mcc) with I18nSupport with SessionHelper {
+class EmploymentSummaryController @Inject()(implicit val mcc: MessagesControllerComponents,
+                                            authAction: AuthorisedAction,
+                                            implicit val appConfig: AppConfig,
+                                            singleEmploymentSummaryView: SingleEmploymentSummaryView,
+                                            multipleEmploymentsSummaryView: MultipleEmploymentsSummaryView,
+                                            incomeTaxUserDataService: IncomeTaxUserDataService
+                                           ) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   implicit val executionContext: ExecutionContext = mcc.executionContext
 

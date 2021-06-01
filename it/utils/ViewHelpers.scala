@@ -16,7 +16,6 @@
 
 package utils
 
-import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

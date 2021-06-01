@@ -16,7 +16,7 @@
 
 package models
 
-import controllers.Assets.SERVICE_UNAVAILABLE
+import play.api.http.Status.SERVICE_UNAVAILABLE
 import play.api.libs.json.{JsObject, Json}
 import utils.UnitTest
 
