@@ -73,11 +73,24 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "signIn.url" -> s"/auth-login-stub/gg-sign-in",
   )
 
+  def externalConfig: Map[String, String] = Map(
+    "auditing.enabled" -> "false",
+    "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck",
+    "microservice.services.income-tax-submission.host" -> "127.0.0.1",
+    "microservice.services.income-tax-submission.port" -> wiremockPort.toString,
+    "metrics.enabled" -> "false"
+  )
+
   lazy val agentAuthErrorPage: AgentAuthErrorPageView = app.injector.instanceOf[AgentAuthErrorPageView]
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
     .in(Environment.simple(mode = Mode.Dev))
     .configure(config)
+    .build
+
+  lazy val appWithFakeExternalCall: Application = new GuiceApplicationBuilder()
+    .in(Environment.simple(mode = Mode.Dev))
+    .configure(externalConfig)
     .build
 
   implicit lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
