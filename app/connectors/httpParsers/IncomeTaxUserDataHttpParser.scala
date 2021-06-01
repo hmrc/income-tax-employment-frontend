@@ -31,14 +31,6 @@ object IncomeTaxUserDataHttpParser extends APIParser {
   implicit object IncomeTaxUserDataHttpReads extends HttpReads[IncomeTaxUserDataResponse] {
     override def read(method: String, url: String, response: HttpResponse): IncomeTaxUserDataResponse = {
 
-      println()
-      println()
-      println(response.status)
-      println(response.body)
-      println()
-      println()
-      println()
-
       response.status match {
         case OK => response.json.validate[IncomeTaxUserData].fold[IncomeTaxUserDataResponse](
           jsonErrors => badSuccessJsonFromAPI,
