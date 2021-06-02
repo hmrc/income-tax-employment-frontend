@@ -21,7 +21,7 @@ import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.Helpers.OK
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import utils.IntegrationTest
 
 import scala.concurrent.Await
@@ -55,17 +55,20 @@ class IncomeTaxUserDataConnectorSpec extends IntegrationTest{
         val result: IncomeTaxUserDataResponse = Await.result(connector.getUserData(nino, taxYear), Duration.Inf)
         result shouldBe Right(userData(employmentsModel))
       }
-      "submission returns a 200 even if call is external as headers are passed in extraHeaders" in {
+    }
+
+    "Return an error result" when {
+
+      "submission returns a 500 when the call is external as the headers won't be passed along" in {
+
+        implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("sessionIdValue"))).withExtraHeaders("mtditid"->mtditid)
 
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,
           Json.toJson(userData(employmentsModel)).toString(), ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
 
-        val result: IncomeTaxUserDataResponse = Await.result(externalConnector.getUserData(nino, taxYear), Duration.Inf)
-        result shouldBe Right(userData(employmentsModel))
+        val result: IncomeTaxUserDataResponse = Await.result(externalConnector.getUserData(nino, taxYear)(hc), Duration.Inf)
+        result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR,APIErrorBodyModel.parsingError))
       }
-    }
-
-    "Return an error result" when {
 
       "submission returns a 200 but invalid json" in {
 
