@@ -16,6 +16,7 @@
 
 package controllers.employment
 
+import audit.{AuditService, ViewEmploymentDetailsAudit}
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import models.employment.{AllEmploymentData, EmploymentSource}
@@ -34,6 +35,7 @@ class EmploymentDetailsController @Inject()(implicit val cc: MessagesControllerC
                                             employmentDetailsView: EmploymentDetailsView,
                                             implicit val appConfig: AppConfig,
                                             incomeTaxUserDataService: IncomeTaxUserDataService,
+                                            auditService: AuditService,
                                             implicit val ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
 
@@ -46,6 +48,9 @@ class EmploymentDetailsController @Inject()(implicit val cc: MessagesControllerC
       source match {
         case Some(source) =>
           val (name, ref, data) = (source.employerName, source.employerRef, source.employmentData)
+          val affinityGroup = if(user.isAgent) "agent" else "individual"
+          val auditModel = ViewEmploymentDetailsAudit(taxYear,affinityGroup ,user.nino, user.mtditid, name, ref, data)
+          auditService.auditModel[ViewEmploymentDetailsAudit](auditModel.toAuditModel)
           Ok(employmentDetailsView(name, ref, data, taxYear))
         case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
