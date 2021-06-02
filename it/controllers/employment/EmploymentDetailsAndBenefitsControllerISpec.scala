@@ -144,6 +144,8 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           textOnPageCheck("Cannot update", taskListRowFieldAmountSelector(2))
         }
         buttonCheck(ContentEN.buttonText, buttonSelector)
+        formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary",
+          "#main-content > div > div > form")
 
         welshToggleCheck(ENGLISH)
       }
@@ -187,6 +189,8 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         }
 
         buttonCheck(ContentEN.buttonText, buttonSelector)
+        formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary",
+          "#main-content > div > div > form")
 
         welshToggleCheck(ENGLISH)
       }
@@ -234,6 +238,8 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         }
 
         buttonCheck(ContentEN.buttonText, buttonSelector)
+        formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary",
+          "#main-content > div > div > form")
 
         welshToggleCheck(ENGLISH)
       }
@@ -266,6 +272,8 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         }
 
         buttonCheck(ContentEN.buttonText, buttonSelector)
+        formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary",
+          "#main-content > div > div > form")
 
         welshToggleCheck(ENGLISH)
       }
@@ -315,6 +323,8 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         }
 
         buttonCheck(ContentEN.buttonText, buttonSelector)
+        formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary",
+          "#main-content > div > div > form")
 
         welshToggleCheck(WELSH)
       }
@@ -348,6 +358,8 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         }
 
         buttonCheck(ContentEN.buttonText, buttonSelector)
+        formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary",
+          "#main-content > div > div > form")
 
         welshToggleCheck(WELSH)
       }
@@ -387,6 +399,8 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         }
 
         buttonCheck(ContentCY.buttonText, buttonSelector)
+        formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary",
+          "#main-content > div > div > form")
 
         welshToggleCheck(WELSH)
       }
@@ -420,6 +434,8 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         }
 
         buttonCheck(ContentCY.buttonText, buttonSelector)
+        formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary",
+          "#main-content > div > div > form")
 
         welshToggleCheck(WELSH)
       }
