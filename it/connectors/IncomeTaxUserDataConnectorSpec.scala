@@ -55,14 +55,6 @@ class IncomeTaxUserDataConnectorSpec extends IntegrationTest{
         val result: IncomeTaxUserDataResponse = Await.result(connector.getUserData(nino, taxYear), Duration.Inf)
         result shouldBe Right(userData(employmentsModel))
       }
-      "submission returns a 200 even if call is external as headers are passed in extraHeaders" in {
-
-        stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,
-          Json.toJson(userData(employmentsModel)).toString(), ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
-
-        val result: IncomeTaxUserDataResponse = Await.result(externalConnector.getUserData(nino, taxYear), Duration.Inf)
-        result shouldBe Right(userData(employmentsModel))
-      }
     }
 
     "Return an error result" when {
