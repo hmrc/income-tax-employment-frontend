@@ -1,2 +1,15 @@
 $govuk-is-ie8: true;
 @import "application";
+
+.hmrc-language-select {
+  @include govuk-media-query($from: desktop) {
+    float: right;
+  }
+}
+
+.js-hidden {
+    display: none;
+}
+.js-enabled .js-hidden {
+    display: block;
+}
