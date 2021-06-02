@@ -77,7 +77,7 @@
 </div>
 }
 
-@layout(pageTitle = headingForUse, taxYear = Some(taxYear), isAgent = user.isAgent) {
+@layout(pageTitle = messages("employment.employmentSummary.heading"), taxYear = Some(taxYear), isAgent = user.isAgent) {
 
     @heading(headingForUse, Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
 
