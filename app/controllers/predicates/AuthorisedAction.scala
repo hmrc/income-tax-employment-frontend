@@ -28,7 +28,8 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.{affinityGroup, allEnrolments, confidenceLevel}
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.HeaderCarrierConverter
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
+import javax.inject.Inject
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -49,7 +50,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
 
   override def invokeBlock[A](request: Request[A], block: User[A] => Future[Result]): Future[Result] = {
 
-    implicit lazy val headerCarrier: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+    implicit lazy val headerCarrier: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request,request.session)
 
     authService.authorised.retrieve(affinityGroup) {
       case Some(AffinityGroup.Agent) => agentAuthentication(block)(request, headerCarrier)
@@ -60,7 +61,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
         Redirect(appConfig.signInUrl)
       case _: AuthorisationException =>
         logger.info(s"[AuthorisedAction][invokeBlock] - User failed to authenticate")
-        Redirect(controllers.errors.routes.UnauthorisedUserErrorController.show())
+        Redirect(controllers.errors.routes.UnauthorisedUserErrorController.show)
     }
   }
 
@@ -97,7 +98,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
             Future.successful(Redirect(appConfig.signInUrl))
           case (None, _) =>
             logger.info(s"[AuthorisedAction][individualAuthentication] - User has no MTD IT enrolment. Redirecting user to sign up for MTD.")
-            Future.successful(Redirect(controllers.errors.routes.IndividualAuthErrorController.show()))
+            Future.successful(Redirect(controllers.errors.routes.IndividualAuthErrorController.show))
         }
       case _ =>
         logger.info("[AuthorisedAction][individualAuthentication] User has confidence level below 200, routing user to IV uplift.")
@@ -136,7 +137,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
 
               case None =>
                 logger.info("[AuthorisedAction][agentAuthentication] Agent with no HMRC-AS-AGENT enrolment. Rendering unauthorised view.")
-                Future.successful(Redirect(controllers.errors.routes.YouNeedAgentServicesController.show()))
+                Future.successful(Redirect(controllers.errors.routes.YouNeedAgentServicesController.show))
             }
           } recover {
           case _: NoActiveSession =>
@@ -144,7 +145,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
             Redirect(appConfig.signInUrl)
           case ex: AuthorisationException =>
             logger.info(s"[AuthorisedAction][agentAuthentication] - Agent does not have delegated authority for Client.")
-            Redirect(controllers.errors.routes.AgentAuthErrorController.show())
+            Redirect(controllers.errors.routes.AgentAuthErrorController.show)
         }
       case (mtditid, nino) =>
         logger.info(s"[AuthorisedAction][agentAuthentication] - Agent does not have session key values. " +

@@ -18,7 +18,8 @@ package controllers.employment
 
 import common.SessionValues
 import config.{MockAuditService, MockIncomeTaxUserDataService}
-import controllers.Assets.Redirect
+import config.MockIncomeTaxUserDataService
+import play.api.mvc.Results.Redirect
 import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
 import play.api.http.Status._
 import play.api.mvc.Result

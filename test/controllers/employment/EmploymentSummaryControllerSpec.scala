@@ -18,10 +18,10 @@ package controllers.employment
 
 import common.SessionValues
 import config.MockIncomeTaxUserDataService
-import controllers.Assets.{Ok, Redirect, SEE_OTHER}
 import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
-import play.api.http.Status.OK
+import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Result
+import play.api.mvc.Results.{Ok, Redirect}
 import utils.UnitTestWithApp
 import views.html.employment.{MultipleEmploymentsSummaryView, SingleEmploymentSummaryView}
 

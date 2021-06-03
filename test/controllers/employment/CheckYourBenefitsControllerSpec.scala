@@ -18,10 +18,10 @@ package controllers.employment
 
 import common.SessionValues
 import config.MockIncomeTaxUserDataService
-import controllers.Assets.{Ok, Redirect}
 import models.employment._
 import play.api.http.Status._
 import play.api.mvc.Result
+import play.api.mvc.Results.{Ok, Redirect}
 import utils.UnitTestWithApp
 import views.html.employment.CheckYourBenefitsView
 

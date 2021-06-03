@@ -18,12 +18,12 @@ package services
 
 import config.{AppConfig, ErrorHandler}
 import connectors.IncomeTaxUserDataConnector
-import controllers.Assets.Redirect
 import javax.inject.{Inject, Singleton}
 import models.employment.AllEmploymentData
 import models.{IncomeTaxUserData, User}
 import play.api.Logging
 import play.api.i18n.MessagesApi
+import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 

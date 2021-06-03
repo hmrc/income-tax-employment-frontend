@@ -22,8 +22,9 @@ import models.employment.AllEmploymentData
 import play.api.i18n.MessagesApi
 import play.api.mvc.Result
 import utils.UnitTest
-import controllers.Assets._
 import uk.gov.hmrc.auth.core.AffinityGroup
+import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.mvc.Results.{Ok, Redirect}
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 
 class IncomeTaxUserDataServiceSpec extends UnitTest with MockIncomeTaxUserDataConnector{

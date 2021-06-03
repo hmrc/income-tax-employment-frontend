@@ -17,7 +17,6 @@
 package utils
 
 import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, Materializer}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import common.SessionValues
 import config.AppConfig
@@ -55,7 +54,6 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid)
 
   implicit val actorSystem: ActorSystem = ActorSystem()
-  implicit val materializer: Materializer = ActorMaterializer()
 
   val startUrl = s"http://localhost:$port/income-through-software/return/employment-income"
 
@@ -75,11 +73,24 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "signIn.url" -> s"/auth-login-stub/gg-sign-in",
   )
 
+  def externalConfig: Map[String, String] = Map(
+    "auditing.enabled" -> "false",
+    "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck",
+    "microservice.services.income-tax-submission.host" -> "127.0.0.1",
+    "microservice.services.income-tax-submission.port" -> wiremockPort.toString,
+    "metrics.enabled" -> "false"
+  )
+
   lazy val agentAuthErrorPage: AgentAuthErrorPageView = app.injector.instanceOf[AgentAuthErrorPageView]
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
     .in(Environment.simple(mode = Mode.Dev))
     .configure(config)
+    .build
+
+  lazy val appWithFakeExternalCall: Application = new GuiceApplicationBuilder()
+    .in(Environment.simple(mode = Mode.Dev))
+    .configure(externalConfig)
     .build
 
   implicit lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
@@ -106,7 +117,6 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   val defaultAcceptedConfidenceLevels = Seq(
     ConfidenceLevel.L200,
-    ConfidenceLevel.L300,
     ConfidenceLevel.L500
   )
 
