@@ -48,8 +48,7 @@ class EmploymentDetailsController @Inject()(implicit val cc: MessagesControllerC
       source match {
         case Some(source) =>
           val (name, ref, data) = (source.employerName, source.employerRef, source.employmentData)
-          val affinityGroup = if(user.isAgent) "agent" else "individual"
-          val auditModel = ViewEmploymentDetailsAudit(taxYear,affinityGroup ,user.nino, user.mtditid, name, ref, data)
+          val auditModel = ViewEmploymentDetailsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, name, ref, data)
           auditService.auditModel[ViewEmploymentDetailsAudit](auditModel.toAuditModel)
           Ok(employmentDetailsView(name, ref, data, taxYear))
         case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))

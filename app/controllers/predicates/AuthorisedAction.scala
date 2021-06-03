@@ -17,7 +17,6 @@
 package controllers.predicates
 
 import java.util.UUID.randomUUID
-
 import common.{EnrolmentIdentifiers, EnrolmentKeys, SessionValues}
 import config.AppConfig
 import models.User
@@ -31,8 +30,8 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.{affinityGroup, allEnrolment
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
-import javax.inject.Inject
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthorisedAction @Inject()(appConfig: AppConfig)
@@ -55,7 +54,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
 
     authService.authorised.retrieve(affinityGroup) {
       case Some(AffinityGroup.Agent) => agentAuthentication(block)(request, headerCarrier)
-      case _ => individualAuthentication(block)(request, headerCarrier)
+      case Some(affinityGroup) => individualAuthentication(block, affinityGroup)(request, headerCarrier)
     } recover {
       case _: NoActiveSession =>
         logger.info(s"[AuthorisedAction][invokeBlock] - No active session. Redirecting to ${appConfig.signInUrl}")
@@ -77,7 +76,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
     }
   }
 
-  def individualAuthentication[A](block: User[A] => Future[Result])
+  def individualAuthentication[A](block: User[A] => Future[Result], affinityGroup: AffinityGroup)
                                  (implicit request: Request[A], hc: HeaderCarrier): Future[Result] = {
     authService.authorised.retrieve(allEnrolments and confidenceLevel) {
       case enrolments ~ userConfidence if userConfidence.level >= minimumConfidenceLevel =>
@@ -91,7 +90,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
               logger.info(s"[AuthorisedAction][individualAuthentication] - No session id in request")
               Future.successful(Redirect(appConfig.signInUrl))
             } { sessionId =>
-              block(User(mtdItId, None, nino, sessionId))
+              block(User(mtdItId, None, nino, sessionId, affinityGroup.toString))
             }
 
           case (_, None) =>
@@ -133,7 +132,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
                   logger.info(s"[AuthorisedAction][agentAuthentication] - No session id in request")
                   Future(Redirect(appConfig.signInUrl))
                 } { sessionId =>
-                  block(User(mtdItId, Some(arn), nino, sessionId))
+                  block(User(mtdItId, Some(arn), nino, sessionId, AffinityGroup.Agent.toString))
                 }
 
               case None =>
