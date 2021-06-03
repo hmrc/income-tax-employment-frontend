@@ -16,7 +16,6 @@
 
 package controllers.predicates
 
-import java.util.UUID.randomUUID
 import common.{EnrolmentIdentifiers, EnrolmentKeys, SessionValues}
 import config.AppConfig
 import models.User
