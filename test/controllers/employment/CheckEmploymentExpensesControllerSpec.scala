@@ -18,9 +18,10 @@ package controllers.employment
 
 import common.SessionValues
 import config.MockIncomeTaxUserDataService
-import controllers.Assets._
 import models.employment._
 import play.api.http.HeaderNames.LOCATION
+import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.mvc.Results.{Ok, Redirect}
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers.header
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}

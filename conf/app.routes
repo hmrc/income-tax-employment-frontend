@@ -29,4 +29,6 @@ GET        /language/:lang                              controllers.LanguageSwit
 
 GET        /error/you-need-agent-services-account           controllers.errors.YouNeedAgentServicesController.show
 
+GET         /keep-alive                                     controllers.SessionExpiredController.keepAlive
+GET         /timeout                                        controllers.SessionExpiredController.timeout
 
