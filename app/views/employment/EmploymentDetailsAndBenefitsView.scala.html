@@ -65,8 +65,7 @@
         </li>
 </ul>
 
-@formWithCSRF(action = controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)) {
-<!--//TODO - Should redirect to employment summary page-->
+@formWithCSRF(action = controllers.employment.routes.EmploymentSummaryController.show(taxYear)) {
     @govUkButton(Button(
             attributes = Map("id" -> "employmentSummaryBtn"),
             preventDoubleClick = true,

@@ -52,7 +52,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-        titleCheck(employerName1)
+        titleCheck(ContentEN.titleAndH1Expected)
         h1Check(employerName1)
         textOnPageCheck(ContentEN.captionExpected, captionSelector)
 
@@ -68,7 +68,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
         welshToggleCheck(ENGLISH)
       }
 
-      "redirect when there is no data" which {
+      "redirect when there is employment data returned but no hmrc employment data" which {
         lazy val result: WSResponse = {
           authoriseIndividual()
           userDataStub(IncomeTaxUserData(Some(AllEmploymentData(Seq(),None,Seq(employmentSource),None))), nino, taxYear)
@@ -94,7 +94,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-        titleCheck(employerName3)
+        titleCheck(ContentEN.titleAndH1Expected)
         h1Check(employerName3)
         textOnPageCheck(ContentEN.captionExpected, captionSelector)
 
@@ -231,7 +231,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-        titleCheck(employerName1)
+        titleCheck(ContentEN.titleAndH1Expected)
         h1Check(employerName1)
         textOnPageCheck(ContentEN.captionExpected, captionSelector)
 
@@ -260,7 +260,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-        titleCheck(employerName3)
+        titleCheck(ContentEN.titleAndH1Expected)
         h1Check(employerName3)
         textOnPageCheck(ContentEN.captionExpected, captionSelector)
 
@@ -401,7 +401,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-        titleCheck(employerName1)
+        titleCheck(ContentCY.titleAndH1Expected)
         h1Check(employerName1)
         textOnPageCheck(ContentCY.captionExpected, captionSelector)
 
@@ -433,7 +433,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-        titleCheck(employerName3)
+        titleCheck(ContentCY.titleAndH1Expected)
         h1Check(employerName3)
         textOnPageCheck(ContentCY.captionExpected, captionSelector)
 
@@ -579,7 +579,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-        titleCheck(employerName1)
+        titleCheck(ContentCY.titleAndH1Expected)
         h1Check(employerName1)
         textOnPageCheck(ContentCY.captionExpected, captionSelector)
 
@@ -611,7 +611,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-        titleCheck(employerName3)
+        titleCheck(ContentCY.titleAndH1Expected)
         h1Check(employerName3)
         textOnPageCheck(ContentCY.captionExpected, captionSelector)
 
