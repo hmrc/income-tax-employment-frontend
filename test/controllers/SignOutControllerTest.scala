@@ -16,8 +16,8 @@
 
 package controllers
 
-import controllers.Assets.SEE_OTHER
 import play.api.http.HeaderNames.LOCATION
+import play.api.http.Status.SEE_OTHER
 import play.api.test.Helpers.header
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import utils.UnitTestWithApp

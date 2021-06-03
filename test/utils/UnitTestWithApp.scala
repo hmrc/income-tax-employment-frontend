@@ -22,6 +22,7 @@ import play.api.test.FakeRequest
 
 import scala.concurrent.ExecutionContext
 
+
 trait UnitTestWithApp extends UnitTest with GuiceOneAppPerSuite {
 
   implicit lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
