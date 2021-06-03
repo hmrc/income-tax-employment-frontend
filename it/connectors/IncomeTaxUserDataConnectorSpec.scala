@@ -59,7 +59,7 @@ class IncomeTaxUserDataConnectorSpec extends IntegrationTest{
 
     "Return an error result" when {
 
-      "submission returns a 500 when the call is external as the headers won't be passed along" in {
+      "the stub isn't matched due to the call being external as the headers won't be passed along" in {
 
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("sessionIdValue"))).withExtraHeaders("mtditid"->mtditid)
 
