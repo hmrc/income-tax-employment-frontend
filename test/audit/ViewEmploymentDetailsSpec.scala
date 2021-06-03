@@ -16,6 +16,7 @@
 
 package audit
 
+import models.employment.{EmploymentData, Pay}
 import utils.UnitTestWithApp
 import play.api.libs.json.Json
 
@@ -30,9 +31,40 @@ class ViewEmploymentDetailsSpec extends UnitTestWithApp{
              |"affinityGroup": "Individual",
              |"nino":"AA12343AA",
              |"mtditid":"mtditid",
-             |"employerName":"Dave"}""".stripMargin)
+             |"employerName":"Dave",
+             |"employerRef":"reference",
+             |"employmentData":{
+             |  "submittedOn":"2020-02-12",
+             |  "employmentSequenceNumber":"123456789999",
+             |  "companyDirector": true,
+             |  "closeCompany":false,
+             |  "directorshipCeasedDate":"2020-02-12",
+             |  "occPen":false,
+             |  "disguisedRemuneration":false,
+             |  "pay": {
+             |    "taxablePayToDate":34234.15,
+             |    "totalTaxToDate":6782.92,
+             |    "tipsAndOtherPayments":67676,
+             |    "payFrequency":"CALENDAR MONTHLY",
+             |    "paymentDate":"2020-04-23",
+             |    "taxWeekNo":32,
+             |    "taxMonthNo":2
+             |  }
+             |}
+             |}""".stripMargin)
 
-        val auditModel = ViewEmploymentDetailsAudit(2020, "Individual", "AA12343AA", "mtditid", "Dave", None, None)
+        val auditModel = ViewEmploymentDetailsAudit(2020, "Individual", "AA12343AA",
+          "mtditid", "Dave", Some("reference"),
+          Some(EmploymentData(
+            submittedOn = ("2020-02-12"),
+            employmentSequenceNumber = Some("123456789999"),
+            companyDirector = Some(true),
+            closeCompany = Some(false),
+            directorshipCeasedDate = Some("2020-02-12"),
+            occPen = Some(false),
+            disguisedRemuneration = Some(false),
+            pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
+          )))
         Json.toJson(auditModel) shouldBe json
       }
     }

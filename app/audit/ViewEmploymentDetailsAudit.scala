@@ -22,7 +22,7 @@ import play.api.libs.json.{Json, OWrites}
 case class ViewEmploymentDetailsAudit(taxYear: Int, affinityGroup: String, nino: String,
                                       mtditid: String, employerName: String, employerRef: Option[String], employmentData: Option[EmploymentData]) {
 
-  private def name = "ViewEmploymentDetailsAudit"
+  private def name = "ViewEmploymentDetails"
   def toAuditModel: AuditModel[ViewEmploymentDetailsAudit] = AuditModel(name, name, this)
 }
 
