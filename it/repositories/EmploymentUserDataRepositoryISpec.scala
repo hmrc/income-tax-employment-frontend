@@ -24,6 +24,7 @@ import org.mongodb.scala.result.InsertOneResult
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.mvc.AnyContent
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
+import uk.gov.hmrc.auth.core.AffinityGroup
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import utils.IntegrationTest
 
@@ -55,7 +56,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
       res mustBe true
       count mustBe 1
       val data: Option[EmploymentUserData] = await(employmentRepo.find(User(
-        employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId),employmentUserData.taxYear))
+        employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId, AffinityGroup.Individual.toString),employmentUserData.taxYear))
       data.map(_.copy(lastUpdated = DateTime.parse("2021-05-17T14:01:52.634Z"))) mustBe Some(
         employmentUserData.copy(lastUpdated = DateTime.parse("2021-05-17T14:01:52.634Z"))
       )
@@ -67,7 +68,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
       res mustBe true
       count mustBe 1
       val data: Option[EmploymentUserData] = await(employmentRepo.find(User(
-        employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId),employmentUserData.taxYear))
+        employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId, AffinityGroup.Individual.toString),employmentUserData.taxYear))
       data.map(_.copy(lastUpdated = DateTime.parse("2021-05-17T14:01:52.634Z"))) mustBe Some(
         newUserData.copy(lastUpdated = DateTime.parse("2021-05-17T14:01:52.634Z"))
       )
@@ -97,7 +98,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
       ).toFuture()).head
       val dataAfter: Option[EmploymentUserData] = await(employmentRepo.find(User(
         employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId
-      ),employmentUserData.taxYear))
+        , AffinityGroup.Individual.toString),employmentUserData.taxYear))
 
       dataAfter.map(_.copy(lastUpdated = dataBefore.lastUpdated)) mustBe Some(dataBefore)
       dataAfter.map(_.lastUpdated.isAfter(dataBefore.lastUpdated)) mustBe Some(true)

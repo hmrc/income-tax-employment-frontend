@@ -87,7 +87,7 @@ class AuthorisedActionSpec extends UnitTest {
           (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
             .expects(*, allEnrolments and confidenceLevel, *, *)
             .returning(Future.successful(enrolments and ConfidenceLevel.L200))
-          auth.individualAuthentication[AnyContent](block)(fakeRequest, headerCarrierWithSession)
+          auth.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeRequest, headerCarrierWithSession)
         }
 
         "returns an OK status" in {
@@ -115,7 +115,7 @@ class AuthorisedActionSpec extends UnitTest {
             (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
               .expects(*, allEnrolments and confidenceLevel, *, *)
               .returning(Future.successful(enrolments and ConfidenceLevel.L200))
-            auth.individualAuthentication[AnyContent](block)(fakeRequest, emptyHeaderCarrier)
+            auth.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeRequest, emptyHeaderCarrier)
           }
 
           "returns an SEE_OTHER status" in {
@@ -131,7 +131,7 @@ class AuthorisedActionSpec extends UnitTest {
           (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
             .expects(*, allEnrolments and confidenceLevel, *, *)
             .returning(Future.successful(enrolments and ConfidenceLevel.L200))
-          auth.individualAuthentication[AnyContent](block)(fakeRequest, headerCarrierWithSession)
+          auth.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeRequest, headerCarrierWithSession)
         }
 
         "returns a forbidden" in {
@@ -148,7 +148,7 @@ class AuthorisedActionSpec extends UnitTest {
           (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
             .expects(*, allEnrolments and confidenceLevel, *, *)
             .returning(Future.successful(enrolments and ConfidenceLevel.L200))
-          auth.individualAuthentication[AnyContent](block)(fakeRequest, headerCarrierWithSession)
+          auth.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeRequest, headerCarrierWithSession)
         }
 
         "returns an Unauthorised" in {
@@ -175,7 +175,7 @@ class AuthorisedActionSpec extends UnitTest {
           (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
             .expects(*, allEnrolments and confidenceLevel, *, *)
             .returning(Future.successful(enrolments and ConfidenceLevel.L50))
-          auth.individualAuthentication[AnyContent](block)(fakeRequest, headerCarrierWithSession)
+          auth.individualAuthentication[AnyContent](block, AffinityGroup.Individual)(fakeRequest, headerCarrierWithSession)
         }
 
         "has a status of 303" in {

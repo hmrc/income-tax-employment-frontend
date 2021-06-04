@@ -22,6 +22,7 @@ import models.employment.AllEmploymentData
 import play.api.i18n.MessagesApi
 import play.api.mvc.Result
 import utils.UnitTest
+import uk.gov.hmrc.auth.core.AffinityGroup
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Results.{Ok, Redirect}
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
@@ -56,7 +57,8 @@ class IncomeTaxUserDataServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       mockFind(nino, taxYear, userData)
 
       val response = service.findUserData(
-        User(mtditid = "1234567890", arn = None, nino = nino, sessionId = "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81"),
+        User(mtditid = "1234567890", arn = None, nino = nino, sessionId = "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81",
+          AffinityGroup.Individual.toString),
         taxYear,
       )(result
       )
@@ -68,7 +70,8 @@ class IncomeTaxUserDataServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       mockFind(nino, taxYear,userData.copy(employment = None))
 
       val response = service.findUserData(
-        User(mtditid = "1234567890", arn = None, nino = nino, sessionId = "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81"),
+        User(mtditid = "1234567890", arn = None, nino = nino, sessionId = "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81",
+          AffinityGroup.Individual.toString),
         taxYear,
       )( result
       )
