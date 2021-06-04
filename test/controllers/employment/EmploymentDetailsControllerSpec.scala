@@ -17,6 +17,7 @@
 package controllers.employment
 
 import common.SessionValues
+import config.{MockAuditService, MockIncomeTaxUserDataService}
 import config.MockIncomeTaxUserDataService
 import play.api.mvc.Results.Redirect
 import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
@@ -28,7 +29,7 @@ import views.html.employment.EmploymentDetailsView
 
 import scala.concurrent.Future
 
-class EmploymentDetailsControllerSpec extends UnitTestWithApp with MockIncomeTaxUserDataService {
+class EmploymentDetailsControllerSpec extends UnitTestWithApp with MockIncomeTaxUserDataService with MockAuditService{
 
   lazy val view = app.injector.instanceOf[EmploymentDetailsView]
   lazy val controller = new EmploymentDetailsController()(
@@ -37,6 +38,7 @@ class EmploymentDetailsControllerSpec extends UnitTestWithApp with MockIncomeTax
     view,
     mockAppConfig,
     mockIncomeTaxUserDataService,
+    mockAuditService,
     ec
   )
   val taxYear = mockAppConfig.defaultTaxYear

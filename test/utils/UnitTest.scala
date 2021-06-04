@@ -79,7 +79,7 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
   val agentAuthErrorPageView: AgentAuthErrorPageView = app.injector.instanceOf[AgentAuthErrorPageView]
 
   implicit lazy val mockMessagesControllerComponents: MessagesControllerComponents = Helpers.stubMessagesControllerComponents()
-  implicit lazy val user: User[AnyContent] = new User[AnyContent]("1234567890", None, "AA123456A", sessionId)(fakeRequest)
+  implicit lazy val user: User[AnyContent] = new User[AnyContent]("1234567890", None, "AA123456A", sessionId, AffinityGroup.Individual.toString)(fakeRequest)
 
   val authorisedAction = new AuthorisedAction(mockAppConfig)(mockAuthService, stubMessagesControllerComponents())
 
