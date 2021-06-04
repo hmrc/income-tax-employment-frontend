@@ -17,7 +17,7 @@
 @import views.html.headerFooterTemplate.Layout
 @import views.html.templates.helpers.Heading
 
-@this(layout: Layout, heading: Heading)
+@this(layout: Layout, heading: Heading, govUkButton: GovukButton)
 
 @()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 @layout(messages("error.agent.title")) {
@@ -28,7 +28,13 @@
         @{messages("error.agent.paragraph2")}</a>
     @{messages("error.agent.paragraph3")}
 </p>
-<p class="govuk-body">@{messages("error.agent.paragraph4")}</p>
+@govUkButton(Button(
+ attributes = Map(),
+ preventDoubleClick = true,
+ content = Text(messages("error.agent.paragraph4")),
+ classes = "govuk-button",
+ href = Some(appConfig.viewAndChangeEnterUtrUrl)
+))
 
 }
 

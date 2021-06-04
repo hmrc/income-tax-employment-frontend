@@ -29,12 +29,14 @@ class AgentAuthErrorPageViewSpec extends AnyWordSpec with Matchers with GuiceOne
   val p1Selector = "#main-content > div > div > p:nth-child(2)"
   val p2Selector = "#main-content > div > div > p:nth-child(3)"
   val authoriseAsAnAgentLinkSelector = "#client_auth_link"
+  val anotherClientDetailsButtonSelector = "#main-content > div > div > a"
 
   val h1Expected = "There’s a problem"
   val youCannotViewText: String = "You cannot view this client’s information. Your client needs to"
   val authoriseYouAsText = "authorise you as their agent (opens in new tab)"
   val beforeYouCanTryText = "before you can sign in to this service."
-  val tryAnotherClientText = "Try another client’s details."
+  val tryAnotherClientText = "Try another client’s details"
+  val tryAnotherClientExpectedHref = "/report-quarterly/income-and-expenses/view/agents/client-utr"
   val authoriseAsAnAgentLink = "https://www.gov.uk/guidance/client-authorisation-an-overview"
 
   "AgentAuthErrorPageView in English" should {
@@ -48,7 +50,7 @@ class AgentAuthErrorPageViewSpec extends AnyWordSpec with Matchers with GuiceOne
       h1Check(h1Expected, "xl")
       textOnPageCheck(s"$youCannotViewText $authoriseYouAsText $beforeYouCanTryText", p1Selector)
       linkCheck(authoriseYouAsText, authoriseAsAnAgentLinkSelector, authoriseAsAnAgentLink)
-      textOnPageCheck(tryAnotherClientText, p2Selector)
+      buttonCheck(tryAnotherClientText, anotherClientDetailsButtonSelector, Some(tryAnotherClientExpectedHref))
     }
   }
 
@@ -63,7 +65,7 @@ class AgentAuthErrorPageViewSpec extends AnyWordSpec with Matchers with GuiceOne
       h1Check(h1Expected, "xl")
       textOnPageCheck(s"$youCannotViewText $authoriseYouAsText $beforeYouCanTryText", p1Selector)
       linkCheck(authoriseYouAsText, authoriseAsAnAgentLinkSelector, authoriseAsAnAgentLink)
-      textOnPageCheck(tryAnotherClientText, p2Selector)
+      buttonCheck(tryAnotherClientText, anotherClientDetailsButtonSelector, Some(tryAnotherClientExpectedHref))
     }
   }
 }
