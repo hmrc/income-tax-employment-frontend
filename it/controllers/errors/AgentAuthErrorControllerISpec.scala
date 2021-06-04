@@ -29,12 +29,13 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
     val heading: String = "There’s a problem"
     val title = "There’s a problem"
     val youCan = "You cannot view this client’s information. Your client needs to authorise you as their agent (opens in new tab) before you can sign in to this service."
-    val tryAnother = "Try another client’s details."
+    val tryAnother = "Try another client’s details"
+    val tryAnotherExpectedHref = "http://localhost:11111/report-quarterly/income-and-expenses/view/agents/client-utr"
 
   }
   object Selectors {
     val youCan = "#main-content > div > div > p:nth-child(2)"
-    val tryAnother = "#main-content > div > div > p:nth-child(3)"
+    val tryAnother = "#main-content > div > div > a"
 
   }
      val url = s"http://localhost:$port/income-through-software/return/employment-income/error/you-need-client-authorisation"
@@ -50,7 +51,7 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
         titleCheck(ExpectedResults.title)
         h1Check(ExpectedResults.heading,"xl")
         textOnPageCheck(ExpectedResults.youCan, Selectors.youCan)
-        textOnPageCheck(ExpectedResults.tryAnother, Selectors.tryAnother)
+        buttonCheck(ExpectedResults.tryAnother, Selectors.tryAnother, Some(ExpectedResults.tryAnotherExpectedHref))
       }
     }
   }
