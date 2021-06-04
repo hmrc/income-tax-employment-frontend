@@ -50,10 +50,6 @@ class TaxYearAction @Inject()(taxYear: Int, missingTaxYearReset: Boolean)(
           Left(
             Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
               .addingToSession(TAX_YEAR -> taxYear.toString)
-              .removingFromSession(
-                DIVIDENDS_CYA, INTEREST_CYA, GIFT_AID_CYA,
-                DIVIDENDS_PRIOR_SUB, INTEREST_PRIOR_SUB, GIFT_AID_PRIOR_SUB
-              )
           )
         }
       } else {
