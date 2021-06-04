@@ -18,12 +18,10 @@ package controllers.employment
 
 import common.SessionValues
 import config.{MockAuditService, MockIncomeTaxUserDataService}
-import config.MockIncomeTaxUserDataService
-import play.api.mvc.Results.Redirect
-import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
+import models.employment.EmploymentData
 import play.api.http.Status._
 import play.api.mvc.Result
-import play.api.mvc.Results.Ok
+import play.api.mvc.Results.{Ok, Redirect}
 import utils.UnitTestWithApp
 import views.html.employment.EmploymentDetailsView
 
@@ -44,45 +42,15 @@ class EmploymentDetailsControllerSpec extends UnitTestWithApp with MockIncomeTax
   val taxYear = mockAppConfig.defaultTaxYear
   val employmentId = "223/AB12399"
 
-  object FullModel {
-    val allData: AllEmploymentData = AllEmploymentData(
-      hmrcEmploymentData = Seq(
-        EmploymentSource(
-          employmentId = "223/AB12399",
-          employerName = "maggie",
-          employerRef = Some("223/AB12399"),
-          payrollId = Some("123456789999"),
-          startDate = Some("2019-04-21"),
-          cessationDate = Some("2020-03-11"),
-          dateIgnored = Some("2020-04-04T01:01:01Z"),
-          submittedOn = Some("2020-01-04T05:01:01Z"),
-          employmentData = Some(EmploymentData(
-            submittedOn = ("2020-02-12"),
-            employmentSequenceNumber = Some("123456789999"),
-            companyDirector = Some(true),
-            closeCompany = Some(false),
-            directorshipCeasedDate = Some("2020-02-12"),
-            occPen = Some(false),
-            disguisedRemuneration = Some(false),
-            pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
-          )),
-          None
-        )
-      ),
-      hmrcExpenses = None,
-      customerEmploymentData = Seq(),
-      customerExpenses = None
-    )
-  }
 
   ".show" should {
 
     "return a result when GetEmploymentDataModel is in Session" which {
 
       s"has an OK($OK) status" in new TestWithAuth {
-        val data: Option[EmploymentData] = FullModel.allData.hmrcEmploymentData.head.employmentData
-        val name: String = FullModel.allData.hmrcEmploymentData.head.employerName
-        val ref: Option[String] = FullModel.allData.hmrcEmploymentData.head.employerRef
+        val data: Option[EmploymentData] = employmentsModel.hmrcEmploymentData.head.employmentData
+        val name: String = employmentsModel.hmrcEmploymentData.head.employerName
+        val ref: Option[String] = employmentsModel.hmrcEmploymentData.head.employerRef
 
         val result: Future[Result] = {
           mockFind(taxYear, Ok(view(name, ref, data, taxYear)))

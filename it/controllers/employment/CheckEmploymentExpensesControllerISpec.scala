@@ -86,41 +86,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   }
 
 
-  val expenses: Expenses = Expenses(Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7), Some(8))
-  val employmentExpenses: EmploymentExpenses = EmploymentExpenses(
-    submittedOn = None,
-    totalExpenses = None,
-    expenses = Some(expenses)
-  )
-  val allData: AllEmploymentData = AllEmploymentData(
-    hmrcEmploymentData = Seq(
-      EmploymentSource(
-        employmentId = "223/AB12399",
-        employerName = "maggie",
-        employerRef = Some("223/AB12399"),
-        payrollId = Some("123456789999"),
-        startDate = Some("2019-04-21"),
-        cessationDate = Some("2020-03-11"),
-        dateIgnored = Some("2020-04-04T01:01:01Z"),
-        submittedOn = Some("2020-01-04T05:01:01Z"),
-        employmentData = Some(EmploymentData(
-          submittedOn = ("2020-02-12"),
-          employmentSequenceNumber = Some("123456789999"),
-          companyDirector = Some(true),
-          closeCompany = Some(false),
-          directorshipCeasedDate = Some("2020-02-12"),
-          occPen = Some(false),
-          disguisedRemuneration = Some(false),
-          pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
-        )),
-        None
-      )
-    ),
-    hmrcExpenses = Some(employmentExpenses),
-    customerEmploymentData = Seq(),
-    customerExpenses = None
-  )
-
   private def summaryListRowFieldNameSelector(i: Int) = s"#main-content > div > div > dl > div:nth-child($i) > dt"
 
   private def summaryListRowFieldAmountSelector(i: Int) = s"#main-content > div > div > dl > div:nth-child($i) > dd"
@@ -133,7 +98,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          userDataStub(userData(allData),nino,taxYear)
+          userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
@@ -178,7 +143,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          userDataStub(userData(allData.copy(hmrcExpenses = None)),nino,taxYear)
+          userDataStub(userData(fullEmploymentsModel(None).copy(hmrcExpenses = None)),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
           ).withFollowRedirects(false).get())
@@ -208,7 +173,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          userDataStub(userData(allData),nino,taxYear)
+          userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
@@ -269,7 +234,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          userDataStub(userData(allData),nino,taxYear)
+          userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -322,7 +287,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          userDataStub(userData(allData),nino,taxYear)
+          userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }

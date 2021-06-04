@@ -24,7 +24,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
-import views.html.employment.EmploymentDetailsView
+import views.html.employment.CheckEmploymentDetailsView
 import javax.inject.Inject
 import services.IncomeTaxUserDataService
 
@@ -32,7 +32,7 @@ import scala.concurrent.ExecutionContext
 
 class EmploymentDetailsController @Inject()(implicit val cc: MessagesControllerComponents,
                                             authAction: AuthorisedAction,
-                                            employmentDetailsView: EmploymentDetailsView,
+                                            employmentDetailsView: CheckEmploymentDetailsView,
                                             implicit val appConfig: AppConfig,
                                             incomeTaxUserDataService: IncomeTaxUserDataService,
                                             auditService: AuditService,

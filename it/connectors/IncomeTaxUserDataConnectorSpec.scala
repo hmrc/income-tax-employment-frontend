@@ -50,10 +50,10 @@ class IncomeTaxUserDataConnectorSpec extends IntegrationTest{
       "submission returns a 200" in {
 
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,
-          Json.toJson(userData(employmentsModel)).toString(), ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
+          Json.toJson(userData(fullEmploymentsModel(None))).toString(), ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
 
         val result: IncomeTaxUserDataResponse = Await.result(connector.getUserData(nino, taxYear), Duration.Inf)
-        result shouldBe Right(userData(employmentsModel))
+        result shouldBe Right(userData(fullEmploymentsModel(None)))
       }
     }
 
@@ -64,7 +64,7 @@ class IncomeTaxUserDataConnectorSpec extends IntegrationTest{
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("sessionIdValue"))).withExtraHeaders("mtditid"->mtditid)
 
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,
-          Json.toJson(userData(employmentsModel)).toString(), ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
+          Json.toJson(userData(fullEmploymentsModel(None))).toString(), ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
 
         val result: IncomeTaxUserDataResponse = Await.result(externalConnector.getUserData(nino, taxYear)(hc), Duration.Inf)
         result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR,APIErrorBodyModel.parsingError))

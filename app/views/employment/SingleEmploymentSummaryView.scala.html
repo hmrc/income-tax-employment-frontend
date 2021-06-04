@@ -39,14 +39,12 @@
     <ul class="hmrc-add-to-a-list hmrc-add-to-a-list--short">
         <li class="hmrc-add-to-a-list__contents">
             <span class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light">
-                @employment.employmentData.map{ _ =>
-                    <a class="govuk-link" href="@controllers.employment.routes.EmploymentDetailsController.show(taxYear, employment.employmentId)">
+                <a class="govuk-link" href="@controllers.employment.routes.EmploymentDetailsController.show(taxYear, employment.employmentId)">
                     @messages("common.employmentDetails")
-                    </a>
-                }.getOrElse{@messages("common.employmentDetails")}
+                </a>
             </span>
             <span class="hmrc-add-to-a-list__change">
-                @if(employment.employmentData.isDefined){ @messages("common.status.updated") }else{ @messages("common.status.cannotUpdate")}
+                 @messages("common.status.updated")
             </span>
         </li>
         <li class="hmrc-add-to-a-list__contents">
