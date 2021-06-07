@@ -22,7 +22,7 @@ import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
 import play.api.http.HeaderNames
 import play.api.http.Status._
-import play.api.libs.ws.{WSClient, WSResponse}
+import play.api.libs.ws.WSResponse
 import utils.{IntegrationTest, ViewHelpers}
 
 
@@ -137,7 +137,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         lazy val result: WSResponse = {
           authoriseIndividual()
           userDataStub(userData(allData),nino,taxYear)
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+          urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -182,9 +182,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         lazy val result: WSResponse = {
           authoriseIndividual()
           userDataStub(userData(allData.copy(hmrcExpenses = None)),nino,taxYear)
-          await(wsClient.url(url).withHttpHeaders(
-            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
-          ).withFollowRedirects(false).get())
+          urlGet(url, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         result.status shouldBe SEE_OTHER
@@ -214,7 +212,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         lazy val result: WSResponse = {
           authoriseAgent()
           userDataStub(userData(allData),nino,taxYear)
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+          urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -258,7 +256,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     "returns an action when auth call fails" which {
       lazy val result: WSResponse = {
         authoriseAgentUnauthorized()
-        await(wsClient.url(url).get())
+        urlGet(url)
       }
       "has an UNAUTHORIZED(401) status" in {
         result.status shouldBe UNAUTHORIZED
@@ -277,8 +275,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         lazy val result: WSResponse = {
           authoriseIndividual()
           userDataStub(userData(allData),nino,taxYear)
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+          urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -331,8 +328,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         lazy val result: WSResponse = {
           authoriseAgent()
           userDataStub(userData(allData),nino,taxYear)
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+          urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)

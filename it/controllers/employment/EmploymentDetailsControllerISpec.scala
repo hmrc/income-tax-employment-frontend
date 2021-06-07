@@ -21,7 +21,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status._
-import play.api.libs.ws.{WSClient, WSResponse}
+import play.api.libs.ws.WSResponse
 import utils.{IntegrationTest, ViewHelpers}
 
 class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers {
@@ -190,8 +190,8 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
   "in english" when {
 
     import ExpectedResults.ContentEN._
-    import Selectors._
     import ExpectedResults.ContentValues._
+    import Selectors._
 
     "the user is an individual" when {
 
@@ -202,7 +202,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(FullModel.allData), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -236,9 +236,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
             userDataStub(userData(
               FullModel.allData.copy(hmrcEmploymentData = Seq.empty)
             ), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(
-              HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
-            ).withFollowRedirects(false).get())
+            urlGet(url, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           result.status shouldBe SEE_OTHER
@@ -250,8 +248,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(MinModel.miniData), nino, taxYear)
-            await(wsClient.url(url)
-              .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -276,8 +273,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(SomeModelWithInvalidData.invalidData), nino, taxYear)
-            await(wsClient.url(url)
-              .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -317,7 +313,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(userData(FullModel.allData), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -349,8 +345,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(userData(MinModel.miniData), nino, taxYear)
-            await(wsClient.url(url)
-              .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -374,8 +369,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(userData(SomeModelWithInvalidData.invalidData), nino, taxYear)
-            await(wsClient.url(url)
-              .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -397,7 +391,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
         "returns an action when auth call fails" which {
           lazy val result: WSResponse = {
             authoriseAgentUnauthorized()
-            await(wsClient.url(url).get())
+            urlGet(url)
           }
           "has an UNAUTHORIZED(401) status" in {
             result.status shouldBe UNAUTHORIZED
@@ -410,8 +404,8 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
   "in welsh" when {
 
     import ExpectedResults.ContentCY._
-    import Selectors._
     import ExpectedResults.ContentValues._
+    import Selectors._
 
     "the user is an individual" when {
 
@@ -422,8 +416,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(FullModel.allData), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-              HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -455,9 +448,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(MinModel.miniData), nino, taxYear)
-
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-              HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -480,9 +471,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(SomeModelWithInvalidData.invalidData), nino, taxYear)
-
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-              HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -513,8 +502,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(userData(FullModel.allData), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-              HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -546,8 +534,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(userData(MinModel.miniData), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-              HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -571,8 +558,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(userData(SomeModelWithInvalidData.invalidData), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-              HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
