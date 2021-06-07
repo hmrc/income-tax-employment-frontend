@@ -23,13 +23,13 @@ import play.api.http.Status._
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
 import utils.UnitTestWithApp
-import views.html.employment.EmploymentDetailsView
+import views.html.employment.CheckEmploymentDetailsView
 
 import scala.concurrent.Future
 
 class EmploymentDetailsControllerSpec extends UnitTestWithApp with MockIncomeTaxUserDataService with MockAuditService{
 
-  lazy val view = app.injector.instanceOf[EmploymentDetailsView]
+  lazy val view = app.injector.instanceOf[CheckEmploymentDetailsView]
   lazy val controller = new EmploymentDetailsController()(
     mockMessagesControllerComponents,
     authorisedAction,
