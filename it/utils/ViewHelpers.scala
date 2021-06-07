@@ -35,7 +35,7 @@ trait ViewHelpers { self: AnyWordSpec with Matchers =>
   val ExpectedResults: Object
   val Selectors: Object
 
-  def urlGet(url: String, welsh: Boolean = false)(wsClient: WSClient): WSResponse = {
+  def urlGet(url: String, welsh: Boolean = false)(implicit wsClient: WSClient): WSResponse = {
     if(welsh){
       await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy").get())
     } else {
