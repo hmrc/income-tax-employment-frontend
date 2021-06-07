@@ -24,7 +24,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status._
-import play.api.libs.ws.{WSClient, WSResponse}
+import play.api.libs.ws.WSResponse
 import utils.{IntegrationTest, ViewHelpers}
 
 class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers {
@@ -96,7 +96,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -125,8 +125,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(Some(AllEmploymentData(Seq(), None, Seq(employmentSource), None))), nino, taxYear)
-            await(wsClient.url(url).withFollowRedirects(false)
-              .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -138,7 +137,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(Some(singleEmploymentWithExpensesAndBenefitsModel)), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -167,8 +166,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
-            await(wsClient.url(url)
-              .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -205,8 +203,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithExpensesModel)), nino, taxYear)
-            await(wsClient.url(url)
-              .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -243,9 +240,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(), nino, taxYear)
-            await(wsClient.url(url)
-              .withFollowRedirects(false)
-              .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url,follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "has an SEE_OTHER(303) status" in {
@@ -275,7 +270,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -304,7 +299,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(IncomeTaxUserData(Some(singleEmploymentWithExpensesAndBenefitsModel)), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -333,8 +328,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
-            await(wsClient.url(url)
-              .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -371,8 +365,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithExpensesModel)), nino, taxYear)
-            await(wsClient.url(url)
-              .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -409,9 +402,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(IncomeTaxUserData(), nino, taxYear)
-            await(wsClient.url(url)
-              .withFollowRedirects(false)
-              .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "has an SEE_OTHER(303) status" in {
@@ -447,11 +438,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
-            await(
-              wsClient.url(url).withHttpHeaders(
-                HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
-              ).get()
-            )
+            urlGet(url, true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -480,10 +467,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(Some(singleEmploymentWithExpensesAndBenefitsModel)), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(
-              HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
-            ).get()
-            )
+            urlGet(url, true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -512,10 +496,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
-            await(wsClient.url(url)
-              .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
-              ).get()
-            )
+            urlGet(url, true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -552,10 +533,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithExpensesModel)), nino, taxYear)
-            await(wsClient.url(url)
-              .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
-              ).get()
-            )
+            urlGet(url, true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -592,11 +570,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(), nino, taxYear)
-            await(wsClient.url(url)
-              .withFollowRedirects(false)
-              .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck")
-              .get()
-            )
+            urlGet(url, true, false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "has an SEE_OTHER(303) status" in {
@@ -626,10 +600,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
-            await(wsClient.url(url)
-              .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck")
-              .get()
-            )
+            urlGet(url, true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -658,10 +629,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(IncomeTaxUserData(Some(singleEmploymentWithExpensesAndBenefitsModel)), nino, taxYear)
-            await(wsClient.url(url)
-              .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck")
-              .get()
-            )
+            urlGet(url, true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -690,10 +658,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
-            await(wsClient.url(url)
-              .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck")
-              .get()
-            )
+            urlGet(url, true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -730,10 +695,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithExpensesModel)), nino, taxYear)
-            await(wsClient.url(url)
-              .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck")
-              .get()
-            )
+            urlGet(url, true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -770,11 +732,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(IncomeTaxUserData(), nino, taxYear)
-            await(wsClient.url(url)
-              .withFollowRedirects(false)
-              .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck")
-              .get()
-            )
+            urlGet(url, true, false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "has an SEE_OTHER(303) status" in {
@@ -787,7 +745,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
         "returns an action when auth call fails" which {
           lazy val result: WSResponse = {
             authoriseIndividualUnauthorized()
-            await(wsClient.url(url).get())
+            urlGet(url)
           }
           "has an UNAUTHORIZED(401) status" in {
             result.status shouldBe UNAUTHORIZED

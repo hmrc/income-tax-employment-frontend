@@ -21,7 +21,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status._
-import play.api.libs.ws.{WSClient, WSResponse}
+import play.api.libs.ws.WSResponse
 import utils.{IntegrationTest, ViewHelpers}
 
 
@@ -121,7 +121,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           implicit lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(fullModel(None)), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -153,9 +153,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(fullModel(None).copy(hmrcEmploymentData = Seq())), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(
-              HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
-            ).withFollowRedirects(false).get())
+            urlGet(url, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           result.status shouldBe SEE_OTHER
@@ -166,7 +164,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           implicit lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z", Some(BenefitsModel))))), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -197,7 +195,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
       "render Unauthorised user error page" which {
         lazy val result: WSResponse = {
           authoriseIndividualUnauthorized()
-          await(wsClient.url(url).get())
+          urlGet(url)
         }
         "has an UNAUTHORIZED(401) status" in {
           result.status shouldBe UNAUTHORIZED
@@ -214,7 +212,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           implicit lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(userData(fullModel(None)), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -247,7 +245,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           implicit lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z", Some(BenefitsModel))))), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -279,7 +277,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
       "render Unauthorised user error page" which {
         lazy val result: WSResponse = {
           authoriseAgentUnauthorized()
-          await(wsClient.url(url).get())
+          urlGet(url)
         }
         "has an UNAUTHORIZED(401) status" in {
           result.status shouldBe UNAUTHORIZED
@@ -304,8 +302,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(fullModel(None)), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-              HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -338,8 +335,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z", Some(BenefitsModel))))), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-              HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -378,8 +374,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(userData(fullModel(None)), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-              HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -413,8 +408,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
             authoriseAgent()
 
             userDataStub(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z", Some(BenefitsModel))))), nino, taxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-              HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)

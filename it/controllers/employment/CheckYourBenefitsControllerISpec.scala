@@ -22,7 +22,7 @@ import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
 import play.api.http.HeaderNames
 import play.api.http.Status._
-import play.api.libs.ws.{WSClient, WSResponse}
+import play.api.libs.ws.WSResponse
 import utils.{IntegrationTest, ViewHelpers}
 
 class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach {
@@ -221,7 +221,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(employmentData(Some(fullBenefits))),nino,defaultTaxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -304,9 +304,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(employmentData(None)),nino,defaultTaxYear)
-            await(wsClient.url(url).withHttpHeaders(
-              HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck"
-            ).withFollowRedirects(false).get())
+            urlGet(url, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           result.status shouldBe SEE_OTHER
@@ -318,7 +316,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(employmentData(Some(filteredBenefits))),nino,defaultTaxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -382,7 +380,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(userData(employmentData(Some(fullBenefits))),nino,defaultTaxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck").get())
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -475,8 +473,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(employmentData(Some(fullBenefits))),nino,defaultTaxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck",
-              HeaderNames.ACCEPT_LANGUAGE -> "cy").get())
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -559,8 +556,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(employmentData(Some(filteredBenefits))),nino,defaultTaxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck",
-              HeaderNames.ACCEPT_LANGUAGE -> "cy").get())
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -624,8 +620,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(userData(employmentData(Some(fullBenefits))),nino,defaultTaxYear)
-            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck",
-              HeaderNames.ACCEPT_LANGUAGE -> "cy").get())
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)

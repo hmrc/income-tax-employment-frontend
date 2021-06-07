@@ -16,7 +16,6 @@
 
 package utils
 
-import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -35,11 +34,13 @@ trait ViewHelpers { self: AnyWordSpec with Matchers =>
   val ExpectedResults: Object
   val Selectors: Object
 
-  def urlGet(url: String, welsh: Boolean = false)(implicit wsClient: WSClient): WSResponse = {
+  def urlGet(url: String, welsh: Boolean = false, follow: Boolean = true, headers: Seq[(String, String)] = Seq())(implicit wsClient: WSClient): WSResponse = {
+
     if(welsh){
-      await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy").get())
+      val newHeaders = Seq(HeaderNames.ACCEPT_LANGUAGE -> "cy") ++ headers
+      await(wsClient.url(url).withFollowRedirects(follow).withHttpHeaders(newHeaders: _*).get())
     } else {
-      await(wsClient.url(url).get())
+      await(wsClient.url(url).withFollowRedirects(follow).withHttpHeaders(headers: _*).get())
     }
   }
 
