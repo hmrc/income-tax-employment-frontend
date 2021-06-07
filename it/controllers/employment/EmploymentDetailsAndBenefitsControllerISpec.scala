@@ -33,7 +33,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
     Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
     Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount)
   )
-  lazy val url = s"${appUrl(port)}/2022/employer-details-and-benefits?employmentId=001"
+  val url = s"${appUrl(port)}/2022/employer-details-and-benefits?employmentId=001"
 
   def fullModel(benefitsModel: Option[EmploymentBenefits]): AllEmploymentData = {
     AllEmploymentData(
@@ -124,7 +124,9 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
 
-titleCheck(titleExpected)
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(titleExpected)
           h1Check(h1Expected)
           captionCheck(captionExpected)
 
@@ -166,6 +168,8 @@ titleCheck(titleExpected)
             userDataStub(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z", Some(BenefitsModel))))), nino, taxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleExpected)
           h1Check(h1Expected)
@@ -213,6 +217,8 @@ titleCheck(titleExpected)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
 
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
           titleCheck(titleExpected)
           h1Check(h1Expected)
           captionCheck(captionExpected)
@@ -243,6 +249,8 @@ titleCheck(titleExpected)
             userDataStub(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z", Some(BenefitsModel))))), nino, taxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleExpected)
           h1Check(h1Expected)
@@ -293,12 +301,14 @@ titleCheck(titleExpected)
 
         "render the page where the status for benefits is Cannot Update when there is no Benefits data in mongo" which {
 
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(fullModel(None)), nino, taxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
               HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleExpected)
           h1Check(h1Expected)
@@ -325,12 +335,14 @@ titleCheck(titleExpected)
 
         "render the page where the status for benefits is Updated when there is Benefits data in mongo" which {
 
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z", Some(BenefitsModel))))), nino, taxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
               HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleExpected)
           h1Check(h1Expected)
@@ -363,12 +375,14 @@ titleCheck(titleExpected)
 
         "render the page where the status for benefits is Cannot Update when there is no Benefits data in mongo" which {
 
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(userData(fullModel(None)), nino, taxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
               HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleExpected)
           h1Check(h1Expected)
@@ -395,13 +409,15 @@ titleCheck(titleExpected)
 
         "render the page where the status for benefits is Updated when there is Benefits data in mongo" which {
 
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseAgent()
 
             userDataStub(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z", Some(BenefitsModel))))), nino, taxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
               HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleExpected)
           h1Check(h1Expected)

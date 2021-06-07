@@ -17,16 +17,18 @@
 package controllers.employment
 
 import models.employment._
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
 import play.api.http.HeaderNames
 import play.api.http.Status._
-import play.api.libs.ws.WSResponse
+import play.api.libs.ws.{WSClient, WSResponse}
 import utils.{IntegrationTest, ViewHelpers}
 
 
 class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach {
 
-  lazy val url = s"${appUrl(port)}/$taxYear/check-employment-expenses"
+  val url = s"${appUrl(port)}/$taxYear/check-employment-expenses"
 
   object Selectors {
     val headingSelector = "#main-content > div > div > header > h1"
@@ -132,11 +134,13 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "returns an action when data is in mongo" which {
 
-        implicit lazy val result: WSResponse = {
+        lazy val result: WSResponse = {
           authoriseIndividual()
           userDataStub(userData(allData),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
+
+        implicit def document: () => Document = () => Jsoup.parse(result.body)
 
         titleCheck(titleExpectedIndividual)
         h1Check(h1ExpectedIndividual)
@@ -175,7 +179,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "redirect to overview page when theres no expenses" in {
 
-        implicit lazy val result: WSResponse = {
+        lazy val result: WSResponse = {
           authoriseIndividual()
           userDataStub(userData(allData.copy(hmrcExpenses = None)),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(
@@ -207,11 +211,13 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "returns an action when data is in mongo" which {
 
-        implicit lazy val result: WSResponse = {
+        lazy val result: WSResponse = {
           authoriseAgent()
           userDataStub(userData(allData),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
+
+        implicit def document: () => Document = () => Jsoup.parse(result.body)
 
         titleCheck(titleExpectedAgent)
         h1Check(h1ExpectedAgent)
@@ -268,12 +274,14 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "returns an action when data is in mongo" which {
 
-        implicit lazy val result: WSResponse = {
+        lazy val result: WSResponse = {
           authoriseIndividual()
           userDataStub(userData(allData),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
+
+        implicit def document: () => Document = () => Jsoup.parse(result.body)
 
         titleCheck(titleExpectedIndividual)
         h1Check(h1ExpectedIndividual)
@@ -320,12 +328,14 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "returns an action when data is in mongo" which {
 
-        implicit lazy val result: WSResponse = {
+        lazy val result: WSResponse = {
           authoriseAgent()
           userDataStub(userData(allData),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
+
+        implicit def document: () => Document = () => Jsoup.parse(result.body)
 
         titleCheck(titleExpectedAgent)
         h1Check(h1ExpectedAgent)
