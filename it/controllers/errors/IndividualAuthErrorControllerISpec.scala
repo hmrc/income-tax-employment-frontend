@@ -56,7 +56,7 @@ class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelper
       "render the page" which {
         lazy val result: WSResponse = {
           authoriseIndividual()
-          urlGet(url)(wsClient)
+          urlGet(url)
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -83,7 +83,7 @@ class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelper
       "render the page" which {
         lazy val result: WSResponse = {
           authoriseIndividual()
-          urlGet(url, true)(wsClient)
+          urlGet(url, true)
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)

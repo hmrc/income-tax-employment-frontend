@@ -62,7 +62,7 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
       "return the AgentAuthErrorPageView with the right content" which {
         lazy val result: WSResponse = {
           authoriseIndividual()
-          urlGet(url)(wsClient)
+          urlGet(url)
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -88,7 +88,7 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
       "return the AgentAuthErrorPageView with the right content" which {
         lazy val result: WSResponse = {
           authoriseIndividual()
-          urlGet(url, true)(wsClient)
+          urlGet(url, true)
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
