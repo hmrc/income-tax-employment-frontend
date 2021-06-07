@@ -32,8 +32,6 @@ class IncomeTaxUserDataConnectorSpec extends IntegrationTest{
   lazy val connector: IncomeTaxUserDataConnector = app.injector.instanceOf[IncomeTaxUserDataConnector]
   lazy val externalConnector: IncomeTaxUserDataConnector = appWithFakeExternalCall.injector.instanceOf[IncomeTaxUserDataConnector]
 
-  val taxYear = 2022
-
   implicit override val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
 
   "IncomeTaxUserDataConnector" should {
