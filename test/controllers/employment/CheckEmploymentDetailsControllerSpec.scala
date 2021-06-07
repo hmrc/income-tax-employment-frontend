@@ -27,10 +27,10 @@ import views.html.employment.CheckEmploymentDetailsView
 
 import scala.concurrent.Future
 
-class EmploymentDetailsControllerSpec extends UnitTestWithApp with MockIncomeTaxUserDataService with MockAuditService{
+class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockIncomeTaxUserDataService with MockAuditService{
 
   lazy val view = app.injector.instanceOf[CheckEmploymentDetailsView]
-  lazy val controller = new EmploymentDetailsController()(
+  lazy val controller = new CheckEmploymentDetailsController()(
     mockMessagesControllerComponents,
     authorisedAction,
     view,

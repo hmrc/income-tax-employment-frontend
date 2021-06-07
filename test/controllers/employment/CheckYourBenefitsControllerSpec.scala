@@ -29,7 +29,7 @@ import scala.concurrent.Future
 class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockIncomeTaxUserDataService with UnitTest{
 
 
-  lazy val view = app.injector.instanceOf[CheckYourBenefitsView]
+  lazy val view: CheckYourBenefitsView= app.injector.instanceOf[CheckYourBenefitsView]
 
   lazy val controller = new CheckYourBenefitsController(
     authorisedAction,
@@ -48,7 +48,6 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockIncomeTax
     "return a result when all data is in Session" which {
 
       s"has an OK($OK) status" in new TestWithAuth {
-        println(employmentsModel)
         val result: Future[Result] = {
           mockFind(taxYear,Ok(view(taxYear, employmentsModel.hmrcEmploymentData.head.employmentBenefits.get.benefits.get)))
           controller.show(taxYear, employmentId)(fakeRequest.withSession(

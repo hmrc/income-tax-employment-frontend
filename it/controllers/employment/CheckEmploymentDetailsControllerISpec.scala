@@ -128,7 +128,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     )
   }
 
-  object SomeModelWithInvalidData {
+  object SomeModelWithInvalidDateFormat {
     val invalidData: AllEmploymentData = AllEmploymentData(
       hmrcEmploymentData = Seq(
         EmploymentSource(
@@ -257,11 +257,11 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       }
 
 
-      "handle Model with Invalid date in mongo" when {
+      "handle Model with Invalid date format in mongo" when {
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          userDataStub(userData(SomeModelWithInvalidData.invalidData),nino,taxYear)
+          userDataStub(userData(SomeModelWithInvalidDateFormat.invalidData),nino,taxYear)
           await(wsClient.url(url)
             .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -385,11 +385,11 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       }
 
 
-      "handle Model with Invalid date in mongo" when {
+      "handle Model with Invalid date format in mongo" when {
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          userDataStub(userData(SomeModelWithInvalidData.invalidData),nino,taxYear)
+          userDataStub(userData(SomeModelWithInvalidDateFormat.invalidData),nino,taxYear)
           await(wsClient.url(url)
             .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -517,11 +517,11 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       }
 
 
-      "handle Model with Invalid date in mongo" when {
+      "handle Model with Invalid date format in mongo" when {
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          userDataStub(userData(SomeModelWithInvalidData.invalidData),nino,taxYear)
+          userDataStub(userData(SomeModelWithInvalidDateFormat.invalidData),nino,taxYear)
 
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
@@ -537,16 +537,16 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         textOnPageCheck(ContentCY.insetTextExpectedIndividual, insetTextSelector)
 
 
-        textOnPageCheck(ContentEN.employeeFieldName1, summaryListRowFieldNameSelector(1))
+        textOnPageCheck(ContentCY.employeeFieldName1, summaryListRowFieldNameSelector(1))
         textOnPageCheck(ContentValues.employeeFieldValue1, summaryListRowFieldAmountSelector(1))
 
-        textOnPageCheck(ContentEN.employeeFieldName4, summaryListRowFieldNameSelector(2))
+        textOnPageCheck(ContentCY.employeeFieldName4, summaryListRowFieldNameSelector(2))
         textOnPageCheck(ContentValues.employeeFieldValue4a, summaryListRowFieldAmountSelector(2))
 
-        textOnPageCheck(ContentEN.employeeFieldName5, summaryListRowFieldNameSelector(3))
+        textOnPageCheck(ContentCY.employeeFieldName5, summaryListRowFieldNameSelector(3))
         textOnPageCheck(ContentValues.employeeFieldValue5, summaryListRowFieldAmountSelector(3))
 
-        textOnPageCheck(ContentEN.employeeFieldName6, summaryListRowFieldNameSelector(4))
+        textOnPageCheck(ContentCY.employeeFieldName6, summaryListRowFieldNameSelector(4))
         textOnPageCheck(ContentValues.employeeFieldValue6, summaryListRowFieldAmountSelector(4))
 
         welshToggleCheck(WELSH)
@@ -635,11 +635,11 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       }
 
 
-      "handle Model with Invalid date in session" when {
+      "handle Model with Invalid date format in session" when {
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          userDataStub(userData(SomeModelWithInvalidData.invalidData),nino,taxYear)
+          userDataStub(userData(SomeModelWithInvalidDateFormat.invalidData),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }

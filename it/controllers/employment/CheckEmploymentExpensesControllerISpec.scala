@@ -16,7 +16,6 @@
 
 package controllers.employment
 
-import models.employment._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
