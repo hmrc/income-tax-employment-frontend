@@ -23,7 +23,7 @@ import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import helpers.{PlaySessionCookieBaker, WireMockHelper}
 import models.IncomeTaxUserData
-import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
+import models.employment.{AllEmploymentData, Benefits, EmploymentBenefits, EmploymentData, EmploymentExpenses, EmploymentSource, Expenses, Pay}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -168,16 +168,16 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   def userData(allData: AllEmploymentData): IncomeTaxUserData = IncomeTaxUserData(Some(allData))
 
-  def userDataStub(userData: IncomeTaxUserData, nino: String, taxYear: Int): StubMapping ={
+  def userDataStub(userData: IncomeTaxUserData, nino: String, taxYear: Int): StubMapping = {
 
     stubGetWithHeadersCheck(
       s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,
-      Json.toJson(userData).toString(),("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
+      Json.toJson(userData).toString(), ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
   }
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  lazy val employmentsModel: AllEmploymentData = AllEmploymentData(
+  def fullEmploymentsModel(benefits: Option[EmploymentBenefits]): AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(
       EmploymentSource(
         employmentId = "001",
@@ -196,14 +196,69 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
           directorshipCeasedDate = Some("2020-02-12"),
           occPen = Some(false),
           disguisedRemuneration = Some(false),
-          pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
+          pay = Pay(34234.15, 6782.92, Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))
         )),
-        None
+        employmentBenefits = benefits
       )
+
     ),
-    hmrcExpenses = None,
+    hmrcExpenses = Some(employmentExpenses),
     customerEmploymentData = Seq(),
     customerExpenses = None
   )
+
+  lazy val expenses: Expenses = Expenses(
+    Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7), Some(8)
+  )
+  lazy val employmentExpenses: EmploymentExpenses = EmploymentExpenses(
+    submittedOn = None,
+    totalExpenses = None,
+    expenses = Some(expenses)
+  )
+
+  lazy val filteredBenefits: Some[EmploymentBenefits] = Some(EmploymentBenefits(
+    submittedOn = "2020-02-12",
+    benefits = Some(Benefits(
+      van = Some(3.00),
+      vanFuel = Some(4.00),
+      mileage = Some(5.00),
+    ))
+  )
+  )
+
+  lazy val fullBenefits: Some [EmploymentBenefits] = Some(EmploymentBenefits(
+    submittedOn = "2020-02-12",
+    benefits = Some(Benefits(
+      car = Some(1.23),
+      carFuel = Some(2.00),
+      van = Some(3.00),
+      vanFuel = Some(4.00),
+      mileage = Some(5.00),
+      accommodation = Some(6.00),
+      qualifyingRelocationExpenses = Some(7.00),
+      nonQualifyingRelocationExpenses = Some(8.00),
+      travelAndSubsistence = Some(9.00),
+      personalIncidentalExpenses = Some(10.00),
+      entertaining = Some(11.00),
+      telephone = Some(12.00),
+      employerProvidedServices = Some(13.00),
+      employerProvidedProfessionalSubscriptions = Some(14.00),
+      service = Some(15.00),
+      medicalInsurance = Some(16.00),
+      nurseryPlaces = Some(17.00),
+      beneficialLoan = Some(18.00),
+      educationalServices = Some(19.00),
+      incomeTaxPaidByDirector = Some(20.00),
+      paymentsOnEmployeesBehalf = Some(21.00),
+      expenses = Some(22.00),
+      taxableExpenses = Some(23.00),
+      vouchersAndCreditCards = Some(24.00),
+      nonCash = Some(25.00),
+      otherItems = Some(26.00),
+      assets = Some(27.00),
+      assetTransfer = Some(280000.00)
+    )
+    )
+  ))
 
 }

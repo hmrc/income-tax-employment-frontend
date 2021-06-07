@@ -7,7 +7,7 @@ GET        /assets/*file                                    controllers.Assets.v
 
 GET        /:taxYear/employer-details-and-benefits          controllers.employment.EmploymentDetailsAndBenefitsController.show(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/check-employment-details               controllers.employment.EmploymentDetailsController.show(taxYear: Int, employmentId: String)
+GET        /:taxYear/check-employment-details               controllers.employment.CheckEmploymentDetailsController.show(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/check-employment-expenses              controllers.employment.CheckEmploymentExpensesController.show(taxYear: Int)
 

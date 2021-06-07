@@ -41,7 +41,7 @@ class IncomeTaxUserDataConnectorSpec extends IntegrationTest{
       "submission returns a 204" in {
 
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", NO_CONTENT,
-          "{}", ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
+          "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
         val result: IncomeTaxUserDataResponse = Await.result(connector.getUserData(nino, taxYear), Duration.Inf)
         result shouldBe Right(IncomeTaxUserData())
@@ -50,10 +50,10 @@ class IncomeTaxUserDataConnectorSpec extends IntegrationTest{
       "submission returns a 200" in {
 
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,
-          Json.toJson(userData(employmentsModel)).toString(), ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
+          Json.toJson(userData(fullEmploymentsModel(None))).toString(), "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
         val result: IncomeTaxUserDataResponse = Await.result(connector.getUserData(nino, taxYear), Duration.Inf)
-        result shouldBe Right(userData(employmentsModel))
+        result shouldBe Right(userData(fullEmploymentsModel(None)))
       }
     }
 
@@ -64,7 +64,7 @@ class IncomeTaxUserDataConnectorSpec extends IntegrationTest{
         implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("sessionIdValue"))).withExtraHeaders("mtditid"->mtditid)
 
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,
-          Json.toJson(userData(employmentsModel)).toString(), ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
+          Json.toJson(userData(fullEmploymentsModel(None))).toString(), "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
         val result: IncomeTaxUserDataResponse = Await.result(externalConnector.getUserData(nino, taxYear)(hc), Duration.Inf)
         result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR,APIErrorBodyModel.parsingError))
@@ -73,7 +73,7 @@ class IncomeTaxUserDataConnectorSpec extends IntegrationTest{
       "submission returns a 200 but invalid json" in {
 
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,
-        Json.toJson("""{"invalid": true}""").toString(),("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
+        Json.toJson("""{"invalid": true}""").toString(),"X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
         val result: IncomeTaxUserDataResponse = Await.result(connector.getUserData(nino, taxYear), Duration.Inf)
         result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR,APIErrorBodyModel.parsingError))
@@ -82,7 +82,7 @@ class IncomeTaxUserDataConnectorSpec extends IntegrationTest{
       "submission returns a 500" in {
 
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", INTERNAL_SERVER_ERROR,
-        """{"code": "FAILED", "reason": "failed"}""",("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
+        """{"code": "FAILED", "reason": "failed"}""","X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
         val result: IncomeTaxUserDataResponse = Await.result(connector.getUserData(nino, taxYear), Duration.Inf)
         result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR,APIErrorBodyModel("FAILED","failed")))
@@ -91,7 +91,7 @@ class IncomeTaxUserDataConnectorSpec extends IntegrationTest{
       "submission returns a 503" in {
 
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", SERVICE_UNAVAILABLE,
-        """{"code": "FAILED", "reason": "failed"}""",("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
+        """{"code": "FAILED", "reason": "failed"}""","X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
         val result: IncomeTaxUserDataResponse = Await.result(connector.getUserData(nino, taxYear), Duration.Inf)
         result shouldBe Left(APIErrorModel(SERVICE_UNAVAILABLE,APIErrorBodyModel("FAILED","failed")))
@@ -100,7 +100,7 @@ class IncomeTaxUserDataConnectorSpec extends IntegrationTest{
       "submission returns an unexpected result" in {
 
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", BAD_REQUEST,
-        """{"code": "FAILED", "reason": "failed"}""",("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
+        """{"code": "FAILED", "reason": "failed"}""","X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
         val result: IncomeTaxUserDataResponse = Await.result(connector.getUserData(nino, taxYear), Duration.Inf)
         result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR,APIErrorBodyModel("FAILED","failed")))
