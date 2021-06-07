@@ -17,7 +17,6 @@
 package controllers.employment
 
 import controllers.employment.EmploymentSummaryControllerISpec.FullModel._
-import controllers.employment.EmploymentSummaryControllerISpec.{taxYear, _}
 import controllers.employment.routes._
 import models.IncomeTaxUserData
 import models.employment._
@@ -25,769 +24,749 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status._
-import play.api.libs.ws.{WSClient, WSResponse}
+import play.api.libs.ws.WSResponse
 import utils.{IntegrationTest, ViewHelpers}
 
 class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers {
 
-  lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
+  lazy val url = s"${appUrl(port)}/$taxYear/employment-summary"
 
-  val url =
-    s"http://localhost:$port/income-through-software/return/employment-income/$taxYear/employment-summary"
+  object Selectors {
 
-  "as an individual in english" when {
+    val headingSelector = "#main-content > div > div > header > h1"
+    val captionSelector = "#main-content > div > div > header > p"
+    val employmentSummaryParagraphSelector = "#main-content > div > div > p:nth-child(2)"
+    val employmentDetailsRowSelector: String =
+      s"#main-content > div > div > div.govuk-form-group > ul > li:nth-child(1) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
+    val employmentBenefitsRowSelector: String =
+      s"#main-content > div > div > div.govuk-form-group > ul > li:nth-child(2) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
+    val employmentExpensesRowSelector: String =
+      s"#main-content > div > div > div.govuk-form-group > ul > li:nth-child(3) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
+    val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
+    val expensesParagraphHeadingSelector = "#main-content > div > div > p.govuk-label--m"
+    val expensesParagraphSubheadingSelector = "#main-content > div > div > p:nth-child(6)"
+    val expensesSummaryListRowFieldNameSelector = s"#main-content > div > div > div:nth-child(7) > ul > li > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
+    val expensesSummaryListRowFieldActionSelector = s"#main-content > div > div > div:nth-child(7) > ul > li > span.hmrc-add-to-a-list__change"
 
-    ".show" should {
+    def employmentDetailsRowLinkSelector: String = s"$employmentDetailsRowSelector > a"
 
-      "return single employment summary view when there is only one employment without Expenses and Benefits" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+    def employmentBenefitsRowLinkSelector: String = s"$employmentBenefitsRowSelector > a"
+
+    def employmentExpensesRowLinkSelector: String = s"$employmentExpensesRowSelector > a"
+
+    def employerSummaryListRowFieldNameSelector(i: Int) = s"#main-content > div > div > div:nth-child(4) > ul > li:nth-child($i) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light > a"
+
+    def employerSummaryListRowFieldActionSelector(i: Int) = s"#main-content > div > div > div:nth-child(4) > ul > li:nth-child($i) > span.hmrc-add-to-a-list__change"
+
+    def expensesSummaryListRowFieldNameLinkSelector = s"$expensesSummaryListRowFieldNameSelector > a"
+  }
+
+  object ExpectedResults {
+
+    object ContentEN {
+      val titleAndH1Expected = "Employment"
+      val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+      val contentExpectedAgent = "Your client’s employment information is based on the information we already hold about them."
+      val contentExpectedIndividual = "Your employment information is based on the information we already hold about you."
+      val insetTextExpectedAgent = s"You cannot update your client’s employment information until 6 April $taxYear."
+      val insetTextExpectedIndividual = s"You cannot update your employment information until 6 April $taxYear."
+    }
+
+    object ContentCY {
+      val titleAndH1Expected = "Employment"
+      val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+      val contentExpectedAgent = "Your client’s employment information is based on the information we already hold about them."
+      val contentExpectedIndividual = "Your employment information is based on the information we already hold about you."
+      val insetTextExpectedAgent = s"You cannot update your client’s employment information until 6 April $taxYear."
+      val insetTextExpectedIndividual = s"You cannot update your employment information until 6 April $taxYear."
+    }
+
+  }
+
+  "in english" when {
+
+    import ExpectedResults.ContentEN._
+    import Selectors._
+
+    "the user is an individual" when {
+
+      ".show" should {
+
+        "return single employment summary view when there is only one employment without Expenses and Benefits" which {
+          implicit lazy val result: WSResponse = {
+            authoriseIndividual()
+            userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
+            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+          }
+
+          "status OK" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(titleAndH1Expected)
+          h1Check(employerName1)
+          textOnPageCheck(captionExpected, captionSelector)
+
+          textOnPageCheck(contentExpectedIndividual, employmentSummaryParagraphSelector)
+          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+
+          linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId1).url)
+          textOnPageCheck("Benefits", employmentBenefitsRowSelector)
+          textOnPageCheck("Expenses", employmentExpensesRowSelector)
+
+          buttonCheck("Return to overview")
+
+          welshToggleCheck(ENGLISH)
         }
 
-        "status OK" in {
-          result.status shouldBe OK
+        "redirect when there is employment data returned but no hmrc employment data" which {
+          lazy val result: WSResponse = {
+            authoriseIndividual()
+            userDataStub(IncomeTaxUserData(Some(AllEmploymentData(Seq(), None, Seq(employmentSource), None))), nino, taxYear)
+            await(wsClient.url(url).withFollowRedirects(false)
+              .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+          }
+
+          "status OK" in {
+            result.status shouldBe SEE_OTHER
+          }
         }
 
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
+        "return single employment summary view when there is only one employment with Expenses and Benefits" which {
+          implicit lazy val result: WSResponse = {
+            authoriseIndividual()
+            userDataStub(IncomeTaxUserData(Some(singleEmploymentWithExpensesAndBenefitsModel)), nino, taxYear)
+            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+          }
 
-        titleCheck(ContentEN.titleAndH1Expected)
-        h1Check(employerName1)
-        textOnPageCheck(ContentEN.captionExpected, captionSelector)
+          "status OK" in {
+            result.status shouldBe OK
+          }
 
-        textOnPageCheck(ContentEN.contentExpectedIndividual, employmentSummaryParagraphSelector)
-        textOnPageCheck(ContentEN.insetTextExpectedIndividual, insetTextSelector)
+          titleCheck(titleAndH1Expected)
+          h1Check(employerName3)
+          textOnPageCheck(captionExpected, captionSelector)
 
-        linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId1).url)
-        textOnPageCheck("Benefits", employmentBenefitsRowSelector)
-        textOnPageCheck("Expenses", employmentExpensesRowSelector)
+          textOnPageCheck(contentExpectedIndividual, employmentSummaryParagraphSelector)
+          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
 
-        buttonCheck("Return to overview")
+          linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId3).url)
+          linkCheck("Benefits", employmentBenefitsRowLinkSelector, CheckYourBenefitsController.show(taxYear, employmentId3).url)
+          linkCheck("Expenses", employmentExpensesRowLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
 
-        welshToggleCheck(ENGLISH)
+          buttonCheck("Return to overview")
+
+          welshToggleCheck(ENGLISH)
+        }
+
+        "render multiple employment summary view when there are two employments without Expenses and Benefits" which {
+          implicit lazy val result: WSResponse = {
+            authoriseIndividual()
+            userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
+            await(wsClient.url(url)
+              .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+          }
+
+          "status OK" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(titleAndH1Expected)
+          h1Check(titleAndH1Expected)
+          textOnPageCheck(captionExpected, captionSelector)
+
+          textOnPageCheck(contentExpectedIndividual, employmentSummaryParagraphSelector)
+          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+
+          linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId1).url)
+          textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
+
+          linkCheck(employerName2, employerSummaryListRowFieldNameSelector(2), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId2).url)
+          textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(2), s"for $employerName2 row")
+
+          textOnPageCheck("Expenses", expensesParagraphHeadingSelector, "for Expenses heading")
+          textOnPageCheck("This is a total of expenses from all employment in the tax year.", expensesParagraphSubheadingSelector)
+
+          textOnPageCheck("Expenses", expensesSummaryListRowFieldNameSelector, "for Expenses row")
+          textOnPageCheck("Cannot update", expensesSummaryListRowFieldActionSelector)
+
+          buttonCheck("Return to overview")
+
+          welshToggleCheck(ENGLISH)
+        }
+
+        "render multiple employment summary view when there are two employments with Expenses and Benefits" which {
+          implicit lazy val result: WSResponse = {
+            authoriseIndividual()
+            userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithExpensesModel)), nino, taxYear)
+            await(wsClient.url(url)
+              .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+          }
+
+          "status OK" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(titleAndH1Expected)
+          h1Check(titleAndH1Expected)
+          textOnPageCheck(captionExpected, captionSelector)
+
+          textOnPageCheck(contentExpectedIndividual, employmentSummaryParagraphSelector)
+          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+
+          linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId1).url)
+          textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
+
+          linkCheck(employerName3, employerSummaryListRowFieldNameSelector(2), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId3).url)
+          textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(2), s"for $employerName3 row")
+
+          textOnPageCheck("Expenses", expensesParagraphHeadingSelector)
+          textOnPageCheck("This is a total of expenses from all employment in the tax year.", expensesParagraphSubheadingSelector)
+
+          linkCheck("Expenses", expensesSummaryListRowFieldNameLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
+          textOnPageCheck("Updated", expensesSummaryListRowFieldActionSelector)
+
+          buttonCheck("Return to overview")
+
+          welshToggleCheck(ENGLISH)
+        }
+
+        "redirect the User to the Overview page no data in session" which {
+          lazy val result: WSResponse = {
+            authoriseIndividual()
+            userDataStub(IncomeTaxUserData(), nino, taxYear)
+            await(wsClient.url(url)
+              .withFollowRedirects(false)
+              .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+          }
+
+          "has an SEE_OTHER(303) status" in {
+            result.status shouldBe SEE_OTHER
+            result.header(HeaderNames.LOCATION) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+          }
+
+        }
+
+        "returns an action when auth call fails" which {
+          lazy val result: WSResponse = {
+            authoriseIndividualUnauthorized()
+            await(wsClient.url(url).get())
+          }
+          "has an UNAUTHORIZED(401) status" in {
+            result.status shouldBe UNAUTHORIZED
+          }
+        }
       }
+    }
 
-      "redirect when there is employment data returned but no hmrc employment data" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          userDataStub(IncomeTaxUserData(Some(AllEmploymentData(Seq(),None,Seq(employmentSource),None))), nino, taxYear)
-          await(wsClient.url(url).withFollowRedirects(false)
-            .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+    "the user is an agent" when {
+
+      ".show" should {
+
+        "return single employment summary view when there is only one employment without Expenses and Benefits" which {
+          implicit lazy val result: WSResponse = {
+            authoriseAgent()
+            userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
+            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+          }
+
+          "status OK" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(titleAndH1Expected)
+          h1Check(employerName1)
+          textOnPageCheck(captionExpected, captionSelector)
+
+          textOnPageCheck(contentExpectedAgent, employmentSummaryParagraphSelector)
+          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+
+          linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId1).url)
+          textOnPageCheck("Benefits", employmentBenefitsRowSelector)
+          textOnPageCheck("Expenses", employmentExpensesRowSelector)
+
+          buttonCheck("Return to overview")
+
+          welshToggleCheck(ENGLISH)
         }
 
-        "status OK" in {
-          result.status shouldBe SEE_OTHER
-        }
-      }
+        "return single employment summary view when there is only one employment with Expenses and Benefits" which {
+          implicit lazy val result: WSResponse = {
+            authoriseAgent()
+            userDataStub(IncomeTaxUserData(Some(singleEmploymentWithExpensesAndBenefitsModel)), nino, taxYear)
+            await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+          }
 
-      "return single employment summary view when there is only one employment with Expenses and Benefits" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          userDataStub(IncomeTaxUserData(Some(singleEmploymentWithExpensesAndBenefitsModel)), nino, taxYear)
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
-        }
+          "status OK" in {
+            result.status shouldBe OK
+          }
 
-        "status OK" in {
-          result.status shouldBe OK
-        }
+          titleCheck(titleAndH1Expected)
+          h1Check(employerName3)
+          textOnPageCheck(captionExpected, captionSelector)
 
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
+          textOnPageCheck(contentExpectedAgent, employmentSummaryParagraphSelector)
+          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
 
-        titleCheck(ContentEN.titleAndH1Expected)
-        h1Check(employerName3)
-        textOnPageCheck(ContentEN.captionExpected, captionSelector)
+          linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId3).url)
+          linkCheck("Benefits", employmentBenefitsRowLinkSelector, CheckYourBenefitsController.show(taxYear, employmentId3).url)
+          linkCheck("Expenses", employmentExpensesRowLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
 
-        textOnPageCheck(ContentEN.contentExpectedIndividual, employmentSummaryParagraphSelector)
-        textOnPageCheck(ContentEN.insetTextExpectedIndividual, insetTextSelector)
+          buttonCheck("Return to overview")
 
-        linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId3).url)
-        linkCheck("Benefits", employmentBenefitsRowLinkSelector, CheckYourBenefitsController.show(taxYear, employmentId3).url)
-        linkCheck("Expenses", employmentExpensesRowLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
-
-        buttonCheck("Return to overview")
-
-        welshToggleCheck(ENGLISH)
-      }
-
-      "render multiple employment summary view when there are two employments without Expenses and Benefits" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
-          await(wsClient.url(url)
-            .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+          welshToggleCheck(ENGLISH)
         }
 
-        "status OK" in {
-          result.status shouldBe OK
+        "render multiple employment summary view when there are two employments without Expenses and Benefits" which {
+          implicit lazy val result: WSResponse = {
+            authoriseAgent()
+            userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
+            await(wsClient.url(url)
+              .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+          }
+
+          "status OK" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(titleAndH1Expected)
+          h1Check(titleAndH1Expected)
+          textOnPageCheck(captionExpected, captionSelector)
+
+          textOnPageCheck(contentExpectedAgent, employmentSummaryParagraphSelector)
+          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+
+          linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId1).url)
+          textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
+
+          linkCheck(employerName2, employerSummaryListRowFieldNameSelector(2), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId2).url)
+          textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(2), s"for $employerName2 row")
+
+          textOnPageCheck("Expenses", expensesParagraphHeadingSelector, "for Expenses heading")
+          textOnPageCheck("This is a total of expenses from all employment in the tax year.", expensesParagraphSubheadingSelector)
+
+          textOnPageCheck("Expenses", expensesSummaryListRowFieldNameSelector, "for Expenses row")
+          textOnPageCheck("Cannot update", expensesSummaryListRowFieldActionSelector)
+
+          buttonCheck("Return to overview")
+
+          welshToggleCheck(ENGLISH)
         }
 
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
+        "render multiple employment summary view when there are two employments with Expenses and Benefits" which {
+          implicit lazy val result: WSResponse = {
+            authoriseAgent()
+            userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithExpensesModel)), nino, taxYear)
+            await(wsClient.url(url)
+              .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+          }
 
-        titleCheck(ContentEN.titleAndH1Expected)
-        h1Check(ContentEN.titleAndH1Expected)
-        textOnPageCheck(ContentEN.captionExpected, captionSelector)
+          "status OK" in {
+            result.status shouldBe OK
+          }
 
-        textOnPageCheck(ContentEN.contentExpectedIndividual, employmentSummaryParagraphSelector)
-        textOnPageCheck(ContentEN.insetTextExpectedIndividual, insetTextSelector)
+          titleCheck(titleAndH1Expected)
+          h1Check(titleAndH1Expected)
+          textOnPageCheck(captionExpected, captionSelector)
 
-        linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId1).url)
-        textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
+          textOnPageCheck(contentExpectedAgent, employmentSummaryParagraphSelector)
+          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
 
-        linkCheck(employerName2, employerSummaryListRowFieldNameSelector(2), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId2).url)
-        textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(2), s"for $employerName2 row")
+          linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId1).url)
+          textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
 
-        textOnPageCheck("Expenses", expensesParagraphHeadingSelector, "for Expenses heading")
-        textOnPageCheck("This is a total of expenses from all employment in the tax year.", expensesParagraphSubheadingSelector)
+          linkCheck(employerName3, employerSummaryListRowFieldNameSelector(2), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId3).url)
+          textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(2), s"for $employerName3 row")
 
-        textOnPageCheck("Expenses", expensesSummaryListRowFieldNameSelector, "for Expenses row")
-        textOnPageCheck("Cannot update", expensesSummaryListRowFieldActionSelector)
+          textOnPageCheck("Expenses", expensesParagraphHeadingSelector)
+          textOnPageCheck("This is a total of expenses from all employment in the tax year.", expensesParagraphSubheadingSelector)
 
-        buttonCheck("Return to overview")
+          linkCheck("Expenses", expensesSummaryListRowFieldNameLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
+          textOnPageCheck("Updated", expensesSummaryListRowFieldActionSelector)
 
-        welshToggleCheck(ENGLISH)
-      }
+          buttonCheck("Return to overview")
 
-      "render multiple employment summary view when there are two employments with Expenses and Benefits" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithExpensesModel)), nino, taxYear)
-          await(wsClient.url(url)
-            .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear),  "Csrf-Token" -> "nocheck").get())
+          welshToggleCheck(ENGLISH)
         }
 
-        "status OK" in {
-          result.status shouldBe OK
+        "redirect the User to the Overview page no data in session" which {
+          lazy val result: WSResponse = {
+            authoriseAgent()
+            userDataStub(IncomeTaxUserData(), nino, taxYear)
+            await(wsClient.url(url)
+              .withFollowRedirects(false)
+              .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+          }
+
+          "has an SEE_OTHER(303) status" in {
+            result.status shouldBe SEE_OTHER
+            result.header(HeaderNames.LOCATION) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+          }
+
         }
 
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        titleCheck(ContentEN.titleAndH1Expected)
-        h1Check(ContentEN.titleAndH1Expected)
-        textOnPageCheck(ContentEN.captionExpected, captionSelector)
-
-        textOnPageCheck(ContentEN.contentExpectedIndividual, employmentSummaryParagraphSelector)
-        textOnPageCheck(ContentEN.insetTextExpectedIndividual, insetTextSelector)
-
-        linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId1).url)
-        textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
-
-        linkCheck(employerName3, employerSummaryListRowFieldNameSelector(2), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId3).url)
-        textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(2), s"for $employerName3 row")
-
-        textOnPageCheck("Expenses", expensesParagraphHeadingSelector)
-        textOnPageCheck("This is a total of expenses from all employment in the tax year.", expensesParagraphSubheadingSelector)
-
-        linkCheck("Expenses", expensesSummaryListRowFieldNameLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
-        textOnPageCheck("Updated", expensesSummaryListRowFieldActionSelector)
-
-        buttonCheck("Return to overview")
-
-        welshToggleCheck(ENGLISH)
-      }
-
-      "redirect the User to the Overview page no data in session" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          userDataStub(IncomeTaxUserData(), nino, taxYear)
-          await(wsClient.url(url)
-            .withFollowRedirects(false)
-            .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear),  "Csrf-Token" -> "nocheck").get())
-        }
-
-        "has an SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-        }
-
-      }
-
-      "returns an action when auth call fails" which {
-        lazy val result: WSResponse = {
-          authoriseIndividualUnauthorized()
-          await(wsClient.url(url).get())
-        }
-        "has an UNAUTHORIZED(401) status" in {
-          result.status shouldBe UNAUTHORIZED
+        "returns an action when auth call fails" which {
+          lazy val result: WSResponse = {
+            authoriseAgentUnauthorized()
+            await(wsClient.url(url).get())
+          }
+          "has an UNAUTHORIZED(401) status" in {
+            result.status shouldBe UNAUTHORIZED
+          }
         }
       }
     }
   }
 
-  "as an agent in english" when {
+  "in welsh" when {
 
-    ".show" should {
+    import ExpectedResults.ContentCY._
+    import Selectors._
 
-      "return single employment summary view when there is only one employment without Expenses and Benefits" which {
-        lazy val result: WSResponse = {
-          authoriseAgent()
-          userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear),  "Csrf-Token" -> "nocheck").get())
+    "the user is an individual" when {
+
+      ".show" should {
+
+        "return single employment summary view when there is only one employment without Expenses and Benefits" which {
+          implicit lazy val result: WSResponse = {
+            authoriseIndividual()
+            userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
+            await(
+              wsClient.url(url).withHttpHeaders(
+                HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
+              ).get()
+            )
+          }
+
+          "status OK" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(titleAndH1Expected)
+          h1Check(employerName1)
+          textOnPageCheck(captionExpected, captionSelector)
+
+          textOnPageCheck(contentExpectedIndividual, employmentSummaryParagraphSelector)
+          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+
+          linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId1).url)
+          textOnPageCheck("Benefits", employmentBenefitsRowSelector)
+          textOnPageCheck("Expenses", employmentExpensesRowSelector)
+
+          buttonCheck("Return to overview")
+
+          welshToggleCheck(WELSH)
         }
 
-        "status OK" in {
-          result.status shouldBe OK
-        }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        titleCheck(ContentEN.titleAndH1Expected)
-        h1Check(employerName1)
-        textOnPageCheck(ContentEN.captionExpected, captionSelector)
-
-        textOnPageCheck(ContentEN.contentExpectedAgent, employmentSummaryParagraphSelector)
-        textOnPageCheck(ContentEN.insetTextExpectedAgent, insetTextSelector)
-
-        linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId1).url)
-        textOnPageCheck("Benefits", employmentBenefitsRowSelector)
-        textOnPageCheck("Expenses", employmentExpensesRowSelector)
-
-        buttonCheck("Return to overview")
-
-        welshToggleCheck(ENGLISH)
-      }
-
-      "return single employment summary view when there is only one employment with Expenses and Benefits" which {
-        lazy val result: WSResponse = {
-          authoriseAgent()
-          userDataStub(IncomeTaxUserData(Some(singleEmploymentWithExpensesAndBenefitsModel)), nino, taxYear)
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear),  "Csrf-Token" -> "nocheck").get())
-        }
-
-        "status OK" in {
-          result.status shouldBe OK
-        }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        titleCheck(ContentEN.titleAndH1Expected)
-        h1Check(employerName3)
-        textOnPageCheck(ContentEN.captionExpected, captionSelector)
-
-        textOnPageCheck(ContentEN.contentExpectedAgent, employmentSummaryParagraphSelector)
-        textOnPageCheck(ContentEN.insetTextExpectedAgent, insetTextSelector)
-
-        linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId3).url)
-        linkCheck("Benefits", employmentBenefitsRowLinkSelector, CheckYourBenefitsController.show(taxYear, employmentId3).url)
-        linkCheck("Expenses", employmentExpensesRowLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
-
-        buttonCheck("Return to overview")
-
-        welshToggleCheck(ENGLISH)
-      }
-
-      "render multiple employment summary view when there are two employments without Expenses and Benefits" which {
-        lazy val result: WSResponse = {
-          authoriseAgent()
-          userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
-          await(wsClient.url(url)
-            .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear),  "Csrf-Token" -> "nocheck").get())
-        }
-
-        "status OK" in {
-          result.status shouldBe OK
-        }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        titleCheck(ContentEN.titleAndH1Expected)
-        h1Check(ContentEN.titleAndH1Expected)
-        textOnPageCheck(ContentEN.captionExpected, captionSelector)
-
-        textOnPageCheck(ContentEN.contentExpectedAgent, employmentSummaryParagraphSelector)
-        textOnPageCheck(ContentEN.insetTextExpectedAgent, insetTextSelector)
-
-        linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId1).url)
-        textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
-
-        linkCheck(employerName2, employerSummaryListRowFieldNameSelector(2), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId2).url)
-        textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(2), s"for $employerName2 row")
-
-        textOnPageCheck("Expenses", expensesParagraphHeadingSelector, "for Expenses heading")
-        textOnPageCheck("This is a total of expenses from all employment in the tax year.", expensesParagraphSubheadingSelector)
-
-        textOnPageCheck("Expenses", expensesSummaryListRowFieldNameSelector, "for Expenses row")
-        textOnPageCheck("Cannot update", expensesSummaryListRowFieldActionSelector)
-
-        buttonCheck("Return to overview")
-
-        welshToggleCheck(ENGLISH)
-      }
-
-      "render multiple employment summary view when there are two employments with Expenses and Benefits" which {
-        lazy val result: WSResponse = {
-          authoriseAgent()
-          userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithExpensesModel)), nino, taxYear)
-          await(wsClient.url(url)
-            .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear),  "Csrf-Token" -> "nocheck").get())
-        }
-
-        "status OK" in {
-          result.status shouldBe OK
-        }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        titleCheck(ContentEN.titleAndH1Expected)
-        h1Check(ContentEN.titleAndH1Expected)
-        textOnPageCheck(ContentEN.captionExpected, captionSelector)
-
-        textOnPageCheck(ContentEN.contentExpectedAgent, employmentSummaryParagraphSelector)
-        textOnPageCheck(ContentEN.insetTextExpectedAgent, insetTextSelector)
-
-        linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId1).url)
-        textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
-
-        linkCheck(employerName3, employerSummaryListRowFieldNameSelector(2), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId3).url)
-        textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(2), s"for $employerName3 row")
-
-        textOnPageCheck("Expenses", expensesParagraphHeadingSelector)
-        textOnPageCheck("This is a total of expenses from all employment in the tax year.", expensesParagraphSubheadingSelector)
-
-        linkCheck("Expenses", expensesSummaryListRowFieldNameLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
-        textOnPageCheck("Updated", expensesSummaryListRowFieldActionSelector)
-
-        buttonCheck("Return to overview")
-
-        welshToggleCheck(ENGLISH)
-      }
-
-      "redirect the User to the Overview page no data in session" which {
-        lazy val result: WSResponse = {
-          authoriseAgent()
-          userDataStub(IncomeTaxUserData(), nino, taxYear)
-          await(wsClient.url(url)
-            .withFollowRedirects(false)
-            .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear),  "Csrf-Token" -> "nocheck").get())
-        }
-
-        "has an SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-        }
-
-      }
-
-      "returns an action when auth call fails" which {
-        lazy val result: WSResponse = {
-          authoriseAgentUnauthorized()
-          await(wsClient.url(url).get())
-        }
-        "has an UNAUTHORIZED(401) status" in {
-          result.status shouldBe UNAUTHORIZED
-        }
-      }
-    }
-  }
-
-  "as an individual in welsh" when {
-
-    ".show" should {
-
-      "return single employment summary view when there is only one employment without Expenses and Benefits" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
-          await(
-            wsClient.url(url).withHttpHeaders(
-              HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear),  "Csrf-Token" -> "nocheck"
+        "return single employment summary view when there is only one employment with Expenses and Benefits" which {
+          implicit lazy val result: WSResponse = {
+            authoriseIndividual()
+            userDataStub(IncomeTaxUserData(Some(singleEmploymentWithExpensesAndBenefitsModel)), nino, taxYear)
+            await(wsClient.url(url).withHttpHeaders(
+              HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
             ).get()
-          )
+            )
+          }
+
+          "status OK" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(titleAndH1Expected)
+          h1Check(employerName3)
+          textOnPageCheck(captionExpected, captionSelector)
+
+          textOnPageCheck(contentExpectedIndividual, employmentSummaryParagraphSelector)
+          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+
+          linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId3).url)
+          linkCheck("Benefits", employmentBenefitsRowLinkSelector, CheckYourBenefitsController.show(taxYear, employmentId3).url)
+          linkCheck("Expenses", employmentExpensesRowLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
+
+          buttonCheck("Return to overview")
+
+          welshToggleCheck(WELSH)
         }
 
-        "status OK" in {
-          result.status shouldBe OK
+        "render multiple employment summary view when there are two employments without Expenses and Benefits" which {
+          implicit lazy val result: WSResponse = {
+            authoriseIndividual()
+            userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
+            await(wsClient.url(url)
+              .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
+              ).get()
+            )
+          }
+
+          "status OK" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(titleAndH1Expected)
+          h1Check(titleAndH1Expected)
+          textOnPageCheck(captionExpected, captionSelector)
+
+          textOnPageCheck(contentExpectedIndividual, employmentSummaryParagraphSelector)
+          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+
+          linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId1).url)
+          textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
+
+          linkCheck(employerName2, employerSummaryListRowFieldNameSelector(2), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId2).url)
+          textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(2), s"for $employerName2 row")
+
+          textOnPageCheck("Expenses", expensesParagraphHeadingSelector, "for Expenses heading")
+          textOnPageCheck("This is a total of expenses from all employment in the tax year.", expensesParagraphSubheadingSelector)
+
+          textOnPageCheck("Expenses", expensesSummaryListRowFieldNameSelector, "for Expenses row")
+          textOnPageCheck("Cannot update", expensesSummaryListRowFieldActionSelector)
+
+          buttonCheck("Return to overview")
+
+          welshToggleCheck(WELSH)
         }
 
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
+        "render multiple employment summary view when there are two employments with Expenses and Benefits" which {
+          implicit lazy val result: WSResponse = {
+            authoriseIndividual()
+            userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithExpensesModel)), nino, taxYear)
+            await(wsClient.url(url)
+              .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
+              ).get()
+            )
+          }
 
-        titleCheck(ContentCY.titleAndH1Expected)
-        h1Check(employerName1)
-        textOnPageCheck(ContentCY.captionExpected, captionSelector)
+          "status OK" in {
+            result.status shouldBe OK
+          }
 
-        textOnPageCheck(ContentCY.contentExpectedIndividual, employmentSummaryParagraphSelector)
-        textOnPageCheck(ContentCY.insetTextExpectedIndividual, insetTextSelector)
+          titleCheck(titleAndH1Expected)
+          h1Check(titleAndH1Expected)
+          textOnPageCheck(captionExpected, captionSelector)
 
-        linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId1).url)
-        textOnPageCheck("Benefits", employmentBenefitsRowSelector)
-        textOnPageCheck("Expenses", employmentExpensesRowSelector)
+          textOnPageCheck(contentExpectedIndividual, employmentSummaryParagraphSelector)
+          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
 
-        buttonCheck("Return to overview")
+          linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId1).url)
+          textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
 
-        welshToggleCheck(WELSH)
+          linkCheck(employerName3, employerSummaryListRowFieldNameSelector(2), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId3).url)
+          textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(2), s"for $employerName3 row")
+
+          textOnPageCheck("Expenses", expensesParagraphHeadingSelector)
+          textOnPageCheck("This is a total of expenses from all employment in the tax year.", expensesParagraphSubheadingSelector)
+
+          linkCheck("Expenses", expensesSummaryListRowFieldNameLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
+          textOnPageCheck("Updated", expensesSummaryListRowFieldActionSelector)
+
+          buttonCheck("Return to overview")
+
+          welshToggleCheck(WELSH)
+        }
+
+        "redirect the User to the Overview page no data in session" which {
+          lazy val result: WSResponse = {
+            authoriseIndividual()
+            userDataStub(IncomeTaxUserData(), nino, taxYear)
+            await(wsClient.url(url)
+              .withFollowRedirects(false)
+              .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck")
+              .get()
+            )
+          }
+
+          "has an SEE_OTHER(303) status" in {
+            result.status shouldBe SEE_OTHER
+            result.header(HeaderNames.LOCATION) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+          }
+
+        }
+
+        "returns an action when auth call fails" which {
+          lazy val result: WSResponse = {
+            authoriseIndividualUnauthorized()
+            await(wsClient.url(url).get())
+          }
+          "has an UNAUTHORIZED(401) status" in {
+            result.status shouldBe UNAUTHORIZED
+          }
+        }
       }
+    }
 
-      "return single employment summary view when there is only one employment with Expenses and Benefits" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          userDataStub(IncomeTaxUserData(Some(singleEmploymentWithExpensesAndBenefitsModel)), nino, taxYear)
-          await(wsClient.url(url).withHttpHeaders(
-            HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear),  "Csrf-Token" -> "nocheck"
-          ).get()
-          )
+    "the user is an agent" when {
+
+      ".show" should {
+
+        "return single employment summary view when there is only one employment without Expenses and Benefits" which {
+          implicit lazy val result: WSResponse = {
+            authoriseAgent()
+            userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
+            await(wsClient.url(url)
+              .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck")
+              .get()
+            )
+          }
+
+          "status OK" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(titleAndH1Expected)
+          h1Check(employerName1)
+          textOnPageCheck(captionExpected, captionSelector)
+
+          textOnPageCheck(contentExpectedAgent, employmentSummaryParagraphSelector)
+          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+
+          linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId1).url)
+          textOnPageCheck("Benefits", employmentBenefitsRowSelector)
+          textOnPageCheck("Expenses", employmentExpensesRowSelector)
+
+          buttonCheck("Return to overview")
+
+          welshToggleCheck(WELSH)
         }
 
-        "status OK" in {
-          result.status shouldBe OK
+        "return single employment summary view when there is only one employment with Expenses and Benefits" which {
+          implicit lazy val result: WSResponse = {
+            authoriseAgent()
+            userDataStub(IncomeTaxUserData(Some(singleEmploymentWithExpensesAndBenefitsModel)), nino, taxYear)
+            await(wsClient.url(url)
+              .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck")
+              .get()
+            )
+          }
+
+          "status OK" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(titleAndH1Expected)
+          h1Check(employerName3)
+          textOnPageCheck(captionExpected, captionSelector)
+
+          textOnPageCheck(contentExpectedAgent, employmentSummaryParagraphSelector)
+          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+
+          linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId3).url)
+          linkCheck("Benefits", employmentBenefitsRowLinkSelector, CheckYourBenefitsController.show(taxYear, employmentId3).url)
+          linkCheck("Expenses", employmentExpensesRowLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
+
+          buttonCheck("Return to overview")
+
+          welshToggleCheck(WELSH)
         }
 
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
+        "render multiple employment summary view when there are two employments without Expenses and Benefits" which {
+          implicit lazy val result: WSResponse = {
+            authoriseAgent()
+            userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
+            await(wsClient.url(url)
+              .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck")
+              .get()
+            )
+          }
 
-        titleCheck(ContentCY.titleAndH1Expected)
-        h1Check(employerName3)
-        textOnPageCheck(ContentCY.captionExpected, captionSelector)
+          "status OK" in {
+            result.status shouldBe OK
+          }
 
-        textOnPageCheck(ContentCY.contentExpectedIndividual, employmentSummaryParagraphSelector)
-        textOnPageCheck(ContentCY.insetTextExpectedIndividual, insetTextSelector)
+          titleCheck(titleAndH1Expected)
+          h1Check(titleAndH1Expected)
+          textOnPageCheck(captionExpected, captionSelector)
 
-        linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId3).url)
-        linkCheck("Benefits", employmentBenefitsRowLinkSelector, CheckYourBenefitsController.show(taxYear, employmentId3).url)
-        linkCheck("Expenses", employmentExpensesRowLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
+          textOnPageCheck(contentExpectedAgent, employmentSummaryParagraphSelector)
+          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
 
-        buttonCheck("Return to overview")
+          linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId1).url)
+          textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
 
-        welshToggleCheck(WELSH)
-      }
+          linkCheck(employerName2, employerSummaryListRowFieldNameSelector(2), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId2).url)
+          textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(2), s"for $employerName2 row")
 
-      "render multiple employment summary view when there are two employments without Expenses and Benefits" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
-          await(wsClient.url(url)
-            .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear),  "Csrf-Token" -> "nocheck"
-            ).get()
-          )
+          textOnPageCheck("Expenses", expensesParagraphHeadingSelector, "for Expenses heading")
+          textOnPageCheck("This is a total of expenses from all employment in the tax year.", expensesParagraphSubheadingSelector)
+
+          textOnPageCheck("Expenses", expensesSummaryListRowFieldNameSelector, "for Expenses row")
+          textOnPageCheck("Cannot update", expensesSummaryListRowFieldActionSelector)
+
+          buttonCheck("Return to overview")
+
+          welshToggleCheck(WELSH)
         }
 
-        "status OK" in {
-          result.status shouldBe OK
+        "render multiple employment summary view when there are two employments with Expenses and Benefits" which {
+          implicit lazy val result: WSResponse = {
+            authoriseAgent()
+            userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithExpensesModel)), nino, taxYear)
+            await(wsClient.url(url)
+              .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck")
+              .get()
+            )
+          }
+
+          "status OK" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(titleAndH1Expected)
+          h1Check(titleAndH1Expected)
+          textOnPageCheck(captionExpected, captionSelector)
+
+          textOnPageCheck(contentExpectedAgent, employmentSummaryParagraphSelector)
+          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+
+          linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId1).url)
+          textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
+
+          linkCheck(employerName3, employerSummaryListRowFieldNameSelector(2), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId3).url)
+          textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(2), s"for $employerName3 row")
+
+          textOnPageCheck("Expenses", expensesParagraphHeadingSelector)
+          textOnPageCheck("This is a total of expenses from all employment in the tax year.", expensesParagraphSubheadingSelector)
+
+          linkCheck("Expenses", expensesSummaryListRowFieldNameLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
+          textOnPageCheck("Updated", expensesSummaryListRowFieldActionSelector)
+
+          buttonCheck("Return to overview")
+
+          welshToggleCheck(WELSH)
         }
 
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
+        "redirect the User to the Overview page no data in session" which {
+          lazy val result: WSResponse = {
+            authoriseAgent()
+            userDataStub(IncomeTaxUserData(), nino, taxYear)
+            await(wsClient.url(url)
+              .withFollowRedirects(false)
+              .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck")
+              .get()
+            )
+          }
 
-        titleCheck(ContentCY.titleAndH1Expected)
-        h1Check(ContentCY.titleAndH1Expected)
-        textOnPageCheck(ContentCY.captionExpected, captionSelector)
+          "has an SEE_OTHER(303) status" in {
+            result.status shouldBe SEE_OTHER
+            result.header(HeaderNames.LOCATION) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+          }
 
-        textOnPageCheck(ContentCY.contentExpectedIndividual, employmentSummaryParagraphSelector)
-        textOnPageCheck(ContentCY.insetTextExpectedIndividual, insetTextSelector)
-
-        linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId1).url)
-        textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
-
-        linkCheck(employerName2, employerSummaryListRowFieldNameSelector(2), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId2).url)
-        textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(2), s"for $employerName2 row")
-
-        textOnPageCheck("Expenses", expensesParagraphHeadingSelector, "for Expenses heading")
-        textOnPageCheck("This is a total of expenses from all employment in the tax year.", expensesParagraphSubheadingSelector)
-
-        textOnPageCheck("Expenses", expensesSummaryListRowFieldNameSelector, "for Expenses row")
-        textOnPageCheck("Cannot update", expensesSummaryListRowFieldActionSelector)
-
-        buttonCheck("Return to overview")
-
-        welshToggleCheck(WELSH)
-      }
-
-      "render multiple employment summary view when there are two employments with Expenses and Benefits" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithExpensesModel)), nino, taxYear)
-          await(wsClient.url(url)
-            .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear),  "Csrf-Token" -> "nocheck"
-            ).get()
-          )
         }
 
-        "status OK" in {
-          result.status shouldBe OK
-        }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        titleCheck(ContentCY.titleAndH1Expected)
-        h1Check(ContentCY.titleAndH1Expected)
-        textOnPageCheck(ContentCY.captionExpected, captionSelector)
-
-        textOnPageCheck(ContentCY.contentExpectedIndividual, employmentSummaryParagraphSelector)
-        textOnPageCheck(ContentCY.insetTextExpectedIndividual, insetTextSelector)
-
-        linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId1).url)
-        textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
-
-        linkCheck(employerName3, employerSummaryListRowFieldNameSelector(2), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId3).url)
-        textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(2), s"for $employerName3 row")
-
-        textOnPageCheck("Expenses", expensesParagraphHeadingSelector)
-        textOnPageCheck("This is a total of expenses from all employment in the tax year.", expensesParagraphSubheadingSelector)
-
-        linkCheck("Expenses", expensesSummaryListRowFieldNameLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
-        textOnPageCheck("Updated", expensesSummaryListRowFieldActionSelector)
-
-        buttonCheck("Return to overview")
-
-        welshToggleCheck(WELSH)
-      }
-
-      "redirect the User to the Overview page no data in session" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          userDataStub(IncomeTaxUserData(), nino, taxYear)
-          await(wsClient.url(url)
-            .withFollowRedirects(false)
-            .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear),  "Csrf-Token" -> "nocheck")
-            .get()
-          )
-        }
-
-        "has an SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-        }
-
-      }
-
-      "returns an action when auth call fails" which {
-        lazy val result: WSResponse = {
-          authoriseIndividualUnauthorized()
-          await(wsClient.url(url).get())
-        }
-        "has an UNAUTHORIZED(401) status" in {
-          result.status shouldBe UNAUTHORIZED
+        "returns an action when auth call fails" which {
+          lazy val result: WSResponse = {
+            authoriseIndividualUnauthorized()
+            await(wsClient.url(url).get())
+          }
+          "has an UNAUTHORIZED(401) status" in {
+            result.status shouldBe UNAUTHORIZED
+          }
         }
       }
     }
   }
-
-  "as an agent in welsh" when{
-
-    ".show" should {
-
-      "return single employment summary view when there is only one employment without Expenses and Benefits" which {
-        lazy val result: WSResponse = {
-          authoriseAgent()
-          userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
-          await(wsClient.url(url)
-            .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear),  "Csrf-Token" -> "nocheck")
-            .get()
-          )
-        }
-
-        "status OK" in {
-          result.status shouldBe OK
-        }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        titleCheck(ContentCY.titleAndH1Expected)
-        h1Check(employerName1)
-        textOnPageCheck(ContentCY.captionExpected, captionSelector)
-
-        textOnPageCheck(ContentCY.contentExpectedAgent, employmentSummaryParagraphSelector)
-        textOnPageCheck(ContentCY.insetTextExpectedAgent, insetTextSelector)
-
-        linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId1).url)
-        textOnPageCheck("Benefits", employmentBenefitsRowSelector)
-        textOnPageCheck("Expenses", employmentExpensesRowSelector)
-
-        buttonCheck("Return to overview")
-
-        welshToggleCheck(WELSH)
-      }
-
-      "return single employment summary view when there is only one employment with Expenses and Benefits" which {
-        lazy val result: WSResponse = {
-          authoriseAgent()
-          userDataStub(IncomeTaxUserData(Some(singleEmploymentWithExpensesAndBenefitsModel)), nino, taxYear)
-          await(wsClient.url(url)
-            .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear),  "Csrf-Token" -> "nocheck")
-            .get()
-          )
-        }
-
-        "status OK" in {
-          result.status shouldBe OK
-        }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        titleCheck(ContentCY.titleAndH1Expected)
-        h1Check(employerName3)
-        textOnPageCheck(ContentCY.captionExpected, captionSelector)
-
-        textOnPageCheck(ContentCY.contentExpectedAgent, employmentSummaryParagraphSelector)
-        textOnPageCheck(ContentCY.insetTextExpectedAgent, insetTextSelector)
-
-        linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId3).url)
-        linkCheck("Benefits", employmentBenefitsRowLinkSelector, CheckYourBenefitsController.show(taxYear, employmentId3).url)
-        linkCheck("Expenses", employmentExpensesRowLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
-
-        buttonCheck("Return to overview")
-
-        welshToggleCheck(WELSH)
-      }
-
-      "render multiple employment summary view when there are two employments without Expenses and Benefits" which {
-        lazy val result: WSResponse = {
-          authoriseAgent()
-          userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
-          await(wsClient.url(url)
-            .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear),  "Csrf-Token" -> "nocheck")
-            .get()
-          )
-        }
-
-        "status OK" in {
-          result.status shouldBe OK
-        }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        titleCheck(ContentCY.titleAndH1Expected)
-        h1Check(ContentCY.titleAndH1Expected)
-        textOnPageCheck(ContentCY.captionExpected, captionSelector)
-
-        textOnPageCheck(ContentCY.contentExpectedAgent, employmentSummaryParagraphSelector)
-        textOnPageCheck(ContentCY.insetTextExpectedAgent, insetTextSelector)
-
-        linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId1).url)
-        textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
-
-        linkCheck(employerName2, employerSummaryListRowFieldNameSelector(2), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId2).url)
-        textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(2), s"for $employerName2 row")
-
-        textOnPageCheck("Expenses", expensesParagraphHeadingSelector, "for Expenses heading")
-        textOnPageCheck("This is a total of expenses from all employment in the tax year.", expensesParagraphSubheadingSelector)
-
-        textOnPageCheck("Expenses", expensesSummaryListRowFieldNameSelector, "for Expenses row")
-        textOnPageCheck("Cannot update", expensesSummaryListRowFieldActionSelector)
-
-        buttonCheck("Return to overview")
-
-        welshToggleCheck(WELSH)
-      }
-
-      "render multiple employment summary view when there are two employments with Expenses and Benefits" which {
-        lazy val result: WSResponse = {
-          authoriseAgent()
-          userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithExpensesModel)), nino, taxYear)
-          await(wsClient.url(url)
-            .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear),  "Csrf-Token" -> "nocheck")
-            .get()
-          )
-        }
-
-        "status OK" in {
-          result.status shouldBe OK
-        }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        titleCheck(ContentCY.titleAndH1Expected)
-        h1Check(ContentCY.titleAndH1Expected)
-        textOnPageCheck(ContentCY.captionExpected, captionSelector)
-
-        textOnPageCheck(ContentCY.contentExpectedAgent, employmentSummaryParagraphSelector)
-        textOnPageCheck(ContentCY.insetTextExpectedAgent, insetTextSelector)
-
-        linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId1).url)
-        textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
-
-        linkCheck(employerName3, employerSummaryListRowFieldNameSelector(2), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId3).url)
-        textOnPageCheck(s"Updated", employerSummaryListRowFieldActionSelector(2), s"for $employerName3 row")
-
-        textOnPageCheck("Expenses", expensesParagraphHeadingSelector)
-        textOnPageCheck("This is a total of expenses from all employment in the tax year.", expensesParagraphSubheadingSelector)
-
-        linkCheck("Expenses", expensesSummaryListRowFieldNameLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
-        textOnPageCheck("Updated", expensesSummaryListRowFieldActionSelector)
-
-        buttonCheck("Return to overview")
-
-        welshToggleCheck(WELSH)
-      }
-
-      "redirect the User to the Overview page no data in session" which {
-        lazy val result: WSResponse = {
-          authoriseAgent()
-          userDataStub(IncomeTaxUserData(), nino, taxYear)
-          await(wsClient.url(url)
-            .withFollowRedirects(false)
-            .withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy", HeaderNames.COOKIE -> playSessionCookies(taxYear),  "Csrf-Token" -> "nocheck")
-            .get()
-          )
-        }
-
-        "has an SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header(HeaderNames.LOCATION) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-        }
-
-      }
-
-      "returns an action when auth call fails" which {
-        lazy val result: WSResponse = {
-          authoriseIndividualUnauthorized()
-          await(wsClient.url(url).get())
-        }
-        "has an UNAUTHORIZED(401) status" in {
-          result.status shouldBe UNAUTHORIZED
-        }
-      }
-    }
-  }
-
 }
 
 object EmploymentSummaryControllerISpec {
-
-  val taxYear = 2022
-
-  val headingSelector = "#main-content > div > div > header > h1"
-  val captionSelector = "#main-content > div > div > header > p"
-
-  val employmentSummaryParagraphSelector = "#main-content > div > div > p:nth-child(2)"
-
-  val employmentDetailsRowSelector: String =
-    s"#main-content > div > div > div.govuk-form-group > ul > li:nth-child(1) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
-  val employmentBenefitsRowSelector: String =
-    s"#main-content > div > div > div.govuk-form-group > ul > li:nth-child(2) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
-  val employmentExpensesRowSelector: String =
-    s"#main-content > div > div > div.govuk-form-group > ul > li:nth-child(3) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
-
-  def employmentDetailsRowLinkSelector: String = s"$employmentDetailsRowSelector > a"
-  def employmentBenefitsRowLinkSelector: String = s"$employmentBenefitsRowSelector > a"
-  def employmentExpensesRowLinkSelector: String = s"$employmentExpensesRowSelector > a"
-
-  val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
-
-  val expensesParagraphHeadingSelector = "#main-content > div > div > p.govuk-label--m"
-  val expensesParagraphSubheadingSelector = "#main-content > div > div > p:nth-child(6)"
-
-  def employerSummaryListRowFieldNameSelector(i: Int) = s"#main-content > div > div > div:nth-child(4) > ul > li:nth-child($i) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light > a"
-  def employerSummaryListRowFieldActionSelector(i: Int) = s"#main-content > div > div > div:nth-child(4) > ul > li:nth-child($i) > span.hmrc-add-to-a-list__change"
-  def expensesSummaryListRowFieldNameLinkSelector = s"$expensesSummaryListRowFieldNameSelector > a"
-  val expensesSummaryListRowFieldNameSelector = s"#main-content > div > div > div:nth-child(7) > ul > li > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
-
-  val expensesSummaryListRowFieldActionSelector = s"#main-content > div > div > div:nth-child(7) > ul > li > span.hmrc-add-to-a-list__change"
-
-  object ContentEN {
-    val titleAndH1Expected = "Employment"
-    val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val contentExpectedAgent = "Your client’s employment information is based on the information we already hold about them."
-    val contentExpectedIndividual = "Your employment information is based on the information we already hold about you."
-    val insetTextExpectedAgent = s"You cannot update your client’s employment information until 6 April $taxYear."
-    val insetTextExpectedIndividual = s"You cannot update your employment information until 6 April $taxYear."
-  }
-
-  object ContentCY {
-    val titleAndH1Expected = "Employment"
-    val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val contentExpectedAgent = "Your client’s employment information is based on the information we already hold about them."
-    val contentExpectedIndividual = "Your employment information is based on the information we already hold about you."
-    val insetTextExpectedAgent = s"You cannot update your client’s employment information until 6 April $taxYear."
-    val insetTextExpectedIndividual = s"You cannot update your employment information until 6 April $taxYear."
-  }
 
   object FullModel {
     val employerName1 = "Maggie"

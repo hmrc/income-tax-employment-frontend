@@ -30,6 +30,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
+import play.api.libs.ws.WSClient
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.OK
@@ -49,13 +50,16 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   val nino = "AA123456A"
   val mtditid = "1234567890"
   val sessionId = "sessionId-eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"
+  val taxYear = 2022
 
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid)
 
   implicit val actorSystem: ActorSystem = ActorSystem()
 
-  val startUrl = s"http://localhost:$port/income-through-software/return/employment-income"
+  def wsClient: WSClient = app.injector.instanceOf[WSClient]
+
+  def appUrl(port: Int) = s"http://localhost:$port/income-through-software/return/employment-income"
 
   def await[T](awaitable: Awaitable[T]): T = Await.result(awaitable, Duration.Inf)
 

@@ -16,29 +16,76 @@
 
 package controllers.errors
 
-import config.AppConfig
-import play.api.mvc.{MessagesControllerComponents, Result}
-import play.api.test.FakeRequest
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.UNAUTHORIZED
-import utils.IntegrationTest
-import views.html.authErrorPages.IndividualUnauthorisedView
+import utils.{IntegrationTest, ViewHelpers}
 
-class IndividualAuthErrorControllerISpec extends IntegrationTest {
+class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
 
+  lazy val url = s"${appUrl(port)}/error/you-need-to-sign-up"
 
-  lazy val controller = new IndividualAuthErrorController(
-    app.injector.instanceOf[MessagesControllerComponents],
-    app.injector.instanceOf[AppConfig],
-    app.injector.instanceOf[IndividualUnauthorisedView]
-  )
-
-  ".show" should {
-
-    "return an Unauthorized status" in {
-      val result: Result = await(controller.show()(FakeRequest()))
-      result.header.status shouldBe UNAUTHORIZED
+  object ExpectedResults {
+    object ContentEN {
+      val validTitle: String = "You cannot view this page"
+      val pageContent: String = "You need to sign up for Making Tax Digital for Income Tax before you can view this page."
+      val linkContent: String = "sign up for Making Tax Digital for Income Tax"
+      val linkHref: String = "https://www.gov.uk/guidance/sign-up-your-business-for-making-tax-digital-for-income-tax"
     }
 
+    object ContentCY {
+      val validTitle: String = "You cannot view this page"
+      val pageContent: String = "You need to sign up for Making Tax Digital for Income Tax before you can view this page."
+      val linkContent: String = "sign up for Making Tax Digital for Income Tax"
+      val linkHref: String = "https://www.gov.uk/guidance/sign-up-your-business-for-making-tax-digital-for-income-tax"
+    }
   }
 
+  object Selectors {
+    val paragraphSelector: String = ".govuk-body"
+    val linkSelector: String = paragraphSelector + " > a"
+  }
+
+  "When set to english" when {
+
+    import ExpectedResults.ContentEN._
+
+    "the page is requested" should {
+
+      "render the page" which {
+        implicit lazy val result: WSResponse = {
+          authoriseIndividual()
+          urlGet(url)(wsClient)
+        }
+
+        result.status shouldBe UNAUTHORIZED
+        titleCheck(validTitle)
+        welshToggleCheck("English")
+        h1Check(validTitle, "xl")
+        textOnPageCheck(pageContent, Selectors.paragraphSelector)
+        linkCheck(linkContent, Selectors.linkSelector, linkHref)
+      }
+    }
+  }
+
+  "When set to welsh" when {
+
+    import ExpectedResults.ContentCY._
+
+    "the page is requested" should {
+
+      "render the page" which {
+        implicit lazy val result: WSResponse = {
+          authoriseIndividual()
+          urlGet(url, true)(wsClient)
+        }
+
+        result.status shouldBe UNAUTHORIZED
+        titleCheck(validTitle)
+        welshToggleCheck("English")
+        h1Check(validTitle, "xl")
+        textOnPageCheck(pageContent, Selectors.paragraphSelector)
+        linkCheck(linkContent, Selectors.linkSelector, linkHref)
+      }
+    }
+  }
 }
