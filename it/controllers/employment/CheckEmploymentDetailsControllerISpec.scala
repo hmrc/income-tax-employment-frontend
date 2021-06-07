@@ -24,7 +24,7 @@ import play.api.http.Status._
 import play.api.libs.ws.{WSClient, WSResponse}
 import utils.{IntegrationTest, ViewHelpers}
 
-class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers {
+class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers {
 
   lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
   val taxYear = 2022
@@ -90,41 +90,12 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
     val employeeFieldValue2 = "223/AB12399"
     val employeeFieldValue3 = "12 February 2020"
     val employeeFieldValue4 = "No"
+    val employeeFieldValue4a = "Yes"
     val employeeFieldValue5 = "£34234.15"
     val employeeFieldValue6 = "£6782.92"
     val employeeFieldValue7 = "£67676"
   }
 
-  object FullModel {
-    val allData: AllEmploymentData = AllEmploymentData(
-      hmrcEmploymentData = Seq(
-        EmploymentSource(
-          employmentId = "001",
-          employerName = "maggie",
-          employerRef = Some("223/AB12399"),
-          payrollId = Some("123456789999"),
-          startDate = Some("2019-04-21"),
-          cessationDate = Some("2020-03-11"),
-          dateIgnored = Some("2020-04-04T01:01:01Z"),
-          submittedOn = Some("2020-01-04T05:01:01Z"),
-          employmentData = Some(EmploymentData(
-            submittedOn = ("2020-02-12"),
-            employmentSequenceNumber = Some("123456789999"),
-            companyDirector = Some(true),
-            closeCompany = Some(false),
-            directorshipCeasedDate = Some("2020-02-12"),
-            occPen = Some(false),
-            disguisedRemuneration = Some(false),
-            pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
-          )),
-          None
-        )
-      ),
-      hmrcExpenses = None,
-      customerEmploymentData = Seq(),
-      customerExpenses = None
-    )
-  }
 
   object MinModel {
     val miniData: AllEmploymentData = AllEmploymentData(
@@ -146,7 +117,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
             directorshipCeasedDate = None,
             occPen = None,
             disguisedRemuneration = None,
-            pay = Pay(34234.15, 6782.92, None, "CALENDAR MONTHLY", "2020-04-23", None, None)
+            pay = Pay(34234.15, 6782.92, None, None,None, None, None)
           )),
           None
         )
@@ -157,7 +128,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
     )
   }
 
-  object SomeModelWithInvalidData {
+  object SomeModelWithInvalidDateFormat {
     val invalidData: AllEmploymentData = AllEmploymentData(
       hmrcEmploymentData = Seq(
         EmploymentSource(
@@ -173,11 +144,11 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
             submittedOn = "2020-02-12",
             employmentSequenceNumber = None,
             companyDirector = Some(true),
-            closeCompany = None,
+            closeCompany = Some(true),
             directorshipCeasedDate = Some("14/07/1990"),
             occPen = None,
             disguisedRemuneration = None,
-            pay = Pay(34234.15, 6782.92, None, "CALENDAR MONTHLY", "2020-04-23", None, None)
+            pay = Pay(34234.15, 6782.92, None, None, None, None, None)
           )),
           None
         )
@@ -198,7 +169,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          userDataStub(userData(FullModel.allData),nino,taxYear)
+          userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
@@ -242,7 +213,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
         lazy val result: WSResponse = {
           authoriseIndividual()
           userDataStub(userData(
-            FullModel.allData.copy(hmrcEmploymentData = Seq.empty)
+            fullEmploymentsModel(None).copy(hmrcEmploymentData = Seq.empty)
           ),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
@@ -286,11 +257,11 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
 
-      "return an action when some model with invalid date is in mongo" when {
+      "handle Model with Invalid date format in mongo" when {
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          userDataStub(userData(SomeModelWithInvalidData.invalidData),nino,taxYear)
+          userDataStub(userData(SomeModelWithInvalidDateFormat.invalidData),nino,taxYear)
           await(wsClient.url(url)
             .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -308,11 +279,14 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
         textOnPageCheck(ContentEN.employeeFieldName1, summaryListRowFieldNameSelector(1))
         textOnPageCheck(ContentValues.employeeFieldValue1, summaryListRowFieldAmountSelector(1))
 
-        textOnPageCheck(ContentEN.employeeFieldName5, summaryListRowFieldNameSelector(2))
-        textOnPageCheck(ContentValues.employeeFieldValue5, summaryListRowFieldAmountSelector(2))
+        textOnPageCheck(ContentEN.employeeFieldName4, summaryListRowFieldNameSelector(2))
+        textOnPageCheck(ContentValues.employeeFieldValue4a, summaryListRowFieldAmountSelector(2))
 
-        textOnPageCheck(ContentEN.employeeFieldName6, summaryListRowFieldNameSelector(3))
-        textOnPageCheck(ContentValues.employeeFieldValue6, summaryListRowFieldAmountSelector(3))
+        textOnPageCheck(ContentEN.employeeFieldName5, summaryListRowFieldNameSelector(3))
+        textOnPageCheck(ContentValues.employeeFieldValue5, summaryListRowFieldAmountSelector(3))
+
+        textOnPageCheck(ContentEN.employeeFieldName6, summaryListRowFieldNameSelector(4))
+        textOnPageCheck(ContentValues.employeeFieldValue6, summaryListRowFieldAmountSelector(4))
 
         welshToggleCheck(ENGLISH)
 
@@ -339,7 +313,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          userDataStub(userData(FullModel.allData),nino,taxYear)
+          userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
 
@@ -411,11 +385,11 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
 
-      "return an action when some model with invalid date is in mongo" when {
+      "handle Model with Invalid date format in mongo" when {
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          userDataStub(userData(SomeModelWithInvalidData.invalidData),nino,taxYear)
+          userDataStub(userData(SomeModelWithInvalidDateFormat.invalidData),nino,taxYear)
           await(wsClient.url(url)
             .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -433,11 +407,14 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
         textOnPageCheck(ContentEN.employeeFieldName1, summaryListRowFieldNameSelector(1))
         textOnPageCheck(ContentValues.employeeFieldValue1, summaryListRowFieldAmountSelector(1))
 
-        textOnPageCheck(ContentEN.employeeFieldName5, summaryListRowFieldNameSelector(2))
-        textOnPageCheck(ContentValues.employeeFieldValue5, summaryListRowFieldAmountSelector(2))
+        textOnPageCheck(ContentEN.employeeFieldName4, summaryListRowFieldNameSelector(2))
+        textOnPageCheck(ContentValues.employeeFieldValue4a, summaryListRowFieldAmountSelector(2))
 
-        textOnPageCheck(ContentEN.employeeFieldName6, summaryListRowFieldNameSelector(3))
-        textOnPageCheck(ContentValues.employeeFieldValue6, summaryListRowFieldAmountSelector(3))
+        textOnPageCheck(ContentEN.employeeFieldName5, summaryListRowFieldNameSelector(3))
+        textOnPageCheck(ContentValues.employeeFieldValue5, summaryListRowFieldAmountSelector(3))
+
+        textOnPageCheck(ContentEN.employeeFieldName6, summaryListRowFieldNameSelector(4))
+        textOnPageCheck(ContentValues.employeeFieldValue6, summaryListRowFieldAmountSelector(4))
 
         welshToggleCheck(ENGLISH)
 
@@ -464,7 +441,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          userDataStub(userData(FullModel.allData),nino,taxYear)
+          userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -540,11 +517,11 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
 
-      "return an action when some model with invalid date is in mongo" when {
+      "handle Model with Invalid date format in mongo" when {
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          userDataStub(userData(SomeModelWithInvalidData.invalidData),nino,taxYear)
+          userDataStub(userData(SomeModelWithInvalidDateFormat.invalidData),nino,taxYear)
 
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
@@ -563,11 +540,14 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
         textOnPageCheck(ContentCY.employeeFieldName1, summaryListRowFieldNameSelector(1))
         textOnPageCheck(ContentValues.employeeFieldValue1, summaryListRowFieldAmountSelector(1))
 
-        textOnPageCheck(ContentCY.employeeFieldName5, summaryListRowFieldNameSelector(2))
-        textOnPageCheck(ContentValues.employeeFieldValue5, summaryListRowFieldAmountSelector(2))
+        textOnPageCheck(ContentCY.employeeFieldName4, summaryListRowFieldNameSelector(2))
+        textOnPageCheck(ContentValues.employeeFieldValue4a, summaryListRowFieldAmountSelector(2))
 
-        textOnPageCheck(ContentCY.employeeFieldName6, summaryListRowFieldNameSelector(3))
-        textOnPageCheck(ContentValues.employeeFieldValue6, summaryListRowFieldAmountSelector(3))
+        textOnPageCheck(ContentCY.employeeFieldName5, summaryListRowFieldNameSelector(3))
+        textOnPageCheck(ContentValues.employeeFieldValue5, summaryListRowFieldAmountSelector(3))
+
+        textOnPageCheck(ContentCY.employeeFieldName6, summaryListRowFieldNameSelector(4))
+        textOnPageCheck(ContentValues.employeeFieldValue6, summaryListRowFieldAmountSelector(4))
 
         welshToggleCheck(WELSH)
 
@@ -583,7 +563,7 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          userDataStub(userData(FullModel.allData),nino,taxYear)
+          userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -655,11 +635,11 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
 
-      "return an action when some model with invalid date is in session" when {
+      "handle Model with Invalid date format in session" when {
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          userDataStub(userData(SomeModelWithInvalidData.invalidData),nino,taxYear)
+          userDataStub(userData(SomeModelWithInvalidDateFormat.invalidData),nino,taxYear)
           await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
             HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
         }
@@ -674,14 +654,17 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
         textOnPageCheck(ContentCY.insetTextExpectedAgent, insetTextSelector)
 
 
-        textOnPageCheck(ContentCY.employeeFieldName1, summaryListRowFieldNameSelector(1))
+        textOnPageCheck(ContentEN.employeeFieldName1, summaryListRowFieldNameSelector(1))
         textOnPageCheck(ContentValues.employeeFieldValue1, summaryListRowFieldAmountSelector(1))
 
-        textOnPageCheck(ContentCY.employeeFieldName5, summaryListRowFieldNameSelector(2))
-        textOnPageCheck(ContentValues.employeeFieldValue5, summaryListRowFieldAmountSelector(2))
+        textOnPageCheck(ContentEN.employeeFieldName4, summaryListRowFieldNameSelector(2))
+        textOnPageCheck(ContentValues.employeeFieldValue4a, summaryListRowFieldAmountSelector(2))
 
-        textOnPageCheck(ContentCY.employeeFieldName6, summaryListRowFieldNameSelector(3))
-        textOnPageCheck(ContentValues.employeeFieldValue6, summaryListRowFieldAmountSelector(3))
+        textOnPageCheck(ContentEN.employeeFieldName5, summaryListRowFieldNameSelector(3))
+        textOnPageCheck(ContentValues.employeeFieldValue5, summaryListRowFieldAmountSelector(3))
+
+        textOnPageCheck(ContentEN.employeeFieldName6, summaryListRowFieldNameSelector(4))
+        textOnPageCheck(ContentValues.employeeFieldValue6, summaryListRowFieldAmountSelector(4))
 
         welshToggleCheck(WELSH)
 

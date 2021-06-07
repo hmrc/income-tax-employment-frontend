@@ -24,19 +24,19 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
-import views.html.employment.EmploymentDetailsView
+import views.html.employment.CheckEmploymentDetailsView
 import javax.inject.Inject
 import services.IncomeTaxUserDataService
 
 import scala.concurrent.ExecutionContext
 
-class EmploymentDetailsController @Inject()(implicit val cc: MessagesControllerComponents,
-                                            authAction: AuthorisedAction,
-                                            employmentDetailsView: EmploymentDetailsView,
-                                            implicit val appConfig: AppConfig,
-                                            incomeTaxUserDataService: IncomeTaxUserDataService,
-                                            auditService: AuditService,
-                                            implicit val ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
+class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesControllerComponents,
+                                                 authAction: AuthorisedAction,
+                                                 employmentDetailsView: CheckEmploymentDetailsView,
+                                                 implicit val appConfig: AppConfig,
+                                                 incomeTaxUserDataService: IncomeTaxUserDataService,
+                                                 auditService: AuditService,
+                                                 implicit val ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
