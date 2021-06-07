@@ -35,8 +35,6 @@ trait ViewHelpers { self: AnyWordSpec with Matchers =>
   val ExpectedResults: Object
   val Selectors: Object
 
-  implicit def document(implicit result: WSResponse): () => Document = () => Jsoup.parse(result.body)
-
   def urlGet(url: String, welsh: Boolean = false)(wsClient: WSClient): WSResponse = {
     if(welsh){
       await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy").get())

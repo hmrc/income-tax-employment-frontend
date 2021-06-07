@@ -16,6 +16,9 @@
 
 package controllers.errors
 
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.api.http.Status.UNAUTHORIZED
 import play.api.libs.ws.WSResponse
 import utils.{IntegrationTest, ViewHelpers}
 
@@ -49,7 +52,7 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
     val authoriseAsAnAgentLinkSelector = "#client_auth_link"
   }
 
-  lazy val url = s"${appUrl(port)}/error/you-need-client-authorisation"
+  val url = s"${appUrl(port)}/error/you-need-client-authorisation"
 
   "calling GET with english header" when {
 
@@ -57,9 +60,15 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
 
     "the user is an individual" should {
       "return the AgentAuthErrorPageView with the right content" which {
-        implicit lazy val result: WSResponse = {
+        lazy val result: WSResponse = {
           authoriseIndividual()
           urlGet(url)(wsClient)
+        }
+
+        implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+        "has an UNAUTHORIZED(401) status" in {
+          result.status shouldBe UNAUTHORIZED
         }
 
         titleCheck(title)
@@ -77,9 +86,15 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
 
     "the user is an individual" should {
       "return the AgentAuthErrorPageView with the right content" which {
-        implicit lazy val result: WSResponse = {
+        lazy val result: WSResponse = {
           authoriseIndividual()
           urlGet(url, true)(wsClient)
+        }
+
+        implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+        "has an UNAUTHORIZED(401) status" in {
+          result.status shouldBe UNAUTHORIZED
         }
 
         titleCheck(title)

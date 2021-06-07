@@ -16,13 +16,13 @@
 
 package controllers.errors
 
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.api.http.Status.UNAUTHORIZED
 import play.api.libs.ws.WSResponse
-import play.api.test.Helpers.UNAUTHORIZED
 import utils.{IntegrationTest, ViewHelpers}
 
 class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
-
-  lazy val url = s"${appUrl(port)}/error/you-need-to-sign-up"
 
   object ExpectedResults {
     object ContentEN {
@@ -45,6 +45,8 @@ class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelper
     val linkSelector: String = paragraphSelector + " > a"
   }
 
+  val url = s"${appUrl(port)}/error/you-need-to-sign-up"
+
   "When set to english" when {
 
     import ExpectedResults.ContentEN._
@@ -52,12 +54,17 @@ class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelper
     "the page is requested" should {
 
       "render the page" which {
-        implicit lazy val result: WSResponse = {
+        lazy val result: WSResponse = {
           authoriseIndividual()
           urlGet(url)(wsClient)
         }
 
-        result.status shouldBe UNAUTHORIZED
+        implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+        "has an UNAUTHORIZED(401) status" in {
+          result.status shouldBe UNAUTHORIZED
+        }
+
         titleCheck(validTitle)
         welshToggleCheck("English")
         h1Check(validTitle, "xl")
@@ -74,14 +81,19 @@ class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelper
     "the page is requested" should {
 
       "render the page" which {
-        implicit lazy val result: WSResponse = {
+        lazy val result: WSResponse = {
           authoriseIndividual()
           urlGet(url, true)(wsClient)
         }
 
-        result.status shouldBe UNAUTHORIZED
+        implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+        "has an UNAUTHORIZED(401) status" in {
+          result.status shouldBe UNAUTHORIZED
+        }
+
         titleCheck(validTitle)
-        welshToggleCheck("English")
+        welshToggleCheck("Welsh")
         h1Check(validTitle, "xl")
         textOnPageCheck(pageContent, Selectors.paragraphSelector)
         linkCheck(linkContent, Selectors.linkSelector, linkHref)

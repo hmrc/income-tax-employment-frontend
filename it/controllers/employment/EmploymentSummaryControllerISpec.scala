@@ -24,12 +24,12 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status._
-import play.api.libs.ws.WSResponse
+import play.api.libs.ws.{WSClient, WSResponse}
 import utils.{IntegrationTest, ViewHelpers}
 
 class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers {
 
-  lazy val url = s"${appUrl(port)}/$taxYear/employment-summary"
+  val url = s"${appUrl(port)}/$taxYear/employment-summary"
 
   object Selectors {
 
@@ -93,7 +93,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
       ".show" should {
 
         "return single employment summary view when there is only one employment without Expenses and Benefits" which {
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
@@ -102,6 +102,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           "status OK" in {
             result.status shouldBe OK
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleAndH1Expected)
           h1Check(employerName1)
@@ -133,7 +135,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "return single employment summary view when there is only one employment with Expenses and Benefits" which {
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(Some(singleEmploymentWithExpensesAndBenefitsModel)), nino, taxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
@@ -142,6 +144,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           "status OK" in {
             result.status shouldBe OK
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleAndH1Expected)
           h1Check(employerName3)
@@ -160,7 +164,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "render multiple employment summary view when there are two employments without Expenses and Benefits" which {
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
             await(wsClient.url(url)
@@ -170,6 +174,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           "status OK" in {
             result.status shouldBe OK
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleAndH1Expected)
           h1Check(titleAndH1Expected)
@@ -196,7 +202,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "render multiple employment summary view when there are two employments with Expenses and Benefits" which {
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithExpensesModel)), nino, taxYear)
             await(wsClient.url(url)
@@ -206,6 +212,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           "status OK" in {
             result.status shouldBe OK
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleAndH1Expected)
           h1Check(titleAndH1Expected)
@@ -264,7 +272,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
       ".show" should {
 
         "return single employment summary view when there is only one employment without Expenses and Benefits" which {
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
@@ -273,6 +281,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           "status OK" in {
             result.status shouldBe OK
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleAndH1Expected)
           h1Check(employerName1)
@@ -291,7 +301,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "return single employment summary view when there is only one employment with Expenses and Benefits" which {
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(IncomeTaxUserData(Some(singleEmploymentWithExpensesAndBenefitsModel)), nino, taxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
@@ -300,6 +310,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           "status OK" in {
             result.status shouldBe OK
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleAndH1Expected)
           h1Check(employerName3)
@@ -318,7 +330,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "render multiple employment summary view when there are two employments without Expenses and Benefits" which {
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
             await(wsClient.url(url)
@@ -328,6 +340,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           "status OK" in {
             result.status shouldBe OK
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleAndH1Expected)
           h1Check(titleAndH1Expected)
@@ -354,7 +368,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "render multiple employment summary view when there are two employments with Expenses and Benefits" which {
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithExpensesModel)), nino, taxYear)
             await(wsClient.url(url)
@@ -364,6 +378,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           "status OK" in {
             result.status shouldBe OK
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleAndH1Expected)
           h1Check(titleAndH1Expected)
@@ -428,7 +444,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
       ".show" should {
 
         "return single employment summary view when there is only one employment without Expenses and Benefits" which {
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
             await(
@@ -441,6 +457,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           "status OK" in {
             result.status shouldBe OK
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleAndH1Expected)
           h1Check(employerName1)
@@ -459,7 +477,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "return single employment summary view when there is only one employment with Expenses and Benefits" which {
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(Some(singleEmploymentWithExpensesAndBenefitsModel)), nino, taxYear)
             await(wsClient.url(url).withHttpHeaders(
@@ -471,6 +489,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           "status OK" in {
             result.status shouldBe OK
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleAndH1Expected)
           h1Check(employerName3)
@@ -489,7 +509,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "render multiple employment summary view when there are two employments without Expenses and Benefits" which {
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
             await(wsClient.url(url)
@@ -501,6 +521,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           "status OK" in {
             result.status shouldBe OK
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleAndH1Expected)
           h1Check(titleAndH1Expected)
@@ -527,7 +549,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "render multiple employment summary view when there are two employments with Expenses and Benefits" which {
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithExpensesModel)), nino, taxYear)
             await(wsClient.url(url)
@@ -539,6 +561,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           "status OK" in {
             result.status shouldBe OK
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleAndH1Expected)
           h1Check(titleAndH1Expected)
@@ -599,7 +623,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
       ".show" should {
 
         "return single employment summary view when there is only one employment without Expenses and Benefits" which {
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
             await(wsClient.url(url)
@@ -611,6 +635,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           "status OK" in {
             result.status shouldBe OK
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleAndH1Expected)
           h1Check(employerName1)
@@ -629,7 +655,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "return single employment summary view when there is only one employment with Expenses and Benefits" which {
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(IncomeTaxUserData(Some(singleEmploymentWithExpensesAndBenefitsModel)), nino, taxYear)
             await(wsClient.url(url)
@@ -641,6 +667,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           "status OK" in {
             result.status shouldBe OK
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleAndH1Expected)
           h1Check(employerName3)
@@ -659,7 +687,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "render multiple employment summary view when there are two employments without Expenses and Benefits" which {
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
             await(wsClient.url(url)
@@ -671,6 +699,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           "status OK" in {
             result.status shouldBe OK
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleAndH1Expected)
           h1Check(titleAndH1Expected)
@@ -697,7 +727,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "render multiple employment summary view when there are two employments with Expenses and Benefits" which {
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithExpensesModel)), nino, taxYear)
             await(wsClient.url(url)
@@ -709,6 +739,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           "status OK" in {
             result.status shouldBe OK
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleAndH1Expected)
           h1Check(titleAndH1Expected)

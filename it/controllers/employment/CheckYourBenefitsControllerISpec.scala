@@ -28,8 +28,8 @@ import utils.{IntegrationTest, ViewHelpers}
 class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach {
 
   val defaultTaxYear = 2022
-  lazy val url = s"${appUrl(port)}/$defaultTaxYear/check-employment-benefits?employmentId=001"
-    
+  val url = s"${appUrl(port)}/$defaultTaxYear/check-employment-benefits?employmentId=001"
+
   val fullBenefits: Benefits = Benefits(
     car = Some(1.23),
     carFuel = Some(2.00),
@@ -209,20 +209,22 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   "in english" when {
-    
+
     import ExpectedResults.ContentEN._
-    
+
     "calling GET" when {
 
       "an individual" should {
 
         "return a fully populated page when all the fields are populated" which {
 
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(employmentData(Some(fullBenefits))),nino,defaultTaxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck").get())
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleIndividual)
           captionCheck(caption)
@@ -313,11 +315,13 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "return only the relevant data on the page when only certain data items are in mongo" which {
 
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(employmentData(Some(filteredBenefits))),nino,defaultTaxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck").get())
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleIndividual)
           h1Check(headingIndividual)
@@ -335,38 +339,38 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           s"should not display the following values" in {
 
-            document(result)().body().toString.contains(companyCar) shouldBe false
-            document(result)().body().toString.contains(fuelForCompanyCar) shouldBe false
-            document(result)().body().toString.contains(accommodationHeader) shouldBe false
-            document(result)().body().toString.contains(accommodation) shouldBe false
-            document(result)().body().toString.contains(qualifyingRelocationCosts) shouldBe false
-            document(result)().body().toString.contains(nonQualifyingRelocationCosts) shouldBe false
-            document(result)().body().toString.contains(travelHeader) shouldBe false
-            document(result)().body().toString.contains(travelAndSubsistence) shouldBe false
-            document(result)().body().toString.contains(personalCosts) shouldBe false
-            document(result)().body().toString.contains(entertainment) shouldBe false
-            document(result)().body().toString.contains(utilitiesHeader) shouldBe false
-            document(result)().body().toString.contains(telephone) shouldBe false
-            document(result)().body().toString.contains(servicesProvided) shouldBe false
-            document(result)().body().toString.contains(profSubscriptions) shouldBe false
-            document(result)().body().toString.contains(otherServices) shouldBe false
-            document(result)().body().toString.contains(medicalHeader) shouldBe false
-            document(result)().body().toString.contains(medicalIns) shouldBe false
-            document(result)().body().toString.contains(nursery) shouldBe false
-            document(result)().body().toString.contains(beneficialLoans) shouldBe false
-            document(result)().body().toString.contains(educational) shouldBe false
-            document(result)().body().toString.contains(incomeTaxHeader) shouldBe false
-            document(result)().body().toString.contains(incomeTaxPaid) shouldBe false
-            document(result)().body().toString.contains(incurredCostsPaid) shouldBe false
-            document(result)().body().toString.contains(reimbursedHeader) shouldBe false
-            document(result)().body().toString.contains(nonTaxable) shouldBe false
-            document(result)().body().toString.contains(taxableCosts) shouldBe false
-            document(result)().body().toString.contains(vouchers) shouldBe false
-            document(result)().body().toString.contains(nonCash) shouldBe false
-            document(result)().body().toString.contains(otherBenefits) shouldBe false
-            document(result)().body().toString.contains(assetsHeader) shouldBe false
-            document(result)().body().toString.contains(assets) shouldBe false
-            document(result)().body().toString.contains(assetTransfers) shouldBe false
+            document().body().toString.contains(companyCar) shouldBe false
+            document().body().toString.contains(fuelForCompanyCar) shouldBe false
+            document().body().toString.contains(accommodationHeader) shouldBe false
+            document().body().toString.contains(accommodation) shouldBe false
+            document().body().toString.contains(qualifyingRelocationCosts) shouldBe false
+            document().body().toString.contains(nonQualifyingRelocationCosts) shouldBe false
+            document().body().toString.contains(travelHeader) shouldBe false
+            document().body().toString.contains(travelAndSubsistence) shouldBe false
+            document().body().toString.contains(personalCosts) shouldBe false
+            document().body().toString.contains(entertainment) shouldBe false
+            document().body().toString.contains(utilitiesHeader) shouldBe false
+            document().body().toString.contains(telephone) shouldBe false
+            document().body().toString.contains(servicesProvided) shouldBe false
+            document().body().toString.contains(profSubscriptions) shouldBe false
+            document().body().toString.contains(otherServices) shouldBe false
+            document().body().toString.contains(medicalHeader) shouldBe false
+            document().body().toString.contains(medicalIns) shouldBe false
+            document().body().toString.contains(nursery) shouldBe false
+            document().body().toString.contains(beneficialLoans) shouldBe false
+            document().body().toString.contains(educational) shouldBe false
+            document().body().toString.contains(incomeTaxHeader) shouldBe false
+            document().body().toString.contains(incomeTaxPaid) shouldBe false
+            document().body().toString.contains(incurredCostsPaid) shouldBe false
+            document().body().toString.contains(reimbursedHeader) shouldBe false
+            document().body().toString.contains(nonTaxable) shouldBe false
+            document().body().toString.contains(taxableCosts) shouldBe false
+            document().body().toString.contains(vouchers) shouldBe false
+            document().body().toString.contains(nonCash) shouldBe false
+            document().body().toString.contains(otherBenefits) shouldBe false
+            document().body().toString.contains(assetsHeader) shouldBe false
+            document().body().toString.contains(assets) shouldBe false
+            document().body().toString.contains(assetTransfers) shouldBe false
           }
         }
       }
@@ -375,13 +379,15 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "return a fully populated page when all the fields are populated" which {
 
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(userData(employmentData(Some(fullBenefits))),nino,defaultTaxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck").get())
           }
 
-titleCheck(titleAgent)
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(titleAgent)
           h1Check(headingAgent)
           textOnPageCheck(p1Agent, Selectors.p1)
           textOnPageCheck(p2Agent, Selectors.p2)
@@ -459,21 +465,23 @@ titleCheck(titleAgent)
   "in welsh" when {
 
     import ExpectedResults.ContentCY._
-    
+
     "calling GET" when {
 
       "an individual" should {
 
         "return a fully populated page when all the fields are populated" which {
 
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(employmentData(Some(fullBenefits))),nino,defaultTaxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck",
               HeaderNames.ACCEPT_LANGUAGE -> "cy").get())
           }
 
-titleCheck(titleIndividual)
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(titleIndividual)
           captionCheck(caption)
           h1Check(headingIndividual)
           textOnPageCheck(p1Individual, Selectors.p1)
@@ -555,7 +563,9 @@ titleCheck(titleIndividual)
               HeaderNames.ACCEPT_LANGUAGE -> "cy").get())
           }
 
-titleCheck(titleIndividual)
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(titleIndividual)
           h1Check(headingIndividual)
           textOnPageCheck(p1Individual, Selectors.p1)
           textOnPageCheck(p2Individual, Selectors.p2)
@@ -571,38 +581,38 @@ titleCheck(titleIndividual)
 
           s"should not display the following values" in {
 
-            document(result)().body().toString.contains(companyCar) shouldBe false
-            document(result)().body().toString.contains(fuelForCompanyCar) shouldBe false
-            document(result)().body().toString.contains(accommodationHeader) shouldBe false
-            document(result)().body().toString.contains(accommodation) shouldBe false
-            document(result)().body().toString.contains(qualifyingRelocationCosts) shouldBe false
-            document(result)().body().toString.contains(nonQualifyingRelocationCosts) shouldBe false
-            document(result)().body().toString.contains(travelHeader) shouldBe false
-            document(result)().body().toString.contains(travelAndSubsistence) shouldBe false
-            document(result)().body().toString.contains(personalCosts) shouldBe false
-            document(result)().body().toString.contains(entertainment) shouldBe false
-            document(result)().body().toString.contains(utilitiesHeader) shouldBe false
-            document(result)().body().toString.contains(telephone) shouldBe false
-            document(result)().body().toString.contains(servicesProvided) shouldBe false
-            document(result)().body().toString.contains(profSubscriptions) shouldBe false
-            document(result)().body().toString.contains(otherServices) shouldBe false
-            document(result)().body().toString.contains(medicalHeader) shouldBe false
-            document(result)().body().toString.contains(medicalIns) shouldBe false
-            document(result)().body().toString.contains(nursery) shouldBe false
-            document(result)().body().toString.contains(beneficialLoans) shouldBe false
-            document(result)().body().toString.contains(educational) shouldBe false
-            document(result)().body().toString.contains(incomeTaxHeader) shouldBe false
-            document(result)().body().toString.contains(incomeTaxPaid) shouldBe false
-            document(result)().body().toString.contains(incurredCostsPaid) shouldBe false
-            document(result)().body().toString.contains(reimbursedHeader) shouldBe false
-            document(result)().body().toString.contains(nonTaxable) shouldBe false
-            document(result)().body().toString.contains(taxableCosts) shouldBe false
-            document(result)().body().toString.contains(vouchers) shouldBe false
-            document(result)().body().toString.contains(nonCash) shouldBe false
-            document(result)().body().toString.contains(otherBenefits) shouldBe false
-            document(result)().body().toString.contains(assetsHeader) shouldBe false
-            document(result)().body().toString.contains(assets) shouldBe false
-            document(result)().body().toString.contains(assetTransfers) shouldBe false
+            document().body().toString.contains(companyCar) shouldBe false
+            document().body().toString.contains(fuelForCompanyCar) shouldBe false
+            document().body().toString.contains(accommodationHeader) shouldBe false
+            document().body().toString.contains(accommodation) shouldBe false
+            document().body().toString.contains(qualifyingRelocationCosts) shouldBe false
+            document().body().toString.contains(nonQualifyingRelocationCosts) shouldBe false
+            document().body().toString.contains(travelHeader) shouldBe false
+            document().body().toString.contains(travelAndSubsistence) shouldBe false
+            document().body().toString.contains(personalCosts) shouldBe false
+            document().body().toString.contains(entertainment) shouldBe false
+            document().body().toString.contains(utilitiesHeader) shouldBe false
+            document().body().toString.contains(telephone) shouldBe false
+            document().body().toString.contains(servicesProvided) shouldBe false
+            document().body().toString.contains(profSubscriptions) shouldBe false
+            document().body().toString.contains(otherServices) shouldBe false
+            document().body().toString.contains(medicalHeader) shouldBe false
+            document().body().toString.contains(medicalIns) shouldBe false
+            document().body().toString.contains(nursery) shouldBe false
+            document().body().toString.contains(beneficialLoans) shouldBe false
+            document().body().toString.contains(educational) shouldBe false
+            document().body().toString.contains(incomeTaxHeader) shouldBe false
+            document().body().toString.contains(incomeTaxPaid) shouldBe false
+            document().body().toString.contains(incurredCostsPaid) shouldBe false
+            document().body().toString.contains(reimbursedHeader) shouldBe false
+            document().body().toString.contains(nonTaxable) shouldBe false
+            document().body().toString.contains(taxableCosts) shouldBe false
+            document().body().toString.contains(vouchers) shouldBe false
+            document().body().toString.contains(nonCash) shouldBe false
+            document().body().toString.contains(otherBenefits) shouldBe false
+            document().body().toString.contains(assetsHeader) shouldBe false
+            document().body().toString.contains(assets) shouldBe false
+            document().body().toString.contains(assetTransfers) shouldBe false
           }
         }
       }
@@ -611,14 +621,16 @@ titleCheck(titleIndividual)
 
         "return a fully populated page when all the fields are populated" which {
 
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(userData(employmentData(Some(fullBenefits))),nino,defaultTaxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear), "Csrf-Token" -> "nocheck",
               HeaderNames.ACCEPT_LANGUAGE -> "cy").get())
           }
 
-titleCheck(titleAgent)
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(titleAgent)
           h1Check(headingAgent)
           textOnPageCheck(p1Agent, Selectors.p1)
           textOnPageCheck(p2Agent, Selectors.p2)

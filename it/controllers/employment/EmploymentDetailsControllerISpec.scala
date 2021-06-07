@@ -26,7 +26,7 @@ import utils.{IntegrationTest, ViewHelpers}
 
 class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers {
 
-  lazy val url = s"${appUrl(port)}/$taxYear/check-employment-details?employmentId=001"
+  val url = s"${appUrl(port)}/$taxYear/check-employment-details?employmentId=001"
 
   object Selectors {
     val headingSelector = "#main-content > div > div > header > h1"
@@ -205,6 +205,8 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
 
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
           titleCheck(titleExpectedIndividual)
           h1Check(h1ExpectedIndividual)
           textOnPageCheck(captionExpected, captionSelector)
@@ -252,6 +254,8 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
               .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
 
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
           titleCheck(titleExpectedIndividual)
           h1Check(h1ExpectedIndividual)
           textOnPageCheck(captionExpected, captionSelector)
@@ -275,6 +279,8 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
             await(wsClient.url(url)
               .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleExpectedIndividual)
           h1Check(h1ExpectedIndividual)
@@ -314,6 +320,8 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
             await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
 
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
           titleCheck(titleExpectedAgent)
           h1Check(h1ExpectedAgent)
           textOnPageCheck(captionExpected, captionSelector)
@@ -345,6 +353,8 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
               .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
 
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
           titleCheck(titleExpectedAgent)
           h1Check(h1ExpectedAgent)
           textOnPageCheck(captionExpected, captionSelector)
@@ -367,6 +377,8 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
             await(wsClient.url(url)
               .withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleExpectedAgent)
           h1Check(h1ExpectedAgent)
@@ -407,12 +419,14 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "return a fully populated page when all the fields are populated" which {
 
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(FullModel.allData), nino, taxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
               HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleExpectedIndividual)
           h1Check(h1ExpectedIndividual)
@@ -438,13 +452,15 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "return a filtered list on page when minimum data is in mongo" which {
 
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(MinModel.miniData), nino, taxYear)
 
             await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
               HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleExpectedIndividual)
           h1Check(h1ExpectedIndividual)
@@ -461,14 +477,15 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "return an action when some model with invalid date is in mongo" when {
-
-         implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseIndividual()
             userDataStub(userData(SomeModelWithInvalidData.invalidData), nino, taxYear)
 
             await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
               HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleExpectedIndividual)
           h1Check(h1ExpectedIndividual)
@@ -493,12 +510,14 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "return a fully populated page when all the fields are populated" which {
 
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(userData(FullModel.allData), nino, taxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
               HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleExpectedAgent)
           h1Check(h1ExpectedAgent)
@@ -524,12 +543,14 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "return a filtered list on page when minimum data is in mongo" which {
 
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(userData(MinModel.miniData), nino, taxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
               HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleExpectedAgent)
           h1Check(h1ExpectedAgent)
@@ -547,12 +568,14 @@ class EmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "return an action when some model with invalid date is in session" when {
 
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseAgent()
             userDataStub(userData(SomeModelWithInvalidData.invalidData), nino, taxYear)
             await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
               HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(titleExpectedAgent)
           h1Check(h1ExpectedAgent)
