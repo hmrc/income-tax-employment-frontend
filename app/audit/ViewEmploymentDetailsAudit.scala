@@ -19,7 +19,7 @@ package audit
 import models.employment.EmploymentData
 import play.api.libs.json.{Json, OWrites}
 
-case class ViewEmploymentDetailsAudit(taxYear: Int, affinityGroup: String, nino: String,
+case class ViewEmploymentDetailsAudit(taxYear: Int, userType: String, nino: String,
                                       mtditid: String, employerName: String, employerRef: Option[String], employmentData: Option[EmploymentData]) {
 
   private def name = "ViewEmploymentDetails"
