@@ -106,13 +106,19 @@ trait ViewTest extends UnitTest with GuiceOneAppPerSuite {
     }
   }
 
-  def buttonCheck(text: String, selector: String)(implicit document: Document): Unit = {
+  def buttonCheck(text: String, selector: String, href: Option[String] = None)(implicit document: Document): Unit = {
     s"have a $text button" which {
       s"has the text '$text'" in {
         document.select(selector).text() shouldBe text
       }
       s"has a class of govuk-button" in {
         document.select(selector).attr("class") should include("govuk-button")
+      }
+
+      if(href.isDefined) {
+        s"has a href to '${href.get}'" in {
+          document.select(selector).attr("href") shouldBe href.get
+        }
       }
     }
   }

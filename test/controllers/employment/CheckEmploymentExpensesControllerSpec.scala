@@ -18,7 +18,6 @@ package controllers.employment
 
 import common.SessionValues
 import config.MockIncomeTaxUserDataService
-import models.employment._
 import play.api.http.HeaderNames.LOCATION
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Results.{Ok, Redirect}
@@ -45,35 +44,6 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
 
   val taxYear = 2022
 
-  val allData: AllEmploymentData = AllEmploymentData(
-    hmrcEmploymentData = Seq(
-      EmploymentSource(
-        employmentId = "223/AB12399",
-        employerName = "maggie",
-        employerRef = Some("223/AB12399"),
-        payrollId = Some("123456789999"),
-        startDate = Some("2019-04-21"),
-        cessationDate = Some("2020-03-11"),
-        dateIgnored = Some("2020-04-04T01:01:01Z"),
-        submittedOn = Some("2020-01-04T05:01:01Z"),
-        employmentData = Some(EmploymentData(
-          submittedOn = "2020-02-12",
-          employmentSequenceNumber = Some("123456789999"),
-          companyDirector = Some(true),
-          closeCompany = Some(false),
-          directorshipCeasedDate = Some("2020-02-12"),
-          occPen = Some(false),
-          disguisedRemuneration = Some(false),
-          pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
-        )),
-        None
-      )
-    ),
-    hmrcExpenses = Some(employmentExpenses),
-    customerEmploymentData = Seq(),
-    customerExpenses = None
-  )
-
   "calling show() as an individual" should {
 
     "return status code 303 with correct Location header" when {
@@ -99,7 +69,7 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
           )
 
         val responseF: Future[Result] = {
-          mockFind(taxYear,Ok(view(taxYear, allData.hmrcExpenses.get)))
+          mockFind(taxYear,Ok(view(taxYear, employmentsModel.hmrcExpenses.get)))
           controller.show(taxYear)(request)
         }
 
@@ -128,7 +98,7 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
         val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequestWithMtditidAndNino
 
         val responseF: Future[Result] = {
-          mockFind(taxYear,Ok(view(taxYear, allData.hmrcExpenses.get)))
+          mockFind(taxYear,Ok(view(taxYear, employmentsModel.hmrcExpenses.get)))
           controller.show(taxYear)(request)
         }
 

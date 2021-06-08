@@ -18,47 +18,15 @@ package controllers.employment
 
 import common.SessionValues
 import config.MockIncomeTaxUserDataService
-import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
 import play.api.http.Status._
 import play.api.mvc.Result
+import play.api.mvc.Results.{Ok, Redirect}
 import utils.UnitTestWithApp
 import views.html.employment.EmploymentDetailsAndBenefitsView
-import play.api.mvc.Results.{Ok, Redirect}
 
 import scala.concurrent.Future
 
 class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp with MockIncomeTaxUserDataService {
-
-  object FullModel {
-    val allData: AllEmploymentData = AllEmploymentData(
-      hmrcEmploymentData = Seq(
-        EmploymentSource(
-          employmentId = "223/AB12399",
-          employerName = "maggie",
-          employerRef = Some("223/AB12399"),
-          payrollId = Some("123456789999"),
-          startDate = Some("2019-04-21"),
-          cessationDate = Some("2020-03-11"),
-          dateIgnored = Some("2020-04-04T01:01:01Z"),
-          submittedOn = Some("2020-01-04T05:01:01Z"),
-          employmentData = Some(EmploymentData(
-            submittedOn = "2020-02-12",
-            employmentSequenceNumber = Some("123456789999"),
-            companyDirector = Some(true),
-            closeCompany = Some(false),
-            directorshipCeasedDate = Some("2020-02-12"),
-            occPen = Some(false),
-            disguisedRemuneration = Some(false),
-            pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
-          )),
-          None
-        )
-      ),
-      hmrcExpenses = None,
-      customerEmploymentData = Seq(),
-      customerExpenses = None
-    )
-  }
 
   lazy val view = app.injector.instanceOf[EmploymentDetailsAndBenefitsView]
 
@@ -80,9 +48,9 @@ class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp with Mo
 
       s"has an OK($OK) status" in new TestWithAuth {
 
-        val name: String = FullModel.allData.hmrcEmploymentData.head.employerName
-        val employmentId: String = FullModel.allData.hmrcEmploymentData.head.employmentId
-        val benefitsIsDefined: Boolean = FullModel.allData.hmrcEmploymentData.head.employmentBenefits.isDefined
+        val name: String = employmentsModel.hmrcEmploymentData.head.employerName
+        val employmentId: String = employmentsModel.hmrcEmploymentData.head.employmentId
+        val benefitsIsDefined: Boolean = employmentsModel.hmrcEmploymentData.head.employmentBenefits.isDefined
 
         val result: Future[Result] = {
           mockFind(taxYear,Ok(view(name, employmentId, benefitsIsDefined, taxYear)))

@@ -112,7 +112,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(contentExpectedIndividual, employmentSummaryParagraphSelector)
           textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
 
-          linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId1).url)
+          linkCheck("Employment details", employmentDetailsRowLinkSelector, CheckEmploymentDetailsController.show(taxYear, employmentId1).url)
           textOnPageCheck("Benefits", employmentBenefitsRowSelector)
           textOnPageCheck("Expenses", employmentExpensesRowSelector)
 
@@ -153,7 +153,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(contentExpectedIndividual, employmentSummaryParagraphSelector)
           textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
 
-          linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId3).url)
+          linkCheck("Employment details", employmentDetailsRowLinkSelector, CheckEmploymentDetailsController.show(taxYear, employmentId3).url)
           linkCheck("Benefits", employmentBenefitsRowLinkSelector, CheckYourBenefitsController.show(taxYear, employmentId3).url)
           linkCheck("Expenses", employmentExpensesRowLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
 
@@ -286,7 +286,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(contentExpectedAgent, employmentSummaryParagraphSelector)
           textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
 
-          linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId1).url)
+          linkCheck("Employment details", employmentDetailsRowLinkSelector, CheckEmploymentDetailsController.show(taxYear, employmentId1).url)
           textOnPageCheck("Benefits", employmentBenefitsRowSelector)
           textOnPageCheck("Expenses", employmentExpensesRowSelector)
 
@@ -311,14 +311,11 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           titleCheck(titleAndH1Expected)
           h1Check(employerName3)
           textOnPageCheck(captionExpected, captionSelector)
-
           textOnPageCheck(contentExpectedAgent, employmentSummaryParagraphSelector)
           textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
-
-          linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId3).url)
+          linkCheck("Employment details", employmentDetailsRowLinkSelector, CheckEmploymentDetailsController.show(taxYear, employmentId3).url)
           linkCheck("Benefits", employmentBenefitsRowLinkSelector, CheckYourBenefitsController.show(taxYear, employmentId3).url)
           linkCheck("Expenses", employmentExpensesRowLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
-
           buttonCheck("Return to overview")
 
           welshToggleCheck(ENGLISH)
@@ -450,13 +447,12 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           titleCheck(titleAndH1Expected)
           h1Check(employerName1)
           textOnPageCheck(captionExpected, captionSelector)
+          linkCheck("Employment details", employmentDetailsRowLinkSelector, CheckEmploymentDetailsController.show(taxYear, employmentId1).url)
+          textOnPageCheck("Benefits", employmentBenefitsRowSelector)
+          textOnPageCheck("Expenses", employmentExpensesRowSelector)
 
           textOnPageCheck(contentExpectedIndividual, employmentSummaryParagraphSelector)
           textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
-
-          linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId1).url)
-          textOnPageCheck("Benefits", employmentBenefitsRowSelector)
-          textOnPageCheck("Expenses", employmentExpensesRowSelector)
 
           buttonCheck("Return to overview")
 
@@ -480,12 +476,12 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           h1Check(employerName3)
           textOnPageCheck(captionExpected, captionSelector)
 
-          textOnPageCheck(contentExpectedIndividual, employmentSummaryParagraphSelector)
-          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
-
-          linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId3).url)
+          linkCheck("Employment details", employmentDetailsRowLinkSelector, CheckEmploymentDetailsController.show(taxYear, employmentId3).url)
           linkCheck("Benefits", employmentBenefitsRowLinkSelector, CheckYourBenefitsController.show(taxYear, employmentId3).url)
           linkCheck("Expenses", employmentExpensesRowLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
+
+          textOnPageCheck(contentExpectedIndividual, employmentSummaryParagraphSelector)
+          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
 
           buttonCheck("Return to overview")
 
@@ -616,7 +612,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(contentExpectedAgent, employmentSummaryParagraphSelector)
           textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
 
-          linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId1).url)
+          linkCheck("Employment details", employmentDetailsRowLinkSelector, CheckEmploymentDetailsController.show(taxYear, employmentId1).url)
           textOnPageCheck("Benefits", employmentBenefitsRowSelector)
           textOnPageCheck("Expenses", employmentExpensesRowSelector)
 
@@ -645,7 +641,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(contentExpectedAgent, employmentSummaryParagraphSelector)
           textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
 
-          linkCheck("Employment details", employmentDetailsRowLinkSelector, EmploymentDetailsController.show(taxYear, employmentId3).url)
+          linkCheck("Employment details", employmentDetailsRowLinkSelector, CheckEmploymentDetailsController.show(taxYear, employmentId3).url)
           linkCheck("Benefits", employmentBenefitsRowLinkSelector, CheckYourBenefitsController.show(taxYear, employmentId3).url)
           linkCheck("Expenses", employmentExpensesRowLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
 
@@ -801,7 +797,7 @@ object EmploymentSummaryControllerISpec {
         directorshipCeasedDate = Some("2020-02-12"),
         occPen = Some(false),
         disguisedRemuneration = Some(false),
-        pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
+        pay = Pay(34234.15, 6782.92, Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))
       )),
       None
     )
@@ -823,7 +819,7 @@ object EmploymentSummaryControllerISpec {
         directorshipCeasedDate = Some("2020-02-12"),
         occPen = Some(false),
         disguisedRemuneration = Some(false),
-        pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
+        pay = Pay(34234.15, 6782.92, Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))
       )),
       None
     )
@@ -845,7 +841,7 @@ object EmploymentSummaryControllerISpec {
         directorshipCeasedDate = Some("2020-02-12"),
         occPen = Some(false),
         disguisedRemuneration = Some(false),
-        pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
+        pay = Pay(34234.15, 6782.92, Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))
       )),
       Some(employmentBenefits)
     )

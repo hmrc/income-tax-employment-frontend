@@ -31,8 +31,9 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
       val youCannotViewText: String = "You cannot view this client’s information. Your client needs to"
       val authoriseYouAsText = "authorise you as their agent (opens in new tab)"
       val beforeYouCanTryText = "before you can sign in to this service."
-      val tryAnother = "Try another client’s details."
+      val tryAnother = "Try another client’s details"
       val authoriseAsAnAgentLink = "https://www.gov.uk/guidance/client-authorisation-an-overview"
+      val tryAnotherExpectedHref = "http://localhost:11111/report-quarterly/income-and-expenses/view/agents/client-utr"
     }
 
     object ContentCY {
@@ -41,15 +42,16 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
       val youCannotViewText: String = "You cannot view this client’s information. Your client needs to"
       val authoriseYouAsText = "authorise you as their agent (opens in new tab)"
       val beforeYouCanTryText = "before you can sign in to this service."
-      val tryAnother = "Try another client’s details."
+      val tryAnother = "Try another client’s details"
       val authoriseAsAnAgentLink = "https://www.gov.uk/guidance/client-authorisation-an-overview"
+      val tryAnotherExpectedHref = "http://localhost:11111/report-quarterly/income-and-expenses/view/agents/client-utr"
     }
   }
 
   object Selectors {
     val youCan = "#main-content > div > div > p:nth-child(2)"
-    val tryAnother = "#main-content > div > div > p:nth-child(3)"
     val authoriseAsAnAgentLinkSelector = "#client_auth_link"
+    val tryAnother = "#main-content > div > div > a"
   }
 
   val url = s"${appUrl(port)}/error/you-need-client-authorisation"
@@ -75,7 +77,7 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
         h1Check(heading,"xl")
         textOnPageCheck(s"$youCannotViewText $authoriseYouAsText $beforeYouCanTryText", Selectors.youCan)
         linkCheck(authoriseYouAsText, Selectors.authoriseAsAnAgentLinkSelector, authoriseAsAnAgentLink)
-        textOnPageCheck(tryAnother, Selectors.tryAnother)
+        buttonCheck(tryAnother, Selectors.tryAnother, Some(tryAnotherExpectedHref))
       }
     }
   }
@@ -101,7 +103,7 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
         h1Check(heading,"xl")
         textOnPageCheck(s"$youCannotViewText $authoriseYouAsText $beforeYouCanTryText", Selectors.youCan)
         linkCheck(authoriseYouAsText, Selectors.authoriseAsAnAgentLinkSelector, authoriseAsAnAgentLink)
-        textOnPageCheck(tryAnother, Selectors.tryAnother)
+        buttonCheck(tryAnother, Selectors.tryAnother, Some(tryAnotherExpectedHref))
       }
     }
   }
