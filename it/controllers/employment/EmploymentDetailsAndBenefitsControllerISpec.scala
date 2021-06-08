@@ -16,7 +16,6 @@
 
 package controllers.employment
 
-import models.employment._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -27,44 +26,7 @@ import utils.{IntegrationTest, ViewHelpers}
 
 class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with ViewHelpers {
 
-  val amount: BigDecimal = 100
-  val BenefitsModel: Benefits = Benefits(
-    Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
-    Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
-    Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount)
-  )
   val url = s"${appUrl(port)}/2022/employer-details-and-benefits?employmentId=001"
-
-  def fullModel(benefitsModel: Option[EmploymentBenefits]): AllEmploymentData = {
-    AllEmploymentData(
-      hmrcEmploymentData = Seq(
-        EmploymentSource(
-          employmentId = "001",
-          employerName = "maggie",
-          employerRef = Some("223/AB12399"),
-          payrollId = Some("123456789999"),
-          startDate = Some("2019-04-21"),
-          cessationDate = Some("2020-03-11"),
-          dateIgnored = Some("2020-04-04T01:01:01Z"),
-          submittedOn = Some("2020-01-04T05:01:01Z"),
-          employmentData = Some(EmploymentData(
-            submittedOn = "2020-02-12",
-            employmentSequenceNumber = Some("123456789999"),
-            companyDirector = Some(true),
-            closeCompany = Some(false),
-            directorshipCeasedDate = Some("2020-02-12"),
-            occPen = Some(false),
-            disguisedRemuneration = Some(false),
-            pay = Pay(34234.15, 6782.92, Some(67676), "CALENDAR MONTHLY", "2020-04-23", Some(32), Some(2))
-          )),
-          employmentBenefits = benefitsModel
-        )
-      ),
-      hmrcExpenses = None,
-      customerEmploymentData = Seq(),
-      customerExpenses = None
-    )
-  }
 
   object Selectors {
     val headingSelector = "#main-content > div > div > header > h1"
@@ -120,7 +82,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
           implicit lazy val result: WSResponse = {
             authoriseIndividual()
-            userDataStub(userData(fullModel(None)), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
             urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -129,7 +91,6 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           titleCheck(titleExpected)
           h1Check(h1Expected)
           captionCheck(captionExpected)
-
           textOnPageCheck(p1ExpectedIndividual, p1Selector)
 
           "has an employment details section" which {
@@ -152,7 +113,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
           lazy val result: WSResponse = {
             authoriseIndividual()
-            userDataStub(userData(fullModel(None).copy(hmrcEmploymentData = Seq())), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel(None).copy(hmrcEmploymentData = Seq())), nino, taxYear)
             urlGet(url, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -163,7 +124,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
           implicit lazy val result: WSResponse = {
             authoriseIndividual()
-            userDataStub(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z", Some(BenefitsModel))))), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel(fullBenefits)), nino, taxYear)
             urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -209,9 +170,9 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
         "render the page where the status for benefits is Cannot Update when there is no Benefits data in mongo" which {
 
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             authoriseAgent()
-            userDataStub(userData(fullModel(None)), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
             urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -244,7 +205,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
           implicit lazy val result: WSResponse = {
             authoriseAgent()
-            userDataStub(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z", Some(BenefitsModel))))), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel(fullBenefits)), nino, taxYear)
             urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -301,7 +262,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
           lazy val result: WSResponse = {
             authoriseIndividual()
-            userDataStub(userData(fullModel(None)), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
             urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -334,7 +295,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
           lazy val result: WSResponse = {
             authoriseIndividual()
-            userDataStub(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z", Some(BenefitsModel))))), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel(fullBenefits)), nino, taxYear)
             urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -373,7 +334,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
           lazy val result: WSResponse = {
             authoriseAgent()
-            userDataStub(userData(fullModel(None)), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
             urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -406,8 +367,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
           lazy val result: WSResponse = {
             authoriseAgent()
-
-            userDataStub(userData(fullModel(Some(EmploymentBenefits("2020-04-04T01:01:01Z", Some(BenefitsModel))))), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel(fullBenefits)), nino, taxYear)
             urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
