@@ -28,7 +28,7 @@ class ViewEmploymentDetailsSpec extends UnitTestWithApp{
         val json = Json.parse(
           s"""{
              |"taxYear": 2020,
-             |"affinityGroup": "Individual",
+             |"userType": "individual",
              |"nino":"AA12343AA",
              |"mtditid":"mtditid",
              |"employerName":"Dave",
@@ -53,7 +53,7 @@ class ViewEmploymentDetailsSpec extends UnitTestWithApp{
              |}
              |}""".stripMargin)
 
-        val auditModel = ViewEmploymentDetailsAudit(2020, "Individual", "AA12343AA",
+        val auditModel = ViewEmploymentDetailsAudit(2020, "individual", "AA12343AA",
           "mtditid", "Dave", Some("reference"),
           Some(EmploymentData(
             submittedOn = ("2020-02-12"),
