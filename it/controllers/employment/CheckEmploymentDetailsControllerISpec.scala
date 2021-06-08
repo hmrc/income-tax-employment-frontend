@@ -155,403 +155,409 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         customerExpenses = None
       )
     }
+  }
 
-    "in english" when {
+  "in english" when {
 
-      import ExpectedResults.ContentEN._
-      import ExpectedResults.ContentValues._
-      import Selectors._
+    import ExpectedResults.ContentEN._
+    import ExpectedResults.ContentValues._
+    import ExpectedResults._
+    import Selectors._
 
-      "the user is an individual" when {
+    "the user is an individual" when {
 
-        ".show" should {
+      ".show" should {
 
-          "return a fully populated page when all the fields are populated" which {
+        "return a fully populated page when all the fields are populated" which {
 
-            implicit lazy val result: WSResponse = {
-              authoriseIndividual()
-              userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
-              urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-            }
-
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-            titleCheck(titleExpectedIndividual)
-            h1Check(h1ExpectedIndividual)
-            textOnPageCheck(captionExpected, captionSelector)
-            textOnPageCheck(contentExpectedIndividual, contentTextSelector)
-            textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
-            textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
-            textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
-            textOnPageCheck(employeeFieldName2, summaryListRowFieldNameSelector(2))
-            textOnPageCheck(employeeFieldValue2, summaryListRowFieldAmountSelector(2))
-            textOnPageCheck(employeeFieldName3, summaryListRowFieldNameSelector(3))
-            textOnPageCheck(employeeFieldValue3, summaryListRowFieldAmountSelector(3))
-            textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(4))
-            textOnPageCheck(employeeFieldValue4, summaryListRowFieldAmountSelector(4))
-            textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(5))
-            textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(5))
-            textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(6))
-            textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(6))
-            textOnPageCheck(employeeFieldName7Individual, summaryListRowFieldNameSelector(7))
-            textOnPageCheck(employeeFieldValue7, summaryListRowFieldAmountSelector(7))
-            welshToggleCheck(ENGLISH)
+          implicit lazy val result: WSResponse = {
+            authoriseIndividual()
+            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          "redirect to overview page when theres no details" in {
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-            lazy val result: WSResponse = {
-              authoriseIndividual()
-              userDataStub(userData(
-                fullEmploymentsModel(None).copy(hmrcEmploymentData = Seq.empty)
-              ), nino, taxYear)
-              urlGet(url, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-            }
-
-            result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
-          }
-
-          "return a filtered list on page when minimum data is in mongo" which {
-
-            implicit lazy val result: WSResponse = {
-              authoriseIndividual()
-              userDataStub(userData(MinModel.miniData), nino, taxYear)
-              urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-            }
-
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-            titleCheck(titleExpectedIndividual)
-            h1Check(h1ExpectedIndividual)
-            textOnPageCheck(captionExpected, captionSelector)
-            textOnPageCheck(contentExpectedIndividual, contentTextSelector)
-            textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
-            textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
-            textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
-            textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(2))
-            textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(2))
-            textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(3))
-            textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(3))
-            welshToggleCheck(ENGLISH)
-          }
-
-          "handle Model with Invalid date format in mongo" when {
-
-            implicit lazy val result: WSResponse = {
-              authoriseIndividual()
-              userDataStub(userData(SomeModelWithInvalidDateFormat.invalidData), nino, taxYear)
-              urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-            }
-
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-            titleCheck(titleExpectedIndividual)
-            h1Check(h1ExpectedIndividual)
-            textOnPageCheck(captionExpected, captionSelector)
-            textOnPageCheck(contentExpectedIndividual, contentTextSelector)
-            textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
-            textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
-            textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
-            textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(2))
-            textOnPageCheck(employeeFieldValue4a, summaryListRowFieldAmountSelector(2))
-            textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(2))
-            textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(2))
-            textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(3))
-            textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(3))
-            welshToggleCheck(ENGLISH)
-          }
-
-          "returns an action when auth call fails" which {
-            lazy val result: WSResponse = {
-              authoriseIndividualUnauthorized()
-              await(wsClient.url(url).get())
-            }
-            "has an UNAUTHORIZED(401) status" in {
-              result.status shouldBe UNAUTHORIZED
-            }
-          }
+          titleCheck(titleExpectedIndividual)
+          h1Check(h1ExpectedIndividual)
+          textOnPageCheck(captionExpected, captionSelector)
+          textOnPageCheck(contentExpectedIndividual, contentTextSelector)
+          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+          textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
+          textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(employeeFieldName2, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(employeeFieldValue2, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(employeeFieldName3, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(employeeFieldValue3, summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(employeeFieldValue4, summaryListRowFieldAmountSelector(4))
+          textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(5))
+          textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(5))
+          textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(6))
+          textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(6))
+          textOnPageCheck(employeeFieldName7Individual, summaryListRowFieldNameSelector(7))
+          textOnPageCheck(employeeFieldValue7, summaryListRowFieldAmountSelector(7))
+          welshToggleCheck(ENGLISH)
         }
-      }
 
-      "the user is an agent" when {
+        "redirect to overview page when theres no details" in {
 
-        ".show" should {
-
-          "return a fully populated page when all the fields are populated" which {
-
-            implicit lazy val result: WSResponse = {
-              authoriseAgent()
-              userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
-              urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-            }
-
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-            titleCheck(titleExpectedAgent)
-            h1Check(h1ExpectedAgent)
-            textOnPageCheck(captionExpected, captionSelector)
-            textOnPageCheck(contentExpectedAgent, contentTextSelector)
-            textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
-            textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
-            textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
-            textOnPageCheck(employeeFieldName2, summaryListRowFieldNameSelector(2))
-            textOnPageCheck(employeeFieldValue2, summaryListRowFieldAmountSelector(2))
-            textOnPageCheck(employeeFieldName3, summaryListRowFieldNameSelector(3))
-            textOnPageCheck(employeeFieldValue3, summaryListRowFieldAmountSelector(3))
-            textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(4))
-            textOnPageCheck(employeeFieldValue4, summaryListRowFieldAmountSelector(4))
-            textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(5))
-            textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(5))
-            textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(6))
-            textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(6))
-            textOnPageCheck(employeeFieldName7Agent, summaryListRowFieldNameSelector(7))
-            textOnPageCheck(employeeFieldValue7, summaryListRowFieldAmountSelector(7))
-            welshToggleCheck(ENGLISH)
+          lazy val result: WSResponse = {
+            authoriseIndividual()
+            userDataStub(userData(
+              fullEmploymentsModel(None).copy(hmrcEmploymentData = Seq.empty)
+            ), nino, taxYear)
+            urlGet(url, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          "return a filtered list on page when minimum data is in mongo" which {
+          result.status shouldBe SEE_OTHER
+          result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+        }
 
-            implicit lazy val result: WSResponse = {
-              authoriseAgent()
-              userDataStub(userData(MinModel.miniData), nino, taxYear)
-              urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-            }
+        "return a filtered list on page when minimum data is in mongo" which {
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-            titleCheck(titleExpectedAgent)
-            h1Check(h1ExpectedAgent)
-            textOnPageCheck(captionExpected, captionSelector)
-            textOnPageCheck(contentExpectedAgent, contentTextSelector)
-            textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
-            textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
-            textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
-            textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(2))
-            textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(2))
-            textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(3))
-            textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(3))
-            welshToggleCheck(ENGLISH)
+          implicit lazy val result: WSResponse = {
+            authoriseIndividual()
+            userDataStub(userData(MinModel.miniData), nino, taxYear)
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          "handle Model with Invalid date format in mongo" when {
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-            implicit lazy val result: WSResponse = {
-              authoriseAgent()
-              userDataStub(userData(SomeModelWithInvalidDateFormat.invalidData), nino, taxYear)
-              urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-            }
+          titleCheck(titleExpectedIndividual)
+          h1Check(h1ExpectedIndividual)
+          textOnPageCheck(captionExpected, captionSelector)
+          textOnPageCheck(contentExpectedIndividual, contentTextSelector)
+          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+          textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
+          textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(3))
+          welshToggleCheck(ENGLISH)
+        }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+        "handle Model with Invalid date format in mongo" when {
 
-            titleCheck(titleExpectedAgent)
-            h1Check(h1ExpectedAgent)
-            textOnPageCheck(captionExpected, captionSelector)
-            textOnPageCheck(contentExpectedAgent, contentTextSelector)
-            textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
-            textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
-            textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
-            textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(2))
-            textOnPageCheck(employeeFieldValue4a, summaryListRowFieldAmountSelector(2))
-            textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(2))
-            textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(2))
-            textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(3))
-            textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(3))
-            welshToggleCheck(ENGLISH)
+          implicit lazy val result: WSResponse = {
+            authoriseIndividual()
+            userDataStub(userData(SomeModelWithInvalidDateFormat.invalidData), nino, taxYear)
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          "returns an action when auth call fails" which {
-            lazy val result: WSResponse = {
-              authoriseAgentUnauthorized()
-              urlGet(url)
-            }
-            "has an UNAUTHORIZED(401) status" in {
-              result.status shouldBe UNAUTHORIZED
-            }
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(titleExpectedIndividual)
+          h1Check(h1ExpectedIndividual)
+          textOnPageCheck(captionExpected, captionSelector)
+
+          textOnPageCheck(contentExpectedIndividual, contentTextSelector)
+          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+          textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
+          textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(employeeFieldValue4a, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(4))
+
+          welshToggleCheck(ENGLISH)
+        }
+
+        "returns an action when auth call fails" which {
+          lazy val result: WSResponse = {
+            authoriseIndividualUnauthorized()
+            await(wsClient.url(url).get())
+          }
+          "has an UNAUTHORIZED(401) status" in {
+            result.status shouldBe UNAUTHORIZED
           }
         }
       }
     }
 
-    "in welsh" when {
+    "the user is an agent" when {
 
-      import ExpectedResults.ContentCY._
-      import ExpectedResults.ContentValues._
-      import Selectors._
+      ".show" should {
 
-      "the user is an individual" when {
+        "return a fully populated page when all the fields are populated" which {
 
-        ".show" should {
-
-          "return a fully populated page when all the fields are populated" which {
-
-            lazy val result: WSResponse = {
-              authoriseIndividual()
-              userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
-              urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-            }
-
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-            titleCheck(titleExpectedIndividual)
-            h1Check(h1ExpectedIndividual)
-            textOnPageCheck(captionExpected, captionSelector)
-            textOnPageCheck(contentExpectedIndividual, contentTextSelector)
-            textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
-            textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
-            textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
-            textOnPageCheck(employeeFieldName2, summaryListRowFieldNameSelector(2))
-            textOnPageCheck(employeeFieldValue2, summaryListRowFieldAmountSelector(2))
-            textOnPageCheck(employeeFieldName3, summaryListRowFieldNameSelector(3))
-            textOnPageCheck(employeeFieldValue3, summaryListRowFieldAmountSelector(3))
-            textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(4))
-            textOnPageCheck(employeeFieldValue4, summaryListRowFieldAmountSelector(4))
-            textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(5))
-            textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(5))
-            textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(6))
-            textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(6))
-            textOnPageCheck(employeeFieldName7Individual, summaryListRowFieldNameSelector(7))
-            textOnPageCheck(employeeFieldValue7, summaryListRowFieldAmountSelector(7))
-            welshToggleCheck(WELSH)
+          implicit lazy val result: WSResponse = {
+            authoriseAgent()
+            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          "return a filtered list on page when minimum data is in mongo" which {
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-            lazy val result: WSResponse = {
-              authoriseIndividual()
-              userDataStub(userData(MinModel.miniData), nino, taxYear)
-              urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-            }
+          titleCheck(titleExpectedAgent)
+          h1Check(h1ExpectedAgent)
+          textOnPageCheck(captionExpected, captionSelector)
+          textOnPageCheck(contentExpectedAgent, contentTextSelector)
+          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+          textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
+          textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(employeeFieldName2, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(employeeFieldValue2, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(employeeFieldName3, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(employeeFieldValue3, summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(employeeFieldValue4, summaryListRowFieldAmountSelector(4))
+          textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(5))
+          textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(5))
+          textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(6))
+          textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(6))
+          textOnPageCheck(employeeFieldName7Agent, summaryListRowFieldNameSelector(7))
+          textOnPageCheck(employeeFieldValue7, summaryListRowFieldAmountSelector(7))
+          welshToggleCheck(ENGLISH)
+        }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+        "return a filtered list on page when minimum data is in mongo" which {
 
-            titleCheck(titleExpectedIndividual)
-            h1Check(h1ExpectedIndividual)
-            textOnPageCheck(captionExpected, captionSelector)
-            textOnPageCheck(contentExpectedIndividual, contentTextSelector)
-            textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
-            textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
-            textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
-            textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(2))
-            textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(2))
-            textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(3))
-            textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(3))
-            welshToggleCheck(WELSH)
+          implicit lazy val result: WSResponse = {
+            authoriseAgent()
+            userDataStub(userData(MinModel.miniData), nino, taxYear)
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          "handle Model with Invalid date format in mongo" when {
-            lazy val result: WSResponse = {
-              authoriseIndividual()
-              userDataStub(userData(SomeModelWithInvalidDateFormat.invalidData), nino, taxYear)
-              urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-            }
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+          titleCheck(titleExpectedAgent)
+          h1Check(h1ExpectedAgent)
+          textOnPageCheck(captionExpected, captionSelector)
+          textOnPageCheck(contentExpectedAgent, contentTextSelector)
+          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+          textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
+          textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(3))
+          welshToggleCheck(ENGLISH)
+        }
 
-            titleCheck(titleExpectedIndividual)
-            h1Check(h1ExpectedIndividual)
-            textOnPageCheck(captionExpected, captionSelector)
-            textOnPageCheck(contentExpectedIndividual, contentTextSelector)
-            textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
-            textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
-            textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
-            textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(2))
-            textOnPageCheck(employeeFieldValue4a, summaryListRowFieldAmountSelector(2))
-            textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(2))
-            textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(2))
-            textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(3))
-            textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(3))
-            welshToggleCheck(WELSH)
+        "handle Model with Invalid date format in mongo" when {
 
+          implicit lazy val result: WSResponse = {
+            authoriseAgent()
+            userDataStub(userData(SomeModelWithInvalidDateFormat.invalidData), nino, taxYear)
+            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(titleExpectedAgent)
+          h1Check(h1ExpectedAgent)
+          textOnPageCheck(captionExpected, captionSelector)
+
+          textOnPageCheck(contentExpectedAgent, contentTextSelector)
+          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+          textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
+          textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(employeeFieldValue4a, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(4))
+          welshToggleCheck(ENGLISH)
+        }
+
+        "returns an action when auth call fails" which {
+          lazy val result: WSResponse = {
+            authoriseAgentUnauthorized()
+            urlGet(url)
+          }
+          "has an UNAUTHORIZED(401) status" in {
+            result.status shouldBe UNAUTHORIZED
           }
         }
       }
+    }
+  }
 
-      "as an agent in welsh" when {
+  "in welsh" when {
 
-        ".show" should {
+    import ExpectedResults.ContentCY._
+    import ExpectedResults.ContentValues._
+    import ExpectedResults._
+    import Selectors._
 
-          "return a fully populated page when all the fields are populated" which {
+    "the user is an individual" when {
 
-            lazy val result: WSResponse = {
-              authoriseAgent()
-              userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
-              urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-            }
+      ".show" should {
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+        "return a fully populated page when all the fields are populated" which {
 
-            titleCheck(titleExpectedAgent)
-            h1Check(h1ExpectedAgent)
-            textOnPageCheck(captionExpected, captionSelector)
-            textOnPageCheck(contentExpectedAgent, contentTextSelector)
-            textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
-            textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
-            textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
-            textOnPageCheck(employeeFieldName2, summaryListRowFieldNameSelector(2))
-            textOnPageCheck(employeeFieldValue2, summaryListRowFieldAmountSelector(2))
-            textOnPageCheck(employeeFieldName3, summaryListRowFieldNameSelector(3))
-            textOnPageCheck(employeeFieldValue3, summaryListRowFieldAmountSelector(3))
-            textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(4))
-            textOnPageCheck(employeeFieldValue4, summaryListRowFieldAmountSelector(4))
-            textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(5))
-            textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(5))
-            textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(6))
-            textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(6))
-            textOnPageCheck(employeeFieldName7Agent, summaryListRowFieldNameSelector(7))
-            textOnPageCheck(employeeFieldValue7, summaryListRowFieldAmountSelector(7))
-            welshToggleCheck(WELSH)
+          lazy val result: WSResponse = {
+            authoriseIndividual()
+            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          "return a filtered list on page when minimum data is in mongo" which {
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-            lazy val result: WSResponse = {
-              authoriseAgent()
-              userDataStub(userData(MinModel.miniData), nino, taxYear)
-              urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-            }
+          titleCheck(titleExpectedIndividual)
+          h1Check(h1ExpectedIndividual)
+          textOnPageCheck(captionExpected, captionSelector)
+          textOnPageCheck(contentExpectedIndividual, contentTextSelector)
+          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+          textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
+          textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(employeeFieldName2, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(employeeFieldValue2, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(employeeFieldName3, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(employeeFieldValue3, summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(employeeFieldValue4, summaryListRowFieldAmountSelector(4))
+          textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(5))
+          textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(5))
+          textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(6))
+          textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(6))
+          textOnPageCheck(employeeFieldName7Individual, summaryListRowFieldNameSelector(7))
+          textOnPageCheck(employeeFieldValue7, summaryListRowFieldAmountSelector(7))
+          welshToggleCheck(WELSH)
+        }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+        "return a filtered list on page when minimum data is in mongo" which {
 
-            titleCheck(titleExpectedAgent)
-            h1Check(h1ExpectedAgent)
-            textOnPageCheck(captionExpected, captionSelector)
-            textOnPageCheck(contentExpectedAgent, contentTextSelector)
-            textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
-            textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
-            textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
-            textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(2))
-            textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(2))
-            textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(3))
-            textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(3))
-            welshToggleCheck(WELSH)
+          lazy val result: WSResponse = {
+            authoriseIndividual()
+            userDataStub(userData(MinModel.miniData), nino, taxYear)
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          "handle Model with Invalid date format in mongo" when {
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-            lazy val result: WSResponse = {
-              authoriseAgent()
-              userDataStub(userData(SomeModelWithInvalidDateFormat.invalidData), nino, taxYear)
-              urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-            }
+          titleCheck(titleExpectedIndividual)
+          h1Check(h1ExpectedIndividual)
+          textOnPageCheck(captionExpected, captionSelector)
+          textOnPageCheck(contentExpectedIndividual, contentTextSelector)
+          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+          textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
+          textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(3))
+          welshToggleCheck(WELSH)
+        }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-            titleCheck(titleExpectedAgent)
-            h1Check(h1ExpectedAgent)
-            textOnPageCheck(captionExpected, captionSelector)
-            textOnPageCheck(contentExpectedAgent, contentTextSelector)
-            textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
-            textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
-            textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
-            textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(2))
-            textOnPageCheck(employeeFieldValue4a, summaryListRowFieldAmountSelector(2))
-            textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(2))
-            textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(2))
-            textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(3))
-            textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(3))
-            welshToggleCheck(WELSH)
+        "handle Model with Invalid date format in mongo" when {
+          lazy val result: WSResponse = {
+            authoriseIndividual()
+            userDataStub(userData(SomeModelWithInvalidDateFormat.invalidData), nino, taxYear)
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(titleExpectedIndividual)
+          h1Check(h1ExpectedIndividual)
+          textOnPageCheck(captionExpected, captionSelector)
+          textOnPageCheck(contentExpectedIndividual, contentTextSelector)
+          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+          textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
+          textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(employeeFieldValue4a, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(4))
+          welshToggleCheck(WELSH)
+
+        }
+      }
+    }
+
+    "as an agent in welsh" when {
+
+      ".show" should {
+
+        "return a fully populated page when all the fields are populated" which {
+
+          lazy val result: WSResponse = {
+            authoriseAgent()
+            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(titleExpectedAgent)
+          h1Check(h1ExpectedAgent)
+          textOnPageCheck(captionExpected, captionSelector)
+          textOnPageCheck(contentExpectedAgent, contentTextSelector)
+          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+          textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
+          textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(employeeFieldName2, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(employeeFieldValue2, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(employeeFieldName3, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(employeeFieldValue3, summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(employeeFieldValue4, summaryListRowFieldAmountSelector(4))
+          textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(5))
+          textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(5))
+          textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(6))
+          textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(6))
+          textOnPageCheck(employeeFieldName7Agent, summaryListRowFieldNameSelector(7))
+          textOnPageCheck(employeeFieldValue7, summaryListRowFieldAmountSelector(7))
+          welshToggleCheck(WELSH)
+        }
+
+        "return a filtered list on page when minimum data is in mongo" which {
+
+          lazy val result: WSResponse = {
+            authoriseAgent()
+            userDataStub(userData(MinModel.miniData), nino, taxYear)
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(titleExpectedAgent)
+          h1Check(h1ExpectedAgent)
+          textOnPageCheck(captionExpected, captionSelector)
+          textOnPageCheck(contentExpectedAgent, contentTextSelector)
+          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+          textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
+          textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(3))
+          welshToggleCheck(WELSH)
+        }
+
+        "handle Model with Invalid date format in mongo" when {
+
+          lazy val result: WSResponse = {
+            authoriseAgent()
+            userDataStub(userData(SomeModelWithInvalidDateFormat.invalidData), nino, taxYear)
+            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(titleExpectedAgent)
+          h1Check(h1ExpectedAgent)
+          textOnPageCheck(captionExpected, captionSelector)
+
+          textOnPageCheck(contentExpectedAgent, contentTextSelector)
+          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+          textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
+          textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(employeeFieldValue4a, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(4))
+          welshToggleCheck(WELSH)
         }
       }
     }
