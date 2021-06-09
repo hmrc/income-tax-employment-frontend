@@ -25,7 +25,7 @@ case class EmploymentData(submittedOn: String,
                           directorshipCeasedDate: Option[String],
                           occPen: Option[Boolean],
                           disguisedRemuneration: Option[Boolean],
-                          pay: Pay)
+                          pay: Option[Pay])
 
 object EmploymentData {
   implicit val formats: OFormat[EmploymentData] = Json.format[EmploymentData]

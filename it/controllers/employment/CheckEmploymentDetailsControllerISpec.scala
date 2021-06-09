@@ -117,7 +117,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             directorshipCeasedDate = None,
             occPen = None,
             disguisedRemuneration = None,
-            pay = Pay(34234.15, 6782.92, None, None,None, None, None)
+            pay = Some(Pay(Some(34234.15), Some(6782.92), None, None,None, None, None))
           )),
           None
         )
@@ -148,7 +148,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             directorshipCeasedDate = Some("14/07/1990"),
             occPen = None,
             disguisedRemuneration = None,
-            pay = Pay(34234.15, 6782.92, None, None, None, None, None)
+            pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None, None))
           )),
           None
         )
