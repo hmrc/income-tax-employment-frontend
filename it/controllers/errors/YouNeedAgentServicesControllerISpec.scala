@@ -47,7 +47,7 @@ class YouNeedAgentServicesControllerISpec extends IntegrationTest with ViewHelpe
     val createAnAgentLinkSelector = "#create_agent_services_link"
   }
 
-  val url = s"${appUrl(port)}/error/you-need-agent-services-account"
+  val url = s"$appUrl/error/you-need-agent-services-account"
 
   "When set to english" when {
 

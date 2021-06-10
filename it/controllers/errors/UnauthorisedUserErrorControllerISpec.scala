@@ -60,7 +60,7 @@ class UnauthorisedUserErrorControllerISpec extends IntegrationTest with ViewHelp
     val selfAssessmentLinkSelector = "#govuk-self-assessment-link"
   }
 
-  val url = s"${appUrl(port)}/error/not-authorised-to-use-service"
+  val url = s"$appUrl/error/not-authorised-to-use-service"
 
   "When set to english" when {
 

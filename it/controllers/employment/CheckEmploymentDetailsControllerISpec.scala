@@ -26,7 +26,7 @@ import utils.{IntegrationTest, ViewHelpers}
 
 class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers {
 
-  val url = s"${appUrl(port)}/$taxYear/check-employment-details?employmentId=001"
+  val url = s"$appUrl/$taxYear/check-employment-details?employmentId=001"
 
   object Selectors {
     val headingSelector = "#main-content > div > div > header > h1"

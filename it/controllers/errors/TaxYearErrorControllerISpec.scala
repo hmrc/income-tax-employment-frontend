@@ -54,7 +54,7 @@ class TaxYearErrorControllerISpec extends IntegrationTest with ViewHelpers {
     val linkSelector = "#govuk-self-assessment-link"
   }
 
-  val url = s"${appUrl(port)}/error/wrong-tax-year"
+  val url = s"$appUrl/error/wrong-tax-year"
 
   "When set to english" when {
 

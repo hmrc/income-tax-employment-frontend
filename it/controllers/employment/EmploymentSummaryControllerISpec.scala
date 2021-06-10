@@ -29,7 +29,7 @@ import utils.{IntegrationTest, ViewHelpers}
 
 class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers {
 
-  val url = s"${appUrl(port)}/$taxYear/employment-summary"
+  val url = s"$appUrl/$taxYear/employment-summary"
 
   object Selectors {
 
