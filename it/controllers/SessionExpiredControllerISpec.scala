@@ -14,42 +14,45 @@
  * limitations under the License.
  */
 
-package controllers.errors
+package controllers
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import play.api.http.Status.UNAUTHORIZED
+import play.api.http.Status.OK
 import play.api.libs.ws.WSResponse
 import utils.{IntegrationTest, ViewHelpers}
 
-class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
+class SessionExpiredControllerISpec extends IntegrationTest with ViewHelpers {
 
   object ExpectedResults {
     object ContentEN {
-      val validTitle: String = "You cannot view this page"
-      val pageContent: String = "You need to sign up for Making Tax Digital for Income Tax before you can view this page."
-      val linkContent: String = "sign up for Making Tax Digital for Income Tax"
-      val linkHref: String = "https://www.gov.uk/guidance/sign-up-your-business-for-making-tax-digital-for-income-tax"
+      val h1Expected = "For your security, we signed you out"
+      val p1Expected = "We did not save your answers."
+      val buttonExpectedText = "Sign in"
+      val buttonExpectedUrl: String = "http://localhost:11111/income-through-software/return/2022/start"
     }
 
     object ContentCY {
-      val validTitle: String = "You cannot view this page"
-      val pageContent: String = "You need to sign up for Making Tax Digital for Income Tax before you can view this page."
-      val linkContent: String = "sign up for Making Tax Digital for Income Tax"
-      val linkHref: String = "https://www.gov.uk/guidance/sign-up-your-business-for-making-tax-digital-for-income-tax"
+      val h1Expected = "For your security, we signed you out"
+      val p1Expected = "We did not save your answers."
+      val buttonExpectedText = "Sign in"
+      val buttonExpectedUrl: String = "http://localhost:11111/income-through-software/return/2022/start"
     }
   }
 
   object Selectors {
-    val paragraphSelector: String = ".govuk-body"
-    val linkSelector: String = paragraphSelector + " > a"
+    val h1Selector = "#main-content > div > div > header > h1"
+    val p1Selector = "#main-content > div > div > div.govuk-body > p"
+    val buttonSelector = "#continue"
+    val formSelector = "#main-content > div > div > form"
   }
 
-  val url = s"$appUrl/error/you-need-to-sign-up"
+  val url = s"$appUrl/timeout"
 
   "When set to english" when {
 
     import ExpectedResults.ContentEN._
+    import Selectors._
 
     "the page is requested" should {
 
@@ -61,15 +64,17 @@ class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelper
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-        "has an UNAUTHORIZED(401) status" in {
-          result.status shouldBe UNAUTHORIZED
+        "has an OK status" in {
+          result.status shouldBe OK
         }
 
-        titleCheck(validTitle)
+        titleCheck(h1Expected)
         welshToggleCheck("English")
-        h1Check(validTitle, "xl")
-        textOnPageCheck(pageContent, Selectors.paragraphSelector)
-        linkCheck(linkContent, Selectors.linkSelector, linkHref)
+        h1Check(h1Expected, "xl")
+
+        textOnPageCheck(p1Expected,p1Selector)
+        buttonCheck(buttonExpectedText, buttonSelector)
+        formGetLinkCheck(buttonExpectedUrl, formSelector)
       }
     }
   }
@@ -77,6 +82,7 @@ class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelper
   "When set to welsh" when {
 
     import ExpectedResults.ContentCY._
+    import Selectors._
 
     "the page is requested" should {
 
@@ -88,15 +94,17 @@ class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelper
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-        "has an UNAUTHORIZED(401) status" in {
-          result.status shouldBe UNAUTHORIZED
+        "has an OK status" in {
+          result.status shouldBe OK
         }
 
-        titleCheck(validTitle)
+        titleCheck(h1Expected)
         welshToggleCheck("Welsh")
-        h1Check(validTitle, "xl")
-        textOnPageCheck(pageContent, Selectors.paragraphSelector)
-        linkCheck(linkContent, Selectors.linkSelector, linkHref)
+        h1Check(h1Expected, "xl")
+
+        textOnPageCheck(p1Expected,p1Selector)
+        buttonCheck(buttonExpectedText, buttonSelector)
+        formGetLinkCheck(buttonExpectedUrl, formSelector)
       }
     }
   }

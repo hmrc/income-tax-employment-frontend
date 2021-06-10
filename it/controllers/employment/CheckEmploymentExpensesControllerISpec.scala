@@ -21,75 +21,78 @@ import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
 import play.api.http.HeaderNames
 import play.api.http.Status._
-import play.api.libs.ws.{WSClient, WSResponse}
+import play.api.libs.ws.WSResponse
 import utils.{IntegrationTest, ViewHelpers}
 
 
 class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach {
 
-  lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
-  val taxYear = 2022
-  val url =
-    s"http://localhost:$port/income-through-software/return/employment-income/$taxYear/check-employment-expenses"
+  val url = s"$appUrl/$taxYear/check-employment-expenses"
 
-  val headingSelector = "#main-content > div > div > header > h1"
-  val subHeadingSelector = "#main-content > div > div > header > p"
-  val contentSelector = "#main-content > div > div > p"
-  val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
-  val summaryListSelector = "#main-content > div > div > dl"
-
-  object ContentEN {
-    val h1ExpectedAgent = "Check your client’s employment expenses"
-    val titleExpectedAgent = "Check your client’s employment expenses"
-    val h1ExpectedIndividual = "Check your employment expenses"
-    val titleExpectedIndividual = "Check your employment expenses"
-    val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val contentExpectedAgent = "Your client’s employment expenses are based on information we already hold about them. " +
-      "This is a total of expenses from all employment in the tax year."
-    val contentExpectedIndividual = "Your employment expenses are based on the information we already hold about you. " +
-      "This is a total of expenses from all employment in the tax year."
-    val insetTextExpectedAgent = s"You cannot update your client’s employment expenses until 6 April $taxYear."
-    val insetTextExpectedIndividual = s"You cannot update your employment expenses until 6 April $taxYear."
-
-    val fieldNames = List("Amount for business travel and subsistence expenses",
-      "Job expenses",
-      "Uniform, work cloths and tools (Flat rate expenses)",
-      "Professional fees and subscriptions",
-      "Hotel and meal expenses",
-      "Other expenses and capital allowances",
-      "Vehicle expense",
-      "Mileage allowance relief")
+  object Selectors {
+    val headingSelector = "#main-content > div > div > header > h1"
+    val subHeadingSelector = "#main-content > div > div > header > p"
+    val contentSelector = "#main-content > div > div > p"
+    val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
+    val summaryListSelector = "#main-content > div > div > dl"
   }
 
-  object ContentCY {
-    val h1ExpectedAgent = "Check your client’s employment expenses"
-    val titleExpectedAgent = "Check your client’s employment expenses"
-    val h1ExpectedIndividual = "Check your employment expenses"
-    val titleExpectedIndividual = "Check your employment expenses"
-    val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val contentExpectedAgent: String = "Your client’s employment expenses are based on information we already hold about them. " +
-      "This is a total of expenses from all employment in the tax year."
-    val contentExpectedIndividual: String = "Your employment expenses are based on the information we already hold about you. " +
-      "This is a total of expenses from all employment in the tax year."
-    val insetTextExpectedAgent = s"You cannot update your client’s employment expenses until 6 April $taxYear."
-    val insetTextExpectedIndividual = s"You cannot update your employment expenses until 6 April $taxYear."
+  object ExpectedResults {
 
-    val fieldNames = List("Amount for business travel and subsistence expenses",
-      "Job expenses",
-      "Uniform, work cloths and tools (Flat rate expenses)",
-      "Professional fees and subscriptions",
-      "Hotel and meal expenses",
-      "Other expenses and capital allowances",
-      "Vehicle expense",
-      "Mileage allowance relief")
+    object ContentEN {
+      val h1ExpectedAgent = "Check your client’s employment expenses"
+      val titleExpectedAgent = "Check your client’s employment expenses"
+      val h1ExpectedIndividual = "Check your employment expenses"
+      val titleExpectedIndividual = "Check your employment expenses"
+      val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+      val contentExpectedAgent = "Your client’s employment expenses are based on information we already hold about them. " +
+        "This is a total of expenses from all employment in the tax year."
+      val contentExpectedIndividual = "Your employment expenses are based on the information we already hold about you. " +
+        "This is a total of expenses from all employment in the tax year."
+      val insetTextExpectedAgent = s"You cannot update your client’s employment expenses until 6 April $taxYear."
+      val insetTextExpectedIndividual = s"You cannot update your employment expenses until 6 April $taxYear."
+
+      val fieldNames = List("Amount for business travel and subsistence expenses",
+        "Job expenses",
+        "Uniform, work cloths and tools (Flat rate expenses)",
+        "Professional fees and subscriptions",
+        "Hotel and meal expenses",
+        "Other expenses and capital allowances",
+        "Vehicle expense",
+        "Mileage allowance relief")
+    }
+
+    object ContentCY {
+      val h1ExpectedAgent = "Check your client’s employment expenses"
+      val titleExpectedAgent = "Check your client’s employment expenses"
+      val h1ExpectedIndividual = "Check your employment expenses"
+      val titleExpectedIndividual = "Check your employment expenses"
+      val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+      val contentExpectedAgent: String = "Your client’s employment expenses are based on information we already hold about them. " +
+        "This is a total of expenses from all employment in the tax year."
+      val contentExpectedIndividual: String = "Your employment expenses are based on the information we already hold about you. " +
+        "This is a total of expenses from all employment in the tax year."
+      val insetTextExpectedAgent = s"You cannot update your client’s employment expenses until 6 April $taxYear."
+      val insetTextExpectedIndividual = s"You cannot update your employment expenses until 6 April $taxYear."
+
+      val fieldNames = List("Amount for business travel and subsistence expenses",
+        "Job expenses",
+        "Uniform, work cloths and tools (Flat rate expenses)",
+        "Professional fees and subscriptions",
+        "Hotel and meal expenses",
+        "Other expenses and capital allowances",
+        "Vehicle expense",
+        "Mileage allowance relief")
+    }
   }
-
 
   private def summaryListRowFieldNameSelector(i: Int) = s"#main-content > div > div > dl > div:nth-child($i) > dt"
 
   private def summaryListRowFieldAmountSelector(i: Int) = s"#main-content > div > div > dl > div:nth-child($i) > dd"
 
   "as an individual in English" when {
+
+    import ExpectedResults.ContentEN._
 
     ".show" should {
 
@@ -98,41 +101,41 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         lazy val result: WSResponse = {
           authoriseIndividual()
           userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+          urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-        titleCheck(ContentEN.titleExpectedIndividual)
-        h1Check(ContentEN.h1ExpectedIndividual)
-        captionCheck(ContentEN.captionExpected)
+        titleCheck(titleExpectedIndividual)
+        h1Check(h1ExpectedIndividual)
+        captionCheck(captionExpected)
 
-        textOnPageCheck(ContentEN.contentExpectedIndividual, contentSelector)
-        textOnPageCheck(ContentEN.insetTextExpectedIndividual, insetTextSelector)
+        textOnPageCheck(contentExpectedIndividual, Selectors.contentSelector)
+        textOnPageCheck(insetTextExpectedIndividual, Selectors.insetTextSelector)
 
-        textOnPageCheck(ContentEN.fieldNames(0), summaryListRowFieldNameSelector(1))
+        textOnPageCheck(fieldNames(0), summaryListRowFieldNameSelector(1))
         textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
 
-        textOnPageCheck(ContentEN.fieldNames(1), summaryListRowFieldNameSelector(2))
+        textOnPageCheck(fieldNames(1), summaryListRowFieldNameSelector(2))
         textOnPageCheck("£2", summaryListRowFieldAmountSelector(2))
 
-        textOnPageCheck(ContentEN.fieldNames(2), summaryListRowFieldNameSelector(3))
+        textOnPageCheck(fieldNames(2), summaryListRowFieldNameSelector(3))
         textOnPageCheck("£3", summaryListRowFieldAmountSelector(3))
 
 
-        textOnPageCheck(ContentEN.fieldNames(3), summaryListRowFieldNameSelector(4))
+        textOnPageCheck(fieldNames(3), summaryListRowFieldNameSelector(4))
         textOnPageCheck("£4", summaryListRowFieldAmountSelector(4))
 
-        textOnPageCheck(ContentEN.fieldNames(4), summaryListRowFieldNameSelector(5))
+        textOnPageCheck(fieldNames(4), summaryListRowFieldNameSelector(5))
         textOnPageCheck("£5", summaryListRowFieldAmountSelector(5))
 
-        textOnPageCheck(ContentEN.fieldNames(5), summaryListRowFieldNameSelector(6))
+        textOnPageCheck(fieldNames(5), summaryListRowFieldNameSelector(6))
         textOnPageCheck("£6", summaryListRowFieldAmountSelector(6))
 
-        textOnPageCheck(ContentEN.fieldNames(6), summaryListRowFieldNameSelector(7))
+        textOnPageCheck(fieldNames(6), summaryListRowFieldNameSelector(7))
         textOnPageCheck("£7", summaryListRowFieldAmountSelector(7))
 
-        textOnPageCheck(ContentEN.fieldNames(7), summaryListRowFieldNameSelector(8))
+        textOnPageCheck(fieldNames(7), summaryListRowFieldNameSelector(8))
         textOnPageCheck("£8", summaryListRowFieldAmountSelector(8))
 
         welshToggleCheck(ENGLISH)
@@ -143,9 +146,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         lazy val result: WSResponse = {
           authoriseIndividual()
           userDataStub(userData(fullEmploymentsModel(None).copy(hmrcExpenses = None)),nino,taxYear)
-          await(wsClient.url(url).withHttpHeaders(
-            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck"
-          ).withFollowRedirects(false).get())
+          urlGet(url, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         result.status shouldBe SEE_OTHER
@@ -166,6 +167,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
   "as an agent in English" when {
 
+    import ExpectedResults.ContentEN._
+
     ".show" should {
 
       "returns an action when data is in mongo" which {
@@ -173,41 +176,41 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         lazy val result: WSResponse = {
           authoriseAgent()
           userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
+          urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-        titleCheck(ContentEN.titleExpectedAgent)
-        h1Check(ContentEN.h1ExpectedAgent)
-        captionCheck(ContentEN.captionExpected)
+        titleCheck(titleExpectedAgent)
+        h1Check(h1ExpectedAgent)
+        captionCheck(captionExpected)
 
-        textOnPageCheck(ContentEN.contentExpectedAgent, contentSelector)
-        textOnPageCheck(ContentEN.insetTextExpectedAgent, insetTextSelector)
+        textOnPageCheck(contentExpectedAgent, Selectors.contentSelector)
+        textOnPageCheck(insetTextExpectedAgent, Selectors.insetTextSelector)
 
-        textOnPageCheck(ContentEN.fieldNames(0), summaryListRowFieldNameSelector(1))
+        textOnPageCheck(fieldNames(0), summaryListRowFieldNameSelector(1))
         textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
 
-        textOnPageCheck(ContentEN.fieldNames(1), summaryListRowFieldNameSelector(2))
+        textOnPageCheck(fieldNames(1), summaryListRowFieldNameSelector(2))
         textOnPageCheck("£2", summaryListRowFieldAmountSelector(2))
 
-        textOnPageCheck(ContentEN.fieldNames(2), summaryListRowFieldNameSelector(3))
+        textOnPageCheck(fieldNames(2), summaryListRowFieldNameSelector(3))
         textOnPageCheck("£3", summaryListRowFieldAmountSelector(3))
 
 
-        textOnPageCheck(ContentEN.fieldNames(3), summaryListRowFieldNameSelector(4))
+        textOnPageCheck(fieldNames(3), summaryListRowFieldNameSelector(4))
         textOnPageCheck("£4", summaryListRowFieldAmountSelector(4))
 
-        textOnPageCheck(ContentEN.fieldNames(4), summaryListRowFieldNameSelector(5))
+        textOnPageCheck(fieldNames(4), summaryListRowFieldNameSelector(5))
         textOnPageCheck("£5", summaryListRowFieldAmountSelector(5))
 
-        textOnPageCheck(ContentEN.fieldNames(5), summaryListRowFieldNameSelector(6))
+        textOnPageCheck(fieldNames(5), summaryListRowFieldNameSelector(6))
         textOnPageCheck("£6", summaryListRowFieldAmountSelector(6))
 
-        textOnPageCheck(ContentEN.fieldNames(6), summaryListRowFieldNameSelector(7))
+        textOnPageCheck(fieldNames(6), summaryListRowFieldNameSelector(7))
         textOnPageCheck("£7", summaryListRowFieldAmountSelector(7))
 
-        textOnPageCheck(ContentEN.fieldNames(7), summaryListRowFieldNameSelector(8))
+        textOnPageCheck(fieldNames(7), summaryListRowFieldNameSelector(8))
         textOnPageCheck("£8", summaryListRowFieldAmountSelector(8))
 
         welshToggleCheck(ENGLISH)
@@ -217,7 +220,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     "returns an action when auth call fails" which {
       lazy val result: WSResponse = {
         authoriseAgentUnauthorized()
-        await(wsClient.url(url).get())
+        urlGet(url)
       }
       "has an UNAUTHORIZED(401) status" in {
         result.status shouldBe UNAUTHORIZED
@@ -227,50 +230,51 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
   "as an individual in Welsh" when {
 
+    import ExpectedResults.ContentCY._
+
     ".show" should {
 
       "returns an action when data is in mongo" which {
 
         lazy val result: WSResponse = {
           authoriseIndividual()
-          userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
-        }
 
+          userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
+          urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-        titleCheck(ContentCY.titleExpectedIndividual)
-        h1Check(ContentCY.h1ExpectedIndividual)
-        captionCheck(ContentCY.captionExpected)
+        titleCheck(titleExpectedIndividual)
+        h1Check(h1ExpectedIndividual)
+        captionCheck(captionExpected)
 
-        textOnPageCheck(ContentCY.contentExpectedIndividual, contentSelector)
-        textOnPageCheck(ContentCY.insetTextExpectedIndividual, insetTextSelector)
+        textOnPageCheck(contentExpectedIndividual, Selectors.contentSelector)
+        textOnPageCheck(insetTextExpectedIndividual, Selectors.insetTextSelector)
 
-        textOnPageCheck(ContentCY.fieldNames(0), summaryListRowFieldNameSelector(1))
+        textOnPageCheck(fieldNames(0), summaryListRowFieldNameSelector(1))
         textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
 
-        textOnPageCheck(ContentCY.fieldNames(1), summaryListRowFieldNameSelector(2))
+        textOnPageCheck(fieldNames(1), summaryListRowFieldNameSelector(2))
         textOnPageCheck("£2", summaryListRowFieldAmountSelector(2))
 
-        textOnPageCheck(ContentCY.fieldNames(2), summaryListRowFieldNameSelector(3))
+        textOnPageCheck(fieldNames(2), summaryListRowFieldNameSelector(3))
         textOnPageCheck("£3", summaryListRowFieldAmountSelector(3))
 
 
-        textOnPageCheck(ContentCY.fieldNames(3), summaryListRowFieldNameSelector(4))
+        textOnPageCheck(fieldNames(3), summaryListRowFieldNameSelector(4))
         textOnPageCheck("£4", summaryListRowFieldAmountSelector(4))
 
-        textOnPageCheck(ContentCY.fieldNames(4), summaryListRowFieldNameSelector(5))
+        textOnPageCheck(fieldNames(4), summaryListRowFieldNameSelector(5))
         textOnPageCheck("£5", summaryListRowFieldAmountSelector(5))
 
-        textOnPageCheck(ContentCY.fieldNames(5), summaryListRowFieldNameSelector(6))
+        textOnPageCheck(fieldNames(5), summaryListRowFieldNameSelector(6))
         textOnPageCheck("£6", summaryListRowFieldAmountSelector(6))
 
-        textOnPageCheck(ContentCY.fieldNames(6), summaryListRowFieldNameSelector(7))
+        textOnPageCheck(fieldNames(6), summaryListRowFieldNameSelector(7))
         textOnPageCheck("£7", summaryListRowFieldAmountSelector(7))
 
-        textOnPageCheck(ContentCY.fieldNames(7), summaryListRowFieldNameSelector(8))
+        textOnPageCheck(fieldNames(7), summaryListRowFieldNameSelector(8))
         textOnPageCheck("£8", summaryListRowFieldAmountSelector(8))
 
         welshToggleCheck(WELSH)
@@ -280,50 +284,51 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
   "as an agent in Welsh" when {
 
+    import ExpectedResults.ContentCY._
+
     ".show" should {
 
       "returns an action when data is in mongo" which {
 
         lazy val result: WSResponse = {
           authoriseAgent()
-          userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
-          await(wsClient.url(url).withHttpHeaders(HeaderNames.ACCEPT_LANGUAGE -> "cy",
-            HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck").get())
-        }
 
+          userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
+          urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-        titleCheck(ContentCY.titleExpectedAgent)
-        h1Check(ContentCY.h1ExpectedAgent)
-        captionCheck(ContentCY.captionExpected)
+        titleCheck(titleExpectedAgent)
+        h1Check(h1ExpectedAgent)
+        captionCheck(captionExpected)
 
-        textOnPageCheck(ContentCY.contentExpectedAgent, contentSelector)
-        textOnPageCheck(ContentCY.insetTextExpectedAgent, insetTextSelector)
+        textOnPageCheck(contentExpectedAgent, Selectors.contentSelector)
+        textOnPageCheck(insetTextExpectedAgent, Selectors.insetTextSelector)
 
-        textOnPageCheck(ContentCY.fieldNames(0), summaryListRowFieldNameSelector(1))
+        textOnPageCheck(fieldNames(0), summaryListRowFieldNameSelector(1))
         textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
 
-        textOnPageCheck(ContentCY.fieldNames(1), summaryListRowFieldNameSelector(2))
+        textOnPageCheck(fieldNames(1), summaryListRowFieldNameSelector(2))
         textOnPageCheck("£2", summaryListRowFieldAmountSelector(2))
 
-        textOnPageCheck(ContentCY.fieldNames(2), summaryListRowFieldNameSelector(3))
+        textOnPageCheck(fieldNames(2), summaryListRowFieldNameSelector(3))
         textOnPageCheck("£3", summaryListRowFieldAmountSelector(3))
 
 
-        textOnPageCheck(ContentCY.fieldNames(3), summaryListRowFieldNameSelector(4))
+        textOnPageCheck(fieldNames(3), summaryListRowFieldNameSelector(4))
         textOnPageCheck("£4", summaryListRowFieldAmountSelector(4))
 
-        textOnPageCheck(ContentCY.fieldNames(4), summaryListRowFieldNameSelector(5))
+        textOnPageCheck(fieldNames(4), summaryListRowFieldNameSelector(5))
         textOnPageCheck("£5", summaryListRowFieldAmountSelector(5))
 
-        textOnPageCheck(ContentCY.fieldNames(5), summaryListRowFieldNameSelector(6))
+        textOnPageCheck(fieldNames(5), summaryListRowFieldNameSelector(6))
         textOnPageCheck("£6", summaryListRowFieldAmountSelector(6))
 
-        textOnPageCheck(ContentCY.fieldNames(6), summaryListRowFieldNameSelector(7))
+        textOnPageCheck(fieldNames(6), summaryListRowFieldNameSelector(7))
         textOnPageCheck("£7", summaryListRowFieldAmountSelector(7))
 
-        textOnPageCheck(ContentCY.fieldNames(7), summaryListRowFieldNameSelector(8))
+        textOnPageCheck(fieldNames(7), summaryListRowFieldNameSelector(8))
         textOnPageCheck("£8", summaryListRowFieldAmountSelector(8))
 
         welshToggleCheck(WELSH)
