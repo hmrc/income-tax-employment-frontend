@@ -16,6 +16,7 @@
 
 package controllers.employment
 
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -38,61 +39,132 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     def summaryListRowFieldAmountSelector(i: Int) = s"#main-content > div > div > dl > div:nth-child($i) > dd"
   }
 
-  object ExpectedResults {
+  trait ExpectedResultsForLanguage {
+    val expectedH1: String
+    val expectedTitle: String
+    val expectedContent: String
+    val expectedInsetText: String
+    val employeeFieldName7: String
+  }
 
-    object ContentEN {
-      val h1ExpectedAgent = "Check your client’s employment details"
-      val titleExpectedAgent = "Check your client’s employment details"
-      val h1ExpectedIndividual = "Check your employment details"
-      val titleExpectedIndividual = "Check your employment details"
-      val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-      val contentExpectedAgent = "Your client’s employment details are based on the information we already hold about them."
-      val contentExpectedIndividual = "Your employment details are based on the information we already hold about you."
-      val insetTextExpectedAgent = s"You cannot update your client’s employment details until 6 April $taxYear."
-      val insetTextExpectedIndividual = s"You cannot update your employment details until 6 April $taxYear."
+  trait CommonExpectedResult {
+    val expectedCaption: String
+    val employeeFieldName1: String
+    val employeeFieldName2: String
+    val employeeFieldName3: String
+    val employeeFieldName4: String
+    val employeeFieldName5: String
+    val employeeFieldName6: String
+  }
 
-      val employeeFieldName1 = "Employer"
-      val employeeFieldName2 = "PAYE reference"
-      val employeeFieldName3 = "Director role end date"
-      val employeeFieldName4 = "Close company"
-      val employeeFieldName5 = "Pay received"
-      val employeeFieldName6 = "UK tax taken from pay"
-      val employeeFieldName7Individual = "Payments not on your P60"
-      val employeeFieldName7Agent = "Payments not on P60"
+  object ContentValues {
+    val employeeFieldValue1 = "maggie"
+    val employeeFieldValue2 = "223/AB12399"
+    val employeeFieldValue3 = "12 February 2020"
+    val employeeFieldValue4 = "No"
+    val employeeFieldValue4a = "Yes"
+    val employeeFieldValue5 = "£34234.15"
+    val employeeFieldValue6 = "£6782.92"
+    val employeeFieldValue7 = "£67676"
+  }
 
-    }
+  object CommonExpectedEN extends CommonExpectedResult {
+    val expectedCaption = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val employeeFieldName1 = "Employer"
+    val employeeFieldName2 = "PAYE reference"
+    val employeeFieldName3 = "Director role end date"
+    val employeeFieldName4 = "Close company"
+    val employeeFieldName5 = "Pay received"
+    val employeeFieldName6 = "UK tax taken from pay"
+  }
 
-    object ContentCY {
-      val h1ExpectedAgent = "Check your client’s employment details"
-      val titleExpectedAgent = "Check your client’s employment details"
-      val h1ExpectedIndividual = "Check your employment details"
-      val titleExpectedIndividual = "Check your employment details"
-      val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-      val contentExpectedAgent = "Your client’s employment details are based on the information we already hold about them."
-      val contentExpectedIndividual = "Your employment details are based on the information we already hold about you."
-      val insetTextExpectedAgent = s"You cannot update your client’s employment details until 6 April $taxYear."
-      val insetTextExpectedIndividual = s"You cannot update your employment details until 6 April $taxYear."
+  object CommonExpectedCY extends CommonExpectedResult {
+    val expectedCaption = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val employeeFieldName1 = "Employer"
+    val employeeFieldName2 = "PAYE reference"
+    val employeeFieldName3 = "Director role end date"
+    val employeeFieldName4 = "Close company"
+    val employeeFieldName5 = "Pay received"
+    val employeeFieldName6 = "UK tax taken from pay"
+  }
 
-      val employeeFieldName1 = "Employer"
-      val employeeFieldName2 = "PAYE reference"
-      val employeeFieldName3 = "Director role end date"
-      val employeeFieldName4 = "Close company"
-      val employeeFieldName5 = "Pay received"
-      val employeeFieldName6 = "UK tax taken from pay"
-      val employeeFieldName7Individual = "Payments not on your P60"
-      val employeeFieldName7Agent = "Payments not on P60"
-    }
+  object ExpectedIndividualEN extends ExpectedResultsForLanguage {
+    val expectedH1 = "Check your employment details"
+    val expectedTitle = "Check your employment details"
+    val expectedContent = "Your employment details are based on the information we already hold about you."
+    val expectedInsetText = s"You cannot update your employment details until 6 April $taxYear."
+    val employeeFieldName7 = "Payments not on your P60"
+  }
 
-    object ContentValues {
-      val employeeFieldValue1 = "maggie"
-      val employeeFieldValue2 = "223/AB12399"
-      val employeeFieldValue3 = "12 February 2020"
-      val employeeFieldValue4 = "No"
-      val employeeFieldValue4a = "Yes"
-      val employeeFieldValue5 = "£34234.15"
-      val employeeFieldValue6 = "£6782.92"
-      val employeeFieldValue7 = "£67676"
-    }
+  object ExpectedAgentEN extends ExpectedResultsForLanguage {
+    val expectedH1 = "Check your client’s employment details"
+    val expectedTitle = "Check your client’s employment details"
+    val expectedContent = "Your client’s employment details are based on the information we already hold about them."
+    val expectedInsetText = s"You cannot update your client’s employment details until 6 April $taxYear."
+    val employeeFieldName7 = "Payments not on P60"
+  }
+
+  object ExpectedIndividualCY extends ExpectedResultsForLanguage {
+    val expectedH1 = "Check your employment details"
+    val expectedTitle = "Check your employment details"
+    val expectedContent = "Your employment details are based on the information we already hold about you."
+    val expectedInsetText = s"You cannot update your employment details until 6 April $taxYear."
+    val employeeFieldName7 = "Payments not on your P60"
+  }
+
+  object ExpectedAgentCY extends ExpectedResultsForLanguage {
+    val expectedH1 = "Check your client’s employment details"
+    val expectedTitle = "Check your client’s employment details"
+    val expectedContent = "Your client’s employment details are based on the information we already hold about them."
+    val expectedInsetText = s"You cannot update your client’s employment details until 6 April $taxYear."
+    val employeeFieldName7 = "Payments not on P60"
+  }
+
+
+//  object ExpectedResults {
+//
+//    object ContentEN {
+//      val h1ExpectedAgent = "Check your client’s employment details"
+//      val titleExpectedAgent = "Check your client’s employment details"
+//      val h1ExpectedIndividual = "Check your employment details"
+//      val titleExpectedIndividual = "Check your employment details"
+//      val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+//      val contentExpectedAgent = "Your client’s employment details are based on the information we already hold about them."
+//      val contentExpectedIndividual = "Your employment details are based on the information we already hold about you."
+//      val insetTextExpectedAgent = s"You cannot update your client’s employment details until 6 April $taxYear."
+//      val insetTextExpectedIndividual = s"You cannot update your employment details until 6 April $taxYear."
+//
+//      val employeeFieldName1 = "Employer"
+//      val employeeFieldName2 = "PAYE reference"
+//      val employeeFieldName3 = "Director role end date"
+//      val employeeFieldName4 = "Close company"
+//      val employeeFieldName5 = "Pay received"
+//      val employeeFieldName6 = "UK tax taken from pay"
+//      val employeeFieldName7Individual = "Payments not on your P60"
+//      val employeeFieldName7Agent = "Payments not on P60"
+//
+//    }
+//
+//    object ContentCY {
+//      val h1ExpectedAgent = "Check your client’s employment details"
+//      val titleExpectedAgent = "Check your client’s employment details"
+//      val h1ExpectedIndividual = "Check your employment details"
+//      val titleExpectedIndividual = "Check your employment details"
+//      val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+//      val contentExpectedAgent = "Your client’s employment details are based on the information we already hold about them."
+//      val contentExpectedIndividual = "Your employment details are based on the information we already hold about you."
+//      val insetTextExpectedAgent = s"You cannot update your client’s employment details until 6 April $taxYear."
+//      val insetTextExpectedIndividual = s"You cannot update your employment details until 6 April $taxYear."
+//
+//      val employeeFieldName1 = "Employer"
+//      val employeeFieldName2 = "PAYE reference"
+//      val employeeFieldName3 = "Director role end date"
+//      val employeeFieldName4 = "Close company"
+//      val employeeFieldName5 = "Pay received"
+//      val employeeFieldName6 = "UK tax taken from pay"
+//      val employeeFieldName7Individual = "Payments not on your P60"
+//      val employeeFieldName7Agent = "Payments not on P60"
+//    }
 
     object MinModel {
       val miniData: AllEmploymentData = AllEmploymentData(
@@ -155,6 +227,86 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         customerExpenses = None
       )
     }
+  //}
+
+  def commonChecks(agent: Boolean = false, welsh: Boolean = false)(implicit document: () => Document): Unit ={
+    import Selectors._
+
+    (agent, welsh) match {
+      case (false, false) =>
+        import ExpectedResults.ContentEN._
+
+        titleCheck(titleExpectedIndividual)
+        h1Check(h1ExpectedIndividual)
+        textOnPageCheck(captionExpected, captionSelector)
+        textOnPageCheck(contentExpectedIndividual, contentTextSelector)
+        textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+        welshToggleCheck(ENGLISH)
+
+      case (true, false) =>
+        import ExpectedResults.ContentEN._
+
+        titleCheck(titleExpectedAgent)
+        h1Check(h1ExpectedAgent)
+        textOnPageCheck(captionExpected, captionSelector)
+        textOnPageCheck(contentExpectedAgent, contentTextSelector)
+        textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+        welshToggleCheck(ENGLISH)
+
+      case (false, true) =>
+        import ExpectedResults.ContentCY._
+
+        titleCheck(titleExpectedIndividual)
+        h1Check(h1ExpectedIndividual)
+        textOnPageCheck(captionExpected, captionSelector)
+        textOnPageCheck(contentExpectedIndividual, contentTextSelector)
+        textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+        welshToggleCheck(WELSH)
+
+      case (true, true) =>
+        import ExpectedResults.ContentCY._
+
+        titleCheck(titleExpectedAgent)
+        h1Check(h1ExpectedAgent)
+        textOnPageCheck(captionExpected, captionSelector)
+        textOnPageCheck(contentExpectedAgent, contentTextSelector)
+        textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+        welshToggleCheck(WELSH)
+    }
+  }
+
+  val userScenarios =
+    Seq(UserScenario(isWelsh = false, isAgent = false, ExpectedIndividualEN, CommonExpectedEN),
+      UserScenario(isWelsh = false, isAgent = true, ExpectedAgentEN, CommonExpectedEN),
+      UserScenario(isWelsh = true, isAgent = false, ExpectedIndividualCY, CommonExpectedCY),
+      UserScenario(isWelsh = true, isAgent = true, ExpectedAgentCY, CommonExpectedCY))
+
+
+  ".show" when {
+    import Selectors._
+
+    userScenarios.foreach { user =>
+      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+
+        "return the uk dividends page when there is no priorSubmission data and no cyaData in session" which {
+
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
+            urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(user.expectedResultsForLanguage.expectedTitle)
+          h1Check(user.expectedResultsForLanguage.expectedH1)
+          textOnPageCheck(captionExpected, captionSelector)
+          textOnPageCheck(contentExpectedIndividual, contentTextSelector)
+          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+          welshToggleCheck(ENGLISH)
+        }
+      }
+    }
   }
 
   "in english" when {
@@ -178,11 +330,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(titleExpectedIndividual)
-          h1Check(h1ExpectedIndividual)
-          textOnPageCheck(captionExpected, captionSelector)
-          textOnPageCheck(contentExpectedIndividual, contentTextSelector)
-          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+          commonChecks()
           textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
           textOnPageCheck(employeeFieldName2, summaryListRowFieldNameSelector(2))
@@ -197,7 +345,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(6))
           textOnPageCheck(employeeFieldName7Individual, summaryListRowFieldNameSelector(7))
           textOnPageCheck(employeeFieldValue7, summaryListRowFieldAmountSelector(7))
-          welshToggleCheck(ENGLISH)
         }
 
         "redirect to overview page when theres no details" in {
@@ -224,18 +371,13 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(titleExpectedIndividual)
-          h1Check(h1ExpectedIndividual)
-          textOnPageCheck(captionExpected, captionSelector)
-          textOnPageCheck(contentExpectedIndividual, contentTextSelector)
-          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+          commonChecks()
           textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
           textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(2))
           textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(2))
           textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(3))
           textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(3))
-          welshToggleCheck(ENGLISH)
         }
 
         "handle Model with Invalid date format in mongo" when {
@@ -248,12 +390,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(titleExpectedIndividual)
-          h1Check(h1ExpectedIndividual)
-          textOnPageCheck(captionExpected, captionSelector)
-
-          textOnPageCheck(contentExpectedIndividual, contentTextSelector)
-          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+          commonChecks()
           textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
           textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(2))
@@ -262,8 +399,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(3))
           textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(4))
           textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(4))
-
-          welshToggleCheck(ENGLISH)
         }
 
         "returns an action when auth call fails" which {
@@ -292,11 +427,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(titleExpectedAgent)
-          h1Check(h1ExpectedAgent)
-          textOnPageCheck(captionExpected, captionSelector)
-          textOnPageCheck(contentExpectedAgent, contentTextSelector)
-          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+          commonChecks(true)
           textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
           textOnPageCheck(employeeFieldName2, summaryListRowFieldNameSelector(2))
@@ -311,7 +442,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(6))
           textOnPageCheck(employeeFieldName7Agent, summaryListRowFieldNameSelector(7))
           textOnPageCheck(employeeFieldValue7, summaryListRowFieldAmountSelector(7))
-          welshToggleCheck(ENGLISH)
         }
 
         "return a filtered list on page when minimum data is in mongo" which {
@@ -324,18 +454,13 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(titleExpectedAgent)
-          h1Check(h1ExpectedAgent)
-          textOnPageCheck(captionExpected, captionSelector)
-          textOnPageCheck(contentExpectedAgent, contentTextSelector)
-          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+          commonChecks(true)
           textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
           textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(2))
           textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(2))
           textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(3))
           textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(3))
-          welshToggleCheck(ENGLISH)
         }
 
         "handle Model with Invalid date format in mongo" when {
@@ -348,12 +473,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(titleExpectedAgent)
-          h1Check(h1ExpectedAgent)
-          textOnPageCheck(captionExpected, captionSelector)
-
-          textOnPageCheck(contentExpectedAgent, contentTextSelector)
-          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+          commonChecks(true)
           textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
           textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(2))
@@ -362,7 +482,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(3))
           textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(4))
           textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(4))
-          welshToggleCheck(ENGLISH)
         }
 
         "returns an action when auth call fails" which {
@@ -399,11 +518,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(titleExpectedIndividual)
-          h1Check(h1ExpectedIndividual)
-          textOnPageCheck(captionExpected, captionSelector)
-          textOnPageCheck(contentExpectedIndividual, contentTextSelector)
-          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+          commonChecks(welsh = true)
           textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
           textOnPageCheck(employeeFieldName2, summaryListRowFieldNameSelector(2))
@@ -418,7 +533,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(6))
           textOnPageCheck(employeeFieldName7Individual, summaryListRowFieldNameSelector(7))
           textOnPageCheck(employeeFieldValue7, summaryListRowFieldAmountSelector(7))
-          welshToggleCheck(WELSH)
         }
 
         "return a filtered list on page when minimum data is in mongo" which {
@@ -431,18 +545,13 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(titleExpectedIndividual)
-          h1Check(h1ExpectedIndividual)
-          textOnPageCheck(captionExpected, captionSelector)
-          textOnPageCheck(contentExpectedIndividual, contentTextSelector)
-          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+          commonChecks(welsh = true)
           textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
           textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(2))
           textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(2))
           textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(3))
           textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(3))
-          welshToggleCheck(WELSH)
         }
 
         "handle Model with Invalid date format in mongo" when {
@@ -454,11 +563,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(titleExpectedIndividual)
-          h1Check(h1ExpectedIndividual)
-          textOnPageCheck(captionExpected, captionSelector)
-          textOnPageCheck(contentExpectedIndividual, contentTextSelector)
-          textOnPageCheck(insetTextExpectedIndividual, insetTextSelector)
+          commonChecks(welsh = true)
           textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
           textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(2))
@@ -467,8 +572,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(3))
           textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(4))
           textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(4))
-          welshToggleCheck(WELSH)
-
         }
       }
     }
@@ -487,11 +590,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(titleExpectedAgent)
-          h1Check(h1ExpectedAgent)
-          textOnPageCheck(captionExpected, captionSelector)
-          textOnPageCheck(contentExpectedAgent, contentTextSelector)
-          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+          commonChecks(true, true)
           textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
           textOnPageCheck(employeeFieldName2, summaryListRowFieldNameSelector(2))
@@ -506,7 +605,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(6))
           textOnPageCheck(employeeFieldName7Agent, summaryListRowFieldNameSelector(7))
           textOnPageCheck(employeeFieldValue7, summaryListRowFieldAmountSelector(7))
-          welshToggleCheck(WELSH)
         }
 
         "return a filtered list on page when minimum data is in mongo" which {
@@ -519,18 +617,13 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(titleExpectedAgent)
-          h1Check(h1ExpectedAgent)
-          textOnPageCheck(captionExpected, captionSelector)
-          textOnPageCheck(contentExpectedAgent, contentTextSelector)
-          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+          commonChecks(true, true)
           textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
           textOnPageCheck(employeeFieldName5, summaryListRowFieldNameSelector(2))
           textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(2))
           textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(3))
           textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(3))
-          welshToggleCheck(WELSH)
         }
 
         "handle Model with Invalid date format in mongo" when {
@@ -543,12 +636,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(titleExpectedAgent)
-          h1Check(h1ExpectedAgent)
-          textOnPageCheck(captionExpected, captionSelector)
-
-          textOnPageCheck(contentExpectedAgent, contentTextSelector)
-          textOnPageCheck(insetTextExpectedAgent, insetTextSelector)
+          commonChecks(true, true)
           textOnPageCheck(employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(employeeFieldValue1, summaryListRowFieldAmountSelector(1))
           textOnPageCheck(employeeFieldName4, summaryListRowFieldNameSelector(2))
@@ -557,7 +645,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(employeeFieldValue5, summaryListRowFieldAmountSelector(3))
           textOnPageCheck(employeeFieldName6, summaryListRowFieldNameSelector(4))
           textOnPageCheck(employeeFieldValue6, summaryListRowFieldAmountSelector(4))
-          welshToggleCheck(WELSH)
         }
       }
     }
