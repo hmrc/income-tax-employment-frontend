@@ -16,8 +16,10 @@
 
 package controllers.employment
 
+import audit.{AuditService, ViewEmploymentBenefitsAudit}
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
+
 import javax.inject.Inject
 import models.employment.Benefits
 import play.api.i18n.I18nSupport
@@ -35,6 +37,7 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
                                             implicit val appConfig: AppConfig,
                                             checkYourBenefitsView: CheckYourBenefitsView,
                                             incomeTaxUserDataService: IncomeTaxUserDataService,
+                                            auditService: AuditService,
                                             implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
@@ -45,7 +48,10 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
       }
 
       benefits match {
-        case Some(benefits) => Ok(checkYourBenefitsView(taxYear, benefits))
+        case Some(benefits) =>
+          val auditModel = ViewEmploymentBenefitsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, benefits)
+          auditService.auditModel[ViewEmploymentBenefitsAudit](auditModel.toAuditModel)
+          Ok(checkYourBenefitsView(taxYear, benefits))
         case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)) //This will be changed to serve its own page as part of SASS-669
       }
     }
