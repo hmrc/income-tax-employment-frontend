@@ -54,7 +54,7 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
     val tryAnother = "#main-content > div > div > a"
   }
 
-  val url = s"${appUrl(port)}/error/you-need-client-authorisation"
+  val url = s"$appUrl/error/you-need-client-authorisation"
 
   "calling GET with english header" when {
 
