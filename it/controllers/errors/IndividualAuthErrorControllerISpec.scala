@@ -45,7 +45,7 @@ class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelper
     val linkSelector: String = paragraphSelector + " > a"
   }
 
-  val url = s"${appUrl(port)}/error/you-need-to-sign-up"
+  val url = s"$appUrl/error/you-need-to-sign-up"
 
   "When set to english" when {
 

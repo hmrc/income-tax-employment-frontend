@@ -47,7 +47,7 @@ class SessionExpiredControllerISpec extends IntegrationTest with ViewHelpers {
     val formSelector = "#main-content > div > div > form"
   }
 
-  val url = s"${appUrl(port)}/timeout"
+  val url = s"$appUrl/timeout"
 
   "When set to english" when {
 

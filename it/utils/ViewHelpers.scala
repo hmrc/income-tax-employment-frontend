@@ -33,30 +33,23 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
   val ENGLISH = "English"
   val WELSH = "Welsh"
 
-  val ExpectedResults: Object
-  val Selectors: Object
-
   def welshTest(isWelsh: Boolean): String = if (isWelsh) "Welsh" else "English"
-
   def agentTest(isAgent: Boolean): String = if (isAgent) "Agent" else "Individual"
 
   def welshToggle(isWelsh: Boolean)(implicit document: () => Document): Unit = if (isWelsh) welshToggleCheck(WELSH) else welshToggleCheck(ENGLISH)
 
   def authoriseAgentOrIndividual(isAgent: Boolean, nino: Boolean = true): StubMapping = if (isAgent) authoriseAgent() else authoriseIndividual(nino)
+  def unauthorisedAgentOrIndividual(isAgent: Boolean): StubMapping = if (isAgent) authoriseAgentUnauthorized() else authoriseIndividualUnauthorized()
 
   case class UserScenario[ExpectedResultsForLanguage,CommonExpectedResult](isWelsh: Boolean,
                                                                            isAgent: Boolean,
                                                                            expectedResultsForLanguage: ExpectedResultsForLanguage,
-                                                                           CommonExpectedResult: CommonExpectedResult)
+                                                                           commonExpectedResult: CommonExpectedResult)
 
   def urlGet(url: String, welsh: Boolean = false, follow: Boolean = true, headers: Seq[(String, String)] = Seq())(implicit wsClient: WSClient): WSResponse = {
 
-    if(welsh){
-      val newHeaders = Seq(HeaderNames.ACCEPT_LANGUAGE -> "cy") ++ headers
-      await(wsClient.url(url).withFollowRedirects(follow).withHttpHeaders(newHeaders: _*).get())
-    } else {
-      await(wsClient.url(url).withFollowRedirects(follow).withHttpHeaders(headers: _*).get())
-    }
+    val newHeaders = if(welsh) Seq(HeaderNames.ACCEPT_LANGUAGE -> "cy") ++ headers else headers
+    await(wsClient.url(url).withFollowRedirects(follow).withHttpHeaders(newHeaders: _*).get())
   }
 
   def elementText(selector: String)(implicit document: () => Document): String = {

@@ -27,7 +27,7 @@ import utils.{IntegrationTest, ViewHelpers}
 class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach {
 
   val defaultTaxYear = 2022
-  val url = s"${appUrl(port)}/$defaultTaxYear/check-employment-benefits?employmentId=001"
+  val url = s"$appUrl/$defaultTaxYear/check-employment-benefits?employmentId=001"
 
   private def fieldNameSelector(section: Int, row: Int) = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dt"
 
