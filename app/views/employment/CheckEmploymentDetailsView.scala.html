@@ -60,7 +60,7 @@
         val payReceived: (String, Option[String]) = ("payReceived", employmentDetails.map(e => bigDecimalCurrency(e.pay.get.taxablePayToDate.get.toString)))
         val totalTaxToDate: (String, Option[String]) = ("totalTaxToDate", employmentDetails.map(e => bigDecimalCurrency(e.pay.get.totalTaxToDate.get.toString)))
         val tipsAndOtherPaymentsAmount: (String, Option[String]) = (s"tipsAndOtherPayments.${if(user.isAgent) "agent" else "individual"}",
-            employmentDetails.flatMap(_.pay.get.tipsAndOtherPayments.map(amount => bigDecimalCurrency(amount.toString))))
+            employmentDetails.flatMap(_.pay.flatMap(_.tipsAndOtherPayments.map(amount => bigDecimalCurrency(amount.toString)))))
 
     val employmentDataFields = List(employerName, payeRef, directorCeasedDate, closeCompany,
             payReceived, totalTaxToDate, tipsAndOtherPaymentsAmount)
