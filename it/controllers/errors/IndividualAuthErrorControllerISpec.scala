@@ -79,7 +79,7 @@ class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelper
           import user.commonExpectedResults._
 
           titleCheck(validTitle)
-          welshToggle(user.isWelsh)
+          welshToggleCheck(user.isWelsh)
           h1Check(validTitle, "xl")
           textOnPageCheck(pageContent, paragraphSelector)
           linkCheck(linkContent, linkSelector, linkHref)

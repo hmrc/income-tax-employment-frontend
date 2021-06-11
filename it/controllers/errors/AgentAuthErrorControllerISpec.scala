@@ -96,7 +96,7 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
           textOnPageCheck(s"$youCannotViewText $authoriseYouAsText $beforeYouCanTryText", youCan)
           linkCheck(authoriseYouAsText, authoriseAsAnAgentLinkSelector, authoriseAsAnAgentLink)
           buttonCheck(tryAnother, Selectors.tryAnother, Some(tryAnotherExpectedHref))
-          welshToggle(user.isWelsh)
+          welshToggleCheck(user.isWelsh)
         }
       }
     }

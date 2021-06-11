@@ -36,8 +36,6 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
   def welshTest(isWelsh: Boolean): String = if (isWelsh) "Welsh" else "English"
   def agentTest(isAgent: Boolean): String = if (isAgent) "Agent" else "Individual"
 
-  def welshToggle(isWelsh: Boolean)(implicit document: () => Document): Unit = if (isWelsh) welshToggleCheck(WELSH) else welshToggleCheck(ENGLISH)
-
   def authoriseAgentOrIndividual(isAgent: Boolean, nino: Boolean = true): StubMapping = if (isAgent) authoriseAgent() else authoriseIndividual(nino)
   def unauthorisedAgentOrIndividual(isAgent: Boolean): StubMapping = if (isAgent) authoriseAgentUnauthorized() else authoriseIndividualUnauthorized()
 
