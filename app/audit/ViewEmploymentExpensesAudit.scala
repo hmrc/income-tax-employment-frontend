@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package models
+package audit
 
-import play.api.mvc.{Request, WrappedRequest}
+import models.employment.Expenses
+import play.api.libs.json.{Json, OWrites}
 
-case class User[T](mtditid: String,
-                   arn: Option[String],
-                   nino: String,
-                   sessionId: String,
-                   affinityGroup: String)
+case class ViewEmploymentExpensesAudit(taxYear: Int, userType: String, nino: String, mtditid: String, expenses: Expenses) {
 
-                  (implicit request: Request[T]) extends WrappedRequest[T](request) {
-  def isAgent: Boolean = arn.nonEmpty
+  private def name = "ViewEmploymentExpenses"
+  def toAuditModel: AuditModel[ViewEmploymentExpensesAudit] = AuditModel(name, name, this)
+
+}
+
+object ViewEmploymentExpensesAudit {
+  implicit def writes: OWrites[ViewEmploymentExpensesAudit] = Json.writes[ViewEmploymentExpensesAudit]
+
 }
