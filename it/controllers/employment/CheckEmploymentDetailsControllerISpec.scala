@@ -93,6 +93,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       val employeeFieldValue6 = "£6782.92"
       val employeeFieldValue7 = "£67676"
     }
+  }
 
   object MinModel {
     val miniData: AllEmploymentData = AllEmploymentData(

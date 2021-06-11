@@ -23,7 +23,6 @@ case class User[T](mtditid: String,
                    nino: String,
                    sessionId: String,
                    affinityGroup: String)
-
                   (implicit request: Request[T]) extends WrappedRequest[T](request) {
   def isAgent: Boolean = arn.nonEmpty
 }
