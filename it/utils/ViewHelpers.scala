@@ -41,10 +41,12 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
   def authoriseAgentOrIndividual(isAgent: Boolean, nino: Boolean = true): StubMapping = if (isAgent) authoriseAgent() else authoriseIndividual(nino)
   def unauthorisedAgentOrIndividual(isAgent: Boolean): StubMapping = if (isAgent) authoriseAgentUnauthorized() else authoriseIndividualUnauthorized()
 
-  case class UserScenario[ExpectedResultsForLanguage,CommonExpectedResult](isWelsh: Boolean,
-                                                                           isAgent: Boolean,
-                                                                           expectedResultsForLanguage: ExpectedResultsForLanguage,
-                                                                           commonExpectedResult: CommonExpectedResult)
+  case class UserScenario[CommonExpectedResults,SpecificExpectedResults](isWelsh: Boolean,
+                                                                         isAgent: Boolean,
+                                                                         commonExpectedResults: CommonExpectedResults,
+                                                                         specificExpectedResults: Option[SpecificExpectedResults] = None)
+
+  val userScenarios: Seq[UserScenario[_, _]]
 
   def urlGet(url: String, welsh: Boolean = false, follow: Boolean = true, headers: Seq[(String, String)] = Seq())(implicit wsClient: WSClient): WSResponse = {
 
@@ -172,6 +174,10 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
         document().select(".govuk-error-message").text() shouldBe s"Error: $text"
       }
     }
+  }
+
+  def welshToggleCheck(isWelsh: Boolean)(implicit document: () => Document): Unit ={
+    welshToggleCheck(if(isWelsh) WELSH else ENGLISH)
   }
 
   def welshToggleCheck(activeLanguage: String)(implicit document: () => Document): Unit = {

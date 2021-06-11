@@ -38,7 +38,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     def summaryListRowFieldAmountSelector(i: Int) = s"#main-content > div > div > dl > div:nth-child($i) > dd"
   }
 
-  trait ExpectedResultsForLanguage {
+  trait SpecificExpectedResults {
     val expectedH1: String
     val expectedTitle: String
     val expectedContent: String
@@ -46,7 +46,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldName7: String
   }
 
-  trait CommonExpectedResult {
+  trait CommonExpectedResults {
     val expectedCaption: String
     val employeeFieldName1: String
     val employeeFieldName2: String
@@ -67,7 +67,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldValue7 = "£67676"
   }
 
-  object CommonExpectedEN extends CommonExpectedResult {
+  object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val employeeFieldName1 = "Employer"
     val employeeFieldName2 = "PAYE reference"
@@ -77,7 +77,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldName6 = "UK tax taken from pay"
   }
 
-  object CommonExpectedCY extends CommonExpectedResult {
+  object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val employeeFieldName1 = "Employer"
     val employeeFieldName2 = "PAYE reference"
@@ -87,7 +87,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldName6 = "UK tax taken from pay"
   }
 
-  object ExpectedIndividualEN extends ExpectedResultsForLanguage {
+  object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedH1 = "Check your employment details"
     val expectedTitle = "Check your employment details"
     val expectedContent = "Your employment details are based on the information we already hold about you."
@@ -95,7 +95,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldName7 = "Payments not on your P60"
   }
 
-  object ExpectedAgentEN extends ExpectedResultsForLanguage {
+  object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedH1 = "Check your client’s employment details"
     val expectedTitle = "Check your client’s employment details"
     val expectedContent = "Your client’s employment details are based on the information we already hold about them."
@@ -103,7 +103,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldName7 = "Payments not on P60"
   }
 
-  object ExpectedIndividualCY extends ExpectedResultsForLanguage {
+  object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedH1 = "Check your employment details"
     val expectedTitle = "Check your employment details"
     val expectedContent = "Your employment details are based on the information we already hold about you."
@@ -111,7 +111,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldName7 = "Payments not on your P60"
   }
 
-  object ExpectedAgentCY extends ExpectedResultsForLanguage {
+  object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedH1 = "Check your client’s employment details"
     val expectedTitle = "Check your client’s employment details"
     val expectedContent = "Your client’s employment details are based on the information we already hold about them."
@@ -119,11 +119,11 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldName7 = "Payments not on P60"
   }
 
-  val userScenarios: Seq[UserScenario[ExpectedResultsForLanguage, CommonExpectedResult]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, ExpectedIndividualEN, CommonExpectedEN),
-      UserScenario(isWelsh = false, isAgent = true, ExpectedAgentEN, CommonExpectedEN),
-      UserScenario(isWelsh = true, isAgent = false, ExpectedIndividualCY, CommonExpectedCY),
-      UserScenario(isWelsh = true, isAgent = true, ExpectedAgentCY, CommonExpectedCY))
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
+    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+      UserScenario(isWelsh = false, isAgent = true,  CommonExpectedEN, Some(ExpectedAgentEN)),
+      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
 
   object MinModel {
@@ -207,25 +207,26 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           "has an OK status" in {
             result.status shouldBe OK
           }
-          titleCheck(user.expectedResultsForLanguage.expectedTitle)
-          h1Check(user.expectedResultsForLanguage.expectedH1)
-          textOnPageCheck(user.commonExpectedResult.expectedCaption, captionSelector)
-          textOnPageCheck(user.expectedResultsForLanguage.expectedContent, contentTextSelector)
-          textOnPageCheck(user.expectedResultsForLanguage.expectedInsetText, insetTextSelector)
-          welshToggleCheck(if(user.isWelsh) WELSH else ENGLISH)
-          textOnPageCheck(user.commonExpectedResult.employeeFieldName1, summaryListRowFieldNameSelector(1))
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          textOnPageCheck(user.commonExpectedResults.expectedCaption, captionSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentTextSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedInsetText, insetTextSelector)
+          welshToggleCheck(user.isWelsh)
+          textOnPageCheck(user.commonExpectedResults.employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employeeFieldValue1, summaryListRowFieldAmountSelector(1))
-          textOnPageCheck(user.commonExpectedResult.employeeFieldName2, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(user.commonExpectedResults.employeeFieldName2, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.employeeFieldValue2, summaryListRowFieldAmountSelector(2))
-          textOnPageCheck(user.commonExpectedResult.employeeFieldName3, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(user.commonExpectedResults.employeeFieldName3, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.employeeFieldValue3, summaryListRowFieldAmountSelector(3))
-          textOnPageCheck(user.commonExpectedResult.employeeFieldName4, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(user.commonExpectedResults.employeeFieldName4, summaryListRowFieldNameSelector(4))
           textOnPageCheck(ContentValues.employeeFieldValue4, summaryListRowFieldAmountSelector(4))
-          textOnPageCheck(user.commonExpectedResult.employeeFieldName5, summaryListRowFieldNameSelector(5))
+          textOnPageCheck(user.commonExpectedResults.employeeFieldName5, summaryListRowFieldNameSelector(5))
           textOnPageCheck(ContentValues.employeeFieldValue5, summaryListRowFieldAmountSelector(5))
-          textOnPageCheck(user.commonExpectedResult.employeeFieldName6, summaryListRowFieldNameSelector(6))
+          textOnPageCheck(user.commonExpectedResults.employeeFieldName6, summaryListRowFieldNameSelector(6))
           textOnPageCheck(ContentValues.employeeFieldValue6, summaryListRowFieldAmountSelector(6))
-          textOnPageCheck(user.expectedResultsForLanguage.employeeFieldName7, summaryListRowFieldNameSelector(7))
+          textOnPageCheck(user.specificExpectedResults.get.employeeFieldName7, summaryListRowFieldNameSelector(7))
           textOnPageCheck(ContentValues.employeeFieldValue7, summaryListRowFieldAmountSelector(7))
         }
 
@@ -256,17 +257,17 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           "has an OK status" in {
             result.status shouldBe OK
           }
-          titleCheck(user.expectedResultsForLanguage.expectedTitle)
-          h1Check(user.expectedResultsForLanguage.expectedH1)
-          textOnPageCheck(user.commonExpectedResult.expectedCaption, captionSelector)
-          textOnPageCheck(user.expectedResultsForLanguage.expectedContent, contentTextSelector)
-          textOnPageCheck(user.expectedResultsForLanguage.expectedInsetText, insetTextSelector)
-          welshToggleCheck(if(user.isWelsh) WELSH else ENGLISH)
-          textOnPageCheck(user.commonExpectedResult.employeeFieldName1, summaryListRowFieldNameSelector(1))
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          textOnPageCheck(user.commonExpectedResults.expectedCaption, captionSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentTextSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedInsetText, insetTextSelector)
+          welshToggleCheck(user.isWelsh)
+          textOnPageCheck(user.commonExpectedResults.employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employeeFieldValue1, summaryListRowFieldAmountSelector(1))
-          textOnPageCheck(user.commonExpectedResult.employeeFieldName5, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(user.commonExpectedResults.employeeFieldName5, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.employeeFieldValue5, summaryListRowFieldAmountSelector(2))
-          textOnPageCheck(user.commonExpectedResult.employeeFieldName6, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(user.commonExpectedResults.employeeFieldName6, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.employeeFieldValue6, summaryListRowFieldAmountSelector(3))
         }
 
@@ -283,19 +284,19 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           "has an OK status" in {
             result.status shouldBe OK
           }
-          titleCheck(user.expectedResultsForLanguage.expectedTitle)
-          h1Check(user.expectedResultsForLanguage.expectedH1)
-          textOnPageCheck(user.commonExpectedResult.expectedCaption, captionSelector)
-          textOnPageCheck(user.expectedResultsForLanguage.expectedContent, contentTextSelector)
-          textOnPageCheck(user.expectedResultsForLanguage.expectedInsetText, insetTextSelector)
-          welshToggleCheck(if(user.isWelsh) WELSH else ENGLISH)
-          textOnPageCheck(user.commonExpectedResult.employeeFieldName1, summaryListRowFieldNameSelector(1))
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          textOnPageCheck(user.commonExpectedResults.expectedCaption, captionSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentTextSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedInsetText, insetTextSelector)
+          welshToggleCheck(user.isWelsh)
+          textOnPageCheck(user.commonExpectedResults.employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employeeFieldValue1, summaryListRowFieldAmountSelector(1))
-          textOnPageCheck(user.commonExpectedResult.employeeFieldName4, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(user.commonExpectedResults.employeeFieldName4, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.employeeFieldValue4a, summaryListRowFieldAmountSelector(2))
-          textOnPageCheck(user.commonExpectedResult.employeeFieldName5, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(user.commonExpectedResults.employeeFieldName5, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.employeeFieldValue5, summaryListRowFieldAmountSelector(3))
-          textOnPageCheck(user.commonExpectedResult.employeeFieldName6, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(user.commonExpectedResults.employeeFieldName6, summaryListRowFieldNameSelector(4))
           textOnPageCheck(ContentValues.employeeFieldValue6, summaryListRowFieldAmountSelector(4))
         }
 

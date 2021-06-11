@@ -24,22 +24,6 @@ import utils.{IntegrationTest, ViewHelpers}
 
 class SessionExpiredControllerISpec extends IntegrationTest with ViewHelpers {
 
-  object ExpectedResults {
-    object ContentEN {
-      val h1Expected = "For your security, we signed you out"
-      val p1Expected = "We did not save your answers."
-      val buttonExpectedText = "Sign in"
-      val buttonExpectedUrl: String = "http://localhost:11111/income-through-software/return/2022/start"
-    }
-
-    object ContentCY {
-      val h1Expected = "For your security, we signed you out"
-      val p1Expected = "We did not save your answers."
-      val buttonExpectedText = "Sign in"
-      val buttonExpectedUrl: String = "http://localhost:11111/income-through-software/return/2022/start"
-    }
-  }
-
   object Selectors {
     val h1Selector = "#main-content > div > div > header > h1"
     val p1Selector = "#main-content > div > div > div.govuk-body > p"
@@ -49,62 +33,61 @@ class SessionExpiredControllerISpec extends IntegrationTest with ViewHelpers {
 
   val url = s"$appUrl/timeout"
 
-  "When set to english" when {
-
-    import ExpectedResults.ContentEN._
-    import Selectors._
-
-    "the page is requested" should {
-
-      "render the page" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          urlGet(url)
-        }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        "has an OK status" in {
-          result.status shouldBe OK
-        }
-
-        titleCheck(h1Expected)
-        welshToggleCheck("English")
-        h1Check(h1Expected, "xl")
-
-        textOnPageCheck(p1Expected,p1Selector)
-        buttonCheck(buttonExpectedText, buttonSelector)
-        formGetLinkCheck(buttonExpectedUrl, formSelector)
-      }
-    }
+  trait CommonExpectedResults {
+    val h1Expected: String
+    val p1Expected: String
+    val buttonExpectedText: String
+    val buttonExpectedUrl: String
   }
 
-  "When set to welsh" when {
+  object CommonExpectedEN extends CommonExpectedResults {
+    val h1Expected = "For your security, we signed you out"
+    val p1Expected = "We did not save your answers."
+    val buttonExpectedText = "Sign in"
+    val buttonExpectedUrl: String = "http://localhost:11111/income-through-software/return/2022/start"
+  }
 
-    import ExpectedResults.ContentCY._
+  object CommonExpectedCY extends CommonExpectedResults {
+    val h1Expected = "For your security, we signed you out"
+    val p1Expected = "We did not save your answers."
+    val buttonExpectedText = "Sign in"
+    val buttonExpectedUrl: String = "http://localhost:11111/income-through-software/return/2022/start"
+  }
+
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = {
+    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN),
+      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY))
+  }
+
+  ".show" when {
     import Selectors._
 
-    "the page is requested" should {
+    userScenarios.foreach { user =>
+      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-      "render the page" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          urlGet(url, true)
+        "render the page with the right content" which {
+
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            urlGet(url, welsh = user.isWelsh)
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has an OK status" in {
+            result.status shouldBe OK
+          }
+
+          import user.commonExpectedResults._
+
+          titleCheck(h1Expected)
+          welshToggleCheck(user.isWelsh)
+          h1Check(h1Expected, "xl")
+
+          textOnPageCheck(p1Expected,p1Selector)
+          buttonCheck(buttonExpectedText, buttonSelector)
+          formGetLinkCheck(buttonExpectedUrl, formSelector)
         }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        "has an OK status" in {
-          result.status shouldBe OK
-        }
-
-        titleCheck(h1Expected)
-        welshToggleCheck("Welsh")
-        h1Check(h1Expected, "xl")
-
-        textOnPageCheck(p1Expected,p1Selector)
-        buttonCheck(buttonExpectedText, buttonSelector)
-        formGetLinkCheck(buttonExpectedUrl, formSelector)
       }
     }
   }

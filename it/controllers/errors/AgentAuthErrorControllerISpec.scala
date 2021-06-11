@@ -24,30 +24,6 @@ import utils.{IntegrationTest, ViewHelpers}
 
 class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
 
-  object ExpectedResults {
-    object ContentEN {
-      val heading: String = "There’s a problem"
-      val title = "There’s a problem"
-      val youCannotViewText: String = "You cannot view this client’s information. Your client needs to"
-      val authoriseYouAsText = "authorise you as their agent (opens in new tab)"
-      val beforeYouCanTryText = "before you can sign in to this service."
-      val tryAnother = "Try another client’s details"
-      val authoriseAsAnAgentLink = "https://www.gov.uk/guidance/client-authorisation-an-overview"
-      val tryAnotherExpectedHref = "http://localhost:11111/report-quarterly/income-and-expenses/view/agents/client-utr"
-    }
-
-    object ContentCY {
-      val heading: String = "There’s a problem"
-      val title = "There’s a problem"
-      val youCannotViewText: String = "You cannot view this client’s information. Your client needs to"
-      val authoriseYouAsText = "authorise you as their agent (opens in new tab)"
-      val beforeYouCanTryText = "before you can sign in to this service."
-      val tryAnother = "Try another client’s details"
-      val authoriseAsAnAgentLink = "https://www.gov.uk/guidance/client-authorisation-an-overview"
-      val tryAnotherExpectedHref = "http://localhost:11111/report-quarterly/income-and-expenses/view/agents/client-utr"
-    }
-  }
-
   object Selectors {
     val youCan = "#main-content > div > div > p:nth-child(2)"
     val authoriseAsAnAgentLinkSelector = "#client_auth_link"
@@ -56,54 +32,72 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
 
   val url = s"$appUrl/error/you-need-client-authorisation"
 
-  "calling GET with english header" when {
-
-    import ExpectedResults.ContentEN._
-
-    "the user is an individual" should {
-      "return the AgentAuthErrorPageView with the right content" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          urlGet(url)
-        }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        "has an UNAUTHORIZED(401) status" in {
-          result.status shouldBe UNAUTHORIZED
-        }
-
-        titleCheck(title)
-        h1Check(heading,"xl")
-        textOnPageCheck(s"$youCannotViewText $authoriseYouAsText $beforeYouCanTryText", Selectors.youCan)
-        linkCheck(authoriseYouAsText, Selectors.authoriseAsAnAgentLinkSelector, authoriseAsAnAgentLink)
-        buttonCheck(tryAnother, Selectors.tryAnother, Some(tryAnotherExpectedHref))
-      }
-    }
+  trait CommonExpectedResults {
+    val heading: String
+    val title: String
+    val youCannotViewText: String
+    val authoriseYouAsText: String
+    val beforeYouCanTryText: String
+    val tryAnother: String
+    val authoriseAsAnAgentLink: String
+    val tryAnotherExpectedHref: String
   }
 
-  "calling GET with welsh header" when {
+  object CommonExpectedEN extends CommonExpectedResults {
+    val heading: String = "There’s a problem"
+    val title = "There’s a problem"
+    val youCannotViewText: String = "You cannot view this client’s information. Your client needs to"
+    val authoriseYouAsText = "authorise you as their agent (opens in new tab)"
+    val beforeYouCanTryText = "before you can sign in to this service."
+    val tryAnother = "Try another client’s details"
+    val authoriseAsAnAgentLink = "https://www.gov.uk/guidance/client-authorisation-an-overview"
+    val tryAnotherExpectedHref = "http://localhost:11111/report-quarterly/income-and-expenses/view/agents/client-utr"
+  }
 
-    import ExpectedResults.ContentCY._
+  object CommonExpectedCY extends CommonExpectedResults {
+    val heading: String = "There’s a problem"
+    val title = "There’s a problem"
+    val youCannotViewText: String = "You cannot view this client’s information. Your client needs to"
+    val authoriseYouAsText = "authorise you as their agent (opens in new tab)"
+    val beforeYouCanTryText = "before you can sign in to this service."
+    val tryAnother = "Try another client’s details"
+    val authoriseAsAnAgentLink = "https://www.gov.uk/guidance/client-authorisation-an-overview"
+    val tryAnotherExpectedHref = "http://localhost:11111/report-quarterly/income-and-expenses/view/agents/client-utr"
+  }
 
-    "the user is an individual" should {
-      "return the AgentAuthErrorPageView with the right content" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          urlGet(url, true)
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = {
+    Seq(UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN),
+      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY))
+  }
+
+  ".show" when {
+    import Selectors._
+
+    userScenarios.foreach { user =>
+      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+
+        "return the AgentAuthErrorPageView with the right content" which {
+
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            urlGet(url, welsh = user.isWelsh)
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has an UNAUTHORIZED(401) status" in {
+            result.status shouldBe UNAUTHORIZED
+          }
+
+          import user.commonExpectedResults._
+
+          titleCheck(title)
+          h1Check(heading,"xl")
+          textOnPageCheck(s"$youCannotViewText $authoriseYouAsText $beforeYouCanTryText", youCan)
+          linkCheck(authoriseYouAsText, authoriseAsAnAgentLinkSelector, authoriseAsAnAgentLink)
+          buttonCheck(tryAnother, Selectors.tryAnother, Some(tryAnotherExpectedHref))
+          welshToggle(user.isWelsh)
         }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        "has an UNAUTHORIZED(401) status" in {
-          result.status shouldBe UNAUTHORIZED
-        }
-
-        titleCheck(title)
-        h1Check(heading,"xl")
-        textOnPageCheck(s"$youCannotViewText $authoriseYouAsText $beforeYouCanTryText", Selectors.youCan)
-        linkCheck(authoriseYouAsText, Selectors.authoriseAsAnAgentLinkSelector, authoriseAsAnAgentLink)
-        buttonCheck(tryAnother, Selectors.tryAnother, Some(tryAnotherExpectedHref))
       }
     }
   }

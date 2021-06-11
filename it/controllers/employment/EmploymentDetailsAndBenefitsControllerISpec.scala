@@ -35,16 +35,14 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
     val buttonSelector = "#employmentSummaryBtn"
     val employmentDetailsLinkSelector = "#employment-details_link"
     val employmentBenefitsLinkSelector = "#employment-benefits_link"
-
     def taskListRowFieldNameSelector(i: Int) = s"#main-content > div > div > ul > li:nth-child($i) > span.app-task-list__task-name"
-
     def taskListRowFieldAmountSelector(i: Int) = s"#main-content > div > div > ul > li:nth-child($i) > span.hmrc-status-tag"
   }
 
-  object ExpectedResults {
+  val employmentDetailsUrl = "/income-through-software/return/employment-income/2022/check-employment-details?employmentId=001"
+  val employmentBenefitsUrl = "/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=001"
 
-    val employmentDetailsUrl = "/income-through-software/return/employment-income/2022/check-employment-details?employmentId=001"
-    val employmentBenefitsUrl = "/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=001"
+  object ExpectedResults {
 
     object ContentEN {
       val h1Expected = "maggie"
@@ -67,333 +65,155 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
     }
   }
 
-  "in english" when {
+  trait SpecificExpectedResults {
+    val expectedH1: String
+    val expectedTitle: String
+    val expectedContent: String
+  }
 
-    import ExpectedResults.ContentCY._
-    import ExpectedResults.employmentDetailsUrl
-    import ExpectedResults.employmentBenefitsUrl
+  trait CommonExpectedResults {
+    val expectedCaption: String
+    val fieldNames: Seq[String]
+    val buttonText: String
+    val updated: String
+    val cannotUpdate: String
+  }
+
+  object CommonExpectedEN extends CommonExpectedResults {
+    val expectedCaption = "Employment for 6 April 2021 to 5 April 2022"
+    val fieldNames = Seq("Employment details", "Benefits")
+    val buttonText = "Return to employment summary"
+    val updated = "Updated"
+    val cannotUpdate = "Cannot update"
+  }
+
+  object CommonExpectedCY extends CommonExpectedResults {
+    val expectedCaption = "Employment for 6 April 2021 to 5 April 2022"
+    val fieldNames = Seq("Employment details", "Benefits")
+    val buttonText = "Return to employment summary"
+    val updated = "Updated"
+    val cannotUpdate = "Cannot update"
+  }
+
+  object ExpectedIndividualEN extends SpecificExpectedResults {
+    val expectedH1: String = "maggie"
+    val expectedTitle: String = "Employment details and benefits"
+    val expectedContent: String = "You cannot update your employment information until 6 April 2022."
+  }
+
+  object ExpectedAgentEN extends SpecificExpectedResults {
+    val expectedH1: String = "maggie"
+    val expectedTitle: String = "Employment details and benefits"
+    val expectedContent: String = "You cannot update your client’s employment information until 6 April 2022."
+  }
+
+  object ExpectedIndividualCY extends SpecificExpectedResults {
+    val expectedH1: String = "maggie"
+    val expectedTitle: String = "Employment details and benefits"
+    val expectedContent: String = "You cannot update your employment information until 6 April 2022."
+  }
+
+  object ExpectedAgentCY extends SpecificExpectedResults {
+    val expectedH1: String = "maggie"
+    val expectedTitle: String = "Employment details and benefits"
+    val expectedContent: String = "You cannot update your client’s employment information until 6 April 2022."
+  }
+
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
+    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+      UserScenario(isWelsh = false, isAgent = true,  CommonExpectedEN, Some(ExpectedAgentEN)),
+      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
+  }
+
+  ".show" when {
     import Selectors._
 
-    "the user is an individual" when {
+    userScenarios.foreach { user =>
+      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-      ".show" should {
-
-        "render the page where the status for benefits is Cannot Update when there is no Benefits data in mongo" which {
+        "render the page where the status for benefits is Cannot Update when there is no Benefits data" which {
 
           implicit lazy val result: WSResponse = {
-            authoriseIndividual()
+            authoriseAgentOrIndividual(user.isAgent)
             userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
-            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(titleExpected)
-          h1Check(h1Expected)
-          captionCheck(captionExpected)
-          textOnPageCheck(p1ExpectedIndividual, p1Selector)
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent, p1Selector)
 
           "has an employment details section" which {
-            linkCheck(fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl)
-            textOnPageCheck("Updated", taskListRowFieldAmountSelector(1))
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl)
+            textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(1))
           }
 
           "has a benefits section" which {
-            textOnPageCheck(fieldNames(1), taskListRowFieldNameSelector(2))
-            textOnPageCheck("Cannot update", taskListRowFieldAmountSelector(2))
+            textOnPageCheck(user.commonExpectedResults.fieldNames(1), taskListRowFieldNameSelector(2))
+            textOnPageCheck(user.commonExpectedResults.cannotUpdate, taskListRowFieldAmountSelector(2))
           }
-          buttonCheck(buttonText, buttonSelector)
-          formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary",
-            "#main-content > div > div > form")
+          buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
+          formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary", "#main-content > div > div > form")
 
-          welshToggleCheck(ENGLISH)
+          welshToggleCheck(user.isWelsh)
         }
 
         "redirect when there is no data" in {
 
           lazy val result: WSResponse = {
-            authoriseIndividual()
+            authoriseAgentOrIndividual(user.isAgent)
             userDataStub(userData(fullEmploymentsModel(None).copy(hmrcEmploymentData = Seq())), nino, taxYear)
-            urlGet(url, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           result.status shouldBe SEE_OTHER
         }
 
-        "render the page where the status for benefits is Updated when there is Benefits data in mongo" which {
+
+        "render the page where the status for benefits is Updated when there is Benefits data" which {
 
           implicit lazy val result: WSResponse = {
-            authoriseIndividual()
+            authoriseAgentOrIndividual(user.isAgent)
             userDataStub(userData(fullEmploymentsModel(fullBenefits)), nino, taxYear)
-            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(titleExpected)
-          h1Check(h1Expected)
-          captionCheck(captionExpected)
-
-          textOnPageCheck(p1ExpectedIndividual, p1Selector)
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent, p1Selector)
 
           "has an employment details section" which {
-            textOnPageCheck("Updated", taskListRowFieldAmountSelector(1))
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl)
+            textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(1))
           }
 
           "has a benefits section" which {
-            linkCheck(fieldNames(1), employmentBenefitsLinkSelector, employmentBenefitsUrl)
-            textOnPageCheck("Updated", taskListRowFieldAmountSelector(2))
+            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, employmentBenefitsUrl)
+            textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(2))
           }
 
-          buttonCheck(buttonText, buttonSelector)
+          buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
           formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary",
             "#main-content > div > div > form")
 
-          welshToggleCheck(ENGLISH)
+          welshToggleCheck(user.isWelsh)
         }
-      }
 
-      "render Unauthorised user error page" which {
-        lazy val result: WSResponse = {
-          authoriseIndividualUnauthorized()
-          urlGet(url)
-        }
-        "has an UNAUTHORIZED(401) status" in {
-          result.status shouldBe UNAUTHORIZED
-        }
-      }
-    }
-
-    "the user is an agent" when {
-
-      ".show" should {
-
-        "render the page where the status for benefits is Cannot Update when there is no Benefits data in mongo" which {
-
+        "render Unauthorised user error page" which {
           lazy val result: WSResponse = {
-            authoriseAgent()
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
-            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            unauthorisedAgentOrIndividual(user.isAgent)
+            urlGet(url, welsh = user.isWelsh)
           }
-
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-          titleCheck(titleExpected)
-          h1Check(h1Expected)
-          captionCheck(captionExpected)
-
-          textOnPageCheck(p1ExpectedAgent, p1Selector)
-
-          "has an employment details section" which {
-            linkCheck(fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl)
-            textOnPageCheck("Updated", taskListRowFieldAmountSelector(1))
+          "has an UNAUTHORIZED(401) status" in {
+            result.status shouldBe UNAUTHORIZED
           }
-
-          "has a benefits section" which {
-            textOnPageCheck(fieldNames(1), taskListRowFieldNameSelector(2))
-            textOnPageCheck("Cannot update", taskListRowFieldAmountSelector(2))
-          }
-
-          buttonCheck(buttonText, buttonSelector)
-          formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary",
-            "#main-content > div > div > form")
-
-          welshToggleCheck(ENGLISH)
-        }
-
-        "render the page where the status for benefits is Updated when there is Benefits data in mongo" which {
-
-          implicit lazy val result: WSResponse = {
-            authoriseAgent()
-            userDataStub(userData(fullEmploymentsModel(fullBenefits)), nino, taxYear)
-            urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
-
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-          titleCheck(titleExpected)
-          h1Check(h1Expected)
-          captionCheck(captionExpected)
-
-          textOnPageCheck(p1ExpectedAgent, p1Selector)
-
-          "has an employment details section" which {
-            linkCheck(fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl)
-            textOnPageCheck("Updated", taskListRowFieldAmountSelector(1))
-          }
-
-          "has a benefits section" which {
-            linkCheck(fieldNames(1), employmentBenefitsLinkSelector, employmentBenefitsUrl)
-            textOnPageCheck("Updated", taskListRowFieldAmountSelector(2))
-          }
-
-          buttonCheck(buttonText, buttonSelector)
-          formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary",
-            "#main-content > div > div > form")
-
-          welshToggleCheck(ENGLISH)
-        }
-      }
-
-      "render Unauthorised user error page" which {
-        lazy val result: WSResponse = {
-          authoriseAgentUnauthorized()
-          urlGet(url)
-        }
-        "has an UNAUTHORIZED(401) status" in {
-          result.status shouldBe UNAUTHORIZED
-        }
-      }
-    }
-  }
-
-  "in welsh" when {
-
-    import ExpectedResults.ContentCY._
-    import ExpectedResults.employmentDetailsUrl
-    import ExpectedResults.employmentBenefitsUrl
-    import Selectors._
-
-    "when the user is an individual" when {
-
-      ".show" should {
-
-        "render the page where the status for benefits is Cannot Update when there is no Benefits data in mongo" which {
-
-          lazy val result: WSResponse = {
-            authoriseIndividual()
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
-            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
-
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-          titleCheck(titleExpected)
-          h1Check(h1Expected)
-          captionCheck(captionExpected)
-
-          textOnPageCheck(p1ExpectedIndividual, p1Selector)
-
-          "has an employment details section" which {
-            linkCheck(fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl)
-            textOnPageCheck("Updated", taskListRowFieldAmountSelector(1))
-          }
-
-          "has a benefits section" which {
-            textOnPageCheck(fieldNames(1), taskListRowFieldNameSelector(2))
-            textOnPageCheck("Cannot update", taskListRowFieldAmountSelector(2))
-          }
-
-          buttonCheck(buttonText, buttonSelector)
-          formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary",
-            "#main-content > div > div > form")
-
-          welshToggleCheck(WELSH)
-        }
-
-        "render the page where the status for benefits is Updated when there is Benefits data in mongo" which {
-
-          lazy val result: WSResponse = {
-            authoriseIndividual()
-            userDataStub(userData(fullEmploymentsModel(fullBenefits)), nino, taxYear)
-            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
-
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-          titleCheck(titleExpected)
-          h1Check(h1Expected)
-          captionCheck(captionExpected)
-
-          textOnPageCheck(p1ExpectedIndividual, p1Selector)
-
-          "has an employment details section" which {
-            linkCheck(fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl)
-            textOnPageCheck("Updated", taskListRowFieldAmountSelector(1))
-          }
-
-          "has a benefits section" which {
-            linkCheck(fieldNames(1), employmentBenefitsLinkSelector, employmentBenefitsUrl)
-            textOnPageCheck("Updated", taskListRowFieldAmountSelector(2))
-          }
-
-          buttonCheck(buttonText, buttonSelector)
-          formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary",
-            "#main-content > div > div > form")
-
-          welshToggleCheck(WELSH)
-        }
-      }
-    }
-
-    "the user is an agent" when {
-
-      ".show" should {
-
-        "render the page where the status for benefits is Cannot Update when there is no Benefits data in mongo" which {
-
-          lazy val result: WSResponse = {
-            authoriseAgent()
-            userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
-            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
-
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-          titleCheck(titleExpected)
-          h1Check(h1Expected)
-          captionCheck(captionExpected)
-
-          textOnPageCheck(p1ExpectedAgent, p1Selector)
-
-          "has an employment details section" which {
-            linkCheck(fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl)
-            textOnPageCheck("Updated", taskListRowFieldAmountSelector(1))
-          }
-
-          "has a benefits section" which {
-            textOnPageCheck(fieldNames(1), taskListRowFieldNameSelector(2))
-            textOnPageCheck("Cannot update", taskListRowFieldAmountSelector(2))
-          }
-
-          buttonCheck(buttonText, buttonSelector)
-          formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary",
-            "#main-content > div > div > form")
-
-          welshToggleCheck(WELSH)
-        }
-
-        "render the page where the status for benefits is Updated when there is Benefits data in mongo" which {
-
-          lazy val result: WSResponse = {
-            authoriseAgent()
-            userDataStub(userData(fullEmploymentsModel(fullBenefits)), nino, taxYear)
-            urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
-
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-          titleCheck(titleExpected)
-          h1Check(h1Expected)
-          captionCheck(captionExpected)
-
-          textOnPageCheck(p1ExpectedAgent, p1Selector)
-
-          "has an employment details section" which {
-            linkCheck(fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl)
-            textOnPageCheck("Updated", taskListRowFieldAmountSelector(1))
-          }
-
-          "has a benefits section" which {
-            linkCheck(fieldNames(1), employmentBenefitsLinkSelector, employmentBenefitsUrl)
-            textOnPageCheck("Updated", taskListRowFieldAmountSelector(2))
-          }
-
-          buttonCheck(buttonText, buttonSelector)
-          formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary",
-            "#main-content > div > div > form")
-
-          welshToggleCheck(WELSH)
         }
       }
     }
