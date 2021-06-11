@@ -16,8 +16,11 @@
 
 package controllers.employment
 
+import audit.{AuditService, ViewEmploymentExpensesAudit}
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
+import models.employment.EmploymentExpenses
+
 import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -31,6 +34,7 @@ import scala.concurrent.ExecutionContext
 class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAction,
                                                   checkEmploymentExpensesView: CheckEmploymentExpensesView,
                                                   incomeTaxUserDataService: IncomeTaxUserDataService,
+                                                  auditService: AuditService,
                                                   implicit val appConfig: AppConfig,
                                                   implicit val mcc: MessagesControllerComponents,
                                                   implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
@@ -39,8 +43,11 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
 
     incomeTaxUserDataService.findUserData(user, taxYear)(allEmploymentData =>
       allEmploymentData.hmrcExpenses match {
-      case Some(expenses) => Ok(checkEmploymentExpensesView(taxYear, expenses))
-      case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      case Some(employmentExpenses@EmploymentExpenses(_,_, Some(expenses))) =>
+        val auditModel = ViewEmploymentExpensesAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, expenses)
+        auditService.auditModel[ViewEmploymentExpensesAudit](auditModel.toAuditModel)
+        Ok(checkEmploymentExpensesView(taxYear, employmentExpenses))
+      case _ => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
     })
   }
 }
