@@ -56,15 +56,15 @@ class ViewEmploymentDetailsSpec extends UnitTestWithApp{
         val auditModel = ViewEmploymentDetailsAudit(2020, "individual", "AA12343AA",
           "mtditid", "Dave", Some("reference"),
           Some(EmploymentData(
-            submittedOn = ("2020-02-12"),
+            submittedOn = "2020-02-12",
             employmentSequenceNumber = Some("123456789999"),
             companyDirector = Some(true),
             closeCompany = Some(false),
             directorshipCeasedDate = Some("2020-02-12"),
             occPen = Some(false),
             disguisedRemuneration = Some(false),
-            pay = Pay(34234.15, 6782.92, Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))
-          )))
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))
+          ))))
         Json.toJson(auditModel) shouldBe json
       }
     }
