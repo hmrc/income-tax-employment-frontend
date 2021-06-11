@@ -22,30 +22,32 @@ import play.api.http.Status.UNAUTHORIZED
 import play.api.libs.ws.WSResponse
 import utils.{IntegrationTest, ViewHelpers}
 
-class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
+class YouNeedAgentServicesControllerISpec extends IntegrationTest with ViewHelpers {
 
   object ExpectedResults {
     object ContentEN {
-      val validTitle: String = "You cannot view this page"
-      val pageContent: String = "You need to sign up for Making Tax Digital for Income Tax before you can view this page."
-      val linkContent: String = "sign up for Making Tax Digital for Income Tax"
-      val linkHref: String = "https://www.gov.uk/guidance/sign-up-your-business-for-making-tax-digital-for-income-tax"
+      lazy val h1Expected = "You cannot view this page"
+      lazy val youNeedText = "You need to"
+      lazy val createAnAgentText = "create an agent services account"
+      lazy val beforeYouCanText = "before you can view this page."
+      lazy val createAnAgentLink = "https://www.gov.uk/guidance/get-an-hmrc-agent-services-account"
     }
 
     object ContentCY {
-      val validTitle: String = "You cannot view this page"
-      val pageContent: String = "You need to sign up for Making Tax Digital for Income Tax before you can view this page."
-      val linkContent: String = "sign up for Making Tax Digital for Income Tax"
-      val linkHref: String = "https://www.gov.uk/guidance/sign-up-your-business-for-making-tax-digital-for-income-tax"
+      lazy val h1Expected = "You cannot view this page"
+      lazy val youNeedText = "You need to"
+      lazy val createAnAgentText = "create an agent services account"
+      lazy val beforeYouCanText = "before you can view this page."
+      lazy val createAnAgentLink = "https://www.gov.uk/guidance/get-an-hmrc-agent-services-account"
     }
   }
 
   object Selectors {
-    val paragraphSelector: String = ".govuk-body"
-    val linkSelector: String = paragraphSelector + " > a"
+    val p1Selector = "#main-content > div > div > p"
+    val createAnAgentLinkSelector = "#create_agent_services_link"
   }
 
-  val url = s"$appUrl/error/you-need-to-sign-up"
+  val url = s"$appUrl/error/you-need-agent-services-account"
 
   "When set to english" when {
 
@@ -65,11 +67,11 @@ class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelper
           result.status shouldBe UNAUTHORIZED
         }
 
-        titleCheck(validTitle)
+        titleCheck(h1Expected)
         welshToggleCheck("English")
-        h1Check(validTitle, "xl")
-        textOnPageCheck(pageContent, Selectors.paragraphSelector)
-        linkCheck(linkContent, Selectors.linkSelector, linkHref)
+        h1Check(h1Expected, "xl")
+        textOnPageCheck(s"$youNeedText $createAnAgentText $beforeYouCanText", Selectors.p1Selector)
+        linkCheck(createAnAgentText, Selectors.createAnAgentLinkSelector, createAnAgentLink)
       }
     }
   }
@@ -92,11 +94,11 @@ class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelper
           result.status shouldBe UNAUTHORIZED
         }
 
-        titleCheck(validTitle)
+        titleCheck(h1Expected)
         welshToggleCheck("Welsh")
-        h1Check(validTitle, "xl")
-        textOnPageCheck(pageContent, Selectors.paragraphSelector)
-        linkCheck(linkContent, Selectors.linkSelector, linkHref)
+        h1Check(h1Expected, "xl")
+        textOnPageCheck(s"$youNeedText $createAnAgentText $beforeYouCanText", Selectors.p1Selector)
+        linkCheck(createAnAgentText, Selectors.createAnAgentLinkSelector, createAnAgentLink)
       }
     }
   }
