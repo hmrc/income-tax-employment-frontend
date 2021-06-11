@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package models.employment
+package audit
 
-import play.api.libs.json.{Json, OFormat}
+import models.employment.Benefits
+import play.api.libs.json.{Json, OWrites}
 
-case class Pay(taxablePayToDate: Option[BigDecimal],
-               totalTaxToDate: Option[BigDecimal],
-               tipsAndOtherPayments: Option[BigDecimal],
-               payFrequency: Option[String],
-               paymentDate: Option[String],
-               taxWeekNo: Option[Int],
-               taxMonthNo: Option[Int])
+case class ViewEmploymentBenefitsAudit(taxYear: Int, userType: String, nino: String,
+                                       mtditid: String, benefits: Benefits) {
 
-object Pay {
-  implicit val formats: OFormat[Pay] = Json.format[Pay]
+  private def name = "ViewEmploymentBenefits"
+  def toAuditModel: AuditModel[ViewEmploymentBenefitsAudit] = AuditModel(name, name, this)
 }
+
+object ViewEmploymentBenefitsAudit {
+  implicit def writes: OWrites[ViewEmploymentBenefitsAudit] = Json.writes[ViewEmploymentBenefitsAudit]
+}
+
+
