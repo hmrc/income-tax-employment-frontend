@@ -193,14 +193,14 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
         dateIgnored = Some("2020-04-04T01:01:01Z"),
         submittedOn = Some("2020-01-04T05:01:01Z"),
         employmentData = Some(EmploymentData(
-          submittedOn = ("2020-02-12"),
+          submittedOn = "2020-02-12",
           employmentSequenceNumber = Some("123456789999"),
           companyDirector = Some(true),
           closeCompany = Some(false),
           directorshipCeasedDate = Some("2020-02-12"),
           occPen = Some(false),
           disguisedRemuneration = Some(false),
-          pay = Pay(34234.15, 6782.92, Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))
+          pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2)))
         )),
         employmentBenefits = benefits
       )
@@ -208,8 +208,8 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     ),
     hmrcExpenses = Some(employmentExpenses),
     customerEmploymentData = Seq(),
-    customerExpenses = None
-  )
+    customerExpenses = None)
+
 
   lazy val expenses: Expenses = Expenses(
     Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7), Some(8)

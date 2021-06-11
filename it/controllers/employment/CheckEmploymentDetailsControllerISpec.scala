@@ -93,68 +93,69 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       val employeeFieldValue6 = "£6782.92"
       val employeeFieldValue7 = "£67676"
     }
+  }
 
-    object MinModel {
-      val miniData: AllEmploymentData = AllEmploymentData(
-        hmrcEmploymentData = Seq(
-          EmploymentSource(
-            employmentId = "001",
-            employerName = "maggie",
-            employerRef = None,
-            payrollId = None,
-            startDate = None,
-            cessationDate = None,
-            dateIgnored = None,
-            submittedOn = None,
-            employmentData = Some(EmploymentData(
-              submittedOn = "2020-02-12",
-              employmentSequenceNumber = None,
-              companyDirector = None,
-              closeCompany = None,
-              directorshipCeasedDate = None,
-              occPen = None,
-              disguisedRemuneration = None,
-              pay = Pay(34234.15, 6782.92, None, None, None, None, None)
-            )),
-            None
-          )
-        ),
-        hmrcExpenses = None,
-        customerEmploymentData = Seq(),
-        customerExpenses = None
-      )
-    }
+  object MinModel {
+    val miniData: AllEmploymentData = AllEmploymentData(
+      hmrcEmploymentData = Seq(
+        EmploymentSource(
+          employmentId = "001",
+          employerName = "maggie",
+          employerRef = None,
+          payrollId = None,
+          startDate = None,
+          cessationDate = None,
+          dateIgnored = None,
+          submittedOn = None,
+          employmentData = Some(EmploymentData(
+            submittedOn = "2020-02-12",
+            employmentSequenceNumber = None,
+            companyDirector = None,
+            closeCompany = None,
+            directorshipCeasedDate = None,
+            occPen = None,
+            disguisedRemuneration = None,
+            pay = Some(Pay(Some(34234.15), Some(6782.92), None, None,None, None, None))
+          )),
+          None
+        )
+      ),
+      hmrcExpenses = None,
+      customerEmploymentData = Seq(),
+      customerExpenses = None
+    )
+  }
 
-    object SomeModelWithInvalidDateFormat {
-      val invalidData: AllEmploymentData = AllEmploymentData(
-        hmrcEmploymentData = Seq(
-          EmploymentSource(
-            employmentId = "001",
-            employerName = "maggie",
-            employerRef = None,
-            payrollId = None,
-            startDate = None,
-            cessationDate = None,
-            dateIgnored = None,
-            submittedOn = None,
-            employmentData = Some(EmploymentData(
-              submittedOn = "2020-02-12",
-              employmentSequenceNumber = None,
-              companyDirector = Some(true),
-              closeCompany = Some(true),
-              directorshipCeasedDate = Some("14/07/1990"),
-              occPen = None,
-              disguisedRemuneration = None,
-              pay = Pay(34234.15, 6782.92, None, None, None, None, None)
-            )),
-            None
-          )
-        ),
-        hmrcExpenses = None,
-        customerEmploymentData = Seq(),
-        customerExpenses = None
-      )
-    }
+  object SomeModelWithInvalidDateFormat {
+    val invalidData: AllEmploymentData = AllEmploymentData(
+      hmrcEmploymentData = Seq(
+        EmploymentSource(
+          employmentId = "001",
+          employerName = "maggie",
+          employerRef = None,
+          payrollId = None,
+          startDate = None,
+          cessationDate = None,
+          dateIgnored = None,
+          submittedOn = None,
+          employmentData = Some(EmploymentData(
+            submittedOn = "2020-02-12",
+            employmentSequenceNumber = None,
+            companyDirector = Some(true),
+            closeCompany = Some(true),
+            directorshipCeasedDate = Some("14/07/1990"),
+            occPen = None,
+            disguisedRemuneration = None,
+            pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None, None))
+          )),
+          None
+        )
+      ),
+      hmrcExpenses = None,
+      customerEmploymentData = Seq(),
+      customerExpenses = None
+    )
+
   }
 
   "in english" when {
