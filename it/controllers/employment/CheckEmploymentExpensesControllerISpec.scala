@@ -35,303 +35,146 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val contentSelector = "#main-content > div > div > p"
     val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
     val summaryListSelector = "#main-content > div > div > dl"
+    def summaryListRowFieldNameSelector(i: Int) = s"#main-content > div > div > dl > div:nth-child($i) > dt"
+    def summaryListRowFieldAmountSelector(i: Int) = s"#main-content > div > div > dl > div:nth-child($i) > dd"
   }
 
-  object ExpectedResults {
-
-    object ContentEN {
-      val h1ExpectedAgent = "Check your client’s employment expenses"
-      val titleExpectedAgent = "Check your client’s employment expenses"
-      val h1ExpectedIndividual = "Check your employment expenses"
-      val titleExpectedIndividual = "Check your employment expenses"
-      val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-      val contentExpectedAgent = "Your client’s employment expenses are based on information we already hold about them. " +
-        "This is a total of expenses from all employment in the tax year."
-      val contentExpectedIndividual = "Your employment expenses are based on the information we already hold about you. " +
-        "This is a total of expenses from all employment in the tax year."
-      val insetTextExpectedAgent = s"You cannot update your client’s employment expenses until 6 April $taxYear."
-      val insetTextExpectedIndividual = s"You cannot update your employment expenses until 6 April $taxYear."
-
-      val fieldNames = List("Amount for business travel and subsistence expenses",
-        "Job expenses",
-        "Uniform, work cloths and tools (Flat rate expenses)",
-        "Professional fees and subscriptions",
-        "Hotel and meal expenses",
-        "Other expenses and capital allowances",
-        "Vehicle expense",
-        "Mileage allowance relief")
-    }
-
-    object ContentCY {
-      val h1ExpectedAgent = "Check your client’s employment expenses"
-      val titleExpectedAgent = "Check your client’s employment expenses"
-      val h1ExpectedIndividual = "Check your employment expenses"
-      val titleExpectedIndividual = "Check your employment expenses"
-      val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-      val contentExpectedAgent: String = "Your client’s employment expenses are based on information we already hold about them. " +
-        "This is a total of expenses from all employment in the tax year."
-      val contentExpectedIndividual: String = "Your employment expenses are based on the information we already hold about you. " +
-        "This is a total of expenses from all employment in the tax year."
-      val insetTextExpectedAgent = s"You cannot update your client’s employment expenses until 6 April $taxYear."
-      val insetTextExpectedIndividual = s"You cannot update your employment expenses until 6 April $taxYear."
-
-      val fieldNames = List("Amount for business travel and subsistence expenses",
-        "Job expenses",
-        "Uniform, work cloths and tools (Flat rate expenses)",
-        "Professional fees and subscriptions",
-        "Hotel and meal expenses",
-        "Other expenses and capital allowances",
-        "Vehicle expense",
-        "Mileage allowance relief")
-    }
+  trait SpecificExpectedResults {
+    val expectedH1: String
+    val expectedTitle: String
+    val expectedContent: String
+    val expectedInsetText: String
   }
 
-  private def summaryListRowFieldNameSelector(i: Int) = s"#main-content > div > div > dl > div:nth-child($i) > dt"
-
-  private def summaryListRowFieldAmountSelector(i: Int) = s"#main-content > div > div > dl > div:nth-child($i) > dd"
-
-  "as an individual in English" when {
-
-    import ExpectedResults.ContentEN._
-
-    ".show" should {
-
-      "returns an action when data is in mongo" which {
-
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
-          urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-        }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        titleCheck(titleExpectedIndividual)
-        h1Check(h1ExpectedIndividual)
-        captionCheck(captionExpected)
-
-        textOnPageCheck(contentExpectedIndividual, Selectors.contentSelector)
-        textOnPageCheck(insetTextExpectedIndividual, Selectors.insetTextSelector)
-
-        textOnPageCheck(fieldNames(0), summaryListRowFieldNameSelector(1))
-        textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
-
-        textOnPageCheck(fieldNames(1), summaryListRowFieldNameSelector(2))
-        textOnPageCheck("£2", summaryListRowFieldAmountSelector(2))
-
-        textOnPageCheck(fieldNames(2), summaryListRowFieldNameSelector(3))
-        textOnPageCheck("£3", summaryListRowFieldAmountSelector(3))
-
-
-        textOnPageCheck(fieldNames(3), summaryListRowFieldNameSelector(4))
-        textOnPageCheck("£4", summaryListRowFieldAmountSelector(4))
-
-        textOnPageCheck(fieldNames(4), summaryListRowFieldNameSelector(5))
-        textOnPageCheck("£5", summaryListRowFieldAmountSelector(5))
-
-        textOnPageCheck(fieldNames(5), summaryListRowFieldNameSelector(6))
-        textOnPageCheck("£6", summaryListRowFieldAmountSelector(6))
-
-        textOnPageCheck(fieldNames(6), summaryListRowFieldNameSelector(7))
-        textOnPageCheck("£7", summaryListRowFieldAmountSelector(7))
-
-        textOnPageCheck(fieldNames(7), summaryListRowFieldNameSelector(8))
-        textOnPageCheck("£8", summaryListRowFieldAmountSelector(8))
-
-        welshToggleCheck(ENGLISH)
-      }
-
-      "redirect to overview page when theres no expenses" in {
-
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          userDataStub(userData(fullEmploymentsModel(None).copy(hmrcExpenses = None)),nino,taxYear)
-          urlGet(url, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-        }
-
-        result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
-      }
-    }
-
-    "returns an action when auth call fails" which {
-      lazy val result: WSResponse = {
-        authoriseIndividualUnauthorized()
-        await(wsClient.url(url).get())
-      }
-      "has an UNAUTHORIZED(401) status" in {
-        result.status shouldBe UNAUTHORIZED
-      }
-    }
+  trait CommonExpectedResults {
+    val expectedCaption: String
+    val fieldNames: Seq[String]
   }
 
-  "as an agent in English" when {
-
-    import ExpectedResults.ContentEN._
-
-    ".show" should {
-
-      "returns an action when data is in mongo" which {
-
-        lazy val result: WSResponse = {
-          authoriseAgent()
-          userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
-          urlGet(url, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-        }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        titleCheck(titleExpectedAgent)
-        h1Check(h1ExpectedAgent)
-        captionCheck(captionExpected)
-
-        textOnPageCheck(contentExpectedAgent, Selectors.contentSelector)
-        textOnPageCheck(insetTextExpectedAgent, Selectors.insetTextSelector)
-
-        textOnPageCheck(fieldNames(0), summaryListRowFieldNameSelector(1))
-        textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
-
-        textOnPageCheck(fieldNames(1), summaryListRowFieldNameSelector(2))
-        textOnPageCheck("£2", summaryListRowFieldAmountSelector(2))
-
-        textOnPageCheck(fieldNames(2), summaryListRowFieldNameSelector(3))
-        textOnPageCheck("£3", summaryListRowFieldAmountSelector(3))
-
-
-        textOnPageCheck(fieldNames(3), summaryListRowFieldNameSelector(4))
-        textOnPageCheck("£4", summaryListRowFieldAmountSelector(4))
-
-        textOnPageCheck(fieldNames(4), summaryListRowFieldNameSelector(5))
-        textOnPageCheck("£5", summaryListRowFieldAmountSelector(5))
-
-        textOnPageCheck(fieldNames(5), summaryListRowFieldNameSelector(6))
-        textOnPageCheck("£6", summaryListRowFieldAmountSelector(6))
-
-        textOnPageCheck(fieldNames(6), summaryListRowFieldNameSelector(7))
-        textOnPageCheck("£7", summaryListRowFieldAmountSelector(7))
-
-        textOnPageCheck(fieldNames(7), summaryListRowFieldNameSelector(8))
-        textOnPageCheck("£8", summaryListRowFieldAmountSelector(8))
-
-        welshToggleCheck(ENGLISH)
-      }
-    }
-
-    "returns an action when auth call fails" which {
-      lazy val result: WSResponse = {
-        authoriseAgentUnauthorized()
-        urlGet(url)
-      }
-      "has an UNAUTHORIZED(401) status" in {
-        result.status shouldBe UNAUTHORIZED
-      }
-    }
+  object CommonExpectedEN extends CommonExpectedResults {
+    val expectedCaption = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val fieldNames = Seq("Amount for business travel and subsistence expenses",
+      "Job expenses",
+      "Uniform, work cloths and tools (Flat rate expenses)",
+      "Professional fees and subscriptions",
+      "Hotel and meal expenses",
+      "Other expenses and capital allowances",
+      "Vehicle expense",
+      "Mileage allowance relief")
   }
 
-  "as an individual in Welsh" when {
-
-    import ExpectedResults.ContentCY._
-
-    ".show" should {
-
-      "returns an action when data is in mongo" which {
-
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-
-          userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
-          urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-        }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        titleCheck(titleExpectedIndividual)
-        h1Check(h1ExpectedIndividual)
-        captionCheck(captionExpected)
-
-        textOnPageCheck(contentExpectedIndividual, Selectors.contentSelector)
-        textOnPageCheck(insetTextExpectedIndividual, Selectors.insetTextSelector)
-
-        textOnPageCheck(fieldNames(0), summaryListRowFieldNameSelector(1))
-        textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
-
-        textOnPageCheck(fieldNames(1), summaryListRowFieldNameSelector(2))
-        textOnPageCheck("£2", summaryListRowFieldAmountSelector(2))
-
-        textOnPageCheck(fieldNames(2), summaryListRowFieldNameSelector(3))
-        textOnPageCheck("£3", summaryListRowFieldAmountSelector(3))
-
-
-        textOnPageCheck(fieldNames(3), summaryListRowFieldNameSelector(4))
-        textOnPageCheck("£4", summaryListRowFieldAmountSelector(4))
-
-        textOnPageCheck(fieldNames(4), summaryListRowFieldNameSelector(5))
-        textOnPageCheck("£5", summaryListRowFieldAmountSelector(5))
-
-        textOnPageCheck(fieldNames(5), summaryListRowFieldNameSelector(6))
-        textOnPageCheck("£6", summaryListRowFieldAmountSelector(6))
-
-        textOnPageCheck(fieldNames(6), summaryListRowFieldNameSelector(7))
-        textOnPageCheck("£7", summaryListRowFieldAmountSelector(7))
-
-        textOnPageCheck(fieldNames(7), summaryListRowFieldNameSelector(8))
-        textOnPageCheck("£8", summaryListRowFieldAmountSelector(8))
-
-        welshToggleCheck(WELSH)
-      }
-    }
+  object CommonExpectedCY extends CommonExpectedResults {
+    val expectedCaption = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val fieldNames = Seq("Amount for business travel and subsistence expenses",
+      "Job expenses",
+      "Uniform, work cloths and tools (Flat rate expenses)",
+      "Professional fees and subscriptions",
+      "Hotel and meal expenses",
+      "Other expenses and capital allowances",
+      "Vehicle expense",
+      "Mileage allowance relief")
   }
 
-  "as an agent in Welsh" when {
+  object ExpectedIndividualEN extends SpecificExpectedResults {
+    val expectedH1 = "Check your employment expenses"
+    val expectedTitle = "Check your employment expenses"
+    val expectedContent = "Your employment expenses are based on the information we already hold about you. " +
+      "This is a total of expenses from all employment in the tax year."
+    val expectedInsetText = s"You cannot update your employment expenses until 6 April $taxYear."
+  }
 
-    import ExpectedResults.ContentCY._
+  object ExpectedAgentEN extends SpecificExpectedResults {
+    val expectedH1 = "Check your client’s employment expenses"
+    val expectedTitle = "Check your client’s employment expenses"
+    val expectedContent = "Your client’s employment expenses are based on information we already hold about them. " +
+      "This is a total of expenses from all employment in the tax year."
+    val expectedInsetText = s"You cannot update your client’s employment expenses until 6 April $taxYear."
+  }
 
-    ".show" should {
+  object ExpectedIndividualCY extends SpecificExpectedResults {
+    val expectedH1 = "Check your employment expenses"
+    val expectedTitle = "Check your employment expenses"
+    val expectedContent = "Your employment expenses are based on the information we already hold about you. " +
+      "This is a total of expenses from all employment in the tax year."
+    val expectedInsetText = s"You cannot update your employment expenses until 6 April $taxYear."
+  }
 
-      "returns an action when data is in mongo" which {
+  object ExpectedAgentCY extends SpecificExpectedResults {
+    val expectedH1 = "Check your client’s employment expenses"
+    val expectedTitle = "Check your client’s employment expenses"
+    val expectedContent = "Your client’s employment expenses are based on information we already hold about them. " +
+      "This is a total of expenses from all employment in the tax year."
+    val expectedInsetText = s"You cannot update your client’s employment expenses until 6 April $taxYear."
+  }
 
-        lazy val result: WSResponse = {
-          authoriseAgent()
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
+    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+      UserScenario(isWelsh = false, isAgent = true,  CommonExpectedEN, Some(ExpectedAgentEN)),
+      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
+  }
 
-          userDataStub(userData(fullEmploymentsModel(None)),nino,taxYear)
-          urlGet(url, welsh = true, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+  ".show" when {
+    import Selectors._
+
+    userScenarios.foreach { user =>
+      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+
+        "return a fully populated page when all the fields are populated" which {
+
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
+            urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedInsetText, insetTextSelector)
+          textOnPageCheck(user.commonExpectedResults.fieldNames.head, summaryListRowFieldNameSelector(1))
+          textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(1), summaryListRowFieldNameSelector(2))
+          textOnPageCheck("£2", summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(2), summaryListRowFieldNameSelector(3))
+          textOnPageCheck("£3", summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(3), summaryListRowFieldNameSelector(4))
+          textOnPageCheck("£4", summaryListRowFieldAmountSelector(4))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(4), summaryListRowFieldNameSelector(5))
+          textOnPageCheck("£5", summaryListRowFieldAmountSelector(5))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(5), summaryListRowFieldNameSelector(6))
+          textOnPageCheck("£6", summaryListRowFieldAmountSelector(6))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(6), summaryListRowFieldNameSelector(7))
+          textOnPageCheck("£7", summaryListRowFieldAmountSelector(7))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(7), summaryListRowFieldNameSelector(8))
+          textOnPageCheck("£8", summaryListRowFieldAmountSelector(8))
+          welshToggleCheck(user.isWelsh)
         }
 
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
+        "redirect to overview page when theres no expenses" in {
 
-        titleCheck(titleExpectedAgent)
-        h1Check(h1ExpectedAgent)
-        captionCheck(captionExpected)
+          lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(fullEmploymentsModel(None).copy(hmrcExpenses = None)),nino,taxYear)
+            urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
 
-        textOnPageCheck(contentExpectedAgent, Selectors.contentSelector)
-        textOnPageCheck(insetTextExpectedAgent, Selectors.insetTextSelector)
+          result.status shouldBe SEE_OTHER
+          result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+        }
 
-        textOnPageCheck(fieldNames(0), summaryListRowFieldNameSelector(1))
-        textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
-
-        textOnPageCheck(fieldNames(1), summaryListRowFieldNameSelector(2))
-        textOnPageCheck("£2", summaryListRowFieldAmountSelector(2))
-
-        textOnPageCheck(fieldNames(2), summaryListRowFieldNameSelector(3))
-        textOnPageCheck("£3", summaryListRowFieldAmountSelector(3))
-
-
-        textOnPageCheck(fieldNames(3), summaryListRowFieldNameSelector(4))
-        textOnPageCheck("£4", summaryListRowFieldAmountSelector(4))
-
-        textOnPageCheck(fieldNames(4), summaryListRowFieldNameSelector(5))
-        textOnPageCheck("£5", summaryListRowFieldAmountSelector(5))
-
-        textOnPageCheck(fieldNames(5), summaryListRowFieldNameSelector(6))
-        textOnPageCheck("£6", summaryListRowFieldAmountSelector(6))
-
-        textOnPageCheck(fieldNames(6), summaryListRowFieldNameSelector(7))
-        textOnPageCheck("£7", summaryListRowFieldAmountSelector(7))
-
-        textOnPageCheck(fieldNames(7), summaryListRowFieldNameSelector(8))
-        textOnPageCheck("£8", summaryListRowFieldAmountSelector(8))
-
-        welshToggleCheck(WELSH)
+        "returns an action when auth call fails" which {
+          lazy val result: WSResponse = {
+            unauthorisedAgentOrIndividual(user.isAgent)
+            urlGet(url, welsh = user.isWelsh)
+          }
+          "has an UNAUTHORIZED(401) status" in {
+            result.status shouldBe UNAUTHORIZED
+          }
+        }
       }
     }
   }

@@ -24,24 +24,6 @@ import utils.{IntegrationTest, ViewHelpers}
 
 class YouNeedAgentServicesControllerISpec extends IntegrationTest with ViewHelpers {
 
-  object ExpectedResults {
-    object ContentEN {
-      lazy val h1Expected = "You cannot view this page"
-      lazy val youNeedText = "You need to"
-      lazy val createAnAgentText = "create an agent services account"
-      lazy val beforeYouCanText = "before you can view this page."
-      lazy val createAnAgentLink = "https://www.gov.uk/guidance/get-an-hmrc-agent-services-account"
-    }
-
-    object ContentCY {
-      lazy val h1Expected = "You cannot view this page"
-      lazy val youNeedText = "You need to"
-      lazy val createAnAgentText = "create an agent services account"
-      lazy val beforeYouCanText = "before you can view this page."
-      lazy val createAnAgentLink = "https://www.gov.uk/guidance/get-an-hmrc-agent-services-account"
-    }
-  }
-
   object Selectors {
     val p1Selector = "#main-content > div > div > p"
     val createAnAgentLinkSelector = "#create_agent_services_link"
@@ -49,56 +31,62 @@ class YouNeedAgentServicesControllerISpec extends IntegrationTest with ViewHelpe
 
   val url = s"$appUrl/error/you-need-agent-services-account"
 
-  "When set to english" when {
-
-    import ExpectedResults.ContentEN._
-
-    "the page is requested" should {
-
-      "render the page" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          urlGet(url)
-        }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        "has an UNAUTHORIZED(401) status" in {
-          result.status shouldBe UNAUTHORIZED
-        }
-
-        titleCheck(h1Expected)
-        welshToggleCheck("English")
-        h1Check(h1Expected, "xl")
-        textOnPageCheck(s"$youNeedText $createAnAgentText $beforeYouCanText", Selectors.p1Selector)
-        linkCheck(createAnAgentText, Selectors.createAnAgentLinkSelector, createAnAgentLink)
-      }
-    }
+  trait CommonExpectedResults {
+    val h1Expected: String
+    val youNeedText: String
+    val createAnAgentText: String
+    val beforeYouCanText: String
+    val createAnAgentLink: String
   }
 
-  "When set to welsh" when {
+  object CommonExpectedEN extends CommonExpectedResults {
+    val h1Expected = "You cannot view this page"
+    val youNeedText = "You need to"
+    val createAnAgentText = "create an agent services account"
+    val beforeYouCanText = "before you can view this page."
+    val createAnAgentLink = "https://www.gov.uk/guidance/get-an-hmrc-agent-services-account"
+  }
 
-    import ExpectedResults.ContentCY._
+  object CommonExpectedCY extends CommonExpectedResults {
+    val h1Expected = "You cannot view this page"
+    val youNeedText = "You need to"
+    val createAnAgentText = "create an agent services account"
+    val beforeYouCanText = "before you can view this page."
+    val createAnAgentLink = "https://www.gov.uk/guidance/get-an-hmrc-agent-services-account"
+  }
 
-    "the page is requested" should {
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = {
+    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN),
+      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY))
+  }
 
-      "render the page" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          urlGet(url, true)
+  ".show" when {
+    import Selectors._
+
+    userScenarios.foreach { user =>
+      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+
+        "render the page with the right content" which {
+
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            urlGet(url, welsh = user.isWelsh)
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has an UNAUTHORIZED(401) status" in {
+            result.status shouldBe UNAUTHORIZED
+          }
+
+          import user.commonExpectedResults._
+
+          titleCheck(h1Expected)
+          welshToggleCheck(user.isWelsh)
+          h1Check(h1Expected, "xl")
+          textOnPageCheck(s"$youNeedText $createAnAgentText $beforeYouCanText", p1Selector)
+          linkCheck(createAnAgentText, createAnAgentLinkSelector, createAnAgentLink)
         }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        "has an UNAUTHORIZED(401) status" in {
-          result.status shouldBe UNAUTHORIZED
-        }
-
-        titleCheck(h1Expected)
-        welshToggleCheck("Welsh")
-        h1Check(h1Expected, "xl")
-        textOnPageCheck(s"$youNeedText $createAnAgentText $beforeYouCanText", Selectors.p1Selector)
-        linkCheck(createAnAgentText, Selectors.createAnAgentLinkSelector, createAnAgentLink)
       }
     }
   }
