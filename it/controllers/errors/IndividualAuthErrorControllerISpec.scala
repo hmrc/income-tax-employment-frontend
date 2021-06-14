@@ -24,22 +24,6 @@ import utils.{IntegrationTest, ViewHelpers}
 
 class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
 
-  object ExpectedResults {
-    object ContentEN {
-      val validTitle: String = "You cannot view this page"
-      val pageContent: String = "You need to sign up for Making Tax Digital for Income Tax before you can view this page."
-      val linkContent: String = "sign up for Making Tax Digital for Income Tax"
-      val linkHref: String = "https://www.gov.uk/guidance/sign-up-your-business-for-making-tax-digital-for-income-tax"
-    }
-
-    object ContentCY {
-      val validTitle: String = "You cannot view this page"
-      val pageContent: String = "You need to sign up for Making Tax Digital for Income Tax before you can view this page."
-      val linkContent: String = "sign up for Making Tax Digital for Income Tax"
-      val linkHref: String = "https://www.gov.uk/guidance/sign-up-your-business-for-making-tax-digital-for-income-tax"
-    }
-  }
-
   object Selectors {
     val paragraphSelector: String = ".govuk-body"
     val linkSelector: String = paragraphSelector + " > a"
@@ -47,56 +31,59 @@ class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelper
 
   val url = s"$appUrl/error/you-need-to-sign-up"
 
-  "When set to english" when {
-
-    import ExpectedResults.ContentEN._
-
-    "the page is requested" should {
-
-      "render the page" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          urlGet(url)
-        }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        "has an UNAUTHORIZED(401) status" in {
-          result.status shouldBe UNAUTHORIZED
-        }
-
-        titleCheck(validTitle)
-        welshToggleCheck("English")
-        h1Check(validTitle, "xl")
-        textOnPageCheck(pageContent, Selectors.paragraphSelector)
-        linkCheck(linkContent, Selectors.linkSelector, linkHref)
-      }
-    }
+  trait CommonExpectedResults {
+    val validTitle: String
+    val pageContent: String
+    val linkContent: String
+    val linkHref: String
   }
 
-  "When set to welsh" when {
+  object CommonExpectedEN extends CommonExpectedResults {
+    val validTitle: String = "You cannot view this page"
+    val pageContent: String = "You need to sign up for Making Tax Digital for Income Tax before you can view this page."
+    val linkContent: String = "sign up for Making Tax Digital for Income Tax"
+    val linkHref: String = "https://www.gov.uk/guidance/sign-up-your-business-for-making-tax-digital-for-income-tax"
+  }
 
-    import ExpectedResults.ContentCY._
+  object CommonExpectedCY extends CommonExpectedResults {
+    val validTitle: String = "You cannot view this page"
+    val pageContent: String = "You need to sign up for Making Tax Digital for Income Tax before you can view this page."
+    val linkContent: String = "sign up for Making Tax Digital for Income Tax"
+    val linkHref: String = "https://www.gov.uk/guidance/sign-up-your-business-for-making-tax-digital-for-income-tax"
+  }
 
-    "the page is requested" should {
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = {
+    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN),
+      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY))
+  }
 
-      "render the page" which {
-        lazy val result: WSResponse = {
-          authoriseIndividual()
-          urlGet(url, true)
+  ".show" when {
+    import Selectors._
+
+    userScenarios.foreach { user =>
+      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+
+        "return the AgentAuthErrorPageView with the right content" which {
+
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            urlGet(url, welsh = user.isWelsh)
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has an UNAUTHORIZED(401) status" in {
+            result.status shouldBe UNAUTHORIZED
+          }
+
+          import user.commonExpectedResults._
+
+          titleCheck(validTitle)
+          welshToggleCheck(user.isWelsh)
+          h1Check(validTitle, "xl")
+          textOnPageCheck(pageContent, paragraphSelector)
+          linkCheck(linkContent, linkSelector, linkHref)
         }
-
-        implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-        "has an UNAUTHORIZED(401) status" in {
-          result.status shouldBe UNAUTHORIZED
-        }
-
-        titleCheck(validTitle)
-        welshToggleCheck("Welsh")
-        h1Check(validTitle, "xl")
-        textOnPageCheck(pageContent, Selectors.paragraphSelector)
-        linkCheck(linkContent, Selectors.linkSelector, linkHref)
       }
     }
   }
