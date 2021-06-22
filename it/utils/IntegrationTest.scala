@@ -66,22 +66,18 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   def config: Map[String, String] = Map(
     "auditing.enabled" -> "false",
     "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck",
-    "microservice.services.income-tax-submission-frontend.host" -> wiremockHost,
-    "microservice.services.income-tax-submission-frontend.port" -> wiremockPort.toString,
-    "income-tax-submission-frontend.url" -> s"http://$wiremockHost:$wiremockPort",
+    "microservice.services.income-tax-submission-frontend.url" -> s"http://$wiremockHost:$wiremockPort",
     "microservice.services.auth.host" -> wiremockHost,
     "microservice.services.auth.port" -> wiremockPort.toString,
-    "microservice.services.income-tax-submission.host" -> wiremockHost,
-    "microservice.services.income-tax-submission.port" -> wiremockPort.toString,
-    "view-and-change.baseUrl" -> s"http://$wiremockHost:$wiremockPort",
-    "signIn.url" -> s"/auth-login-stub/gg-sign-in",
+    "microservice.services.income-tax-submission.url" -> s"http://$wiremockHost:$wiremockPort",
+    "microservice.services.view-and-change.url" -> s"http://$wiremockHost:$wiremockPort",
+    "microservice.services.sign-in.url" -> s"/auth-login-stub/gg-sign-in",
   )
 
   def externalConfig: Map[String, String] = Map(
     "auditing.enabled" -> "false",
     "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck",
-    "microservice.services.income-tax-submission.host" -> "127.0.0.1",
-    "microservice.services.income-tax-submission.port" -> wiremockPort.toString,
+    "microservice.services.income-tax-submission.url" -> s"http://127.0.0.1:$wiremockPort",
     "metrics.enabled" -> "false"
   )
 
