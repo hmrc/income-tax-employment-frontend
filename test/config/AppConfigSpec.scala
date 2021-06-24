@@ -25,22 +25,21 @@ class AppConfigSpec extends UnitTest {
   private val appUrl = "http://localhost:9308"
   private val appConfig = new AppConfig(mockServicesConfig)
 
-  (mockServicesConfig.baseUrl(_: String)).expects("bas-gateway-frontend").returns("http://bas-gateway-frontend:9553")
-  (mockServicesConfig.getConfString(_: String, _: String))
-    .expects("bas-gateway-frontend.relativeUrl", *)
-    .returns("http://bas-gateway-frontend:9553")
+  (mockServicesConfig.getString(_: String)).expects("microservice.services.bas-gateway-frontend.url").returns("http://bas-gateway-frontend:9553")
 
-  (mockServicesConfig.baseUrl(_: String)).expects("feedback-frontend").returns("http://feedback-frontend:9553")
-  (mockServicesConfig.getConfString(_: String, _: String))
-    .expects("feedback-frontend.relativeUrl", *)
-    .returns("http://feedback-frontend:9514")
+  (mockServicesConfig.getString(_: String)).expects("microservice.services.feedback-frontend.url").returns("http://feedback-frontend:9514")
 
-  (mockServicesConfig.baseUrl(_: String)).expects("contact-frontend").returns("http://contact-frontend:9250")
-  (mockServicesConfig.getConfString(_: String, _: String))
-    .expects("contact-frontend.baseUrl", *)
-    .returns("http://contact-frontend:9250")
+  (mockServicesConfig.getString(_: String)).expects("microservice.services.contact-frontend.url").returns("http://contact-frontend:9250")
+  (mockServicesConfig.getString(_: String)).expects("microservice.services.income-tax-submission.url").returns("http://income-tax-submission")
+  (mockServicesConfig.getString(_: String)).expects("microservice.services.income-tax-submission-frontend.url").returns("http://income-tax-submission-frontend").twice()
+  (mockServicesConfig.getString(_: String)).expects("microservice.services.income-tax-submission-frontend.context").returns("/income-through-software/return").twice()
+  (mockServicesConfig.getString(_: String)).expects("microservice.services.income-tax-submission-frontend.iv-redirect").returns("/iv-uplift")
+  (mockServicesConfig.getString(_: String)).expects("microservice.services.view-and-change.url").returns("http://view-and-change")
+  (mockServicesConfig.getString(_: String)).expects("microservice.services.sign-in.url").returns("http://sign-in")
+  (mockServicesConfig.getString(_: String)).expects("microservice.services.sign-in.continueUrl").returns("http://sign-in-continue-url")
 
   (mockServicesConfig.getString _).expects("microservice.url").returns(appUrl)
+  (mockServicesConfig.getString _).expects("appName").returns("income-tax-employment-frontend")
 
   "AppConfig" should {
 
@@ -56,14 +55,21 @@ class AppConfigSpec extends UnitTest {
       val expectedFeedbackSurveyUrl = s"http://feedback-frontend:9514/feedback/$expectedServiceIdentifier"
       val expectedContactUrl = s"http://contact-frontend:9250/contact/contact-hmrc?service=$expectedServiceIdentifier"
       val expectedSignOutUrl = s"http://bas-gateway-frontend:9553/bas-gateway/sign-out-without-state"
+      val expectedSignInUrl = "http://sign-in?continue=http%3A%2F%2Fsign-in-continue-url&origin=income-tax-employment-frontend"
+      val expectedSignInContinueUrl = "http%3A%2F%2Fsign-in-continue-url"
 
       appConfig.betaFeedbackUrl(fakeRequest, isAgent) shouldBe expectedBetaFeedbackUrl
-
       appConfig.feedbackSurveyUrl shouldBe expectedFeedbackSurveyUrl
-
       appConfig.contactUrl shouldBe expectedContactUrl
-
       appConfig.signOutUrl shouldBe expectedSignOutUrl
+
+      appConfig.signInUrl shouldBe expectedSignInUrl
+      appConfig.signInContinueUrl shouldBe expectedSignInContinueUrl
+
+      appConfig.incomeTaxSubmissionBaseUrl shouldBe "http://income-tax-submission-frontend/income-through-software/return"
+      appConfig.viewAndChangeEnterUtrUrl shouldBe "http://view-and-change/report-quarterly/income-and-expenses/view/agents/client-utr"
+      appConfig.incomeTaxSubmissionBEBaseUrl shouldBe "http://income-tax-submission/income-tax-submission-service"
+      appConfig.incomeTaxSubmissionIvRedirect shouldBe "http://income-tax-submission-frontend/income-through-software/return/iv-uplift"
     }
 
     "return the correct feedback url when the user is an agent" in {
@@ -80,11 +86,8 @@ class AppConfigSpec extends UnitTest {
       val expectedSignOutUrl = s"http://bas-gateway-frontend:9553/bas-gateway/sign-out-without-state"
 
       appConfig.betaFeedbackUrl(fakeRequest, isAgent) shouldBe expectedBetaFeedbackUrl
-
       appConfig.feedbackSurveyUrl shouldBe expectedFeedbackSurveyUrl
-
       appConfig.contactUrl shouldBe expectedContactUrl
-
       appConfig.signOutUrl shouldBe expectedSignOutUrl
     }
   }
