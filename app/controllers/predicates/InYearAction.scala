@@ -28,31 +28,16 @@ class InYearAction @Inject()(implicit val appConfig: AppConfig) {
   def inYear(taxYear: Int, now: DateTime): Boolean = {
     val defaultTaxYear = appConfig.defaultTaxYear
 
-    val currentTaxYear = DateTime.parse(s"$defaultTaxYear-04-06")
+    if(!appConfig.taxYearErrorFeature) {
+      return true
+    }
 
-    val isValidYear = taxYear == defaultTaxYear || !appConfig.taxYearErrorFeature
-
-    if(isValidYear) {
-      now.isBefore(currentTaxYear)
+    if(taxYear == defaultTaxYear) {
+      now.isBefore(DateTime.parse(s"$defaultTaxYear-04-06"))
     } else {
       false
     }
 
-//    val inYearDate: DateTime =
-//      if (!appConfig.taxYearErrorFeature) {
-//        DateTime.parse(s"$defaultTaxYear-04-06")
-//      }
-//      else {
-//        DateTime.parse(s"$taxYear-04-06")
-//      }
-//
-//    if(inYearDate.isBefore(now)){
-//      true
-//    }
-//    else {
-//      logger.info("[InYearAction][inYear] The current date is after the 6th April, therefore its not in year.")
-//      false
-//    }
   }
 }
 
