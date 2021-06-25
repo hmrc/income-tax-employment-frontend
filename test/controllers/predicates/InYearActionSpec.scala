@@ -29,91 +29,95 @@ class InYearActionSpec extends UnitTest {
   val inYearAction: InYearAction = new InYearAction
 
   "InYearAction.inYear" when {
-//
-//    "return true when called with a year in the past" in {
-//      mockedConfig.taxYearErrorFeature _ expects() returning true
-//      mockedConfig.defaultTaxYear _ expects() returning 2022
-//      inYearAction.inYear(lastYear) shouldBe true
-//    }
-//
-//    "return true when called with 2021" in {
-//      mockedConfig.taxYearErrorFeature _ expects() returning true
-//      mockedConfig.defaultTaxYear _ expects() returning 2022
-//      inYearAction.inYear(2021) shouldBe false
-//    }
-//
-//    "return false when called with a year in the future" in {
-//      mockedConfig.taxYearErrorFeature _ expects() returning true
-//      mockedConfig.defaultTaxYear _ expects() returning 2022
-//      inYearAction.inYear(nextYear) shouldBe false
-//
-
-    "return true when taxYear is 2022 and current date is 5th April 2022" in {
-      val beforeApril = new DateTime(2022, 4, 5, 0, 0)
-      mockedConfig.taxYearErrorFeature _ expects() returning false
-      mockedConfig.defaultTaxYear _ expects() returning 2022
-      inYearAction.inYear(2022, beforeApril) shouldBe true
-    }
-
-    "return false when taxYear is 2022 and current date is 6th April 2022" in {
-      val afterApril = new DateTime(2022, 4, 6, 0, 0)
-      mockedConfig.taxYearErrorFeature _ expects() returning false
-      mockedConfig.defaultTaxYear _ expects() returning 2022
-      inYearAction.inYear(2022, afterApril) shouldBe false
-    }
-
-    "return false when taxYear is 2021 and current date is 6th April 2022" in {
-      val afterApril = new DateTime(2022, 4, 6, 0)
-      mockedConfig.taxYearErrorFeature _ expects() returning false
-      mockedConfig.defaultTaxYear _ expects() returning 2022
-      inYearAction.inYear(2022, afterApril) shouldBe false
-    }
 
     "taxYearErrorFeature is enabled" should {
-      "return true when taxYear is 2021 and current date is 5th April 2022" in {
+      "return false when taxYear is 2021 and current date is 5th April 2022" in {
         val beforeApril = new DateTime(2022, 4, 5, 0, 0)
         mockedConfig.taxYearErrorFeature _ expects() returning true
+        mockedConfig.defaultTaxYear _ expects() returning 2022
+        inYearAction.inYear(2021, beforeApril) shouldBe false
+      }
+
+      "return false when taxYear is 2021 and current date is 6th April 2022" in {
+        val currentDate = new DateTime(2022, 4, 6, 0, 0)
+        mockedConfig.taxYearErrorFeature _ expects() returning true
+        mockedConfig.defaultTaxYear _ expects() returning 2022
+        inYearAction.inYear(2021, currentDate) shouldBe false
+      }
+
+      "return true when taxYear is 2022 and current date is 5th April 2022" in {
+        val currentDate = new DateTime(2022, 4, 5, 0, 0)
+        mockedConfig.taxYearErrorFeature _ expects() returning true
+        mockedConfig.defaultTaxYear _ expects() returning 2022
+        inYearAction.inYear(2022, currentDate) shouldBe true
+      }
+
+      "return false when taxYear is 2022 and current date is 6th April 2022" in {
+        val currentDate = new DateTime(2022, 4, 6, 0, 0)
+        mockedConfig.taxYearErrorFeature _ expects() returning true
+        mockedConfig.defaultTaxYear _ expects() returning 2022
+        inYearAction.inYear(2022, currentDate) shouldBe false
+      }
+
+      "return false when taxYear is 2023 and current date is 5th April 2023" in {
+        val currentDate = new DateTime(2023, 4, 5, 0, 0)
+        mockedConfig.taxYearErrorFeature _ expects() returning true
+        mockedConfig.defaultTaxYear _ expects() returning 2022
+        inYearAction.inYear(2023, currentDate) shouldBe false
+      }
+
+      "return false when taxYear is 2023 and current date is 6th April 2023" in {
+        val currentDate = new DateTime(2023, 4, 5, 0, 0)
+        mockedConfig.taxYearErrorFeature _ expects() returning true
+        mockedConfig.defaultTaxYear _ expects() returning 2022
+        inYearAction.inYear(2023, currentDate) shouldBe false
+      }
+    }
+
+    "taxYearErrorFeature is disabled" should {
+      "return true when taxYear is 2021 and current date is 5th April 2022" in {
+        val beforeApril = new DateTime(2022, 4, 5, 0, 0)
+        mockedConfig.taxYearErrorFeature _ expects() returning false
         mockedConfig.defaultTaxYear _ expects() returning 2022
         inYearAction.inYear(2021, beforeApril) shouldBe true
       }
 
-      "return true when taxYear is 2023 and current date is 5th April 2022" in {
-        val beforeApril = new DateTime(2022, 4, 5, 0, 0)
-        mockedConfig.taxYearErrorFeature _ expects() returning true
+      "return true when taxYear is 2021 and current date is 6th April 2022" in {
+        val currentDate = new DateTime(2022, 4, 6, 0, 0)
+        mockedConfig.taxYearErrorFeature _ expects() returning false
         mockedConfig.defaultTaxYear _ expects() returning 2022
-        inYearAction.inYear(2023, beforeApril) shouldBe true
+        inYearAction.inYear(2021, currentDate) shouldBe true
+      }
+
+      "return true when taxYear is 2022 and current date is 5th April 2022" in {
+        val currentDate = new DateTime(2022, 4, 5, 0, 0)
+        mockedConfig.taxYearErrorFeature _ expects() returning false
+        mockedConfig.defaultTaxYear _ expects() returning 2022
+        inYearAction.inYear(2022, currentDate) shouldBe true
+      }
+
+      // TODO - is this correct
+      "return false when taxYear is 2022 and current date is 6th April 2022" in {
+        val currentDate = new DateTime(2022, 4, 6, 0, 0)
+        mockedConfig.taxYearErrorFeature _ expects() returning false
+        mockedConfig.defaultTaxYear _ expects() returning 2022
+        inYearAction.inYear(2022, currentDate) shouldBe false
+      }
+
+      "return false when taxYear is 2023 and current date is 5th April 2023" in {
+        val currentDate = new DateTime(2023, 4, 6, 0, 0)
+        mockedConfig.taxYearErrorFeature _ expects() returning false
+        mockedConfig.defaultTaxYear _ expects() returning 2022
+        inYearAction.inYear(2023, currentDate) shouldBe false
+      }
+
+      "return true when taxYear is 2023 and current date is 6th April 2023" in {
+        val currentDate = new DateTime(2023, 4, 5, 0, 0)
+        mockedConfig.taxYearErrorFeature _ expects() returning false
+        mockedConfig.defaultTaxYear _ expects() returning 2022
+        inYearAction.inYear(2023, currentDate) shouldBe true
       }
     }
-
-
-
-//    Seq((currentYear, true), (currentYear + 1, false), (currentYear + 2, false), (currentYear + 3, false)).foreach { t =>
-//
-//      val (taxYear, result) = t
-//
-//      s"return $result when current date is before 6th April $currentYear and taxYear is $taxYear" in {
-//          val beforeApril = new DateTime(currentYear, 4, 5, 0, 0)
-//
-////          mockedConfig.taxYearErrorFeature _ expects() returning true
-//          mockedConfig.defaultTaxYear _ expects() returning 2022
-//          inYearAction.inYear(taxYear, beforeApril) shouldBe result
-//      }
-//
-//    }
-//
-//    Seq((currentYear, false), (currentYear + 1, true), (currentYear + 2, false), (currentYear + 3, false)).foreach { t =>
-//
-//      val (taxYear, result) = t
-//
-//      s"return $result when current date is on or after 6th April $currentYear and taxYear is $taxYear" in {
-//        val afterApril = new DateTime(currentYear, 4, 6, 0, 0)
-////        mockedConfig.taxYearErrorFeature _ expects() returning true
-//        mockedConfig.defaultTaxYear _ expects() returning 2022
-//        inYearAction.inYear(taxYear, afterApril) shouldBe result
-//      }
-//
-//
-//    }
 
   }
 }
