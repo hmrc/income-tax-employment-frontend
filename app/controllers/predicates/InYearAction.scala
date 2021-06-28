@@ -17,27 +17,25 @@
 package controllers.predicates
 
 import config.AppConfig
-import org.joda.time.DateTime
 import play.api.Logger
 
+import java.time.{LocalDateTime, ZoneId}
 import javax.inject.Inject
 
 class InYearAction @Inject()(implicit val appConfig: AppConfig) {
+
   lazy val logger: Logger = Logger.apply(this.getClass)
 
-  def inYear(taxYear: Int, now: DateTime): Boolean = {
-    val defaultTaxYear = appConfig.defaultTaxYear
+  val cutOffDay = 6
+  val cutOffMonth = 4
+  val cutOffHour = 0
+  val cutOffMinute = 0
 
-    if(!appConfig.taxYearErrorFeature) {
-      return true
-    }
-
-    if(taxYear == defaultTaxYear) {
-      now.isBefore(DateTime.parse(s"$defaultTaxYear-04-06"))
-    } else {
-      false
-    }
-
+  def inYear(taxYear: Int, now: LocalDateTime = LocalDateTime.now(ZoneId.of("Europe/London"))): Boolean = {
+    def zonedDateTime(time: LocalDateTime) = time.atZone(ZoneId.of("Europe/London")).toLocalDateTime
+    val endOfYearCutOffDate: LocalDateTime = LocalDateTime.of(taxYear, cutOffMonth, cutOffDay, cutOffHour ,cutOffMinute)
+    zonedDateTime(now).isBefore(zonedDateTime(endOfYearCutOffDate))
   }
+
 }
 

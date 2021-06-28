@@ -17,107 +17,44 @@
 package controllers.predicates
 
 import config.AppConfig
-import org.joda.time.DateTime
 import utils.UnitTest
 
+import java.time.LocalDateTime
+
 class InYearActionSpec extends UnitTest {
-  val currentYear = DateTime.now.getYear
-  val lastYear: Int = DateTime.now.getYear - 1
-  val nextYear: Int = DateTime.now.getYear + 1
+  val year2021: Int = 2021
+  val year2022: Int = 2022
+  val month4: Int = 4
+  val day5: Int = 5
+  val day6: Int = 6
+  val hour23: Int = 23
+  val minute59: Int = 59
+  val inYearAction: InYearAction = new InYearAction
 
   implicit lazy val mockedConfig: AppConfig = mock[AppConfig]
-  val inYearAction: InYearAction = new InYearAction
+
+  def newDate(year: Int, month: Int, day: Int): LocalDateTime = LocalDateTime.of(year, month, day, 0, 0)
 
   "InYearAction.inYear" when {
 
-    "taxYearErrorFeature is enabled" should {
-      "return false when taxYear is 2021 and current date is 5th April 2022" in {
-        val beforeApril = new DateTime(2022, 4, 5, 0, 0)
-        mockedConfig.taxYearErrorFeature _ expects() returning true
-        mockedConfig.defaultTaxYear _ expects() returning 2022
-        inYearAction.inYear(2021, beforeApril) shouldBe false
-      }
-
-      "return false when taxYear is 2021 and current date is 6th April 2022" in {
-        val currentDate = new DateTime(2022, 4, 6, 0, 0)
-        mockedConfig.taxYearErrorFeature _ expects() returning true
-        mockedConfig.defaultTaxYear _ expects() returning 2022
-        inYearAction.inYear(2021, currentDate) shouldBe false
-      }
-
-      "return true when taxYear is 2022 and current date is 5th April 2022" in {
-        val currentDate = new DateTime(2022, 4, 5, 0, 0)
-        mockedConfig.taxYearErrorFeature _ expects() returning true
-        mockedConfig.defaultTaxYear _ expects() returning 2022
-        inYearAction.inYear(2022, currentDate) shouldBe true
-      }
-
-      "return false when taxYear is 2022 and current date is 6th April 2022" in {
-        val currentDate = new DateTime(2022, 4, 6, 0, 0)
-        mockedConfig.taxYearErrorFeature _ expects() returning true
-        mockedConfig.defaultTaxYear _ expects() returning 2022
-        inYearAction.inYear(2022, currentDate) shouldBe false
-      }
-
-      "return false when taxYear is 2023 and current date is 5th April 2023" in {
-        val currentDate = new DateTime(2023, 4, 5, 0, 0)
-        mockedConfig.taxYearErrorFeature _ expects() returning true
-        mockedConfig.defaultTaxYear _ expects() returning 2022
-        inYearAction.inYear(2023, currentDate) shouldBe false
-      }
-
-      "return false when taxYear is 2023 and current date is 6th April 2023" in {
-        val currentDate = new DateTime(2023, 4, 5, 0, 0)
-        mockedConfig.taxYearErrorFeature _ expects() returning true
-        mockedConfig.defaultTaxYear _ expects() returning 2022
-        inYearAction.inYear(2023, currentDate) shouldBe false
-      }
+    "return true when taxYear is 2022 and current date is 5th April 2022 and time is just before midnight" in {
+      val currentDate: LocalDateTime = LocalDateTime.of(year2022, month4, day5, hour23, minute59)
+      inYearAction.inYear(year2022, currentDate) shouldBe true
     }
 
-    "taxYearErrorFeature is disabled" should {
-      "return true when taxYear is 2021 and current date is 5th April 2022" in {
-        val beforeApril = new DateTime(2022, 4, 5, 0, 0)
-        mockedConfig.taxYearErrorFeature _ expects() returning false
-        mockedConfig.defaultTaxYear _ expects() returning 2022
-        inYearAction.inYear(2021, beforeApril) shouldBe true
-      }
-
-      "return true when taxYear is 2021 and current date is 6th April 2022" in {
-        val currentDate = new DateTime(2022, 4, 6, 0, 0)
-        mockedConfig.taxYearErrorFeature _ expects() returning false
-        mockedConfig.defaultTaxYear _ expects() returning 2022
-        inYearAction.inYear(2021, currentDate) shouldBe true
-      }
-
-      "return true when taxYear is 2022 and current date is 5th April 2022" in {
-        val currentDate = new DateTime(2022, 4, 5, 0, 0)
-        mockedConfig.taxYearErrorFeature _ expects() returning false
-        mockedConfig.defaultTaxYear _ expects() returning 2022
-        inYearAction.inYear(2022, currentDate) shouldBe true
-      }
-
-      // TODO - is this correct
-      "return false when taxYear is 2022 and current date is 6th April 2022" in {
-        val currentDate = new DateTime(2022, 4, 6, 0, 0)
-        mockedConfig.taxYearErrorFeature _ expects() returning false
-        mockedConfig.defaultTaxYear _ expects() returning 2022
-        inYearAction.inYear(2022, currentDate) shouldBe false
-      }
-
-      "return false when taxYear is 2023 and current date is 5th April 2023" in {
-        val currentDate = new DateTime(2023, 4, 6, 0, 0)
-        mockedConfig.taxYearErrorFeature _ expects() returning false
-        mockedConfig.defaultTaxYear _ expects() returning 2022
-        inYearAction.inYear(2023, currentDate) shouldBe false
-      }
-
-      "return true when taxYear is 2023 and current date is 6th April 2023" in {
-        val currentDate = new DateTime(2023, 4, 5, 0, 0)
-        mockedConfig.taxYearErrorFeature _ expects() returning false
-        mockedConfig.defaultTaxYear _ expects() returning 2022
-        inYearAction.inYear(2023, currentDate) shouldBe true
-      }
+    "return false when taxYear is 2022 and current date is 6th April 2022 at midnight" in {
+      val currentDate: LocalDateTime = newDate(year2022, month4, day6)
+      inYearAction.inYear(year2022, currentDate) shouldBe false
     }
 
+    "return false when taxYear is 2022 and current date is 6th April 2022 at one minute past midnight" in {
+      val currentDate: LocalDateTime = LocalDateTime.of(year2022, month4, day6, 0, 1)
+      inYearAction.inYear(year2022, currentDate) shouldBe false
+    }
+
+    "return false when taxYear is 2022 and current date is 6th April 2022 at one hour past midnight" in {
+      val currentDate: LocalDateTime = LocalDateTime.of(year2022, month4, day6, 1, 1)
+      inYearAction.inYear(year2022, currentDate) shouldBe false
+    }
   }
 }
