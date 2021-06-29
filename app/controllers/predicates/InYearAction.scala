@@ -34,7 +34,16 @@ class InYearAction @Inject()(implicit val appConfig: AppConfig) {
   def inYear(taxYear: Int, now: LocalDateTime = LocalDateTime.now(ZoneId.of("Europe/London"))): Boolean = {
     def zonedDateTime(time: LocalDateTime) = time.atZone(ZoneId.of("Europe/London")).toLocalDateTime
     val endOfYearCutOffDate: LocalDateTime = LocalDateTime.of(taxYear, cutOffMonth, cutOffDay, cutOffHour ,cutOffMinute)
-    zonedDateTime(now).isBefore(zonedDateTime(endOfYearCutOffDate))
+    val isNowBefore: Boolean = zonedDateTime(now).isBefore(zonedDateTime(endOfYearCutOffDate))
+
+    if(isNowBefore) {
+      logger.info(s"[InYearAction][inYear] Employment pages for this request will be in year")
+    }
+    else {
+      logger.info(s"[InYearAction][inYear] Employment pages for this request will be for end of year")
+    }
+
+    isNowBefore
   }
 
 }
