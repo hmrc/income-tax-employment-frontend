@@ -29,7 +29,7 @@ class InYearActionSpec extends UnitTest {
   val day6: Int = 6
   val hour23: Int = 23
   val minute59: Int = 59
-  val inYearAction: InYearAction = new InYearAction
+
 
   implicit lazy val mockedConfig: AppConfig = mock[AppConfig]
 
