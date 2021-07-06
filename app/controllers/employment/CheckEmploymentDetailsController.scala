@@ -44,11 +44,12 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
 
     def result(allEmploymentData: AllEmploymentData): Result = {
+      val isInYear: Boolean = inYearAction.inYear(taxYear)
+      val customerData: Option[EmploymentSource] = allEmploymentData.customerEmploymentData.find(source => source.employmentId.equals(employmentId))
+      val isUsingCustomerData: Boolean = customerData.isDefined && !isInYear
 
-      val customerData: (Option[EmploymentSource], Boolean) = getCustomerData(allEmploymentData, employmentId, taxYear)
-
-      val source: Option[EmploymentSource] = if(customerData._2){
-        customerData._1
+      val source: Option[EmploymentSource] = if(isUsingCustomerData){
+        customerData
       }else {
         allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId))
       }
@@ -58,8 +59,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
             val (name, ref, data, empId) = (source.employerName, source.employerRef, source.employmentData, source.employmentId)
             val auditModel = ViewEmploymentDetailsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, name, ref, data)
             auditService.auditModel[ViewEmploymentDetailsAudit](auditModel.toAuditModel)
-            val isInYear = inYearAction.inYear(taxYear)
-            Ok(employmentDetailsView(name, ref, data, taxYear, isInYear, empId,customerData._2))
+            Ok(employmentDetailsView(name, ref, data, taxYear, isInYear, empId, isUsingCustomerData))
             case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
@@ -72,8 +72,4 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
   }
 
-  private def getCustomerData(allEmploymentData: AllEmploymentData, employmentId:String, taxYear:Int): (Option[EmploymentSource], Boolean) = {
-     val customerData = allEmploymentData.customerEmploymentData.find(source => source.employmentId.equals(employmentId))
-      if(customerData.isDefined && !inYearAction.inYear(taxYear)) (customerData, true) else (customerData, false)
-  }
 }
