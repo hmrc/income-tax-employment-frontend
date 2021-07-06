@@ -121,11 +121,11 @@ employment.employmentDetails.paymentNotOnYourP60.agent =  Payments not on your c
 employment.employmentDetails.tipsAndOtherPayments.individual =  Amount of payments not on your P60
 employment.employmentDetails.tipsAndOtherPayments.agent =  Amount of payments not on your client’s P60
 
-employment.employmentDetails.hiddenText.employer = the name you entered for {0}
+employment.employmentDetails.hiddenText.employer = the name of this employer
 employment.employmentDetails.hiddenText.payeRef.individual = your PAYE reference number
 employment.employmentDetails.hiddenText.payeRef.agent = your client’s PAYE reference number
-employment.employmentDetails.hiddenText.payReceived.individual = the amount of pay you got from this company
-employment.employmentDetails.hiddenText.payReceived.agent = the amount of pay your client got from this company
+employment.employmentDetails.hiddenText.payReceived.individual = the amount of pay you got from this employer
+employment.employmentDetails.hiddenText.payReceived.agent = the amount of pay your client got from this employer
 employment.employmentDetails.hiddenText.totalTaxToDate.individual = the amount of tax you paid
 employment.employmentDetails.hiddenText.totalTaxToDate.agent = the amount of tax your client paid
 employment.employmentDetails.hiddenText.paymentNotOnYourP60.individual = if you got payments that are not on your P60
