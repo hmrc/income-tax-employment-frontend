@@ -20,7 +20,7 @@ import akka.actor.ActorSystem
 import com.codahale.metrics.SharedMetricRegistries
 import common.{EnrolmentIdentifiers, EnrolmentKeys, SessionValues}
 import config.{AppConfig, MockAppConfig}
-import controllers.predicates.AuthorisedAction
+import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.{IncomeTaxUserData, User}
 import models.employment.{AllEmploymentData, Benefits, EmploymentBenefits, EmploymentData, EmploymentExpenses, EmploymentSource, Expenses, Pay}
 import org.scalamock.scalatest.MockFactory
@@ -82,6 +82,8 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
   implicit lazy val user: User[AnyContent] = new User[AnyContent]("1234567890", None, "AA123456A", sessionId, AffinityGroup.Individual.toString)(fakeRequest)
 
   val authorisedAction = new AuthorisedAction(mockAppConfig)(mockAuthService, stubMessagesControllerComponents())
+
+  val inYearAction = new InYearAction
 
   def status(awaitable: Future[Result]): Int = await(awaitable).header.status
 

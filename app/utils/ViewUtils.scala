@@ -28,26 +28,32 @@ import scala.util.Try
 
 object ViewUtils {
 
-  def convertBoolToYesOrNo(employmentField: Option[Boolean])(implicit messages: Messages) : Option[String] = {
-    employmentField.map{
+  case class EmploymentDataForView(fieldHeadings: String, fieldValues: Option[String], changeLink: Call, hiddenText: String)
+
+  def convertBoolToYesOrNo(employmentField: Option[Boolean])(implicit messages: Messages): Option[String] = {
+    employmentField.map {
       case true => messages("common.yes")
       case false => messages("common.no")
     }
   }
 
   def dateFormatter(date: String): Option[String] = {
-    try{
-          Some(LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.UK))
-            .format(DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.UK)))
+    try {
+      Some(LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.UK))
+        .format(DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.UK)))
     }
     catch {
       case _: Exception => None
     }
   }
 
+  def getAgentDynamicContent(msgKey:String, isAgent:Boolean): String ={
+    s"$msgKey.${if (isAgent) "agent" else "individual"}"
+  }
+
   def summaryListRow(key: HtmlContent,
                      value: HtmlContent,
-                     keyClasses: String= "govuk-!-width-one-third",
+                     keyClasses: String = "govuk-!-width-one-third",
                      valueClasses: String = "govuk-!-width-one-third",
                      actionClasses: String = "govuk-!-width-one-third",
                      actions: Seq[(Call, String, Option[String])]): SummaryListRow = {
@@ -66,7 +72,8 @@ object ViewUtils {
           href = call.url,
           content = Text(linkText),
           visuallyHiddenText = visuallyHiddenText
-        )},
+        )
+        },
         classes = actionClasses
       ))
     )
