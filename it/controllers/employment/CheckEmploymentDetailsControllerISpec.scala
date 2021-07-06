@@ -69,7 +69,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldName5: String
     val employeeFieldName6: String
 
-    val changeEmployerNameHiddenText:String=>String
+    val changeEmployerNameHiddenText:String
   }
 
   object ContentValues {
@@ -99,7 +99,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldName5 = "Pay received"
     val employeeFieldName6 = "UK tax taken from pay"
 
-    val changeEmployerNameHiddenText: String => String = (employerName:String) => s"the name you entered for $employerName"
+    val changeEmployerNameHiddenText: String =  "the name of this employer"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -114,7 +114,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldName5 = "Pay received"
     val employeeFieldName6 = "UK tax taken from pay"
 
-    val changeEmployerNameHiddenText: String => String = (employerName:String) => s"the name you entered for $employerName"
+    val changeEmployerNameHiddenText: String =  "the name of this employer"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -125,7 +125,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldName7 = "Payments not on your P60"
     val employeeFieldName8 = "Amount of payments not on your P60"
     val changePAYERefHiddenText: String = "your PAYE reference number"
-    val changePayReceivedHiddenText: String = "the amount of pay you got from this company"
+    val changePayReceivedHiddenText: String = "the amount of pay you got from this employer"
     val taxTakenFromPayHiddenText: String = "the amount of tax you paid"
     val paymentsNotOnP60HiddenText: String = "if you got payments that are not on your P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "the amount of payments that were not on your P60"
@@ -139,7 +139,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldName7 = "Payments not on your client’s P60"
     val employeeFieldName8 = "Amount of payments not on your client’s P60"
     val changePAYERefHiddenText: String = "your client’s PAYE reference number"
-    val changePayReceivedHiddenText: String = "the amount of pay your client got from this company"
+    val changePayReceivedHiddenText: String = "the amount of pay your client got from this employer"
     val taxTakenFromPayHiddenText: String = "the amount of tax your client paid"
     val paymentsNotOnP60HiddenText: String = "if your client got payments that are not on their P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "the amount of payments that were not on your client’s P60"
@@ -153,7 +153,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldName7 = "Payments not on your P60"
     val employeeFieldName8 = "Amount of payments not on your P60"
     val changePAYERefHiddenText: String = "your PAYE reference number"
-    val changePayReceivedHiddenText: String = "the amount of pay you got from this company"
+    val changePayReceivedHiddenText: String = "the amount of pay you got from this employer"
     val taxTakenFromPayHiddenText: String = "the amount of tax you paid"
     val paymentsNotOnP60HiddenText: String = "if you got payments that are not on your P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "the amount of payments that were not on your P60"
@@ -167,7 +167,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldName7 = "Payments not on your client’s P60"
     val employeeFieldName8 = "Amount of payments not on your client’s P60"
     val changePAYERefHiddenText: String = "your client’s PAYE reference number"
-    val changePayReceivedHiddenText: String = "the amount of pay your client got from this company"
+    val changePayReceivedHiddenText: String = "the amount of pay your client got from this employer"
     val taxTakenFromPayHiddenText: String = "the amount of tax your client paid"
     val paymentsNotOnP60HiddenText: String = "if your client got payments that are not on their P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "the amount of payments that were not on your client’s P60"
@@ -338,7 +338,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(user.commonExpectedResults.employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employeeFieldValue1, summaryListRowFieldAmountSelector(1))
-          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.commonExpectedResults.changeEmployerNameHiddenText("maggie")}",
+          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.commonExpectedResults.changeEmployerNameHiddenText}",
             cyaChangeLink(1), dummyHref)
           textOnPageCheck(user.commonExpectedResults.employeeFieldName2, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.employeeFieldValue2, summaryListRowFieldAmountSelector(2))
@@ -413,7 +413,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(user.commonExpectedResults.employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employeeFieldValue1, summaryListRowFieldAmountSelector(1))
-          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.commonExpectedResults.changeEmployerNameHiddenText("maggie")}",
+          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.commonExpectedResults.changeEmployerNameHiddenText}",
             cyaChangeLink(1), dummyHref)
           textOnPageCheck(user.commonExpectedResults.employeeFieldName5, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.employeeFieldValue5a, summaryListRowFieldAmountSelector(2))

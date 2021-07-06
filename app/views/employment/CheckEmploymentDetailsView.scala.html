@@ -62,7 +62,7 @@
         val msgKeyGeneric = "employment.employmentDetails"
 
         val employerName = EmploymentDataForView(messages(msgKeyGeneric + ".employer"), Some(employerNameData), dummyCall,
-        messages("employment.employmentDetails.hiddenText.employer", employerNameData))
+        messages(s"$msgKeyGeneric.hiddenText.employer"))
 
         val payeRef = EmploymentDataForView(messages(msgKeyGeneric + ".payeRef"), employerRefData, dummyCall,
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payeRef", user.isAgent)))
