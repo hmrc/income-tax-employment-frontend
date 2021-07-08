@@ -60,6 +60,7 @@ lazy val microservice = Project(appName, file("."))
     // Use the silencer plugin to suppress warnings
     // You may turn it on for `views` too to suppress warnings from unused imports in compiled twirl templates, but this will hide other warnings.
     scalacOptions += "-P:silencer:pathFilters=routes",
+    scalacOptions += "-P:silencer:lineContentFilters=^\\w",
     libraryDependencies ++= Seq(
       compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
       "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
