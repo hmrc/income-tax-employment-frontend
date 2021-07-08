@@ -23,12 +23,13 @@ import play.api.data.validation.{Constraints, Invalid, Valid}
 
 class StringConstraintsSpec extends Constraints with AnyWordSpecLike with Matchers {
 
-  val maxLength = 2
+  val maxLength = 15
   val errMsgMaxLength = "Too Long"
   val errMsgNonEmpty = "it is empty"
   val errMsgInvalidChar = "there are invalid chars"
   val errMsgNoLeadingSpace = "there are leading spaces"
   val errMsgInvalidInt = "contains non numerical chars"
+  val errMsgDuplicateName = "name already exists"
 
   "The StringConstraints.nonEmpty method" when {
 
@@ -71,6 +72,49 @@ class StringConstraintsSpec extends Constraints with AnyWordSpecLike with Matche
       }
 
     }
+  }
+
+  "The StringConstraints.validateSize method" when {
+
+    "supplied with a valid string" should {
+
+      "return valid" in {
+
+        StringConstraints.validateSize(maxLength)(errMsgNonEmpty)("someInput") shouldBe Valid
+      }
+    }
+    "supplied with an invalid string" should {
+
+      "return invalid" in {
+
+        StringConstraints.validateSize(maxLength)(errMsgNonEmpty)("stringExceedsMaxLength") shouldBe Invalid(errMsgNonEmpty)
+      }
+    }
+
+  }
+
+  "The StringConstraints.validateNotDuplicateName method" when {
+
+    "supplied with a non-duplicate name" should {
+
+      "return valid" in {
+
+        val employerNames = List("Google", "Apple", "Amazon")
+
+        StringConstraints.validateNotDuplicateEmployerName(employerNames)(errMsgDuplicateName)("Twitter") shouldBe Valid
+      }
+    }
+    "supplied with a duplicate name" should {
+
+      "return invalid" in {
+
+        val employerNames = List("Google", "Apple", "Amazon")
+
+        StringConstraints.validateNotDuplicateEmployerName(employerNames)(errMsgDuplicateName)("Google") shouldBe Invalid(errMsgDuplicateName)
+
+      }
+    }
+
   }
 
 }

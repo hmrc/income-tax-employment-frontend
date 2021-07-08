@@ -61,7 +61,7 @@
 
         val msgKeyGeneric = "employment.employmentDetails"
 
-        val employerName = EmploymentDataForView(messages(msgKeyGeneric + ".employer"), Some(employerNameData), dummyCall,
+        val employerName = EmploymentDataForView(messages(msgKeyGeneric + ".employer"), Some(employerNameData), controllers.employment.routes.EmployerNameController.show(taxYear),
         messages(s"$msgKeyGeneric.hiddenText.employer"))
 
         val payeRef = EmploymentDataForView(messages(msgKeyGeneric + ".payeRef"), employerRefData, dummyCall,

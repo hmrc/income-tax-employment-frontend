@@ -330,6 +330,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           }
 
           val dummyHref =  "/income-through-software/return/employment-income/2021/check-employment-expenses"
+          val employerNameHref =  "/income-through-software/return/employment-income/2021/employer-name"
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -339,7 +340,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.commonExpectedResults.employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employeeFieldValue1, summaryListRowFieldAmountSelector(1))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.commonExpectedResults.changeEmployerNameHiddenText}",
-            cyaChangeLink(1), dummyHref)
+            cyaChangeLink(1), employerNameHref)
           textOnPageCheck(user.commonExpectedResults.employeeFieldName2, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.employeeFieldValue2, summaryListRowFieldAmountSelector(2))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changePAYERefHiddenText}",
@@ -406,6 +407,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           }
 
           val dummyHref =  "/income-through-software/return/employment-income/2021/check-employment-expenses"
+          val employerNameHref =  "/income-through-software/return/employment-income/2021/employer-name"
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -414,7 +416,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.commonExpectedResults.employeeFieldName1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employeeFieldValue1, summaryListRowFieldAmountSelector(1))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.commonExpectedResults.changeEmployerNameHiddenText}",
-            cyaChangeLink(1), dummyHref)
+            cyaChangeLink(1), employerNameHref)
           textOnPageCheck(user.commonExpectedResults.employeeFieldName5, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.employeeFieldValue5a, summaryListRowFieldAmountSelector(2))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changePayReceivedHiddenText}",

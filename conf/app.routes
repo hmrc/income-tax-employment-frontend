@@ -8,11 +8,14 @@ GET        /assets/*file                                    controllers.Assets.v
 GET        /:taxYear/employer-details-and-benefits          controllers.employment.EmploymentDetailsAndBenefitsController.show(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/check-employment-details               controllers.employment.CheckEmploymentDetailsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/check-employment-details              controllers.employment.CheckEmploymentDetailsController.submit(taxYear: Int, employmentId: String)
+POST       /:taxYear/check-employment-details               controllers.employment.CheckEmploymentDetailsController.submit(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/check-employment-expenses              controllers.employment.CheckEmploymentExpensesController.show(taxYear: Int)
 
 GET        /:taxYear/check-employment-benefits              controllers.employment.CheckYourBenefitsController.show(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/employer-name                          controllers.employment.EmployerNameController.show(taxYear: Int)
+POST       /:taxYear/employer-name                          controllers.employment.EmployerNameController.submit(taxYear: Int)
 
 GET        /sign-out                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
@@ -20,13 +23,13 @@ GET        /error/you-need-to-sign-up                       controllers.errors.I
 
 GET        /error/wrong-tax-year                            controllers.errors.TaxYearErrorController.show
 
-GET        /error/you-need-client-authorisation              controllers.errors.AgentAuthErrorController.show
+GET        /error/you-need-client-authorisation             controllers.errors.AgentAuthErrorController.show
 
 GET        /error/not-authorised-to-use-service             controllers.errors.UnauthorisedUserErrorController.show
 
-GET        /:taxYear/employment-summary                    controllers.employment.EmploymentSummaryController.show(taxYear: Int)
+GET        /:taxYear/employment-summary                     controllers.employment.EmploymentSummaryController.show(taxYear: Int)
 
-GET        /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
+GET        /language/:lang                                  controllers.LanguageSwitchController.switchToLanguage(lang: String)
 
 GET        /error/you-need-agent-services-account           controllers.errors.YouNeedAgentServicesController.show
 

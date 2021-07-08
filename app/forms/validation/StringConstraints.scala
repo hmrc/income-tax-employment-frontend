@@ -34,5 +34,13 @@ object StringConstraints {
     x => if (x.isEmpty) Invalid(msgKey) else Valid
   )
 
+  def validateSize(maxChars: Int): String => Constraint[String] = msgKey => constraint[String](
+    x => if (x.length <= maxChars) Valid else Invalid(msgKey)
+  )
+
+  def validateNotDuplicateEmployerName(previousEntries: Seq[String]): String => Constraint[String] = msgKey => constraint[String](
+    x => if (previousEntries.contains(x)) Invalid(msgKey) else Valid
+  )
+
 
 }
