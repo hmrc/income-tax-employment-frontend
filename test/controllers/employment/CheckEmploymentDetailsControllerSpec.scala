@@ -17,7 +17,7 @@
 package controllers.employment
 
 import common.SessionValues
-import config.{MockAuditService, MockIncomeTaxUserDataService}
+import config.{MockAuditService, MockEmploymentSessionService}
 import models.employment.EmploymentData
 import play.api.http.Status._
 import play.api.mvc.Result
@@ -27,7 +27,7 @@ import views.html.employment.CheckEmploymentDetailsView
 
 import scala.concurrent.Future
 
-class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockIncomeTaxUserDataService with MockAuditService{
+class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockEmploymentSessionService with MockAuditService{
 
   lazy val view = app.injector.instanceOf[CheckEmploymentDetailsView]
   lazy val controller = new CheckEmploymentDetailsController()(

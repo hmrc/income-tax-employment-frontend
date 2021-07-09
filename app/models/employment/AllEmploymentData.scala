@@ -36,8 +36,117 @@ case class EmploymentSource(employmentId: String,
                             dateIgnored: Option[String],
                             submittedOn: Option[String],
                             employmentData: Option[EmploymentData],
-                            employmentBenefits: Option[EmploymentBenefits])
+                            employmentBenefits: Option[EmploymentBenefits]){
+
+  def toEmploymentDetailsView(isUsingCustomerData: Boolean): EmploymentDetailsView = {
+    EmploymentDetailsView(
+      employerName,
+      employerRef,
+      employmentId,
+      startDate,
+      Some(cessationDate.isDefined),
+      cessationDate,
+      employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
+      employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
+      employmentData.map(_.pay.exists(_.tipsAndOtherPayments.isDefined)),
+      employmentData.flatMap(_.pay.flatMap(_.tipsAndOtherPayments)),
+      isUsingCustomerData
+    )
+  }
+}
 
 object EmploymentSource {
   implicit val format: OFormat[EmploymentSource] = Json.format[EmploymentSource]
 }
+
+// API#1661 Add Employment
+//    "employerRef"
+//    "employerName"
+//    "startDate"
+//    "cessationDate"
+//    "payrollId"
+
+// API#1662 Update Employment
+//    "employerRef"
+//    "employerName"
+//    "startDate"
+//    "cessationDate"
+//    "payrollId"
+
+// API#1643 Create/Update Employment financial Data Submission
+//"employment": {
+//        "pay": { " - REQUIRED
+//            "taxablePayToDate" - REQUIRED
+//            "totalTaxToDate" - REQUIRED
+//            "tipsAndOtherPayments"
+//        },
+//        "lumpSums": {
+//            "taxableLumpSumsAndCertainIncome": {
+//              "amount"
+//              "taxPaid"
+//              "taxTakenOffInEmployment"
+//            },
+//            "benefitFromEmployerFinancedRetirementScheme": {
+//                "amount"
+//                "exemptAmount"
+//                "taxPaid"
+//                "taxTakenOffInEmployment"
+//            },
+//            "redundancyCompensationPaymentsOverExemption": {
+//                "amount"
+//                "taxPaid"
+//                "taxTakenOffInEmployment"
+//            },
+//            "redundancyCompensationPaymentsUnderExemption": {
+//                "amount"
+//            }
+//        },
+//        "deductions": {
+//            "studentLoans": {
+//                "uglDeductionAmount"
+//                "pglDeductionAmount"
+//          }
+//        },
+//        "benefitsInKind": {
+//            "accommodation"
+//            "assets"
+//            "assetTransfer"
+//            "beneficialLoan"
+//            "car"
+//            "carFuel"
+//            "educationalServices"
+//            "entertaining"
+//            "expenses"
+//            "medicalInsurance"
+//            "telephone"
+//            "service"
+//            "taxableExpenses"
+//            "van"
+//            "vanFuel"
+//            "mileage"
+//            "nonQualifyingRelocationExpenses"
+//            "nurseryPlaces"
+//            "otherItems"
+//            "paymentsOnEmployeesBehalf"
+//            "personalIncidentalExpenses"
+//            "qualifyingRelocationExpenses"
+//            "employerProvidedProfessionalSubscriptions"
+//            "employerProvidedServices"
+//            "incomeTaxPaidByDirector"
+//            "travelAndSubsistence"
+//            "vouchersAndCreditCards"
+//            "nonCash"
+//        }
+//    }
+
+// API#1669 Create/Update Employment expenses
+//"expenses": {
+//      "businessTravelCosts"
+//      "jobExpenses"
+//      "flatRateJobExpenses"
+//      "professionalSubscriptions"
+//      "hotelAndMealExpenses"
+//      "otherAndCapitalAllowances"
+//      "vehicleExpenses"
+//      "mileageAllowanceRelief"
+//   }

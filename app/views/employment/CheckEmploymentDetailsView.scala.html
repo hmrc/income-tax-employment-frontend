@@ -28,7 +28,7 @@
         govukSummaryList: GovukSummaryList,
         govukInsetText: GovukInsetText
 )
-@(employerNameData: String, employerRefData: Option[String], employmentDetails: Option[EmploymentData], taxYear: Int, isInYear:Boolean, employmentId:String, isCustomerData:Boolean)(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
+@(employmentDetails: EmploymentDetailsView, taxYear: Int, isInYear:Boolean)(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
 
 
 @headingForUse = @{
