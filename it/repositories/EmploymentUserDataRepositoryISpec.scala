@@ -62,7 +62,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
       )
     }
     "update a document in the collection" in {
-      val newUserData = employmentUserData.copy(employmentAnswers = Some(Seq("Example")))
+      val newUserData = employmentUserData.copy(employment = Some(Seq("Example")))
       count mustBe 1
       val res: Boolean = await(employmentRepo.update(newUserData))
       res mustBe true

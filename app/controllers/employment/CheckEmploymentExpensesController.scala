@@ -24,7 +24,7 @@ import models.employment.EmploymentExpenses
 import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.IncomeTaxUserDataService
+import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.employment.CheckEmploymentExpensesView
@@ -33,7 +33,7 @@ import scala.concurrent.ExecutionContext
 
 class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAction,
                                                   checkEmploymentExpensesView: CheckEmploymentExpensesView,
-                                                  incomeTaxUserDataService: IncomeTaxUserDataService,
+                                                  incomeTaxUserDataService: EmploymentSessionService,
                                                   auditService: AuditService,
                                                   implicit val appConfig: AppConfig,
                                                   implicit val mcc: MessagesControllerComponents,
@@ -41,7 +41,7 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
 
   def show(taxYear: Int): Action[AnyContent] = authorisedAction.async { implicit user =>
 
-    incomeTaxUserDataService.findUserData(user, taxYear)(allEmploymentData =>
+    incomeTaxUserDataService.findPreviousEmploymentUserData(user, taxYear)(allEmploymentData =>
       allEmploymentData.hmrcExpenses match {
       case Some(employmentExpenses@EmploymentExpenses(_,_, Some(expenses))) =>
         val auditModel = ViewEmploymentExpensesAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, expenses)

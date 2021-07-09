@@ -44,9 +44,11 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfi
   indexes        = EmploymentUserDataIndexes.indexes(appConfig)
 ) with Repository with EmploymentUserDataRepository {
 
-  def find[T](user: User[T], taxYear: Int): Future[Option[EmploymentUserData]] = {
+  def create[T](userData: EmploymentUserData)(implicit user: User[T]): Future[Boolean] = collection.insertOne(userData).toFutureOption().map(_.isDefined)
+
+  def find[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Option[EmploymentUserData]] = {
     collection.findOneAndUpdate(
-      filter = filter(user.sessionId,user.mtditid,user.nino,taxYear),
+      filter = filter(user.sessionId,user.mtditid,user.nino,taxYear,employmentId),
       update = set("lastUpdated", toBson(DateTime.now(DateTimeZone.UTC))(MongoJodaFormats.dateTimeWrites)),
       options = FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
     ).toFutureOption()
@@ -54,11 +56,16 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfi
 
   def update(employmentUserData: EmploymentUserData): Future[Boolean] = {
     collection.findOneAndReplace(
-      filter = filter(employmentUserData.sessionId,employmentUserData.mtdItId,employmentUserData.nino,employmentUserData.taxYear),
+      filter = filter(employmentUserData.sessionId,employmentUserData.mtdItId,
+        employmentUserData.nino,employmentUserData.taxYear, employmentUserData.employmentId),
       replacement = employmentUserData,
       options = FindOneAndReplaceOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
     ).toFutureOption().map(_.isDefined)
   }
+
+  def clear(taxYear: Int, employmentId: String)(implicit user: User[_]): Future[Boolean] = collection.deleteOne(
+    filter = filter(user.sessionId, user.mtditid, user.nino, taxYear, employmentId)
+  ).toFutureOption().map(_.isDefined)
 }
 
 private object EmploymentUserDataIndexes {
@@ -67,7 +74,8 @@ private object EmploymentUserDataIndexes {
     ascending("sessionId"),
     ascending("mtdItId"),
     ascending("nino"),
-    ascending("taxYear")
+    ascending("taxYear"),
+    ascending("employmentId")
   )
 
   def indexes(appConfig: AppConfig): Seq[IndexModel] = {
@@ -80,6 +88,8 @@ private object EmploymentUserDataIndexes {
 
 trait EmploymentUserDataRepository {
 
-  def find[T](user: User[T], taxYear: Int): Future[Option[EmploymentUserData]]
+  def create[T](userData: EmploymentUserData)(implicit user: User[T]): Future[Boolean]
+  def find[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Option[EmploymentUserData]]
   def update(employmentUserData: EmploymentUserData): Future[Boolean]
+  def clear(taxYear: Int, employmentId: String)(implicit user: User[_]): Future[Boolean]
 }
