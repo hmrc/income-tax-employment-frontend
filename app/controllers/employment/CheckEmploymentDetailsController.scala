@@ -19,7 +19,7 @@ package controllers.employment
 import audit.{AuditService, ViewEmploymentDetailsAudit}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthorisedAction, InYearAction}
-import models.employment.{AllEmploymentData, EmploymentDetailsView, EmploymentSource}
+import models.employment.{AllEmploymentData, EmploymentDetailsViewModel, EmploymentSource}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -49,7 +49,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     def inYearResult(allEmploymentData: AllEmploymentData): Result = {
       employmentSessionService.employmentSourceToUse(allEmploymentData,employmentId,isInYear) match {
         case Some(source) =>
-          performAuditAndRenderView(source.toEmploymentDetailsView(employmentSessionService.shouldUseCustomerData(allEmploymentData,employmentId,isInYear)),
+          performAuditAndRenderView(source.toEmploymentDetailsViewModel(employmentSessionService.shouldUseCustomerData(allEmploymentData,employmentId,isInYear)),
             taxYear, isInYear)
         case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
@@ -64,7 +64,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
           employmentSessionService.updateSessionData(employmentId, EmploymentCYAModel.apply(source, isUsingCustomerData),
             taxYear, needsCreating = true, isPriorSubmission = true
           )(errorHandler.internalServerError()){
-            performAuditAndRenderView(source.toEmploymentDetailsView(isUsingCustomerData),taxYear, isInYear)
+            performAuditAndRenderView(source.toEmploymentDetailsViewModel(isUsingCustomerData),taxYear, isInYear)
           }
 
         case None => Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
@@ -86,7 +86,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     }
   }
 
-  def performAuditAndRenderView(employmentDetails: EmploymentDetailsView, taxYear: Int, isInYear: Boolean)(implicit user: User[AnyContent]): Result ={
+  def performAuditAndRenderView(employmentDetails: EmploymentDetailsViewModel, taxYear: Int, isInYear: Boolean)(implicit user: User[AnyContent]): Result ={
     val auditModel = ViewEmploymentDetailsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, employmentDetails)
     auditService.auditModel[ViewEmploymentDetailsAudit](auditModel.toAuditModel)
     Ok(employmentDetailsView(employmentDetails, taxYear, isInYear))

@@ -36,13 +36,13 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
                                             val mcc: MessagesControllerComponents,
                                             implicit val appConfig: AppConfig,
                                             checkYourBenefitsView: CheckYourBenefitsView,
-                                            incomeTaxUserDataService: EmploymentSessionService,
+                                            employmentSessionService: EmploymentSessionService,
                                             auditService: AuditService,
                                             implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
 
-    incomeTaxUserDataService.findPreviousEmploymentUserData(user, taxYear){ allEmploymentData =>
+    employmentSessionService.findPreviousEmploymentUserData(user, taxYear){ allEmploymentData =>
       val benefits: Option[Benefits] = {
         allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId)).flatMap(_.employmentBenefits).flatMap(_.benefits)
       }

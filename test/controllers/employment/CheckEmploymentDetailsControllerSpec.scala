@@ -18,7 +18,7 @@ package controllers.employment
 
 import common.SessionValues
 import config.{MockAuditService, MockEmploymentSessionService}
-import models.employment.{EmploymentData, EmploymentDetailsView}
+import models.employment.{EmploymentData, EmploymentDetailsViewModel}
 import play.api.http.Status._
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
@@ -52,7 +52,7 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockEmpl
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {
           mockFind(taxYear, Ok(view(
-            EmploymentDetailsView(
+            EmploymentDetailsViewModel(
               employerName = "Dave",
               employerRef = Some("reference"),
               employmentId = "id",

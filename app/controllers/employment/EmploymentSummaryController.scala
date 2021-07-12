@@ -33,14 +33,14 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
                                             implicit val appConfig: AppConfig,
                                             singleEmploymentSummaryView: SingleEmploymentSummaryView,
                                             multipleEmploymentsSummaryView: MultipleEmploymentsSummaryView,
-                                            incomeTaxUserDataService: EmploymentSessionService
+                                            employmentSessionService: EmploymentSessionService
                                            ) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   implicit val executionContext: ExecutionContext = mcc.executionContext
 
   def show(taxYear: Int) : Action[AnyContent] = authAction.async { implicit user =>
 
-    incomeTaxUserDataService.findPreviousEmploymentUserData(user, taxYear) { allEmploymentData =>
+    employmentSessionService.findPreviousEmploymentUserData(user, taxYear) { allEmploymentData =>
 
       val doExpensesExist = allEmploymentData.hmrcExpenses.isDefined
 

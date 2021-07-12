@@ -33,7 +33,7 @@ import scala.concurrent.ExecutionContext
 
 class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAction,
                                                   checkEmploymentExpensesView: CheckEmploymentExpensesView,
-                                                  incomeTaxUserDataService: EmploymentSessionService,
+                                                  employmentSessionService: EmploymentSessionService,
                                                   auditService: AuditService,
                                                   implicit val appConfig: AppConfig,
                                                   implicit val mcc: MessagesControllerComponents,
@@ -41,7 +41,7 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
 
   def show(taxYear: Int): Action[AnyContent] = authorisedAction.async { implicit user =>
 
-    incomeTaxUserDataService.findPreviousEmploymentUserData(user, taxYear)(allEmploymentData =>
+    employmentSessionService.findPreviousEmploymentUserData(user, taxYear)(allEmploymentData =>
       allEmploymentData.hmrcExpenses match {
       case Some(employmentExpenses@EmploymentExpenses(_,_, Some(expenses))) =>
         val auditModel = ViewEmploymentExpensesAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, expenses)

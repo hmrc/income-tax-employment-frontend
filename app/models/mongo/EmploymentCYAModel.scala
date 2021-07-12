@@ -16,7 +16,7 @@
 
 package models.mongo
 
-import models.employment.{EmploymentBenefits, EmploymentDetailsView, EmploymentSource}
+import models.employment.{EmploymentBenefits, EmploymentDetailsViewModel, EmploymentSource}
 import play.api.libs.json.{Json, OFormat}
 
 case class EmploymentDetails(employerName: String,
@@ -41,8 +41,8 @@ case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
                               //TODO Update to custom benefits model as above with employment details
                               employmentBenefits: Option[EmploymentBenefits] = None){
 
-  def toEmploymentDetailsView(employmentId: String, isUsingCustomerData: Boolean): EmploymentDetailsView = {
-    EmploymentDetailsView(
+  def toEmploymentDetailsView(employmentId: String, isUsingCustomerData: Boolean): EmploymentDetailsViewModel = {
+    EmploymentDetailsViewModel(
       employmentDetails.employerName,
       employmentDetails.employerRef,
       employmentId,

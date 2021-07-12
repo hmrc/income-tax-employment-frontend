@@ -57,8 +57,8 @@ case class EmploymentSource(employmentId: String,
     )
   }
 
-  def toEmploymentDetailsView(isUsingCustomerData: Boolean): EmploymentDetailsView = {
-    EmploymentDetailsView(
+  def toEmploymentDetailsViewModel(isUsingCustomerData: Boolean): EmploymentDetailsViewModel = {
+    EmploymentDetailsViewModel(
       employerName,
       employerRef,
       employmentId,
