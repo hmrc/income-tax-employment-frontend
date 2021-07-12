@@ -16,7 +16,7 @@
 
 package models.mongo
 
-import models.employment.{EmploymentBenefits, EmploymentDetailsView, EmploymentExpenses, EmploymentSource}
+import models.employment.{EmploymentBenefits, EmploymentDetailsView, EmploymentSource}
 import play.api.libs.json.{Json, OFormat}
 
 case class EmploymentDetails(employerName: String,
@@ -38,9 +38,8 @@ object EmploymentDetails {
 }
 
 case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
-                              //TODO Update to custom benefits & expenses models as above with employment details
-                              employmentBenefits: Option[EmploymentBenefits] = None,
-                              employmentExpenses: Option[EmploymentExpenses] = None){
+                              //TODO Update to custom benefits model as above with employment details
+                              employmentBenefits: Option[EmploymentBenefits] = None){
 
   def toEmploymentDetailsView(employmentId: String, isUsingCustomerData: Boolean): EmploymentDetailsView = {
     EmploymentDetailsView(
@@ -61,10 +60,8 @@ case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
 object EmploymentCYAModel {
   implicit val format: OFormat[EmploymentCYAModel] = Json.format[EmploymentCYAModel]
 
-  def apply(employmentSource: EmploymentSource, expenses: Option[EmploymentExpenses],
-            isUsingCustomerData: Boolean, isUsingCustomerExpenses: Boolean): EmploymentCYAModel = EmploymentCYAModel(
+  def apply(employmentSource: EmploymentSource, isUsingCustomerData: Boolean): EmploymentCYAModel = EmploymentCYAModel(
     employmentDetails = employmentSource.toEmploymentDetails(isUsingCustomerData),
-    employmentBenefits = employmentSource.employmentBenefits,
-    employmentExpenses = expenses //TODO use isUsingCustomerExpenses boolean
+    employmentBenefits = employmentSource.employmentBenefits
   )
 }

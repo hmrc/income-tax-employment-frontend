@@ -57,19 +57,11 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
 
     def saveCYAAndReturnEndOfYearResult(allEmploymentData: AllEmploymentData): Future[Result] = {
       val isUsingCustomerData: Boolean = employmentSessionService.shouldUseCustomerData(allEmploymentData,employmentId,isInYear)
-      val isUsingCustomerExpenses: Boolean = employmentSessionService.shouldUseCustomerExpenses(allEmploymentData,isInYear)
 
       employmentSessionService.employmentSourceToUse(allEmploymentData,employmentId,isInYear) match {
         case Some(source) =>
 
-          employmentSessionService.updateSessionData(
-            employmentId,
-            EmploymentCYAModel.apply(
-              source,
-              employmentSessionService.employmentExpensesToUse(allEmploymentData,isInYear),
-              isUsingCustomerData,
-              isUsingCustomerExpenses
-            ),
+          employmentSessionService.updateSessionData(employmentId, EmploymentCYAModel.apply(source, isUsingCustomerData),
             taxYear, needsCreating = true, isPriorSubmission = true
           )(errorHandler.internalServerError()){
             performAuditAndRenderView(source.toEmploymentDetailsView(isUsingCustomerData),taxYear, isInYear)
