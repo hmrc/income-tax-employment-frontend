@@ -34,4 +34,9 @@ trait EmploymentDatabaseHelper { self: IntegrationTest =>
   def insertCyaData(cya: EmploymentUserData, user: User[_]): Boolean = {
     await(employmentDatabase.create(cya)(user))
   }
+
+  //noinspection ScalaStyle
+  def findCyaData(taxYear: Int, employmentId: String, user: User[_]): Option[EmploymentUserData] = {
+    await(employmentDatabase.find(taxYear, employmentId)(user))
+  }
 }

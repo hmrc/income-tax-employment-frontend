@@ -18,32 +18,42 @@ package controllers.predicates
 
 import config.AppConfig
 import play.api.Logger
+import play.api.mvc.Result
+import play.api.mvc.Results.Redirect
 
 import java.time.{LocalDateTime, ZoneId}
 import javax.inject.Inject
+import scala.concurrent.Future
 
 class InYearAction @Inject()(implicit val appConfig: AppConfig) {
 
   lazy val logger: Logger = Logger.apply(this.getClass)
 
-  val cutOffDay = 6
-  val cutOffMonth = 4
-  val cutOffHour = 0
-  val cutOffMinute = 0
+  private val taxYearStartDay = 6
+  private val taxYearStartMonth = 4
+  private val taxYearStartHour = 0
+  private val taxYearStartMinute = 0
 
-  def inYear(taxYear: Int, now: LocalDateTime = LocalDateTime.now(ZoneId.of("Europe/London"))): Boolean = {
-    def zonedDateTime(time: LocalDateTime) = time.atZone(ZoneId.of("Europe/London")).toLocalDateTime
-    val endOfYearCutOffDate: LocalDateTime = LocalDateTime.of(taxYear, cutOffMonth, cutOffDay, cutOffHour ,cutOffMinute)
+  def inYear(taxYear: Int, now: LocalDateTime = LocalDateTime.now): Boolean = {
+    def zonedDateTime(time: LocalDateTime): LocalDateTime = time.atZone(ZoneId.of("Europe/London")).toLocalDateTime
+    val endOfYearCutOffDate: LocalDateTime = LocalDateTime.of(taxYear, taxYearStartMonth, taxYearStartDay, taxYearStartHour ,taxYearStartMinute)
     val isNowBefore: Boolean = zonedDateTime(now).isBefore(zonedDateTime(endOfYearCutOffDate))
 
     if(isNowBefore) {
-      logger.info(s"[InYearAction][inYear] Employment pages for this request will be in year")
-    }
-    else {
-      logger.info(s"[InYearAction][inYear] Employment pages for this request will be for end of year")
+      logger.info(s"[InYearAction][inYear] Employment pages for this request will be in year.")
+    } else {
+      logger.info(s"[InYearAction][inYear] Employment pages for this request will not be in year.")
     }
 
     isNowBefore
+  }
+
+  def notInYear(taxYear: Int, now: LocalDateTime = LocalDateTime.now)(block: Future[Result]): Future[Result] = {
+    if(!inYear(taxYear, now)){
+      block
+    } else {
+      Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+    }
   }
 
 }
