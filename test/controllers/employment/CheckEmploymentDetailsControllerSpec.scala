@@ -50,11 +50,6 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockEmpl
     "return a result when GetEmploymentDataModel is in Session" which {
 
       s"has an OK($OK) status" in new TestWithAuth {
-        val data: Option[EmploymentData] = employmentsModel.hmrcEmploymentData.head.employmentData
-        val name: String = employmentsModel.hmrcEmploymentData.head.employerName
-        val ref: Option[String] = employmentsModel.hmrcEmploymentData.head.employerRef
-        val empId: String = employmentsModel.hmrcEmploymentData.head.employmentId
-
         val result: Future[Result] = {
           mockFind(taxYear, Ok(view(
             EmploymentDetailsView(
@@ -73,8 +68,7 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockEmpl
           )))
           controller.show(taxYear, employmentId = employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
-          )
-          )
+          ))
         }
 
         status(result) shouldBe OK
