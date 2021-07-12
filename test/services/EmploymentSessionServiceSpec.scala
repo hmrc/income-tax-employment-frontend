@@ -16,7 +16,7 @@
 
 package services
 
-import config.{AppConfig, ErrorHandler, MockIncomeTaxUserDataConnector}
+import config.{AppConfig, ErrorHandler, MockEmploymentUserDataRepository, MockIncomeTaxUserDataConnector}
 import models.User
 import models.employment.AllEmploymentData
 import play.api.i18n.MessagesApi
@@ -27,7 +27,7 @@ import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Results.{Ok, Redirect}
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 
-class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataConnector{
+class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataConnector with MockEmploymentUserDataRepository{
 
   val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
   val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
@@ -39,7 +39,8 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
   val messages: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  val service: EmploymentSessionService = new EmploymentSessionService(mockUserDataConnector,mockAppConfig,messages,errorHandler)
+  val service: EmploymentSessionService = new EmploymentSessionService(
+    mockEmploymentUserDataRepository,mockUserDataConnector,mockAppConfig,messages,errorHandler)
 
   val taxYear = 2022
 
@@ -50,7 +51,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
     }
   }
 
-  ".findUserData" should {
+  ".findPreviousEmploymentUserData" should {
 
     "return the ok result" in {
 

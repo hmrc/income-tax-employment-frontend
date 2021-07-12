@@ -17,7 +17,7 @@
 package repositories
 
 import models.User
-import models.mongo.EmploymentUserData
+import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.joda.time.DateTime
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.result.InsertOneResult
@@ -44,7 +44,13 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     "1234567890",
     "AA123456A",
     2022,
-    None
+    "employmentId",
+    isPriorSubmission = true,
+    EmploymentCYAModel(
+      EmploymentDetails("Employer Name",currentDataIsHmrcHeld = true),
+      None,
+      None
+    )
   )
 
   implicit val request: FakeRequest[AnyContent] = fakeRequest
@@ -55,20 +61,21 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
       val res: Boolean = await(employmentRepo.update(employmentUserData))
       res mustBe true
       count mustBe 1
-      val data: Option[EmploymentUserData] = await(employmentRepo.find(User(
-        employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId, AffinityGroup.Individual.toString),employmentUserData.taxYear))
+      val data: Option[EmploymentUserData] = await(employmentRepo.find(taxYear,employmentId = "employmentId")(User(
+        employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId, AffinityGroup.Individual.toString)))
       data.map(_.copy(lastUpdated = DateTime.parse("2021-05-17T14:01:52.634Z"))) mustBe Some(
         employmentUserData.copy(lastUpdated = DateTime.parse("2021-05-17T14:01:52.634Z"))
       )
     }
     "update a document in the collection" in {
-      val newUserData = employmentUserData.copy(employment = Some(Seq("Example")))
+      val newUserData = employmentUserData.copy(employment = employmentUserData.employment.copy(
+        employmentDetails = employmentUserData.employment.employmentDetails.copy(employerName = "Name 2")))
       count mustBe 1
       val res: Boolean = await(employmentRepo.update(newUserData))
       res mustBe true
       count mustBe 1
-      val data: Option[EmploymentUserData] = await(employmentRepo.find(User(
-        employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId, AffinityGroup.Individual.toString),employmentUserData.taxYear))
+      val data: Option[EmploymentUserData] = await(employmentRepo.find(taxYear,employmentId = "employmentId")(User(
+        employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId, AffinityGroup.Individual.toString)))
       data.map(_.copy(lastUpdated = DateTime.parse("2021-05-17T14:01:52.634Z"))) mustBe Some(
         newUserData.copy(lastUpdated = DateTime.parse("2021-05-17T14:01:52.634Z"))
       )
@@ -96,9 +103,9 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
       val dataBefore: EmploymentUserData = await(employmentRepo.collection.find(
         filter(employmentUserData.sessionId,employmentUserData.mtdItId,employmentUserData.nino,employmentUserData.taxYear)
       ).toFuture()).head
-      val dataAfter: Option[EmploymentUserData] = await(employmentRepo.find(User(
+      val dataAfter: Option[EmploymentUserData] = await(employmentRepo.find(taxYear,employmentId = "employmentId")(User(
         employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId
-        , AffinityGroup.Individual.toString),employmentUserData.taxYear))
+        , AffinityGroup.Individual.toString)))
 
       dataAfter.map(_.copy(lastUpdated = dataBefore.lastUpdated)) mustBe Some(dataBefore)
       dataAfter.map(_.lastUpdated.isAfter(dataBefore.lastUpdated)) mustBe Some(true)

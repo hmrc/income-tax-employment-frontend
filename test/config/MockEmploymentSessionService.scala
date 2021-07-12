@@ -32,7 +32,8 @@ trait MockEmploymentSessionService extends MockFactory {
 
   def mockFind(taxYear: Int, result: Result):
   CallHandler6[User[_], Int, AllEmploymentData => Result, Request[_], HeaderCarrier, ExecutionContext, Future[Result]] = {
-    (mockIncomeTaxUserDataService.findPreviousEmploymentUserData(_: User[_],_: Int)(_: AllEmploymentData => Result)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+    (mockIncomeTaxUserDataService.findPreviousEmploymentUserData(_: User[_],_: Int)
+    (_: AllEmploymentData => Result)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
       .expects(*, taxYear, *, *, *, *)
       .returns(Future.successful(result))
       .anyNumberOfTimes()

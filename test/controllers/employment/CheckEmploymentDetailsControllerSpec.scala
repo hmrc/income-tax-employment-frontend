@@ -38,7 +38,8 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockEmpl
     mockAppConfig,
     mockIncomeTaxUserDataService,
     mockAuditService,
-    ec
+    ec,
+    mockErrorHandler
   )
   val taxYear = mockAppConfig.defaultTaxYear
   val employmentId = "223/AB12399"
@@ -55,7 +56,7 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockEmpl
         val empId: String = employmentsModel.hmrcEmploymentData.head.employmentId
 
         val result: Future[Result] = {
-          mockFind(taxYear, Ok(view(name, ref, data, taxYear, isInYear = true, empId, isCustomerData = false)))
+//          mockFind(taxYear, Ok(view(name, ref, data, taxYear, isInYear = true, empId, isCustomerData = false)))
           controller.show(taxYear, employmentId = employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           )
