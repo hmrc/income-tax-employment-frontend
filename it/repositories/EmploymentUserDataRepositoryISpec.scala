@@ -48,7 +48,6 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     isPriorSubmission = true,
     EmploymentCYAModel(
       EmploymentDetails("Employer Name",currentDataIsHmrcHeld = true),
-      None,
       None
     )
   )
