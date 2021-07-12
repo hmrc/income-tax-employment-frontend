@@ -16,7 +16,7 @@
 
 package audit
 
-import models.employment.EmploymentDetailsView
+import models.employment.EmploymentDetailsViewModel
 import play.api.libs.json.Json
 import utils.UnitTestWithApp
 
@@ -49,7 +49,7 @@ class ViewEmploymentDetailsSpec extends UnitTestWithApp{
         //scalastyle:off
         val auditModel = ViewEmploymentDetailsAudit(2020, "individual", "AA12343AA",
           "mtditid",
-          EmploymentDetailsView(
+          EmploymentDetailsViewModel(
             employerName = "Dave",
             employerRef = Some("reference"),
             employmentId = "id",
