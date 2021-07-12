@@ -18,7 +18,7 @@ package controllers.employment
 
 import common.SessionValues
 import config.{MockAuditService, MockEmploymentSessionService}
-import models.employment.EmploymentData
+import models.employment.{EmploymentData, EmploymentDetailsView}
 import play.api.http.Status._
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
@@ -56,7 +56,21 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockEmpl
         val empId: String = employmentsModel.hmrcEmploymentData.head.employmentId
 
         val result: Future[Result] = {
-//          mockFind(taxYear, Ok(view(name, ref, data, taxYear, isInYear = true, empId, isCustomerData = false)))
+          mockFind(taxYear, Ok(view(
+            EmploymentDetailsView(
+              employerName = "Dave",
+              employerRef = Some("reference"),
+              employmentId = "id",
+              startDate = Some("2020-02-12"),
+              cessationDateQuestion = Some(true),
+              cessationDate = Some("2020-02-12"),
+              taxablePayToDate = Some(34234.15),
+              totalTaxToDate = Some(6782.92),
+              tipsAndOtherPaymentsQuestion = Some(true),
+              tipsAndOtherPayments = Some(67676),
+              isUsingCustomerData = false
+            ), taxYear, isInYear = true
+          )))
           controller.show(taxYear, employmentId = employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           )
