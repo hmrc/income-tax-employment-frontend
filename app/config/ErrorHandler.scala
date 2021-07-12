@@ -44,10 +44,6 @@ class ErrorHandler @Inject()(internalServerErrorTemplate: InternalServerErrorTem
     InternalServerError(internalServerErrorTemplate())
   }
 
-  def futureInternalServerError()(implicit user: User[_]): Future[Result] = {
-    Future.successful(InternalServerError(internalServerErrorTemplate()))
-  }
-
   def handleError(status: Int)(implicit request: Request[_]): Result = {
     status match {
       case SERVICE_UNAVAILABLE => ServiceUnavailable(serviceUnavailableTemplate())
