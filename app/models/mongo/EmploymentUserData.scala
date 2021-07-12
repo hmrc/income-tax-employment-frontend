@@ -17,7 +17,7 @@
 package models.mongo
 
 import org.joda.time.{DateTime, DateTimeZone}
-import play.api.libs.json.{OFormat, OWrites, Reads, __}
+import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
 
 case class EmploymentUserData(sessionId: String,
@@ -29,37 +29,9 @@ case class EmploymentUserData(sessionId: String,
                               employment: EmploymentCYAModel,
                               lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC))
 
-object EmploymentUserData {
+object EmploymentUserData extends MongoJodaFormats {
 
-  implicit lazy val formats: OFormat[EmploymentUserData] = OFormat(reads, writes)
+  implicit val mongoJodaDateTimeFormats: Format[DateTime] = dateTimeFormat
 
-  implicit lazy val reads: Reads[EmploymentUserData] = {
-
-    import play.api.libs.functional.syntax._
-    (
-      (__ \ "sessionId").read[String] and
-        (__ \ "mtdItId").read[String] and
-        (__ \ "nino").read[String] and
-        (__ \ "taxYear").read[Int] and
-        (__ \ "employmentId").read[String] and
-        (__ \ "isPriorSubmission").read[Boolean] and
-        (__ \ "employment").read[EmploymentCYAModel] and
-        (__ \ "lastUpdated").read(MongoJodaFormats.dateTimeReads)
-      ) (EmploymentUserData.apply _)
-  }
-
-  implicit lazy val writes: OWrites[EmploymentUserData] = {
-
-    import play.api.libs.functional.syntax._
-    (
-      (__ \ "sessionId").write[String] and
-        (__ \ "mtdItId").write[String] and
-        (__ \ "nino").write[String] and
-        (__ \ "taxYear").write[Int] and
-        (__ \ "employmentId").write[String] and
-        (__ \ "isPriorSubmission").write[Boolean] and
-        (__ \ "employment").write[EmploymentCYAModel] and
-        (__ \ "lastUpdated").write(MongoJodaFormats.dateTimeWrites)
-      ) (unlift(EmploymentUserData.unapply))
-  }
+  implicit val formats: Format[EmploymentUserData] = Json.format[EmploymentUserData]
 }

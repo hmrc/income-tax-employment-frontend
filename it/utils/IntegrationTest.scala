@@ -50,6 +50,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   val nino = "AA123456A"
   val mtditid = "1234567890"
   val sessionId = "sessionId-eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"
+  val affinityGroup = "affinityGroup"
   val taxYear = 2022
 
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
@@ -163,8 +164,8 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   def playSessionCookies(taxYear: Int): String = PlaySessionCookieBaker.bakeSessionCookie(Map(
     SessionValues.TAX_YEAR -> taxYear.toString,
     SessionKeys.sessionId -> sessionId,
-    SessionValues.CLIENT_NINO -> "AA123456A",
-    SessionValues.CLIENT_MTDITID -> "1234567890"
+    SessionValues.CLIENT_NINO -> nino,
+    SessionValues.CLIENT_MTDITID -> mtditid
   ))
 
   def userData(allData: AllEmploymentData): IncomeTaxUserData = IncomeTaxUserData(Some(allData))

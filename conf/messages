@@ -84,6 +84,14 @@ timeout.button = Sign in
 taxYear-error-template.paragraph.1 = You can only enter information for the 2021 to 2022 tax year.
 taxYear-error-template.paragraph.2 = Check that you’ve entered the correct web address.
 
+employment.other-payments.title.individual = Did you receive any payments that are not on your P60?
+employment.other-payments.title.agent = Did your client receive any payments that are not on their P60?
+employment.other-payments.detail.individual = This includes any tips. (A small gift of money for a service you provided.)
+employment.other-payments.detail.agent = This includes any tips. (A small gift of money for a service your client provided.)
+
+employment.other-payments.errors.noRadioSelected.individual = Select yes if you received any payments that are not on your P60
+employment.other-payments.errors.noRadioSelected.agent = Select yes if your client received any payments that are not on their P60
+
 employment.employmentInfo.p1.individual = You cannot update your employment information until 6 April {0}.
 employment.employmentInfo.p1.agent = You cannot update your client’s employment information until 6 April {0}.
 
@@ -146,7 +154,6 @@ employment.expenses.expense.type.job = Job expenses
 employment.expenses.expense.type.hotel-and-meal = Hotel and meal expenses
 employment.expenses.expense.type.vehicle = Vehicle expense
 employment.expenses.expense.type.mileage-allowance = Mileage allowance relief
-
 
 employment.expenses.sub-heading.individual = Your employment expenses are based on the information we already hold about you. This is a total of expenses from all employment in the tax year.
 employment.expenses.sub-heading.agent = Your client’s employment expenses are based on information we already hold about them. This is a total of expenses from all employment in the tax year.
