@@ -26,6 +26,8 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.employment.CheckEmploymentDetailsView
 import javax.inject.Inject
+import models.User
+import models.mongo.EmploymentCYAModel
 import services.EmploymentSessionService
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,49 +42,62 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
                                                  ec: ExecutionContext,
                                                  errorHandler: ErrorHandler) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
-
-
-  //scalastyle:off
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
 
     val isInYear: Boolean = inYearAction.inYear(taxYear)
 
-    def performAuditAndRenderView(employmentDetailsView: EmploymentDetailsView): Result ={
-//      val (name, ref, data, empId) = (source.employerName, source.employerRef, source.employmentData, source.employmentId)
-//      val auditModel = ViewEmploymentDetailsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, name, ref, data)
-//      auditService.auditModel[ViewEmploymentDetailsAudit](auditModel.toAuditModel)
-      Ok(employmentDetailsView(employmentDetailsView, taxYear, isInYear))
-    }
-
-    def customerData(allEmploymentData: AllEmploymentData): Option[EmploymentSource] = allEmploymentData.customerEmploymentData.find(source => source.employmentId.equals(employmentId))
-    def isUsingCustomerData(allEmploymentData: AllEmploymentData): Boolean = customerData(allEmploymentData).isDefined && !isInYear
-
-    def result(allEmploymentData: AllEmploymentData): Result = {
-
-      val source: Option[EmploymentSource] = if(isUsingCustomerData(allEmploymentData)){
-        customerData(allEmploymentData)
-      } else {
-        allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId))
-      }
-
-      source match {
-        case Some(source) => performAuditAndRenderView(source.toEmploymentDetailsView(isUsingCustomerData(allEmploymentData)))
+    def inYearResult(allEmploymentData: AllEmploymentData): Result = {
+      employmentSessionService.employmentSourceToUse(allEmploymentData,employmentId,isInYear) match {
+        case Some(source) =>
+          performAuditAndRenderView(source.toEmploymentDetailsView(employmentSessionService.shouldUseCustomerData(allEmploymentData,employmentId,isInYear)),
+            taxYear, isInYear)
         case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
 
+    def saveCYAAndReturnEndOfYearResult(allEmploymentData: AllEmploymentData): Future[Result] = {
+      val isUsingCustomerData: Boolean = employmentSessionService.shouldUseCustomerData(allEmploymentData,employmentId,isInYear)
+      val isUsingCustomerExpenses: Boolean = employmentSessionService.shouldUseCustomerExpenses(allEmploymentData,isInYear)
+
+      employmentSessionService.employmentSourceToUse(allEmploymentData,employmentId,isInYear) match {
+        case Some(source) =>
+
+          employmentSessionService.updateSessionData(
+            employmentId,
+            EmploymentCYAModel.apply(
+              source,
+              employmentSessionService.employmentExpensesToUse(allEmploymentData,isInYear),
+              isUsingCustomerData,
+              isUsingCustomerExpenses
+            ),
+            taxYear, needsCreating = true, isPriorSubmission = true
+          )(errorHandler.internalServerError()){
+            performAuditAndRenderView(source.toEmploymentDetailsView(isUsingCustomerData),taxYear, isInYear)
+          }
+
+        case None => Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+      }
+    }
+
     if(isInYear){
-      employmentSessionService.findPreviousEmploymentUserData(user, taxYear)(result)
+      employmentSessionService.findPreviousEmploymentUserData(user, taxYear)(inYearResult)
     } else {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
-          case Some(cya) => Future(performAuditAndRenderView(cya.toEmploymentDetailsView(employmentId,isUsingCustomerData(prior))))
-          case None =>
-            //TODO save cya to mongo
-            Future(result(prior))
+          case Some(cya) => Future(
+            performAuditAndRenderView(cya.toEmploymentDetailsView(employmentId,employmentSessionService.shouldUseCustomerData(prior,employmentId,isInYear)),
+              taxYear, isInYear)
+          )
+          case None => saveCYAAndReturnEndOfYearResult(prior)
         }
       }
     }
+  }
+
+  def performAuditAndRenderView(employmentDetails: EmploymentDetailsView, taxYear: Int, isInYear: Boolean)(implicit user: User[AnyContent]): Result ={
+    val auditModel = ViewEmploymentDetailsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, employmentDetails)
+    auditService.auditModel[ViewEmploymentDetailsAudit](auditModel.toAuditModel)
+    Ok(employmentDetailsView(employmentDetails, taxYear, isInYear))
   }
 
   def submit(taxYear:Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>

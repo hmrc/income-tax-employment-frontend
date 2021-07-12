@@ -41,17 +41,26 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfi
   mongoComponent = mongo,
   collectionName = "employmentUserData",
   domainFormat   = EmploymentUserData.formats,
-  indexes        = EmploymentUserDataIndexes.indexes(appConfig)
+  indexes        = EmploymentUserDataIndexes.indexes(appConfig),
+  //TODO REMOVE REPLACE INDEXES WHEN DEPLOYED FULLY TO PRODUCTION
+  replaceIndexes = true
 ) with Repository with EmploymentUserDataRepository {
 
   def create[T](userData: EmploymentUserData)(implicit user: User[T]): Future[Boolean] = collection.insertOne(userData).toFutureOption().map(_.isDefined)
 
   def find[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Option[EmploymentUserData]] = {
-    collection.findOneAndUpdate(
-      filter = filter(user.sessionId,user.mtditid,user.nino,taxYear,employmentId),
-      update = set("lastUpdated", toBson(DateTime.now(DateTimeZone.UTC))(MongoJodaFormats.dateTimeWrites)),
-      options = FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
-    ).toFutureOption()
+    def updateLastUpdated: Future[Option[EmploymentUserData]] = {
+      collection.findOneAndUpdate(
+        filter = filter(user.sessionId, user.mtditid, user.nino, taxYear, employmentId),
+        update = set("lastUpdated", toBson(DateTime.now(DateTimeZone.UTC))(MongoJodaFormats.dateTimeWrites)),
+        options = FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
+      ).toFutureOption()
+    }
+
+    collection.find(filter = filter(user.sessionId, user.mtditid, user.nino, taxYear, employmentId)).toSingle().toFutureOption().flatMap {
+      case Some(_) => updateLastUpdated
+      case None => Future(None)
+    }
   }
 
   def update(employmentUserData: EmploymentUserData): Future[Boolean] = {

@@ -25,8 +25,7 @@ case class EmploymentUserData(sessionId: String,
                               nino: String,
                               taxYear: Int,
                               employmentId: String,
-                              hasBeenPreviouslySubmitted: Boolean,
-                              currentDataIsHmrcHeld: Boolean,
+                              isPriorSubmission: Boolean,
                               employment: EmploymentCYAModel,
                               lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC))
 
@@ -44,7 +43,6 @@ object EmploymentUserData {
         (__ \ "taxYear").read[Int] and
         (__ \ "employmentId").read[String] and
         (__ \ "hasBeenSubmitted").read[Boolean] and
-        (__ \ "currentDataIsHmrcHeld").read[Boolean] and
         (__ \ "employment").read[EmploymentCYAModel] and
         (__ \ "lastUpdated").read(MongoJodaFormats.dateTimeReads)
       ) (EmploymentUserData.apply _)
@@ -60,7 +58,6 @@ object EmploymentUserData {
         (__ \ "taxYear").write[Int] and
         (__ \ "employmentId").write[String] and
         (__ \ "hasBeenSubmitted").write[Boolean] and
-        (__ \ "currentDataIsHmrcHeld").write[Boolean] and
         (__ \ "employment").write[EmploymentCYAModel] and
         (__ \ "lastUpdated").write(MongoJodaFormats.dateTimeWrites)
       ) (unlift(EmploymentUserData.unapply))
