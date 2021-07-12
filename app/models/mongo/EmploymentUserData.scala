@@ -42,7 +42,7 @@ object EmploymentUserData {
         (__ \ "nino").read[String] and
         (__ \ "taxYear").read[Int] and
         (__ \ "employmentId").read[String] and
-        (__ \ "hasBeenSubmitted").read[Boolean] and
+        (__ \ "isPriorSubmission").read[Boolean] and
         (__ \ "employment").read[EmploymentCYAModel] and
         (__ \ "lastUpdated").read(MongoJodaFormats.dateTimeReads)
       ) (EmploymentUserData.apply _)
@@ -57,7 +57,7 @@ object EmploymentUserData {
         (__ \ "nino").write[String] and
         (__ \ "taxYear").write[Int] and
         (__ \ "employmentId").write[String] and
-        (__ \ "hasBeenSubmitted").write[Boolean] and
+        (__ \ "isPriorSubmission").write[Boolean] and
         (__ \ "employment").write[EmploymentCYAModel] and
         (__ \ "lastUpdated").write(MongoJodaFormats.dateTimeWrites)
       ) (unlift(EmploymentUserData.unapply))
