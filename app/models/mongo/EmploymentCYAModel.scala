@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package models.mongo
 
-import models.employment.EmploymentDetailsView
+import models.employment.{EmploymentBenefits, EmploymentDetailsView, EmploymentExpenses, EmploymentSource}
 import play.api.libs.json.{Json, OFormat}
 
 case class EmploymentDetails(employerName: String,
@@ -25,29 +25,20 @@ case class EmploymentDetails(employerName: String,
                              cessationDateQuestion: Option[Boolean],
                              cessationDate: Option[String],
                              dateIgnored: Option[String],
-                             submittedOn: Option[String],
+                             employmentSubmittedOn: Option[String],
+                             employmentDetailsSubmittedOn: Option[String],
                              taxablePayToDate: Option[BigDecimal],
                              totalTaxToDate: Option[BigDecimal],
                              tipsAndOtherPaymentsQuestion: Option[Boolean],
-                             tipsAndOtherPayments: Option[BigDecimal])
+                             tipsAndOtherPayments: Option[BigDecimal],
+                             currentDataIsHmrcHeld: Boolean)
 
 object EmploymentDetails {
   implicit val format: OFormat[EmploymentDetails] = Json.format[EmploymentDetails]
 }
 
-case class EmploymentBenefits()
-
-object EmploymentBenefits {
-  implicit val format: OFormat[EmploymentBenefits] = Json.format[EmploymentBenefits]
-}
-
-case class EmploymentExpenses()
-
-object EmploymentExpenses {
-  implicit val format: OFormat[EmploymentExpenses] = Json.format[EmploymentExpenses]
-}
-
 case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
+                              //TODO Update to custom benefits & expenses models as above with employment details
                               employmentBenefits: Option[EmploymentBenefits],
                               employmentExpenses: Option[EmploymentExpenses]){
 
@@ -69,4 +60,11 @@ case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
 
 object EmploymentCYAModel {
   implicit val format: OFormat[EmploymentCYAModel] = Json.format[EmploymentCYAModel]
+
+  def apply(employmentSource: EmploymentSource, expenses: Option[EmploymentExpenses],
+            isUsingCustomerData: Boolean, isUsingCustomerExpenses: Boolean): EmploymentCYAModel = EmploymentCYAModel(
+    employmentDetails = employmentSource.toEmploymentDetails(isUsingCustomerData),
+    employmentBenefits = employmentSource.employmentBenefits,
+    employmentExpenses = expenses //TODO use isUsingCustomerExpenses boolean
+  )
 }

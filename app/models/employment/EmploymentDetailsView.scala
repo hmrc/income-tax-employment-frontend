@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package models.employment
 
 import play.api.libs.json.{Json, OFormat}
 
 case class EmploymentDetailsView(employerName: String,
-                                   employerRef: Option[String],
-                                   employmentId: String,
-                                   startDate: Option[String],
-                                   cessationDateQuestion: Option[Boolean],
-                                   cessationDate: Option[String],
-                                   taxablePayToDate: Option[BigDecimal],
-                                   totalTaxToDate: Option[BigDecimal],
-                                   tipsAndOtherPaymentsQuestion: Option[Boolean],
-                                   tipsAndOtherPayments: Option[BigDecimal],
-                                   isUsingCustomerData: Boolean)
+                                 employerRef: Option[String],
+                                 employmentId: String,
+                                 startDate: Option[String],
+                                 cessationDateQuestion: Option[Boolean],
+                                 cessationDate: Option[String],
+                                 taxablePayToDate: Option[BigDecimal],
+                                 totalTaxToDate: Option[BigDecimal],
+                                 tipsAndOtherPaymentsQuestion: Option[Boolean],
+                                 tipsAndOtherPayments: Option[BigDecimal],
+                                 isUsingCustomerData: Boolean)
 
 object EmploymentDetailsView {
   implicit val format: OFormat[EmploymentDetailsView] = Json.format[EmploymentDetailsView]

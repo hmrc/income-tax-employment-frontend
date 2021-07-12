@@ -16,6 +16,7 @@
 
 package models.employment
 
+import models.mongo.EmploymentDetails
 import play.api.libs.json.{Json, OFormat}
 
 case class AllEmploymentData(hmrcEmploymentData: Seq[EmploymentSource],
@@ -37,6 +38,24 @@ case class EmploymentSource(employmentId: String,
                             submittedOn: Option[String],
                             employmentData: Option[EmploymentData],
                             employmentBenefits: Option[EmploymentBenefits]){
+
+  def toEmploymentDetails(isUsingCustomerData: Boolean): EmploymentDetails = {
+    EmploymentDetails(
+      employerName = employerName,
+      employerRef = employerRef,
+      startDate = startDate,
+      cessationDateQuestion = Some(cessationDate.isDefined),
+      cessationDate = cessationDate,
+      dateIgnored = dateIgnored,
+      employmentSubmittedOn = submittedOn,
+      employmentDetailsSubmittedOn = employmentData.map(_.submittedOn),
+      taxablePayToDate = employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
+      totalTaxToDate = employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
+      tipsAndOtherPaymentsQuestion = employmentData.map(_.pay.exists(_.tipsAndOtherPayments.isDefined)),
+      tipsAndOtherPayments = employmentData.flatMap(_.pay.flatMap(_.tipsAndOtherPayments)),
+      currentDataIsHmrcHeld = !isUsingCustomerData
+    )
+  }
 
   def toEmploymentDetailsView(isUsingCustomerData: Boolean): EmploymentDetailsView = {
     EmploymentDetailsView(

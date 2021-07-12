@@ -21,7 +21,7 @@ import connectors.IncomeTaxUserDataConnector
 import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import javax.inject.{Inject, Singleton}
 import models.{IncomeTaxUserData, User}
-import models.employment.AllEmploymentData
+import models.employment.{AllEmploymentData, EmploymentExpenses, EmploymentSource}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.Logging
@@ -62,7 +62,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
   //scalastyle:off
   def updateSessionData[A](employmentId: String, cyaModel: EmploymentCYAModel, taxYear: Int,
-                           needsCreating: Boolean = false, isPriorSubmission: Boolean = true)(onFail: A)(onSuccess: A)
+                           needsCreating: Boolean, isPriorSubmission: Boolean)(onFail: A)(onSuccess: A)
                           (implicit user: User[_], ec: ExecutionContext): Future[A] = {
 
     val userData = EmploymentUserData(
@@ -71,11 +71,10 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       user.nino,
       taxYear,
       employmentId,
-      hasBeenPreviouslySubmitted = isPriorSubmission,
+      isPriorSubmission = isPriorSubmission,
       cyaModel,
       DateTime.now(DateTimeZone.UTC)
     )
-
 
     //TODO See if we can remove the create / update and have one method
     if(needsCreating){
@@ -116,6 +115,26 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     employmentUserDataRepository.clear(taxYear, employmentId).map {
       case true => onSuccess
       case false => onFail
+    }
+  }
+
+  def customerData(allEmploymentData: AllEmploymentData, employmentId: String): Option[EmploymentSource] = allEmploymentData.customerEmploymentData.find(source => source.employmentId.equals(employmentId))
+  def shouldUseCustomerData(allEmploymentData: AllEmploymentData, employmentId: String, isInYear: Boolean): Boolean = customerData(allEmploymentData, employmentId).isDefined && !isInYear
+  def shouldUseCustomerExpenses(allEmploymentData: AllEmploymentData, isInYear: Boolean): Boolean = allEmploymentData.customerExpenses.isDefined && !isInYear
+
+  def employmentExpensesToUse(allEmploymentData: AllEmploymentData, isInYear: Boolean): Option[EmploymentExpenses] = {
+    if(shouldUseCustomerExpenses(allEmploymentData, isInYear)){
+      allEmploymentData.customerExpenses
+    } else {
+      allEmploymentData.hmrcExpenses
+    }
+  }
+
+  def employmentSourceToUse(allEmploymentData: AllEmploymentData, employmentId: String, isInYear: Boolean): Option[EmploymentSource] = {
+    if(shouldUseCustomerData(allEmploymentData, employmentId, isInYear)){
+      customerData(allEmploymentData,employmentId)
+    } else {
+      allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId))
     }
   }
 
