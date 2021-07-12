@@ -20,17 +20,17 @@ import models.employment.{EmploymentBenefits, EmploymentDetailsView, EmploymentE
 import play.api.libs.json.{Json, OFormat}
 
 case class EmploymentDetails(employerName: String,
-                             employerRef: Option[String],
-                             startDate: Option[String],
-                             cessationDateQuestion: Option[Boolean],
-                             cessationDate: Option[String],
-                             dateIgnored: Option[String],
-                             employmentSubmittedOn: Option[String],
-                             employmentDetailsSubmittedOn: Option[String],
-                             taxablePayToDate: Option[BigDecimal],
-                             totalTaxToDate: Option[BigDecimal],
-                             tipsAndOtherPaymentsQuestion: Option[Boolean],
-                             tipsAndOtherPayments: Option[BigDecimal],
+                             employerRef: Option[String] = None,
+                             startDate: Option[String] = None,
+                             cessationDateQuestion: Option[Boolean] = None,
+                             cessationDate: Option[String] = None,
+                             dateIgnored: Option[String] = None,
+                             employmentSubmittedOn: Option[String] = None,
+                             employmentDetailsSubmittedOn: Option[String] = None,
+                             taxablePayToDate: Option[BigDecimal] = None,
+                             totalTaxToDate: Option[BigDecimal] = None,
+                             tipsAndOtherPaymentsQuestion: Option[Boolean] = None,
+                             tipsAndOtherPayments: Option[BigDecimal] = None,
                              currentDataIsHmrcHeld: Boolean)
 
 object EmploymentDetails {
@@ -39,8 +39,8 @@ object EmploymentDetails {
 
 case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
                               //TODO Update to custom benefits & expenses models as above with employment details
-                              employmentBenefits: Option[EmploymentBenefits],
-                              employmentExpenses: Option[EmploymentExpenses]){
+                              employmentBenefits: Option[EmploymentBenefits] = None,
+                              employmentExpenses: Option[EmploymentExpenses] = None){
 
   def toEmploymentDetailsView(employmentId: String, isUsingCustomerData: Boolean): EmploymentDetailsView = {
     EmploymentDetailsView(
