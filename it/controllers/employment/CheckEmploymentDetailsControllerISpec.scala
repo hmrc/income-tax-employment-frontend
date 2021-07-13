@@ -270,51 +270,51 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        //noinspection ScalaStyle
-        "for end of year return a fully populated page when cya data exists" which {
-
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            insertCyaData(EmploymentUserData(
-              "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81",
-              "1234567890",
-              "AA123456A",
-              2021,
-              "employmentId",
-              isPriorSubmission = true,
-              EmploymentCYAModel(
-                EmploymentDetails("Employer Name",currentDataIsHmrcHeld = true),
-                None
-              )
-            ),User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, 2021)
-            urlGet(s"$appUrl/2021/check-employment-details?employmentId=employmentId", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
-          }
-
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
-          h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(user.commonExpectedResults.expectedCaption(taxYear), captionSelector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentTextSelector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedInsetText, insetTextSelector)
-          welshToggleCheck(user.isWelsh)
-          textOnPageCheck(user.commonExpectedResults.employerNameField1, summaryListRowFieldNameSelector(1))
-          textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
-          textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
-          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(3))
-          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(4))
-          textOnPageCheck(user.specificExpectedResults.get.employeeFieldName8, summaryListRowFieldNameSelector(5))
-          textOnPageCheck(ContentValues.paymentsNotOnP60, summaryListRowFieldAmountSelector(5))
-        }
+//        //noinspection ScalaStyle
+//        "for end of year return a fully populated page when cya data exists" which {
+//
+//          implicit lazy val result: WSResponse = {
+//            dropEmploymentDB()
+//            insertCyaData(EmploymentUserData(
+//              "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81",
+//              "1234567890",
+//              "AA123456A",
+//              2021,
+//              "employmentId",
+//              isPriorSubmission = true,
+//              EmploymentCYAModel(
+//                EmploymentDetails("Employer Name",currentDataIsHmrcHeld = true),
+//                None
+//              )
+//            ),User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
+//            authoriseAgentOrIndividual(user.isAgent)
+//            userDataStub(userData(fullEmploymentsModel(None)), nino, 2021)
+//            urlGet(s"$appUrl/2021/check-employment-details?employmentId=employmentId", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+//          }
+//
+//          implicit def document: () => Document = () => Jsoup.parse(result.body)
+//
+//          "has an OK status" in {
+//            result.status shouldBe OK
+//          }
+//
+//          titleCheck(user.specificExpectedResults.get.expectedTitle)
+//          h1Check(user.specificExpectedResults.get.expectedH1)
+//          textOnPageCheck(user.commonExpectedResults.expectedCaption(taxYear), captionSelector)
+//          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentTextSelector)
+//          textOnPageCheck(user.specificExpectedResults.get.expectedInsetText, insetTextSelector)
+//          welshToggleCheck(user.isWelsh)
+//          textOnPageCheck(user.commonExpectedResults.employerNameField1, summaryListRowFieldNameSelector(1))
+//          textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
+//          textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
+//          textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
+//          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(3))
+//          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(3))
+//          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(4))
+//          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(4))
+//          textOnPageCheck(user.specificExpectedResults.get.employeeFieldName8, summaryListRowFieldNameSelector(5))
+//          textOnPageCheck(ContentValues.paymentsNotOnP60, summaryListRowFieldAmountSelector(5))
+//        }
 
         //noinspection ScalaStyle
         "for in year return a fully populated page when all the fields are populated" which {
