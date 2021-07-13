@@ -22,6 +22,7 @@ import play.api.libs.json.{Json, OFormat}
 case class EmploymentDetails(employerName: String,
                              employerRef: Option[String] = None,
                              startDate: Option[String] = None,
+                             payrollId: Option[String] = None,
                              cessationDateQuestion: Option[Boolean] = None,
                              cessationDate: Option[String] = None,
                              dateIgnored: Option[String] = None,
