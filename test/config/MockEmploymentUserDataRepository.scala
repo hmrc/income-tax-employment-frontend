@@ -43,7 +43,14 @@ trait MockEmploymentUserDataRepository extends MockFactory {
   }
   def mockUpdate(employmentUserData: EmploymentUserData, response: Boolean): CallHandler1[EmploymentUserData, Future[Boolean]] = {
     (mockEmploymentUserDataRepository.update(_: EmploymentUserData))
-      .expects(employmentUserData)
+      .expects(*)
+      .returns(Future.successful(response))
+      .anyNumberOfTimes()
+  }
+
+  def mockClear(taxYear: Int, employmentId: String,response:Boolean): Unit ={
+    (mockEmploymentUserDataRepository.clear(_: Int, _: String)(_: User[_]))
+      .expects(taxYear,employmentId,*)
       .returns(Future.successful(response))
       .anyNumberOfTimes()
   }
