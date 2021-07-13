@@ -113,7 +113,8 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       employmentDataResponse match {
         case Right(Some(employmentData)) => block(optionalCya.map(_.employment), employmentData)
         case Right(None) =>
-          logger.info(s"[EmploymentSessionService][getAndHandle] No employment data found for user. SessionId: ${user.sessionId}")
+          logger.info(s"[EmploymentSessionService][getAndHandle] No employment data found for user." +
+            s"Redirecting to overview page. SessionId: ${user.sessionId}")
           Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
         case Left(error) => Future(errorHandler.handleError(error.status))
       }
