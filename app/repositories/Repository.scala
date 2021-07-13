@@ -21,10 +21,11 @@ import org.mongodb.scala.model.Filters.{and, equal}
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 
 trait Repository {
-  def filter(sessionId: String, mtdItId: String, nino: String, taxYear: Int): Bson = and(
+  def filter(sessionId: String, mtdItId: String, nino: String, taxYear: Int, employmentId: String): Bson = and(
     equal("sessionId", toBson(sessionId)),
     equal("mtdItId", toBson(mtdItId)),
     equal("nino", toBson(nino)),
-    equal("taxYear", toBson(taxYear))
+    equal("taxYear", toBson(taxYear)),
+    equal("employmentId", toBson(employmentId))
   )
 }

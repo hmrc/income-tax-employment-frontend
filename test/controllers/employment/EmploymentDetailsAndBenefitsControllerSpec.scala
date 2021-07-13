@@ -17,7 +17,7 @@
 package controllers.employment
 
 import common.SessionValues
-import config.MockIncomeTaxUserDataService
+import config.MockEmploymentSessionService
 import play.api.http.Status._
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
@@ -26,7 +26,7 @@ import views.html.employment.EmploymentDetailsAndBenefitsView
 
 import scala.concurrent.Future
 
-class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp with MockIncomeTaxUserDataService {
+class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp with MockEmploymentSessionService {
 
   lazy val view = app.injector.instanceOf[EmploymentDetailsAndBenefitsView]
 

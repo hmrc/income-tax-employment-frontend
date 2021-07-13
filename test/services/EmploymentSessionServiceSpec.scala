@@ -16,7 +16,7 @@
 
 package services
 
-import config.{AppConfig, ErrorHandler, MockIncomeTaxUserDataConnector}
+import config.{AppConfig, ErrorHandler, MockEmploymentUserDataRepository, MockIncomeTaxUserDataConnector}
 import models.User
 import models.employment.AllEmploymentData
 import play.api.i18n.MessagesApi
@@ -27,7 +27,7 @@ import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Results.{Ok, Redirect}
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 
-class IncomeTaxUserDataServiceSpec extends UnitTest with MockIncomeTaxUserDataConnector{
+class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataConnector with MockEmploymentUserDataRepository{
 
   val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
   val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
@@ -39,7 +39,8 @@ class IncomeTaxUserDataServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
   val messages: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  val service: IncomeTaxUserDataService = new IncomeTaxUserDataService(mockUserDataConnector,mockAppConfig,messages,errorHandler)
+  val service: EmploymentSessionService = new EmploymentSessionService(
+    mockEmploymentUserDataRepository,mockUserDataConnector,mockAppConfig,messages,errorHandler)
 
   val taxYear = 2022
 
@@ -50,13 +51,13 @@ class IncomeTaxUserDataServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
     }
   }
 
-  ".findUserData" should {
+  ".findPreviousEmploymentUserData" should {
 
     "return the ok result" in {
 
       mockFind(nino, taxYear, userData)
 
-      val response = service.findUserData(
+      val response = service.findPreviousEmploymentUserData(
         User(mtditid = "1234567890", arn = None, nino = nino, sessionId = "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81",
           AffinityGroup.Individual.toString),
         taxYear,
@@ -69,7 +70,7 @@ class IncomeTaxUserDataServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
       mockFind(nino, taxYear,userData.copy(employment = None))
 
-      val response = service.findUserData(
+      val response = service.findPreviousEmploymentUserData(
         User(mtditid = "1234567890", arn = None, nino = nino, sessionId = "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81",
           AffinityGroup.Individual.toString),
         taxYear,

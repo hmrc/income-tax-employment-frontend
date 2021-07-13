@@ -16,11 +16,11 @@
 
 package audit
 
-import models.employment.EmploymentData
+import models.employment.EmploymentDetailsViewModel
 import play.api.libs.json.{Json, OWrites}
 
 case class ViewEmploymentDetailsAudit(taxYear: Int, userType: String, nino: String,
-                                      mtditid: String, employerName: String, employerRef: Option[String], employmentData: Option[EmploymentData]) {
+                                      mtditid: String, employmentData: EmploymentDetailsViewModel) {
 
   private def name = "ViewEmploymentDetails"
   def toAuditModel: AuditModel[ViewEmploymentDetailsAudit] = AuditModel(name, name, this)

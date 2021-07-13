@@ -24,7 +24,9 @@ case class EmploymentUserData(sessionId: String,
                               mtdItId: String,
                               nino: String,
                               taxYear: Int,
-                              employmentAnswers: Option[Seq[String]] = None, //TODO Will be page answers
+                              employmentId: String,
+                              isPriorSubmission: Boolean,
+                              employment: EmploymentCYAModel,
                               lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC))
 
 object EmploymentUserData {
@@ -39,7 +41,9 @@ object EmploymentUserData {
         (__ \ "mtdItId").read[String] and
         (__ \ "nino").read[String] and
         (__ \ "taxYear").read[Int] and
-        (__ \ "employmentAnswers").readNullable[Seq[String]] and
+        (__ \ "employmentId").read[String] and
+        (__ \ "isPriorSubmission").read[Boolean] and
+        (__ \ "employment").read[EmploymentCYAModel] and
         (__ \ "lastUpdated").read(MongoJodaFormats.dateTimeReads)
       ) (EmploymentUserData.apply _)
   }
@@ -52,7 +56,9 @@ object EmploymentUserData {
         (__ \ "mtdItId").write[String] and
         (__ \ "nino").write[String] and
         (__ \ "taxYear").write[Int] and
-        (__ \ "employmentAnswers").writeNullable[Seq[String]] and
+        (__ \ "employmentId").write[String] and
+        (__ \ "isPriorSubmission").write[Boolean] and
+        (__ \ "employment").write[EmploymentCYAModel] and
         (__ \ "lastUpdated").write(MongoJodaFormats.dateTimeWrites)
       ) (unlift(EmploymentUserData.unapply))
   }

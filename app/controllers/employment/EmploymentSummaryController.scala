@@ -20,7 +20,7 @@ import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.IncomeTaxUserDataService
+import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.employment.{MultipleEmploymentsSummaryView, SingleEmploymentSummaryView}
@@ -33,14 +33,14 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
                                             implicit val appConfig: AppConfig,
                                             singleEmploymentSummaryView: SingleEmploymentSummaryView,
                                             multipleEmploymentsSummaryView: MultipleEmploymentsSummaryView,
-                                            incomeTaxUserDataService: IncomeTaxUserDataService
+                                            employmentSessionService: EmploymentSessionService
                                            ) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   implicit val executionContext: ExecutionContext = mcc.executionContext
 
   def show(taxYear: Int) : Action[AnyContent] = authAction.async { implicit user =>
 
-    incomeTaxUserDataService.findUserData(user, taxYear) { allEmploymentData =>
+    employmentSessionService.findPreviousEmploymentUserData(user, taxYear) { allEmploymentData =>
 
       val doExpensesExist = allEmploymentData.hmrcExpenses.isDefined
 

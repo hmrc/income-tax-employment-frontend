@@ -16,6 +16,7 @@
 
 package models.employment
 
+import models.mongo.EmploymentDetails
 import play.api.libs.json.{Json, OFormat}
 
 case class AllEmploymentData(hmrcEmploymentData: Seq[EmploymentSource],
@@ -36,7 +37,42 @@ case class EmploymentSource(employmentId: String,
                             dateIgnored: Option[String],
                             submittedOn: Option[String],
                             employmentData: Option[EmploymentData],
-                            employmentBenefits: Option[EmploymentBenefits])
+                            employmentBenefits: Option[EmploymentBenefits]){
+
+  def toEmploymentDetails(isUsingCustomerData: Boolean): EmploymentDetails = {
+    EmploymentDetails(
+      employerName = employerName,
+      employerRef = employerRef,
+      startDate = startDate,
+      cessationDateQuestion = Some(cessationDate.isDefined),
+      cessationDate = cessationDate,
+      dateIgnored = dateIgnored,
+      employmentSubmittedOn = submittedOn,
+      employmentDetailsSubmittedOn = employmentData.map(_.submittedOn),
+      taxablePayToDate = employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
+      totalTaxToDate = employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
+      tipsAndOtherPaymentsQuestion = employmentData.map(_.pay.exists(_.tipsAndOtherPayments.isDefined)),
+      tipsAndOtherPayments = employmentData.flatMap(_.pay.flatMap(_.tipsAndOtherPayments)),
+      currentDataIsHmrcHeld = !isUsingCustomerData
+    )
+  }
+
+  def toEmploymentDetailsViewModel(isUsingCustomerData: Boolean): EmploymentDetailsViewModel = {
+    EmploymentDetailsViewModel(
+      employerName,
+      employerRef,
+      employmentId,
+      startDate,
+      Some(cessationDate.isDefined),
+      cessationDate,
+      employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
+      employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
+      employmentData.map(_.pay.exists(_.tipsAndOtherPayments.isDefined)),
+      employmentData.flatMap(_.pay.flatMap(_.tipsAndOtherPayments)),
+      isUsingCustomerData
+    )
+  }
+}
 
 object EmploymentSource {
   implicit val format: OFormat[EmploymentSource] = Json.format[EmploymentSource]

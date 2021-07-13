@@ -17,8 +17,8 @@
 package controllers.employment
 
 import common.SessionValues
-import config.{MockAuditService, MockIncomeTaxUserDataService}
-import models.employment.EmploymentData
+import config.{MockAuditService, MockEmploymentSessionService}
+import models.employment.{EmploymentData, EmploymentDetailsViewModel}
 import play.api.http.Status._
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
@@ -27,7 +27,7 @@ import views.html.employment.CheckEmploymentDetailsView
 
 import scala.concurrent.Future
 
-class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockIncomeTaxUserDataService with MockAuditService{
+class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockEmploymentSessionService with MockAuditService{
 
   lazy val view = app.injector.instanceOf[CheckEmploymentDetailsView]
   lazy val controller = new CheckEmploymentDetailsController()(
@@ -38,7 +38,8 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockInco
     mockAppConfig,
     mockIncomeTaxUserDataService,
     mockAuditService,
-    ec
+    ec,
+    mockErrorHandler
   )
   val taxYear = mockAppConfig.defaultTaxYear
   val employmentId = "223/AB12399"
@@ -49,17 +50,25 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockInco
     "return a result when GetEmploymentDataModel is in Session" which {
 
       s"has an OK($OK) status" in new TestWithAuth {
-        val data: Option[EmploymentData] = employmentsModel.hmrcEmploymentData.head.employmentData
-        val name: String = employmentsModel.hmrcEmploymentData.head.employerName
-        val ref: Option[String] = employmentsModel.hmrcEmploymentData.head.employerRef
-        val empId: String = employmentsModel.hmrcEmploymentData.head.employmentId
-
         val result: Future[Result] = {
-          mockFind(taxYear, Ok(view(name, ref, data, taxYear, isInYear = true, empId, isCustomerData = false)))
+          mockFind(taxYear, Ok(view(
+            EmploymentDetailsViewModel(
+              employerName = "Dave",
+              employerRef = Some("reference"),
+              employmentId = "id",
+              startDate = Some("2020-02-12"),
+              cessationDateQuestion = Some(true),
+              cessationDate = Some("2020-02-12"),
+              taxablePayToDate = Some(34234.15),
+              totalTaxToDate = Some(6782.92),
+              tipsAndOtherPaymentsQuestion = Some(true),
+              tipsAndOtherPayments = Some(67676),
+              isUsingCustomerData = false
+            ), taxYear, isInYear = true
+          )))
           controller.show(taxYear, employmentId = employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
-          )
-          )
+          ))
         }
 
         status(result) shouldBe OK

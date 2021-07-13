@@ -16,9 +16,9 @@
 
 package audit
 
-import models.employment.{EmploymentData, Pay}
-import utils.UnitTestWithApp
+import models.employment.EmploymentDetailsViewModel
 import play.api.libs.json.Json
+import utils.UnitTestWithApp
 
 class ViewEmploymentDetailsSpec extends UnitTestWithApp{
 
@@ -27,44 +27,41 @@ class ViewEmploymentDetailsSpec extends UnitTestWithApp{
       "produce valid json" in {
         val json = Json.parse(
           s"""{
-             |"taxYear": 2020,
-             |"userType": "individual",
-             |"nino":"AA12343AA",
-             |"mtditid":"mtditid",
-             |"employerName":"Dave",
-             |"employerRef":"reference",
-             |"employmentData":{
-             |  "submittedOn":"2020-02-12",
-             |  "employmentSequenceNumber":"123456789999",
-             |  "companyDirector": true,
-             |  "closeCompany":false,
-             |  "directorshipCeasedDate":"2020-02-12",
-             |  "occPen":false,
-             |  "disguisedRemuneration":false,
-             |  "pay": {
-             |    "taxablePayToDate":34234.15,
-             |    "totalTaxToDate":6782.92,
-             |    "tipsAndOtherPayments":67676,
-             |    "payFrequency":"CALENDAR MONTHLY",
-             |    "paymentDate":"2020-04-23",
-             |    "taxWeekNo":32,
-             |    "taxMonthNo":2
-             |  }
-             |}
+             |	"taxYear": 2020,
+             |	"userType": "individual",
+             |	"nino": "AA12343AA",
+             |	"mtditid": "mtditid",
+             |	"employmentData": {
+             |		"employerName": "Dave",
+             |		"employerRef": "reference",
+             |		"employmentId": "id",
+             |		"startDate": "2020-02-12",
+             |		"cessationDateQuestion": true,
+             |		"cessationDate": "2020-02-12",
+             |		"taxablePayToDate": 34234.15,
+             |		"totalTaxToDate": 6782.92,
+             |		"tipsAndOtherPaymentsQuestion": true,
+             |		"tipsAndOtherPayments": 67676,
+             |		"isUsingCustomerData": false
+             |	}
              |}""".stripMargin)
 
+        //scalastyle:off
         val auditModel = ViewEmploymentDetailsAudit(2020, "individual", "AA12343AA",
-          "mtditid", "Dave", Some("reference"),
-          Some(EmploymentData(
-            submittedOn = "2020-02-12",
-            employmentSequenceNumber = Some("123456789999"),
-            companyDirector = Some(true),
-            closeCompany = Some(false),
-            directorshipCeasedDate = Some("2020-02-12"),
-            occPen = Some(false),
-            disguisedRemuneration = Some(false),
-            pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))
-          ))))
+          "mtditid",
+          EmploymentDetailsViewModel(
+            employerName = "Dave",
+            employerRef = Some("reference"),
+            employmentId = "id",
+            startDate = Some("2020-02-12"),
+            cessationDateQuestion = Some(true),
+            cessationDate = Some("2020-02-12"),
+            taxablePayToDate = Some(34234.15),
+            totalTaxToDate = Some(6782.92),
+            tipsAndOtherPaymentsQuestion = Some(true),
+            tipsAndOtherPayments = Some(67676),
+            isUsingCustomerData = false
+          ))
         Json.toJson(auditModel) shouldBe json
       }
     }
