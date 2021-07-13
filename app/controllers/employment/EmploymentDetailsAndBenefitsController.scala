@@ -22,7 +22,7 @@ import javax.inject.Inject
 import models.employment.EmploymentSource
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.IncomeTaxUserDataService
+import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.employment.EmploymentDetailsAndBenefitsView
@@ -33,14 +33,14 @@ class EmploymentDetailsAndBenefitsController @Inject()(implicit val cc: Messages
                                                        authAction: AuthorisedAction,
                                                        employmentDetailsAndBenefitsView: EmploymentDetailsAndBenefitsView,
                                                        implicit val appConfig: AppConfig,
-                                                       incomeTaxUserDataService: IncomeTaxUserDataService,
+                                                       employmentSessionService: EmploymentSessionService,
                                                        implicit val ec: ExecutionContext
                                                       ) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
 
-    incomeTaxUserDataService.findUserData(user, taxYear){ allEmploymentData =>
+    employmentSessionService.findPreviousEmploymentUserData(user, taxYear){ allEmploymentData =>
       val source: Option[EmploymentSource] = {
         allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId))
       }

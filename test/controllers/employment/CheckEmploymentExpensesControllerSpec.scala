@@ -17,7 +17,7 @@
 package controllers.employment
 
 import common.SessionValues
-import config.{MockAuditService, MockIncomeTaxUserDataService}
+import config.{MockAuditService, MockEmploymentSessionService}
 import play.api.http.HeaderNames.LOCATION
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Results.{Ok, Redirect}
@@ -29,7 +29,7 @@ import views.html.employment.CheckEmploymentExpensesView
 
 import scala.concurrent.Future
 
-class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with DefaultAwaitTimeout with MockIncomeTaxUserDataService with MockAuditService {
+class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with DefaultAwaitTimeout with MockEmploymentSessionService with MockAuditService {
 
   lazy val view: CheckEmploymentExpensesView = app.injector.instanceOf[CheckEmploymentExpensesView]
 

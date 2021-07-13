@@ -17,7 +17,7 @@
 package controllers.employment
 
 import common.SessionValues
-import config.MockIncomeTaxUserDataService
+import config.MockEmploymentSessionService
 import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Result
@@ -27,7 +27,7 @@ import views.html.employment.{MultipleEmploymentsSummaryView, SingleEmploymentSu
 
 import scala.concurrent.Future
 
-class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockIncomeTaxUserDataService {
+class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymentSessionService {
 
   object FullModel {
 

@@ -23,8 +23,9 @@ import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 import play.api.mvc.Results._
 import play.api.http.Status._
-
 import javax.inject.{Inject, Singleton}
+import models.User
+
 import scala.concurrent.Future
 
 @Singleton
@@ -38,6 +39,10 @@ class ErrorHandler @Inject()(internalServerErrorTemplate: InternalServerErrorTem
     internalServerErrorTemplate()
 
   override def notFoundTemplate(implicit request: Request[_]): Html = notFoundTemplate()
+
+  def internalServerError()(implicit user: User[_]): Result = {
+    InternalServerError(internalServerErrorTemplate())
+  }
 
   def handleError(status: Int)(implicit request: Request[_]): Result = {
     status match {

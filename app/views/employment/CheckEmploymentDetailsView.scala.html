@@ -18,7 +18,7 @@
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Heading
 @import utils.ViewUtils._
-@import models.employment.EmploymentData
+@import models.employment.EmploymentDetailsViewModel
 
 @this(
         layout: Layout,
@@ -28,7 +28,7 @@
         govukSummaryList: GovukSummaryList,
         govukInsetText: GovukInsetText
 )
-@(employerNameData: String, employerRefData: Option[String], employmentDetails: Option[EmploymentData], taxYear: Int, isInYear:Boolean, employmentId:String, isCustomerData:Boolean)(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
+@(employmentDetails: EmploymentDetailsViewModel, taxYear: Int, isInYear:Boolean)(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
 
 
 @headingForUse = @{
@@ -36,7 +36,7 @@
 }
 
 @margin = @{
-    if(!isCustomerData) "govuk-!-margin-bottom-2" else "govuk-!-margin-bottom-4"
+    if(!employmentDetails.isUsingCustomerData) "govuk-!-margin-bottom-2" else "govuk-!-margin-bottom-4"
 }
 
 @layout(pageTitle = headingForUse, taxYear = Some(taxYear), isAgent = user.isAgent) {
@@ -45,7 +45,7 @@
 
     @heading(headingForUse, Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), margin)
 
-    @if(!isCustomerData){
+    @if(!employmentDetails.isUsingCustomerData){
         <p class="govuk-body">@messages(s"employment.employmentInformation.content.${if(user.isAgent) "agent" else "individual"}")</p>
     }
 
@@ -61,37 +61,29 @@
 
         val msgKeyGeneric = "employment.employmentDetails"
 
-        val employerName = EmploymentDataForView(messages(msgKeyGeneric + ".employer"), Some(employerNameData), dummyCall,
+        val employerName = EmploymentDataForView(messages(msgKeyGeneric + ".employer"), Some(employmentDetails.employerName), dummyCall,
         messages(s"$msgKeyGeneric.hiddenText.employer"))
 
-        val payeRef = EmploymentDataForView(messages(msgKeyGeneric + ".payeRef"), employerRefData, dummyCall,
+        val payeRef = EmploymentDataForView(messages(msgKeyGeneric + ".payeRef"), employmentDetails.employerRef, dummyCall,
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payeRef", user.isAgent)))
 
-        val directorCeasedDate = EmploymentDataForView(messages(msgKeyGeneric + ".directorCeasedDate"),
-        employmentDetails.flatMap(_.directorshipCeasedDate.flatMap(dateFormatter)), dummyCall,
-        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.directorCeasedDate", user.isAgent)))
-
-        val closeCompany = EmploymentDataForView(messages(msgKeyGeneric + ".closeCompany"),
-        convertBoolToYesOrNo(employmentDetails.flatMap(_.closeCompany)), dummyCall,
-        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.closeCompany", user.isAgent)))
-
         val payReceived = EmploymentDataForView(messages(msgKeyGeneric + ".payReceived"),
-        employmentDetails.flatMap(_.pay.flatMap(_.taxablePayToDate.map(amount => bigDecimalCurrency(amount.toString)))), dummyCall,
+        employmentDetails.taxablePayToDate.map(amount => bigDecimalCurrency(amount.toString)), dummyCall,
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payReceived", user.isAgent)))
 
         val totalTaxToDate = EmploymentDataForView(messages(msgKeyGeneric + ".totalTaxToDate"),
-        employmentDetails.flatMap(_.pay.flatMap(_.totalTaxToDate.map(amount => bigDecimalCurrency(amount.toString)))), dummyCall,
+        employmentDetails.totalTaxToDate.map(amount => bigDecimalCurrency(amount.toString)), dummyCall,
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.totalTaxToDate", user.isAgent)))
 
         val paymentsNotOnYourP60 = EmploymentDataForView(messages(getAgentDynamicContent(s"$msgKeyGeneric.paymentNotOnYourP60",user.isAgent)),
-        convertBoolToYesOrNo(employmentDetails.map(_.pay.map(_.tipsAndOtherPayments.isDefined).getOrElse(false))), dummyCall,
+        convertBoolToYesOrNo(employmentDetails.tipsAndOtherPaymentsQuestion), dummyCall,
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.paymentNotOnYourP60", user.isAgent)))
 
         val tipsAndOtherPaymentsAmount = EmploymentDataForView(messages(getAgentDynamicContent(s"$msgKeyGeneric.tipsAndOtherPayments", user.isAgent)),
-        employmentDetails.flatMap(_.pay.flatMap(_.tipsAndOtherPayments.map(amount => bigDecimalCurrency(amount.toString)))), dummyCall,
+        employmentDetails.tipsAndOtherPayments.map(amount => bigDecimalCurrency(amount.toString)), dummyCall,
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.tipsAndOtherPayments", user.isAgent)))
 
-        val employmentDataFields = if(isInYear) {List(employerName, payeRef, directorCeasedDate, closeCompany,
+        val employmentDataFields = if(isInYear) {List(employerName, payeRef,
         payReceived, totalTaxToDate, tipsAndOtherPaymentsAmount)} else {
         List(employerName, payeRef, payReceived, totalTaxToDate, paymentsNotOnYourP60, tipsAndOtherPaymentsAmount)
         }
@@ -110,7 +102,7 @@
         )
     }
     @if(!isInYear){
-        @formWithCSRF(action = controllers.employment.routes.CheckEmploymentDetailsController.submit(taxYear, employmentId)) {
+        @formWithCSRF(action = controllers.employment.routes.CheckEmploymentDetailsController.submit(taxYear, employmentDetails.employmentId)) {
             @button("common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))
         }
     }
