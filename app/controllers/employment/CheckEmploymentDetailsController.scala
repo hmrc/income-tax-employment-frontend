@@ -49,7 +49,8 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     def inYearResult(allEmploymentData: AllEmploymentData): Result = {
       employmentSessionService.employmentSourceToUse(allEmploymentData,employmentId,isInYear) match {
         case Some(source) =>
-          performAuditAndRenderView(source.toEmploymentDetailsViewModel(employmentSessionService.shouldUseCustomerData(allEmploymentData,employmentId,isInYear)),
+          performAuditAndRenderView(source.toEmploymentDetailsViewModel(
+            employmentSessionService.shouldUseCustomerData(allEmploymentData,employmentId,isInYear)),
             taxYear, isInYear)
         case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }

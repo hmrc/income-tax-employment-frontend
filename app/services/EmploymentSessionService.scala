@@ -46,7 +46,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     getPriorData(taxYear)(user,hc).map {
       case Right(IncomeTaxUserData(Some(employmentData))) => result(employmentData)
       case Right(IncomeTaxUserData(None)) =>
-        logger.info(s"[IncomeTaxUserDataService][findUserData] No employment data found for user. SessionId: ${user.sessionId}")
+        logger.info(s"[EmploymentSessionService][findPreviousEmploymentUserData] No employment data found for user. SessionId: ${user.sessionId}")
         Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       case Left(error) => errorHandler.handleError(error.status)
     }
@@ -58,6 +58,17 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
   def getSessionData(taxYear: Int, employmentId: String)(implicit user: User[_]): Future[Option[EmploymentUserData]] = {
     employmentUserDataRepository.find(taxYear, employmentId)
+  }
+
+  def getSessionDataAndReturnResult(taxYear: Int, employmentId: String)(result: EmploymentUserData => Future[Result])
+                                   (implicit user: User[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Result] = {
+
+    employmentUserDataRepository.find(taxYear, employmentId).flatMap {
+      case Some(employmentUserData: EmploymentUserData) => result(employmentUserData)
+      case None =>
+        logger.info(s"[EmploymentSessionService][getSessionDataAndReturnResult] No employment data found for user. SessionId: ${user.sessionId}")
+        Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+    }
   }
 
   //scalastyle:off
