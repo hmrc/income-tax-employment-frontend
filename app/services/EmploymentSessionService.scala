@@ -65,9 +65,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
     employmentUserDataRepository.find(taxYear, employmentId).flatMap {
       case Some(employmentUserData: EmploymentUserData) => result(employmentUserData)
-      case None =>
-        logger.info(s"[EmploymentSessionService][getSessionDataAndReturnResult] No employment data found for user. SessionId: ${user.sessionId}")
-        Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+      case None => Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     }
   }
 
