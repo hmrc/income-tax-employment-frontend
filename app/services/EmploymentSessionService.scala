@@ -108,12 +108,14 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       priorDataResponse <- getPriorData(taxYear)
     } yield {
 
+      if(optionalCya.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandle] No employment CYA data found for user. SessionId: ${user.sessionId}")
+
       val employmentDataResponse = priorDataResponse.map(_.employment)
 
       employmentDataResponse match {
         case Right(Some(employmentData)) => block(optionalCya.map(_.employment), employmentData)
         case Right(None) =>
-          logger.info(s"[IncomeTaxUserDataService][findUserData] No employment data found for user. SessionId: ${user.sessionId}")
+          logger.info(s"[EmploymentSessionService][getAndHandle] No employment data found for user. SessionId: ${user.sessionId}")
           Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
         case Left(error) => Future(errorHandler.handleError(error.status))
       }
