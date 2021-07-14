@@ -54,6 +54,33 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
 
   implicit val request: FakeRequest[AnyContent] = fakeRequest
 
+  "clear" should {
+    "remove a record" in new EmptyDatabase {
+      count mustBe 0
+      val res: Boolean = await(employmentRepo.update(employmentUserData))
+      res mustBe true
+      count mustBe 1
+      val clear: Boolean = await(employmentRepo.clear(taxYear,employmentUserData.employmentId)(User(
+          employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId, AffinityGroup.Individual.toString)))
+      clear mustBe true
+      count mustBe 0
+    }
+  }
+
+  "create" should {
+    "create a record" in new EmptyDatabase {
+      count mustBe 0
+      val res: Boolean = await(employmentRepo.create(employmentUserData)(User(
+        employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId, AffinityGroup.Individual.toString)))
+      res mustBe true
+      count mustBe 1
+      val duplicateAttempt: Boolean = await(employmentRepo.create(employmentUserData)(User(
+        employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId, AffinityGroup.Individual.toString)))
+      duplicateAttempt mustBe false
+      count mustBe 1
+    }
+  }
+
   "update" should {
     "add a document to the collection" in new EmptyDatabase {
       count mustBe 0

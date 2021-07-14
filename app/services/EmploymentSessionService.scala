@@ -46,7 +46,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     getPriorData(taxYear)(user,hc).map {
       case Right(IncomeTaxUserData(Some(employmentData))) => result(employmentData)
       case Right(IncomeTaxUserData(None)) =>
-        logger.info(s"[IncomeTaxUserDataService][findUserData] No employment data found for user. SessionId: ${user.sessionId}")
+        logger.info(s"[EmploymentSessionService][findPreviousEmploymentUserData] No employment data found for user. SessionId: ${user.sessionId}")
         Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       case Left(error) => errorHandler.handleError(error.status)
     }
@@ -58,6 +58,15 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
   def getSessionData(taxYear: Int, employmentId: String)(implicit user: User[_]): Future[Option[EmploymentUserData]] = {
     employmentUserDataRepository.find(taxYear, employmentId)
+  }
+
+  def getSessionDataAndReturnResult(taxYear: Int, employmentId: String)(result: EmploymentUserData => Future[Result])
+                                   (implicit user: User[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Result] = {
+
+    employmentUserDataRepository.find(taxYear, employmentId).flatMap {
+      case Some(employmentUserData: EmploymentUserData) => result(employmentUserData)
+      case None => Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+    }
   }
 
   //scalastyle:off
@@ -97,12 +106,15 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       priorDataResponse <- getPriorData(taxYear)
     } yield {
 
+      if(optionalCya.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandle] No employment CYA data found for user. SessionId: ${user.sessionId}")
+
       val employmentDataResponse = priorDataResponse.map(_.employment)
 
       employmentDataResponse match {
         case Right(Some(employmentData)) => block(optionalCya.map(_.employment), employmentData)
         case Right(None) =>
-          logger.info(s"[IncomeTaxUserDataService][findUserData] No employment data found for user. SessionId: ${user.sessionId}")
+          logger.info(s"[EmploymentSessionService][getAndHandle] No employment data found for user." +
+            s"Redirecting to overview page. SessionId: ${user.sessionId}")
           Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
         case Left(error) => Future(errorHandler.handleError(error.status))
       }

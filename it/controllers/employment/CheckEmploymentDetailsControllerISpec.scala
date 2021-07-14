@@ -16,7 +16,9 @@
 
 package controllers.employment
 
+import models.User
 import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -49,7 +51,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val expectedInsetText: String
     val employeeFieldName7: String
     val employeeFieldName8: String
-
+    val paymentsNotOnYourP60: String
     val changePAYERefHiddenText:String
     val changePayReceivedHiddenText:String
     val taxTakenFromPayHiddenText:String
@@ -66,7 +68,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payeReferenceField2: String
     val payReceivedField3: String
     val taxField4: String
-
+    val paymentsNotOnP60Yes: String
+    val paymentsNotOnP60No: String
     val changeEmployerNameHiddenText:String
   }
 
@@ -77,8 +80,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payReceivedB = "£34234.50"
     val taxTakenFromPay = "£6782.92"
     val taxTakenFromPayB = "£6782.90"
-    val paymentsNotOnP60No = "No"
-    val paymentsNotOnP60Yes = "Yes"
     val paymentsNotOnP60 = "£67676"
   }
 
@@ -91,7 +92,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payeReferenceField2 = "PAYE reference"
     val payReceivedField3 = "Pay received"
     val taxField4 = "UK tax taken from pay"
-
+    val paymentsNotOnP60Yes = "Yes"
+    val paymentsNotOnP60No = "No"
     val changeEmployerNameHiddenText: String =  "the name of this employer"
   }
 
@@ -104,7 +106,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payeReferenceField2 = "PAYE reference"
     val payReceivedField3 = "Pay received"
     val taxField4 = "UK tax taken from pay"
-
+    val paymentsNotOnP60Yes = "Yes"
+    val paymentsNotOnP60No = "No"
     val changeEmployerNameHiddenText: String =  "the name of this employer"
   }
 
@@ -120,6 +123,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val taxTakenFromPayHiddenText: String = "the amount of tax you paid"
     val paymentsNotOnP60HiddenText: String = "if you got payments that are not on your P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "the amount of payments that were not on your P60"
+    val paymentsNotOnYourP60: String = "Payments not on your P60"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -134,6 +138,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val taxTakenFromPayHiddenText: String = "the amount of tax your client paid"
     val paymentsNotOnP60HiddenText: String = "if your client got payments that are not on their P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "the amount of payments that were not on your client’s P60"
+    val paymentsNotOnYourP60: String = "Payments not on your client’s P60"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -148,6 +153,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val taxTakenFromPayHiddenText: String = "the amount of tax you paid"
     val paymentsNotOnP60HiddenText: String = "if you got payments that are not on your P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "the amount of payments that were not on your P60"
+    val paymentsNotOnYourP60: String = "Payments not on your P60"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -162,6 +168,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val taxTakenFromPayHiddenText: String = "the amount of tax your client paid"
     val paymentsNotOnP60HiddenText: String = "if your client got payments that are not on their P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "the amount of payments that were not on your client’s P60"
+    val paymentsNotOnYourP60: String = "Payments not on your client’s P60"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -269,6 +276,68 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
         //noinspection ScalaStyle
+        "redirect to the overview page when prior data exists but not matching the id" which {
+
+          implicit lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(fullEmploymentsModel(None)), nino, 2021)
+            urlGet(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+          }
+
+          "has an SEE OTHER status" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2021/view")
+          }
+        }
+        //noinspection ScalaStyle
+        "for end of year return a fully populated page when cya data exists" which {
+
+          implicit lazy val result: WSResponse = {
+            dropEmploymentDB()
+            insertCyaData(EmploymentUserData(
+              sessionId,
+              "1234567890",
+              "AA123456A",
+              2021,
+              "001",
+              isPriorSubmission = true,
+              EmploymentCYAModel(
+                fullEmploymentsModel(None).hmrcEmploymentData.head.toEmploymentDetails(false),
+                None
+              )
+            ),User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(fullEmploymentsModel(None)), nino, 2021)
+            urlGet(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has an OK status" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          textOnPageCheck(user.commonExpectedResults.expectedCaption(2021), captionSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentTextSelector)
+          welshToggleCheck(user.isWelsh)
+          textOnPageCheck(user.commonExpectedResults.employerNameField1, summaryListRowFieldNameSelector(1))
+          textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(4))
+          textOnPageCheck(user.specificExpectedResults.get.paymentsNotOnYourP60, summaryListRowFieldNameSelector(5))
+          textOnPageCheck(user.commonExpectedResults.paymentsNotOnP60Yes, summaryListRowFieldAmountSelector(5))
+          textOnPageCheck(user.specificExpectedResults.get.employeeFieldName8, summaryListRowFieldNameSelector(6))
+          textOnPageCheck(ContentValues.paymentsNotOnP60, summaryListRowFieldAmountSelector(6))
+        }
+
+        //noinspection ScalaStyle
         "for in year return a fully populated page when all the fields are populated" which {
 
           implicit lazy val result: WSResponse = {
@@ -342,7 +411,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.taxTakenFromPayHiddenText}",
             cyaChangeLink(4), dummyHref)
           textOnPageCheck(user.specificExpectedResults.get.employeeFieldName7, summaryListRowFieldNameSelector(5))
-          textOnPageCheck(ContentValues.paymentsNotOnP60Yes, summaryListRowFieldAmountSelector(5))
+          textOnPageCheck(user.commonExpectedResults.paymentsNotOnP60Yes, summaryListRowFieldAmountSelector(5))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.paymentsNotOnP60HiddenText}",
             cyaChangeLink(5), dummyHref)
           textOnPageCheck(user.specificExpectedResults.get.employeeFieldName8, summaryListRowFieldNameSelector(6))
@@ -415,7 +484,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.taxTakenFromPayHiddenText}",
             cyaChangeLink(3), dummyHref)
           textOnPageCheck(user.specificExpectedResults.get.employeeFieldName7, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(ContentValues.paymentsNotOnP60No, summaryListRowFieldAmountSelector(4))
+          textOnPageCheck(user.commonExpectedResults.paymentsNotOnP60No, summaryListRowFieldAmountSelector(4))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.paymentsNotOnP60HiddenText}",
             cyaChangeLink(4), dummyHref)
 

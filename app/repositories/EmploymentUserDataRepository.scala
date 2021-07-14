@@ -28,10 +28,13 @@ import org.joda.time.{DateTime, DateTimeZone}
 import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.model.Indexes.{ascending, compoundIndex}
 import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions, IndexModel, IndexOptions}
+import play.api.Logging
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
+import utils.PagerDutyHelper.pagerDutyLog
+import utils.PagerDutyHelper.PagerDutyKeys.FAILED_TO_CREATE_EMPLOYMENT_DATA
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,9 +47,16 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfi
   indexes        = EmploymentUserDataIndexes.indexes(appConfig),
   //TODO REMOVE REPLACE INDEXES WHEN DEPLOYED FULLY TO PRODUCTION
   replaceIndexes = true
-) with Repository with EmploymentUserDataRepository {
+) with Repository with EmploymentUserDataRepository with Logging {
 
-  def create[T](userData: EmploymentUserData)(implicit user: User[T]): Future[Boolean] = collection.insertOne(userData).toFutureOption().map(_.isDefined)
+  def create[T](userData: EmploymentUserData)(implicit user: User[T]): Future[Boolean] = {
+    collection.insertOne(userData).toFutureOption().map(_.isDefined).recover{
+      case e: Exception =>
+        pagerDutyLog(FAILED_TO_CREATE_EMPLOYMENT_DATA, s"[EmploymentUserDataRepositoryImpl][create] Failed to create employment user data. " +
+          s"Error:${e.getMessage}. SessionId: ${user.sessionId}")
+        false
+    }
+  }
 
   def find[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Option[EmploymentUserData]] = {
     def updateLastUpdated: Future[Option[EmploymentUserData]] = {
@@ -59,7 +69,9 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfi
 
     collection.find(filter = filter(user.sessionId, user.mtditid, user.nino, taxYear, employmentId)).toSingle().toFutureOption().flatMap {
       case Some(_) => updateLastUpdated
-      case None => Future(None)
+      case None =>
+        logger.info(s"[EmploymentUserDataRepositoryImpl][find] No employment CYA data found for user. SessionId: ${user.sessionId}")
+        Future(None)
     }
   }
 

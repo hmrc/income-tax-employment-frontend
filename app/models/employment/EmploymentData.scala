@@ -25,7 +25,7 @@ case class EmploymentData(submittedOn: String,
                           directorshipCeasedDate: Option[String],
                           occPen: Option[Boolean],
                           disguisedRemuneration: Option[Boolean],
-                          pay: Option[Pay])
+                          pay: Option[Pay]) //TODO Add extra fields that we dont use lumpSums, deductions etc
 
 object EmploymentData {
   implicit val formats: OFormat[EmploymentData] = Json.format[EmploymentData]
