@@ -53,7 +53,7 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfi
     collection.insertOne(userData).toFutureOption().map(_.isDefined).recover{
       case e: Exception =>
         pagerDutyLog(FAILED_TO_CREATE_EMPLOYMENT_DATA, s"[EmploymentUserDataRepositoryImpl][create] Failed to create employment user data. " +
-          s"Error:${e.getMessage} SessionId: ${user.sessionId}")
+          s"Error:${e.getMessage}. SessionId: ${user.sessionId}")
         false
     }
   }
