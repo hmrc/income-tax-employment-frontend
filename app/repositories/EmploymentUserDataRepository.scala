@@ -16,12 +16,9 @@
 
 package repositories
 
-import java.util.concurrent.TimeUnit
-
 import com.mongodb.client.model.ReturnDocument
 import com.mongodb.client.model.Updates.set
 import config.AppConfig
-import javax.inject.{Inject, Singleton}
 import models.User
 import models.mongo.EmploymentUserData
 import org.joda.time.{DateTime, DateTimeZone}
@@ -36,6 +33,8 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
 import utils.PagerDutyHelper.pagerDutyLog
 import utils.PagerDutyHelper.PagerDutyKeys.FAILED_TO_CREATE_EMPLOYMENT_DATA
 
+import java.util.concurrent.TimeUnit
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -44,9 +43,7 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfi
   mongoComponent = mongo,
   collectionName = "employmentUserData",
   domainFormat   = EmploymentUserData.formats,
-  indexes        = EmploymentUserDataIndexes.indexes(appConfig),
-  //TODO REMOVE REPLACE INDEXES WHEN DEPLOYED FULLY TO PRODUCTION
-  replaceIndexes = true
+  indexes        = EmploymentUserDataIndexes.indexes(appConfig)
 ) with Repository with EmploymentUserDataRepository with Logging {
 
   def create[T](userData: EmploymentUserData)(implicit user: User[T]): Future[Boolean] = {

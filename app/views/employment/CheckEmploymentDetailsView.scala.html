@@ -76,7 +76,7 @@
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.totalTaxToDate", user.isAgent)))
 
         val paymentsNotOnYourP60 = EmploymentDataForView(messages(getAgentDynamicContent(s"$msgKeyGeneric.paymentNotOnYourP60",user.isAgent)),
-        convertBoolToYesOrNo(employmentDetails.tipsAndOtherPaymentsQuestion), dummyCall,
+        convertBoolToYesOrNo(employmentDetails.tipsAndOtherPaymentsQuestion), controllers.employment.routes.OtherPaymentsController.show(taxYear, employmentDetails.employmentId),
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.paymentNotOnYourP60", user.isAgent)))
 
         val tipsAndOtherPaymentsAmount = EmploymentDataForView(messages(getAgentDynamicContent(s"$msgKeyGeneric.tipsAndOtherPayments", user.isAgent)),

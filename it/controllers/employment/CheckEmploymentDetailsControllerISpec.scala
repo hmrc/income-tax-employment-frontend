@@ -272,6 +272,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
   ".show" when {
     import Selectors._
 
+    val employmentId = "001"
+
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
@@ -373,12 +375,11 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         }
         //noinspection ScalaStyle
         "for end of year return a fully populated page, with change links, when all the fields are populated" which {
-
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear-1)
-            urlGet(s"$appUrl/${taxYear-1}/check-employment-details?employmentId=001", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(s"$appUrl/${taxYear-1}/check-employment-details?employmentId=$employmentId", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -388,6 +389,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           }
 
           val dummyHref =  "/income-through-software/return/employment-income/2021/check-employment-expenses"
+
+          val otherPaymentsQuestionPageHref = controllers.employment.routes.OtherPaymentsController.show(taxYear-1, employmentId)
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -413,7 +416,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.specificExpectedResults.get.employeeFieldName7, summaryListRowFieldNameSelector(5))
           textOnPageCheck(user.commonExpectedResults.paymentsNotOnP60Yes, summaryListRowFieldAmountSelector(5))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.paymentsNotOnP60HiddenText}",
-            cyaChangeLink(5), dummyHref)
+            cyaChangeLink(5), otherPaymentsQuestionPageHref.url)
           textOnPageCheck(user.specificExpectedResults.get.employeeFieldName8, summaryListRowFieldNameSelector(6))
           textOnPageCheck(ContentValues.paymentsNotOnP60, summaryListRowFieldAmountSelector(6))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.amountOfPaymentsNotOnP60HiddenText}",
@@ -456,7 +459,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(userData(CustomerMinModel.miniData), nino, taxYear-1)
-            urlGet(s"$appUrl/${taxYear-1}/check-employment-details?employmentId=001", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(s"$appUrl/${taxYear-1}/check-employment-details?employmentId=$employmentId", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -466,6 +469,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           }
 
           val dummyHref =  "/income-through-software/return/employment-income/2021/check-employment-expenses"
+          val otherPaymentsQuestionPageHref = controllers.employment.routes.OtherPaymentsController.show(taxYear-1, employmentId)
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -486,7 +490,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.specificExpectedResults.get.employeeFieldName7, summaryListRowFieldNameSelector(4))
           textOnPageCheck(user.commonExpectedResults.paymentsNotOnP60No, summaryListRowFieldAmountSelector(4))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.paymentsNotOnP60HiddenText}",
-            cyaChangeLink(4), dummyHref)
+            cyaChangeLink(4), otherPaymentsQuestionPageHref.url)
 
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           formPostLinkCheck(user.commonExpectedResults. continueButtonLink, continueButtonFormSelector)
