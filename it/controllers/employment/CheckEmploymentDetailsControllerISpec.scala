@@ -18,7 +18,7 @@ package controllers.employment
 
 import models.User
 import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames

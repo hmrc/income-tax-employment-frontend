@@ -102,7 +102,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
     "save the data when its an update" in {
 
-      mockUpdate(employmentData,true)
+      mockUpdate(true)
 
       val response = service.updateSessionData(
         "employmentId",cya, taxYear, needsCreating = false, true
@@ -118,7 +118,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
         None
       )
 
-      mockUpdate(EmploymentUserData(sessionId,"1234567890",nino,taxYear,"employmentId",true,cya),false)
+      mockUpdate(false)
 
       val response = service.updateSessionData(
         "employmentId",cya, taxYear, needsCreating = false, true

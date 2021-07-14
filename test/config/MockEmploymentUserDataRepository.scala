@@ -41,7 +41,7 @@ trait MockEmploymentUserDataRepository extends MockFactory {
       .returns(Future.successful(response))
       .anyNumberOfTimes()
   }
-  def mockUpdate(employmentUserData: EmploymentUserData, response: Boolean): CallHandler1[EmploymentUserData, Future[Boolean]] = {
+  def mockUpdate(response: Boolean): CallHandler1[EmploymentUserData, Future[Boolean]] = {
     (mockEmploymentUserDataRepository.update(_: EmploymentUserData))
       .expects(*)
       .returns(Future.successful(response))
