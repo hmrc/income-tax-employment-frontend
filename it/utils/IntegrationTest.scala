@@ -72,6 +72,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "microservice.services.income-tax-submission.url" -> s"http://$wiremockHost:$wiremockPort",
     "microservice.services.view-and-change.url" -> s"http://$wiremockHost:$wiremockPort",
     "microservice.services.sign-in.url" -> s"/auth-login-stub/gg-sign-in",
+    "taxYearErrorFeatureSwitch" -> "false"
   )
 
   def externalConfig: Map[String, String] = Map(

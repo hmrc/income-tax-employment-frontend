@@ -28,6 +28,7 @@ import views.html.employment.CheckEmploymentDetailsView
 import javax.inject.Inject
 import models.User
 import models.mongo.EmploymentCYAModel
+import play.api.Logging
 import services.EmploymentSessionService
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,7 +41,8 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
                                                  employmentSessionService: EmploymentSessionService,
                                                  auditService: AuditService,
                                                  ec: ExecutionContext,
-                                                 errorHandler: ErrorHandler) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                                 errorHandler: ErrorHandler) extends FrontendController(cc)
+  with I18nSupport with SessionHelper with Logging {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
 
@@ -49,9 +51,13 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     def inYearResult(allEmploymentData: AllEmploymentData): Result = {
       employmentSessionService.employmentSourceToUse(allEmploymentData,employmentId,isInYear) match {
         case Some(source) =>
-          performAuditAndRenderView(source.toEmploymentDetailsViewModel(employmentSessionService.shouldUseCustomerData(allEmploymentData,employmentId,isInYear)),
+          performAuditAndRenderView(source.toEmploymentDetailsViewModel(
+            employmentSessionService.shouldUseCustomerData(allEmploymentData,employmentId,isInYear)),
             taxYear, isInYear)
-        case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        case None =>
+          logger.info(s"[CheckEmploymentDetailsController][inYearResult] No prior employment data exists with employmentId." +
+            s"Redirecting to overview page. SessionId: ${user.sessionId}")
+          Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
 
@@ -67,7 +73,10 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
             performAuditAndRenderView(source.toEmploymentDetailsViewModel(isUsingCustomerData),taxYear, isInYear)
           }
 
-        case None => Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+        case None =>
+          logger.info(s"[CheckEmploymentDetailsController][saveCYAAndReturnEndOfYearResult] No prior employment data exists with employmentId." +
+            s"Redirecting to overview page. SessionId: ${user.sessionId}")
+          Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
       }
     }
 
