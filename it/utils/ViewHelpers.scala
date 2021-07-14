@@ -22,7 +22,7 @@ import org.jsoup.nodes.Document
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.HeaderNames
-import play.api.libs.ws.{WSClient, WSResponse}
+import play.api.libs.ws.{BodyWritable, WSClient, WSResponse}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
 trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
@@ -50,6 +50,18 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
 
     val newHeaders = if(welsh) Seq(HeaderNames.ACCEPT_LANGUAGE -> "cy") ++ headers else headers
     await(wsClient.url(url).withFollowRedirects(follow).withHttpHeaders(newHeaders: _*).get())
+  }
+
+  def urlPost[T](url: String,
+                 body: T,
+                 welsh: Boolean = false,
+                 follow: Boolean = true,
+                 headers: Seq[(String, String)] = Seq()
+                )(implicit wsClient: WSClient, bodyWritable: BodyWritable[T]): WSResponse = {
+
+    val headersWithNoCheck = headers ++ Seq("Csrf-Token" -> "nocheck")
+    val newHeaders = if(welsh) Seq(HeaderNames.ACCEPT_LANGUAGE -> "cy") ++ headersWithNoCheck else headersWithNoCheck
+    await(wsClient.url(url).withFollowRedirects(follow).withHttpHeaders(newHeaders: _*).post(body))
   }
 
   def elementText(selector: String)(implicit document: () => Document): String = {
@@ -87,6 +99,12 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
   def textOnPageCheck(text: String, selector: String, additionalTestText: String = "")(implicit document: () => Document): Unit = {
     s"have text on the screen of '$text' $additionalTestText" in {
       document().select(selector).text() shouldBe text
+    }
+  }
+
+  def formRadioValueCheck(selected: Boolean, selector: String)(implicit document: () => Document): Unit = {
+    s"have a radio button form with the value set to '$selected'" in {
+      document().select(selector).attr("value") shouldBe selected.toString
     }
   }
 

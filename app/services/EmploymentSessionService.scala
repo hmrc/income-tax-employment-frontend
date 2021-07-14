@@ -86,16 +86,12 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     )
 
     //TODO See if we can remove the create / update and have one method
-    if(needsCreating){
-      employmentUserDataRepository.create(userData).map {
-        case true => onSuccess
-        case false => onFail
-      }
-    } else {
-      employmentUserDataRepository.update(userData).map {
-        case true => onSuccess
-        case false => onFail
-      }
+    val resultFuture: Future[Boolean] =
+      if(needsCreating) employmentUserDataRepository.create(userData) else employmentUserDataRepository.update(userData)
+
+    resultFuture.map {
+      case true => onSuccess
+      case false => onFail
     }
   }
 
