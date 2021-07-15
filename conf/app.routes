@@ -14,6 +14,9 @@ GET        /:taxYear/check-employment-expenses              controllers.employme
 
 GET        /:taxYear/check-employment-benefits              controllers.employment.CheckYourBenefitsController.show(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/amount-of-payments-not-on-p60          controllers.employment.AmountOfTipsOnP60Controller.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/amount-of-payments-not-on-p60          controllers.employment.AmountOfTipsOnP60Controller.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/payments-not-on-p60                    controllers.employment.OtherPaymentsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/payments-not-on-p60                    controllers.employment.OtherPaymentsController.submit(taxYear: Int, employmentId: String)
 
