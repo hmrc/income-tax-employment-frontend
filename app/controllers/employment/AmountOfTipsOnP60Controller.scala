@@ -42,7 +42,7 @@ class AmountOfTipsOnP60Controller @Inject()(implicit val cc: MessagesControllerC
                                             errorHandler: ErrorHandler,
                                             implicit val ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
-  def agentOrIndividual(implicit isAgent: Boolean): String = (if (isAgent) "agent" else "individual")
+  def agentOrIndividual(implicit isAgent: Boolean): String = if (isAgent) "agent" else "individual"
 
   def form(implicit isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
     emptyFieldKey = "amountsNotOnYourP60.error.noEntry." + agentOrIndividual,
@@ -72,8 +72,7 @@ class AmountOfTipsOnP60Controller @Inject()(implicit val cc: MessagesControllerC
               val cya = data.employment
               val updatedCya = cya.copy(cya.employmentDetails.copy(tipsAndOtherPayments = Some(submittedAmount)))
               employmentSessionService.updateSessionData(employmentId, updatedCya, taxYear, false, data.isPriorSubmission)(errorHandler.internalServerError()){
-                Future.successful(Ok(checkEmploymentDetailsView(cya.toEmploymentDetailsView(employmentId, true), taxYear, inYearAction.inYear(taxYear))))
-                Ok("Redirect to next page") //TODO direct to next page during wireup
+                Ok(checkEmploymentDetailsView(cya.toEmploymentDetailsView(employmentId, true), taxYear, inYearAction.inYear(taxYear)))
               }
           }
         }

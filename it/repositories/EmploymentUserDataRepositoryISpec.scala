@@ -57,11 +57,11 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
   "clear" should {
     "remove a record" in new EmptyDatabase {
       count mustBe 0
-      val res: Boolean = await(employmentRepo.update(employmentUserData))
+      val res: Boolean = await(employmentRepo.update(empUserData))
       res mustBe true
       count mustBe 1
-      val clear: Boolean = await(employmentRepo.clear(taxYear,employmentUserData.employmentId)(User(
-          employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId, AffinityGroup.Individual.toString)))
+      val clear: Boolean = await(employmentRepo.clear(taxYear,empUserData.employmentId)(User(
+          empUserData.mtdItId,None,empUserData.nino,empUserData.sessionId, AffinityGroup.Individual.toString)))
       clear mustBe true
       count mustBe 0
     }
@@ -70,12 +70,12 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
   "create" should {
     "create a record" in new EmptyDatabase {
       count mustBe 0
-      val res: Boolean = await(employmentRepo.create(employmentUserData)(User(
-        employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId, AffinityGroup.Individual.toString)))
+      val res: Boolean = await(employmentRepo.create(empUserData)(User(
+        empUserData.mtdItId,None,empUserData.nino,empUserData.sessionId, AffinityGroup.Individual.toString)))
       res mustBe true
       count mustBe 1
-      val duplicateAttempt: Boolean = await(employmentRepo.create(employmentUserData)(User(
-        employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId, AffinityGroup.Individual.toString)))
+      val duplicateAttempt: Boolean = await(employmentRepo.create(empUserData)(User(
+        empUserData.mtdItId,None,empUserData.nino,empUserData.sessionId, AffinityGroup.Individual.toString)))
       duplicateAttempt mustBe false
       count mustBe 1
     }
