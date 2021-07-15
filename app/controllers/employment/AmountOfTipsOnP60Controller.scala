@@ -18,6 +18,7 @@ package controllers.employment
 
 import audit.AuditService
 import config.{AppConfig, ErrorHandler}
+import controllers.employment.routes.CheckEmploymentDetailsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.AmountForm
 import play.api.data.Form
@@ -72,7 +73,7 @@ class AmountOfTipsOnP60Controller @Inject()(implicit val cc: MessagesControllerC
               val cya = data.employment
               val updatedCya = cya.copy(cya.employmentDetails.copy(tipsAndOtherPayments = Some(submittedAmount)))
               employmentSessionService.updateSessionData(employmentId, updatedCya, taxYear, false, data.isPriorSubmission)(errorHandler.internalServerError()){
-                Ok(checkEmploymentDetailsView(cya.toEmploymentDetailsView(employmentId, true), taxYear, inYearAction.inYear(taxYear)))
+                Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId))
               }
           }
         }

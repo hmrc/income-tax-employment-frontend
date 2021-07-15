@@ -21,7 +21,7 @@ import models.mongo.EmploymentUserData
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
-import play.api.http.Status.{BAD_REQUEST, OK}
+import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -193,7 +193,7 @@ class AmountOfTipsOnP60ControllerISpec extends IntegrationTest with ViewHelpers 
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          result.status shouldBe OK
+          result.status shouldBe SEE_OTHER
         }
 
         s"return a BAD_REQUEST($BAD_REQUEST) status" when {
