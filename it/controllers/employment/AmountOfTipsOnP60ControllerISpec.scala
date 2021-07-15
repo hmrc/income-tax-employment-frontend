@@ -115,6 +115,8 @@ class AmountOfTipsOnP60ControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   val employmentUserDataWithP60s: EmploymentUserData = employmentUserData.copy(employment = employmentUserData.employment.copy(employmentUserData.employment.employmentDetails.copy(tipsAndOtherPayments = Some(100.00))))
+  val empDataWithNoToP60Question: EmploymentUserData = employmentUserData.copy(employment = employmentUserData.employment.copy(employmentUserData.employment.employmentDetails.copy(tipsAndOtherPaymentsQuestion = Some(false))))
+  val empDataWithUnansweredP60Question: EmploymentUserData = employmentUserData.copy(employment = employmentUserData.employment.copy(employmentUserData.employment.employmentDetails.copy(tipsAndOtherPaymentsQuestion = None)))
 
   ".show" should {
 
@@ -176,6 +178,42 @@ class AmountOfTipsOnP60ControllerISpec extends IntegrationTest with ViewHelpers 
           welshToggleCheck(user.isWelsh)
         }
       }
+    }
+
+    "redirect to the 'did you receive any payments that are not on your p60' page when they've previously answered no" which {
+      lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(false)
+        dropEmploymentDB()
+        insertCyaData(empDataWithNoToP60Question, User(mtditid,None,nino,sessionId,"Individual")(fakeRequest))
+        urlGet(amountOfTipsOnP60PageUrl, welsh = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+      }
+
+      implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+      "has an OK status" in {
+        result.status shouldBe OK
+      }
+
+      titleCheck("Did you receive any payments that are not on your P60?")
+      h1Check("Did you receive any payments that are not on your P60?")
+    }
+
+    "redirect to the 'did you receive any payments that are not on your p60' page when they've not answered the previous question" which {
+      lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(false)
+        dropEmploymentDB()
+        insertCyaData(empDataWithUnansweredP60Question, User(mtditid,None,nino,sessionId,"Individual")(fakeRequest))
+        urlGet(amountOfTipsOnP60PageUrl, welsh = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+      }
+
+      implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+      "has an OK status" in {
+        result.status shouldBe OK
+      }
+
+      titleCheck("Did you receive any payments that are not on your P60?")
+      h1Check("Did you receive any payments that are not on your P60?")
     }
   }
 
