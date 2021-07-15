@@ -26,8 +26,8 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.SessionHelper
-import views.html.employment.{OtherPaymentsAmountView, CheckEmploymentDetailsView}
+import utils.{Clock, SessionHelper}
+import views.html.employment.{CheckEmploymentDetailsView, OtherPaymentsAmountView}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,11 +36,10 @@ class OtherPaymentsAmountController @Inject()(implicit val cc: MessagesControlle
                                               authAction: AuthorisedAction,
                                               inYearAction: InYearAction,
                                               otherPaymentsAmountView: OtherPaymentsAmountView,
-                                              checkEmploymentDetailsView: CheckEmploymentDetailsView,
                                               implicit val appConfig: AppConfig,
                                               employmentSessionService: EmploymentSessionService,
-                                              auditService: AuditService,
                                               errorHandler: ErrorHandler,
+                                              clock: Clock,
                                               implicit val ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def agentOrIndividual(implicit isAgent: Boolean): String = if (isAgent) "agent" else "individual"
@@ -77,7 +76,7 @@ class OtherPaymentsAmountController @Inject()(implicit val cc: MessagesControlle
             data =>
               val cya = data.employment
               val updatedCya = cya.copy(cya.employmentDetails.copy(tipsAndOtherPayments = Some(submittedAmount)))
-              employmentSessionService.updateSessionData(employmentId, updatedCya, taxYear, false, data.isPriorSubmission)(errorHandler.internalServerError()){
+              employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()){
                 Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId))
               }
           }

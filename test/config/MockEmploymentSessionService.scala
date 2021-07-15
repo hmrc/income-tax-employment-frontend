@@ -18,23 +18,22 @@ package config
 
 import models.User
 import models.employment.AllEmploymentData
-import org.scalamock.handlers.CallHandler6
+import org.scalamock.handlers.CallHandler5
 import org.scalamock.scalatest.MockFactory
 import play.api.mvc.{Request, Result}
 import services.EmploymentSessionService
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 trait MockEmploymentSessionService extends MockFactory {
 
   val mockIncomeTaxUserDataService: EmploymentSessionService = mock[EmploymentSessionService]
 
-  def mockFind(taxYear: Int, result: Result):
-  CallHandler6[User[_], Int, AllEmploymentData => Result, Request[_], HeaderCarrier, ExecutionContext, Future[Result]] = {
+  def mockFind(taxYear: Int, result: Result): CallHandler5[User[_], Int, AllEmploymentData => Result, Request[_], HeaderCarrier, Future[Result]] = {
     (mockIncomeTaxUserDataService.findPreviousEmploymentUserData(_: User[_],_: Int)
-    (_: AllEmploymentData => Result)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-      .expects(*, taxYear, *, *, *, *)
+    (_: AllEmploymentData => Result)(_: Request[_], _: HeaderCarrier))
+      .expects(*, taxYear, *, *, *)
       .returns(Future.successful(result))
       .anyNumberOfTimes()
   }

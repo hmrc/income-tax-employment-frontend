@@ -29,3 +29,5 @@ trait Repository {
     equal("employmentId", toBson(employmentId))
   )
 }
+
+object Repository extends Repository

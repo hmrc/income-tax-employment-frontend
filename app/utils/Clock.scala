@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package config
+package utils
 
-import com.google.inject.AbstractModule
-import common.UUID
-import repositories.{EmploymentUserDataRepository, EmploymentUserDataRepositoryImpl}
-import utils.Clock
+import org.joda.time.{DateTime, DateTimeZone}
 
-class Modules extends AbstractModule {
-
-  override def configure(): Unit = {
-    bind(classOf[AppConfig]).asEagerSingleton()
-    bind(classOf[UUID]).toInstance(UUID)
-    bind(classOf[Clock]).toInstance(Clock)
-    bind(classOf[EmploymentUserDataRepository]).to(classOf[EmploymentUserDataRepositoryImpl]).asEagerSingleton()
-  }
-
+trait Clock {
+  def now(zone: DateTimeZone = DateTimeZone.UTC): DateTime = DateTime.now(zone)
 }
+
+object Clock extends Clock

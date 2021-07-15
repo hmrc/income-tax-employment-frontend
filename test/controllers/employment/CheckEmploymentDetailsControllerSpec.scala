@@ -18,7 +18,7 @@ package controllers.employment
 
 import common.SessionValues
 import config.{MockAuditService, MockEmploymentSessionService}
-import models.employment.{EmploymentData, EmploymentDetailsViewModel}
+import models.employment.EmploymentDetailsViewModel
 import play.api.http.Status._
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
@@ -39,7 +39,8 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockEmpl
     mockIncomeTaxUserDataService,
     mockAuditService,
     ec,
-    mockErrorHandler
+    mockErrorHandler,
+    testClock
   )
   val taxYear = mockAppConfig.defaultTaxYear
   val employmentId = "223/AB12399"

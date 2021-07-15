@@ -18,7 +18,7 @@ package config
 
 import models.User
 import models.mongo.EmploymentUserData
-import org.scalamock.handlers.{CallHandler1, CallHandler2, CallHandler3}
+import org.scalamock.handlers.{CallHandler2, CallHandler3}
 import org.scalamock.scalatest.MockFactory
 import repositories.EmploymentUserDataRepository
 
@@ -35,15 +35,9 @@ trait MockEmploymentUserDataRepository extends MockFactory {
       .returns(Future.successful(employmentUserData))
       .anyNumberOfTimes()
   }
-  def mockCreate(employmentUserData: EmploymentUserData, response: Boolean): CallHandler2[EmploymentUserData, User[_], Future[Boolean]] = {
-    (mockEmploymentUserDataRepository.create(_: EmploymentUserData)(_: User[_]))
-      .expects(employmentUserData,*)
-      .returns(Future.successful(response))
-      .anyNumberOfTimes()
-  }
-  def mockUpdate(response: Boolean): CallHandler1[EmploymentUserData, Future[Boolean]] = {
-    (mockEmploymentUserDataRepository.update(_: EmploymentUserData))
-      .expects(*)
+  def mockCreateOrUpdate(employmentUserData: EmploymentUserData, response: Option[EmploymentUserData]): CallHandler2[EmploymentUserData, User[_], Future[Option[EmploymentUserData]]] = {
+    (mockEmploymentUserDataRepository.createOrUpdate(_: EmploymentUserData)(_: User[_]))
+      .expects(employmentUserData, *)
       .returns(Future.successful(response))
       .anyNumberOfTimes()
   }

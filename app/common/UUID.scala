@@ -17,11 +17,8 @@
 package common
 
 trait UUID {
-  def randomUUID: String
+  def randomUUID: String = java.util.UUID.randomUUID().toString
 }
 
-object UUID {
-  def apply(): UUID = new UUID {
-    override def randomUUID: String = java.util.UUID.randomUUID().toString
-  }
-}
+object UUID extends UUID
+

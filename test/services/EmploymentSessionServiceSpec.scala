@@ -18,14 +18,14 @@ package services
 
 import config.{AppConfig, ErrorHandler, MockEmploymentUserDataRepository, MockIncomeTaxUserDataConnector}
 import models.User
-import models.employment.{AllEmploymentData, EmploymentData, EmploymentExpenses, EmploymentSource, Expenses, Pay}
+import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.i18n.MessagesApi
 import play.api.mvc.Result
-import utils.UnitTest
-import uk.gov.hmrc.auth.core.AffinityGroup
-import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Results.{Ok, Redirect}
+import uk.gov.hmrc.auth.core.AffinityGroup
+import utils.UnitTest
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 
 import scala.concurrent.Future
@@ -42,8 +42,8 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
   val messages: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  val service: EmploymentSessionService = new EmploymentSessionService(
-    mockEmploymentUserDataRepository,mockUserDataConnector,mockAppConfig,messages,errorHandler)
+  val service: EmploymentSessionService =
+    new EmploymentSessionService(mockEmploymentUserDataRepository, mockUserDataConnector, mockAppConfig, messages, errorHandler, mockExecutionContext)
 
   val taxYear = 2022
 
@@ -96,32 +96,33 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
     None
   )
 
-  val employmentData = EmploymentUserData(sessionId,"1234567890",nino,taxYear,"employmentId",true,cya)
+  val employmentData = EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", true, cya, testClock.now())
 
-  ".updateSessionData" should {
+  ".createOrUpdateSessionData" should {
 
-    "save the data when its an update" in {
+    "return SEE_OTHER(303) status when createOrUpdate succeeds" in {
 
-      mockUpdate(true)
+      mockCreateOrUpdate(employmentData, Some(employmentData))
 
-      val response = service.updateSessionData(
-        "employmentId",cya, taxYear, needsCreating = false, true
+      val response = service.createOrUpdateSessionData(
+        "employmentId", cya, taxYear, true
       )(Redirect("400"))(Redirect("303"))
 
       status(response) shouldBe SEE_OTHER
       redirectUrl(response) shouldBe "303"
     }
-    "redirect when failed to save the data when its an update" in {
+
+    "return BAD_REQUEST(400) status when createOrUpdate fails" in {
 
       val cya = EmploymentCYAModel(
         EmploymentDetails("Employer Name",currentDataIsHmrcHeld = true),
         None
       )
 
-      mockUpdate(false)
+      mockCreateOrUpdate(employmentData, None)
 
-      val response = service.updateSessionData(
-        "employmentId",cya, taxYear, needsCreating = false, true
+      val response = service.createOrUpdateSessionData(
+        "employmentId",cya, taxYear, true
       )(Redirect("400"))(Redirect("303"))
 
       status(response) shouldBe SEE_OTHER
