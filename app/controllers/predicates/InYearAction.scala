@@ -18,12 +18,9 @@ package controllers.predicates
 
 import config.AppConfig
 import play.api.Logger
-import play.api.mvc.Result
-import play.api.mvc.Results.Redirect
 
 import java.time.{LocalDateTime, ZoneId}
 import javax.inject.Inject
-import scala.concurrent.Future
 
 class InYearAction @Inject()(implicit val appConfig: AppConfig) {
 

@@ -24,10 +24,12 @@ import controllers.predicates.AuthorisedAction
 import helpers.{PlaySessionCookieBaker, WireMockHelper}
 import models.IncomeTaxUserData
 import models.employment.{AllEmploymentData, Benefits, EmploymentBenefits, EmploymentData, EmploymentExpenses, EmploymentSource, Expenses, Pay}
+import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.http.HeaderNames
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
@@ -52,6 +54,10 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   val sessionId = "sessionId-eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"
   val affinityGroup = "affinityGroup"
   val taxYear = 2022
+
+  val xSessionId: (String, String) = "X-Session-ID" -> sessionId
+
+  val EMPLOYMENT_PRIOR = "EmploymentPrior"
 
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid)
@@ -168,6 +174,20 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     SessionValues.CLIENT_MTDITID -> mtditid
   ))
 
+  def playSessionCookie(agent: Boolean = false, extraData: Map[String, String] = Map.empty): Seq[(String, String)] = {
+    {
+      if (agent) {
+        Seq(HeaderNames.COOKIE -> PlaySessionCookieBaker.bakeSessionCookie(extraData ++ Map(
+          SessionValues.CLIENT_NINO -> "AA123456A",
+          SessionValues.CLIENT_MTDITID -> mtditid))
+        )
+      } else {
+        Seq(HeaderNames.COOKIE -> PlaySessionCookieBaker.bakeSessionCookie(extraData), "mtditid" -> mtditid)
+      }
+    } ++
+      Seq(xSessionId)
+  }
+
   def userData(allData: AllEmploymentData): IncomeTaxUserData = IncomeTaxUserData(Some(allData))
 
   def userDataStub(userData: IncomeTaxUserData, nino: String, taxYear: Int): StubMapping = {
@@ -262,5 +282,18 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     )
     )
   ))
+
+  def employmentUserData: EmploymentUserData = EmploymentUserData(
+    sessionId,
+    mtditid,
+    nino,
+    2021,
+    "employmentId",
+    isPriorSubmission = true,
+    EmploymentCYAModel(
+      EmploymentDetails("Employer Name",currentDataIsHmrcHeld = true),
+      None
+    )
+  )
 
 }

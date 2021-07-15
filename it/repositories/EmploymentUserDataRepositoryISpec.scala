@@ -39,7 +39,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     await(employmentRepo.ensureIndexes)
   }
 
-  val employmentUserData: EmploymentUserData = EmploymentUserData(
+  val empUserData: EmploymentUserData = EmploymentUserData(
     "sessionId-1618a1e8-4979-41d8-a32e-5ffbe69fac81",
     "1234567890",
     "AA123456A",
@@ -84,30 +84,30 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
   "update" should {
     "add a document to the collection" in new EmptyDatabase {
       count mustBe 0
-      val res: Boolean = await(employmentRepo.update(employmentUserData))
+      val res: Boolean = await(employmentRepo.update(empUserData))
       res mustBe true
       count mustBe 1
       val data: Option[EmploymentUserData] = await(employmentRepo.find(taxYear,employmentId = "employmentId")(User(
-        employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId, AffinityGroup.Individual.toString)))
+        empUserData.mtdItId,None,empUserData.nino,empUserData.sessionId, AffinityGroup.Individual.toString)))
       data.map(_.copy(lastUpdated = DateTime.parse("2021-05-17T14:01:52.634Z"))) mustBe Some(
-        employmentUserData.copy(lastUpdated = DateTime.parse("2021-05-17T14:01:52.634Z"))
+        empUserData.copy(lastUpdated = DateTime.parse("2021-05-17T14:01:52.634Z"))
       )
     }
     "update a document in the collection" in {
-      val newUserData = employmentUserData.copy(employment = employmentUserData.employment.copy(
-        employmentDetails = employmentUserData.employment.employmentDetails.copy(employerName = "Name 2")))
+      val newUserData = empUserData.copy(employment = empUserData.employment.copy(
+        employmentDetails = empUserData.employment.employmentDetails.copy(employerName = "Name 2")))
       count mustBe 1
       val res: Boolean = await(employmentRepo.update(newUserData))
       res mustBe true
       count mustBe 1
       val data: Option[EmploymentUserData] = await(employmentRepo.find(taxYear,employmentId = "employmentId")(User(
-        employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId, AffinityGroup.Individual.toString)))
+        empUserData.mtdItId,None,empUserData.nino,empUserData.sessionId, AffinityGroup.Individual.toString)))
       data.map(_.copy(lastUpdated = DateTime.parse("2021-05-17T14:01:52.634Z"))) mustBe Some(
         newUserData.copy(lastUpdated = DateTime.parse("2021-05-17T14:01:52.634Z"))
       )
     }
     "insert a new document to the collection if the sessionId is different" in {
-      val newUserData = employmentUserData.copy(sessionId = "sessionId-000001")
+      val newUserData = empUserData.copy(sessionId = "sessionId-000001")
       count mustBe 1
       val res: Boolean = await(employmentRepo.update(newUserData))
       res mustBe true
@@ -127,10 +127,10 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     "get a document and update the TTL" in {
       count mustBe 2
       val dataBefore: EmploymentUserData = await(employmentRepo.collection.find(
-        filter(employmentUserData.sessionId,employmentUserData.mtdItId,employmentUserData.nino,employmentUserData.taxYear)
+        filter(empUserData.sessionId,empUserData.mtdItId,empUserData.nino,empUserData.taxYear)
       ).toFuture()).head
       val dataAfter: Option[EmploymentUserData] = await(employmentRepo.find(taxYear,employmentId = "employmentId")(User(
-        employmentUserData.mtdItId,None,employmentUserData.nino,employmentUserData.sessionId
+        empUserData.mtdItId,None,empUserData.nino,empUserData.sessionId
         , AffinityGroup.Individual.toString)))
 
       dataAfter.map(_.copy(lastUpdated = dataBefore.lastUpdated)) mustBe Some(dataBefore)
@@ -141,7 +141,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
   "the set indexes" should {
     "enforce uniqueness" in {
       val result: Either[Exception,InsertOneResult] = try {
-        Right(await(employmentRepo.collection.insertOne(employmentUserData).toFuture()))
+        Right(await(employmentRepo.collection.insertOne(empUserData).toFuture()))
       } catch {
         case e: Exception => Left(e)
       }
