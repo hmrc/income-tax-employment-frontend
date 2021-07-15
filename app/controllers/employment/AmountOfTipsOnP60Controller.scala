@@ -18,7 +18,7 @@ package controllers.employment
 
 import audit.AuditService
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckEmploymentDetailsController
+import controllers.employment.routes.{CheckEmploymentDetailsController, OtherPaymentsController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.AmountForm
 import play.api.data.Form
@@ -55,9 +55,14 @@ class AmountOfTipsOnP60Controller @Inject()(implicit val cc: MessagesControllerC
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId){
         data =>
-          val amount = data.employment.employmentDetails.tipsAndOtherPayments
-          val filledForm = amount.fold(form(user.isAgent))(x => form(user.isAgent).fill(x))
-          Future.successful(Ok(amountOfTipsOnP60View(filledForm,taxYear, employmentId, amount)))
+          data.employment.employmentDetails.tipsAndOtherPaymentsQuestion match {
+            case Some(true) =>
+              val amount = data.employment.employmentDetails.tipsAndOtherPayments
+              val filledForm = amount.fold(form(user.isAgent))(x => form(user.isAgent).fill(x))
+              Future.successful(Ok(amountOfTipsOnP60View(filledForm,taxYear, employmentId, amount)))
+            case _ =>
+              Future.successful(Redirect(OtherPaymentsController.show(taxYear, employmentId)))
+          }
       }
     }
   }

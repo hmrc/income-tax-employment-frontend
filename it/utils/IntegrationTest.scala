@@ -291,7 +291,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "employmentId",
     isPriorSubmission = true,
     EmploymentCYAModel(
-      EmploymentDetails("Employer Name",currentDataIsHmrcHeld = true),
+      EmploymentDetails("Employer Name",currentDataIsHmrcHeld = true, tipsAndOtherPaymentsQuestion = Some(true)),
       None
     )
   )
