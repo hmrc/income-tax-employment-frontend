@@ -14,13 +14,15 @@
  * limitations under the License.
  *@
 
-@this(govukInput: GovukInput, heading: Heading)
+@import utils.ViewUtils.bigDecimalCurrency
+
+@this(govukInput: GovukInput, headingHelper: Heading)
 
 @(
     form: Form[_],
     id: String,
     name: String,
-    label: String,
+    heading: String,
     isPageHeading: Boolean,
     headingMessageArgs: Seq[String] = Seq(),
     hint: Option[Html] = None,
@@ -30,24 +32,36 @@
     inputType: String = "text",
     currency: Boolean = false,
     subheading: Option[String] = None,
-    headingClasses: String = ""
+    headingClasses: String = "",
+    content: Option[Html] = None,
+    maxLength: String = ""
 )(implicit messages: Messages)
+
+@contentHtml = {
+    @if(subheading.isDefined) {
+    @headingHelper(messages(heading, headingMessageArgs: _*), Some(subheading.get), headingClasses)
+    } else {
+        <div>@messages(heading, headingMessageArgs:_*)</div>
+    }
+    @content
+}
 
 @govukInput(Input(
     id,
     name,
     classes = if(currency) "govuk-input--width-10 " + classes.fold("")(x => x) else classes.fold("")(x => x),
     label = Label(
-        content = if(subheading.isDefined) HtmlContent(heading(messages(label, headingMessageArgs:_*), Some(subheading.get), headingClasses)) else Text(messages(label, headingMessageArgs:_*)),
+        content = HtmlContent(contentHtml),
         isPageHeading = isPageHeading,
         classes = if(isPageHeading) "govuk-label--xl " + labelClasses.fold("")(cls => cls) else labelClasses.fold("")(cls => cls)
     ),
     hint = hint.map(hintHtml => Hint(
         content = HtmlContent(hintHtml)
     )),
-    value = form(name).value,
+    value = if(currency) form(name).value.map(bigDecimalCurrency(_, "")) else form(name).value,
     autocomplete = autocomplete.map(value => value),
     inputType = inputType,
     errorMessage = form(name).error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*)))),
-    prefix = if(currency) Some(PrefixOrSuffix(content = Text("£"))) else None
+    prefix = if(currency) Some(PrefixOrSuffix(content = Text("£"))) else None,
+    attributes = if(currency) Map("maxlength" -> "50") else Map("maxlength" -> maxLength)
 ))

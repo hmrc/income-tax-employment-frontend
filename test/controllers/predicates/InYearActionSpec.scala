@@ -25,7 +25,7 @@ import utils.UnitTest
 import java.time.LocalDateTime
 import scala.concurrent.Future
 
-class InYearActionSpec extends UnitTest with Status {
+class InYearActionSpec extends UnitTest {
   val year2021: Int = 2021
   val year2022: Int = 2022
   val month4: Int = 4
@@ -33,6 +33,7 @@ class InYearActionSpec extends UnitTest with Status {
   val day6: Int = 6
   val hour23: Int = 23
   val minute59: Int = 59
+
 
   implicit lazy val mockedConfig: AppConfig = mock[AppConfig]
 

@@ -56,8 +56,8 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
                  body: T,
                  welsh: Boolean = false,
                  follow: Boolean = true,
-                 headers: Seq[(String, String)] = Seq()
-                )(implicit wsClient: WSClient, bodyWritable: BodyWritable[T]): WSResponse = {
+                 headers: Seq[(String, String)] = Seq())
+                (implicit wsClient: WSClient, bodyWritable: BodyWritable[T]): WSResponse = {
 
     val headersWithNoCheck = headers ++ Seq("Csrf-Token" -> "nocheck")
     val newHeaders = if(welsh) Seq(HeaderNames.ACCEPT_LANGUAGE -> "cy") ++ headersWithNoCheck else headersWithNoCheck
