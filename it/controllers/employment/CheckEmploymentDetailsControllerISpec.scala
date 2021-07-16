@@ -390,6 +390,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           val dummyHref =  "/income-through-software/return/employment-income/2021/check-employment-expenses"
 
+          val employerNameHref = controllers.employment.routes.EmployerNameController.show(taxYear-1, employmentId)
           val otherPaymentsQuestionPageHref = controllers.employment.routes.OtherPaymentsController.show(taxYear-1, employmentId)
           val otherPaymentsAmountPageHref = controllers.employment.routes.OtherPaymentsAmountController.show(taxYear-1, employmentId)
 
@@ -401,7 +402,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.commonExpectedResults.employerNameField1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.commonExpectedResults.changeEmployerNameHiddenText}",
-            cyaChangeLink(1), dummyHref)
+            cyaChangeLink(1), employerNameHref.url)
           textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changePAYERefHiddenText}",
@@ -470,6 +471,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           }
 
           val dummyHref =  "/income-through-software/return/employment-income/2021/check-employment-expenses"
+
+          val employerNameHref = controllers.employment.routes.EmployerNameController.show(taxYear-1, employmentId)
           val otherPaymentsQuestionPageHref = controllers.employment.routes.OtherPaymentsController.show(taxYear-1, employmentId)
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -479,7 +482,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.commonExpectedResults.employerNameField1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.commonExpectedResults.changeEmployerNameHiddenText}",
-            cyaChangeLink(1), dummyHref)
+            cyaChangeLink(1), employerNameHref.url)
           textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.payReceivedB, summaryListRowFieldAmountSelector(2))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changePayReceivedHiddenText}",
