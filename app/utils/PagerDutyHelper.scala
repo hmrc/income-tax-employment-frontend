@@ -26,7 +26,9 @@ object PagerDutyHelper extends Logging {
     val INTERNAL_SERVER_ERROR_FROM_API: PagerDutyKeys.Value = Value
     val UNEXPECTED_RESPONSE_FROM_API: PagerDutyKeys.Value = Value
     val FOURXX_RESPONSE_FROM_API: PagerDutyKeys.Value = Value
-    val FAILED_TO_CREATE_EMPLOYMENT_DATA: PagerDutyKeys.Value = Value
+    val FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA: PagerDutyKeys.Value = Value
+    val FAILED_TO_FIND_EMPLOYMENT_DATA: PagerDutyKeys.Value = Value
+    val FAILED_TO_ClEAR_EMPLOYMENT_DATA: PagerDutyKeys.Value = Value
   }
 
   def pagerDutyLog(pagerDutyKey: PagerDutyKeys.Value, otherDetail: String): Unit = {

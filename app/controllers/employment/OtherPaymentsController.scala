@@ -27,7 +27,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.SessionHelper
+import utils.{Clock, SessionHelper}
 import views.html.employment.OtherPaymentsView
 
 import javax.inject.Inject
@@ -40,7 +40,8 @@ class OtherPaymentsController @Inject()(implicit val cc: MessagesControllerCompo
                                         appConfig: AppConfig,
                                         employmentSessionService: EmploymentSessionService,
                                         errorHandler: ErrorHandler,
-                                        ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                        ec: ExecutionContext,
+                                        clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
     missingInputError = s"employment.other-payments.errors.noRadioSelected.${if (user.isAgent) "agent" else "individual"}"
@@ -69,7 +70,7 @@ class OtherPaymentsController @Inject()(implicit val cc: MessagesControllerCompo
               val updatedCyaModel: EmploymentCYAModel =
                 cya.copy(employmentDetails = cya.employmentDetails.copy(tipsAndOtherPaymentsQuestion = Some(yesNo), tipsAndOtherPayments = updatedTipsAndOtherPaymentsAmount))
 
-              employmentSessionService.updateSessionData(employmentId, updatedCyaModel, taxYear, false, data.isPriorSubmission)(errorHandler.internalServerError()){
+              employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()){
                 if(yesNo) { Redirect(OtherPaymentsAmountController.show(taxYear, employmentId)) }
                 // TODO - This would need to change when we introduce the "new Employment Flow (E4)"
                 else { Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)) }

@@ -23,7 +23,7 @@ import models.employment.{AllEmploymentData, EmploymentDetailsViewModel, Employm
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.SessionHelper
+import utils.{Clock, SessionHelper}
 import views.html.employment.CheckEmploymentDetailsView
 import javax.inject.Inject
 import models.User
@@ -41,7 +41,8 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
                                                  employmentSessionService: EmploymentSessionService,
                                                  auditService: AuditService,
                                                  ec: ExecutionContext,
-                                                 errorHandler: ErrorHandler) extends FrontendController(cc)
+                                                 errorHandler: ErrorHandler,
+                                                 clock: Clock) extends FrontendController(cc)
   with I18nSupport with SessionHelper with Logging {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
@@ -66,9 +67,8 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
 
       employmentSessionService.employmentSourceToUse(allEmploymentData,employmentId,isInYear) match {
         case Some(source) =>
-
-          employmentSessionService.updateSessionData(employmentId, EmploymentCYAModel.apply(source, isUsingCustomerData),
-            taxYear, needsCreating = true, isPriorSubmission = true
+          employmentSessionService.createOrUpdateSessionData(employmentId, EmploymentCYAModel.apply(source, isUsingCustomerData),
+            taxYear, isPriorSubmission = true
           )(errorHandler.internalServerError()){
             performAuditAndRenderView(source.toEmploymentDetailsViewModel(isUsingCustomerData),taxYear, isInYear)
           }
@@ -101,7 +101,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     Ok(employmentDetailsView(employmentDetails, taxYear, isInYear))
   }
 
-  def submit(taxYear:Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear:Int, employmentId: String): Action[AnyContent] = authAction.async { _ =>
 
     //TODO - Once Create and Update API has been orchestrated
     Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))

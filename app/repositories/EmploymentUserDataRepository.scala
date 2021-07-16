@@ -22,18 +22,16 @@ import config.AppConfig
 import models.User
 import models.mongo.EmploymentUserData
 import org.joda.time.{DateTime, DateTimeZone}
-import org.mongodb.scala.bson.conversions.Bson
-import org.mongodb.scala.model.Indexes.{ascending, compoundIndex}
-import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions, IndexModel, IndexOptions}
+import org.mongodb.scala.MongoException
+import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions}
 import play.api.Logging
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
-import utils.PagerDutyHelper.pagerDutyLog
-import utils.PagerDutyHelper.PagerDutyKeys.FAILED_TO_CREATE_EMPLOYMENT_DATA
+import utils.PagerDutyHelper.PagerDutyKeys.{FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA, FAILED_TO_ClEAR_EMPLOYMENT_DATA, FAILED_TO_FIND_EMPLOYMENT_DATA}
+import utils.PagerDutyHelper.{PagerDutyKeys, pagerDutyLog}
 
-import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -46,68 +44,54 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfi
   indexes        = EmploymentUserDataIndexes.indexes(appConfig)
 ) with Repository with EmploymentUserDataRepository with Logging {
 
-  def create[T](userData: EmploymentUserData)(implicit user: User[T]): Future[Boolean] = {
-    collection.insertOne(userData).toFutureOption().map(_.isDefined).recover{
-      case e: Exception =>
-        pagerDutyLog(FAILED_TO_CREATE_EMPLOYMENT_DATA, s"[EmploymentUserDataRepositoryImpl][create] Failed to create employment user data. " +
-          s"Error:${e.getMessage}. SessionId: ${user.sessionId}")
-        false
-    }
-  }
-
   def find[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Option[EmploymentUserData]] = {
-    def updateLastUpdated: Future[Option[EmploymentUserData]] = {
-      collection.findOneAndUpdate(
-        filter = filter(user.sessionId, user.mtditid, user.nino, taxYear, employmentId),
-        update = set("lastUpdated", toBson(DateTime.now(DateTimeZone.UTC))(MongoJodaFormats.dateTimeWrites)),
-        options = FindOneAndUpdateOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
-      ).toFutureOption()
-    }
+    val queryFilter = filter(user.sessionId, user.mtditid, user.nino, taxYear, employmentId)
+    val update = set("lastUpdated", toBson(DateTime.now(DateTimeZone.UTC))(MongoJodaFormats.dateTimeWrites))
+    val options = FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
 
-    collection.find(filter = filter(user.sessionId, user.mtditid, user.nino, taxYear, employmentId)).toSingle().toFutureOption().flatMap {
-      case Some(_) => updateLastUpdated
-      case None =>
-        logger.info(s"[EmploymentUserDataRepositoryImpl][find] No employment CYA data found for user. SessionId: ${user.sessionId}")
-        Future(None)
-    }
+    collection.findOneAndUpdate(queryFilter, update, options)
+      .toFutureOption()
+      .map{
+        case Some(data) => Some(data)
+        case None =>
+          logger.info(s"[EmploymentUserDataRepositoryImpl][find] No employment CYA data found for user. SessionId: ${user.sessionId}")
+          None
+      }.recover(mongoRecover("Find", FAILED_TO_FIND_EMPLOYMENT_DATA))
   }
 
-  def update(employmentUserData: EmploymentUserData): Future[Boolean] = {
-    collection.findOneAndReplace(
-      filter = filter(employmentUserData.sessionId,employmentUserData.mtdItId,
-        employmentUserData.nino,employmentUserData.taxYear, employmentUserData.employmentId),
-      replacement = employmentUserData,
-      options = FindOneAndReplaceOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
-    ).toFutureOption().map(_.isDefined)
+  def createOrUpdate[T](data: EmploymentUserData)(implicit user: User[T]): Future[Option[EmploymentUserData]] = {
+    val queryFilter = filter(data.sessionId, data.mtdItId, data.nino, data.taxYear, data.employmentId)
+    val replacement = data
+    val options = FindOneAndReplaceOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
+
+    collection.findOneAndReplace(queryFilter, replacement, options)
+      .toFutureOption()
+      .recover(mongoRecover("CreateOrUpdate", FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA))
   }
 
-  def clear(taxYear: Int, employmentId: String)(implicit user: User[_]): Future[Boolean] = collection.deleteOne(
-    filter = filter(user.sessionId, user.mtditid, user.nino, taxYear, employmentId)
-  ).toFutureOption().map(_.isDefined)
-}
+  def clear[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Boolean] =
+    collection.deleteOne(filter(user.sessionId, user.mtditid, user.nino, taxYear, employmentId))
+      .toFutureOption()
+      .recover(mongoRecover("Clear", FAILED_TO_ClEAR_EMPLOYMENT_DATA))
+      .map(_.exists(_.wasAcknowledged()))
 
-private object EmploymentUserDataIndexes {
+  def mongoRecover[T](operation: String, pagerDutyKey: PagerDutyKeys.Value)
+                        (implicit user: User[_]): PartialFunction[Throwable, Option[T]] = new PartialFunction[Throwable, Option[T]] {
 
-  private val lookUpIndex: Bson = compoundIndex(
-    ascending("sessionId"),
-    ascending("mtdItId"),
-    ascending("nino"),
-    ascending("taxYear"),
-    ascending("employmentId")
-  )
+    override def isDefinedAt(x: Throwable): Boolean = x.isInstanceOf[MongoException]
 
-  def indexes(appConfig: AppConfig): Seq[IndexModel] = {
-    Seq(
-      IndexModel(lookUpIndex, IndexOptions().unique(true).name("UserDataLookupIndex")),
-      IndexModel(ascending("lastUpdated"), IndexOptions().expireAfter(appConfig.mongoTTL, TimeUnit.MINUTES).name("UserDataTTL"))
-    )
+    override def apply(e: Throwable): Option[T] = {
+      pagerDutyLog(
+        pagerDutyKey,
+        s"[EmploymentUserDataRepositoryImpl][$operation] Failed to create employment user data. Error:${e.getMessage}. SessionId: ${user.sessionId}"
+      )
+      None
+    }
   }
 }
 
 trait EmploymentUserDataRepository {
-
-  def create[T](userData: EmploymentUserData)(implicit user: User[T]): Future[Boolean]
+  def createOrUpdate[T](employmentUserData: EmploymentUserData)(implicit user: User[T]): Future[Option[EmploymentUserData]]
   def find[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Option[EmploymentUserData]]
-  def update(employmentUserData: EmploymentUserData): Future[Boolean]
-  def clear(taxYear: Int, employmentId: String)(implicit user: User[_]): Future[Boolean]
+  def clear[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Boolean]
 }
