@@ -17,7 +17,7 @@
 package controllers.employment
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckEmploymentDetailsController
+import controllers.employment.routes.{OtherPaymentsAmountController, CheckEmploymentDetailsController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
@@ -70,8 +70,7 @@ class OtherPaymentsController @Inject()(implicit val cc: MessagesControllerCompo
                 cya.copy(employmentDetails = cya.employmentDetails.copy(tipsAndOtherPaymentsQuestion = Some(yesNo), tipsAndOtherPayments = updatedTipsAndOtherPaymentsAmount))
 
               employmentSessionService.updateSessionData(employmentId, updatedCyaModel, taxYear, false, data.isPriorSubmission)(errorHandler.internalServerError()){
-                // TODO replace this with actual amount page url, which is implemented in SASS-1029
-                if(yesNo) { Redirect(Call("POST", "/other-payments-p60-amount-TO-BE-DEFINED")) }
+                if(yesNo) { Redirect(OtherPaymentsAmountController.show(taxYear, employmentId)) }
                 // TODO - This would need to change when we introduce the "new Employment Flow (E4)"
                 else { Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)) }
               }
