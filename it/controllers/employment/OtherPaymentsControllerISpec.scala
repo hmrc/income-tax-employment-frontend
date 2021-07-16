@@ -97,7 +97,7 @@ class OtherPaymentsControllerISpec extends IntegrationTest with ViewHelpers with
     val expectedErrorText = "Select yes if your client received any payments that are not on their P60"
   }
 
-  private val employmentId = UUID().randomUUID
+  private val employmentId = UUID.randomUUID
   private def url(taxYear: Int) = s"$appUrl/$taxYear/payments-not-on-p60?employmentId=$employmentId"
   val otherPaymentsAmountUrl =
     s"/income-through-software/return/employment-income/$validTaxYear2021/amount-of-payments-not-on-p60?employmentId=$employmentId"

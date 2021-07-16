@@ -19,18 +19,19 @@ package services
 import config.{AppConfig, ErrorHandler}
 import connectors.IncomeTaxUserDataConnector
 import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
-import javax.inject.{Inject, Singleton}
-import models.{IncomeTaxUserData, User}
 import models.employment.{AllEmploymentData, EmploymentExpenses, EmploymentSource}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
-import org.joda.time.{DateTime, DateTimeZone}
+import models.{IncomeTaxUserData, User}
+import org.joda.time.DateTimeZone
 import play.api.Logging
 import play.api.i18n.MessagesApi
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, Result}
 import repositories.EmploymentUserDataRepository
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.Clock
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -38,10 +39,11 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
                                          incomeTaxUserDataConnector: IncomeTaxUserDataConnector,
                                          implicit private val appConfig: AppConfig,
                                          val messagesApi: MessagesApi,
-                                         errorHandler: ErrorHandler) extends Logging {
+                                         errorHandler: ErrorHandler,
+                                         implicit val ec: ExecutionContext) extends Logging {
 
   def findPreviousEmploymentUserData(user: User[_], taxYear: Int)(result: AllEmploymentData => Result)
-                                    (implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Result] = {
+                                    (implicit request: Request[_], hc: HeaderCarrier): Future[Result] = {
 
     getPriorData(taxYear)(user,hc).map {
       case Right(IncomeTaxUserData(Some(employmentData))) => result(employmentData)
@@ -61,7 +63,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   def getSessionDataAndReturnResult(taxYear: Int, employmentId: String)(result: EmploymentUserData => Future[Result])
-                                   (implicit user: User[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Result] = {
+                                   (implicit user: User[_]): Future[Result] = {
 
     employmentUserDataRepository.find(taxYear, employmentId).flatMap {
       case Some(employmentUserData: EmploymentUserData) => result(employmentUserData)
@@ -70,9 +72,8 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   //scalastyle:off
-  def updateSessionData[A](employmentId: String, cyaModel: EmploymentCYAModel, taxYear: Int,
-                           needsCreating: Boolean, isPriorSubmission: Boolean)(onFail: A)(onSuccess: A)
-                          (implicit user: User[_], ec: ExecutionContext): Future[A] = {
+  def createOrUpdateSessionData[A](employmentId: String, cyaModel: EmploymentCYAModel, taxYear: Int, isPriorSubmission: Boolean)
+                                  (onFail: A)(onSuccess: A)(implicit user: User[_], clock: Clock): Future[A] = {
 
     val userData = EmploymentUserData(
       user.sessionId,
@@ -80,23 +81,19 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       user.nino,
       taxYear,
       employmentId,
-      isPriorSubmission = isPriorSubmission,
+      isPriorSubmission,
       cyaModel,
-      DateTime.now(DateTimeZone.UTC)
+      clock.now(DateTimeZone.UTC)
     )
 
-    //TODO See if we can remove the create / update and have one method
-    val resultFuture: Future[Boolean] =
-      if(needsCreating) employmentUserDataRepository.create(userData) else employmentUserDataRepository.update(userData)
-
-    resultFuture.map {
-      case true => onSuccess
-      case false => onFail
+    employmentUserDataRepository.createOrUpdate(userData).map {
+      case Some(_) => onSuccess
+      case None => onFail
     }
   }
 
   def getAndHandle(taxYear: Int, employmentId: String)(block: (Option[EmploymentCYAModel], AllEmploymentData) => Future[Result])
-                     (implicit executionContext: ExecutionContext, user: User[_], hc: HeaderCarrier): Future[Result] = {
+                     (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
     val result = for {
       optionalCya <- getSessionData(taxYear, employmentId)
       priorDataResponse <- getPriorData(taxYear)
@@ -119,7 +116,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     result.flatten
   }
 
-  def clear[R](taxYear: Int, employmentId: String)(onFail: R)(onSuccess: R)(implicit user: User[_], ec: ExecutionContext): Future[R] = {
+  def clear[R](taxYear: Int, employmentId: String)(onFail: R)(onSuccess: R)(implicit user: User[_]): Future[R] = {
     employmentUserDataRepository.clear(taxYear, employmentId).map {
       case true => onSuccess
       case false => onFail
