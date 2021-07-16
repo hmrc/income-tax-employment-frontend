@@ -202,10 +202,10 @@ checkYourBenefits.assetsHeader = Assets and asset transfers
 checkYourBenefits.assets = Assets
 checkYourBenefits.assetTransfers = Asset transfers
 
-amountsNotOnYourP60.heading.individual = What is the total amount of payments not included on your P60?
-amountsNotOnYourP60.heading.agent = What is the total amount of payments not included on your client’s P60?
-amountsNotOnYourP60.error.noEntry.individual =  Enter the amount of payments not included on your P60
-amountsNotOnYourP60.error.noEntry.agent =  Enter the amount of payments not included on your client’s P60
-amountsNotOnYourP60.incorrectFormat = Enter the amount of payments in the correct format
-amountsNotOnYourP60.maximum = The amount of payments must be less than £100,000,000,000
-amountsNotOnYourP60.wasNot = If it was not £{0}, tell us the correct amount.
+otherPaymentsAmount.heading.individual = What is the total amount of payments not included on your P60?
+otherPaymentsAmount.heading.agent = What is the total amount of payments not included on your client’s P60?
+otherPaymentsAmount.error.noEntry.individual =  Enter the amount of payments not included on your P60
+otherPaymentsAmount.error.noEntry.agent =  Enter the amount of payments not included on your client’s P60
+otherPaymentsAmount.incorrectFormat = Enter the amount of payments in the correct format
+otherPaymentsAmount.maximum = The amount of payments must be less than £100,000,000,000
+otherPaymentsAmount.wasNot = If it was not {0}, tell us the correct amount.

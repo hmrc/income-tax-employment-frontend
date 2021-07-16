@@ -32,14 +32,14 @@
 @hasFormErrors = @{form.hasErrors}
 
 @headingForUse = @{
-messages(s"amountsNotOnYourP60.heading.${if(user.isAgent) "agent" else "individual"}")
+messages(s"otherPaymentsAmount.heading.${if(user.isAgent) "agent" else "individual"}")
 }
 
 @layout(pageTitle = headingForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
 
     @errorSummary(form.errors.distinct)
 
-    @formWithCSRF(action = controllers.employment.routes.AmountOfTipsOnP60Controller.submit(taxYear, employmentId)) {
+    @formWithCSRF(action = controllers.employment.routes.OtherPaymentsAmountController.submit(taxYear, employmentId)) {
 
 
             @inputText(
@@ -62,9 +62,9 @@ messages(s"amountsNotOnYourP60.heading.${if(user.isAgent) "agent" else "individu
 }
 
 @contentHtml = {
-    @if(amount != None){
+    @if(amount.isDefined){
         <p>
-            @messages("amountsNotOnYourP60.wasNot", amount.get)
+            @messages("otherPaymentsAmount.wasNot", bigDecimalCurrency(amount.get.toString))
         </p>
     }
 }

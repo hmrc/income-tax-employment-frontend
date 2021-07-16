@@ -27,28 +27,28 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
-import views.html.employment.{AmountOfTipsOnP60View, CheckEmploymentDetailsView}
+import views.html.employment.{OtherPaymentsAmountView, CheckEmploymentDetailsView}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AmountOfTipsOnP60Controller @Inject()(implicit val cc: MessagesControllerComponents,
-                                            authAction: AuthorisedAction,
-                                            inYearAction: InYearAction,
-                                            amountOfTipsOnP60View: AmountOfTipsOnP60View,
-                                            checkEmploymentDetailsView: CheckEmploymentDetailsView,
-                                            implicit val appConfig: AppConfig,
-                                            employmentSessionService: EmploymentSessionService,
-                                            auditService: AuditService,
-                                            errorHandler: ErrorHandler,
-                                            implicit val ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
+class OtherPaymentsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
+                                              authAction: AuthorisedAction,
+                                              inYearAction: InYearAction,
+                                              otherPaymentsAmountView: OtherPaymentsAmountView,
+                                              checkEmploymentDetailsView: CheckEmploymentDetailsView,
+                                              implicit val appConfig: AppConfig,
+                                              employmentSessionService: EmploymentSessionService,
+                                              auditService: AuditService,
+                                              errorHandler: ErrorHandler,
+                                              implicit val ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def agentOrIndividual(implicit isAgent: Boolean): String = if (isAgent) "agent" else "individual"
 
   def form(implicit isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = "amountsNotOnYourP60.error.noEntry." + agentOrIndividual,
-    wrongFormatKey = "amountsNotOnYourP60.incorrectFormat",
-    exceedsMaxAmountKey = "amountsNotOnYourP60.maximum"
+    emptyFieldKey = "otherPaymentsAmount.error.noEntry." + agentOrIndividual,
+    wrongFormatKey = "otherPaymentsAmount.incorrectFormat",
+    exceedsMaxAmountKey = "otherPaymentsAmount.maximum"
   )
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
@@ -59,7 +59,7 @@ class AmountOfTipsOnP60Controller @Inject()(implicit val cc: MessagesControllerC
             case Some(true) =>
               val amount = data.employment.employmentDetails.tipsAndOtherPayments
               val filledForm = amount.fold(form(user.isAgent))(x => form(user.isAgent).fill(x))
-              Future.successful(Ok(amountOfTipsOnP60View(filledForm,taxYear, employmentId, amount)))
+              Future.successful(Ok(otherPaymentsAmountView(filledForm,taxYear, employmentId, amount)))
             case _ =>
               Future.successful(Redirect(OtherPaymentsController.show(taxYear, employmentId)))
           }
@@ -70,7 +70,7 @@ class AmountOfTipsOnP60Controller @Inject()(implicit val cc: MessagesControllerC
     inYearAction.notInYear(taxYear) {
       form(user.isAgent).bindFromRequest().fold(
         { formWithErrors =>
-          Future.successful(BadRequest(amountOfTipsOnP60View(formWithErrors,taxYear, employmentId, None)))
+          Future.successful(BadRequest(otherPaymentsAmountView(formWithErrors,taxYear, employmentId, None)))
         },
         { submittedAmount =>
           employmentSessionService.getSessionDataAndReturnResult(taxYear,employmentId){
