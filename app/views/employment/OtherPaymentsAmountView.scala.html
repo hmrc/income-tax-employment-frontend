@@ -47,7 +47,7 @@ messages(s"otherPaymentsAmount.heading.${if(user.isAgent) "agent" else "individu
                 id = "amount",
                 name = "amount",
                 heading = headingForUse,
-                headingClasses = "govuk-! -margin-bottom-2",
+                headingClasses = "govuk-!-margin-bottom-2",
                 subheading = Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)),
                 content = Some(contentHtml),
                 hint = Some(Html(messages("common.currency.hint"))),
