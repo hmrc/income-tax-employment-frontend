@@ -39,10 +39,10 @@
 
 @contentHtml = {
     @if(subheading.isDefined) {
-    @headingHelper(messages(heading, headingMessageArgs: _*), Some(subheading.get), headingClasses)
-    } else {
-        <div>@messages(heading, headingMessageArgs:_*)</div>
-    }
+            @headingHelper(messages(heading, headingMessageArgs: _*), Some(subheading.get), headingClasses)
+        } else {
+            <div>@messages(heading, headingMessageArgs:_*)</div>
+        }
     @content
 }
 
@@ -51,9 +51,9 @@
     name,
     classes = if(currency) "govuk-input--width-10 " + classes.fold("")(x => x) else classes.fold("")(x => x),
     label = Label(
-        content = HtmlContent(contentHtml),
-        isPageHeading = isPageHeading,
-        classes = if(isPageHeading) "govuk-label--xl " + labelClasses.fold("")(cls => cls) else labelClasses.fold("")(cls => cls)
+    content = HtmlContent(contentHtml),
+    isPageHeading = isPageHeading,
+    classes = if(isPageHeading) "govuk-label--xl " + labelClasses.fold("")(cls => cls) else labelClasses.fold("")(cls => cls)
     ),
     hint = hint.map(hintHtml => Hint(
         content = HtmlContent(hintHtml)
