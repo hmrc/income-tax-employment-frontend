@@ -25,9 +25,9 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
-class AmountOfTipsOnP60ControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper{
+class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper{
 
-  val amountOfTipsOnP60PageUrl = s"$appUrl/2021/amount-of-payments-not-on-p60?employmentId=employmentId"
+  val otherPaymentsAmountPageUrl = s"$appUrl/2021/amount-of-payments-not-on-p60?employmentId=employmentId"
   val continueLink = "/income-through-software/return/employment-income/2021/amount-of-payments-not-on-p60?employmentId=employmentId"
 
   val amount: String = "100"
@@ -47,6 +47,7 @@ class AmountOfTipsOnP60ControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedH1: String
     val expectedErrorTitle: String
     val expectedErrorNoEntry: String
+    val expectedOtherPaymentsPageHeader: String
   }
 
   trait CommonExpectedResults {
@@ -64,6 +65,7 @@ class AmountOfTipsOnP60ControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedH1 = "What is the total amount of payments not included on your P60?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorNoEntry = "Enter the amount of payments not included on your P60"
+    val expectedOtherPaymentsPageHeader = "Did you receive any payments that are not on your P60?"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -71,6 +73,7 @@ class AmountOfTipsOnP60ControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedH1 = "What is the total amount of payments not included on your P60?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorNoEntry = "Enter the amount of payments not included on your P60"
+    val expectedOtherPaymentsPageHeader = "Did you receive any payments that are not on your P60?"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -78,6 +81,7 @@ class AmountOfTipsOnP60ControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedH1 = "What is the total amount of payments not included on your client’s P60?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorNoEntry = "Enter the amount of payments not included on your client’s P60"
+    val expectedOtherPaymentsPageHeader = "Did your client receive any payments that are not on their P60?"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -85,6 +89,7 @@ class AmountOfTipsOnP60ControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedH1 = "What is the total amount of payments not included on your client’s P60?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorNoEntry = "Enter the amount of payments not included on your client’s P60"
+    val expectedOtherPaymentsPageHeader = "Did your client receive any payments that are not on their P60?"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -114,21 +119,21 @@ class AmountOfTipsOnP60ControllerISpec extends IntegrationTest with ViewHelpers 
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
 
-  val employmentUserDataWithP60s: EmploymentUserData = employmentUserData.copy(employment = employmentUserData.employment.copy(employmentUserData.employment.employmentDetails.copy(tipsAndOtherPayments = Some(100.00))))
-  val empDataWithNoToP60Question: EmploymentUserData = employmentUserData.copy(employment = employmentUserData.employment.copy(employmentUserData.employment.employmentDetails.copy(tipsAndOtherPaymentsQuestion = Some(false))))
-  val empDataWithUnansweredP60Question: EmploymentUserData = employmentUserData.copy(employment = employmentUserData.employment.copy(employmentUserData.employment.employmentDetails.copy(tipsAndOtherPaymentsQuestion = None)))
+  val employmentUserDataWithTipsAndOtherPayments: EmploymentUserData = employmentUserData.copy(employment = employmentUserData.employment.copy(employmentUserData.employment.employmentDetails.copy(tipsAndOtherPayments = Some(100.00))))
+  val empDataWithNoToTipsQuestion: EmploymentUserData = employmentUserData.copy(employment = employmentUserData.employment.copy(employmentUserData.employment.employmentDetails.copy(tipsAndOtherPaymentsQuestion = Some(false))))
+  val empDataWithUnansweredTipsQuestion: EmploymentUserData = employmentUserData.copy(employment = employmentUserData.employment.copy(employmentUserData.employment.employmentDetails.copy(tipsAndOtherPaymentsQuestion = None)))
 
   ".show" should {
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "render the 'amount of tips on p60' page with the correct content" which {
+        "render the 'other payments amount' page with the correct content" which {
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(employmentUserData, User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
-            urlGet(amountOfTipsOnP60PageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -150,12 +155,12 @@ class AmountOfTipsOnP60ControllerISpec extends IntegrationTest with ViewHelpers 
           welshToggleCheck(user.isWelsh)
         }
 
-        "render the 'amount of tips on p60' page with the correct content when theres a previous amount" which {
+        "render the 'other payments amount' page with the correct content when theres a previous amount" which {
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserDataWithP60s, User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
-            urlGet(amountOfTipsOnP60PageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+            insertCyaData(employmentUserDataWithTipsAndOtherPayments, User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
+            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -177,43 +182,44 @@ class AmountOfTipsOnP60ControllerISpec extends IntegrationTest with ViewHelpers 
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
+
+        "redirect to the 'did you receive any payments that are not on your p60' page when they've previously answered no" which {
+          lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            insertCyaData(empDataWithNoToTipsQuestion, User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
+            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has an OK status" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(user.specificExpectedResults.get.expectedOtherPaymentsPageHeader)
+          h1Check(user.specificExpectedResults.get.expectedOtherPaymentsPageHeader)
+        }
+
+        "redirect to the 'did you receive any payments that are not on your p60' page when they've not answered the previous question" which {
+          lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            insertCyaData(empDataWithUnansweredTipsQuestion, User(mtditid,None,nino,sessionId,"Individual")(fakeRequest))
+            insertCyaData(empDataWithUnansweredTipsQuestion, User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
+            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has an OK status" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(user.specificExpectedResults.get.expectedOtherPaymentsPageHeader)
+          h1Check(user.specificExpectedResults.get.expectedOtherPaymentsPageHeader)
+        }
       }
-    }
-
-    "redirect to the 'did you receive any payments that are not on your p60' page when they've previously answered no" which {
-      lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(false)
-        dropEmploymentDB()
-        insertCyaData(empDataWithNoToP60Question, User(mtditid,None,nino,sessionId,"Individual")(fakeRequest))
-        urlGet(amountOfTipsOnP60PageUrl, welsh = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
-      }
-
-      implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-      "has an OK status" in {
-        result.status shouldBe OK
-      }
-
-      titleCheck("Did you receive any payments that are not on your P60?")
-      h1Check("Did you receive any payments that are not on your P60?")
-    }
-
-    "redirect to the 'did you receive any payments that are not on your p60' page when they've not answered the previous question" which {
-      lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(false)
-        dropEmploymentDB()
-        insertCyaData(empDataWithUnansweredP60Question, User(mtditid,None,nino,sessionId,"Individual")(fakeRequest))
-        urlGet(amountOfTipsOnP60PageUrl, welsh = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
-      }
-
-      implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-      "has an OK status" in {
-        result.status shouldBe OK
-      }
-
-      titleCheck("Did you receive any payments that are not on your P60?")
-      h1Check("Did you receive any payments that are not on your P60?")
     }
   }
 
@@ -227,7 +233,7 @@ class AmountOfTipsOnP60ControllerISpec extends IntegrationTest with ViewHelpers 
 
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(amountOfTipsOnP60PageUrl, body = form, follow = false, welsh = user.isWelsh,
+            urlPost(otherPaymentsAmountPageUrl, body = form, follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -241,7 +247,7 @@ class AmountOfTipsOnP60ControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(amountOfTipsOnP60PageUrl, body = form, follow = false, welsh = user.isWelsh,
+              urlPost(otherPaymentsAmountPageUrl, body = form, follow = false, welsh = user.isWelsh,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
 
@@ -271,7 +277,7 @@ class AmountOfTipsOnP60ControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(amountOfTipsOnP60PageUrl, body = form, follow = false, welsh = user.isWelsh,
+              urlPost(otherPaymentsAmountPageUrl, body = form, follow = false, welsh = user.isWelsh,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
 
@@ -301,7 +307,7 @@ class AmountOfTipsOnP60ControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(amountOfTipsOnP60PageUrl, body = form, follow = false, welsh = user.isWelsh,
+              urlPost(otherPaymentsAmountPageUrl, body = form, follow = false, welsh = user.isWelsh,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))            }
 
             "has the correct status" in {

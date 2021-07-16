@@ -20,7 +20,6 @@ import common.UUID
 import controllers.employment.routes.{CheckEmploymentDetailsController, OtherPaymentsController}
 import forms.YesNoForm
 import models.User
-import models.employment.{EmploymentData, EmploymentSource, Pay}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -100,6 +99,8 @@ class OtherPaymentsControllerISpec extends IntegrationTest with ViewHelpers with
 
   private val employmentId = UUID().randomUUID
   private def url(taxYear: Int) = s"$appUrl/$taxYear/payments-not-on-p60?employmentId=$employmentId"
+  val otherPaymentsAmountUrl =
+    s"/income-through-software/return/employment-income/$validTaxYear2021/amount-of-payments-not-on-p60?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
   private def employmentUserData(employmentCyaModel: EmploymentCYAModel) =
@@ -261,7 +262,7 @@ class OtherPaymentsControllerISpec extends IntegrationTest with ViewHelpers with
             }
 
             "redirect to Other Payments Amount page" in {
-              result.header(HeaderNames.LOCATION) shouldBe Some("/other-payments-p60-amount-TO-BE-DEFINED")
+              result.header(HeaderNames.LOCATION) shouldBe Some(otherPaymentsAmountUrl)
             }
 
             "cyaModel is updated and tipsAndOtherPaymentsQuestion is set to Some(true)" in {

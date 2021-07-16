@@ -80,7 +80,7 @@
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.paymentNotOnYourP60", user.isAgent)))
 
         val tipsAndOtherPaymentsAmount = EmploymentDataForView(messages(getAgentDynamicContent(s"$msgKeyGeneric.tipsAndOtherPayments", user.isAgent)),
-        employmentDetails.tipsAndOtherPayments.map(amount => bigDecimalCurrency(amount.toString)), controllers.employment.routes.AmountOfTipsOnP60Controller.show(taxYear, employmentDetails.employmentId),
+        employmentDetails.tipsAndOtherPayments.map(amount => bigDecimalCurrency(amount.toString)), controllers.employment.routes.OtherPaymentsAmountController.show(taxYear, employmentDetails.employmentId),
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.tipsAndOtherPayments", user.isAgent)))
 
         val employmentDataFields = if(isInYear) {List(employerName, payeRef,

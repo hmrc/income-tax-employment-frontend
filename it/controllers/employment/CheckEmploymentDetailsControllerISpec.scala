@@ -391,7 +391,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           val dummyHref =  "/income-through-software/return/employment-income/2021/check-employment-expenses"
 
           val otherPaymentsQuestionPageHref = controllers.employment.routes.OtherPaymentsController.show(taxYear-1, employmentId)
-          val otherPaymentsAmountPageHref = controllers.employment.routes.AmountOfTipsOnP60Controller.show(taxYear-1, employmentId)
+          val otherPaymentsAmountPageHref = controllers.employment.routes.OtherPaymentsAmountController.show(taxYear-1, employmentId)
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
