@@ -28,7 +28,6 @@ common.error.invalid_number = Enter an amount using numbers 0 to 9
 common.error.amountMaxLimit = Enter an amount less than £100,000,000,000
 common.error.invalid_currency_format = Enter the amount in the correct format
 
-
 common.error.self-assessment.paragraph.1.1 = If the web address is correct or you selected a link or button, you can use
 common.error.self-assessment.paragraph.1.2 = Self Assessment: general enquiries (opens in new tab)
 common.error.self-assessment.paragraph.1.3 = to speak to someone about your income tax
@@ -146,6 +145,18 @@ employment.employerName.heading.agent = What’s the name of your client’s emp
 employment.employerName.error.noEntry.individual = Enter the name of your employer
 employment.employerName.error.noEntry.agent = Enter the name of your client’s employer
 employment.employerName.error.name.limit = The employer name must be 74 characters or fewer
+
+employment.employmentTax.title.individual = How much UK tax was taken from your earnings?
+employment.employmentTax.title.agent = How much UK tax was taken from your client’s earnings?
+employment.employmentTax.heading.individual = How much UK tax was taken from your {0} earnings?
+employment.employmentTax.heading.agent = How much UK tax was taken from your clients {0} earnings?
+employment.employmentTax.formLabel.individual = You can usually find this amount in the 'Pay and Income Tax details' section of your P60.
+employment.employmentTax.formLabel.agent = You can usually find this amount in the 'Pay and Income Tax details' section of your clients P60.
+employment.employmentTax.preFill.amount = If £{0} was not taken in UK tax, tell us the correct amount.
+employment.employmentTax.error.noEntry.individual = Enter the amount of UK tax taken from your earnings
+employment.employmentTax.error.noEntry.agent = Enter the amount of UK tax taken from your client’s earnings
+employment.employmentTax.error.format = Enter the amount of UK tax in the correct format
+employment.employmentTax.error.max = The amount of UK tax must be less than £100,000,000,000
 
 employment.expenses.title.individual = Check your employment expenses
 employment.expenses.title.agent = Check your client’s employment expenses

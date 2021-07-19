@@ -65,6 +65,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val changeLinkExpected:String
     val continueButtonText: String
     val continueButtonLink: String
+    val taxButtonLink: String
     val employerNameField1: String
     val payeReferenceField2: String
     val payReceivedField3: String
@@ -89,6 +90,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val changeLinkExpected = "Change"
     val continueButtonText = "Save and continue"
     val continueButtonLink = "/income-through-software/return/employment-income/2021/check-employment-details?employmentId=001"
+    val taxButtonLink = "/income-through-software/return/employment-income/2021/uk-tax?employmentId=001"
     val employerNameField1 = "Employer"
     val payeReferenceField2 = "PAYE reference"
     val payReceivedField3 = "Pay received"
@@ -103,6 +105,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val changeLinkExpected = "Change"
     val continueButtonText = "Save and continue"
     val continueButtonLink = "/income-through-software/return/employment-income/2021/check-employment-details?employmentId=001"
+    val taxButtonLink = "/income-through-software/return/employment-income/2021/uk-tax?employmentId=001"
     val employerNameField1 = "Employer"
     val payeReferenceField2 = "PAYE reference"
     val payReceivedField3 = "Pay received"
@@ -396,6 +399,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           }
 
           val dummyHref =  "/income-through-software/return/employment-income/2021/check-employment-expenses"
+          val taxHref = "/income-through-software/return/employment-income/2021/uk-tax?employmentId=001"
 
 
 
@@ -419,7 +423,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(4))
           textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(4))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.taxTakenFromPayHiddenText}",
-            cyaChangeLink(4), dummyHref)
+            cyaChangeLink(4), taxHref)
           textOnPageCheck(user.specificExpectedResults.get.employeeFieldName7, summaryListRowFieldNameSelector(5))
           textOnPageCheck(user.commonExpectedResults.paymentsNotOnP60Yes, summaryListRowFieldAmountSelector(5))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.paymentsNotOnP60HiddenText}",
@@ -476,6 +480,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           }
 
           val dummyHref =  "/income-through-software/return/employment-income/2021/check-employment-expenses"
+          val taxHref = "/income-through-software/return/employment-income/2021/uk-tax?employmentId=001"
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -492,7 +497,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.taxTakenFromPayB, summaryListRowFieldAmountSelector(3))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.taxTakenFromPayHiddenText}",
-            cyaChangeLink(3), dummyHref)
+            cyaChangeLink(3), taxHref)
           textOnPageCheck(user.specificExpectedResults.get.employeeFieldName7, summaryListRowFieldNameSelector(4))
           textOnPageCheck(user.commonExpectedResults.paymentsNotOnP60No, summaryListRowFieldAmountSelector(4))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.paymentsNotOnP60HiddenText}",
