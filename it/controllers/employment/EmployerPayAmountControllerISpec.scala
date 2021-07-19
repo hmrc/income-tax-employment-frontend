@@ -211,40 +211,36 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           welshToggleCheck(user.isWelsh)
 
         }
-      }
-    }
-
-  }
-
-  ".show" should {
-
-    "redirect  to check employment details page when there is no cya data in session" when {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(isAgent = false)
-        dropEmploymentDB()
-        urlGet(urlEOY, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-      }
+        "redirect  to check employment details page when there is no cya data in session" when {
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            urlGet(urlEOY, follow = false, welsh=user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
 
 
-      "has an SEE_OTHER status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-details?employmentId=001")
-      }
-    }
+          "has an SEE_OTHER status" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-details?employmentId=001")
+          }
+        }
 
-    "redirect  to overview page if the user tries to hit this page with current taxYear" when {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(isAgent = false)
-        dropEmploymentDB()
-        insertCyaData(CyaModel.cya, User(mtditid, None, nino, sessionId, "agent"))
-        val inYearUrl =s"$appUrl/$taxYear/how-much-pay?employmentId=001"
-        urlGet(inYearUrl, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-      }
+        "redirect  to overview page if the user tries to hit this page with current taxYear" when {
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            insertCyaData(CyaModel.cya, User(mtditid, None, nino, sessionId, "agent"))
+            val inYearUrl =s"$appUrl/$taxYear/how-much-pay?employmentId=001"
+            urlGet(inYearUrl, welsh=user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
 
 
-      "has an SEE_OTHER status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+          "has an SEE_OTHER status" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+          }
+        }
+
       }
     }
   }
@@ -318,23 +314,21 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           inputFieldValueCheck("9999999999999999999999999999", inputAmountField)
           errorSummaryCheck(maxAmountErrorText, expectedErrorHref)
         }
-      }
-    }
-  }
 
-  ".submit" should {
+        "redirect to Overview page when a valid form is submitted" when {
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            insertCyaData(CyaModel.cya, userRequest)
+            urlPost(urlEOY, follow=false,
+              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+          }
 
-    "redirect to Overview page when a valid form is submitted" when {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(false)
-        dropEmploymentDB()
-        insertCyaData(CyaModel.cya, userRequest)
-        urlPost(urlEOY, follow=false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
-      }
-
-      "has an SEE_OTHER status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-details?employmentId=001")
+          "has an SEE_OTHER status" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-details?employmentId=001")
+          }
+        }
       }
     }
   }
