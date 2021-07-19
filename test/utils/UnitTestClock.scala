@@ -15,9 +15,10 @@
  */
 
 package utils
+
 import org.joda.time.{DateTime, DateTimeZone}
 
-object TestClock extends Clock {
+object UnitTestClock extends Clock {
   private val year = 2021
   private val month = 1
   private val day = 1

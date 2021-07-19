@@ -86,8 +86,8 @@ taxYear-error-template.paragraph.2 = Check that you’ve entered the correct web
 
 employment.other-payments.title.individual = Did you receive any payments that are not on your P60?
 employment.other-payments.title.agent = Did your client receive any payments that are not on their P60?
-employment.other-payments.detail.individual = This includes any tips. (A small gift of money for a service you provided.)
-employment.other-payments.detail.agent = This includes any tips. (A small gift of money for a service your client provided.)
+employment.other-payments.detail.individual = This includes any tips (a small gift of money for a service you provided).
+employment.other-payments.detail.agent = This includes any tips (a small gift of money for a service your client provided).
 
 employment.other-payments.errors.noRadioSelected.individual = Select yes if you received any payments that are not on your P60
 employment.other-payments.errors.noRadioSelected.agent = Select yes if your client received any payments that are not on their P60

@@ -16,6 +16,7 @@
 
 package controllers.employment
 
+import controllers.employment.routes.{CheckEmploymentDetailsController, OtherPaymentsController}
 import models.User
 import models.mongo.EmploymentUserData
 import org.jsoup.Jsoup
@@ -27,7 +28,8 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper{
 
-  val otherPaymentsAmountPageUrl = s"$appUrl/2021/amount-of-payments-not-on-p60?employmentId=employmentId"
+  val employmentId = "employmentId"
+  val otherPaymentsAmountPageUrl = s"$appUrl/2021/amount-of-payments-not-on-p60?employmentId=$employmentId"
   val continueLink = "/income-through-software/return/employment-income/2021/amount-of-payments-not-on-p60?employmentId=employmentId"
 
   val amount: String = "100"
@@ -183,22 +185,37 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
           welshToggleCheck(user.isWelsh)
         }
 
+        "redirect to the CheckYourEmploymentDetails page there is no CYA data" which {
+          lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+          }
+
+          "has an SEE_OTHER status" in {
+            result.status shouldBe SEE_OTHER
+          }
+
+          "redirect to OtherPayments not on P60 page" in {
+            result.header(HeaderNames.LOCATION) shouldBe Some(CheckEmploymentDetailsController.show(2021, employmentId).url)
+          }
+        }
+
         "redirect to the 'did you receive any payments that are not on your p60' page when they've previously answered no" which {
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(empDataWithNoToTipsQuestion, User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
-            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-          "has an OK status" in {
-            result.status shouldBe OK
+          "has an SEE_OTHER status" in {
+            result.status shouldBe SEE_OTHER
           }
 
-          titleCheck(user.specificExpectedResults.get.expectedOtherPaymentsPageHeader)
-          h1Check(user.specificExpectedResults.get.expectedOtherPaymentsPageHeader)
+          "redirect to OtherPayments not on P60 page" in {
+            result.header(HeaderNames.LOCATION) shouldBe Some(OtherPaymentsController.show(2021, employmentId).url)
+          }
         }
 
         "redirect to the 'did you receive any payments that are not on your p60' page when they've not answered the previous question" which {
@@ -207,17 +224,15 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
             dropEmploymentDB()
             insertCyaData(empDataWithUnansweredTipsQuestion, User(mtditid,None,nino,sessionId,"Individual")(fakeRequest))
             insertCyaData(empDataWithUnansweredTipsQuestion, User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
-            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+          }
+          "has an SEE_OTHER status" in {
+            result.status shouldBe SEE_OTHER
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-          "has an OK status" in {
-            result.status shouldBe OK
+          "redirect to OtherPayments not on P60 page" in {
+            result.header(HeaderNames.LOCATION) shouldBe Some(OtherPaymentsController.show(2021, employmentId).url)
           }
-
-          titleCheck(user.specificExpectedResults.get.expectedOtherPaymentsPageHeader)
-          h1Check(user.specificExpectedResults.get.expectedOtherPaymentsPageHeader)
         }
       }
     }
@@ -225,19 +240,57 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
 
   ".submit" should {
 
+    val validAmountForm = Map("amount" -> Seq(amount))
+
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
         "return an OK" in {
-          lazy val form: Map[String, Seq[String]] = Map("amount" -> Seq(amount))
-
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(otherPaymentsAmountPageUrl, body = form, follow = false, welsh = user.isWelsh,
+            urlPost(otherPaymentsAmountPageUrl, body = validAmountForm, follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           result.status shouldBe SEE_OTHER
+        }
+
+        // TODO - Minor bug where user can submit a form even though they're either answered no to the previous question or not answered it at all. These tests can be renabled when we have implemented the support for this.
+        "redirect to the 'did you receive any payments that are not on your p60' page" ignore {
+          "they attempt to submit amount when they've previously answered no" which {
+            lazy val result: WSResponse = {
+              authoriseAgentOrIndividual(user.isAgent)
+              dropEmploymentDB()
+              insertCyaData(empDataWithNoToTipsQuestion, User(mtditid, if (user.isAgent) Some("12345678") else None, nino, sessionId, if (user.isAgent) "Agent" else "Individual")(fakeRequest))
+              urlPost(otherPaymentsAmountPageUrl, body = validAmountForm, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+            }
+
+            "has an SEE_OTHER status" in {
+              result.status shouldBe SEE_OTHER
+            }
+
+            "redirect to OtherPayments not on P60 page" in {
+              result.header(HeaderNames.LOCATION) shouldBe Some(OtherPaymentsController.show(2021, employmentId).url)
+            }
+          }
+
+          "they attempt to submit amount when they've not answered the payments not on P60 question" which {
+            lazy val result: WSResponse = {
+              authoriseAgentOrIndividual(user.isAgent)
+              dropEmploymentDB()
+              insertCyaData(empDataWithUnansweredTipsQuestion, User(mtditid, if (user.isAgent) Some("12345678") else None, nino, sessionId, if (user.isAgent) "Agent" else "Individual")(fakeRequest))
+              urlPost(otherPaymentsAmountPageUrl, body = validAmountForm, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+            }
+
+            "has an SEE_OTHER status" in {
+              result.status shouldBe SEE_OTHER
+              findCyaData(2021, employmentId, User(mtditid, if (user.isAgent) Some("12345678") else None, nino, sessionId, if (user.isAgent) "Agent" else "Individual")(fakeRequest))
+            }
+
+            "redirect to OtherPayments not on P60 page" in {
+              result.header(HeaderNames.LOCATION) shouldBe Some(OtherPaymentsController.show(2021, employmentId).url)
+            }
+          }
         }
 
         s"return a BAD_REQUEST($BAD_REQUEST) status" when {

@@ -68,7 +68,7 @@ class OtherPaymentsControllerISpec extends IntegrationTest with ViewHelpers with
     val expectedH1: String = "Did you receive any payments that are not on your P60?"
     val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val detailsContent: String = "This includes any tips. (A small gift of money for a service you provided.)"
+    val detailsContent: String = "This includes any tips (a small gift of money for a service you provided)."
     val expectedErrorText = "Select yes if you received any payments that are not on your P60"
   }
 
@@ -76,7 +76,7 @@ class OtherPaymentsControllerISpec extends IntegrationTest with ViewHelpers with
     val expectedH1: String = "Did your client receive any payments that are not on their P60?"
     val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val detailsContent: String = "This includes any tips. (A small gift of money for a service your client provided.)"
+    val detailsContent: String = "This includes any tips (a small gift of money for a service your client provided)."
     val expectedErrorText = "Select yes if your client received any payments that are not on their P60"
 
   }
@@ -85,7 +85,7 @@ class OtherPaymentsControllerISpec extends IntegrationTest with ViewHelpers with
     val expectedH1: String = "Did you receive any payments that are not on your P60?"
     val expectedTitle: String = "Did you receive any payments that are not on your P60?"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val detailsContent: String = "This includes any tips. (A small gift of money for a service you provided.)"
+    val detailsContent: String = "This includes any tips (a small gift of money for a service you provided)."
     val expectedErrorText = "Select yes if you received any payments that are not on your P60"
   }
 
@@ -93,7 +93,7 @@ class OtherPaymentsControllerISpec extends IntegrationTest with ViewHelpers with
     val expectedH1: String =  "Did your client receive any payments that are not on their P60?"
     val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val detailsContent: String = "This includes any tips. (A small gift of money for a service your client provided.)"
+    val detailsContent: String = "This includes any tips (a small gift of money for a service your client provided)."
     val expectedErrorText = "Select yes if your client received any payments that are not on their P60"
   }
 
