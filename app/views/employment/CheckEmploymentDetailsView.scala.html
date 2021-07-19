@@ -59,6 +59,8 @@
 
         val dummyCall = controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)
 
+        val employmentTaxCall = controllers.employment.routes.EmploymentTaxController.show(taxYear, employmentDetails.employmentId)
+
         val msgKeyGeneric = "employment.employmentDetails"
 
         val employerName = EmploymentDataForView(messages(msgKeyGeneric + ".employer"), Some(employmentDetails.employerName), controllers.employment.routes.EmployerNameController.show(taxYear, employmentDetails.employmentId),
@@ -73,7 +75,7 @@
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payReceived", user.isAgent)))
 
         val totalTaxToDate = EmploymentDataForView(messages(msgKeyGeneric + ".totalTaxToDate"),
-        employmentDetails.totalTaxToDate.map(amount => bigDecimalCurrency(amount.toString)), dummyCall,
+        employmentDetails.totalTaxToDate.map(amount => bigDecimalCurrency(amount.toString)), employmentTaxCall,
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.totalTaxToDate", user.isAgent)))
 
         val paymentsNotOnYourP60 = EmploymentDataForView(messages(getAgentDynamicContent(s"$msgKeyGeneric.paymentNotOnYourP60",user.isAgent)),

@@ -55,4 +55,5 @@ class InYearAction @Inject()(implicit val appConfig: AppConfig) {
       Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     }
   }
+
 }
