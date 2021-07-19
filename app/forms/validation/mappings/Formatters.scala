@@ -39,9 +39,9 @@ trait Formatters {
 
   private[mappings] def currencyFormatter(requiredKey: String,
                                           invalidNumericKey: String,
-                                          nonNumericKey: String,
                                           maxAmountKey: String,
-                                          args: Seq[String] = Seq.empty): Formatter[BigDecimal] =
+                                          args: Seq[String] = Seq.empty[String]
+                                          ): Formatter[BigDecimal] =
     new Formatter[BigDecimal] {
 
       val is2dp = """\d+|\d*\.\d{1,2}"""
@@ -57,12 +57,12 @@ trait Formatters {
           .map(_.replaceAll("""\s""", ""))
           .flatMap {
             case s if s.isEmpty => Left(Seq(FormError(key, requiredKey, args)))
-            case s if !s.matches(validNumeric) => Left(Seq(FormError(key, nonNumericKey, args)))
+            case s if !s.matches(validNumeric) => Left(Seq(FormError(key,invalidNumericKey, args)))
             case s if !s.matches(is2dp) => Left(Seq(FormError(key, invalidNumericKey, args)))
             case s =>
               nonFatalCatch
                 .either(BigDecimal(s.replaceAll("£", "")))
-                .left.map(_ => Seq(FormError(key, nonNumericKey, args)))
+                .left.map(_ => Seq(FormError(key, invalidNumericKey, args)))
           }
           .flatMap { bigDecimal =>
             if (bigDecimal < BigDecimal("100000000000")) Right(bigDecimal) else Left(Seq(FormError(key, maxAmountKey, args)))

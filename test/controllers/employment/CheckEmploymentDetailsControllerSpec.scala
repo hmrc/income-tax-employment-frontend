@@ -33,8 +33,8 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockEmpl
   lazy val controller = new CheckEmploymentDetailsController()(
     mockMessagesControllerComponents,
     authorisedAction,
-    inYearAction,
     view,
+    inYearAction,
     mockAppConfig,
     mockIncomeTaxUserDataService,
     mockAuditService,
