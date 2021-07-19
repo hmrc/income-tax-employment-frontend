@@ -68,7 +68,8 @@
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payeRef", user.isAgent)))
 
         val payReceived = EmploymentDataForView(messages(msgKeyGeneric + ".payReceived"),
-        employmentDetails.taxablePayToDate.map(amount => bigDecimalCurrency(amount.toString)), dummyCall,
+        employmentDetails.taxablePayToDate.map(amount => bigDecimalCurrency(amount.toString)),
+        controllers.employment.routes.EmployerPayAmountController.show(taxYear, employmentDetails.employmentId),
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payReceived", user.isAgent)))
 
         val totalTaxToDate = EmploymentDataForView(messages(msgKeyGeneric + ".totalTaxToDate"),

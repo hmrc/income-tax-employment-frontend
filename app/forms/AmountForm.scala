@@ -31,9 +31,9 @@ object AmountForm {
                 ): Form[BigDecimal] = Form(
     amount -> currency(
       requiredKey = emptyFieldKey,
-      invalidNumeric = wrongFormatKey,
-      nonNumericKey = wrongFormatKey,
-      maxAmountKey = exceedsMaxAmountKey
+      wrongFormatKey = wrongFormatKey,
+      maxAmountKey = exceedsMaxAmountKey,
+      args = emptyFieldArguments
     )
   )
 
