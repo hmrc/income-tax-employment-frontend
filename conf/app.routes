@@ -14,8 +14,13 @@ GET        /:taxYear/check-employment-expenses              controllers.employme
 
 GET        /:taxYear/check-employment-benefits              controllers.employment.CheckYourBenefitsController.show(taxYear: Int, employmentId: String)
 
+
+GET        /:taxYear/employer-name                          controllers.employment.EmployerNameController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/employer-name                          controllers.employment.EmployerNameController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/amount-of-payments-not-on-p60          controllers.employment.OtherPaymentsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/amount-of-payments-not-on-p60          controllers.employment.OtherPaymentsAmountController.submit(taxYear: Int, employmentId: String)
+
 
 GET        /:taxYear/payments-not-on-p60                    controllers.employment.OtherPaymentsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/payments-not-on-p60                    controllers.employment.OtherPaymentsController.submit(taxYear: Int, employmentId: String)
