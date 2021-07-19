@@ -23,7 +23,7 @@ import play.api.data.validation.{Constraints, Invalid, Valid}
 
 class StringConstraintsSpec extends Constraints with AnyWordSpecLike with Matchers {
 
-  val maxLength = 2
+  val maxLength = 15
   val errMsgMaxLength = "Too Long"
   val errMsgNonEmpty = "it is empty"
   val errMsgInvalidChar = "there are invalid chars"
@@ -70,6 +70,24 @@ class StringConstraintsSpec extends Constraints with AnyWordSpecLike with Matche
         StringConstraints.validateChar(errMsgInvalidChar)("!()+{}?^~") shouldBe Invalid(errMsgInvalidChar)
       }
 
+    }
+  }
+
+  "The StringConstraints.validateSize method" when {
+
+    "supplied with a valid string" should {
+
+      "return valid" in {
+
+        StringConstraints.validateSize(maxLength)(errMsgMaxLength)("someInput") shouldBe Valid
+      }
+    }
+    "supplied with a string that exceeds the maximum length" should {
+
+      "return invalid" in {
+
+        StringConstraints.validateSize(maxLength)(errMsgMaxLength)("stringExceedsMaxLength") shouldBe Invalid(errMsgMaxLength)
+      }
     }
   }
 

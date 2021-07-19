@@ -33,6 +33,8 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
   val ENGLISH = "English"
   val WELSH = "Welsh"
 
+  val errorPrefix = "Error: "
+
   def welshTest(isWelsh: Boolean): String = if (isWelsh) "Welsh" else "English"
   def agentTest(isAgent: Boolean): String = if (isAgent) "Agent" else "Individual"
 
@@ -164,6 +166,12 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
   def inputFieldCheck(name: String, selector: String)(implicit document: () => Document): Unit = {
     s"has a name of '$name'" in {
       document().select(selector).attr("name") shouldBe name
+    }
+  }
+
+  def inputFieldValueCheck(value: String, selector: String)(implicit document: () => Document): Unit = {
+    s"'$selector' has a value of '$value'" in {
+      document().select(selector).attr("value") shouldBe value
     }
   }
 
