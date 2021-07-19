@@ -40,7 +40,11 @@ GET        /error/not-authorised-to-use-service             controllers.errors.U
 
 GET        /:taxYear/employment-summary                     controllers.employment.EmploymentSummaryController.show(taxYear: Int)
 
-GET        /language/:lang                                  controllers.LanguageSwitchController.switchToLanguage(lang: String)
+GET        /:taxYear/uk-tax                                controllers.employment.EmploymentTaxController.show(taxYear: Int, employmentId: String)
+
+POST       /:taxYear/uk-tax                                controllers.employment.EmploymentTaxController.submit(taxYear: Int, employmentId: String)
+
+GET        /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
 
 GET        /error/you-need-agent-services-account           controllers.errors.YouNeedAgentServicesController.show
 

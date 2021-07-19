@@ -1,0 +1,60 @@
+
+@import views.html.headerFooterTemplate.Layout
+@import views.html.templates.helpers.{InputText, ErrorSummary, Button, Heading}
+
+
+@this(
+        layout: Layout,
+        errorSummary: ErrorSummary,
+        formWithCSRF: FormWithCSRF,
+        button: Button,
+        heading: Heading,
+        govUkButton: GovukButton,
+        inputText: InputText
+)
+
+@(taxYear: Int, isAgent: Boolean, employerName: String, action: Call, form: Form[BigDecimal], amount: Option[BigDecimal])(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
+
+@titleForUse = @{messages(s"employment.employmentTax.title.${if(user.isAgent) "agent" else "individual"}")}
+@headingForUse = @{messages(s"employment.employmentTax.heading.${if(user.isAgent) "agent" else "individual"}", employerName)}
+
+@hintText = @{
+        Some(Html(messages(s"common.currency.hint")))
+}
+
+@contentHtml = {
+        <p>
+                @messages(s"employment.employmentTax.formLabel.${if(user.isAgent) "agent" else "individual"}")
+        </p>
+        @if(amount.isDefined){
+                <p>
+                        @messages(s"employment.employmentTax.preFill.amount", amount.get)
+                </p>
+        }
+}
+
+@layout(pageTitle = titleForUse, taxYear = Some(taxYear), isAgent = user.isAgent, hasErrors = form.hasErrors) {
+
+        @errorSummary(form.errors)
+
+        @formWithCSRF(action = action) {
+                @inputText(
+                        form,
+                        id = "amount",
+                        name = "amount",
+                        heading = headingForUse,
+                        headingClasses = "govuk-!-margin-bottom-2",
+                        subheading = Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)),
+                        content = Some(contentHtml),
+                        hint = Some(Html(messages("common.currency.hint"))),
+                        isPageHeading = false,
+                        currency = true
+                )
+                @button()
+        }
+
+}
+
+@{
+// $COVERAGE-OFF$
+}
