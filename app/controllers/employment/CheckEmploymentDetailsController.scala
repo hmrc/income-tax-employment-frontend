@@ -18,6 +18,7 @@ package controllers.employment
 
 import audit.{AuditService, ViewEmploymentDetailsAudit}
 import config.{AppConfig, ErrorHandler}
+import controllers.predicates.InYearAction
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.employment.{AllEmploymentData, EmploymentDetailsViewModel, EmploymentSource}
 import play.api.i18n.I18nSupport
@@ -25,6 +26,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.CheckEmploymentDetailsView
+
 import javax.inject.Inject
 import models.User
 import models.mongo.EmploymentCYAModel
@@ -35,8 +37,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesControllerComponents,
                                                  authAction: AuthorisedAction,
-                                                 inYearAction: InYearAction,
                                                  employmentDetailsView: CheckEmploymentDetailsView,
+                                                 inYearAction: InYearAction,
                                                  appConfig: AppConfig,
                                                  employmentSessionService: EmploymentSessionService,
                                                  auditService: AuditService,

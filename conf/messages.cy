@@ -208,6 +208,7 @@ checkYourBenefits.assetsHeader = Assets and asset transfers
 checkYourBenefits.assets = Assets
 checkYourBenefits.assetTransfers = Asset transfers
 
+
 otherPaymentsAmount.heading.individual = What is the total amount of payments not included on your P60?
 otherPaymentsAmount.heading.agent = What is the total amount of payments not included on your client’s P60?
 otherPaymentsAmount.error.noEntry.individual =  Enter the amount of payments not included on your P60
@@ -215,3 +216,21 @@ otherPaymentsAmount.error.noEntry.agent =  Enter the amount of payments not incl
 otherPaymentsAmount.incorrectFormat = Enter the amount of payments in the correct format
 otherPaymentsAmount.maximum = The amount of payments must be less than £100,000,000,000
 otherPaymentsAmount.wasNot = If it was not {0}, tell us the correct amount.
+
+employerPayAmount.title.agent = How much did your client’s employer pay them?
+employerPayAmount.title.individual = How much did your employer pay you?
+
+employerPayAmount.heading.agent = How much did {0} pay your client?
+employerPayAmount.heading.individual =  How much did {0} pay you?
+
+employerPayAmount.error.empty.agent = Enter the amount your client was paid
+employerPayAmount.error.empty.individual = Enter the amount you were paid
+employerPayAmount.error.amountMaxLimit = The amount paid must be less than £100,000,000,000
+employerPayAmount.error.wrongFormat = Enter the amount paid in the correct format
+
+employerPayAmount.paragraph.agent = If your client was not paid {0}, tell us the correct amount.
+employerPayAmount.paragraph.individual = If you were not paid {0}, tell us the correct amount.
+
+employerPayAmount.paragraphNewAccount.agent = Enter the gross amount. This can usually be found on your client’s P60.
+employerPayAmount.paragraphNewAccount.individual = Enter the gross amount. This can usually be found on your P60.
+
