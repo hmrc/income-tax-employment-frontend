@@ -136,7 +136,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
       mockFind(taxYear,"employmentId",Some(employmentData))
 
-      val response = service.getSessionDataAndReturnResult(taxYear,"employmentId"){
+      val response = service.getSessionDataAndReturnResult(taxYear,"employmentId")(){
         _ => Future.successful(Redirect("303"))
       }
 
@@ -147,7 +147,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
       mockFind(taxYear,"employmentId",None)
 
-      val response = service.getSessionDataAndReturnResult(taxYear,"employmentId"){
+      val response = service.getSessionDataAndReturnResult(taxYear,"employmentId")(){
         _ => Future.successful(Redirect("303"))
       }
 
