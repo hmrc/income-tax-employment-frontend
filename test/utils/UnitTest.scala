@@ -147,6 +147,7 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
   }
 
   val nino = "AA123456A"
+  val mtditid = "1234567890"
 
   val userData: IncomeTaxUserData = IncomeTaxUserData(
     Some(employmentsModel)
