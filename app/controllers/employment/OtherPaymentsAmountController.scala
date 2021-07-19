@@ -16,18 +16,18 @@
 
 package controllers.employment
 
-import audit.AuditService
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.{CheckEmploymentDetailsController, OtherPaymentsController}
+import controllers.employment.routes.{CheckEmploymentDetailsController, OtherPaymentsAmountController, OtherPaymentsController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.AmountForm
+import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.employment.{CheckEmploymentDetailsView, OtherPaymentsAmountView}
+import views.html.employment.OtherPaymentsAmountView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -52,7 +52,7 @@ class OtherPaymentsAmountController @Inject()(implicit val cc: MessagesControlle
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId){
+      employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(CheckEmploymentDetailsController.show(taxYear, employmentId).url){
         data =>
           data.employment.employmentDetails.tipsAndOtherPaymentsQuestion match {
             case Some(true) =>
@@ -72,7 +72,7 @@ class OtherPaymentsAmountController @Inject()(implicit val cc: MessagesControlle
           Future.successful(BadRequest(otherPaymentsAmountView(formWithErrors,taxYear, employmentId, None)))
         },
         { submittedAmount =>
-          employmentSessionService.getSessionDataAndReturnResult(taxYear,employmentId){
+          employmentSessionService.getSessionDataAndReturnResult(taxYear,employmentId)(CheckEmploymentDetailsController.show(taxYear, employmentId).url){
             data =>
               val cya = data.employment
               val updatedCya = cya.copy(cya.employmentDetails.copy(tipsAndOtherPayments = Some(submittedAmount)))

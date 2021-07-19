@@ -56,7 +56,7 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
 
   implicit val actorSystem: ActorSystem = ActorSystem()
 
-  implicit val testClock: Clock = TestClock
+  implicit val testClock: Clock = UnitTestClock
 
   def await[T](awaitable: Awaitable[T]): T = Await.result(awaitable, Duration.Inf)
 

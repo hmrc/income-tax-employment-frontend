@@ -65,6 +65,8 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   implicit val actorSystem: ActorSystem = ActorSystem()
 
+  implicit val integrationTestClock = IntegrationTestClock
+
   implicit def wsClient: WSClient = app.injector.instanceOf[WSClient]
 
   lazy val appUrl = s"http://localhost:$port/income-through-software/return/employment-income"
