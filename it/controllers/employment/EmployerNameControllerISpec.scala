@@ -185,14 +185,6 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
-      }
-    }
-  }
-
-  ".show" should {
-
-    userScenarios.foreach { user =>
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
         "redirect the user to the overview page when it is not end of year" which {
           lazy val result: WSResponse = {
@@ -210,74 +202,6 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
     }
   }
 
-  ".submit" should {
-
-    userScenarios.foreach { user =>
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
-        s"return a BAD_REQUEST($BAD_REQUEST) status" when {
-
-          "the submitted data is empty" which {
-            lazy val form: Map[String, String] = Map(EmployerNameForm.employerName -> "")
-
-            lazy val result: WSResponse = {
-              dropEmploymentDB()
-              authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerNamePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
-
-            "has the correct status" in {
-              result.status shouldBe BAD_REQUEST
-            }
-
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-            import Selectors._
-            import user.commonExpectedResults._
-
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
-            h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-            inputFieldCheck(expectedInputName, inputFieldSelector)
-            buttonCheck(expectedButtonText, continueButtonSelector)
-            welshToggleCheck(user.isWelsh)
-
-            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Selectors.inputFieldSelector)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry)
-          }
-
-          "the submitted data is too long" which {
-            lazy val form: Map[String, String] = Map(EmployerNameForm.employerName -> charLimit)
-
-            lazy val result: WSResponse = {
-              dropEmploymentDB()
-              authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerNamePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
-
-            "has the correct status" in {
-              result.status shouldBe BAD_REQUEST
-            }
-
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-            import Selectors._
-            import user.commonExpectedResults._
-
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
-            h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-            inputFieldCheck(expectedInputName, inputFieldSelector)
-            buttonCheck(expectedButtonText, continueButtonSelector)
-            welshToggleCheck(user.isWelsh)
-
-            errorSummaryCheck(expectedErrorCharLimit, Selectors.inputFieldSelector)
-            errorAboveElementCheck(expectedErrorCharLimit)
-          }
-        }
-      }
-    }
-  }
 
   ".submit" should {
 
@@ -355,9 +279,69 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
         }
 
-      }
+        s"return a BAD_REQUEST($BAD_REQUEST) status" when {
 
+          "the submitted data is empty" which {
+            lazy val form: Map[String, String] = Map(EmployerNameForm.employerName -> "")
+
+            lazy val result: WSResponse = {
+              dropEmploymentDB()
+              authoriseAgentOrIndividual(user.isAgent)
+              urlPost(employerNamePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            }
+
+            "has the correct status" in {
+              result.status shouldBe BAD_REQUEST
+            }
+
+            implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+            import Selectors._
+            import user.commonExpectedResults._
+
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            h1Check(user.specificExpectedResults.get.expectedH1)
+            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            inputFieldCheck(expectedInputName, inputFieldSelector)
+            buttonCheck(expectedButtonText, continueButtonSelector)
+            welshToggleCheck(user.isWelsh)
+
+            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Selectors.inputFieldSelector)
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry)
+          }
+
+          "the submitted data is too long" which {
+            lazy val form: Map[String, String] = Map(EmployerNameForm.employerName -> charLimit)
+
+            lazy val result: WSResponse = {
+              dropEmploymentDB()
+              authoriseAgentOrIndividual(user.isAgent)
+              urlPost(employerNamePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            }
+
+            "has the correct status" in {
+              result.status shouldBe BAD_REQUEST
+            }
+
+            implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+            import Selectors._
+            import user.commonExpectedResults._
+
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            h1Check(user.specificExpectedResults.get.expectedH1)
+            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            inputFieldCheck(expectedInputName, inputFieldSelector)
+            buttonCheck(expectedButtonText, continueButtonSelector)
+            welshToggleCheck(user.isWelsh)
+
+            errorSummaryCheck(expectedErrorCharLimit, Selectors.inputFieldSelector)
+            errorAboveElementCheck(expectedErrorCharLimit)
+          }
+        }
+      }
     }
   }
+
 }
 
