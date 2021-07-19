@@ -62,12 +62,13 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     employmentUserDataRepository.find(taxYear, employmentId)
   }
 
-  def getSessionDataAndReturnResult(taxYear: Int, employmentId: String)(result: EmploymentUserData => Future[Result])
+  def getSessionDataAndReturnResult(taxYear: Int, employmentId: String)(redirectUrl:String = appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+                                   (result: EmploymentUserData => Future[Result])
                                    (implicit user: User[_]): Future[Result] = {
 
     employmentUserDataRepository.find(taxYear, employmentId).flatMap {
       case Some(employmentUserData: EmploymentUserData) => result(employmentUserData)
-      case None => Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+      case None => Future(Redirect(redirectUrl))
     }
   }
 
