@@ -79,14 +79,14 @@ class StringConstraintsSpec extends Constraints with AnyWordSpecLike with Matche
 
       "return valid" in {
 
-        StringConstraints.validateSize(maxLength)(errMsgNonEmpty)("someInput") shouldBe Valid
+        StringConstraints.validateSize(maxLength)(errMsgMaxLength)("someInput") shouldBe Valid
       }
     }
-    "supplied with an invalid string" should {
+    "supplied with a string that exceeds the maximum length" should {
 
       "return invalid" in {
 
-        StringConstraints.validateSize(maxLength)(errMsgNonEmpty)("stringExceedsMaxLength") shouldBe Invalid(errMsgNonEmpty)
+        StringConstraints.validateSize(maxLength)(errMsgMaxLength)("stringExceedsMaxLength") shouldBe Invalid(errMsgMaxLength)
       }
     }
   }

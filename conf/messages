@@ -146,7 +146,6 @@ employment.employerName.heading.agent = What’s the name of your client’s emp
 employment.employerName.error.noEntry.individual = Enter the name of your employer
 employment.employerName.error.noEntry.agent = Enter the name of your client’s employer
 employment.employerName.error.name.limit = The employer name must be 74 characters or fewer
-employment.employerName.error.name.duplicate = You cannot add 2 employers with the same name
 
 employment.expenses.title.individual = Check your employment expenses
 employment.expenses.title.agent = Check your client’s employment expenses
