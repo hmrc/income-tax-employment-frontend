@@ -23,12 +23,14 @@
 }
 
 @contentHtml = {
-        <p>
-                @messages(s"employment.employmentTax.formLabel.${if(user.isAgent) "agent" else "individual"}")
-        </p>
+
         @if(amount.isDefined){
                 <p>
                         @messages(s"employment.employmentTax.preFill.amount", amount.get)
+                </p>
+        } else {
+                <p>
+                        @messages(s"employment.employmentTax.formLabel.${if(user.isAgent) "agent" else "individual"}")
                 </p>
         }
 }

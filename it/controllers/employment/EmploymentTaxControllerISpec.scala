@@ -39,8 +39,8 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
   trait SpecificExpectedResults {
     val expectedTitle: String
     val expectedH1: String
-    val expectedP1: String
-    val expectedP2: String
+    val expectedPTextNoData: String
+    val expectedPTextWithData: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -58,31 +58,31 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedH1: String = s"How much UK tax was taken from your maggie earnings?"
     val expectedTitle: String = s"How much UK tax was taken from your earnings?"
-    val expectedP1: String = "You can usually find this amount in the Pay and Income Tax details section of your P60."
-    val expectedP2: String = s"If £6,782.92 was not taken in UK tax, tell us the correct amount."
+    val expectedPTextNoData: String = "You can usually find this amount in the ‘Pay and Income Tax details’ section of your P60."
+    val expectedPTextWithData: String = s"If £6,782.92 was not taken in UK tax, tell us the correct amount."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedH1: String = s"How much UK tax was taken from your clients maggie earnings?"
+    val expectedH1: String = s"How much UK tax was taken from your client’s maggie earnings?"
     val expectedTitle: String = s"How much UK tax was taken from your client’s earnings?"
-    val expectedP1: String = "You can usually find this amount in the Pay and Income Tax details section of your clients P60."
-    val expectedP2: String = s"If £6,782.92 was not taken in UK tax, tell us the correct amount."
+    val expectedPTextNoData: String = "You can usually find this amount in the ‘Pay and Income Tax details’ section of your client’s P60."
+    val expectedPTextWithData: String = s"If £6,782.92 was not taken in UK tax, tell us the correct amount."
 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedH1: String = s"How much UK tax was taken from your maggie earnings?"
     val expectedTitle: String = s"How much UK tax was taken from your earnings?"
-    val expectedP1: String = "You can usually find this amount in the Pay and Income Tax details section of your P60."
-    val expectedP2: String = s"If £6,782.92 was not taken in UK tax, tell us the correct amount."
+    val expectedPTextNoData: String = "You can usually find this amount in the ‘Pay and Income Tax details’ section of your P60."
+    val expectedPTextWithData: String = s"If £6,782.92 was not taken in UK tax, tell us the correct amount."
 
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedH1: String = s"How much UK tax was taken from your clients maggie earnings?"
+    val expectedH1: String = s"How much UK tax was taken from your client’s maggie earnings?"
     val expectedTitle: String = s"How much UK tax was taken from your client’s earnings?"
-    val expectedP1: String = "You can usually find this amount in the Pay and Income Tax details section of your clients P60."
-    val expectedP2: String = s"If £6,782.92 was not taken in UK tax, tell us the correct amount."
+    val expectedPTextNoData: String = "You can usually find this amount in the ‘Pay and Income Tax details’ section of your client’s P60."
+    val expectedPTextWithData: String = s"If £6,782.92 was not taken in UK tax, tell us the correct amount."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -93,8 +93,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
   }
 
   object Selectors {
-    val p1 = "#main-content > div > div > form > div > label > p:nth-child(2)"
-    val p2 = "#main-content > div > div > form > div > label > p:nth-child(3)"
+    val pText = "#main-content > div > div > form > div > label > p:nth-child(2)"
     val hintText = "#amount-hint"
     val currencyBox = "#amount"
     val continueButton = "#continue"
@@ -122,7 +121,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
         import Selectors._
 
         //noinspection ScalaStyle
-        "for end of year return a page with filled box" which {
+        "for end of year return a page with prior data" which {
 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
@@ -150,8 +149,42 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           welshToggleCheck(user.isWelsh)
-          textOnPageCheck(user.specificExpectedResults.get.expectedP1, p1)
-          textOnPageCheck(user.specificExpectedResults.get.expectedP2, p2)
+          textOnPageCheck(user.specificExpectedResults.get.expectedPTextWithData, pText)
+          buttonCheck(user.commonExpectedResults.continue, continueButton)
+          textOnPageCheck(user.commonExpectedResults.hint, hintText)
+          inputFieldCheck(user.commonExpectedResults.amount, currencyBox)
+        }
+
+        //noinspection ScalaStyle
+        "for end of year return a page without prior data" which {
+
+          implicit lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            insertCyaData(EmploymentUserData(
+              sessionId,
+              mtditid,
+              nino,
+              taxYear,
+              "001",
+              isPriorSubmission = true,
+              EmploymentCYAModel(
+                fullEmploymentsModel(None).hmrcEmploymentData.head.toEmploymentDetails(false).copy(totalTaxToDate = None),
+                None
+              )
+            ),User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
+            urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has an OK status" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          welshToggleCheck(user.isWelsh)
+          textOnPageCheck(user.specificExpectedResults.get.expectedPTextNoData, pText)
           buttonCheck(user.commonExpectedResults.continue, continueButton)
           textOnPageCheck(user.commonExpectedResults.hint, hintText)
           inputFieldCheck(user.commonExpectedResults.amount, currencyBox)
