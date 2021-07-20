@@ -17,8 +17,8 @@
 package controllers.employment
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.{CheckEmploymentDetailsController, OtherPaymentsAmountController, OtherPaymentsController}
-import controllers.predicates.{AuthorisedAction, InYearAction}
+import controllers.employment.routes.{CheckEmploymentDetailsController, OtherPaymentsAmountController}
+import controllers.predicates.{AuthorisedAction, InYearAction, QuestionsJourneyValidator}
 import forms.AmountForm
 import models.mongo.EmploymentUserData
 import play.api.data.Form
@@ -40,6 +40,7 @@ class OtherPaymentsAmountController @Inject()(implicit val cc: MessagesControlle
                                               employmentSessionService: EmploymentSessionService,
                                               errorHandler: ErrorHandler,
                                               clock: Clock,
+                                              questionsJourneyValidator: QuestionsJourneyValidator,
                                               implicit val ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def agentOrIndividual(implicit isAgent: Boolean): String = if (isAgent) "agent" else "individual"
@@ -52,33 +53,34 @@ class OtherPaymentsAmountController @Inject()(implicit val cc: MessagesControlle
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(CheckEmploymentDetailsController.show(taxYear, employmentId).url){
-        data =>
-          data.employment.employmentDetails.tipsAndOtherPaymentsQuestion match {
-            case Some(true) =>
-              val amount = data.employment.employmentDetails.tipsAndOtherPayments
-              val filledForm = amount.fold(form(user.isAgent))(x => form(user.isAgent).fill(x))
-              Future.successful(Ok(otherPaymentsAmountView(filledForm,taxYear, employmentId, amount)))
-            case _ =>
-              Future.successful(Redirect(OtherPaymentsController.show(taxYear, employmentId)))
-          }
+      implicit val journey = EmploymentUserData.journey(taxYear, employmentId)
+
+      val cyaFuture = employmentSessionService.getSessionData(taxYear,employmentId)
+      questionsJourneyValidator.validate(OtherPaymentsAmountController.show(taxYear, employmentId), cyaFuture)(CheckEmploymentDetailsController.show(taxYear, employmentId).url) { data =>
+        val amount = data.employment.employmentDetails.tipsAndOtherPayments
+        val filledForm = amount.fold(form(user.isAgent))(x => form(user.isAgent).fill(x))
+        Future.successful(Ok(otherPaymentsAmountView(filledForm,taxYear, employmentId, amount)))
       }
     }
   }
   def submit(taxYear:Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
+      implicit val journey = EmploymentUserData.journey(taxYear, employmentId)
+
+      val checkEmploymentDetailsUrl  = CheckEmploymentDetailsController.show(taxYear, employmentId)
+
       form(user.isAgent).bindFromRequest().fold(
         { formWithErrors =>
           Future.successful(BadRequest(otherPaymentsAmountView(formWithErrors,taxYear, employmentId, None)))
         },
         { submittedAmount =>
-          employmentSessionService.getSessionDataAndReturnResult(taxYear,employmentId)(CheckEmploymentDetailsController.show(taxYear, employmentId).url){
-            data =>
-              val cya = data.employment
-              val updatedCya = cya.copy(cya.employmentDetails.copy(tipsAndOtherPayments = Some(submittedAmount)))
-              employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()){
-                Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId))
-              }
+          val cyaFuture = employmentSessionService.getSessionData(taxYear,employmentId)
+          questionsJourneyValidator.validate(OtherPaymentsAmountController.show(taxYear, employmentId), cyaFuture)(checkEmploymentDetailsUrl.url) { data =>
+            val cya = data.employment
+            val updatedCya = cya.copy(cya.employmentDetails.copy(tipsAndOtherPayments = Some(submittedAmount)))
+            employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()){
+              Redirect(checkEmploymentDetailsUrl)
+            }
           }
         }
       )
