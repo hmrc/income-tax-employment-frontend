@@ -26,7 +26,7 @@ import utils.{IntegrationTest, ViewHelpers}
 
 class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with ViewHelpers {
 
-  val url = s"$appUrl/2022/employer-details-and-benefits?employmentId=001"
+  def url(taxYear: Int) = s"$appUrl/$taxYear/employer-details-and-benefits?employmentId=001"
 
   object Selectors {
     val headingSelector = "#main-content > div > div > header > h1"
@@ -39,17 +39,17 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
     def taskListRowFieldAmountSelector(i: Int) = s"#main-content > div > div > ul > li:nth-child($i) > span.hmrc-status-tag"
   }
 
-  val employmentDetailsUrl = "/income-through-software/return/employment-income/2022/check-employment-details?employmentId=001"
-  val employmentBenefitsUrl = "/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=001"
+  def employmentDetailsUrl(taxYear: Int) = s"/income-through-software/return/employment-income/$taxYear/check-employment-details?employmentId=001"
+  def employmentBenefitsUrl(taxYear: Int) = s"/income-through-software/return/employment-income/$taxYear/check-employment-benefits?employmentId=001"
 
   object ExpectedResults {
 
     object ContentEN {
       val h1Expected = "maggie"
       val titleExpected = "Employment details and benefits"
-      val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-      val p1ExpectedAgent = "You cannot update your client’s employment information until 6 April 2022."
-      val p1ExpectedIndividual = "You cannot update your employment information until 6 April 2022."
+      def captionExpected(taxYear: Int) = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+      def p1ExpectedAgent(taxYear: Int) = s"You cannot update your client’s employment information until 6 April $taxYear."
+      def p1ExpectedIndividual(taxYear: Int) = s"You cannot update your employment information until 6 April $taxYear."
       val fieldNames = List("Employment details", "Benefits")
       val buttonText = "Return to employment summary"
     }
@@ -57,9 +57,9 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
     object ContentCY {
       val h1Expected = "maggie"
       val titleExpected = "Employment details and benefits"
-      val captionExpected = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-      val p1ExpectedAgent = "You cannot update your client’s employment information until 6 April 2022."
-      val p1ExpectedIndividual = "You cannot update your employment information until 6 April 2022."
+      def captionExpected(taxYear: Int) = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+      def p1ExpectedAgent(taxYear: Int) = s"You cannot update your client’s employment information until 6 April $taxYear."
+      def p1ExpectedIndividual(taxYear: Int) = s"You cannot update your employment information until 6 April $taxYear."
       val fieldNames = List("Employment details", "Benefits")
       val buttonText = "Return to employment summary"
     }
@@ -68,55 +68,58 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
   trait SpecificExpectedResults {
     val expectedH1: String
     val expectedTitle: String
-    val expectedContent: String
+    def expectedContent(taxYear: Int): String
   }
 
   trait CommonExpectedResults {
-    val expectedCaption: String
+    def expectedCaption(taxYear: Int): String
     val fieldNames: Seq[String]
     val buttonText: String
     val updated: String
     val cannotUpdate: String
+    val notStarted: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = "Employment for 6 April 2021 to 5 April 2022"
+    def expectedCaption(taxYear: Int) = s"Employment for 6 April ${taxYear-1} to 5 April $taxYear"
     val fieldNames = Seq("Employment details", "Benefits")
     val buttonText = "Return to employment summary"
     val updated = "Updated"
     val cannotUpdate = "Cannot update"
+    val notStarted = "Not started"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = "Employment for 6 April 2021 to 5 April 2022"
+    def expectedCaption(taxYear: Int) = s"Employment for 6 April ${taxYear-1} to 5 April $taxYear"
     val fieldNames = Seq("Employment details", "Benefits")
     val buttonText = "Return to employment summary"
     val updated = "Updated"
     val cannotUpdate = "Cannot update"
+    val notStarted = "Not started"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedH1: String = "maggie"
     val expectedTitle: String = "Employment details and benefits"
-    val expectedContent: String = "You cannot update your employment information until 6 April 2022."
+    def expectedContent(taxYear: Int): String = s"You cannot update your employment information until 6 April $taxYear."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedH1: String = "maggie"
     val expectedTitle: String = "Employment details and benefits"
-    val expectedContent: String = "You cannot update your client’s employment information until 6 April 2022."
+    def expectedContent(taxYear: Int): String = s"You cannot update your client’s employment information until 6 April $taxYear."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedH1: String = "maggie"
     val expectedTitle: String = "Employment details and benefits"
-    val expectedContent: String = "You cannot update your employment information until 6 April 2022."
+    def expectedContent(taxYear: Int): String = s"You cannot update your employment information until 6 April $taxYear."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedH1: String = "maggie"
     val expectedTitle: String = "Employment details and benefits"
-    val expectedContent: String = "You cannot update your client’s employment information until 6 April 2022."
+    def expectedContent(taxYear: Int): String = s"You cannot update your client’s employment information until 6 April $taxYear."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -132,23 +135,23 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "render the page where the status for benefits is Cannot Update when there is no Benefits data" which {
+        "render the page where the status for benefits is Cannot Update when there is no Benefits data in year" which {
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
-            urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(user.commonExpectedResults.expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.expectedContent, p1Selector)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYear))
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent(taxYear), p1Selector)
 
           "has an employment details section" which {
-            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl)
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl(taxYear))
             textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(1))
           }
 
@@ -162,40 +165,40 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           welshToggleCheck(user.isWelsh)
         }
 
-        "redirect when there is no data" in {
+        "redirect to the overview page when there is no data in year" in {
 
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(userData(fullEmploymentsModel(None).copy(hmrcEmploymentData = Seq())), nino, taxYear)
-            urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(url(taxYear), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           result.status shouldBe SEE_OTHER
+          result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
         }
 
-
-        "render the page where the status for benefits is Updated when there is Benefits data" which {
+        "render the page where the status for benefits is Updated when there is Benefits data in year" which {
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(userData(fullEmploymentsModel(fullBenefits)), nino, taxYear)
-            urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(user.commonExpectedResults.expectedCaption)
-          textOnPageCheck(user.specificExpectedResults.get.expectedContent, p1Selector)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYear))
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent(taxYear), p1Selector)
 
           "has an employment details section" which {
-            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl)
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl(taxYear))
             textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(1))
           }
 
           "has a benefits section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, employmentBenefitsUrl)
+            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, employmentBenefitsUrl(taxYear))
             textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(2))
           }
 
@@ -206,10 +209,72 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           welshToggleCheck(user.isWelsh)
         }
 
+        "render the page where the status for benefits is Not Started when there is no Benefits data for end of year" which {
+
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear-1)
+            urlGet(url(taxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYear-1))
+
+          "has an employment details section" which {
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl(taxYear-1))
+            textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(1))
+          }
+
+          "has a benefits section" which {
+            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, employmentBenefitsUrl(taxYear-1))
+            textOnPageCheck(user.commonExpectedResults.notStarted, taskListRowFieldAmountSelector(2))
+          }
+
+          buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
+          formGetLinkCheck("/income-through-software/return/employment-income/2021/employment-summary",
+            "#main-content > div > div > form")
+
+          welshToggleCheck(user.isWelsh)
+        }
+
+        "render the page where the status for benefits is Updated when there is Benefits data for end of year" which {
+
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(fullEmploymentsModel(fullBenefits)), nino, taxYear-1)
+            urlGet(url(taxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYear-1))
+
+          "has an employment details section" which {
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl(taxYear-1))
+            textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(1))
+          }
+
+          "has a benefits section" which {
+            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, employmentBenefitsUrl(taxYear-1))
+            textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(2))
+          }
+
+          buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
+          formGetLinkCheck("/income-through-software/return/employment-income/2021/employment-summary",
+            "#main-content > div > div > form")
+
+          welshToggleCheck(user.isWelsh)
+        }
+
         "render Unauthorised user error page" which {
           lazy val result: WSResponse = {
             unauthorisedAgentOrIndividual(user.isAgent)
-            urlGet(url, welsh = user.isWelsh)
+            urlGet(url(taxYear), welsh = user.isWelsh)
           }
           "has an UNAUTHORIZED(401) status" in {
             result.status shouldBe UNAUTHORIZED
