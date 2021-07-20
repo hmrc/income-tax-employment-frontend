@@ -255,8 +255,7 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
           result.status shouldBe SEE_OTHER
         }
 
-        // TODO - Minor bug where user can submit a form even though they're either answered no to the previous question or not answered it at all. These tests can be renabled when we have implemented the support for this.
-        "redirect to the 'did you receive any payments that are not on your p60' page" ignore {
+        "redirect to the 'did you receive any payments that are not on your p60' page" when {
           "they attempt to submit amount when they've previously answered no" which {
             lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
@@ -284,7 +283,6 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
 
             "has an SEE_OTHER status" in {
               result.status shouldBe SEE_OTHER
-              findCyaData(2021, employmentId, User(mtditid, if (user.isAgent) Some("12345678") else None, nino, sessionId, if (user.isAgent) "Agent" else "Individual")(fakeRequest))
             }
 
             "redirect to OtherPayments not on P60 page" in {
