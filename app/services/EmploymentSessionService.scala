@@ -145,7 +145,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   def getLatestEmploymentData(allEmploymentData: AllEmploymentData, isInYear: Boolean): Seq[EmploymentSource] ={
-    if(isInYear){
+    (if(isInYear){
       allEmploymentData.hmrcEmploymentData
     } else {
       //Filters out hmrc data that has been ignored
@@ -181,7 +181,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
         case (false, false) => Seq()
       }
-    }
+    }).sorted(Ordering.by((_: EmploymentSource).submittedOn).reverse)
   }
 
   def latestEmploymentSources(hmrcAndCustomerDataSet: Seq[(EmploymentSource,EmploymentSource)]): Seq[EmploymentSource] ={
