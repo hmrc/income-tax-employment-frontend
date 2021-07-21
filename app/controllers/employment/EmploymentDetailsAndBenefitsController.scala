@@ -46,12 +46,10 @@ class EmploymentDetailsAndBenefitsController @Inject()(implicit val cc: Messages
 
       val isInYear: Boolean = inYearAction.inYear(taxYear)
 
-      val source: Option[EmploymentSource] = {
-        allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId))
-      }
+      val source = employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear)
 
       source match {
-        case Some(source) =>
+        case Some((source, _)) =>
           val (name, benefitsIsDefined) = (source.employerName, source.employmentBenefits.isDefined)
           Ok(employmentDetailsAndBenefitsView(name, employmentId, benefitsIsDefined, taxYear, isInYear))
         case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
