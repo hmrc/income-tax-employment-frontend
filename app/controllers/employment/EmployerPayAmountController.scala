@@ -37,8 +37,7 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
                                             appConfig: AppConfig,
                                             employmentSessionService: EmploymentSessionService,
                                             errorHandler: ErrorHandler,
-                                            clock: Clock,
-                                            ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                            clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
