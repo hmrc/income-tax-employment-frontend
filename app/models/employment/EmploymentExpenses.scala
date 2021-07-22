@@ -19,6 +19,7 @@ package models.employment
 import play.api.libs.json.{Json, OFormat}
 
 case class EmploymentExpenses(submittedOn: Option[String],
+                              dateIgnored: Option[String],
                               totalExpenses: Option[BigDecimal],
                               expenses: Option[Expenses])
 

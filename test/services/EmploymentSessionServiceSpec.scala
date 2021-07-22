@@ -73,7 +73,13 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
           directorshipCeasedDate = None,
           occPen = None,
           disguisedRemuneration = None,
-          pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None, None))
+          pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None, None)),
+          Some(Deductions(
+            studentLoans = Some(StudentLoans(
+              uglDeductionAmount = Some(100.00),
+              pglDeductionAmount = Some(100.00)
+            ))
+          ))
         )),
         None
       )
@@ -82,7 +88,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
     customerEmploymentData = Seq(),
     customerExpenses = Some(
       EmploymentExpenses(
-        None,Some(800),Some(
+        None, None, Some(800),Some(
           Expenses(
             Some(100),Some(100),Some(100),Some(100),Some(100),Some(100),Some(100),Some(100)
           )
