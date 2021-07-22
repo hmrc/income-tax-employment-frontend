@@ -218,7 +218,13 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
           directorshipCeasedDate = Some("2020-02-12"),
           occPen = Some(false),
           disguisedRemuneration = Some(false),
-          pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2)))
+          pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+          Some(Deductions(
+            studentLoans = Some(StudentLoans(
+              uglDeductionAmount = Some(100.00),
+              pglDeductionAmount = Some(100.00)
+            ))
+          ))
         )),
         employmentBenefits = benefits
       )
@@ -234,6 +240,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   )
   lazy val employmentExpenses: EmploymentExpenses = EmploymentExpenses(
     submittedOn = None,
+    dateIgnored = None,
     totalExpenses = None,
     expenses = Some(expenses)
   )

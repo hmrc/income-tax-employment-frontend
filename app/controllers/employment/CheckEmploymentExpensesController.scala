@@ -43,7 +43,7 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
 
     employmentSessionService.findPreviousEmploymentUserData(user, taxYear)(allEmploymentData =>
       allEmploymentData.hmrcExpenses match {
-      case Some(employmentExpenses@EmploymentExpenses(_,_, Some(expenses))) =>
+      case Some(employmentExpenses@EmploymentExpenses(_, _, _, Some(expenses))) =>
         val auditModel = ViewEmploymentExpensesAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, expenses)
         auditService.auditModel[ViewEmploymentExpensesAudit](auditModel.toAuditModel)
         Ok(checkEmploymentExpensesView(taxYear, employmentExpenses))
