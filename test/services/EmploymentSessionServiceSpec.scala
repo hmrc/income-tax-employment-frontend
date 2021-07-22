@@ -197,7 +197,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       "there is both customer and hmrc data but neither has a time submitted" in {
         val response = service.getLatestExpenses(data.copy(hmrcExpenses = data.hmrcExpenses.map(_.copy(submittedOn = None)),
           customerExpenses = data.customerExpenses.map(_.copy(submittedOn = None))), false)
-        response shouldBe data.customerExpenses.map(_.copy(submittedOn = None)
+        response shouldBe data.customerExpenses.map(_.copy(submittedOn = None))
       }
       "there is both customer and hmrc data but customer is the latest" in {
         val response = service.getLatestExpenses(data.copy(
