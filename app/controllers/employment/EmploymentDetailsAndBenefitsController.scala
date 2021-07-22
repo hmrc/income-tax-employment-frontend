@@ -20,7 +20,6 @@ import config.AppConfig
 import controllers.predicates.{AuthorisedAction, InYearAction}
 
 import javax.inject.Inject
-import models.employment.EmploymentSource
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
