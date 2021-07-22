@@ -21,7 +21,7 @@ import java.time.ZonedDateTime
 import config.{AppConfig, ErrorHandler}
 import connectors.IncomeTaxUserDataConnector
 import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
-import models.employment.{AllEmploymentData, EmploymentExpenses, EmploymentSource, Expenses}
+import models.employment.{AllEmploymentData, EmploymentExpenses, EmploymentSource}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.{IncomeTaxUserData, User}
 import org.joda.time.DateTimeZone
