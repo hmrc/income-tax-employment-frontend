@@ -71,7 +71,8 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
             case Some(data) =>
               val cya = data.employment
               val updatedCya = cya.copy(cya.employmentDetails.copy(employerName = submittedName))
-              employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
+              employmentSessionService.createOrUpdateSessionData(
+                employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
                 if(data.isPriorSubmission){
                   Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId))
                 }
