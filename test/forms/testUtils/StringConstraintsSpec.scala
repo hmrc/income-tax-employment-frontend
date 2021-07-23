@@ -60,14 +60,14 @@ class StringConstraintsSpec extends Constraints with AnyWordSpecLike with Matche
         val otherChar = "&@£$€¥#.,:;-"
         val space = ""
 
-        StringConstraints.validateChar(errMsgInvalidChar)(lowerCaseAlphabet + upperCaseAlphabet + space + oneToNine + otherChar + space) shouldBe Valid
+        StringConstraints.validateChar("""^([ A-Za-z0-9&@£$€¥#.,:;-])*$""")(errMsgInvalidChar)(lowerCaseAlphabet + upperCaseAlphabet + space + oneToNine + otherChar + space) shouldBe Valid
       }
     }
 
     "supplied with a string which contains invalid characters" should {
 
       "return invalid" in {
-        StringConstraints.validateChar(errMsgInvalidChar)("!()+{}?^~") shouldBe Invalid(errMsgInvalidChar)
+        StringConstraints.validateChar("""^([ A-Za-z0-9&@£$€¥#.,:;-])*$""")(errMsgInvalidChar)("!()+{}?^~") shouldBe Invalid(errMsgInvalidChar)
       }
 
     }

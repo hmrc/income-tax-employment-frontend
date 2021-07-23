@@ -23,7 +23,7 @@ import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import helpers.{PlaySessionCookieBaker, WireMockHelper}
 import models.IncomeTaxUserData
-import models.employment.{AllEmploymentData, Benefits, EmploymentBenefits, EmploymentData, EmploymentExpenses, EmploymentSource, Expenses, Pay}
+import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers

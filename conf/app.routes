@@ -18,6 +18,9 @@ GET        /:taxYear/check-employment-benefits              controllers.employme
 GET        /:taxYear/employer-name                          controllers.employment.EmployerNameController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/employer-name                          controllers.employment.EmployerNameController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/employer-paye-reference                controllers.employment.PayeRefController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/employer-paye-reference                controllers.employment.PayeRefController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/amount-of-payments-not-on-p60          controllers.employment.OtherPaymentsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/amount-of-payments-not-on-p60          controllers.employment.OtherPaymentsAmountController.submit(taxYear: Int, employmentId: String)
 
