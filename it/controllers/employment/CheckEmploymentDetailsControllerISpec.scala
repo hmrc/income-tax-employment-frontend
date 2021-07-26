@@ -180,6 +180,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employerPayAmountControllerHref = controllers.employment.routes.EmployerPayAmountController.show(taxYear-1, employmentId)
     val otherPaymentsAmountPageHref = controllers.employment.routes.OtherPaymentsAmountController.show(taxYear-1, employmentId)
     val employerNameHref = controllers.employment.routes.EmployerNameController.show(taxYear-1, employmentId)
+    val payeRefHref = controllers.employment.routes.PayeRefController.show(taxYear-1, employmentId)
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -398,7 +399,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             result.status shouldBe OK
           }
 
-          val dummyHref =  "/income-through-software/return/employment-income/2021/check-employment-expenses"
           val taxHref = "/income-through-software/return/employment-income/2021/uk-tax?employmentId=001"
 
 
@@ -415,7 +415,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changePAYERefHiddenText}",
-            cyaChangeLink(2), dummyHref)
+            cyaChangeLink(2), payeRefHref.url)
           textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(3))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changePayReceivedHiddenText}",
@@ -479,7 +479,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             result.status shouldBe OK
           }
 
-          val dummyHref =  "/income-through-software/return/employment-income/2021/check-employment-expenses"
+
           val taxHref = "/income-through-software/return/employment-income/2021/uk-tax?employmentId=001"
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
