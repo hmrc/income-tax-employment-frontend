@@ -26,7 +26,7 @@ object StringConstraints {
 
   val monetaryRegex = """\d+|\d*\.\d{1,2}"""
 
-  val validateChar: String => Constraint[String] = msgKey => constraint[String](
+  def validateChar(charRegex:String): String => Constraint[String] = msgKey => constraint[String](
   x => if (x.matches(charRegex)) Valid else Invalid(msgKey)
   )
 

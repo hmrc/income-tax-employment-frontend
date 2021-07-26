@@ -18,117 +18,107 @@ package controllers.employment
 
 import models.User
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
-import org.eclipse.jetty.http.HttpParser.RequestHandler
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
-class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper  {
+class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper  {
 
   val taxYearEOY = taxYear - 1
-  val amount: BigDecimal = 34234.15
-  val urlEOY = s"$appUrl/2021/how-much-pay?employmentId=001"
+  val payeRef: String = "123/AA12345"
+  def url (taxYear:Int): String = s"$appUrl/${taxYear.toString}/employer-paye-reference?employmentId=001"
 
-  val continueButtonLink: String = "/income-through-software/return/employment-income/2021/how-much-pay?employmentId=001"
+  val continueButtonLink: String = "/income-through-software/return/employment-income/2021/employer-paye-reference?employmentId=001"
 
   implicit val request = FakeRequest()
   private val userRequest: User[_]=  User(mtditid, None, nino, sessionId, affinityGroup)
-
 
   object Selectors {
     val contentSelector = "#main-content > div > div > form > div > label > p"
     val headingSelector = "#main-content > div > div > header > h1"
     val captionSelector = "#main-content > div > div > header > p"
-    val hintTestSelector = "#amount-hint"
-    val poundPrefixSelector = ".govuk-input__prefix"
-    val inputSelector = "#amount"
+    val hintTestSelector = "#payeRef-hint"
+    val inputSelector = "#payeRef"
     val continueButtonSelector = "#continue"
     val continueButtonFormSelector = "#main-content > div > div > form"
-    val expectedErrorHref = "#amount"
-    val inputAmountField = "#amount"
+    val expectedErrorHref = "#payeRef"
+    val inputAmountField = "#payeRef"
   }
 
-  val poundPrefixText = "£"
-  val amountInputName = "amount"
+  val amountInputName = "payeRef"
 
   trait SpecificExpectedResults {
-    val expectedH1: String
     val expectedTitle: String
     val expectedErrorTitle: String
-    val expectedContent: String
     val expectedContentNewAccount: String
-    val emptyErrorText: String
   }
 
   trait CommonExpectedResults {
     val expectedCaption: Int => String
+    val expectedH1: String
+    val expectedContent: String
     val continueButtonText: String
     val hintText: String
+    val emptyErrorText: String
     val wrongFormatErrorText: String
-    val maxAmountErrorText: String
+
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption = (taxYear: Int) => s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedH1: String = "What’s the PAYE reference of maggie?"
     val continueButtonText = "Continue"
-    val hintText = "For example, £600 or £193.54"
-    val wrongFormatErrorText: String = "Enter the amount paid in the correct format"
-    val maxAmountErrorText: String = "The amount paid must be less than £100,000,000,000"
+    val hintText = "For example, 123/AB456"
+    val expectedContent: String = "If the PAYE reference 123/AA12345 is wrong, tell us the correct reference."
+
+    val emptyErrorText: String = "Enter a PAYE reference"
+    val wrongFormatErrorText: String = "Enter a PAYE reference in the correct format"
+
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = (taxYear: Int) => s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedH1: String = "What’s the PAYE reference of maggie?"
     val continueButtonText = "Continue"
-    val hintText = "For example, £600 or £193.54"
-    val wrongFormatErrorText: String = "Enter the amount paid in the correct format"
-    val maxAmountErrorText: String = "The amount paid must be less than £100,000,000,000"
+    val hintText = "For example, 123/AB456"
+    val expectedContent: String = "If the PAYE reference 123/AA12345 is wrong, tell us the correct reference."
+    val expectedContentNewAccount: String = "You can find this on your P60 or on letters about PAYE. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’."
+    val emptyErrorText: String = "Enter a PAYE reference"
+    val wrongFormatErrorText: String = "Enter a PAYE reference in the correct format"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedH1: String = "How much did maggie pay you?"
-    val expectedTitle: String = "How much did your employer pay you?"
+    val expectedTitle: String = "What’s the PAYE reference of your employer?"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val expectedContent: String = s"If you were not paid £$amount, tell us the correct amount."
-    val expectedContentNewAccount: String = "Enter the gross amount. This can usually be found on your P60."
-    val emptyErrorText: String = "Enter the amount you were paid"
+    val expectedContentNewAccount: String = "You can find this on your P60 or on letters about PAYE. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedH1: String = "How much did maggie pay your client?"
-    val expectedTitle: String = "How much did your client’s employer pay them?"
+    val expectedTitle: String = "What’s the PAYE reference of your client’s employer?"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val expectedContent: String = "If your client was not paid £34234.15, tell us the correct amount."
-    val expectedContentNewAccount: String = "Enter the gross amount. This can usually be found on your client’s P60."
-    val emptyErrorText: String = "Enter the amount your client was paid"
+    val expectedContentNewAccount: String = "You can find this on P60 forms or on letters about PAYE. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedH1: String = "How much did maggie pay you?"
-    val expectedTitle: String = "How much did your employer pay you?"
+    val expectedTitle: String = "What’s the PAYE reference of your employer?"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val expectedContent: String = s"If you were not paid £$amount, tell us the correct amount."
-    val expectedContentNewAccount: String = "Enter the gross amount. This can usually be found on your P60."
-    val emptyErrorText: String = "Enter the amount you were paid"
+    val expectedContentNewAccount: String = "You can find this on your P60 or on letters about PAYE. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedH1: String = "How much did maggie pay your client?"
-    val expectedTitle: String = "How much did your client’s employer pay them?"
+    val expectedTitle: String = "What’s the PAYE reference of your client’s employer?"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val expectedContent: String = "If your client was not paid £34234.15, tell us the correct amount."
-    val expectedContentNewAccount: String = "Enter the gross amount. This can usually be found on your client’s P60."
-    val emptyErrorText: String = "Enter the amount your client was paid"
+    val expectedContentNewAccount: String = "You can find this on P60 forms or on letters about PAYE. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’."
   }
 
   object CyaModel {
     val cya = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, "001", true,
       EmploymentCYAModel(
-        EmploymentDetails("maggie", taxablePayToDate = Some(34234.15), currentDataIsHmrcHeld = false),
+        EmploymentDetails("maggie", employerRef = Some("123/AA12345"), currentDataIsHmrcHeld = false),
         None
       )
     )
@@ -152,13 +142,13 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
 
-        "should render How much did xxx pay you? page with cya amount in paragraph text when there is cya data" which {
+        "should render What's the PAYE reference of xxx? page with cya payeRef in paragraph text when there is cya data" which {
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(CyaModel.cya, User(mtditid, None, nino, sessionId, "agent"))
-            urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            insertCyaData(CyaModel.cya, userRequest)
+            urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -168,28 +158,27 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           titleCheck(get.expectedTitle)
-          h1Check(get.expectedH1)
+          h1Check(expectedH1)
           captionCheck(expectedCaption(taxYear))
-          textOnPageCheck(get.expectedContent, contentSelector)
+          textOnPageCheck(expectedContent, contentSelector)
           textOnPageCheck(hintText, hintTestSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck(amount.toString, inputAmountField)
+          inputFieldValueCheck(payeRef, inputAmountField)
 
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
-        "should render How much did xxx pay you? page with generic paragraph text when user is adding a new employment" which {
+        "should render What's the PAYE reference of xxx? page with generic paragraph text when user is adding a new employment" which {
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             val newCya = CyaModel.cya.copy(employment = CyaModel.cya.employment.copy
-            (employmentDetails = CyaModel.cya.employment.employmentDetails.copy(taxablePayToDate = None)))
-            insertCyaData(newCya, User(mtditid, None, nino, sessionId, "agent"))
-            urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            (employmentDetails = CyaModel.cya.employment.employmentDetails.copy(employerRef = None)))
+            insertCyaData(newCya, userRequest)
+            urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -199,11 +188,10 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           titleCheck(get.expectedTitle)
-          h1Check(get.expectedH1)
+          h1Check(expectedH1)
           captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(hintText, hintTestSelector)
           textOnPageCheck(get.expectedContentNewAccount, contentSelector)
-          textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldCheck(amountInputName, inputSelector)
           inputFieldValueCheck("", inputAmountField)
 
@@ -216,7 +204,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            urlGet(urlEOY, follow = false, welsh=user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(url(taxYearEOY), follow = false, welsh=user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
 
@@ -230,9 +218,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(CyaModel.cya, User(mtditid, None, nino, sessionId, "agent"))
-            val inYearUrl =s"$appUrl/$taxYear/how-much-pay?employmentId=001"
-            urlGet(inYearUrl, welsh=user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            insertCyaData(CyaModel.cya, userRequest)
+            urlGet(url(taxYear), welsh=user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
 
@@ -255,13 +242,13 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "should render How much did xxx pay you? page with empty error text when there no input" which {
+        "should render What's the PAYE reference of xxx? page with empty error text when there no input" which {
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(CyaModel.cya, User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
-            urlPost(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
+            insertCyaData(CyaModel.cya, userRequest)
+            urlPost(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -272,16 +259,19 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
           titleCheck(get.expectedErrorTitle)
           inputFieldValueCheck("", inputAmountField)
-          errorSummaryCheck(get.emptyErrorText, expectedErrorHref)
+          errorSummaryCheck(emptyErrorText, expectedErrorHref)
         }
 
-        "should render How much did xxx pay you? page with wrong format text when input is in incorrect format" which {
+        "should render What's the PAYE reference of xxx? page with wrong format text when input is in incorrect format" which {
+
+          val invalidPaye = "123/abc 001<Q>"
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(CyaModel.cya, User(mtditid, None, nino, sessionId, "agent"))
-            urlPost(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "|"))
+            insertCyaData(CyaModel.cya, userRequest)
+            urlPost(url(taxYearEOY), welsh = user.isWelsh,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("payeRef" -> invalidPaye))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -291,29 +281,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           titleCheck(get.expectedErrorTitle)
-          inputFieldValueCheck("", inputAmountField)
+          inputFieldValueCheck(invalidPaye, inputAmountField)
           errorSummaryCheck(wrongFormatErrorText, expectedErrorHref)
-        }
-
-        "should render How much did xxx pay you? page with max error ext when input > 100,000,000,000" which {
-
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            insertCyaData(CyaModel.cya, User(mtditid, None, nino, sessionId, "agent"))
-            urlPost(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)),
-              body = Map("amount" -> "9999999999999999999999999999"))
-          }
-
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-          "has an BAD_REQUEST status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-
-          titleCheck(get.expectedErrorTitle)
-          inputFieldValueCheck("9999999999999999999999999999", inputAmountField)
-          errorSummaryCheck(maxAmountErrorText, expectedErrorHref)
         }
 
         "redirect to Overview page when a valid form is submitted" when {
@@ -321,8 +290,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(CyaModel.cya, userRequest)
-            urlPost(urlEOY, follow=false,
-              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+            urlPost(url(taxYearEOY), follow=false,
+              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("payeRef" -> payeRef))
           }
 
           "has an SEE_OTHER status" in {
