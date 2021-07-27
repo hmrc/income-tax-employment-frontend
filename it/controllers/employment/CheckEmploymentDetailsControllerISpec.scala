@@ -17,7 +17,7 @@
 package controllers.employment
 
 import models.User
-import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
+import models.employment.{AllEmploymentData, Deductions, EmploymentData, EmploymentSource, Pay, StudentLoans}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -210,7 +210,13 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             directorshipCeasedDate = None,
             occPen = None,
             disguisedRemuneration = None,
-            pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None, None))
+            pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None, None)),
+            Some(Deductions(
+              studentLoans = Some(StudentLoans(
+                uglDeductionAmount = Some(100.00),
+                pglDeductionAmount = Some(100.00)
+              ))
+            ))
           )),
           None
         )
@@ -241,7 +247,13 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             directorshipCeasedDate = None,
             occPen = None,
             disguisedRemuneration = None,
-            pay = Some(Pay(Some(34234.50), Some(6782.90), None, None, None, None, None))
+            pay = Some(Pay(Some(34234.50), Some(6782.90), None, None, None, None, None)),
+            Some(Deductions(
+              studentLoans = Some(StudentLoans(
+                uglDeductionAmount = Some(100.00),
+                pglDeductionAmount = Some(100.00)
+              ))
+            ))
           )),
           None
         )
@@ -270,7 +282,13 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             directorshipCeasedDate = Some("14/07/1990"),
             occPen = None,
             disguisedRemuneration = None,
-            pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None, None))
+            pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None, None)),
+            Some(Deductions(
+              studentLoans = Some(StudentLoans(
+                uglDeductionAmount = Some(100.00),
+                pglDeductionAmount = Some(100.00)
+              ))
+            ))
           )),
           None
         )
@@ -478,7 +496,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           "has an OK status" in {
             result.status shouldBe OK
           }
-
 
           val taxHref = "/income-through-software/return/employment-income/2021/uk-tax?employmentId=001"
 

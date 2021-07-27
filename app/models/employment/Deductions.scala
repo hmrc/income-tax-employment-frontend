@@ -18,17 +18,8 @@ package models.employment
 
 import play.api.libs.json.{Json, OFormat}
 
-case class EmploymentData(submittedOn: String,
-                          employmentSequenceNumber: Option[String],
-                          companyDirector: Option[Boolean],
-                          closeCompany: Option[Boolean],
-                          directorshipCeasedDate: Option[String],
-                          occPen: Option[Boolean],
-                          disguisedRemuneration: Option[Boolean],
-                          pay: Option[Pay],
-                          deductions: Option[Deductions]
-                         )
+case class Deductions(studentLoans: Option[StudentLoans])
 
-object EmploymentData {
-  implicit val formats: OFormat[EmploymentData] = Json.format[EmploymentData]
+object Deductions {
+  implicit val formats: OFormat[Deductions] = Json.format[Deductions]
 }

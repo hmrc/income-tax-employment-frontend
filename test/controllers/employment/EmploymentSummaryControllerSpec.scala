@@ -18,7 +18,7 @@ package controllers.employment
 
 import common.SessionValues
 import config.MockEmploymentSessionService
-import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
+import models.employment.{AllEmploymentData, Deductions, EmploymentData, EmploymentSource, Pay, StudentLoans}
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
@@ -48,7 +48,13 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
         directorshipCeasedDate = Some("2020-02-12"),
         occPen = Some(false),
         disguisedRemuneration = Some(false),
-        pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2)))
+        pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+        Some(Deductions(
+          studentLoans = Some(StudentLoans(
+            uglDeductionAmount = Some(100.00),
+            pglDeductionAmount = Some(100.00)
+          ))
+        ))
       )),
       None
     )
@@ -70,7 +76,13 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
         directorshipCeasedDate = Some("2020-02-12"),
         occPen = Some(false),
         disguisedRemuneration = Some(false),
-        pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2)))
+        pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+        Some(Deductions(
+          studentLoans = Some(StudentLoans(
+            uglDeductionAmount = Some(100.00),
+            pglDeductionAmount = Some(100.00)
+          ))
+        ))
       )),
       None
     )
