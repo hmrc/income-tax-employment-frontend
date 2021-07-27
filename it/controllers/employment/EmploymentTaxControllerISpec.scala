@@ -114,7 +114,6 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
   }
 
   ".show" when {
-    import Selectors._
 
     userScenarios.foreach{ user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
