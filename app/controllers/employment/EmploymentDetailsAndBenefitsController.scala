@@ -17,9 +17,9 @@
 package controllers.employment
 
 import config.AppConfig
-import controllers.predicates.AuthorisedAction
+import controllers.predicates.{AuthorisedAction, InYearAction}
+
 import javax.inject.Inject
-import models.employment.EmploymentSource
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
@@ -32,6 +32,7 @@ import scala.concurrent.ExecutionContext
 class EmploymentDetailsAndBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
                                                        authAction: AuthorisedAction,
                                                        employmentDetailsAndBenefitsView: EmploymentDetailsAndBenefitsView,
+                                                       inYearAction: InYearAction,
                                                        implicit val appConfig: AppConfig,
                                                        employmentSessionService: EmploymentSessionService,
                                                        implicit val ec: ExecutionContext
@@ -41,14 +42,15 @@ class EmploymentDetailsAndBenefitsController @Inject()(implicit val cc: Messages
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
 
     employmentSessionService.findPreviousEmploymentUserData(user, taxYear){ allEmploymentData =>
-      val source: Option[EmploymentSource] = {
-        allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId))
-      }
+
+      val isInYear: Boolean = inYearAction.inYear(taxYear)
+
+      val source = employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear)
 
       source match {
-        case Some(source) =>
+        case Some((source, _)) =>
           val (name, benefitsIsDefined) = (source.employerName, source.employmentBenefits.isDefined)
-          Ok(employmentDetailsAndBenefitsView(name, employmentId, benefitsIsDefined, taxYear))
+          Ok(employmentDetailsAndBenefitsView(name, employmentId, benefitsIsDefined, taxYear, isInYear))
         case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }

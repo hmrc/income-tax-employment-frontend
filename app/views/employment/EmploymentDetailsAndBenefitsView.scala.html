@@ -26,14 +26,16 @@
         govUkButton: GovukButton
 )
 
-@(employerNameData: String, empId:String, benefitsDefined:Boolean, taxYear: Int)(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
+@(employerNameData: String, empId:String, benefitsDefined:Boolean, taxYear: Int, isInYear:Boolean)(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
 
 
 @layout(pageTitle = messages("common.employmentDetailsAndBenefits"), taxYear = Some(taxYear), isAgent = user.isAgent) {
 
 @heading(employerNameData, Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
 
-<p class="govuk-body">@messages(s"employment.employmentInfo.p1.${if(user.isAgent) "agent" else "individual"}", taxYear.toString)</p>
+@if(isInYear) {
+    <p class="govuk-body">@messages(s"employment.employmentInfo.p1.${if(user.isAgent) "agent" else "individual"}", taxYear.toString)</p>
+}
 
 <ul class="app-task-list__items govuk-!-padding-left-0">
         <li class="app-task-list__item">
@@ -47,19 +49,19 @@
 
         <li class="app-task-list__item">
               <span class="app-task-list__task-name">
-                  @if(benefitsDefined){
+                  @if(benefitsDefined || !isInYear){
                   <a class=class="govuk-link" id="employment-benefits_link" href=@{controllers.employment.routes.CheckYourBenefitsController.show(taxYear,empId)}>
                       @messages("common.benefits")
                   </a>
-                  }else{
+                  } else {
                       @messages("common.benefits")
                   }
               </span>
             <span class="hmrc-status-tag">
                 @if(benefitsDefined){
                     @messages("common.status.updated")
-                }else{
-                    @messages("common.status.cannotUpdate")
+                } else {
+                    @if(isInYear) {@messages("common.status.cannotUpdate")} else { @messages("common.status.notStarted")}
                 }
             </span>
         </li>

@@ -16,6 +16,8 @@
 
 package services
 
+import java.time.ZonedDateTime
+
 import config.{AppConfig, ErrorHandler}
 import connectors.IncomeTaxUserDataConnector
 import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
@@ -30,8 +32,8 @@ import play.api.mvc.{Request, Result}
 import repositories.EmploymentUserDataRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Clock
-
 import javax.inject.{Inject, Singleton}
+
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -124,26 +126,115 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
   }
 
-  def customerData(allEmploymentData: AllEmploymentData, employmentId: String): Option[EmploymentSource] = allEmploymentData.customerEmploymentData.find(source => source.employmentId.equals(employmentId))
-  def shouldUseCustomerData(allEmploymentData: AllEmploymentData, employmentId: String, isInYear: Boolean): Boolean = customerData(allEmploymentData, employmentId).isDefined && !isInYear
-  def shouldUseCustomerExpenses(allEmploymentData: AllEmploymentData, isInYear: Boolean): Boolean = allEmploymentData.customerExpenses.isDefined && !isInYear
-
-  def employmentExpensesToUse(allEmploymentData: AllEmploymentData, isInYear: Boolean): Option[EmploymentExpenses] = {
-    if(shouldUseCustomerExpenses(allEmploymentData, isInYear)){
-      allEmploymentData.customerExpenses
+  //Returns latest employment source and whether it is customer data
+  def employmentSourceToUse(allEmploymentData: AllEmploymentData, employmentId: String, isInYear: Boolean): Option[(EmploymentSource,Boolean)] = {
+    if(isInYear){
+      allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId)).map((_,false))
     } else {
+
+      val hmrcRecord = allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId))
+      val customerRecord = allEmploymentData.customerEmploymentData.find(source => source.employmentId.equals(employmentId))
+
+      (hmrcRecord, customerRecord) match {
+        case (hmrc@Some(_), None) => hmrc.map((_,false))
+        case (None, customer@Some(_)) => customer.map((_,true))
+        case (Some(hmrcData), Some(customerData)) => Some(latestEmploymentSource((hmrcData,customerData)))
+        case (None, None) => None
+      }
+    }
+  }
+
+  def getLatestEmploymentData(allEmploymentData: AllEmploymentData, isInYear: Boolean): Seq[EmploymentSource] ={
+    (if(isInYear){
+      allEmploymentData.hmrcEmploymentData
+    } else {
+      //Filters out hmrc data that has been ignored
+      val hmrcData: Seq[EmploymentSource] = allEmploymentData.hmrcEmploymentData.filterNot(_.dateIgnored.isDefined)
+      val customerData: Seq[EmploymentSource] = allEmploymentData.customerEmploymentData
+
+      (hmrcData.nonEmpty, customerData.nonEmpty) match {
+        case (true, false) => hmrcData
+        case (false, true) => customerData
+        case (true, true) =>
+
+          val hmrcEmploymentIds = hmrcData.map(_.employmentId)
+          val customerOverrideData: Seq[EmploymentSource] = customerData.filter(customerEmployment => hmrcEmploymentIds.contains(customerEmployment.employmentId))
+          lazy val newCustomerData: Seq[EmploymentSource] = customerData.filterNot(customerEmployment => hmrcEmploymentIds.contains(customerEmployment.employmentId))
+
+          if (customerOverrideData.nonEmpty) {
+
+            val employmentIdsWithBothCustomerAndHmrcData = customerOverrideData.map(_.employmentId)
+
+            val hmrcOverriddenData: Seq[EmploymentSource] = hmrcData.filter(hmrcEmployment => employmentIdsWithBothCustomerAndHmrcData.contains(hmrcEmployment.employmentId))
+            val onlyHmrcData: Seq[EmploymentSource] = hmrcData.filterNot(hmrcEmployment => employmentIdsWithBothCustomerAndHmrcData.contains(hmrcEmployment.employmentId))
+
+            val hmrcAndCustomerDataWithSameIds: Seq[(EmploymentSource, EmploymentSource)] = hmrcOverriddenData.map {
+              hmrcData =>
+                (hmrcData, customerOverrideData.find(_.employmentId.equals(hmrcData.employmentId)).get)
+            }
+
+            latestEmploymentSources(hmrcAndCustomerDataWithSameIds) ++ onlyHmrcData ++ newCustomerData
+
+          } else {
+            hmrcData ++ customerData
+          }
+
+        case (false, false) => Seq()
+      }
+    }).sorted(Ordering.by((_: EmploymentSource).submittedOn).reverse)
+  }
+
+  def latestEmploymentSources(hmrcAndCustomerDataSet: Seq[(EmploymentSource,EmploymentSource)]): Seq[EmploymentSource] ={
+    hmrcAndCustomerDataSet.map(latestEmploymentSource).map(_._1)
+  }
+
+  //Gets the latest employment source data looking at the top level submitted on timestamp from two sources with the same employment id
+  //Returned boolean is whether it is customer data or not
+  def latestEmploymentSource(hmrcAndCustomerDataSet: (EmploymentSource, EmploymentSource)): (EmploymentSource, Boolean) = {
+    val (hmrc, customer) = hmrcAndCustomerDataSet
+
+    val hmrcTimestamp: Option[ZonedDateTime] = hmrc.getSubmittedOnDateTime
+    val customerTimestamp: Option[ZonedDateTime] = customer.getSubmittedOnDateTime
+
+    val shouldUseHmrcData = {
+      (hmrcTimestamp, customerTimestamp) match {
+        case (Some(_), None) => true
+        case (None, Some(_)) => false
+        case (Some(hmrcData), Some(customerData)) => hmrcData.isAfter(customerData)
+        case _ => false
+      }
+    }
+
+    if (shouldUseHmrcData) (hmrc, false) else (customer,true)
+  }
+
+  def getLatestExpenses(allEmploymentData: AllEmploymentData, isInYear: Boolean): Option[EmploymentExpenses] ={
+    if(isInYear){
       allEmploymentData.hmrcExpenses
-    }
-  }
-
-  def employmentSourceToUse(allEmploymentData: AllEmploymentData, employmentId: String, isInYear: Boolean): Option[EmploymentSource] = {
-    if(shouldUseCustomerData(allEmploymentData, employmentId, isInYear)){
-      customerData(allEmploymentData,employmentId)
     } else {
-      allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId))
+      (allEmploymentData.hmrcExpenses, allEmploymentData.customerExpenses) match {
+        case (hmrc@Some(_), None) => hmrc
+        case (None, customer@Some(_)) => customer
+        case (Some(hmrcData), Some(customerData)) =>
+
+          val hmrcTimestamp: Option[ZonedDateTime] = hmrcData.getSubmittedOnDateTime
+          val customerTimestamp: Option[ZonedDateTime] = customerData.getSubmittedOnDateTime
+
+          val shouldUseHmrcExpenses = {
+            (hmrcTimestamp, customerTimestamp) match {
+              case (Some(_), None) => true
+              case (None, Some(_)) => false
+              case (Some(hmrcData), Some(customerData)) => hmrcData.isAfter(customerData)
+              case _ => false
+            }
+          }
+
+          if (shouldUseHmrcExpenses) Some(hmrcData) else Some(customerData)
+
+        case _ => None
+      }
     }
   }
-
 }
 
 

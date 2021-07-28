@@ -16,7 +16,10 @@
 
 package models.employment
 
+import java.time.ZonedDateTime
+
 import models.mongo.EmploymentDetails
+import play.api.Logging
 import play.api.libs.json.{Json, OFormat}
 
 case class AllEmploymentData(hmrcEmploymentData: Seq[EmploymentSource],
@@ -37,7 +40,18 @@ case class EmploymentSource(employmentId: String,
                             dateIgnored: Option[String],
                             submittedOn: Option[String],
                             employmentData: Option[EmploymentData],
-                            employmentBenefits: Option[EmploymentBenefits]){
+                            employmentBenefits: Option[EmploymentBenefits]) extends Logging {
+
+  def getSubmittedOnDateTime: Option[ZonedDateTime] ={
+    try {
+      submittedOn.map(ZonedDateTime.parse(_))
+    } catch {
+      case e:Exception =>
+        logger.warn(s"[EmploymentSource][getSubmittedOnDateTime]" +
+          s" Could not parse submittedOn timestamp. SubmittedOn: $submittedOn, Exception: ${e.getMessage}")
+        None
+    }
+  }
 
   def toEmploymentDetails(isUsingCustomerData: Boolean): EmploymentDetails = {
     EmploymentDetails(
