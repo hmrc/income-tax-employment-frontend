@@ -66,7 +66,8 @@
         val employerName = EmploymentDataForView(messages(msgKeyGeneric + ".employer"), Some(employmentDetails.employerName), controllers.employment.routes.EmployerNameController.show(taxYear, employmentDetails.employmentId),
         messages(s"$msgKeyGeneric.hiddenText.employer"))
 
-        val payeRef = EmploymentDataForView(messages(msgKeyGeneric + ".payeRef"), employmentDetails.employerRef, dummyCall,
+        val payeRef = EmploymentDataForView(messages(msgKeyGeneric + ".payeRef"), employmentDetails.employerRef,
+        controllers.employment.routes.PayeRefController.show(taxYear, employmentDetails.employmentId),
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payeRef", user.isAgent)))
 
         val payReceived = EmploymentDataForView(messages(msgKeyGeneric + ".payReceived"),

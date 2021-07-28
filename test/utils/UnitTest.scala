@@ -21,8 +21,8 @@ import com.codahale.metrics.SharedMetricRegistries
 import common.{EnrolmentIdentifiers, EnrolmentKeys, SessionValues}
 import config.{AppConfig, ErrorHandler, MockAppConfig}
 import controllers.predicates.{AuthorisedAction, InYearAction}
+import models.employment._
 import models.{IncomeTaxUserData, User}
-import models.employment.{AllEmploymentData, Benefits, EmploymentBenefits, EmploymentData, EmploymentExpenses, EmploymentSource, Expenses, Pay}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
@@ -174,7 +174,13 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
           directorshipCeasedDate = Some("2020-02-12"),
           occPen = Some(false),
           disguisedRemuneration = Some(false),
-          pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2)))
+          pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+          Some(Deductions(
+            studentLoans = Some(StudentLoans(
+              uglDeductionAmount = Some(100.00),
+              pglDeductionAmount = Some(100.00)
+            ))
+          ))
         )),
         Some(EmploymentBenefits(
           submittedOn = "2020-02-12",
@@ -192,6 +198,7 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
   )
   lazy val employmentExpenses: EmploymentExpenses = EmploymentExpenses(
     submittedOn = None,
+    dateIgnored = None,
     totalExpenses = None,
     expenses = Some(expenses)
   )
