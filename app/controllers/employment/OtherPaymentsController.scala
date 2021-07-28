@@ -67,15 +67,15 @@ class OtherPaymentsController @Inject()(implicit val cc: MessagesControllerCompo
             yesNo => {
               val cya = data.employment
               val updatedTipsAndOtherPaymentsAmount = if(yesNo) cya.employmentDetails.tipsAndOtherPayments else None
-              val updatedCyaModel: EmploymentCYAModel =
-                cya.copy(employmentDetails = cya.employmentDetails.copy(tipsAndOtherPaymentsQuestion = Some(yesNo), tipsAndOtherPayments = updatedTipsAndOtherPaymentsAmount))
+              val updatedCyaModel: EmploymentCYAModel = cya.copy(employmentDetails = cya.employmentDetails.copy(
+                  tipsAndOtherPaymentsQuestion = Some(yesNo), tipsAndOtherPayments = updatedTipsAndOtherPaymentsAmount))
 
-              employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()){
+              employmentSessionService.createOrUpdateSessionData(
+                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()){
                 if(yesNo) { Redirect(OtherPaymentsAmountController.show(taxYear, employmentId)) }
                 // TODO - This would need to change when we introduce the "new Employment Flow (E4)"
                 else { Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)) }
               }
-
             }
           )
         case None => Future(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))

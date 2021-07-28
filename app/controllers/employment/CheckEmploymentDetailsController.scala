@@ -18,9 +18,8 @@ package controllers.employment
 
 import audit.{AuditService, ViewEmploymentDetailsAudit}
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.InYearAction
 import controllers.predicates.{AuthorisedAction, InYearAction}
-import models.employment.{AllEmploymentData, EmploymentDetailsViewModel, EmploymentSource}
+import models.employment.{AllEmploymentData, EmploymentDetailsViewModel}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -53,10 +52,8 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
 
     def inYearResult(allEmploymentData: AllEmploymentData): Result = {
       employmentSessionService.employmentSourceToUse(allEmploymentData,employmentId,isInYear) match {
-        case Some(source) =>
-          performAuditAndRenderView(source.toEmploymentDetailsViewModel(
-            employmentSessionService.shouldUseCustomerData(allEmploymentData,employmentId,isInYear)),
-            taxYear, isInYear)
+        case Some((source, isUsingCustomerData)) =>
+          performAuditAndRenderView(source.toEmploymentDetailsViewModel(isUsingCustomerData), taxYear, isInYear)
         case None =>
           logger.info(s"[CheckEmploymentDetailsController][inYearResult] No prior employment data exists with employmentId." +
             s"Redirecting to overview page. SessionId: ${user.sessionId}")
@@ -65,10 +62,8 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     }
 
     def saveCYAAndReturnEndOfYearResult(allEmploymentData: AllEmploymentData): Future[Result] = {
-      val isUsingCustomerData: Boolean = employmentSessionService.shouldUseCustomerData(allEmploymentData,employmentId,isInYear)
-
       employmentSessionService.employmentSourceToUse(allEmploymentData,employmentId,isInYear) match {
-        case Some(source) =>
+        case Some((source, isUsingCustomerData)) =>
           employmentSessionService.createOrUpdateSessionData(employmentId, EmploymentCYAModel.apply(source, isUsingCustomerData),
             taxYear, isPriorSubmission = true
           )(errorHandler.internalServerError()){
@@ -88,7 +83,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
           case Some(cya) => Future(
-            performAuditAndRenderView(cya.toEmploymentDetailsView(employmentId,employmentSessionService.shouldUseCustomerData(prior,employmentId,isInYear)),
+            performAuditAndRenderView(cya.toEmploymentDetailsView(employmentId,!cya.employmentDetails.currentDataIsHmrcHeld),
               taxYear, isInYear)
           )
           case None => saveCYAAndReturnEndOfYearResult(prior)

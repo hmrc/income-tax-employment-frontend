@@ -43,6 +43,7 @@ common.benefits = Benefits
 
 common.status.updated = Updated
 common.status.cannotUpdate = Cannot update
+common.status.notStarted = Not started
 
 error.summary.title = There is a problem
 

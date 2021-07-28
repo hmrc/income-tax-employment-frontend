@@ -17,15 +17,15 @@
 package controllers.employment
 
 import config.AppConfig
-import controllers.predicates.AuthorisedAction
+import controllers.predicates.{AuthorisedAction, InYearAction}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.employment.{MultipleEmploymentsSummaryView, SingleEmploymentSummaryView}
-
 import javax.inject.Inject
+
 import scala.concurrent.ExecutionContext
 
 class EmploymentSummaryController @Inject()(implicit val mcc: MessagesControllerComponents,
@@ -33,25 +33,30 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
                                             implicit val appConfig: AppConfig,
                                             singleEmploymentSummaryView: SingleEmploymentSummaryView,
                                             multipleEmploymentsSummaryView: MultipleEmploymentsSummaryView,
-                                            employmentSessionService: EmploymentSessionService
+                                            employmentSessionService: EmploymentSessionService,
+                                            inYearAction: InYearAction
                                            ) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   implicit val executionContext: ExecutionContext = mcc.executionContext
 
-  def show(taxYear: Int) : Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
+
+    val isInYear: Boolean = inYearAction.inYear(taxYear)
 
     employmentSessionService.findPreviousEmploymentUserData(user, taxYear) { allEmploymentData =>
 
-      val doExpensesExist = allEmploymentData.hmrcExpenses.isDefined
+      val latestExpenses = employmentSessionService.getLatestExpenses(allEmploymentData, isInYear)
+      val doExpensesExist = latestExpenses.isDefined
 
-      if(allEmploymentData.hmrcEmploymentData.isEmpty) {
+      val employmentData = employmentSessionService.getLatestEmploymentData(allEmploymentData, isInYear)
+
+      if (employmentData.isEmpty) {
         Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-      } else if(allEmploymentData.hmrcEmploymentData.size == 1) {
-        Ok(singleEmploymentSummaryView(taxYear, allEmploymentData.hmrcEmploymentData.head, doExpensesExist))
+      } else if (employmentData.size == 1) {
+        Ok(singleEmploymentSummaryView(taxYear, employmentData.head, doExpensesExist))
       } else {
-        Ok(multipleEmploymentsSummaryView(taxYear, allEmploymentData.hmrcEmploymentData, doExpensesExist))
+        Ok(multipleEmploymentsSummaryView(taxYear, employmentData, doExpensesExist))
       }
     }
   }
-
 }
