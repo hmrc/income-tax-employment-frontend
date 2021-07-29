@@ -42,6 +42,7 @@ GET        /error/you-need-client-authorisation             controllers.errors.A
 GET        /error/not-authorised-to-use-service             controllers.errors.UnauthorisedUserErrorController.show
 
 GET        /:taxYear/employment-summary                     controllers.employment.EmploymentSummaryController.show(taxYear: Int)
+POST       /:taxYear/employment-summary                     controllers.employment.EmploymentSummaryController.submit(taxYear: Int)
 
 GET        /:taxYear/uk-tax                                controllers.employment.EmploymentTaxController.show(taxYear: Int, employmentId: String)
 
