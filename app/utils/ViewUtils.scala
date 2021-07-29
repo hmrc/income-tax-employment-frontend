@@ -53,12 +53,6 @@ object ViewUtils {
     s"$msgKey.${if (isAgent) "agent" else "individual"}"
   }
 
-  def tableRow(): TableRow ={
-    TableRow(
-
-    )
-  }
-
   def summaryListRow(key: HtmlContent,
                      value: HtmlContent,
                      keyClasses: String = "govuk-!-width-one-third",
