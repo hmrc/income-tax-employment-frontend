@@ -103,6 +103,14 @@ employment.expenses.label = Expenses
 employment.employment.details.label = Employment Details
 employment.expenses.subheading = This is a total of expenses from all employment in the tax year.
 
+employment.hiddenText = employment information for {0}
+expenses.hiddenText.individual = your expenses from all employment this tax year
+expenses.hiddenText.agent = your client’s expenses from all employment this tax year
+employment.addAnother = Do you need to add another employment?
+employment.addAnother.error = Select yes if you need to add another employment
+employment.addAnother.hint.individual = You must tell us about all your employment.
+employment.addAnother.hint.agent = You must tell us about all your client’s employment.
+
 employment.employmentDetails.heading.individual = Check your employment details
 employment.employmentDetails.heading.agent = Check your client’s employment details
 
