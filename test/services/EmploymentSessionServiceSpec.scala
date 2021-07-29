@@ -211,7 +211,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
         response shouldBe data.customerExpenses.map(_.copy(submittedOn = Some("2020-02-04T05:01:01Z")))
       }
       "there are no expenses" in {
-        val response = service.getLatestExpenses(data.copy(hmrcExpenses = None, customerExpenses = None), false)
+        val response = service.getLatestExpenses(data.copy(hmrcExpenses = None,customerExpenses = None), false)
         response shouldBe None
       }
     }
@@ -237,7 +237,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       }
       "when there is hmrc data and customer data at the end of the year" in {
         val response = service.getLatestEmploymentData(data.copy(customerEmploymentData = data.hmrcEmploymentData.map(_.copy(employmentId = "C001"))), false)
-        response shouldBe Seq(data.hmrcEmploymentData.head, data.hmrcEmploymentData.head.copy(employmentId = "C001"))
+        response shouldBe Seq(data.hmrcEmploymentData.head,data.hmrcEmploymentData.head.copy(employmentId = "C001"))
       }
       "when there is hmrc data and customer data at the end of the year where the hmrc has been ignored" in {
         val response = service.getLatestEmploymentData(data.copy(customerEmploymentData = data.hmrcEmploymentData.map(_.copy(employmentId = "C001")),
@@ -285,28 +285,28 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
     "return the latest employment source and whether it is customer data" when {
       "only hmrc data is found in year" in {
 
-        val response = service.employmentSourceToUse(data, "001", true)
+        val response = service.employmentSourceToUse(data,"001",true)
         response shouldBe Some(data.hmrcEmploymentData.head, false)
 
       }
       "only hmrc data is found at the end of the year" in {
 
-        val response = service.employmentSourceToUse(data, "001", false)
+        val response = service.employmentSourceToUse(data,"001",false)
         response shouldBe Some(data.hmrcEmploymentData.head, false)
       }
       "there is no data" in {
 
-        val response = service.employmentSourceToUse(data.copy(hmrcEmploymentData = Seq()), "001", false)
+        val response = service.employmentSourceToUse(data.copy(hmrcEmploymentData = Seq()),"001",false)
         response shouldBe None
       }
       "there is only customer data in year" in {
 
-        val response = service.employmentSourceToUse(data.copy(hmrcEmploymentData = Seq(), customerEmploymentData = data.hmrcEmploymentData), "001", true)
+        val response = service.employmentSourceToUse(data.copy(hmrcEmploymentData = Seq(), customerEmploymentData = data.hmrcEmploymentData),"001",true)
         response shouldBe None
       }
       "there is only customer data at the end of the year" in {
 
-        val response = service.employmentSourceToUse(data.copy(hmrcEmploymentData = Seq(), customerEmploymentData = data.hmrcEmploymentData), "001", false)
+        val response = service.employmentSourceToUse(data.copy(hmrcEmploymentData = Seq(), customerEmploymentData = data.hmrcEmploymentData),"001",false)
         response shouldBe Some(data.hmrcEmploymentData.head, true)
       }
       "there is both hmrc and customer data with the same submitted on date" in {
@@ -316,7 +316,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
             hmrcEmploymentData = data.hmrcEmploymentData.map(_.copy(submittedOn = Some("2020-01-04T05:01:01Z"))),
             customerEmploymentData = data.hmrcEmploymentData.map(_.copy(submittedOn = Some("2020-01-04T05:01:01Z"))),
           ),
-          "001", false)
+          "001",false)
         response shouldBe Some(data.hmrcEmploymentData.head.copy(submittedOn = Some("2020-01-04T05:01:01Z")), true)
       }
       "there is both hmrc and customer data when customer has the latest submittedOn date" in {
@@ -326,7 +326,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
             hmrcEmploymentData = data.hmrcEmploymentData.map(_.copy(submittedOn = Some("2020-01-04T05:01:01Z"))),
             customerEmploymentData = data.hmrcEmploymentData.map(_.copy(submittedOn = Some("2020-02-04T05:01:01Z"))),
           ),
-          "001", false)
+          "001",false)
         response shouldBe Some(data.hmrcEmploymentData.head.copy(submittedOn = Some("2020-02-04T05:01:01Z")), true)
       }
       "there is both hmrc and customer data when hmrc has the latest submittedOn date" in {
@@ -336,7 +336,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
             hmrcEmploymentData = data.hmrcEmploymentData.map(_.copy(submittedOn = Some("2020-03-04T05:01:01Z"))),
             customerEmploymentData = data.hmrcEmploymentData.map(_.copy(submittedOn = Some("2020-02-04T05:01:01Z"))),
           ),
-          "001", false)
+          "001",false)
         response shouldBe Some(data.hmrcEmploymentData.head.copy(submittedOn = Some("2020-03-04T05:01:01Z")), false)
       }
       "there is both hmrc and customer data but only hmrc has a submitted on date" in {
@@ -346,7 +346,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
             hmrcEmploymentData = data.hmrcEmploymentData.map(_.copy(submittedOn = Some("2020-01-04T05:01:01Z"))),
             customerEmploymentData = data.hmrcEmploymentData
           ),
-          "001", false)
+          "001",false)
         response shouldBe Some(data.hmrcEmploymentData.head.copy(submittedOn = Some("2020-01-04T05:01:01Z")), false)
       }
       "there is both hmrc and customer data but only customer has a submitted on date" in {
@@ -356,7 +356,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
             hmrcEmploymentData = data.hmrcEmploymentData,
             customerEmploymentData = data.hmrcEmploymentData.map(_.copy(submittedOn = Some("2020-01-04T05:01:01Z")))
           ),
-          "001", false)
+          "001",false)
         response shouldBe Some(data.hmrcEmploymentData.head.copy(submittedOn = Some("2020-01-04T05:01:01Z")), true)
       }
       "there is both hmrc and customer data but both have no submitted on date" in {
@@ -366,7 +366,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
             hmrcEmploymentData = data.hmrcEmploymentData,
             customerEmploymentData = data.hmrcEmploymentData
           ),
-          "001", false)
+          "001",false)
         response shouldBe Some(data.hmrcEmploymentData.head, true)
       }
     }

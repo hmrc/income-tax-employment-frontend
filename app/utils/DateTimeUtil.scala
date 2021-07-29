@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-package models.employment
+package utils
 
 import play.api.Logging
-import play.api.libs.json.{Json, OFormat}
-import utils.DateTimeUtil.getSubmittedOnDateTime
 
 import java.time.ZonedDateTime
 
-case class EmploymentExpenses(submittedOn: Option[String],
-                              dateIgnored: Option[String],
-                              totalExpenses: Option[BigDecimal],
-                              expenses: Option[Expenses]) extends Logging{
-
-  def submittedOnDateTime: Option[ZonedDateTime] ={
-    getSubmittedOnDateTime(submittedOn)
+object DateTimeUtil extends Logging{
+  def getSubmittedOnDateTime(submittedOn: Option[String]): Option[ZonedDateTime] =
+  {
+    try {
+      submittedOn.map(ZonedDateTime.parse(_))
+    } catch {
+      case e: Exception =>
+        logger.warn(s"Could not parse submittedOn timestamp. SubmittedOn: $submittedOn, Exception: ${e.getMessage}")
+        None
+    }
   }
-}
-
-object EmploymentExpenses {
-  implicit val format: OFormat[EmploymentExpenses] = Json.format[EmploymentExpenses]
 }

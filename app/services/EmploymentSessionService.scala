@@ -21,7 +21,7 @@ import java.time.ZonedDateTime
 import config.{AppConfig, ErrorHandler}
 import connectors.IncomeTaxUserDataConnector
 import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
-import models.employment.{AllEmploymentData, EmploymentExpenses, EmploymentSource}
+import models.employment.{AllEmploymentData, EmploymentExpenses, EmploymentSource, Expenses}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.{IncomeTaxUserData, User}
 import org.joda.time.DateTimeZone
@@ -193,8 +193,8 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   def latestEmploymentSource(hmrcAndCustomerDataSet: (EmploymentSource, EmploymentSource)): (EmploymentSource, Boolean) = {
     val (hmrc, customer) = hmrcAndCustomerDataSet
 
-    val hmrcTimestamp: Option[ZonedDateTime] = hmrc.getSubmittedOnDateTime
-    val customerTimestamp: Option[ZonedDateTime] = customer.getSubmittedOnDateTime
+    val hmrcTimestamp: Option[ZonedDateTime] = hmrc.submittedOnDateTime
+    val customerTimestamp: Option[ZonedDateTime] = customer.submittedOnDateTime
 
     val shouldUseHmrcData = {
       (hmrcTimestamp, customerTimestamp) match {
@@ -217,8 +217,8 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
         case (None, customer@Some(_)) => customer
         case (Some(hmrcData), Some(customerData)) =>
 
-          val hmrcTimestamp: Option[ZonedDateTime] = hmrcData.getSubmittedOnDateTime
-          val customerTimestamp: Option[ZonedDateTime] = customerData.getSubmittedOnDateTime
+          val hmrcTimestamp: Option[ZonedDateTime] = hmrcData.submittedOnDateTime
+          val customerTimestamp: Option[ZonedDateTime] = customerData.submittedOnDateTime
 
           val shouldUseHmrcExpenses = {
             (hmrcTimestamp, customerTimestamp) match {
