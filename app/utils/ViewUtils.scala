@@ -24,8 +24,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
-
 import scala.util.Try
 
 object ViewUtils {
