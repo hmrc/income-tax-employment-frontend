@@ -29,7 +29,6 @@ case class EmploymentDetailsViewModel(employerName: String,
                                       tipsAndOtherPaymentsQuestion: Option[Boolean],
                                       tipsAndOtherPayments: Option[BigDecimal],
                                       isUsingCustomerData: Boolean)
-
 object EmploymentDetailsViewModel {
   implicit val format: OFormat[EmploymentDetailsViewModel] = Json.format[EmploymentDetailsViewModel]
 }

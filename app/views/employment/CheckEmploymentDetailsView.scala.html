@@ -17,8 +17,8 @@
 @import views.html.headerFooterTemplate.Layout
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Heading
-@import utils.ViewUtils._
 @import models.employment.EmploymentDetailsViewModel
+@import utils.ViewUtils._
 
 @this(
         layout: Layout,
@@ -29,7 +29,6 @@
         govukInsetText: GovukInsetText
 )
 @(employmentDetails: EmploymentDetailsViewModel, taxYear: Int, isInYear:Boolean)(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
-
 
 @headingForUse = @{
     messages(s"employment.employmentDetails.heading.${if(user.isAgent) "agent" else "individual"}")
@@ -57,14 +56,16 @@
 
     @{
 
-        val dummyCall = controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)
-
         val employmentTaxCall = controllers.employment.routes.EmploymentTaxController.show(taxYear, employmentDetails.employmentId)
 
         val msgKeyGeneric = "employment.employmentDetails"
 
         val employerName = EmploymentDataForView(messages(msgKeyGeneric + ".employer"), Some(employmentDetails.employerName), controllers.employment.routes.EmployerNameController.show(taxYear, employmentDetails.employmentId),
         messages(s"$msgKeyGeneric.hiddenText.employer"))
+
+        //TODO - Replace the 'Call' to the correct controller for changing the employment start date when that is created.
+        val employmentStartDate = EmploymentDataForView(messages(s"$msgKeyGeneric.startDate"), employmentDetails.startDate.flatMap(dateFormatter), Call("GET", "DUMMY_CALL"),
+        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", user.isAgent), employmentDetails.employerName))
 
         val payeRef = EmploymentDataForView(messages(msgKeyGeneric + ".payeRef"), employmentDetails.employerRef,
         controllers.employment.routes.PayeRefController.show(taxYear, employmentDetails.employmentId),
@@ -87,13 +88,17 @@
         employmentDetails.tipsAndOtherPayments.map(amount => bigDecimalCurrency(amount.toString)), controllers.employment.routes.OtherPaymentsAmountController.show(taxYear, employmentDetails.employmentId),
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.tipsAndOtherPayments", user.isAgent)))
 
-        val employmentDataFields = if(isInYear) {List(employerName, payeRef,
-        payReceived, totalTaxToDate, tipsAndOtherPaymentsAmount)} else {
-        List(employerName, payeRef, payReceived, totalTaxToDate, paymentsNotOnYourP60, tipsAndOtherPaymentsAmount)
+        val employmentDataFields = {
+            if(isInYear) {
+                List(employerName, employmentStartDate, payeRef, payReceived, totalTaxToDate, tipsAndOtherPaymentsAmount)
+            } else {
+                List(employerName, employmentStartDate, payeRef, payReceived, totalTaxToDate, paymentsNotOnYourP60, tipsAndOtherPaymentsAmount)
+            }
         }
 
         govukSummaryList(
             SummaryList(
+                // TODO - This will change so as not to filter out rows if the fieldValue is not present.
                 employmentDataFields.collect{ case EmploymentDataForView(fieldHeading, Some(fieldValue), changeLink, hiddenText) =>
                     summaryListRow(
                         key = HtmlContent(fieldHeading),
