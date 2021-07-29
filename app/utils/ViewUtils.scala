@@ -20,10 +20,12 @@ import play.api.i18n.Messages
 import play.api.mvc.Call
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
-
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+
+import uk.gov.hmrc.govukfrontend.views.viewmodels.table.TableRow
+
 import scala.util.Try
 
 object ViewUtils {
@@ -49,6 +51,12 @@ object ViewUtils {
 
   def getAgentDynamicContent(msgKey:String, isAgent:Boolean): String ={
     s"$msgKey.${if (isAgent) "agent" else "individual"}"
+  }
+
+  def tableRow(): TableRow ={
+    TableRow(
+
+    )
   }
 
   def summaryListRow(key: HtmlContent,
