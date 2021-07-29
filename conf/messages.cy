@@ -126,6 +126,7 @@ employment.employmentDetails.insetText.individual = You cannot update your emplo
 employment.employmentDetails.insetText.agent = You cannot update your client’s employment details until 6 April {0}.
 
 employment.employmentDetails.employer =  Employer
+employment.employmentDetails.startDate =  Employment start date
 employment.employmentDetails.payeRef =  PAYE reference
 employment.employmentDetails.companyDirector =  Company director
 employment.employmentDetails.directorCeasedDate =  Director role end date
@@ -138,6 +139,8 @@ employment.employmentDetails.tipsAndOtherPayments.individual =  Amount of paymen
 employment.employmentDetails.tipsAndOtherPayments.agent =  Amount of payments not on your client’s P60
 
 employment.employmentDetails.hiddenText.employer = the name of this employer
+employment.employmentDetails.hiddenText.startDate.individual = your start date for {0}
+employment.employmentDetails.hiddenText.startDate.agent = your client’s start date for {0}
 employment.employmentDetails.hiddenText.payeRef.individual = your PAYE reference number
 employment.employmentDetails.hiddenText.payeRef.agent = your client’s PAYE reference number
 employment.employmentDetails.hiddenText.payReceived.individual = the amount of pay you got from this employer
@@ -180,8 +183,6 @@ employment.expenses.expense.type.job = Job expenses
 employment.expenses.expense.type.hotel-and-meal = Hotel and meal expenses
 employment.expenses.expense.type.vehicle = Vehicle expense
 employment.expenses.expense.type.mileage-allowance = Mileage allowance relief
-
-
 employment.expenses.sub-heading.individual = Your employment expenses are based on the information we already hold about you. This is a total of expenses from all employment in the tax year.
 employment.expenses.sub-heading.agent = Your client’s employment expenses are based on information we already hold about them. This is a total of expenses from all employment in the tax year.
 
@@ -227,7 +228,6 @@ checkYourBenefits.otherBenefits = Other benefits
 checkYourBenefits.assetsHeader = Assets and asset transfers
 checkYourBenefits.assets = Assets
 checkYourBenefits.assetTransfers = Asset transfers
-
 
 otherPaymentsAmount.heading.individual = What is the total amount of payments not included on your P60?
 otherPaymentsAmount.heading.agent = What is the total amount of payments not included on your client’s P60?

@@ -37,8 +37,7 @@ class PayeRefController @Inject()(implicit val authorisedAction: AuthorisedActio
                                   inYearAction: InYearAction,
                                   errorHandler: ErrorHandler,
                                   employmentSessionService: EmploymentSessionService,
-                                  clock: Clock,
-                                  ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
+                                  clock: Clock) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
 
