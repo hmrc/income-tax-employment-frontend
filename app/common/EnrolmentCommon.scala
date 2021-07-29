@@ -27,3 +27,9 @@ object EnrolmentIdentifiers {
   val agentReference = "AgentReferenceNumber"
   val nino = "NINO"
 }
+
+object EmploymentToRemove {
+  val all = "ALL"
+  val customer = "CUSTOMER"
+  val hmrcHeld = "HMRC-HELD"
+}
