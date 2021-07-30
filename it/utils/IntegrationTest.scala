@@ -168,26 +168,13 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     )) and Some(AffinityGroup.Individual) and ConfidenceLevel.L200
   )
 
-  def playSessionCookies(taxYear: Int): String = PlaySessionCookieBaker.bakeSessionCookie(Map(
+  def playSessionCookies(taxYear: Int, extraData: Map[String, String] = Map.empty): String = PlaySessionCookieBaker.bakeSessionCookie(Map(
     SessionValues.TAX_YEAR -> taxYear.toString,
     SessionKeys.sessionId -> sessionId,
     SessionValues.CLIENT_NINO -> nino,
     SessionValues.CLIENT_MTDITID -> mtditid
-  ))
+  ) ++ extraData)
 
-  def playSessionCookie(agent: Boolean = false, extraData: Map[String, String] = Map.empty): Seq[(String, String)] = {
-    {
-      if (agent) {
-        Seq(HeaderNames.COOKIE -> PlaySessionCookieBaker.bakeSessionCookie(extraData ++ Map(
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> mtditid))
-        )
-      } else {
-        Seq(HeaderNames.COOKIE -> PlaySessionCookieBaker.bakeSessionCookie(extraData), "mtditid" -> mtditid)
-      }
-    } ++
-      Seq(xSessionId)
-  }
 
   def userData(allData: AllEmploymentData): IncomeTaxUserData = IncomeTaxUserData(Some(allData))
 
