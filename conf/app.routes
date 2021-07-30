@@ -31,6 +31,9 @@ POST       /:taxYear/payments-not-on-p60                    controllers.employme
 GET        /:taxYear/how-much-pay                           controllers.employment.EmployerPayAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/how-much-pay                           controllers.employment.EmployerPayAmountController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/add-employment                         controllers.employment.AddEmploymentController.show(taxYear: Int)
+POST       /:taxYear/add-employment                        controllers.employment.AddEmploymentController.submit(taxYear: Int)
+
 GET        /sign-out                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
 GET        /error/you-need-to-sign-up                       controllers.errors.IndividualAuthErrorController.show
