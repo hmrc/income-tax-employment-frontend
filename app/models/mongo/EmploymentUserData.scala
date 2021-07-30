@@ -46,7 +46,8 @@ object EmploymentUserData extends MongoJodaFormats {
       val model = m.employment.employmentDetails
       Set(
         WithoutDependency(model.tipsAndOtherPaymentsQuestion, OtherPaymentsController.show(taxYear, employmentId)),
-        WithDependency(model.tipsAndOtherPayments, model.tipsAndOtherPaymentsQuestion, OtherPaymentsAmountController.show(taxYear, employmentId), OtherPaymentsController.show(taxYear, employmentId))
+        WithDependency(model.tipsAndOtherPayments, model.tipsAndOtherPaymentsQuestion,
+          OtherPaymentsAmountController.show(taxYear, employmentId), OtherPaymentsController.show(taxYear, employmentId))
       )
     }
   }

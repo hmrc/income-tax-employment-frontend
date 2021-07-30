@@ -56,7 +56,8 @@ class OtherPaymentsAmountController @Inject()(implicit val cc: MessagesControlle
       implicit val journey = EmploymentUserData.journey(taxYear, employmentId)
 
       val cyaFuture = employmentSessionService.getSessionData(taxYear,employmentId)
-      questionsJourneyValidator.validate(OtherPaymentsAmountController.show(taxYear, employmentId), cyaFuture)(CheckEmploymentDetailsController.show(taxYear, employmentId).url) { data =>
+      questionsJourneyValidator.validate(OtherPaymentsAmountController.show(taxYear, employmentId),
+        cyaFuture)(CheckEmploymentDetailsController.show(taxYear, employmentId).url) { data =>
         val amount = data.employment.employmentDetails.tipsAndOtherPayments
         val filledForm = amount.fold(form(user.isAgent))(x => form(user.isAgent).fill(x))
         Future.successful(Ok(otherPaymentsAmountView(filledForm,taxYear, employmentId, amount)))
