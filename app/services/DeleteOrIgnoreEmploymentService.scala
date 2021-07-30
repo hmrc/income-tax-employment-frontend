@@ -43,7 +43,8 @@ class DeleteOrIgnoreEmploymentService @Inject() (deleteOrIgnoreEmploymentConnect
         case (None, Some(_)) => handleConnectorCall(user, taxYear, employmentId, hmrcHeld)(result)
         case (Some(_), None) => handleConnectorCall(user, taxYear, employmentId, customer)(result)
         case (None, None) =>
-          logger.info(s"[DeleteOrIgnoreEmploymentService][deleteOrIgnoreEmployment] No employment data found for user and employmentId. SessionId: ${user.sessionId}")
+          logger.info(s"[DeleteOrIgnoreEmploymentService][deleteOrIgnoreEmployment]" +
+            s" No employment data found for user and employmentId. SessionId: ${user.sessionId}")
           Future(Redirect(EmploymentSummaryController.show(taxYear)))
       }
     }
@@ -60,7 +61,6 @@ class DeleteOrIgnoreEmploymentService @Inject() (deleteOrIgnoreEmploymentConnect
     deleteOrIgnoreEmploymentConnector.deleteOrIgnoreEmployment(user.nino, taxYear, employmentId, toRemove)(hc.withExtraHeaders("mtditid" -> user.mtditid)).map {
       case Left(error) => errorHandler.handleError(error.status)
       case Right(_) => result
-
     }
   }
 
