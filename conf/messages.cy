@@ -266,3 +266,5 @@ payeRef.hint = For example, 123/AB456
 payeRef.errors.empty = Enter a PAYE reference
 payeRef.errors.wrongFormat = Enter a PAYE reference in the correct format
 
+AddEmployment.error = Select yes if you want to add an employment
+AddEmployment.header = Do you want to add an employment?
