@@ -125,6 +125,18 @@ trait WireMockHelper {
       )
     )
 
+  def stubDeleteWithHeadersCheck(url: String, status: Integer, responseBody: String,
+                                 sessionHeader: (String, String), mtdidHeader: (String, String)): StubMapping =
+    stubFor(delete(urlMatching(url))
+      .withHeader(sessionHeader._1, equalTo(sessionHeader._2))
+      .withHeader(mtdidHeader._1, equalTo(mtdidHeader._2))
+      .willReturn(
+        aResponse().
+          withStatus(status).
+          withBody(responseBody)
+      )
+    )
+
   private val authoriseUri = "/auth/authorise"
 
   private val mtditEnrolment = Json.obj(
