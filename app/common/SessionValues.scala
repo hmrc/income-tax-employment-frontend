@@ -21,4 +21,5 @@ object SessionValues {
   val CLIENT_NINO = "ClientNino"
 
   val TAX_YEAR = "TAX_YEAR"
+  val TEMP_NEW_EMPLOYMENT_ID = "TEMP_NEW_EMPLOYMENT_ID"
 }
