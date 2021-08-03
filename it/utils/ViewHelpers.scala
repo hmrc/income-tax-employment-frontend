@@ -110,6 +110,12 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
     }
   }
 
+  def formRadioValueCheckPreFilled(isChecked: Boolean, selector: String)(implicit document: () => Document): Unit = {
+    s"have a radio button that ${if(isChecked) "is" else "isn't"} pre-filled for selector '$selector'" in {
+      document().select(selector).hasAttr("checked") shouldBe isChecked
+    }
+  }
+
   def formGetLinkCheck(text: String, selector: String)(implicit document: () => Document): Unit = {
     s"have a form with a GET action of '$text'" in {
       document().select(selector).attr("action") shouldBe text
