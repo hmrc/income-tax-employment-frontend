@@ -39,7 +39,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
     val headingSelector = "#main-content > div > div > header > h1"
     val captionSelector = ".govuk-caption-l"
     val formSelector = "#main-content > div > div > form"
-    val formRadioButtonValueSelector = "#value"
+    val yesRadioButton = "#value"
   }
 
   trait SpecificExpectedResults {
@@ -129,7 +129,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "return Add an employment page page" when {
+        "return Add an employment page" when {
 
           val taxYear = validTaxYear2021
           lazy val result: WSResponse = {
@@ -150,6 +150,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           h1Check(specific.expectedH1)
           textOnPageCheck(expectedCaption, captionSelector)
           buttonCheck(continueButton)
+          formRadioValueCheckPreFilled(isChecked = false, yesRadioButton)
           formPostLinkCheck(s"/income-through-software/return/employment-income${AddEmploymentController.submit(taxYear).url}", formSelector)
         }
 
@@ -176,7 +177,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           textOnPageCheck(expectedCaption, captionSelector)
           buttonCheck(continueButton)
           formPostLinkCheck(s"/income-through-software/return/employment-income${AddEmploymentController.submit(taxYear).url}", formSelector)
-          formRadioValueCheck(selected = true, formRadioButtonValueSelector)
+          formRadioValueCheckPreFilled(isChecked = true, yesRadioButton)
         }
 
         "redirect to Employment Summary page when there is prior data" when {

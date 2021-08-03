@@ -45,7 +45,7 @@ class AddEmploymentController @Inject()(implicit val cc: MessagesControllerCompo
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
     redirectOrRenderView(taxYear){
-      val form = if (SessionValues.TEMP_NEW_EMPLOYMENT_ID.isEmpty) buildForm else buildForm.fill(value = true)
+      val form = if (getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID).isEmpty) buildForm else buildForm.fill(value = true)
       Future(Ok(addEmploymentView(form, taxYear)))
     }
   }
