@@ -16,7 +16,6 @@
 
 package forms.employment
 
-import forms.employment.PayeForm.charRegex
 import forms.validation.StringConstraints.{validateChar, validateSize}
 import forms.validation.mappings.MappingUtil.trimmedText
 import forms.validation.utils.ConstraintUtil.ConstraintUtil
