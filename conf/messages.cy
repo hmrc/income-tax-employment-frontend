@@ -157,6 +157,7 @@ employment.employerName.heading.agent = What’s the name of your client’s emp
 employment.employerName.error.noEntry.individual = Enter the name of your employer
 employment.employerName.error.noEntry.agent = Enter the name of your client’s employer
 employment.employerName.error.name.limit = The employer name must be 74 characters or fewer
+employment.employerName.error.name.wrongFormat = Enter the employer name in the correct format
 
 employment.employmentTax.title.individual = How much UK tax was taken from your earnings?
 employment.employmentTax.title.agent = How much UK tax was taken from your client’s earnings?
