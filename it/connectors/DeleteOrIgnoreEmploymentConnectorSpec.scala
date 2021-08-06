@@ -49,52 +49,14 @@ class DeleteOrIgnoreEmploymentConnectorSpec extends IntegrationTest {
       }
     }
     "Return an error result" when {
-      s"employment returns a $BAD_REQUEST" in {
+      Seq(BAD_REQUEST, NOT_FOUND, FORBIDDEN, UNPROCESSABLE_ENTITY, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE).foreach { status =>
 
-        stubDeleteWithHeadersCheck(url, BAD_REQUEST, APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+        s"expenses returns a $status" in {
+          stubDeleteWithHeadersCheck(url, status, APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.deleteOrIgnoreEmployment(nino, taxYear, employmentId, "ALL"), Duration.Inf)
-        result shouldBe Left(APIErrorModel(BAD_REQUEST, APIErrorBodyModel.parsingError))
-      }
-
-      s"employment returns a $NOT_FOUND" in {
-
-        stubDeleteWithHeadersCheck(url, NOT_FOUND, APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
-
-        val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.deleteOrIgnoreEmployment(nino, taxYear, employmentId, "ALL"), Duration.Inf)
-        result shouldBe Left(APIErrorModel(NOT_FOUND, APIErrorBodyModel.parsingError))
-      }
-
-      s"employment returns a $FORBIDDEN" in {
-
-        stubDeleteWithHeadersCheck(url, FORBIDDEN, APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
-
-        val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.deleteOrIgnoreEmployment(nino, taxYear, employmentId, "ALL"), Duration.Inf)
-        result shouldBe Left(APIErrorModel(FORBIDDEN, APIErrorBodyModel.parsingError))
-      }
-
-      s"employment returns a $UNPROCESSABLE_ENTITY" in {
-
-        stubDeleteWithHeadersCheck(url, UNPROCESSABLE_ENTITY, APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
-
-        val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.deleteOrIgnoreEmployment(nino, taxYear, employmentId, "ALL"), Duration.Inf)
-        result shouldBe Left(APIErrorModel(UNPROCESSABLE_ENTITY, APIErrorBodyModel.parsingError))
-      }
-
-      s"employment returns a $INTERNAL_SERVER_ERROR" in {
-
-        stubDeleteWithHeadersCheck(url, INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
-
-        val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.deleteOrIgnoreEmployment(nino, taxYear, employmentId, "ALL"), Duration.Inf)
-        result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))
-      }
-
-      s"employment returns a $SERVICE_UNAVAILABLE" in {
-
-        stubDeleteWithHeadersCheck(url, SERVICE_UNAVAILABLE, APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
-
-        val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.deleteOrIgnoreEmployment(nino, taxYear, employmentId, "ALL"), Duration.Inf)
-        result shouldBe Left(APIErrorModel(SERVICE_UNAVAILABLE, APIErrorBodyModel.parsingError))
+          val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.deleteOrIgnoreEmployment(nino, taxYear, employmentId, "ALL"), Duration.Inf)
+          result shouldBe Left(APIErrorModel(status, APIErrorBodyModel.parsingError))
+        }
       }
 
       s"employment returns an unexpected result" in {
