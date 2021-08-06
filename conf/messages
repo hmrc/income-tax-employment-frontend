@@ -154,9 +154,15 @@ employment.employmentDetails.hiddenText.tipsAndOtherPayments.agent = the amount 
 
 employment.employerName.heading.individual = What’s the name of your employer?
 employment.employerName.heading.agent = What’s the name of your client’s employer?
+employment.employerName.paragraph = The employer name must be 74 characters or fewer. It can include:
+employment.employerName.bullet.one = Upper and lower case letters (a to z)
+employment.employerName.bullet.two = Numbers
+employment.employerName.bullet.three = The special characters: & : ’ \ , . ( ) -
 employment.employerName.error.noEntry.individual = Enter the name of your employer
 employment.employerName.error.noEntry.agent = Enter the name of your client’s employer
 employment.employerName.error.name.limit = The employer name must be 74 characters or fewer
+employment.employerName.error.name.wrongFormat = Enter the employer name in the correct format
+employment.employerName.hint = For example, A1 Plumbing (UK)
 
 employment.employmentStartDate.title.individual = When did you start working for your employer?
 employment.employmentStartDate.title.agent = When did your client start working for their employer?

@@ -26,9 +26,10 @@ class EmployerNameFormSpec extends UnitTest {
     EmployerNameForm.employerNameForm(isAgent)
   }
 
-  lazy val testNameValid = "Google"
+  lazy val testNameValid = "Google\\- _&`():.'^"
   lazy val testNameEmpty = ""
   lazy val testNameTooBig = "ukHzoBYHkKGGk2V5iuYgS137gN7EB7LRw3uDjvujYg00ZtHwo3sokyOOCEoAK9vuPiP374QKOelo"
+  lazy val testNameInvalidCharacters = "~~~"
   lazy val emptyPreviousNames = List("")
   lazy val employerNames = List("Google")
 
@@ -65,6 +66,14 @@ class EmployerNameFormSpec extends UnitTest {
 
       }
 
+      "invalidate a name with invalid characters" in {
+        val testInput = Map(employerName -> testNameInvalidCharacters)
+
+        val invalidLengthTest = form(isAgent = false).bind(testInput)
+        invalidLengthTest.errors should contain(FormError(employerName, "employment.employerName.error.name.wrongFormat"))
+
+      }
+
     }
 
     "as an agent" should {
@@ -95,6 +104,14 @@ class EmployerNameFormSpec extends UnitTest {
 
         val invalidLengthTest = form(isAgent = true).bind(testInput)
         invalidLengthTest.errors should contain(FormError(employerName, "employment.employerName.error.name.limit"))
+
+      }
+
+      "invalidate a name with invalid characters" in {
+        val testInput = Map(employerName -> testNameInvalidCharacters)
+
+        val invalidLengthTest = form(isAgent = true).bind(testInput)
+        invalidLengthTest.errors should contain(FormError(employerName, "employment.employerName.error.name.wrongFormat"))
 
       }
 
