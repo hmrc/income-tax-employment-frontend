@@ -21,7 +21,7 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import common.SessionValues
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
-import helpers.{PlaySessionCookieBaker, WireMockHelper}
+import helpers.{PlaySessionCookieBaker, WireMockHelper, WiremockStubHelpers}
 import models.IncomeTaxUserData
 import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -47,7 +47,8 @@ import views.html.authErrorPages.AgentAuthErrorPageView
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
 
-trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSuite with WireMockHelper with BeforeAndAfterAll {
+trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSuite with WireMockHelper
+  with WiremockStubHelpers with BeforeAndAfterAll {
 
   val nino = "AA123456A"
   val mtditid = "1234567890"
@@ -77,6 +78,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "microservice.services.auth.host" -> wiremockHost,
     "microservice.services.auth.port" -> wiremockPort.toString,
     "microservice.services.income-tax-employment.url" -> s"http://$wiremockHost:$wiremockPort",
+    "microservice.services.income-tax-expenses.url" -> s"http://$wiremockHost:$wiremockPort",
     "microservice.services.income-tax-submission.url" -> s"http://$wiremockHost:$wiremockPort",
     "microservice.services.view-and-change.url" -> s"http://$wiremockHost:$wiremockPort",
     "microservice.services.sign-in.url" -> s"/auth-login-stub/gg-sign-in",
