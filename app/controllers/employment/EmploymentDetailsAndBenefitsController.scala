@@ -50,7 +50,8 @@ class EmploymentDetailsAndBenefitsController @Inject()(implicit val cc: Messages
       val unignoredHMRCEmployments = allEmploymentData.hmrcEmploymentData.filter(_.dateIgnored.isEmpty)
       val unignoredCustomerEmployments = allEmploymentData.customerEmploymentData.filter(_.dateIgnored.isEmpty)
 
-      val isSingleEmployment: Boolean = (unignoredHMRCEmployments++unignoredCustomerEmployments).filter(_.employmentId != employmentId).isEmpty
+      val isSingleEmployment: Boolean = unignoredHMRCEmployments.filter(_.employmentId != employmentId).isEmpty &&
+        unignoredCustomerEmployments.filter(_.employmentId != employmentId).isEmpty
 
       val source = employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear)
 
