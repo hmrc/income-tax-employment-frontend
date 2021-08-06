@@ -25,7 +25,7 @@ import utils.{IntegrationTest, ViewHelpers}
 
 
 class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with ViewHelpers {
-
+val taxYearEOY=taxYear -1
   def url(taxYear: Int) = s"$appUrl/$taxYear/employer-details-and-benefits?employmentId=001"
 
   object Selectors {
@@ -35,12 +35,14 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
     val buttonSelector = "#employmentSummaryBtn"
     val employmentDetailsLinkSelector = "#employment-details_link"
     val employmentBenefitsLinkSelector = "#employment-benefits_link"
+    val employmentExpensesLinkSelector = "#employment-expenses_link"
     def taskListRowFieldNameSelector(i: Int) = s"#main-content > div > div > ul > li:nth-child($i) > span.app-task-list__task-name"
     def taskListRowFieldAmountSelector(i: Int) = s"#main-content > div > div > ul > li:nth-child($i) > span.hmrc-status-tag"
   }
 
   def employmentDetailsUrl(taxYear: Int) = s"/income-through-software/return/employment-income/$taxYear/check-employment-details?employmentId=001"
   def employmentBenefitsUrl(taxYear: Int) = s"/income-through-software/return/employment-income/$taxYear/check-employment-benefits?employmentId=001"
+  def employmentExpensesUrl(taxYear: Int) = s"/income-through-software/return/employment-income/$taxYear/check-employment-expenses"
 
   object ExpectedResults {
 
@@ -50,7 +52,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
       def captionExpected(taxYear: Int) = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
       def p1ExpectedAgent(taxYear: Int) = s"You cannot update your client’s employment information until 6 April $taxYear."
       def p1ExpectedIndividual(taxYear: Int) = s"You cannot update your employment information until 6 April $taxYear."
-      val fieldNames = List("Employment details", "Benefits")
+      val fieldNames = List("Employment details", "Benefits", "Expenses")
       val buttonText = "Return to employment summary"
     }
 
@@ -60,7 +62,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
       def captionExpected(taxYear: Int) = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
       def p1ExpectedAgent(taxYear: Int) = s"You cannot update your client’s employment information until 6 April $taxYear."
       def p1ExpectedIndividual(taxYear: Int) = s"You cannot update your employment information until 6 April $taxYear."
-      val fieldNames = List("Employment details", "Benefits")
+      val fieldNames = List("Employment details", "Benefits", "Expenses")
       val buttonText = "Return to employment summary"
     }
   }
@@ -82,7 +84,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
   object CommonExpectedEN extends CommonExpectedResults {
     def expectedCaption(taxYear: Int) = s"Employment for 6 April ${taxYear-1} to 5 April $taxYear"
-    val fieldNames = Seq("Employment details", "Benefits")
+    val fieldNames = Seq("Employment details", "Benefits", "Expenses")
     val buttonText = "Return to employment summary"
     val updated = "Updated"
     val cannotUpdate = "Cannot update"
@@ -91,7 +93,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(taxYear: Int) = s"Employment for 6 April ${taxYear-1} to 5 April $taxYear"
-    val fieldNames = Seq("Employment details", "Benefits")
+    val fieldNames = Seq("Employment details", "Benefits", "Expenses")
     val buttonText = "Return to employment summary"
     val updated = "Updated"
     val cannotUpdate = "Cannot update"
@@ -161,6 +163,30 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           }
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
           formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary", "#main-content > div > div > form")
+
+          welshToggleCheck(user.isWelsh)
+        }
+        "render the page with expenses line showing when there are expenses and tax year is EOY" which {
+
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYearEOY)
+            urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
+
+          "has an employment expenses section" which {
+            linkCheck(user.commonExpectedResults.fieldNames(2),employmentExpensesLinkSelector,employmentExpensesUrl(taxYearEOY))
+            textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(3))
+          }
+
+          buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
+          formGetLinkCheck("/income-through-software/return/employment-income/2021/employment-summary", "#main-content > div > div > form")
 
           welshToggleCheck(user.isWelsh)
         }
