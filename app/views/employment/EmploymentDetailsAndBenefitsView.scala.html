@@ -26,7 +26,7 @@
         govUkButton: GovukButton
 )
 
-@(employerNameData: String, empId:String, benefitsDefined:Boolean, taxYear: Int, isInYear:Boolean)(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
+@(employerNameData: String, empId:String, benefitsDefined:Boolean, taxYear: Int, isInYear:Boolean, doExpensesExist:Boolean, isSingleEmployment:Boolean)(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
 
 
 @layout(pageTitle = messages("common.employmentDetailsAndBenefits"), taxYear = Some(taxYear), isAgent = user.isAgent) {
@@ -61,10 +61,26 @@
                 @if(benefitsDefined){
                     @messages("common.status.updated")
                 } else {
-                    @if(isInYear) {@messages("common.status.cannotUpdate")} else { @messages("common.status.notStarted")}
+                    @if(isInYear) {@messages("common.status.cannotUpdate")}  else { @messages("common.status.notStarted")}
                 }
             </span>
         </li>
+  @if(isSingleEmployment){<li class="app-task-list__item">
+              <span class="app-task-list__task-name">
+                 @if(doExpensesExist || !isInYear) {
+                    <a class="govuk-link" id="employment-expenses_link" href="@controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)">
+                    @messages("employment.expenses.label")
+                    </a>
+                } else {@messages("employment.expenses.label")}
+              </span>
+              <span class="hmrc-status-tag">
+                 @if(doExpensesExist){
+                  @messages("common.status.updated")
+                }else{
+                if(isInYear) {@messages("common.status.cannotUpdate")} else {@messages("common.status.notStarted")}
+                }
+            </span>
+  </li>}
 </ul>
 
 @formWithCSRF(action = controllers.employment.routes.EmploymentSummaryController.show(taxYear)) {
