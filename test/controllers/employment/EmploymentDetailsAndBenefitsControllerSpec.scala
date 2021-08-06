@@ -54,7 +54,7 @@ class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp with Mo
         val benefitsIsDefined: Boolean = employmentsModel.hmrcEmploymentData.head.employmentBenefits.isDefined
 
         val result: Future[Result] = {
-          mockFind(taxYear,Ok(view(name, employmentId, benefitsIsDefined, taxYear, isInYear = true)))
+          mockFind(taxYear,Ok(view(name, employmentId, benefitsIsDefined, taxYear, isInYear = true,doExpensesExist=true,isSingleEmployment = true)))
           controller.show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))
