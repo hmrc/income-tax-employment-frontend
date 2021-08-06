@@ -22,6 +22,7 @@ object ConfigKeys {
   val contactFrontendUrl = "microservice.services.contact-frontend.url"
   val incomeTaxSubmissionFrontendUrl = "microservice.services.income-tax-submission-frontend.url"
   val incomeTaxEmploymentUrl = "microservice.services.income-tax-employment.url"
+  val incomeTaxExpensesUrl = "microservice.services.income-tax-expenses.url"
   val basGatewayFrontendUrl = "microservice.services.bas-gateway-frontend.url"
   val feedbackFrontendUrl = "microservice.services.feedback-frontend.url"
   val viewAndChangeUrl = "microservice.services.view-and-change.url"
