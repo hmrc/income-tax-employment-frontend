@@ -153,7 +153,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CyaModel {
-    val cya: EmploymentUserData = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, employmentId, true,
+    val cya: EmploymentUserData = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, employmentId, isPriorSubmission = true,
       EmploymentCYAModel(
         EmploymentDetails(employerName, startDate = Some("2020-01-01"), currentDataIsHmrcHeld = false),
         None
@@ -315,7 +315,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.commonExpectedResults.emptyDayError, Selectors.daySelector)
-//            errorAboveElementCheck(user.commonExpectedResults.emptyDayError)
+            errorAboveElementCheck(user.commonExpectedResults.emptyDayError, Some("amount"))
           }
 
           "the month is empty" which {
@@ -350,7 +350,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.commonExpectedResults.emptyMonthError, Selectors.monthSelector)
-//            errorAboveElementCheck(user.commonExpectedResults.emptyMonthError)
+            errorAboveElementCheck(user.commonExpectedResults.emptyMonthError, Some("amount"))
           }
 
           "the year is empty" which {
@@ -385,7 +385,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.commonExpectedResults.emptyYearError, Selectors.yearSelector)
-//            errorAboveElementCheck(user.commonExpectedResults.emptyYearError)
+            errorAboveElementCheck(user.commonExpectedResults.emptyYearError, Some("amount"))
           }
 
           "the day is invalid" which {
@@ -420,7 +420,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.commonExpectedResults.invalidDayError, Selectors.daySelector)
-//            errorAboveElementCheck(user.commonExpectedResults.invalidDayError)
+            errorAboveElementCheck(user.commonExpectedResults.invalidDayError, Some("amount"))
           }
 
           "the month is invalid" which {
@@ -455,7 +455,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.commonExpectedResults.invalidMonthError, Selectors.monthSelector)
-//            errorAboveElementCheck(user.commonExpectedResults.invalidMonthError)
+            errorAboveElementCheck(user.commonExpectedResults.invalidMonthError, Some("amount"))
           }
 
           "the year is invalid" which {
@@ -490,7 +490,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.commonExpectedResults.invalidYearError, Selectors.yearSelector)
-//            errorAboveElementCheck(user.commonExpectedResults.invalidYearError)
+            errorAboveElementCheck(user.commonExpectedResults.invalidYearError, Some("amount"))
           }
 
           "the date is an invalid date" which {
@@ -525,7 +525,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.commonExpectedResults.invalidDateError, Selectors.daySelector)
-//            errorAboveElementCheck(user.commonExpectedResults.invalidDateError)
+            errorAboveElementCheck(user.commonExpectedResults.invalidDateError, Some("amount"))
           }
 
           "the date is a too recent date i.e. after 5thApril" which {
@@ -560,7 +560,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.commonExpectedResults.tooRecentDateError, Selectors.daySelector)
-//            errorAboveElementCheck(user.commonExpectedResults.tooRecentDateError)
+            errorAboveElementCheck(user.commonExpectedResults.tooRecentDateError, Some("amount"))
           }
 
           "the date is not in the past" which {
@@ -598,7 +598,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.commonExpectedResults.futureDateError, Selectors.daySelector)
-//            errorAboveElementCheck(user.commonExpectedResults.futureDateError)
+            errorAboveElementCheck(user.commonExpectedResults.futureDateError, Some("amount"))
           }
         }
       }

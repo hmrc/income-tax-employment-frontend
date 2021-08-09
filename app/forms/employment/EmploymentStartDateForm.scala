@@ -57,42 +57,12 @@ object EmploymentStartDateForm {
     newDate match {
       case Right(date) =>
         (date.isAfter(LocalDate.now()), date.isBefore(fifthAprilDate(taxYear))) match {
-          case (true, _) => Left(FormError("amount-day", "employment.employmentStartDate.error.notInPast"))
-          case (_, false) => Left(FormError("amount-day", "employment.employmentStartDate.error.tooRecent", Seq(taxYear.toString)))
+          case (true, _) => Left(FormError("invalidFormat", "employment.employmentStartDate.error.notInPast"))
+          case (_, false) => Left(FormError("invalidFormat", "employment.employmentStartDate.error.tooRecent", Seq(taxYear.toString)))
           case _ => Right(date)
         }
       case Left(_) =>
-        Left(FormError("amount-day", "employment.employmentStartDate.error.incorrect"))
+        Left(FormError("invalidFormat", "employment.employmentStartDate.error.incorrect"))
     }
   }
-
-//      .verifying("employment.employmentStartDate.error.totallyEmpty", data => {
-//        (data.amountYear.nonEmpty, data.amountMonth.nonEmpty, data.amountDay.nonEmpty) match {
-//          case (false, false, false) => false
-//          case _ => true
-//        }
-//      })
-
-////      .verifying("employment.employmentStartDate.error.incompleteDay", _.amountDay.nonEmpty)
-//      .verifying("employment.employmentStartDate.error.incompleteDay", data => {
-//        (data.amountYear.nonEmpty, data.amountMonth.nonEmpty, data.amountDay.nonEmpty) match {
-//          case (false, false, false) => true
-//          case (_, _, false) => false
-//          case _ => true
-//        }})
-////      .verifying("employment.employmentStartDate.error.incompleteMonth", _.amountMonth.nonEmpty)
-//      .verifying("employment.employmentStartDate.error.incompleteMonth",  data => {
-//        (data.amountYear.nonEmpty, data.amountMonth.nonEmpty, data.amountDay.nonEmpty) match {
-//          case (false, false, false) => true
-//          case (_, false, _) => false
-//          case _ => true
-//        }})
-////      .verifying("employment.employmentStartDate.error.incompleteYear", _.amountYear.nonEmpty)
-//      .verifying("employment.employmentStartDate.error.incompleteYear",  data => {
-//        (data.amountYear.nonEmpty, data.amountMonth.nonEmpty, data.amountDay.nonEmpty) match {
-//          case (false, false, false) => true
-//          case (false, _, _) => false
-//          case _ => true
-//        }})
-//  )
 }
