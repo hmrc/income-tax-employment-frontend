@@ -77,7 +77,7 @@
                  @if(doExpensesExist){
                   @messages("common.status.updated")
                 }else{
-                if(isInYear) {@messages("common.status.cannotUpdate")} else {@messages("common.status.notStarted")}
+                @if(isInYear) {@messages("common.status.cannotUpdate")} else {@messages("common.status.notStarted")}
                 }
             </span>
   </li>}
