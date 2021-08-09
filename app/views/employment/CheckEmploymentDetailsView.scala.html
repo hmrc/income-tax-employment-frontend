@@ -63,8 +63,7 @@
         val employerName = EmploymentDataForView(messages(msgKeyGeneric + ".employer"), Some(employmentDetails.employerName), controllers.employment.routes.EmployerNameController.show(taxYear, employmentDetails.employmentId),
         messages(s"$msgKeyGeneric.hiddenText.employer"))
 
-        //TODO - Replace the 'Call' to the correct controller for changing the employment start date when that is created.
-        val employmentStartDate = EmploymentDataForView(messages(s"$msgKeyGeneric.startDate"), employmentDetails.startDate.flatMap(dateFormatter), Call("GET", "DUMMY_CALL"),
+        val employmentStartDate = EmploymentDataForView(messages(s"$msgKeyGeneric.startDate"), employmentDetails.startDate.flatMap(dateFormatter), controllers.employment.routes.EmployerStartDateController.show(taxYear, employmentDetails.employmentId),
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", user.isAgent), employmentDetails.employerName))
 
         val payeRef = EmploymentDataForView(messages(msgKeyGeneric + ".payeRef"), employmentDetails.employerRef,

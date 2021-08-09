@@ -17,14 +17,13 @@
 package controllers.employment
 
 import models.User
-import models.employment.{AllEmploymentData, Deductions, EmploymentData, EmploymentSource, Pay, StudentLoans}
+import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.ws.WSResponse
-import play.api.mvc.Call
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -191,7 +190,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val otherPaymentsAmountPageHref = controllers.employment.routes.OtherPaymentsAmountController.show(taxYear-1, employmentId)
     val employerNameHref = controllers.employment.routes.EmployerNameController.show(taxYear-1, employmentId)
     val payeRefHref = controllers.employment.routes.PayeRefController.show(taxYear-1, employmentId)
-    val changeEmploymentStartDateHref = Call("GET", "DUMMY_CALL")
+    val changeEmploymentStartDateHref = controllers.employment.routes.EmployerStartDateController.show(taxYear-1, employmentId)
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -311,8 +310,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
   }
 
   ".show" when {
-    import Selectors._
     import ChangeLinks._
+    import Selectors._
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {

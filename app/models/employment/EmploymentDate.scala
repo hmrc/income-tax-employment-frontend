@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package utils
+package models.employment
 
-import play.api.Logging
+import play.api.libs.json.{Json, OFormat}
 
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
+case class EmploymentDate(amountDay: String,
+                          amountMonth: String,
+                          amountYear: String
+                         )
 
-object DateTimeUtil extends Logging{
-  def getSubmittedOnDateTime(submittedOn: Option[String]): Option[ZonedDateTime] = {
-    try {
-      submittedOn.map(ZonedDateTime.parse(_))
-    } catch {
-      case e: Exception =>
-        logger.warn(s"Could not parse submittedOn timestamp. SubmittedOn: $submittedOn, Exception: ${e.getMessage}")
-        None
-    }
-  }
-
-  val localDateTimeFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
+object EmploymentDate {
+  implicit val format: OFormat[EmploymentDate] = Json.format[EmploymentDate]
 }
+
+

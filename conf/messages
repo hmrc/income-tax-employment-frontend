@@ -158,6 +158,23 @@ employment.employerName.error.noEntry.individual = Enter the name of your employ
 employment.employerName.error.noEntry.agent = Enter the name of your client’s employer
 employment.employerName.error.name.limit = The employer name must be 74 characters or fewer
 
+employment.employmentStartDate.title.individual = When did you start working for your employer?
+employment.employmentStartDate.title.agent = When did your client start working for their employer?
+employment.employmentStartDate.heading.individual = When did you start working at {0}?
+employment.employmentStartDate.heading.agent = When did your client start working at {0}?
+employment.employmentStartDate.forExample = For example, 12 11 2007
+employment.employmentStartDate.error.noEntry.individual = Enter the date your employment started
+employment.employmentStartDate.error.noEntry.agent = Enter the date your client’s employment started
+employment.employmentStartDate.error.incompleteDay = The date must include a day
+employment.employmentStartDate.error.incompleteMonth = The date must include a month
+employment.employmentStartDate.error.incompleteYear = The date must include a year
+employment.employmentStartDate.error.incorrect = Enter the date in the correct format
+employment.employmentStartDate.error.incorrectDay = Enter the day in the correct format
+employment.employmentStartDate.error.incorrectMonth = Enter the month in the correct format
+employment.employmentStartDate.error.incorrectYear = Enter the year in the correct format
+employment.employmentStartDate.error.notInPast = The date must be in the past
+employment.employmentStartDate.error.tooRecent = The date must be before 5 April {0}
+
 employment.employmentTax.title.individual = How much UK tax was taken from your earnings?
 employment.employmentTax.title.agent = How much UK tax was taken from your client’s earnings?
 employment.employmentTax.heading.individual = How much UK tax was taken from your {0} earnings?
