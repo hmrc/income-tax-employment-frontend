@@ -120,9 +120,9 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
     val expectedErrorCharLimit = "The employer name must be 74 characters or fewer"
     val expectedErrorDuplicateName = "You cannot add 2 employers with the same name"
     val paragraphText = "The employer name must be 74 characters or fewer. It can include:"
-    val formatList1 = "Upper and lower case letters (a to z)"
-    val formatList2 = "Numbers"
-    val formatList3 = "The special characters: & : ’ \\ , . ( ) -"
+    val formatList1 = "upper and lower case letters (a to z)"
+    val formatList2 = "numbers"
+    val formatList3 = "the special characters: & : ’ \\ , . ( ) -"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -132,9 +132,9 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
     val expectedErrorCharLimit = "The employer name must be 74 characters or fewer"
     val expectedErrorDuplicateName = "You cannot add 2 employers with the same name"
     val paragraphText = "The employer name must be 74 characters or fewer. It can include:"
-    val formatList1 = "Upper and lower case letters (a to z)"
-    val formatList2 = "Numbers"
-    val formatList3 = "The special characters: & : ’ \\ , . ( ) -"
+    val formatList1 = "upper and lower case letters (a to z)"
+    val formatList2 = "numbers"
+    val formatList3 = "the special characters: & : ’ \\ , . ( ) -"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
