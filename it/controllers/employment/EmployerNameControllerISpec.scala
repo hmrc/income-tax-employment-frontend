@@ -54,6 +54,11 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
     val inputFieldSelector: String = "#name"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
+    val paragraphTextSelector: String = "#main-content > div > div > form > div > label > p"
+    val formatListSelector1: String = "#main-content > div > div > form > div > label > ul > li:nth-child(1)"
+    val formatListSelector2: String = "#main-content > div > div > form > div > label > ul > li:nth-child(2)"
+    val formatListSelector3: String = "#main-content > div > div > form > div > label > ul > li:nth-child(3)"
+
   }
 
   trait SpecificExpectedResults {
@@ -70,6 +75,10 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
     val expectedButtonText: String
     val expectedErrorCharLimit: String
     val expectedErrorDuplicateName: String
+    val paragraphText: String
+    val formatList1: String
+    val formatList2: String
+    val formatList3: String
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -110,6 +119,10 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
     val expectedButtonText = "Continue"
     val expectedErrorCharLimit = "The employer name must be 74 characters or fewer"
     val expectedErrorDuplicateName = "You cannot add 2 employers with the same name"
+    val paragraphText = "The employer name must be 74 characters or fewer. It can include:"
+    val formatList1 = "upper and lower case letters (a to z)"
+    val formatList2 = "numbers"
+    val formatList3 = "the special characters: & : ’ \\ , . ( ) -"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -118,6 +131,10 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
     val expectedButtonText = "Continue"
     val expectedErrorCharLimit = "The employer name must be 74 characters or fewer"
     val expectedErrorDuplicateName = "You cannot add 2 employers with the same name"
+    val paragraphText = "The employer name must be 74 characters or fewer. It can include:"
+    val formatList1 = "upper and lower case letters (a to z)"
+    val formatList2 = "numbers"
+    val formatList3 = "the special characters: & : ’ \\ , . ( ) -"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -156,7 +173,10 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
-
+          textOnPageCheck(paragraphText, paragraphTextSelector)
+          textOnPageCheck(formatList1, formatListSelector1)
+          textOnPageCheck(formatList2, formatListSelector2)
+          textOnPageCheck(formatList3, formatListSelector3)
         }
 
         "render the 'name of your employer' page with the correct content and pre-popped input field" which {
@@ -184,6 +204,10 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
+          textOnPageCheck(paragraphText, paragraphTextSelector)
+          textOnPageCheck(formatList1, formatListSelector1)
+          textOnPageCheck(formatList2, formatListSelector2)
+          textOnPageCheck(formatList3, formatListSelector3)
         }
 
         "redirect the user to the overview page when it is not end of year" which {
