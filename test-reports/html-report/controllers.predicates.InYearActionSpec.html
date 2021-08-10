@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+      <head>
+        <title>ScalaTest Suite controllers.predicates.InYearActionSpec Results</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta http-equiv="Expires" content="-1"/>
+        <meta http-equiv="Pragma" content="no-cache"/>
+        <link href="css/styles.css" rel="stylesheet"/>
+        
+        <script type="text/javascript">
+        //<![CDATA[
+            function toggleDetails(contentId, linkId) { 
+              var ele = document.getElementById(contentId); 
+              var text = document.getElementById(linkId); 
+              if(ele.style.display == "block") { 
+                ele.style.display = "none"; 
+                text.innerHTML = "(Show Details)"; 
+              } 
+              else { 
+                ele.style.display = "block"; 
+                text.innerHTML = "(Hide Details)";
+              }
+            } 
+            function hideOpenInNewTabIfRequired() { 
+              if (top === self) { document.getElementById('printlink').style.display = 'none'; } 
+            }
+        //]]>
+        </script>
+      </head>
+      <body class="specification">
+        <div id="suite_header_name">InYearActionSpec</div>
+        <div id="suite_header_statistic_passed">
+          Tests: total 14, succeeded 14, failed 0, canceled 0, ignored 0, pending 0
+        </div>
+        <div id="d3f92ae0-67ae-40bb-8498-0b2e9d845784" class="scope" style="margin-left: 0px;">
+      InYearAction.inYear
+    </div><div id="8824b163-3b9c-47ca-bee3-225d0037bebb" class="test_passed" style="margin-left: 0px;">
+      <dl>
+        <dt>when return true when taxYear is 2022 and current date is 5th April 2022 and time is just before midnight</dt>
+      </dl>
+    </div><div id="a3c4a606-352e-4ae5-880b-10e45751ed77" class="test_passed" style="margin-left: 0px;">
+      <dl>
+        <dt>when return false when taxYear is 2022 and current date is 6th April 2022 at midnight</dt>
+      </dl>
+    </div><div id="15681064-96ea-44a4-9b2b-11e80a56a18e" class="test_passed" style="margin-left: 0px;">
+      <dl>
+        <dt>when return false when taxYear is 2022 and current date is 6th April 2022 at one minute past midnight</dt>
+      </dl>
+    </div><div id="88a778b1-2e33-48df-a4ac-502f0cf565c4" class="test_passed" style="margin-left: 0px;">
+      <dl>
+        <dt>when return false when taxYear is 2022 and current date is 6th April 2022 at one hour past midnight</dt>
+      </dl>
+    </div><div id="01fd9399-6cc7-4a5a-b84c-2c77a759bfce" class="scope" style="margin-left: 0px;">
+      InYearAction.notInYear
+    </div><div id="d4feec10-6847-4ad9-9524-70d4f638347a" class="scope" style="margin-left: 15px;">
+      when current date is before April 6th 2021 which means the tax year is 2020-21
+    </div><div id="3aca954d-e310-4b02-92e2-b3115781482c" class="test_passed" style="margin-left: 15px;">
+      <dl>
+        <dt>should return redirect to incomeTaxSubmissionOverview page when the requested tax year is 2022</dt>
+      </dl>
+    </div><div id="90d54630-5d53-4843-ab5c-c14ae13d24c1" class="test_passed" style="margin-left: 15px;">
+      <dl>
+        <dt>should return redirect to incomeTaxSubmissionOverview page when the requested tax year is in year (2021)</dt>
+      </dl>
+    </div><div id="6e194953-13c5-4552-b4f9-ad1e80230c62" class="test_passed" style="margin-left: 15px;">
+      <dl>
+        <dt>should return Ok when the requested tax year (2018) precedes the current tax year (2020-2021)</dt>
+      </dl>
+    </div><div id="95e9011b-1097-439b-8114-b52d8241380f" class="test_passed" style="margin-left: 15px;">
+      <dl>
+        <dt>should return Ok when the requested tax year (2019) precedes the current tax year (2020-2021)</dt>
+      </dl>
+    </div><div id="660641a5-6e30-4d0b-acb9-6561306441c6" class="test_passed" style="margin-left: 15px;">
+      <dl>
+        <dt>should return Ok when the requested tax year (2020) precedes the current tax year (2020-2021)</dt>
+      </dl>
+    </div><div id="a0afcd11-77a7-4533-b84e-3b3a528722eb" class="scope" style="margin-left: 15px;">
+      when current date is on or after April 6th 2021 which means the tax year is 2021-22
+    </div><div id="3ee083b6-44c0-4cce-97e7-e70e902e78bc" class="test_passed" style="margin-left: 15px;">
+      <dl>
+        <dt>should return redirect to incomeTaxSubmissionOverview page when the requested tax year is 2023</dt>
+      </dl>
+    </div><div id="01b251a0-1eb8-43e0-9d63-438e1bc7a332" class="test_passed" style="margin-left: 15px;">
+      <dl>
+        <dt>should return redirect to incomeTaxSubmissionOverview page when the requested tax year is in year (2022)</dt>
+      </dl>
+    </div><div id="38ee9857-a4e9-44b8-be4c-3f84af5ba9bf" class="test_passed" style="margin-left: 15px;">
+      <dl>
+        <dt>should return Ok when the requested tax year (2019) precedes the current tax year (2020-2021)</dt>
+      </dl>
+    </div><div id="22044bdb-77d2-4f5a-9bb6-a827a68a767b" class="test_passed" style="margin-left: 15px;">
+      <dl>
+        <dt>should return Ok when the requested tax year (2020) precedes the current tax year (2020-2021)</dt>
+      </dl>
+    </div><div id="8faa3f6e-f572-4bb4-8d0b-e4a9cbace443" class="test_passed" style="margin-left: 15px;">
+      <dl>
+        <dt>should return Ok when the requested tax year (2021) precedes the current tax year (2020-2021)</dt>
+      </dl>
+    </div>
+        <table id="suite_footer">
+          <tr id="suite_footer_id">
+            <td id="suite_footer_id_label_passed">Suite ID</td>
+            <td id="suite_footer_id_value" colspan="5">controllers.predicates.InYearActionSpec</td>
+          </tr>
+          <tr id="suite_footer_class">
+            <td id="suite_footer_class_label_passed">Class name</td>
+            <td id="suite_footer_class_value" colspan="5">controllers.predicates.InYearActionSpec</td>
+          </tr>
+          <tr id="suite_footer_duration">
+            <td id="suite_footer_duration_label_passed">Total duration</td>
+            <td id="suite_footer_duration_value" colspan="2">
+              75 milliseconds
+              </td>
+          </tr>
+        </table>
+           <div id="printlink">(<a href="controllers.predicates.InYearActionSpec.html" target="_blank">Open InYearActionSpec in new tab</a>)</div>
+      </body>
+      <script type="text/javascript">
+        //<![CDATA[
+          hideOpenInNewTabIfRequired();
+        //]]>
+      </script>
+    </html>

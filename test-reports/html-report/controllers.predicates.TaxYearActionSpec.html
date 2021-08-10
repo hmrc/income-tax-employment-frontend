@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+      <head>
+        <title>ScalaTest Suite controllers.predicates.TaxYearActionSpec Results</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta http-equiv="Expires" content="-1"/>
+        <meta http-equiv="Pragma" content="no-cache"/>
+        <link href="css/styles.css" rel="stylesheet"/>
+        
+        <script type="text/javascript">
+        //<![CDATA[
+            function toggleDetails(contentId, linkId) { 
+              var ele = document.getElementById(contentId); 
+              var text = document.getElementById(linkId); 
+              if(ele.style.display == "block") { 
+                ele.style.display = "none"; 
+                text.innerHTML = "(Show Details)"; 
+              } 
+              else { 
+                ele.style.display = "block"; 
+                text.innerHTML = "(Hide Details)";
+              }
+            } 
+            function hideOpenInNewTabIfRequired() { 
+              if (top === self) { document.getElementById('printlink').style.display = 'none'; } 
+            }
+        //]]>
+        </script>
+      </head>
+      <body class="specification">
+        <div id="suite_header_name">TaxYearActionSpec</div>
+        <div id="suite_header_statistic_passed">
+          Tests: total 8, succeeded 8, failed 0, canceled 0, ignored 0, pending 0
+        </div>
+        <div id="81c87643-33be-4f20-98ba-e78ea65359d8" class="scope" style="margin-left: 0px;">
+      TaxYearAction.refine
+    </div><div id="9af19716-a108-4bad-85c6-4d5bea109960" class="scope" style="margin-left: 15px;">
+      should return a Right(request)
+    </div><div id="5daadd93-323d-4e0d-b3da-7c368bad2f63" class="test_passed" style="margin-left: 15px;">
+      <dl>
+        <dt>when the tax year is within range of allowed years, and matches that in session if the feature switch is on</dt>
+      </dl>
+    </div><div id="6d82487f-499c-41af-bbd4-399ce2f510d2" class="test_passed" style="margin-left: 15px;">
+      <dl>
+        <dt>when the tax year is equal to the session value if the feature switch is off</dt>
+      </dl>
+    </div><div id="a5fae206-1138-4307-b808-0514528f6b90" class="test_passed" style="margin-left: 15px;">
+      <dl>
+        <dt>when the tax year is different to the session value if the reset variable input is false</dt>
+      </dl>
+    </div><div id="9474f4d7-fe3f-4136-a676-a52870c2d5b5" class="scope" style="margin-left: 15px;">
+      should return a Left(result)
+    </div><div id="19ab1710-f24a-4982-985c-39717a542fff" class="scope" style="margin-left: 30px;">
+      when the tax year is different from that in session and the feature switch is off which
+    </div><div id="066dca9e-8fd0-4213-b225-983b086af8c8" class="test_passed" style="margin-left: 30px;">
+      <dl>
+        <dt>has a status of SEE_OTHER (303)</dt>
+      </dl>
+    </div><div id="60339717-538d-4d69-a122-b7481e4428ba" class="test_passed" style="margin-left: 30px;">
+      <dl>
+        <dt>has the start page redirect url</dt>
+      </dl>
+    </div><div id="3a4193c6-2b46-4789-869a-12085b65e61c" class="test_passed" style="margin-left: 30px;">
+      <dl>
+        <dt>has an updated tax year session value</dt>
+      </dl>
+    </div><div id="0ef15cab-6083-4cd9-b3c1-bbaba91209a2" class="scope" style="margin-left: 30px;">
+      when the tax year is outside of the allowed limit while the feature switch is on which
+    </div><div id="c3d1b7a8-648a-4627-8ec6-7bd5717e1b99" class="test_passed" style="margin-left: 30px;">
+      <dl>
+        <dt>has a status of SEE_OTHER (303)</dt>
+      </dl>
+    </div><div id="078886af-0c9a-4950-8b88-3d738850e48f" class="test_passed" style="margin-left: 30px;">
+      <dl>
+        <dt>has the overview redirect url</dt>
+      </dl>
+    </div>
+        <table id="suite_footer">
+          <tr id="suite_footer_id">
+            <td id="suite_footer_id_label_passed">Suite ID</td>
+            <td id="suite_footer_id_value" colspan="5">controllers.predicates.TaxYearActionSpec</td>
+          </tr>
+          <tr id="suite_footer_class">
+            <td id="suite_footer_class_label_passed">Class name</td>
+            <td id="suite_footer_class_value" colspan="5">controllers.predicates.TaxYearActionSpec</td>
+          </tr>
+          <tr id="suite_footer_duration">
+            <td id="suite_footer_duration_label_passed">Total duration</td>
+            <td id="suite_footer_duration_value" colspan="2">
+              67 milliseconds
+              </td>
+          </tr>
+        </table>
+           <div id="printlink">(<a href="controllers.predicates.TaxYearActionSpec.html" target="_blank">Open TaxYearActionSpec in new tab</a>)</div>
+      </body>
+      <script type="text/javascript">
+        //<![CDATA[
+          hideOpenInNewTabIfRequired();
+        //]]>
+      </script>
+    </html>

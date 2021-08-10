@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+      <head>
+        <title>ScalaTest Suite services.DeleteOrIgnoreEmploymentServiceSpec Results</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta http-equiv="Expires" content="-1"/>
+        <meta http-equiv="Pragma" content="no-cache"/>
+        <link href="css/styles.css" rel="stylesheet"/>
+        
+        <script type="text/javascript">
+        //<![CDATA[
+            function toggleDetails(contentId, linkId) { 
+              var ele = document.getElementById(contentId); 
+              var text = document.getElementById(linkId); 
+              if(ele.style.display == "block") { 
+                ele.style.display = "none"; 
+                text.innerHTML = "(Show Details)"; 
+              } 
+              else { 
+                ele.style.display = "block"; 
+                text.innerHTML = "(Hide Details)";
+              }
+            } 
+            function hideOpenInNewTabIfRequired() { 
+              if (top === self) { document.getElementById('printlink').style.display = 'none'; } 
+            }
+        //]]>
+        </script>
+      </head>
+      <body class="specification">
+        <div id="suite_header_name">DeleteOrIgnoreEmploymentServiceSpec</div>
+        <div id="suite_header_statistic_passed">
+          Tests: total 6, succeeded 6, failed 0, canceled 0, ignored 0, pending 0
+        </div>
+        <div id="7adab41d-6455-403d-a726-bf0bcbec176b" class="scope" style="margin-left: 0px;">
+      .deleteOrIgnoreEmployment
+    </div><div id="f282b882-d605-4620-ba6b-385747b8f57d" class="scope" style="margin-left: 15px;">
+      should return a successful result
+    </div><div id="2db3ec37-5c36-4d05-ab6a-10324b144b7d" class="scope" style="margin-left: 30px;">
+      when there is both hmrc data and customer data which
+    </div><div id="1c3e4ecd-7755-4c90-9159-43f1c5cfe33f" class="test_passed" style="margin-left: 30px;">
+      <dl>
+        <dt>toRemove is equal to 'ALL'</dt>
+      </dl>
+    </div><div id="edad3277-904f-47f1-97b7-43cc59242e2e" class="scope" style="margin-left: 30px;">
+      when there is hmrc data and no customer data which
+    </div><div id="fe1c0d51-767f-45e7-b894-ffe5ce068f39" class="test_passed" style="margin-left: 30px;">
+      <dl>
+        <dt>toRemove is equal to 'HMRC-HELD'</dt>
+      </dl>
+    </div><div id="fd883655-d06b-4585-a725-57ce8a66f5f5" class="scope" style="margin-left: 30px;">
+      when there is customer data and no hmrc data which
+    </div><div id="84ac0baf-46a1-40c4-8352-4aa824d35c52" class="test_passed" style="margin-left: 30px;">
+      <dl>
+        <dt>toRemove is equal to 'CUSTOMER'</dt>
+      </dl>
+    </div><div id="495ebbbb-7dd0-4494-b43f-30794aa6880e" class="scope" style="margin-left: 15px;">
+      should returns an unsuccessful result
+    </div><div id="dc6e58d9-25d9-44c0-96ef-2081b8ac7fd4" class="test_passed" style="margin-left: 15px;">
+      <dl>
+        <dt>when there is no hmrc or customer data</dt>
+      </dl>
+    </div><div id="94539216-a83f-4f84-ad32-722a29c28a0b" class="test_passed" style="margin-left: 15px;">
+      <dl>
+        <dt>when there is no employment data for that employment id</dt>
+      </dl>
+    </div><div id="4a1a612a-638a-4bb4-91bd-53a1e729277b" class="test_passed" style="margin-left: 15px;">
+      <dl>
+        <dt>when the connector throws a Left</dt>
+      </dl>
+    </div>
+        <table id="suite_footer">
+          <tr id="suite_footer_id">
+            <td id="suite_footer_id_label_passed">Suite ID</td>
+            <td id="suite_footer_id_value" colspan="5">services.DeleteOrIgnoreEmploymentServiceSpec</td>
+          </tr>
+          <tr id="suite_footer_class">
+            <td id="suite_footer_class_label_passed">Class name</td>
+            <td id="suite_footer_class_value" colspan="5">services.DeleteOrIgnoreEmploymentServiceSpec</td>
+          </tr>
+          <tr id="suite_footer_duration">
+            <td id="suite_footer_duration_label_passed">Total duration</td>
+            <td id="suite_footer_duration_value" colspan="2">
+              122 milliseconds
+              </td>
+          </tr>
+        </table>
+           <div id="printlink">(<a href="services.DeleteOrIgnoreEmploymentServiceSpec.html" target="_blank">Open DeleteOrIgnoreEmploymentServiceSpec in new tab</a>)</div>
+      </body>
+      <script type="text/javascript">
+        //<![CDATA[
+          hideOpenInNewTabIfRequired();
+        //]]>
+      </script>
+    </html>
