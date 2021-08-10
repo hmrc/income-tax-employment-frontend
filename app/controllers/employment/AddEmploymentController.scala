@@ -26,7 +26,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.SessionHelper
 import views.html.employment.AddEmploymentView
 
 import javax.inject.Inject
@@ -39,8 +39,8 @@ class AddEmploymentController @Inject()(implicit val cc: MessagesControllerCompo
                                         appConfig: AppConfig,
                                         employmentSessionService: EmploymentSessionService,
                                         errorHandler: ErrorHandler,
-                                        ec: ExecutionContext,
-                                        clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                        ec: ExecutionContext
+                                       ) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>

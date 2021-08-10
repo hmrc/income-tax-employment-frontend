@@ -39,8 +39,7 @@ class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSes
     mockAppConfig,
     mockIncomeTaxUserDataService,
     mockErrorHandler,
-    ec,
-    testClock
+    ec
   )
   val taxYear = 2021
   val employmentId = "223/AB12399"
