@@ -224,6 +224,71 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     customerEmploymentData = Seq(),
     customerExpenses = None)
 
+  def fullEmploymentsModelWithUnignored(benefits: Option[EmploymentBenefits]): AllEmploymentData = AllEmploymentData(
+    hmrcEmploymentData = Seq(
+      EmploymentSource(
+        employmentId = "001",
+        employerName = "maggie",
+        employerRef = Some("223/AB12399"),
+        payrollId = Some("123456789999"),
+        startDate = Some("2019-04-21"),
+        cessationDate = Some("2020-03-11"),
+        dateIgnored = None,
+        submittedOn = Some("2020-01-04T05:01:01Z"),
+        employmentData = Some(EmploymentData(
+          submittedOn = "2020-02-12",
+          employmentSequenceNumber = Some("123456789999"),
+          companyDirector = Some(true),
+          closeCompany = Some(false),
+          directorshipCeasedDate = Some("2020-02-12"),
+          occPen = Some(false),
+          disguisedRemuneration = Some(false),
+          pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+          Some(Deductions(
+            studentLoans = Some(StudentLoans(
+              uglDeductionAmount = Some(100.00),
+              pglDeductionAmount = Some(100.00)
+            ))
+          ))
+        )),
+        employmentBenefits = benefits
+      )
+
+    ),
+    hmrcExpenses = Some(employmentExpenses),
+    customerEmploymentData = Seq(
+      EmploymentSource(
+        employmentId = "004",
+        employerName = "rosa",
+        employerRef = Some("223/AB12399"),
+        payrollId = Some("123456789999"),
+        startDate = Some("2019-04-21"),
+        cessationDate = Some("2020-03-11"),
+        dateIgnored = None,
+        submittedOn = Some("2020-01-04T05:01:01Z"),
+        employmentData = Some(EmploymentData(
+          submittedOn = "2020-02-12",
+          employmentSequenceNumber = Some("123456789999"),
+          companyDirector = Some(true),
+          closeCompany = Some(false),
+          directorshipCeasedDate = Some("2020-02-12"),
+          occPen = Some(false),
+          disguisedRemuneration = Some(false),
+          pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+          Some(Deductions(
+            studentLoans = Some(StudentLoans(
+              uglDeductionAmount = Some(100.00),
+              pglDeductionAmount = Some(100.00)
+            ))
+          ))
+        )),
+        employmentBenefits = benefits
+      )
+
+    ),
+    customerExpenses = None)
+
+
 
   lazy val expenses: Expenses = Expenses(
     Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7), Some(8)
