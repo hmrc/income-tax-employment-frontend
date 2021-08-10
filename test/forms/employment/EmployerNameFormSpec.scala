@@ -26,7 +26,7 @@ class EmployerNameFormSpec extends UnitTest {
     EmployerNameForm.employerNameForm(isAgent)
   }
 
-  lazy val testNameValid = "Google\\- _&`():.'^"
+  lazy val testNameValid = "Google\\- _&`():.'^,"
   lazy val testNameEmpty = ""
   lazy val testNameTooBig = "ukHzoBYHkKGGk2V5iuYgS137gN7EB7LRw3uDjvujYg00ZtHwo3sokyOOCEoAK9vuPiP374QKOelo"
   lazy val testNameInvalidCharacters = "~~~"

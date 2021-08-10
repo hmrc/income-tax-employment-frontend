@@ -27,7 +27,7 @@ object EmployerNameForm {
 
   val employerName: String = "name"
   val charLimit: Int = 74
-  val regex: String = "^[0-9a-zA-Z\\\\{À-˿’}\\- _&`():.'^]{1,74}$"
+  val regex: String = "^[0-9a-zA-Z\\\\{À-˿’}\\- _&`():.'^,]{1,74}$"
 
   def notEmpty(isAgent: Boolean): Constraint[String] =
     nonEmpty(if(isAgent) "employment.employerName.error.noEntry.agent" else "employment.employerName.error.noEntry.individual")
