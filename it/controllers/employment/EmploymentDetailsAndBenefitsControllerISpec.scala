@@ -220,6 +220,31 @@ val taxYearEOY=taxYear -1
           welshToggleCheck(user.isWelsh)
         }
 
+        "render the page with expenses line showing when there are no expenses and tax year is EOY" which {
+
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(fullEmploymentsModel(None).copy(hmrcExpenses = None)), nino, taxYearEOY)
+            urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
+
+          "has an employment expenses section" which {
+            linkCheck(user.commonExpectedResults.fieldNames(2),employmentExpensesLinkSelector,employmentExpensesUrl(taxYearEOY))
+            textOnPageCheck(user.commonExpectedResults.notStarted, taskListRowFieldAmountSelector(3))
+          }
+
+          buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
+          formGetLinkCheck("/income-through-software/return/employment-income/2021/employment-summary", "#main-content > div > div > form")
+
+          welshToggleCheck(user.isWelsh)
+        }
+
         "redirect to the overview page when there is no data in year" in {
 
           lazy val result: WSResponse = {

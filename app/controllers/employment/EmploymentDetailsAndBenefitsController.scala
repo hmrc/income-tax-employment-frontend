@@ -55,6 +55,7 @@ class EmploymentDetailsAndBenefitsController @Inject()(implicit val cc: Messages
 
       val source = employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear)
 
+
       source match {
         case Some((source, _)) =>
           val (name, benefitsIsDefined) = (source.employerName, source.employmentBenefits.isDefined)
