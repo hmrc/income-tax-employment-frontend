@@ -166,6 +166,35 @@ val taxYearEOY=taxYear -1
 
           welshToggleCheck(user.isWelsh)
         }
+
+        "render the page with unignored employments " which {
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(fullEmploymentsModelWithUnignored(None)), nino, taxYear)
+            urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYear))
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent(taxYear), p1Selector)
+
+          "has an employment details section" which {
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl(taxYear))
+            textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(1))
+          }
+
+          "has a benefits section" which {
+            textOnPageCheck(user.commonExpectedResults.fieldNames(1), taskListRowFieldNameSelector(2))
+            textOnPageCheck(user.commonExpectedResults.cannotUpdate, taskListRowFieldAmountSelector(2))
+          }
+          buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
+          formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary", "#main-content > div > div > form")
+
+          welshToggleCheck(user.isWelsh)
+        }
         "render the page with expenses line showing when there are expenses and tax year is EOY" which {
 
           implicit lazy val result: WSResponse = {
