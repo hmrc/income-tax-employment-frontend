@@ -34,6 +34,16 @@
 
 @titleForUse = @{(headingForUse)}
 
+
+@contentHtml = {
+    <p class="govuk-body">@messages("employment.employerName.paragraph")</p>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("employment.employerName.bullet.one")</li>
+        <li>@messages("employment.employerName.bullet.two")</li>
+        <li>@messages("employment.employerName.bullet.three")</li>
+    </ul>
+}
+
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
 
     @errorSummary(form.errors)
@@ -46,7 +56,9 @@
             name = "name",
             heading = headingForUse,
             isPageHeading = false,
+            hint = Some(Html(messages("employment.employerName.hint"))),
             subheading = Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)),
+            content = Some(contentHtml),
             classes = Some("govuk-input--width-20"),
             headingClasses = "govuk-!-margin-bottom-2",
             maxLength = "75"
