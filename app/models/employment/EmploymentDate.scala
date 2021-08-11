@@ -18,13 +18,21 @@ package models.employment
 
 import play.api.libs.json.{Json, OFormat}
 
+import java.time.LocalDate
+
 case class EmploymentDate(amountDay: String,
                           amountMonth: String,
                           amountYear: String
-                         )
+                         ){
+
+  def toLocalDate: LocalDate = LocalDate.of(amountYear.toInt, amountMonth.toInt, amountDay.toInt)
+
+}
 
 object EmploymentDate {
   implicit val format: OFormat[EmploymentDate] = Json.format[EmploymentDate]
 }
+
+
 
 
