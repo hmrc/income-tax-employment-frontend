@@ -17,16 +17,11 @@
 package forms.employment
 
 import forms.validation.mappings.MappingUtil.trimmedText
-import forms.validation.utils.ConstraintUtil.ConstraintUtil
 import models.employment.EmploymentDate
-import play.api.data.{Form, FormError}
 import play.api.data.Forms.mapping
-import play.api.data.validation.Constraint
-import play.api.data.validation.Constraints._
-import play.api.mvc.Results.BadRequest
+import play.api.data.{Form, FormError}
 
 import java.time.LocalDate
-import scala.concurrent.Future
 import scala.util.Try
 
 object EmploymentStartDateForm {
@@ -35,34 +30,47 @@ object EmploymentStartDateForm {
   val startDateMonth: String = "amount-month"
   val startDateYear: String = "amount-year"
 
-  def dayEmpty: Constraint[String] = nonEmpty("employment.employmentStartDate.error.incompleteDay")
-  def monthEmpty: Constraint[String] = nonEmpty("employment.employmentStartDate.error.incompleteMonth")
-  def yearEmpty: Constraint[String] = nonEmpty("employment.employmentStartDate.error.incompleteYear")
-  def isDayNumeric: Constraint[String] = pattern("\\d+".r, error = "employment.employmentStartDate.error.incorrectDay" )
-  def isMonthNumeric: Constraint[String] = pattern("\\d+".r, error = "employment.employmentStartDate.error.incorrectMonth" )
-  def isYearNumeric: Constraint[String] = pattern("\\d+".r, error = "employment.employmentStartDate.error.incorrectYear" )
-
-  def employmentStartDateForm: Form[EmploymentDate] = Form(
-    mapping(
-      startDateDay -> trimmedText.verifying(dayEmpty andThen isDayNumeric) ,
-      startDateMonth -> trimmedText.verifying(monthEmpty andThen isMonthNumeric),
-      startDateYear -> trimmedText.verifying(yearEmpty andThen isYearNumeric)
-    )(EmploymentDate.apply)(EmploymentDate.unapply)
-  )
+  def employmentStartDateForm: Form[EmploymentDate] =
+    Form(
+      mapping(
+        startDateDay -> trimmedText,
+        startDateMonth -> trimmedText,
+        startDateYear -> trimmedText
+      )(EmploymentDate.apply)(EmploymentDate.unapply)
+    )
 
   def fifthAprilDate(taxYear: Int): LocalDate = LocalDate.of(taxYear, 4, 5)
 
-  def verifyNewDate(date: EmploymentDate, taxYear: Int): Either[FormError, LocalDate] = {
-    val newDate: Either[Throwable, LocalDate] = Try(LocalDate.of(date.amountYear.toInt, date.amountMonth.toInt, date.amountDay.toInt)).toEither
-    newDate match {
-      case Right(date) =>
-        (date.isAfter(LocalDate.now()), date.isBefore(fifthAprilDate(taxYear))) match {
-          case (true, _) => Left(FormError("invalidFormat", "employment.employmentStartDate.error.notInPast"))
-          case (_, false) => Left(FormError("invalidFormat", "employment.employmentStartDate.error.tooRecent", Seq(taxYear.toString)))
-          case _ => Right(date)
-        }
-      case Left(_) =>
-        Left(FormError("invalidFormat", "employment.employmentStartDate.error.incorrect"))
+  def areDatesEmpty(date: EmploymentDate, isAgent: Boolean): Seq[FormError] = {
+    val agentCheck: String = if (isAgent) "agent" else "individual"
+    (date.amountDay.isEmpty, date.amountMonth.isEmpty, date.amountYear.isEmpty) match{
+      case (true, true, true) => Seq(FormError(s"emptyAll", s"employment.employmentStartDate.error.incompleteAll.$agentCheck"))
+      case (true, true, false) => Seq(FormError("emptyDayMonth", s"employment.employmentStartDate.error.incompleteDayMonth.$agentCheck"))
+      case (true, false, true) => Seq(FormError("emptyDayYear", s"employment.employmentStartDate.error.incompleteDayYear.$agentCheck"))
+      case (false, true, true) => Seq(FormError("emptyMonthYear", s"employment.employmentStartDate.error.incompleteMonthYear.$agentCheck"))
+      case (false, false, true) => Seq(FormError("emptyYear", s"employment.employmentStartDate.error.incompleteYear.$agentCheck"))
+      case (false, true, false) => Seq(FormError("emptyMonth", s"employment.employmentStartDate.error.incompleteMonth.$agentCheck"))
+      case (true, false, false) => Seq(FormError("emptyDay", s"employment.employmentStartDate.error.incompleteDay.$agentCheck"))
+      case (false, false, false) => Seq()
+    }
+  }
+
+  def verifyNewDate(date: EmploymentDate, taxYear: Int, isAgent: Boolean): Seq[FormError] = {
+    val agentCheck = if (isAgent) "agent" else "individual"
+    val emptyDatesErrors: Seq[FormError] = areDatesEmpty(date, isAgent)
+    if(emptyDatesErrors.isEmpty){
+      val newDate: Either[Throwable, LocalDate] = Try(LocalDate.of(date.amountYear.toInt, date.amountMonth.toInt, date.amountDay.toInt)).toEither
+      newDate match {
+        case Right(date) =>
+          (date.isAfter(LocalDate.now()), date.isBefore(fifthAprilDate(taxYear))) match {
+            case (true, _) => Seq(FormError("invalidFormat", s"employment.employmentStartDate.error.notInPast.$agentCheck"))
+            case (_, false) => Seq(FormError("invalidFormat", s"employment.employmentStartDate.error.tooRecent.$agentCheck", Seq(taxYear.toString)))
+            case _ => Seq()
+          }
+        case Left(_) => Seq(FormError("invalidFormat", s"employment.employmentStartDate.error.invalidDate.$agentCheck"))
+      }
+    } else {
+        emptyDatesErrors
     }
   }
 }

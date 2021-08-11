@@ -44,7 +44,7 @@ class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
                                             implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
 
-  val form: Form[EmploymentDate] = EmploymentStartDateForm.employmentStartDateForm
+  def form: Form[EmploymentDate] = EmploymentStartDateForm.employmentStartDateForm
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -52,7 +52,7 @@ class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
         data.employment.employmentDetails.startDate match {
           case Some(startDate) =>
             val parsedDate: LocalDate = LocalDate.parse(startDate, localDateTimeFormat)
-            val filledForm: Form[EmploymentDate] = EmploymentStartDateForm.employmentStartDateForm.fill(
+            val filledForm: Form[EmploymentDate] = form.fill(
               EmploymentDate(parsedDate.getDayOfMonth.toString,parsedDate.getMonthValue.toString, parsedDate.getYear.toString))
             Future.successful(Ok(employerStartDateView(filledForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
           case None =>
@@ -62,26 +62,20 @@ class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
     }
   }
 
-
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
-        form.bindFromRequest().fold(
+        val newForm = form.bindFromRequest()
+          newForm.copy(errors = EmploymentStartDateForm.verifyNewDate(newForm.get, taxYear, user.isAgent)).fold(
           { formWithErrors =>
             Future.successful(BadRequest(employerStartDateView(formWithErrors, taxYear, employmentId, data.employment.employmentDetails.employerName)))
           },
           { submittedDate =>
             val cya = data.employment
-            EmploymentStartDateForm.verifyNewDate(submittedDate, taxYear) match {
-              case Left(formError) =>
-                Future(BadRequest(employerStartDateView(form.fill(submittedDate).withError(formError), taxYear,
-                  employmentId, data.employment.employmentDetails.employerName)))
-              case Right(date) =>
-                val updatedCya = cya.copy(cya.employmentDetails.copy(startDate = Some(date.toString)))
-                employmentSessionService.createOrUpdateSessionData(
-                  employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
-                  Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId))
-                }
+            val updatedCya = cya.copy(cya.employmentDetails.copy(startDate = Some(submittedDate.toLocalDate.toString)))
+            employmentSessionService.createOrUpdateSessionData(
+              employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
+              Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId))
             }
           }
         )
