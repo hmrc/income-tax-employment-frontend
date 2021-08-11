@@ -49,7 +49,7 @@ val taxYearEOY=taxYear -1
     object ContentEN {
       val h1Expected = "maggie"
       val titleExpected = "Employment details and benefits"
-      def captionExpected(taxYear: Int) = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+      def captionExpected(taxYear: Int) = s"Employment for 6 April $taxYearEOY to 5 April $taxYear"
       def p1ExpectedAgent(taxYear: Int) = s"You cannot update your client’s employment information until 6 April $taxYear."
       def p1ExpectedIndividual(taxYear: Int) = s"You cannot update your employment information until 6 April $taxYear."
       val fieldNames = List("Employment details", "Benefits", "Expenses")
@@ -59,7 +59,7 @@ val taxYearEOY=taxYear -1
     object ContentCY {
       val h1Expected = "maggie"
       val titleExpected = "Employment details and benefits"
-      def captionExpected(taxYear: Int) = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+      def captionExpected(taxYear: Int) = s"Employment for 6 April $taxYearEOY to 5 April $taxYear"
       def p1ExpectedAgent(taxYear: Int) = s"You cannot update your client’s employment information until 6 April $taxYear."
       def p1ExpectedIndividual(taxYear: Int) = s"You cannot update your employment information until 6 April $taxYear."
       val fieldNames = List("Employment details", "Benefits", "Expenses")
