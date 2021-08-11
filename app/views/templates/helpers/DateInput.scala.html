@@ -87,21 +87,21 @@
     )),
     items = Seq(
         InputItem(
-            classes = s"govuk-input--width-2 ${addErrorClass(Seq(form(s"$name-day").error, form("invalidFormat").error))}",
+            classes = s"govuk-input--width-2 ${addErrorClass(Seq(form("invalidFormat").error, form("emptyDay").error, form("emptyDayMonth").error, form("emptyDayYear").error, form("emptyAll").error))}",
             name = "day",
             label = Some(messages("date.input.day")),
             value = form(s"$name-day").value,
             id = s"$name-day"
         ),
         InputItem(
-            classes = s"govuk-input--width-2 ${addErrorClass(Seq(form(s"$name-month").error, form("invalidFormat").error))}",
+            classes = s"govuk-input--width-2 ${addErrorClass(Seq(form("invalidFormat").error, form("emptyMonth").error, form("emptyDayMonth").error, form("emptyMonthYear").error, form("emptyAll").error))}",
             name = "month",
             label = Some(messages("date.input.month")),
             value = form(s"$name-month").value,
             id = s"$name-month"
         ),
         InputItem(
-            classes = s"govuk-input--width-4 ${addErrorClass(Seq(form(s"$name-year").error, form("invalidFormat").error))}",
+            classes = s"govuk-input--width-4 ${addErrorClass(Seq(form("invalidFormat").error, form("emptyYear").error, form("emptyMonthYear").error, form("emptyDayYear").error, form("emptyAll").error))}",
             name = "year",
             label = Some(messages("date.input.year")),
             value = form(s"$name-year").value,
