@@ -42,10 +42,11 @@ messages(s"employment.employmentStartDate.title.${if(user.isAgent) "agent" else 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
 
     @errorSummary(form.errors.distinct.map{ error =>
-        if(error.key == "invalidFormat"){
-            error.copy(key = "amount-day")
-        } else {
-            error
+        error.key match {
+            case "invalidFormat" | "emptyDayMonth" | "emptyDayYear" | "emptyDay" | "emptyAll" => error.copy(key = "amount-day")
+            case "emptyMonthYear" | "emptyMonth" => error.copy(key = "amount-month")
+            case "emptyYear" => error.copy(key = "amount-year")
+            case _ => error
         }
     })
 

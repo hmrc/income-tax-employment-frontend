@@ -65,6 +65,16 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedTitle: String
     val expectedH1: String
     val expectedErrorTitle: String
+    val emptyDayError: String
+    val emptyMonthError: String
+    val emptyYearError: String
+    val emptyDayYearError: String
+    val emptyMonthYearError: String
+    val emptyDayMonthError: String
+    val emptyAllError: String
+    val invalidDateError: String
+    val tooRecentDateError: String
+    val futureDateError: String
   }
 
   trait CommonExpectedResults {
@@ -74,39 +84,70 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
     val month: String
     val year: String
     val forExample: String
-    val emptyDayError: String
-    val emptyMonthError: String
-    val emptyYearError: String
-    val invalidDayError: String
-    val invalidMonthError: String
-    val invalidYearError: String
-    val invalidDateError: String
-    val tooRecentDateError: String
-    val futureDateError: String
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedTitle = "When did you start working for your employer?"
     val expectedH1 = s"When did you start working at $employerName?"
     val expectedErrorTitle = s"Error: $expectedTitle"
+    val emptyDayError = "The date you started employment must include a day"
+    val emptyMonthError = "The date you started employment must include a month"
+    val emptyYearError = "The date you started employment must include a year"
+    val emptyDayYearError = "The date you started employment must include a day and year"
+    val emptyMonthYearError = "The date you started employment must include a month and year"
+    val emptyDayMonthError = "The date you started employment must include a day and month"
+    val emptyAllError = "Enter the date your employment started"
+    val invalidDateError = "The date you started employment must be a real date"
+    val tooRecentDateError = s"The date you started employment must be before 5 April $taxYearEOY"
+    val futureDateError = "The date you started employment must be in the past"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "When did you start working for your employer?"
     val expectedH1 = s"When did you start working at $employerName?"
     val expectedErrorTitle = s"Error: $expectedTitle"
+    val emptyDayError = "The date you started employment must include a day"
+    val emptyMonthError = "The date you started employment must include a month"
+    val emptyYearError = "The date you started employment must include a year"
+    val emptyDayYearError = "The date you started employment must include a day and year"
+    val emptyMonthYearError = "The date you started employment must include a month and year"
+    val emptyDayMonthError = "The date you started employment must include a day and month"
+    val emptyAllError = "Enter the date your employment started"
+    val invalidDateError = "The date you started employment must be a real date"
+    val tooRecentDateError = s"The date you started employment must be before 5 April $taxYearEOY"
+    val futureDateError = "The date you started employment must be in the past"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedTitle = "When did your client start working for their employer?"
     val expectedH1 = s"When did your client start working at $employerName?"
     val expectedErrorTitle = s"Error: $expectedTitle"
+    val emptyDayError = "The date your client started employment must include a day"
+    val emptyMonthError = "The date your client started employment must include a month"
+    val emptyYearError = "The date your client started employment must include a year"
+    val emptyDayYearError = "The date your client started employment must include a day and year"
+    val emptyMonthYearError = "The date your client started employment must include a month and year"
+    val emptyDayMonthError = "The date your client started employment must include a day and month"
+    val emptyAllError = "Enter the date your client’s employment started"
+    val invalidDateError = "The date your client started employment must be a real date"
+    val tooRecentDateError = s"The date your client started employment must be before 5 April $taxYearEOY"
+    val futureDateError = "The date your client started employment must be in the past"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "When did your client start working for their employer?"
     val expectedH1 = s"When did your client start working at $employerName?"
     val expectedErrorTitle = s"Error: $expectedTitle"
+    val emptyDayError = "The date your client started employment must include a day"
+    val emptyMonthError = "The date your client started employment must include a month"
+    val emptyYearError = "The date your client started employment must include a year"
+    val emptyDayYearError = "The date your client started employment must include a day and year"
+    val emptyMonthYearError = "The date your client started employment must include a month and year"
+    val emptyDayMonthError = "The date your client started employment must include a day and month"
+    val emptyAllError = "Enter the date your client’s employment started"
+    val invalidDateError = "The date your client started employment must be a real date"
+    val tooRecentDateError = s"The date your client started employment must be before 5 April $taxYearEOY"
+    val futureDateError = "The date your client started employment must be in the past"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -116,15 +157,6 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
     val month = "month"
     val year = "year"
     val forExample = "For example, 12 11 2007"
-    val emptyDayError = "The date must include a day"
-    val emptyMonthError = "The date must include a month"
-    val emptyYearError = "The date must include a year"
-    val invalidDayError = "Enter the day in the correct format"
-    val invalidMonthError = "Enter the month in the correct format"
-    val invalidYearError = "Enter the year in the correct format"
-    val invalidDateError = "Enter the date in the correct format"
-    val tooRecentDateError = s"The date must be before 5 April $taxYearEOY"
-    val futureDateError = "The date must be in the past"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -134,15 +166,6 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
     val month = "month"
     val year = "year"
     val forExample = "For example, 12 11 2007"
-    val emptyDayError = "The date must include a day"
-    val emptyMonthError = "The date must include a month"
-    val emptyYearError = "The date must include a year"
-    val invalidDayError = "Enter the day in the correct format"
-    val invalidMonthError = "Enter the month in the correct format"
-    val invalidYearError = "Enter the year in the correct format"
-    val invalidDateError = "Enter the date in the correct format"
-    val tooRecentDateError = s"The date must be before 5 April $taxYearEOY"
-    val futureDateError = "The date must be in the past"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -314,8 +337,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
-            errorSummaryCheck(user.commonExpectedResults.emptyDayError, Selectors.daySelector)
-            errorAboveElementCheck(user.commonExpectedResults.emptyDayError, Some("amount"))
+            errorSummaryCheck(user.specificExpectedResults.get.emptyDayError, Selectors.daySelector)
+            errorAboveElementCheck(user.specificExpectedResults.get.emptyDayError, Some("amount"))
           }
 
           "the month is empty" which {
@@ -349,8 +372,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
-            errorSummaryCheck(user.commonExpectedResults.emptyMonthError, Selectors.monthSelector)
-            errorAboveElementCheck(user.commonExpectedResults.emptyMonthError, Some("amount"))
+            errorSummaryCheck(user.specificExpectedResults.get.emptyMonthError, Selectors.monthSelector)
+            errorAboveElementCheck(user.specificExpectedResults.get.emptyMonthError, Some("amount"))
           }
 
           "the year is empty" which {
@@ -384,8 +407,148 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
-            errorSummaryCheck(user.commonExpectedResults.emptyYearError, Selectors.yearSelector)
-            errorAboveElementCheck(user.commonExpectedResults.emptyYearError, Some("amount"))
+            errorSummaryCheck(user.specificExpectedResults.get.emptyYearError, Selectors.yearSelector)
+            errorAboveElementCheck(user.specificExpectedResults.get.emptyYearError, Some("amount"))
+          }
+
+          "the day and month are empty" which {
+            lazy val form: Map[String, String] = Map(EmploymentStartDateForm.startDateYear -> "2020", EmploymentStartDateForm.startDateMonth -> "",
+              EmploymentStartDateForm.startDateDay -> "")
+
+            lazy val result: WSResponse = {
+              dropEmploymentDB()
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              authoriseAgentOrIndividual(user.isAgent)
+              urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            }
+
+            "has the correct status" in {
+              result.status shouldBe BAD_REQUEST
+            }
+
+            implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+            import Selectors._
+            import user.commonExpectedResults._
+
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            h1Check(user.specificExpectedResults.get.expectedH1)
+            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            textOnPageCheck(forExample, forExampleSelector)
+            inputFieldValueCheck("", Selectors.daySelector)
+            inputFieldValueCheck("", Selectors.monthSelector)
+            inputFieldValueCheck("2020", Selectors.yearSelector)
+            buttonCheck(expectedButtonText, continueButtonSelector)
+            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            welshToggleCheck(user.isWelsh)
+
+            errorSummaryCheck(user.specificExpectedResults.get.emptyDayMonthError, Selectors.daySelector)
+            errorAboveElementCheck(user.specificExpectedResults.get.emptyDayMonthError, Some("amount"))
+          }
+
+          "the day and year are empty" which {
+            lazy val form: Map[String, String] = Map(EmploymentStartDateForm.startDateYear -> "", EmploymentStartDateForm.startDateMonth -> "01",
+              EmploymentStartDateForm.startDateDay -> "")
+
+            lazy val result: WSResponse = {
+              dropEmploymentDB()
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              authoriseAgentOrIndividual(user.isAgent)
+              urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            }
+
+            "has the correct status" in {
+              result.status shouldBe BAD_REQUEST
+            }
+
+            implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+            import Selectors._
+            import user.commonExpectedResults._
+
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            h1Check(user.specificExpectedResults.get.expectedH1)
+            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            textOnPageCheck(forExample, forExampleSelector)
+            inputFieldValueCheck("", Selectors.daySelector)
+            inputFieldValueCheck("01", Selectors.monthSelector)
+            inputFieldValueCheck("", Selectors.yearSelector)
+            buttonCheck(expectedButtonText, continueButtonSelector)
+            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            welshToggleCheck(user.isWelsh)
+
+            errorSummaryCheck(user.specificExpectedResults.get.emptyDayYearError, Selectors.daySelector)
+            errorAboveElementCheck(user.specificExpectedResults.get.emptyDayYearError, Some("amount"))
+          }
+
+          "the year and month are empty" which {
+            lazy val form: Map[String, String] = Map(EmploymentStartDateForm.startDateYear -> "", EmploymentStartDateForm.startDateMonth -> "",
+              EmploymentStartDateForm.startDateDay -> "01")
+
+            lazy val result: WSResponse = {
+              dropEmploymentDB()
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              authoriseAgentOrIndividual(user.isAgent)
+              urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            }
+
+            "has the correct status" in {
+              result.status shouldBe BAD_REQUEST
+            }
+
+            implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+            import Selectors._
+            import user.commonExpectedResults._
+
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            h1Check(user.specificExpectedResults.get.expectedH1)
+            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            textOnPageCheck(forExample, forExampleSelector)
+            inputFieldValueCheck("01", Selectors.daySelector)
+            inputFieldValueCheck("", Selectors.monthSelector)
+            inputFieldValueCheck("", Selectors.yearSelector)
+            buttonCheck(expectedButtonText, continueButtonSelector)
+            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            welshToggleCheck(user.isWelsh)
+
+            errorSummaryCheck(user.specificExpectedResults.get.emptyMonthYearError, Selectors.monthSelector)
+            errorAboveElementCheck(user.specificExpectedResults.get.emptyMonthYearError, Some("amount"))
+          }
+
+          "the day, month and year are empty" which {
+            lazy val form: Map[String, String] = Map(EmploymentStartDateForm.startDateYear -> "", EmploymentStartDateForm.startDateMonth -> "",
+              EmploymentStartDateForm.startDateDay -> "")
+
+            lazy val result: WSResponse = {
+              dropEmploymentDB()
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              authoriseAgentOrIndividual(user.isAgent)
+              urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            }
+
+            "has the correct status" in {
+              result.status shouldBe BAD_REQUEST
+            }
+
+            implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+            import Selectors._
+            import user.commonExpectedResults._
+
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            h1Check(user.specificExpectedResults.get.expectedH1)
+            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            textOnPageCheck(forExample, forExampleSelector)
+            inputFieldValueCheck("", Selectors.daySelector)
+            inputFieldValueCheck("", Selectors.monthSelector)
+            inputFieldValueCheck("", Selectors.yearSelector)
+            buttonCheck(expectedButtonText, continueButtonSelector)
+            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            welshToggleCheck(user.isWelsh)
+
+            errorSummaryCheck(user.specificExpectedResults.get.emptyAllError, Selectors.daySelector)
+            errorAboveElementCheck(user.specificExpectedResults.get.emptyAllError, Some("amount"))
           }
 
           "the day is invalid" which {
@@ -419,8 +582,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
-            errorSummaryCheck(user.commonExpectedResults.invalidDayError, Selectors.daySelector)
-            errorAboveElementCheck(user.commonExpectedResults.invalidDayError, Some("amount"))
+            errorSummaryCheck(user.specificExpectedResults.get.invalidDateError, Selectors.daySelector)
+            errorAboveElementCheck(user.specificExpectedResults.get.invalidDateError, Some("amount"))
           }
 
           "the month is invalid" which {
@@ -454,8 +617,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
-            errorSummaryCheck(user.commonExpectedResults.invalidMonthError, Selectors.monthSelector)
-            errorAboveElementCheck(user.commonExpectedResults.invalidMonthError, Some("amount"))
+            errorSummaryCheck(user.specificExpectedResults.get.invalidDateError, Selectors.daySelector)
+            errorAboveElementCheck(user.specificExpectedResults.get.invalidDateError, Some("amount"))
           }
 
           "the year is invalid" which {
@@ -489,11 +652,11 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
-            errorSummaryCheck(user.commonExpectedResults.invalidYearError, Selectors.yearSelector)
-            errorAboveElementCheck(user.commonExpectedResults.invalidYearError, Some("amount"))
+            errorSummaryCheck(user.specificExpectedResults.get.invalidDateError, Selectors.daySelector)
+            errorAboveElementCheck(user.specificExpectedResults.get.invalidDateError, Some("amount"))
           }
 
-          "the date is an invalid date" which {
+          "the date is an invalid date i.e. month is set to 13" which {
             lazy val form: Map[String, String] = Map(EmploymentStartDateForm.startDateYear -> "2020", EmploymentStartDateForm.startDateMonth -> "13",
               EmploymentStartDateForm.startDateDay -> "01")
 
@@ -524,8 +687,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
-            errorSummaryCheck(user.commonExpectedResults.invalidDateError, Selectors.daySelector)
-            errorAboveElementCheck(user.commonExpectedResults.invalidDateError, Some("amount"))
+            errorSummaryCheck(user.specificExpectedResults.get.invalidDateError, Selectors.daySelector)
+            errorAboveElementCheck(user.specificExpectedResults.get.invalidDateError, Some("amount"))
           }
 
           "the date is a too recent date i.e. after 5thApril" which {
@@ -559,8 +722,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
-            errorSummaryCheck(user.commonExpectedResults.tooRecentDateError, Selectors.daySelector)
-            errorAboveElementCheck(user.commonExpectedResults.tooRecentDateError, Some("amount"))
+            errorSummaryCheck(user.specificExpectedResults.get.tooRecentDateError, Selectors.daySelector)
+            errorAboveElementCheck(user.specificExpectedResults.get.tooRecentDateError, Some("amount"))
           }
 
           "the date is not in the past" which {
@@ -597,9 +760,10 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
-            errorSummaryCheck(user.commonExpectedResults.futureDateError, Selectors.daySelector)
-            errorAboveElementCheck(user.commonExpectedResults.futureDateError, Some("amount"))
+            errorSummaryCheck(user.specificExpectedResults.get.futureDateError, Selectors.daySelector)
+            errorAboveElementCheck(user.specificExpectedResults.get.futureDateError, Some("amount"))
           }
+
         }
       }
     }
