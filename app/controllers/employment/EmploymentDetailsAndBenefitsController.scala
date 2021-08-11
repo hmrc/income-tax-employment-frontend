@@ -44,13 +44,22 @@ class EmploymentDetailsAndBenefitsController @Inject()(implicit val cc: Messages
     employmentSessionService.findPreviousEmploymentUserData(user, taxYear){ allEmploymentData =>
 
       val isInYear: Boolean = inYearAction.inYear(taxYear)
+      val latestExpenses = employmentSessionService.getLatestExpenses(allEmploymentData, isInYear)
+      val doExpensesExist = latestExpenses.isDefined
+
+      val unignoredHMRCEmployments = allEmploymentData.hmrcEmploymentData.filter(_.dateIgnored.isEmpty)
+      val unignoredCustomerEmployments = allEmploymentData.customerEmploymentData.filter(_.dateIgnored.isEmpty)
+
+      val isSingleEmployment: Boolean = unignoredHMRCEmployments.filter(_.employmentId != employmentId).isEmpty &&
+        unignoredCustomerEmployments.filter(_.employmentId != employmentId).isEmpty
 
       val source = employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear)
+
 
       source match {
         case Some((source, _)) =>
           val (name, benefitsIsDefined) = (source.employerName, source.employmentBenefits.isDefined)
-          Ok(employmentDetailsAndBenefitsView(name, employmentId, benefitsIsDefined, taxYear, isInYear))
+          Ok(employmentDetailsAndBenefitsView(name, employmentId, benefitsIsDefined, taxYear, isInYear, doExpensesExist ,isSingleEmployment))
         case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
