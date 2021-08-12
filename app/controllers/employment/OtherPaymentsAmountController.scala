@@ -28,8 +28,9 @@ import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.OtherPaymentsAmountView
-
 import javax.inject.Inject
+import models.question.QuestionsJourney
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class OtherPaymentsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -53,7 +54,7 @@ class OtherPaymentsAmountController @Inject()(implicit val cc: MessagesControlle
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      implicit val journey = EmploymentUserData.journey(taxYear, employmentId)
+      implicit val journey: QuestionsJourney[EmploymentUserData] = EmploymentUserData.journey(taxYear, employmentId)
 
       val cyaFuture = employmentSessionService.getSessionData(taxYear,employmentId)
       questionsJourneyValidator.validate(OtherPaymentsAmountController.show(taxYear, employmentId),
@@ -66,7 +67,7 @@ class OtherPaymentsAmountController @Inject()(implicit val cc: MessagesControlle
   }
   def submit(taxYear:Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      implicit val journey = EmploymentUserData.journey(taxYear, employmentId)
+      implicit val journey: QuestionsJourney[EmploymentUserData] = EmploymentUserData.journey(taxYear, employmentId)
 
       val checkEmploymentDetailsUrl  = CheckEmploymentDetailsController.show(taxYear, employmentId)
 

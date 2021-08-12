@@ -18,9 +18,10 @@ package config
 
 import connectors.IncomeTaxUserDataConnector
 import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
-import models.IncomeTaxUserData
+import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData}
 import org.scalamock.handlers.CallHandler3
 import org.scalamock.scalatest.MockFactory
+import play.api.http.Status.INTERNAL_SERVER_ERROR
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
@@ -33,6 +34,12 @@ trait MockIncomeTaxUserDataConnector extends MockFactory {
     (mockUserDataConnector.getUserData(_: String,_: Int)(_: HeaderCarrier))
       .expects(nino, taxYear, *)
       .returns(Future.successful(Right(userData)))
+      .anyNumberOfTimes()
+  }
+  def mockFindFail(nino: String, taxYear: Int): CallHandler3[String, Int, HeaderCarrier, Future[IncomeTaxUserDataResponse]] = {
+    (mockUserDataConnector.getUserData(_: String,_: Int)(_: HeaderCarrier))
+      .expects(nino, taxYear, *)
+      .returns(Future.successful(Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))))
       .anyNumberOfTimes()
   }
 }

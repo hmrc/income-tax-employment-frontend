@@ -60,19 +60,16 @@ class AddEmploymentController @Inject()(implicit val cc: MessagesControllerCompo
     missingInputError = "AddEmployment.error"
   )
 
-
   private def submitForm(taxYear:Int)(implicit user:User[_]): Future[Result] = {
     buildForm.bindFromRequest().fold(
       { formWithErrors =>
         Future.successful(BadRequest(addEmploymentView(formWithErrors, taxYear)))
       },
-      { radioValue =>
-        radioValue match {
-          case true => val id = UUID.randomUUID
-            Future.successful(Redirect(controllers.employment.routes.EmployerNameController.show(taxYear, id))
-              .addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID ->id))
-          case _ => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-        }
+      {
+        case true => val id = UUID.randomUUID
+          Future.successful(Redirect(controllers.employment.routes.EmployerNameController.show(taxYear, id))
+            .addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> id))
+        case _ => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
       })
   }
 

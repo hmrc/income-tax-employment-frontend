@@ -16,11 +16,16 @@
 
 package services
 
-import java.time.ZonedDateTime
+import java.util.NoSuchElementException
 
 import config.{AppConfig, ErrorHandler}
-import connectors.IncomeTaxUserDataConnector
+import connectors.httpParsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmploymentDataResponse
 import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
+import connectors.{CreateUpdateEmploymentDataConnector, IncomeTaxUserDataConnector}
+import javax.inject.{Inject, Singleton}
+import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest,
+  CreateUpdateEmploymentRequestError, CreateUpdatePay, EmploymentDataAndDataRemainsUnchanged, JourneyNotFinished, NothingToUpdate}
+import models.employment.{AllEmploymentData, Benefits, Deductions, EmploymentExpenses, EmploymentSource}
 import models.employment.{AllEmploymentData, EmploymentExpenses, EmploymentSource, Expenses}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.{IncomeTaxUserData, User}
@@ -32,9 +37,10 @@ import play.api.mvc.{Request, Result}
 import repositories.EmploymentUserDataRepository
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Clock
-import javax.inject.{Inject, Singleton}
+import controllers.employment.routes.CheckEmploymentDetailsController
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 @Singleton
 class EmploymentSessionService @Inject()(employmentUserDataRepository: EmploymentUserDataRepository,
@@ -42,6 +48,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
                                          implicit private val appConfig: AppConfig,
                                          val messagesApi: MessagesApi,
                                          errorHandler: ErrorHandler,
+                                         createUpdateEmploymentDataConnector: CreateUpdateEmploymentDataConnector,
                                          implicit val ec: ExecutionContext) extends Logging {
 
   def findPreviousEmploymentUserData(user: User[_], taxYear: Int)(result: AllEmploymentData => Result)
@@ -95,7 +102,124 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
   }
 
-  def getAndHandle(taxYear: Int, employmentId: String)(block: (Option[EmploymentCYAModel], AllEmploymentData) => Future[Result])
+  def createModelAndReturnResult(cya: EmploymentUserData, prior: Option[AllEmploymentData], taxYear: Int)
+                                (result: CreateUpdateEmploymentRequest => Future[Result])(implicit user: User[_]): Future[Result] = {
+    cyaAndPriorToCreateUpdateEmploymentRequest(cya, prior) match {
+      case Left(NothingToUpdate) => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+      case Left(JourneyNotFinished) =>
+        //TODO Route to: journey not finished page / show banner saying not finished / hide submit button when not complete?
+       Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear,cya.employmentId)))
+      case Right(model) => result(model)
+    }
+  }
+
+  def cyaAndPriorToCreateUpdateEmploymentRequest(cya: EmploymentUserData, prior: Option[AllEmploymentData])(implicit user: User[_]): Either[CreateUpdateEmploymentRequestError, CreateUpdateEmploymentRequest] = {
+
+    val hmrcEmploymentIdToIgnore: Option[String] = prior.flatMap(_.hmrcEmploymentData.find(_.employmentId == cya.employmentId).map(_.employmentId))
+    val customerEmploymentId: Option[String] = prior.flatMap(_.customerEmploymentData.find(_.employmentId == cya.employmentId).map(_.employmentId))
+
+    Try {
+      val employment = formCreateUpdateEmployment(cya, prior)
+      val employmentData = formCreateUpdateEmploymentData(cya, prior)
+
+      (employment.dataHasNotChanged, employmentData.dataHasNotChanged, customerEmploymentId.isDefined) match {
+        case (true, true, _) => CreateUpdateEmploymentRequest()
+        case (_, _, false) => CreateUpdateEmploymentRequest(
+          employmentId = None,
+          employment = Some(employment.data),
+          employmentData = Some(employmentData.data),
+          hmrcEmploymentIdToIgnore = hmrcEmploymentIdToIgnore
+        )
+        case (employmentHasNotChanged, employmentDataHasNotChanged, _) => CreateUpdateEmploymentRequest(
+          employmentId = customerEmploymentId,
+          employment = if (employmentHasNotChanged) None else Some(employment.data),
+          employmentData = if (employmentDataHasNotChanged) None else Some(employmentData.data)
+        )
+      }
+    }.toEither match {
+      case Left(error:NoSuchElementException) =>
+        logger.warn(s"[EmploymentSessionService][cyaAndPriorToCreateUpdateEmploymentRequest] " +
+          s"Could not create request model. Journey is not finished. SessionId: ${user.sessionId}.")
+        Left(JourneyNotFinished)
+      case Right(CreateUpdateEmploymentRequest(_, None, None, _)) =>
+        logger.info(s"[EmploymentSessionService][cyaAndPriorToCreateUpdateEmploymentRequest] " +
+          s"Data to be submitted matched the prior data exactly. Nothing to update. SessionId: ${user.sessionId}")
+        Left(NothingToUpdate)
+      case Right(model) => Right(model)
+    }
+  }
+
+  private def formCreateUpdateEmployment(cya: EmploymentUserData, prior: Option[AllEmploymentData]): EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmployment] = {
+
+    lazy val newCreateUpdateEmployment = {
+      CreateUpdateEmployment(
+        cya.employment.employmentDetails.employerRef,
+        cya.employment.employmentDetails.employerName,
+        cya.employment.employmentDetails.startDate.get, //.get on purpose to provoke no such element exception and route them to finish journey.
+        cya.employment.employmentDetails.cessationDate,
+        cya.employment.employmentDetails.payrollId
+      )
+    }
+
+    lazy val default = EmploymentDataAndDataRemainsUnchanged(newCreateUpdateEmployment,dataHasNotChanged = false)
+    prior.fold[EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmployment]](default) {
+      prior =>
+        val priorData: Option[EmploymentSource] = employmentSourceToUse(prior, cya.employmentId, false).map(_._1)
+
+        priorData.fold[EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmployment]](default){
+          prior =>
+            EmploymentDataAndDataRemainsUnchanged(newCreateUpdateEmployment, prior.dataHasNotChanged(newCreateUpdateEmployment))
+        }
+    }
+  }
+
+  private def formCreateUpdateEmploymentData(cya: EmploymentUserData, prior: Option[AllEmploymentData]): EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmploymentData] = {
+
+    def createUpdateEmploymentData(benefits: Option[Benefits] = None, deductions: Option[Deductions] = None) = {
+      CreateUpdateEmploymentData(
+        CreateUpdatePay(
+          taxablePayToDate = cya.employment.employmentDetails.taxablePayToDate.get, //.get on purpose to provoke no such element exception and route them to finish journey.
+          totalTaxToDate = cya.employment.employmentDetails.totalTaxToDate.get, //.get on purpose to provoke no such element exception and route them to finish journey.
+          tipsAndOtherPayments = cya.employment.employmentDetails.tipsAndOtherPayments
+        ),
+        benefitsInKind = benefits,
+        deductions = deductions
+      )
+    }
+
+    lazy val default = EmploymentDataAndDataRemainsUnchanged(createUpdateEmploymentData(),dataHasNotChanged = false)
+
+    prior.fold[EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmploymentData]](default) {
+      prior =>
+        val priorData: Option[EmploymentSource] = employmentSourceToUse(prior, cya.employmentId, false).map(_._1)
+
+        priorData.fold[EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmploymentData]](default) {
+          prior =>
+            prior.employmentData.fold[EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmploymentData]] {
+              EmploymentDataAndDataRemainsUnchanged(createUpdateEmploymentData(prior.employmentBenefits.flatMap(_.benefits)), dataHasNotChanged = false)
+            } {
+              employmentData =>
+                EmploymentDataAndDataRemainsUnchanged(createUpdateEmploymentData(prior.employmentBenefits.flatMap(_.benefits), employmentData.deductions),
+                  employmentData.dataHasNotChanged(createUpdateEmploymentData().pay))
+            }
+        }
+    }
+  }
+
+  def createOrUpdateEmploymentResult(taxYear: Int, employmentRequest: CreateUpdateEmploymentRequest)
+                              (implicit user: User[_], hc: HeaderCarrier): Future[Result] ={
+    createOrUpdateEmployment(taxYear,employmentRequest).map {
+      case Left(error) => errorHandler.handleError(error.status)
+      case Right(_) => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+    }
+  }
+
+  private def createOrUpdateEmployment(taxYear: Int, employmentRequest: CreateUpdateEmploymentRequest)
+                              (implicit user: User[_], hc: HeaderCarrier): Future[CreateUpdateEmploymentDataResponse] ={
+    createUpdateEmploymentDataConnector.createUpdateEmploymentData(user.nino,taxYear,employmentRequest)(hc.withExtraHeaders("mtditid" -> user.mtditid))
+  }
+
+  def getAndHandle(taxYear: Int, employmentId: String)(block: (Option[EmploymentUserData], Option[AllEmploymentData]) => Future[Result])
                      (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
     val result = for {
       optionalCya <- getSessionData(taxYear, employmentId)
@@ -106,13 +230,12 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
       val employmentDataResponse = priorDataResponse.map(_.employment)
 
-      employmentDataResponse match {
-        case Right(Some(employmentData)) => block(optionalCya.map(_.employment), employmentData)
-        case Right(None) =>
-          logger.info(s"[EmploymentSessionService][getAndHandle] No employment data found for user." +
-            s"Redirecting to overview page. SessionId: ${user.sessionId}")
+      (optionalCya,employmentDataResponse) match {
+        case (None, Right(None)) => logger.info(s"[EmploymentSessionService][getAndHandle] No employment data found for user." +
+          s"Redirecting to overview page. SessionId: ${user.sessionId}")
           Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-        case Left(error) => Future(errorHandler.handleError(error.status))
+        case (_, Right(employmentData)) => block(optionalCya, employmentData)
+        case (_, Left(error)) => Future(errorHandler.handleError(error.status))
       }
     }
 
@@ -126,21 +249,15 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
   }
 
-  //Returns latest employment source and whether it is customer data
   def employmentSourceToUse(allEmploymentData: AllEmploymentData, employmentId: String, isInYear: Boolean): Option[(EmploymentSource,Boolean)] = {
     if(isInYear){
       allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId)).map((_,false))
     } else {
 
-      val hmrcRecord = allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId))
+      val hmrcRecord = allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId) && source.dateIgnored.isEmpty)
       val customerRecord = allEmploymentData.customerEmploymentData.find(source => source.employmentId.equals(employmentId))
 
-      (hmrcRecord, customerRecord) match {
-        case (hmrc@Some(_), None) => hmrc.map((_,false))
-        case (None, customer@Some(_)) => customer.map((_,true))
-        case (Some(hmrcData), Some(customerData)) => Some(latestEmploymentSource((hmrcData,customerData)))
-        case (None, None) => None
-      }
+      customerRecord.fold(hmrcRecord.map((_,false)))(customerRecord => Some(customerRecord,true))
     }
   }
 
@@ -151,88 +268,22 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       //Filters out hmrc data that has been ignored
       val hmrcData: Seq[EmploymentSource] = allEmploymentData.hmrcEmploymentData.filterNot(_.dateIgnored.isDefined)
       val customerData: Seq[EmploymentSource] = allEmploymentData.customerEmploymentData
-
-      (hmrcData.nonEmpty, customerData.nonEmpty) match {
-        case (true, false) => hmrcData
-        case (false, true) => customerData
-        case (true, true) =>
-
-          val hmrcEmploymentIds = hmrcData.map(_.employmentId)
-          val customerOverrideData: Seq[EmploymentSource] = customerData.filter(customerEmployment => hmrcEmploymentIds.contains(customerEmployment.employmentId))
-          lazy val newCustomerData: Seq[EmploymentSource] = customerData.filterNot(customerEmployment => hmrcEmploymentIds.contains(customerEmployment.employmentId))
-
-          if (customerOverrideData.nonEmpty) {
-
-            val employmentIdsWithBothCustomerAndHmrcData = customerOverrideData.map(_.employmentId)
-
-            val hmrcOverriddenData: Seq[EmploymentSource] = hmrcData.filter(hmrcEmployment => employmentIdsWithBothCustomerAndHmrcData.contains(hmrcEmployment.employmentId))
-            val onlyHmrcData: Seq[EmploymentSource] = hmrcData.filterNot(hmrcEmployment => employmentIdsWithBothCustomerAndHmrcData.contains(hmrcEmployment.employmentId))
-
-            val hmrcAndCustomerDataWithSameIds: Seq[(EmploymentSource, EmploymentSource)] = hmrcOverriddenData.map {
-              hmrcData =>
-                (hmrcData, customerOverrideData.find(_.employmentId.equals(hmrcData.employmentId)).get)
-            }
-
-            latestEmploymentSources(hmrcAndCustomerDataWithSameIds) ++ onlyHmrcData ++ newCustomerData
-
-          } else {
-            hmrcData ++ customerData
-          }
-
-        case (false, false) => Seq()
-      }
+      hmrcData ++ customerData
     }).sorted(Ordering.by((_: EmploymentSource).submittedOn).reverse)
-  }
-
-  def latestEmploymentSources(hmrcAndCustomerDataSet: Seq[(EmploymentSource,EmploymentSource)]): Seq[EmploymentSource] ={
-    hmrcAndCustomerDataSet.map(latestEmploymentSource).map(_._1)
-  }
-
-  //Gets the latest employment source data looking at the top level submitted on timestamp from two sources with the same employment id
-  //Returned boolean is whether it is customer data or not
-  def latestEmploymentSource(hmrcAndCustomerDataSet: (EmploymentSource, EmploymentSource)): (EmploymentSource, Boolean) = {
-    val (hmrc, customer) = hmrcAndCustomerDataSet
-
-    val hmrcTimestamp: Option[ZonedDateTime] = hmrc.submittedOnDateTime
-    val customerTimestamp: Option[ZonedDateTime] = customer.submittedOnDateTime
-
-    val shouldUseHmrcData = {
-      (hmrcTimestamp, customerTimestamp) match {
-        case (Some(_), None) => true
-        case (None, Some(_)) => false
-        case (Some(hmrcData), Some(customerData)) => hmrcData.isAfter(customerData)
-        case _ => false
-      }
-    }
-
-    if (shouldUseHmrcData) (hmrc, false) else (customer,true)
   }
 
   def getLatestExpenses(allEmploymentData: AllEmploymentData, isInYear: Boolean): Option[EmploymentExpenses] ={
     if(isInYear){
       allEmploymentData.hmrcExpenses
     } else {
-      (allEmploymentData.hmrcExpenses, allEmploymentData.customerExpenses) match {
-        case (hmrc@Some(_), None) => hmrc
-        case (None, customer@Some(_)) => customer
-        case (Some(hmrcData), Some(customerData)) =>
+      val hmrcExpenses = allEmploymentData.hmrcExpenses
+      val customerExpenses = allEmploymentData.customerExpenses
 
-          val hmrcTimestamp: Option[ZonedDateTime] = hmrcData.submittedOnDateTime
-          val customerTimestamp: Option[ZonedDateTime] = customerData.submittedOnDateTime
-
-          val shouldUseHmrcExpenses = {
-            (hmrcTimestamp, customerTimestamp) match {
-              case (Some(_), None) => true
-              case (None, Some(_)) => false
-              case (Some(hmrcData), Some(customerData)) => hmrcData.isAfter(customerData)
-              case _ => false
-            }
-          }
-
-          if (shouldUseHmrcExpenses) Some(hmrcData) else Some(customerData)
-
-        case _ => None
+      if(hmrcExpenses.isDefined && customerExpenses.isDefined && hmrcExpenses.get.dateIgnored.isEmpty){
+        logger.warn("[EmploymentSessionService][getLatestExpenses] Hmrc expenses and customer expenses exist but hmrc expenses have not been ignored")
       }
+
+      allEmploymentData.customerExpenses.fold(allEmploymentData.hmrcExpenses)(customerExpenses => Some(customerExpenses))
     }
   }
 }
