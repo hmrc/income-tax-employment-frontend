@@ -57,7 +57,6 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
     }
   }
 
-
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
 
     inYearAction.notInYear(taxYear) {

@@ -29,7 +29,7 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.http.HeaderNames
+import play.api.http.Status.{NOT_FOUND, NO_CONTENT}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
@@ -186,6 +186,12 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
       s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,
       Json.toJson(userData).toString(), ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
   }
+  def noUserDataStub(nino: String, taxYear: Int): StubMapping = {
+
+    stubGetWithHeadersCheck(
+      s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", NO_CONTENT,
+      "{}", ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
+  }
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
@@ -198,7 +204,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
         payrollId = Some("123456789999"),
         startDate = Some("2019-04-21"),
         cessationDate = Some("2020-03-11"),
-        dateIgnored = Some("2020-04-04T01:01:01Z"),
+        dateIgnored = None,
         submittedOn = Some("2020-01-04T05:01:01Z"),
         employmentData = Some(EmploymentData(
           submittedOn = "2020-02-12",

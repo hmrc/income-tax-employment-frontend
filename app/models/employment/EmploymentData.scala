@@ -16,6 +16,7 @@
 
 package models.employment
 
+import models.employment.createUpdate.CreateUpdatePay
 import play.api.libs.json.{Json, OFormat}
 
 case class EmploymentData(submittedOn: String,
@@ -27,7 +28,14 @@ case class EmploymentData(submittedOn: String,
                           disguisedRemuneration: Option[Boolean],
                           pay: Option[Pay],
                           deductions: Option[Deductions]
-                         )
+                         ){
+
+  def dataHasNotChanged(createUpdatePay: CreateUpdatePay): Boolean = {
+    pay.flatMap(_.taxablePayToDate).contains(createUpdatePay.taxablePayToDate) &&
+    pay.flatMap(_.totalTaxToDate).contains(createUpdatePay.totalTaxToDate) &&
+    pay.flatMap(_.tipsAndOtherPayments) == createUpdatePay.tipsAndOtherPayments
+  }
+}
 
 object EmploymentData {
   implicit val formats: OFormat[EmploymentData] = Json.format[EmploymentData]

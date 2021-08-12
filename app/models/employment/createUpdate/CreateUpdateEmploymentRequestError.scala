@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package models.employment
-import play.api.libs.json.{Json, OFormat}
-import utils.DateTimeUtil.getSubmittedOnDateTime
+package models.employment.createUpdate
 
-import java.time.ZonedDateTime
+trait CreateUpdateEmploymentRequestError
 
-case class EmploymentExpenses(submittedOn: Option[String],
-                              dateIgnored: Option[String],
-                              totalExpenses: Option[BigDecimal],
-                              expenses: Option[Expenses])
-
-object EmploymentExpenses {
-  implicit val format: OFormat[EmploymentExpenses] = Json.format[EmploymentExpenses]
-}
+case object NothingToUpdate extends CreateUpdateEmploymentRequestError
+case object JourneyNotFinished extends CreateUpdateEmploymentRequestError

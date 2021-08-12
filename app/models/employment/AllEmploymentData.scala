@@ -23,6 +23,8 @@ import utils.DateTimeUtil.getSubmittedOnDateTime
 
 import java.time.ZonedDateTime
 
+import models.employment.createUpdate.CreateUpdateEmployment
+
 case class AllEmploymentData(hmrcEmploymentData: Seq[EmploymentSource],
                              hmrcExpenses: Option[EmploymentExpenses],
                              customerEmploymentData: Seq[EmploymentSource],
@@ -43,8 +45,12 @@ case class EmploymentSource(employmentId: String,
                             employmentData: Option[EmploymentData],
                             employmentBenefits: Option[EmploymentBenefits]) extends Logging {
 
-  def submittedOnDateTime: Option[ZonedDateTime] ={
-    getSubmittedOnDateTime(submittedOn)
+  def dataHasNotChanged(createUpdateEmployment: CreateUpdateEmployment): Boolean = {
+    employerRef == createUpdateEmployment.employerRef &&
+      employerName == createUpdateEmployment.employerName &&
+      startDate.contains(createUpdateEmployment.startDate) &&
+      cessationDate == createUpdateEmployment.cessationDate &&
+      payrollId == createUpdateEmployment.payrollId
   }
 
   def toEmploymentDetails(isUsingCustomerData: Boolean): EmploymentDetails = {

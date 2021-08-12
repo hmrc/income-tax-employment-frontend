@@ -60,7 +60,7 @@ trait WireMockHelper {
     verify(getRequestedFor(urlEqualTo(uri)))
   }
 
-  def stubGet(url: String, status: Integer, body: String): StubMapping =
+  def stubGet(url: String, status: Int, body: String): StubMapping =
     stubFor(get(urlMatching(url))
       .willReturn(
         aResponse().
@@ -69,7 +69,7 @@ trait WireMockHelper {
       )
     )
 
-  def stubGetWithHeadersCheck(url: String, status: Integer, body: String, sessionHeader: (String, String), mtdidHeader: (String, String)): StubMapping =
+  def stubGetWithHeadersCheck(url: String, status: Int, body: String, sessionHeader: (String, String), mtdidHeader: (String, String)): StubMapping =
     stubFor(get(urlMatching(url))
       .withHeader(sessionHeader._1, equalTo(sessionHeader._2))
       .withHeader(mtdidHeader._1, equalTo(mtdidHeader._2))
@@ -80,7 +80,7 @@ trait WireMockHelper {
       )
     )
 
-  def stubPost(url: String, status: Integer, responseBody: String, requestHeaders: Seq[HttpHeader] = Seq.empty): StubMapping = {
+  def stubPost(url: String, status: Int, responseBody: String, requestHeaders: Seq[HttpHeader] = Seq.empty): StubMapping = {
     val mappingWithHeaders: MappingBuilder = requestHeaders.foldLeft(post(urlMatching(url))){ (result, nxt) =>
       result.withHeader(nxt.key(), equalTo(nxt.firstValue()))
     }
@@ -93,7 +93,7 @@ trait WireMockHelper {
       )
     )
   }
-  def stubPut(url: String, status: Integer, responseBody: String, requestHeaders: Seq[HttpHeader] = Seq.empty): StubMapping = {
+  def stubPut(url: String, status: Int, responseBody: String, requestHeaders: Seq[HttpHeader] = Seq.empty): StubMapping = {
     val mappingWithHeaders: MappingBuilder = requestHeaders.foldLeft(put(urlMatching(url))){ (result, nxt) =>
       result.withHeader(nxt.key(), equalTo(nxt.firstValue()))
     }
@@ -107,7 +107,7 @@ trait WireMockHelper {
     )
   }
 
-  def stubPatch(url: String, status: Integer, responseBody: String): StubMapping =
+  def stubPatch(url: String, status: Int, responseBody: String): StubMapping =
     stubFor(patch(urlMatching(url))
       .willReturn(
         aResponse().
@@ -116,7 +116,7 @@ trait WireMockHelper {
       )
     )
 
-  def stubDelete(url: String, status: Integer, responseBody: String): StubMapping =
+  def stubDelete(url: String, status: Int, responseBody: String): StubMapping =
     stubFor(delete(urlMatching(url))
       .willReturn(
         aResponse().
@@ -125,11 +125,24 @@ trait WireMockHelper {
       )
     )
 
-  def stubDeleteWithHeadersCheck(url: String, status: Integer, responseBody: String,
+  def stubDeleteWithHeadersCheck(url: String, status: Int, responseBody: String,
                                  sessionHeader: (String, String), mtdidHeader: (String, String)): StubMapping =
     stubFor(delete(urlMatching(url))
       .withHeader(sessionHeader._1, equalTo(sessionHeader._2))
       .withHeader(mtdidHeader._1, equalTo(mtdidHeader._2))
+      .willReturn(
+        aResponse().
+          withStatus(status).
+          withBody(responseBody)
+      )
+    )
+
+  def stubPostWithHeadersCheck(url: String, status: Int, requestBody: String, responseBody: String,
+                               sessionHeader: (String, String), mtdidHeader: (String, String)): StubMapping =
+    stubFor(post(urlMatching(url))
+      .withHeader(sessionHeader._1, equalTo(sessionHeader._2))
+      .withHeader(mtdidHeader._1, equalTo(mtdidHeader._2))
+      .withRequestBody(equalTo(requestBody))
       .willReturn(
         aResponse().
           withStatus(status).

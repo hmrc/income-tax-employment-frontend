@@ -151,7 +151,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           textOnPageCheck(expectedCaption, captionSelector)
           buttonCheck(continueButton)
           formRadioValueCheckPreFilled(isChecked = false, yesRadioButton)
-          formPostLinkCheck(s"/income-through-software/return/employment-income${AddEmploymentController.submit(taxYear).url}", formSelector)
+          formPostLinkCheck("/income-through-software/return/employment-income/2021/add-employment", formSelector)
         }
 
         "return Add an employment page page with yes pre-filled when there is session value employment id is defined" when {
@@ -176,7 +176,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           h1Check(specific.expectedH1)
           textOnPageCheck(expectedCaption, captionSelector)
           buttonCheck(continueButton)
-          formPostLinkCheck(s"/income-through-software/return/employment-income${AddEmploymentController.submit(taxYear).url}", formSelector)
+          formPostLinkCheck("/income-through-software/return/employment-income/2021/add-employment", formSelector)
           formRadioValueCheckPreFilled(isChecked = true, yesRadioButton)
         }
 
@@ -254,8 +254,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           textOnPageCheck(expectedCaption, captionSelector)
           buttonCheck(continueButton)
           errorSummaryCheck(specific.expectedErrorText, expectedErrorHref)
-          formPostLinkCheck(s"/income-through-software/return/employment-income${AddEmploymentController.submit(validTaxYear2021).url}", formSelector)
-
+          formPostLinkCheck("/income-through-software/return/employment-income/2021/add-employment", formSelector)
         }
 
         "redirect to Overview Page when radio button no is selected" when {

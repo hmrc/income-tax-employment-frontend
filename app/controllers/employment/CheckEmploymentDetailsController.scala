@@ -18,19 +18,19 @@ package controllers.employment
 
 import audit.{AuditService, ViewEmploymentDetailsAudit}
 import config.{AppConfig, ErrorHandler}
+import controllers.employment.routes.CheckEmploymentDetailsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
+import javax.inject.Inject
+import models.User
 import models.employment.{AllEmploymentData, EmploymentDetailsViewModel}
+import models.mongo.EmploymentCYAModel
+import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.CheckEmploymentDetailsView
-
-import javax.inject.Inject
-import models.User
-import models.mongo.EmploymentCYAModel
-import play.api.Logging
-import services.EmploymentSessionService
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -77,16 +77,19 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
       }
     }
 
-    if(isInYear){
+    if (isInYear) {
       employmentSessionService.findPreviousEmploymentUserData(user, taxYear)(inYearResult)
     } else {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
           case Some(cya) => Future(
-            performAuditAndRenderView(cya.toEmploymentDetailsView(employmentId,!cya.employmentDetails.currentDataIsHmrcHeld),
+            performAuditAndRenderView(cya.employment.toEmploymentDetailsView(employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld),
               taxYear, isInYear)
           )
-          case None => saveCYAAndReturnEndOfYearResult(prior)
+          case None =>
+            prior.fold(Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))) {
+              prior => saveCYAAndReturnEndOfYearResult(prior)
+            }
         }
       }
     }
@@ -98,10 +101,24 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     Ok(employmentDetailsView(employmentDetails, taxYear, isInYear))
   }
 
-  def submit(taxYear:Int, employmentId: String): Action[AnyContent] = authAction.async { _ =>
+  def submit(taxYear:Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
 
-    //TODO - Once Create and Update API has been orchestrated
-    Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+    inYearAction.notInYear(taxYear){
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
+        cya match {
+          case Some(cya) =>
+
+            employmentSessionService.createModelAndReturnResult(cya,prior,taxYear){
+              model =>
+                employmentSessionService.createOrUpdateEmploymentResult(taxYear,model).flatMap{
+                  result =>
+                    employmentSessionService.clear(taxYear,employmentId)(errorHandler.internalServerError())(result)
+                }
+            }
+
+          case None => Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear,employmentId)))
+        }
+      }
+    }
   }
-
 }
