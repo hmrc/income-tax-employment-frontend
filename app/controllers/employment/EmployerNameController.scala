@@ -16,6 +16,7 @@
 
 package controllers.employment
 
+import common.SessionValues
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import play.api.data.Form
@@ -56,7 +57,6 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
     }
   }
 
-
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
 
     inYearAction.notInYear(taxYear) {
@@ -83,7 +83,8 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
             case None =>
               val newCya = EmploymentCYAModel(EmploymentDetails(employerName = submittedName, currentDataIsHmrcHeld = false))
               employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear, false)(errorHandler.internalServerError()) {
-                Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)) //TODO direct to next question page during wireup
+                Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+                  .removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID) //TODO direct to next question page during wireup
               }
           }
         }

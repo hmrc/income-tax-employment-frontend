@@ -16,9 +16,10 @@
 
 package config
 
-import models.User
+import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
+import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData, User}
 import models.employment.AllEmploymentData
-import org.scalamock.handlers.CallHandler5
+import org.scalamock.handlers.{CallHandler3, CallHandler5}
 import org.scalamock.scalatest.MockFactory
 import play.api.mvc.{Request, Result}
 import services.EmploymentSessionService
@@ -35,6 +36,23 @@ trait MockEmploymentSessionService extends MockFactory {
     (_: AllEmploymentData => Result)(_: Request[_], _: HeaderCarrier))
       .expects(*, taxYear, *, *, *)
       .returns(Future.successful(result))
+      .anyNumberOfTimes()
+  }
+
+  def mockGetPriorRight(taxYear: Int,
+                        allEmploymentData: Option[AllEmploymentData]): CallHandler3[Int, User[_], HeaderCarrier, Future[IncomeTaxUserDataResponse]] = {
+    (mockIncomeTaxUserDataService.getPriorData(_: Int)
+    (_: User[_], _: HeaderCarrier))
+      .expects(taxYear, *, *)
+      .returns(Future.successful(Right(IncomeTaxUserData(allEmploymentData))))
+      .anyNumberOfTimes()
+  }
+
+  def mockGetPriorLeft(taxYear: Int): CallHandler3[Int, User[_], HeaderCarrier, Future[IncomeTaxUserDataResponse]] = {
+    (mockIncomeTaxUserDataService.getPriorData(_: Int)
+    (_: User[_], _: HeaderCarrier))
+      .expects(taxYear, *, *)
+      .returns(Future.successful(Left(APIErrorModel(500, APIErrorBodyModel("test", "test")))))
       .anyNumberOfTimes()
   }
 }

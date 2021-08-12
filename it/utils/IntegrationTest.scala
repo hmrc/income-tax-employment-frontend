@@ -21,7 +21,7 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import common.SessionValues
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
-import helpers.{PlaySessionCookieBaker, WireMockHelper}
+import helpers.{PlaySessionCookieBaker, WireMockHelper, WiremockStubHelpers}
 import models.IncomeTaxUserData
 import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -29,7 +29,7 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.http.HeaderNames
+import play.api.http.Status.{NOT_FOUND, NO_CONTENT}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
@@ -47,7 +47,8 @@ import views.html.authErrorPages.AgentAuthErrorPageView
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
 
-trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSuite with WireMockHelper with BeforeAndAfterAll {
+trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSuite with WireMockHelper
+  with WiremockStubHelpers with BeforeAndAfterAll {
 
   val nino = "AA123456A"
   val mtditid = "1234567890"
@@ -76,6 +77,8 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "microservice.services.income-tax-submission-frontend.url" -> s"http://$wiremockHost:$wiremockPort",
     "microservice.services.auth.host" -> wiremockHost,
     "microservice.services.auth.port" -> wiremockPort.toString,
+    "microservice.services.income-tax-employment.url" -> s"http://$wiremockHost:$wiremockPort",
+    "microservice.services.income-tax-expenses.url" -> s"http://$wiremockHost:$wiremockPort",
     "microservice.services.income-tax-submission.url" -> s"http://$wiremockHost:$wiremockPort",
     "microservice.services.view-and-change.url" -> s"http://$wiremockHost:$wiremockPort",
     "microservice.services.sign-in.url" -> s"/auth-login-stub/gg-sign-in",
@@ -167,26 +170,13 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     )) and Some(AffinityGroup.Individual) and ConfidenceLevel.L200
   )
 
-  def playSessionCookies(taxYear: Int): String = PlaySessionCookieBaker.bakeSessionCookie(Map(
+  def playSessionCookies(taxYear: Int, extraData: Map[String, String] = Map.empty): String = PlaySessionCookieBaker.bakeSessionCookie(Map(
     SessionValues.TAX_YEAR -> taxYear.toString,
     SessionKeys.sessionId -> sessionId,
     SessionValues.CLIENT_NINO -> nino,
     SessionValues.CLIENT_MTDITID -> mtditid
-  ))
+  ) ++ extraData)
 
-  def playSessionCookie(agent: Boolean = false, extraData: Map[String, String] = Map.empty): Seq[(String, String)] = {
-    {
-      if (agent) {
-        Seq(HeaderNames.COOKIE -> PlaySessionCookieBaker.bakeSessionCookie(extraData ++ Map(
-          SessionValues.CLIENT_NINO -> "AA123456A",
-          SessionValues.CLIENT_MTDITID -> mtditid))
-        )
-      } else {
-        Seq(HeaderNames.COOKIE -> PlaySessionCookieBaker.bakeSessionCookie(extraData), "mtditid" -> mtditid)
-      }
-    } ++
-      Seq(xSessionId)
-  }
 
   def userData(allData: AllEmploymentData): IncomeTaxUserData = IncomeTaxUserData(Some(allData))
 
@@ -195,6 +185,12 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     stubGetWithHeadersCheck(
       s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,
       Json.toJson(userData).toString(), ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
+  }
+  def noUserDataStub(nino: String, taxYear: Int): StubMapping = {
+
+    stubGetWithHeadersCheck(
+      s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", NO_CONTENT,
+      "{}", ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
   }
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
@@ -208,7 +204,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
         payrollId = Some("123456789999"),
         startDate = Some("2019-04-21"),
         cessationDate = Some("2020-03-11"),
-        dateIgnored = Some("2020-04-04T01:01:01Z"),
+        dateIgnored = None,
         submittedOn = Some("2020-01-04T05:01:01Z"),
         employmentData = Some(EmploymentData(
           submittedOn = "2020-02-12",
@@ -233,6 +229,71 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     hmrcExpenses = Some(employmentExpenses),
     customerEmploymentData = Seq(),
     customerExpenses = None)
+
+  def fullEmploymentsModelWithUnignored(benefits: Option[EmploymentBenefits]): AllEmploymentData = AllEmploymentData(
+    hmrcEmploymentData = Seq(
+      EmploymentSource(
+        employmentId = "001",
+        employerName = "maggie",
+        employerRef = Some("223/AB12399"),
+        payrollId = Some("123456789999"),
+        startDate = Some("2019-04-21"),
+        cessationDate = Some("2020-03-11"),
+        dateIgnored = None,
+        submittedOn = Some("2020-01-04T05:01:01Z"),
+        employmentData = Some(EmploymentData(
+          submittedOn = "2020-02-12",
+          employmentSequenceNumber = Some("123456789999"),
+          companyDirector = Some(true),
+          closeCompany = Some(false),
+          directorshipCeasedDate = Some("2020-02-12"),
+          occPen = Some(false),
+          disguisedRemuneration = Some(false),
+          pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+          Some(Deductions(
+            studentLoans = Some(StudentLoans(
+              uglDeductionAmount = Some(100.00),
+              pglDeductionAmount = Some(100.00)
+            ))
+          ))
+        )),
+        employmentBenefits = benefits
+      )
+
+    ),
+    hmrcExpenses = Some(employmentExpenses),
+    customerEmploymentData = Seq(
+      EmploymentSource(
+        employmentId = "004",
+        employerName = "rosa",
+        employerRef = Some("223/AB12399"),
+        payrollId = Some("123456789999"),
+        startDate = Some("2019-04-21"),
+        cessationDate = Some("2020-03-11"),
+        dateIgnored = None,
+        submittedOn = Some("2020-01-04T05:01:01Z"),
+        employmentData = Some(EmploymentData(
+          submittedOn = "2020-02-12",
+          employmentSequenceNumber = Some("123456789999"),
+          companyDirector = Some(true),
+          closeCompany = Some(false),
+          directorshipCeasedDate = Some("2020-02-12"),
+          occPen = Some(false),
+          disguisedRemuneration = Some(false),
+          pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+          Some(Deductions(
+            studentLoans = Some(StudentLoans(
+              uglDeductionAmount = Some(100.00),
+              pglDeductionAmount = Some(100.00)
+            ))
+          ))
+        )),
+        employmentBenefits = benefits
+      )
+
+    ),
+    customerExpenses = None)
+
 
 
   lazy val expenses: Expenses = Expenses(

@@ -18,12 +18,14 @@ package controllers.employment
 
 import common.SessionValues
 import config.MockEmploymentSessionService
+import forms.YesNoForm
 import models.employment.{AllEmploymentData, Deductions, EmploymentData, EmploymentSource, Pay, StudentLoans}
+import play.api.data.Form
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
 import utils.UnitTestWithApp
-import views.html.employment.{MultipleEmploymentsSummaryView, SingleEmploymentSummaryView}
+import views.html.employment.{MultipleEmploymentsSummaryView, SingleEmploymentSummaryView, SingleEmploymentSummaryViewEOY}
 
 import scala.concurrent.Future
 
@@ -103,7 +105,12 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
   }
 
   lazy val singleView = app.injector.instanceOf[SingleEmploymentSummaryView]
+  lazy val singleEOYView = app.injector.instanceOf[SingleEmploymentSummaryViewEOY]
   lazy val multipleView = app.injector.instanceOf[MultipleEmploymentsSummaryView]
+
+  lazy val yesNoForm: Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = "employment.addAnother.error"
+  )
 
   lazy val controller = new EmploymentSummaryController()(
     mockMessagesControllerComponents,
@@ -111,6 +118,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
     mockAppConfig,
     singleView,
     multipleView,
+    singleEOYView,
     mockIncomeTaxUserDataService,
     inYearAction
   )
@@ -132,7 +140,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
     "render multiple employment summary view when there are two employments" which {
       s"has an OK($OK) status" in new TestWithAuth {
-        mockFind(taxYear, Ok(multipleView(taxYear, Seq(FullModel.employmentSource1, FullModel.employmentSource2), false)))
+        mockFind(taxYear, Ok(multipleView(taxYear, Seq(FullModel.employmentSource1, FullModel.employmentSource2), false, false, yesNoForm)))
 
         val result: Future[Result] = controller.show(taxYear)(fakeRequest)
         status(result) shouldBe OK

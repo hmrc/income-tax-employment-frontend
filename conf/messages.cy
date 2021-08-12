@@ -103,6 +103,14 @@ employment.expenses.label = Expenses
 employment.employment.details.label = Employment Details
 employment.expenses.subheading = This is a total of expenses from all employment in the tax year.
 
+employment.hiddenText = employment information for {0}
+expenses.hiddenText.individual = your expenses from all employment this tax year
+expenses.hiddenText.agent = your client’s expenses from all employment this tax year
+employment.addAnother = Do you need to add another employment?
+employment.addAnother.error = Select yes if you need to add another employment
+employment.addAnother.hint.individual = You must tell us about all your employment.
+employment.addAnother.hint.agent = You must tell us about all your client’s employment.
+
 employment.employmentDetails.heading.individual = Check your employment details
 employment.employmentDetails.heading.agent = Check your client’s employment details
 
@@ -118,6 +126,7 @@ employment.employmentDetails.insetText.individual = You cannot update your emplo
 employment.employmentDetails.insetText.agent = You cannot update your client’s employment details until 6 April {0}.
 
 employment.employmentDetails.employer =  Employer
+employment.employmentDetails.startDate =  Employment start date
 employment.employmentDetails.payeRef =  PAYE reference
 employment.employmentDetails.companyDirector =  Company director
 employment.employmentDetails.directorCeasedDate =  Director role end date
@@ -130,6 +139,8 @@ employment.employmentDetails.tipsAndOtherPayments.individual =  Amount of paymen
 employment.employmentDetails.tipsAndOtherPayments.agent =  Amount of payments not on your client’s P60
 
 employment.employmentDetails.hiddenText.employer = the name of this employer
+employment.employmentDetails.hiddenText.startDate.individual = your start date for {0}
+employment.employmentDetails.hiddenText.startDate.agent = your client’s start date for {0}
 employment.employmentDetails.hiddenText.payeRef.individual = your PAYE reference number
 employment.employmentDetails.hiddenText.payeRef.agent = your client’s PAYE reference number
 employment.employmentDetails.hiddenText.payReceived.individual = the amount of pay you got from this employer
@@ -143,9 +154,56 @@ employment.employmentDetails.hiddenText.tipsAndOtherPayments.agent = the amount 
 
 employment.employerName.heading.individual = What’s the name of your employer?
 employment.employerName.heading.agent = What’s the name of your client’s employer?
+employment.employerName.paragraph = The employer name must be 74 characters or fewer. It can include:
+employment.employerName.bullet.one = upper and lower case letters (a to z)
+employment.employerName.bullet.two = numbers
+employment.employerName.bullet.three = the special characters: & : ’ \ , . ( ) -
 employment.employerName.error.noEntry.individual = Enter the name of your employer
 employment.employerName.error.noEntry.agent = Enter the name of your client’s employer
 employment.employerName.error.name.limit = The employer name must be 74 characters or fewer
+employment.employerName.error.name.wrongFormat = Enter the employer name in the correct format
+employment.employerName.hint = For example, A1 Plumbing (UK)
+
+employment.employmentStartDate.title.individual = When did you start working for your employer?
+employment.employmentStartDate.title.agent = When did your client start working for their employer?
+employment.employmentStartDate.heading.individual = When did you start working at {0}?
+employment.employmentStartDate.heading.agent = When did your client start working at {0}?
+employment.employmentStartDate.forExample = For example, 12 11 2007
+employment.employmentStartDate.error.incompleteDay = The date must include a day
+employment.employmentStartDate.error.incompleteMonth = The date must include a month
+employment.employmentStartDate.error.incompleteYear = The date must include a year
+employment.employmentStartDate.error.incorrect = Enter the date in the correct format
+employment.employmentStartDate.error.incorrectDay = Enter the day in the correct format
+employment.employmentStartDate.error.incorrectMonth = Enter the month in the correct format
+employment.employmentStartDate.error.incorrectYear = Enter the year in the correct format
+employment.employmentStartDate.error.notInPast = The date must be in the past
+employment.employmentStartDate.error.tooRecent = The date must be before 5 April {0}
+
+employment.employmentStartDate.title.individual = When did you start working for your employer?
+employment.employmentStartDate.title.agent = When did your client start working for their employer?
+employment.employmentStartDate.heading.individual = When did you start working at {0}?
+employment.employmentStartDate.heading.agent = When did your client start working at {0}?
+employment.employmentStartDate.forExample = For example, 12 11 2007
+employment.employmentStartDate.error.incompleteDay.individual = The date you started employment must include a day
+employment.employmentStartDate.error.incompleteDay.agent = The date your client started employment must include a day
+employment.employmentStartDate.error.incompleteMonth.individual = The date you started employment must include a month
+employment.employmentStartDate.error.incompleteMonth.agent = The date your client started employment must include a month
+employment.employmentStartDate.error.incompleteYear.individual = The date you started employment must include a year
+employment.employmentStartDate.error.incompleteYear.agent = The date your client started employment must include a year
+employment.employmentStartDate.error.incompleteDayMonth.individual = The date you started employment must include a day and month
+employment.employmentStartDate.error.incompleteDayMonth.agent = The date your client started employment must include a day and month
+employment.employmentStartDate.error.incompleteDayYear.individual = The date you started employment must include a day and year
+employment.employmentStartDate.error.incompleteDayYear.agent = The date your client started employment must include a day and year
+employment.employmentStartDate.error.incompleteMonthYear.individual = The date you started employment must include a month and year
+employment.employmentStartDate.error.incompleteMonthYear.agent = The date your client started employment must include a month and year
+employment.employmentStartDate.error.incompleteAll.individual = Enter the date your employment started
+employment.employmentStartDate.error.incompleteAll.agent = Enter the date your client’s employment started
+employment.employmentStartDate.error.invalidDate.individual = The date you started employment must be a real date
+employment.employmentStartDate.error.invalidDate.agent = The date your client started employment must be a real date
+employment.employmentStartDate.error.notInPast.individual = The date you started employment must be in the past
+employment.employmentStartDate.error.notInPast.agent = The date your client started employment must be in the past
+employment.employmentStartDate.error.tooRecent.individual = The date you started employment must be before 5 April {0}
+employment.employmentStartDate.error.tooRecent.agent = The date your client started employment must be before 5 April {0}
 
 employment.employmentTax.title.individual = How much UK tax was taken from your earnings?
 employment.employmentTax.title.agent = How much UK tax was taken from your client’s earnings?
@@ -172,8 +230,6 @@ employment.expenses.expense.type.job = Job expenses
 employment.expenses.expense.type.hotel-and-meal = Hotel and meal expenses
 employment.expenses.expense.type.vehicle = Vehicle expense
 employment.expenses.expense.type.mileage-allowance = Mileage allowance relief
-
-
 employment.expenses.sub-heading.individual = Your employment expenses are based on the information we already hold about you. This is a total of expenses from all employment in the tax year.
 employment.expenses.sub-heading.agent = Your client’s employment expenses are based on information we already hold about them. This is a total of expenses from all employment in the tax year.
 
@@ -220,7 +276,6 @@ checkYourBenefits.assetsHeader = Assets and asset transfers
 checkYourBenefits.assets = Assets
 checkYourBenefits.assetTransfers = Asset transfers
 
-
 otherPaymentsAmount.heading.individual = What is the total amount of payments not included on your P60?
 otherPaymentsAmount.heading.agent = What is the total amount of payments not included on your client’s P60?
 otherPaymentsAmount.error.noEntry.individual =  Enter the amount of payments not included on your P60
@@ -258,3 +313,5 @@ payeRef.hint = For example, 123/AB456
 payeRef.errors.empty = Enter a PAYE reference
 payeRef.errors.wrongFormat = Enter a PAYE reference in the correct format
 
+AddEmployment.error = Select yes if you want to add an employment
+AddEmployment.header = Do you want to add an employment?

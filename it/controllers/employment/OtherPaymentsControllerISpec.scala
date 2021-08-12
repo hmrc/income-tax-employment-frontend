@@ -154,7 +154,8 @@ class OtherPaymentsControllerISpec extends IntegrationTest with ViewHelpers with
             textOnPageCheck(specific.detailsContent, detailsSelector)
             textOnPageCheck(expectedCaption, captionSelector)
             buttonCheck(continueButton)
-            formPostLinkCheck(s"/income-through-software/return/employment-income${OtherPaymentsController.submit(taxYear, employmentId).url}", formSelector)
+            formPostLinkCheck(s"/income-through-software/return/employment-income/" +
+              s"2021/payments-not-on-p60?employmentId=$employmentId", formSelector)
             formRadioValueCheck(selected = true, formRadioButtonValueSelector)
           }
 
@@ -376,7 +377,8 @@ class OtherPaymentsControllerISpec extends IntegrationTest with ViewHelpers with
             textOnPageCheck(specific.detailsContent, detailsSelector)
             textOnPageCheck(expectedCaption, captionSelector)
             buttonCheck(continueButton)
-            formPostLinkCheck(s"/income-through-software/return/employment-income${OtherPaymentsController.submit(taxYear, employmentId).url}", formSelector)
+            formPostLinkCheck(s"/income-through-software/return/employment-income/" +
+              s"2021/payments-not-on-p60?employmentId=$employmentId", formSelector)
           }
         }
 
