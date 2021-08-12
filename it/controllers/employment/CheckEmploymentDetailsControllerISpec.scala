@@ -19,6 +19,7 @@ package controllers.employment
 import models.User
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.employment.{AllEmploymentData, Deductions, EmploymentData, EmploymentSource, Pay, StudentLoans}
+import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

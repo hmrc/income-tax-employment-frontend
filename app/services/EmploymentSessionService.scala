@@ -26,6 +26,7 @@ import javax.inject.{Inject, Singleton}
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest,
   CreateUpdateEmploymentRequestError, CreateUpdatePay, EmploymentDataAndDataRemainsUnchanged, JourneyNotFinished, NothingToUpdate}
 import models.employment.{AllEmploymentData, Benefits, Deductions, EmploymentExpenses, EmploymentSource}
+import models.employment.{AllEmploymentData, EmploymentExpenses, EmploymentSource, Expenses}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.{IncomeTaxUserData, User}
 import org.joda.time.DateTimeZone

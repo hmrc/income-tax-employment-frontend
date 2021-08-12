@@ -19,6 +19,9 @@ package models.employment
 import models.mongo.EmploymentDetails
 import play.api.Logging
 import play.api.libs.json.{Json, OFormat}
+import utils.DateTimeUtil.getSubmittedOnDateTime
+
+import java.time.ZonedDateTime
 
 import models.employment.createUpdate.CreateUpdateEmployment
 

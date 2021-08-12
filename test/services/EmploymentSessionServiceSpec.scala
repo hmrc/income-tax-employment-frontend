@@ -519,6 +519,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       }
       "only hmrc data is found at the end of the year" in {
 
+
         val response = service.employmentSourceToUse(allEmploymentData,"001",false)
         response shouldBe Some(allEmploymentData.hmrcEmploymentData.head, false)
       }

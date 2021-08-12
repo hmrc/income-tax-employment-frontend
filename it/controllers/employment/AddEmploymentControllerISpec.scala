@@ -255,7 +255,6 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           buttonCheck(continueButton)
           errorSummaryCheck(specific.expectedErrorText, expectedErrorHref)
           formPostLinkCheck("/income-through-software/return/employment-income/2021/add-employment", formSelector)
-
         }
 
         "redirect to Overview Page when radio button no is selected" when {
