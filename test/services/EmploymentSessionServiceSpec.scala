@@ -149,6 +149,31 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
     )
   )
 
+  "getAndHandle" should {
+    "return an error if the call failed" in {
+
+      mockFind(taxYear,"employmentId",None)
+      mockFindFail(nino,taxYear)
+
+      val response = service.getAndHandle(taxYear, "employmentId")((_,_) => Future(Ok))
+
+      status(response) shouldBe INTERNAL_SERVER_ERROR
+    }
+  }
+
+  "findPreviousEmploymentUserData" should {
+    "return an error if the call failed" in {
+
+      mockFindFail(nino,taxYear)
+
+      val response = service.findPreviousEmploymentUserData(
+        User(mtditid = mtditid, arn = None, nino = nino, sessionId = sessionId, AffinityGroup.Individual.toString),
+        taxYear)(_ => Ok)
+
+      status(response) shouldBe INTERNAL_SERVER_ERROR
+    }
+  }
+
   "createOrUpdateEmploymentResult" should {
     "use the request model to make the api call and return the correct redirect" in {
 
