@@ -17,37 +17,81 @@
 package controllers.employment
 
 import audit.{AuditService, ViewEmploymentExpensesAudit}
-import config.AppConfig
-import controllers.predicates.AuthorisedAction
-import models.employment.EmploymentExpenses
-
+import config.{AppConfig, ErrorHandler}
+import controllers.predicates.{AuthorisedAction, InYearAction}
+import models.employment.{AllEmploymentData, EmploymentExpenses, Expenses}
 import javax.inject.Inject
+import models.User
+import models.mongo.ExpensesCYAModel
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.SessionHelper
+import utils.{Clock, SessionHelper}
 import views.html.employment.CheckEmploymentExpensesView
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAction,
                                                   checkEmploymentExpensesView: CheckEmploymentExpensesView,
                                                   employmentSessionService: EmploymentSessionService,
                                                   auditService: AuditService,
+                                                  inYearAction: InYearAction,
+                                                  errorHandler: ErrorHandler,
+                                                  implicit val clock: Clock,
                                                   implicit val appConfig: AppConfig,
                                                   implicit val mcc: MessagesControllerComponents,
                                                   implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int): Action[AnyContent] = authorisedAction.async { implicit user =>
 
-    employmentSessionService.findPreviousEmploymentUserData(user, taxYear)(allEmploymentData =>
+    val isInYear: Boolean = inYearAction.inYear(taxYear)
+
+    def inYearResult(allEmploymentData: AllEmploymentData): Result = {
       allEmploymentData.hmrcExpenses match {
-      case Some(employmentExpenses@EmploymentExpenses(_, _, _, Some(expenses))) =>
-        val auditModel = ViewEmploymentExpensesAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, expenses)
-        auditService.auditModel[ViewEmploymentExpensesAudit](auditModel.toAuditModel)
-        Ok(checkEmploymentExpensesView(taxYear, employmentExpenses))
-      case _ => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-    })
+        case Some(employmentExpenses@EmploymentExpenses(_, _, _, Some(expenses))) => performAuditAndRenderView(expenses,taxYear,isInYear)
+        case _ => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      }
+    }
+
+    def saveCYAAndReturnEndOfYearResult(allEmploymentData: Option[AllEmploymentData]): Future[Result] = {
+
+      allEmploymentData match {
+        case Some(allEmploymentData) =>
+          employmentSessionService.getLatestExpenses(allEmploymentData, isInYear) match {
+            case Some((employmentExpenses@EmploymentExpenses(_, _, _, Some(expenses)), isUsingCustomerData)) =>
+
+              employmentSessionService.createOrUpdateExpensesSessionData(ExpensesCYAModel.apply(expenses, isUsingCustomerData),
+                taxYear, isPriorSubmission = true
+              )(errorHandler.internalServerError()) {
+                performAuditAndRenderView(expenses, taxYear, isInYear)
+              }
+
+            case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear))
+          }
+        case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear))
+      }
+    }
+
+    if (isInYear) {
+      employmentSessionService.findPreviousEmploymentUserData(user, taxYear)(inYearResult)
+    } else {
+      employmentSessionService.getAndHandleExpenses(taxYear) { (cya, prior) =>
+        cya match {
+          case Some(cya) =>
+            val expenses = cya.expensesCya
+            Future(performAuditAndRenderView(expenses.expenses, taxYear, isInYear))
+          case None =>
+            saveCYAAndReturnEndOfYearResult(prior)
+        }
+      }
+    }
+  }
+
+  def performAuditAndRenderView(expenses:Expenses, taxYear: Int, isInYear: Boolean)
+                               (implicit user: User[AnyContent]): Result ={
+    val auditModel = ViewEmploymentExpensesAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, expenses)
+    auditService.auditModel[ViewEmploymentExpensesAudit](auditModel.toAuditModel)
+    Ok(checkEmploymentExpensesView(taxYear, expenses, isInYear))
   }
 }

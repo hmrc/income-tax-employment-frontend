@@ -16,13 +16,21 @@
 
 package models.mongo
 
-import models.employment.Expenses
 import org.joda.time.{DateTime, DateTimeZone}
+import play.api.libs.json.{Format, Json, OFormat}
+import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
 
 case class ExpensesUserData(sessionId: String,
                             mtdItId: String,
                             nino: String,
                             taxYear: Int,
                             isPriorSubmission: Boolean,
-                            expensesCya: Expenses,
+                            expensesCya: ExpensesCYAModel,
                             lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC))
+
+object ExpensesUserData extends MongoJodaFormats {
+
+  implicit val mongoJodaDateTimeFormats: Format[DateTime] = dateTimeFormat
+
+  implicit val format: OFormat[ExpensesUserData] = Json.format[ExpensesUserData]
+}
