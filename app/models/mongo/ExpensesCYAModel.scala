@@ -25,9 +25,11 @@ case class ExpensesCYAModel(expenses: Expenses,
 object ExpensesCYAModel {
   implicit val format: OFormat[ExpensesCYAModel] = Json.format[ExpensesCYAModel]
 
-  def apply(expenses: Expenses, isUsingCustomerData: Boolean): ExpensesCYAModel = ExpensesCYAModel(
-    expenses,
-    !isUsingCustomerData
-  )
+  def makeModel(expenses: Expenses, isUsingCustomerData: Boolean): ExpensesCYAModel = {
+    ExpensesCYAModel(
+      expenses,
+      !isUsingCustomerData
+    )
+  }
 
 }

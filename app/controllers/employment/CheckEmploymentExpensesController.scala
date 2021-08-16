@@ -49,24 +49,21 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
 
     def inYearResult(allEmploymentData: AllEmploymentData): Result = {
       allEmploymentData.hmrcExpenses match {
-        case Some(employmentExpenses@EmploymentExpenses(_, _, _, Some(expenses))) => performAuditAndRenderView(expenses,taxYear,isInYear)
+        case Some(EmploymentExpenses(_, _, _, Some(expenses))) => performAuditAndRenderView(expenses,taxYear,isInYear)
         case _ => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
 
     def saveCYAAndReturnEndOfYearResult(allEmploymentData: Option[AllEmploymentData]): Future[Result] = {
-
       allEmploymentData match {
         case Some(allEmploymentData) =>
           employmentSessionService.getLatestExpenses(allEmploymentData, isInYear) match {
-            case Some((employmentExpenses@EmploymentExpenses(_, _, _, Some(expenses)), isUsingCustomerData)) =>
-
-              employmentSessionService.createOrUpdateExpensesSessionData(ExpensesCYAModel.apply(expenses, isUsingCustomerData),
+            case Some((EmploymentExpenses(_, _, _, Some(expenses)), isUsingCustomerData)) =>
+              employmentSessionService.createOrUpdateExpensesSessionData(ExpensesCYAModel.makeModel(expenses, isUsingCustomerData),
                 taxYear, isPriorSubmission = true
               )(errorHandler.internalServerError()) {
                 performAuditAndRenderView(expenses, taxYear, isInYear)
               }
-
             case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear))
           }
         case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear))

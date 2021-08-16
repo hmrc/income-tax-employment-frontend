@@ -108,7 +108,6 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   //scalastyle:off
   def createOrUpdateExpensesSessionData[A](cyaModel: ExpensesCYAModel, taxYear: Int, isPriorSubmission: Boolean)
                                   (onFail: A)(onSuccess: A)(implicit user: User[_], clock: Clock): Future[A] = {
-
     val userData = ExpensesUserData(
       user.sessionId,
       user.mtditid,

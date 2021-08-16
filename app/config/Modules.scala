@@ -18,7 +18,7 @@ package config
 
 import com.google.inject.AbstractModule
 import common.UUID
-import repositories.{EmploymentUserDataRepository, EmploymentUserDataRepositoryImpl}
+import repositories.{EmploymentUserDataRepository, EmploymentUserDataRepositoryImpl, ExpensesUserDataRepository, ExpensesUserDataRepositoryImpl}
 import utils.Clock
 
 class Modules extends AbstractModule {
@@ -28,6 +28,7 @@ class Modules extends AbstractModule {
     bind(classOf[UUID]).toInstance(UUID)
     bind(classOf[Clock]).toInstance(Clock)
     bind(classOf[EmploymentUserDataRepository]).to(classOf[EmploymentUserDataRepositoryImpl]).asEagerSingleton()
+    bind(classOf[ExpensesUserDataRepository]).to(classOf[ExpensesUserDataRepositoryImpl]).asEagerSingleton()
   }
 
 }
