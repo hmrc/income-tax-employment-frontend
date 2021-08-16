@@ -18,6 +18,7 @@ package controllers.employment
 
 import audit.{AuditService, ViewEmploymentExpensesAudit}
 import config.{AppConfig, ErrorHandler}
+import controllers.employment.routes.CheckEmploymentExpensesController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.employment.{AllEmploymentData, EmploymentExpenses, Expenses}
 import javax.inject.Inject
@@ -90,5 +91,28 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
     val auditModel = ViewEmploymentExpensesAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, expenses)
     auditService.auditModel[ViewEmploymentExpensesAudit](auditModel.toAuditModel)
     Ok(checkEmploymentExpensesView(taxYear, expenses, isInYear))
+  }
+
+  def submit(taxYear:Int): Action[AnyContent] = authorisedAction.async { implicit user =>
+
+    inYearAction.notInYear(taxYear){
+      employmentSessionService.getAndHandleExpenses(taxYear) { (cya, prior) =>
+        cya match {
+          case Some(cya) =>
+
+            //TODO create CreateUpdateExpensesRequest model with new expenses data
+            //            employmentSessionService.createModelAndReturnResult(cya,prior,taxYear){
+            //              model =>
+            //                employmentSessionService.createOrUpdateEmploymentResult(taxYear,model).flatMap{
+            //                  result =>
+            //                    employmentSessionService.clear(taxYear)(errorHandler.internalServerError())(result)
+            //                }
+            //            }
+            Future.successful(errorHandler.internalServerError())
+
+          case None => Future.successful(Redirect(CheckEmploymentExpensesController.show(taxYear)))
+        }
+      }
+    }
   }
 }

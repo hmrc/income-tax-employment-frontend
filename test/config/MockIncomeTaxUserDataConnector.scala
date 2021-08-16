@@ -36,6 +36,12 @@ trait MockIncomeTaxUserDataConnector extends MockFactory {
       .returns(Future.successful(Right(userData)))
       .anyNumberOfTimes()
   }
+  def mockFindNoContent(nino: String, taxYear: Int): CallHandler3[String, Int, HeaderCarrier, Future[IncomeTaxUserDataResponse]] = {
+    (mockUserDataConnector.getUserData(_: String,_: Int)(_: HeaderCarrier))
+      .expects(nino, taxYear, *)
+      .returns(Future.successful(Right(IncomeTaxUserData())))
+      .anyNumberOfTimes()
+  }
   def mockFindFail(nino: String, taxYear: Int): CallHandler3[String, Int, HeaderCarrier, Future[IncomeTaxUserDataResponse]] = {
     (mockUserDataConnector.getUserData(_: String,_: Int)(_: HeaderCarrier))
       .expects(nino, taxYear, *)

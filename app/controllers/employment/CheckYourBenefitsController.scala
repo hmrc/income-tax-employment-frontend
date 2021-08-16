@@ -68,7 +68,6 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
           )(errorHandler.internalServerError()) {
 
             val benefits: Option[Benefits] = source.employmentBenefits.flatMap(_.benefits)
-
             performAuditAndRenderView(benefits.getOrElse(Benefits()), taxYear, isInYear)
           }
 
@@ -82,11 +81,9 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
     if (isInYear) {
       employmentSessionService.findPreviousEmploymentUserData(user, taxYear)(inYearResult)
     } else {
-
       employmentSessionService.getAndHandle(taxYear, employmentId, redirectWhenNoPrior = true) { (cya, prior) =>
         cya match {
           case Some(cya) =>
-
             val benefits: Option[Benefits] = cya.employment.employmentBenefits.flatMap(_.benefits)
             Future(performAuditAndRenderView(benefits.getOrElse(Benefits()), taxYear, isInYear))
 
@@ -120,7 +117,7 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
 //                    employmentSessionService.clear(taxYear,employmentId)(errorHandler.internalServerError())(result)
 //                }
 //            }
-            ???
+            Future.successful(errorHandler.internalServerError())
 
           case None => Future.successful(Redirect(CheckYourBenefitsController.show(taxYear,employmentId)))
         }

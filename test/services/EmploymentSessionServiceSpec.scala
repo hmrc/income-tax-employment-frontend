@@ -16,7 +16,7 @@
 
 package services
 
-import config.{AppConfig, ErrorHandler, MockCreateUpdateEmploymentDataConnector, MockEmploymentUserDataRepository, MockIncomeTaxUserDataConnector}
+import config.{AppConfig, ErrorHandler, MockCreateUpdateEmploymentDataConnector, MockEmploymentUserDataRepository, MockExpensesUserDataRepository, MockIncomeTaxUserDataConnector}
 import models.APIErrorBodyModel.parsingError
 import models.{APIErrorBodyModel, APIErrorModel, User}
 import models.employment._
@@ -33,7 +33,7 @@ import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, Serv
 import scala.concurrent.Future
 
 class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataConnector
-  with MockEmploymentUserDataRepository with MockCreateUpdateEmploymentDataConnector {
+  with MockEmploymentUserDataRepository with MockCreateUpdateEmploymentDataConnector with MockExpensesUserDataRepository{
 
   val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
   val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
@@ -46,7 +46,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
   val messages: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   val service: EmploymentSessionService =
-    new EmploymentSessionService(mockEmploymentUserDataRepository, mockUserDataConnector, mockAppConfig, messages,
+    new EmploymentSessionService(mockEmploymentUserDataRepository, mockExpensesUserDataRepository, mockUserDataConnector, mockAppConfig, messages,
       errorHandler, mockCreateUpdateEmploymentDataConnector, mockExecutionContext)
 
   val taxYear = 2022
@@ -150,12 +150,33 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
   )
 
   "getAndHandle" should {
+    "redirect if no data and redirect is set to true" in {
+
+      mockFind(taxYear,"employmentId",None)
+      mockFindNoContent(nino,taxYear)
+      val response = service.getAndHandle(taxYear, "employmentId",true)((_,_) => Future(Ok))
+
+      status(response) shouldBe SEE_OTHER
+    }
+
     "return an error if the call failed" in {
 
       mockFind(taxYear,"employmentId",None)
       mockFindFail(nino,taxYear)
 
       val response = service.getAndHandle(taxYear, "employmentId")((_,_) => Future(Ok))
+
+      status(response) shouldBe INTERNAL_SERVER_ERROR
+    }
+  }
+  "getAndHandleExpenses" should {
+
+    "return an error if the call failed" in {
+
+      mockFindFail(nino,taxYear)
+      mockFind(taxYear,None)
+
+      val response = service.getAndHandleExpenses(taxYear)((_,_) => Future(Ok))
 
       status(response) shouldBe INTERNAL_SERVER_ERROR
     }
@@ -433,33 +454,33 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
     "return the latest expenses data" when {
       "only hmrc data is found in year" in {
         val response = service.getLatestExpenses(allEmploymentData, true)
-        response shouldBe allEmploymentData.hmrcExpenses
+        response shouldBe Some((allEmploymentData.hmrcExpenses.get,false))
       }
       "only hmrc data is found at the end of the year" in {
         val response = service.getLatestExpenses(allEmploymentData.copy(customerExpenses = None), false)
-        response shouldBe allEmploymentData.hmrcExpenses
+        response shouldBe Some((allEmploymentData.hmrcExpenses.get,false))
       }
       "only customer data is found at the end of the year" in {
         val response = service.getLatestExpenses(allEmploymentData.copy(hmrcExpenses = None), false)
-        response shouldBe allEmploymentData.customerExpenses
+        response shouldBe Some((allEmploymentData.customerExpenses.get,true))
       }
       "there is both customer and hmrc data" in {
         val response = service.getLatestExpenses(allEmploymentData, false)
-        response shouldBe allEmploymentData.customerExpenses
+        response shouldBe Some((allEmploymentData.customerExpenses.get,true))
       }
       "there is both customer and hmrc data but customer has a time submitted" in {
         val response = service.getLatestExpenses(allEmploymentData.copy(hmrcExpenses = allEmploymentData.hmrcExpenses.map(_.copy(submittedOn = None))), false)
-        response shouldBe allEmploymentData.customerExpenses
+        response shouldBe Some((allEmploymentData.customerExpenses.get,true))
       }
       "there is both customer and hmrc data but neither has a time submitted" in {
         val response = service.getLatestExpenses(allEmploymentData.copy(hmrcExpenses = allEmploymentData.hmrcExpenses.map(_.copy(submittedOn = None)),
           customerExpenses = allEmploymentData.customerExpenses.map(_.copy(submittedOn = None))), false)
-        response shouldBe allEmploymentData.customerExpenses.map(_.copy(submittedOn = None))
+        response shouldBe Some((allEmploymentData.customerExpenses.map(_.copy(submittedOn = None)).get, true))
       }
       "there is both customer and hmrc data but customer is the latest" in {
         val response = service.getLatestExpenses(allEmploymentData.copy(
           customerExpenses = allEmploymentData.customerExpenses.map(_.copy(submittedOn = Some("2020-02-04T05:01:01Z")))), false)
-        response shouldBe allEmploymentData.customerExpenses.map(_.copy(submittedOn = Some("2020-02-04T05:01:01Z")))
+        response shouldBe Some((allEmploymentData.customerExpenses.map(_.copy(submittedOn = Some("2020-02-04T05:01:01Z"))).get, true))
       }
       "there are no expenses" in {
         val response = service.getLatestExpenses(allEmploymentData.copy(hmrcExpenses = None,customerExpenses = None), false)
