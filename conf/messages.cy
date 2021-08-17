@@ -230,8 +230,8 @@ employment.expenses.expense.type.job = Job expenses
 employment.expenses.expense.type.hotel-and-meal = Hotel and meal expenses
 employment.expenses.expense.type.vehicle = Vehicle expense
 employment.expenses.expense.type.mileage-allowance = Mileage allowance relief
-employment.expenses.sub-heading.individual.single = Your employment expenses are based on the information we already hold about you.
-employment.expenses.sub-heading.agent.single = Your client’s employment expenses are based on information we already hold about them.
+employment.expenses.sub-heading.individual.nonMultiple = Your employment expenses are based on the information we already hold about you.
+employment.expenses.sub-heading.agent.nonMultiple = Your client’s employment expenses are based on information we already hold about them.
 employment.expenses.sub-heading.individual.multiple = Your employment expenses are based on the information we already hold about you. This is a total of expenses from all employment in the tax year.
 employment.expenses.sub-heading.agent.multiple = Your client’s employment expenses are based on information we already hold about them. This is a total of expenses from all employment in the tax year.
 

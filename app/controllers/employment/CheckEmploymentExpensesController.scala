@@ -49,13 +49,14 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
 
     val isInYear: Boolean = inYearAction.inYear(taxYear)
 
-    def isSingleEmployment(allEmploymentData: AllEmploymentData):Boolean = {
-      employmentSessionService.getLatestEmploymentData(allEmploymentData,isInYear).length ==1
+    def isMultipleEmployments(allEmploymentData: AllEmploymentData): Boolean = {
+      employmentSessionService.getLatestEmploymentData(allEmploymentData, isInYear).length > 1
     }
 
     def inYearResult(allEmploymentData: AllEmploymentData): Result = {
       allEmploymentData.hmrcExpenses match {
-        case Some(EmploymentExpenses(_, _, _, Some(expenses))) => performAuditAndRenderView(expenses,taxYear,isInYear, isSingleEmployment(allEmploymentData))
+        case Some(EmploymentExpenses(_, _, _, Some(expenses))) => performAuditAndRenderView(expenses, taxYear, isInYear,
+          isMultipleEmployments(allEmploymentData))
         case _ => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
@@ -68,11 +69,13 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
               employmentSessionService.createOrUpdateExpensesSessionData(ExpensesCYAModel.makeModel(expenses, isUsingCustomerData),
                 taxYear, isPriorSubmission = true
               )(errorHandler.internalServerError()) {
-                performAuditAndRenderView(expenses, taxYear, isInYear, isSingleEmployment(allEmploymentData))
+                performAuditAndRenderView(expenses, taxYear, isInYear, isMultipleEmployments(allEmploymentData))
               }
-            case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear, isSingleEmployment(allEmploymentData)))
+            case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear, isMultipleEmployments(allEmploymentData)))
           }
-        case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear, None))
+          //No employments is ok?
+        case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear, isMultipleEmployments = false))
+      }
     }
 
     if (isInYear) {
@@ -82,7 +85,7 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
         cya match {
           case Some(cya) =>
             val expenses = cya.expensesCya
-            Future(performAuditAndRenderView(expenses.expenses, taxYear, isInYear))
+            Future(performAuditAndRenderView(expenses.expenses, taxYear, isInYear, prior.map(isMultipleEmployments).getOrElse(false)))
           case None =>
             saveCYAAndReturnEndOfYearResult(prior)
         }
@@ -90,16 +93,16 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
     }
   }
 
-  def performAuditAndRenderView(expenses:Expenses, taxYear: Int, isInYear: Boolean)
-                               (implicit user: User[AnyContent]): Result ={
+  def performAuditAndRenderView(expenses: Expenses, taxYear: Int, isInYear: Boolean, isMultipleEmployments: Boolean)
+                               (implicit user: User[AnyContent]): Result = {
     val auditModel = ViewEmploymentExpensesAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, expenses)
     auditService.auditModel[ViewEmploymentExpensesAudit](auditModel.toAuditModel)
-    Ok(checkEmploymentExpensesView(taxYear, expenses, isInYear, isSingleEmployment))
+    Ok(checkEmploymentExpensesView(taxYear, expenses, isInYear, isMultipleEmployments))
   }
 
-  def submit(taxYear:Int): Action[AnyContent] = authorisedAction.async { implicit user =>
+  def submit(taxYear: Int): Action[AnyContent] = authorisedAction.async { implicit user =>
 
-    inYearAction.notInYear(taxYear){
+    inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandleExpenses(taxYear) { (cya, prior) =>
         cya match {
           case Some(cya) =>
