@@ -88,7 +88,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
           )
           case None =>
             prior.fold(Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))) {
-              prior => saveCYAAndReturnEndOfYearResult(prior)
+              saveCYAAndReturnEndOfYearResult
             }
         }
       }

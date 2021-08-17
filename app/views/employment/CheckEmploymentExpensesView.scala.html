@@ -19,7 +19,6 @@
 @import views.html.templates.helpers.Heading
 @import utils.ViewUtils.summaryListRow
 @import views.html.templates.helpers.Link
-@import models.employment.EmploymentExpenses
 @import models.employment.Expenses
 @import utils.ViewUtils.bigDecimalCurrency
 
@@ -32,7 +31,7 @@
         link: Link,
 )
 
-@(taxYear: Int, employmentExpenses: EmploymentExpenses)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, expenses: Expenses, isInYear: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = messages(s"employment.expenses.title.${if(user.isAgent) "agent" else "individual"}"), taxYear = Some(taxYear), isAgent = user.isAgent) {
     @heading(
@@ -50,8 +49,6 @@
     }
 
     @{
-        val expenses: Option[Expenses] = employmentExpenses.expenses
-
         def toSummaryListRow(key: String, amountOpt: Option[BigDecimal]): Option[SummaryListRow] = {
             amountOpt.map { amount =>
                 summaryListRow(
@@ -63,22 +60,20 @@
             }
         }
 
-        expenses.map { expense =>
-            govukSummaryList(
-                SummaryList(
-                    Seq(
-                        toSummaryListRow(messages("employment.expenses.expense.type.business-travel"), expense.businessTravelCosts),
-                        toSummaryListRow(messages("employment.expenses.expense.type.job"), expense.jobExpenses),
-                        toSummaryListRow(messages("employment.expenses.expense.type.flat-rate-job"), expense.flatRateJobExpenses),
-                        toSummaryListRow(messages("employment.expenses.expense.type.professional-subscriptions"), expense.professionalSubscriptions),
-                        toSummaryListRow(messages("employment.expenses.expense.type.hotel-and-meal"), expense.hotelAndMealExpenses),
-                        toSummaryListRow(messages("employment.expenses.expense.type.other-and-capital-allowances"), expense.otherAndCapitalAllowances),
-                        toSummaryListRow(messages("employment.expenses.expense.type.vehicle"), expense.vehicleExpenses),
-                        toSummaryListRow(messages("employment.expenses.expense.type.mileage-allowance"), expense.mileageAllowanceRelief),
-                    ).collect { case Some(summaryListRow) => summaryListRow }
-                )
+        govukSummaryList(
+            SummaryList(
+                Seq(
+                    toSummaryListRow(messages("employment.expenses.expense.type.business-travel"), expenses.businessTravelCosts),
+                    toSummaryListRow(messages("employment.expenses.expense.type.job"), expenses.jobExpenses),
+                    toSummaryListRow(messages("employment.expenses.expense.type.flat-rate-job"), expenses.flatRateJobExpenses),
+                    toSummaryListRow(messages("employment.expenses.expense.type.professional-subscriptions"), expenses.professionalSubscriptions),
+                    toSummaryListRow(messages("employment.expenses.expense.type.hotel-and-meal"), expenses.hotelAndMealExpenses),
+                    toSummaryListRow(messages("employment.expenses.expense.type.other-and-capital-allowances"), expenses.otherAndCapitalAllowances),
+                    toSummaryListRow(messages("employment.expenses.expense.type.vehicle"), expenses.vehicleExpenses),
+                    toSummaryListRow(messages("employment.expenses.expense.type.mileage-allowance"), expenses.mileageAllowanceRelief),
+                ).collect { case Some(summaryListRow) => summaryListRow }
             )
-        }
+        )
 
     }
 

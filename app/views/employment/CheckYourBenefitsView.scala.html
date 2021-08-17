@@ -30,7 +30,7 @@
     govukInsetText: GovukInsetText,
 )
 
-@(taxYear: Int, benefits: Benefits)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, benefits: Benefits, isInYear: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @headingForUse = @{messages(s"checkYourBenefits.heading.${if(user.isAgent) "agent" else "individual"}")}
 
