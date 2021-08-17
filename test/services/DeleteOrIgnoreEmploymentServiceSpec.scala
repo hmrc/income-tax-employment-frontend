@@ -58,25 +58,12 @@ class DeleteOrIgnoreEmploymentServiceSpec extends UnitTest with MockDeleteOrIgno
     )
 
     val data:AllEmploymentData = AllEmploymentData(
-      hmrcEmploymentData = Seq(empSource),hmrcExpenses = None,customerEmploymentData = Seq(empSource), None
+      hmrcEmploymentData = Seq(empSource),hmrcExpenses = None,customerEmploymentData = Seq(empSource.copy(employmentId = "002")), None
     )
 
   ".deleteOrIgnoreEmployment" should {
 
     "return a successful result" when {
-
-      "there is both hmrc data and customer data" which {
-
-        "toRemove is equal to 'ALL'" in {
-
-          mockDeleteOrIgnoreEmploymentRight(nino, taxYear, employmentId, "ALL" )
-
-          val response = service.deleteOrIgnoreEmployment(user, data, taxYear, employmentId)(Ok)
-
-          await(response) shouldBe Ok
-
-        }
-      }
 
       "there is hmrc data and no customer data" which {
 
@@ -95,9 +82,9 @@ class DeleteOrIgnoreEmploymentServiceSpec extends UnitTest with MockDeleteOrIgno
 
         "toRemove is equal to 'CUSTOMER'" in {
 
-          mockDeleteOrIgnoreEmploymentRight(nino, taxYear, employmentId, "CUSTOMER" )
+          mockDeleteOrIgnoreEmploymentRight(nino, taxYear, "002", "CUSTOMER" )
 
-          val response = service.deleteOrIgnoreEmployment(user, data.copy(hmrcEmploymentData = Seq()), taxYear, employmentId)(Ok)
+          val response = service.deleteOrIgnoreEmployment(user, data.copy(hmrcEmploymentData = Seq()), taxYear, "002")(Ok)
 
           await(response) shouldBe Ok
 
@@ -110,17 +97,15 @@ class DeleteOrIgnoreEmploymentServiceSpec extends UnitTest with MockDeleteOrIgno
 
       "there is no hmrc or customer data" in {
 
-        mockDeleteOrIgnoreEmploymentRight(nino, taxYear, employmentId, "CUSTOMER" )
+        mockDeleteOrIgnoreEmploymentRight(nino, taxYear, "002", "CUSTOMER" )
 
-        val response = service.deleteOrIgnoreEmployment(user, data.copy(hmrcEmploymentData = Seq(), customerEmploymentData = Seq()), taxYear, employmentId)(Ok)
+        val response = service.deleteOrIgnoreEmployment(user, data.copy(hmrcEmploymentData = Seq(), customerEmploymentData = Seq()), taxYear, "002")(Ok)
 
         await(response) shouldBe Redirect(EmploymentSummaryController.show(taxYear).url)
 
       }
 
       "there is no employment data for that employment id" in {
-
-        mockDeleteOrIgnoreEmploymentRight(nino, taxYear, employmentId, "CUSTOMER" )
 
         val response = service.deleteOrIgnoreEmployment(user, data, taxYear, differentEmploymentId)(Ok)
 
@@ -130,9 +115,9 @@ class DeleteOrIgnoreEmploymentServiceSpec extends UnitTest with MockDeleteOrIgno
 
       "the connector throws a Left" in {
 
-        mockDeleteOrIgnoreEmploymentLeft(nino, taxYear, employmentId, "ALL" )
+        mockDeleteOrIgnoreEmploymentLeft(nino, taxYear, "002", "CUSTOMER" )
 
-        val response = service.deleteOrIgnoreEmployment(user, data, taxYear, employmentId)(Ok)
+        val response = service.deleteOrIgnoreEmployment(user, data, taxYear, "002")(Ok)
 
         status(response) shouldBe INTERNAL_SERVER_ERROR
 
