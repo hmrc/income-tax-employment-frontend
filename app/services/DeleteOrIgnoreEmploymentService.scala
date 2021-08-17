@@ -39,9 +39,8 @@ class DeleteOrIgnoreEmploymentService @Inject() (deleteOrIgnoreEmploymentConnect
                               (implicit request: Request[_], hc: HeaderCarrier): Future[Result] = {
 
       (customerData(employmentData, employmentId), hmrcData(employmentData, employmentId)) match {
-        case (Some(_), Some(_)) => handleConnectorCall(user, taxYear, employmentId, all)(result)
-        case (None, Some(_)) => handleConnectorCall(user, taxYear, employmentId, hmrcHeld)(result)
-        case (Some(_), None) => handleConnectorCall(user, taxYear, employmentId, customer)(result)
+        case (_, Some(_)) => handleConnectorCall(user, taxYear, employmentId, hmrcHeld)(result)
+        case (Some(_), _) => handleConnectorCall(user, taxYear, employmentId, customer)(result)
         case (None, None) =>
           logger.info(s"[DeleteOrIgnoreEmploymentService][deleteOrIgnoreEmployment]" +
             s" No employment data found for user and employmentId. SessionId: ${user.sessionId}")

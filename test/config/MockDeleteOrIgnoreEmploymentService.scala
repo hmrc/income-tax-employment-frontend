@@ -30,8 +30,10 @@ trait MockDeleteOrIgnoreEmploymentService extends MockFactory {
 
   val mockDeleteOrIgnoreEmploymentService: DeleteOrIgnoreEmploymentService = mock[DeleteOrIgnoreEmploymentService]
 
-  def mockDeleteOrIgnore(user: User[_], employmentData: AllEmploymentData, taxYear: Int, employmentId: String)(result: Result): CallHandler7[User[_], AllEmploymentData, Int, String, Result, Request[_], HeaderCarrier, Future[Result]] = {
-    (mockDeleteOrIgnoreEmploymentService.deleteOrIgnoreEmployment(_: User[_], _: AllEmploymentData, _: Int, _: String)(_: Result)(_: Request[_], _:HeaderCarrier))
+  def mockDeleteOrIgnore(user: User[_], employmentData: AllEmploymentData, taxYear: Int, employmentId: String)
+                        (result: Result): CallHandler7[User[_], AllEmploymentData, Int, String, Result, Request[_], HeaderCarrier, Future[Result]] = {
+    (mockDeleteOrIgnoreEmploymentService.deleteOrIgnoreEmployment(_: User[_],
+      _: AllEmploymentData, _: Int, _: String)(_: Result)(_: Request[_], _:HeaderCarrier))
       .expects(user, employmentData, taxYear, employmentId, result, *, *)
       .returns(Future.successful(result))
       .anyNumberOfTimes()
