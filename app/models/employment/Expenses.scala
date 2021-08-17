@@ -18,14 +18,14 @@ package models.employment
 
 import play.api.libs.json.{Json, OFormat}
 
-case class Expenses(businessTravelCosts: Option[BigDecimal],
-                    jobExpenses: Option[BigDecimal],
-                    flatRateJobExpenses: Option[BigDecimal],
-                    professionalSubscriptions: Option[BigDecimal],
-                    hotelAndMealExpenses: Option[BigDecimal],
-                    otherAndCapitalAllowances: Option[BigDecimal],
-                    vehicleExpenses: Option[BigDecimal],
-                    mileageAllowanceRelief: Option[BigDecimal])
+case class Expenses(businessTravelCosts: Option[BigDecimal] = None,
+                    jobExpenses: Option[BigDecimal] = None,
+                    flatRateJobExpenses: Option[BigDecimal] = None,
+                    professionalSubscriptions: Option[BigDecimal] = None,
+                    hotelAndMealExpenses: Option[BigDecimal] = None,
+                    otherAndCapitalAllowances: Option[BigDecimal] = None,
+                    vehicleExpenses: Option[BigDecimal] = None,
+                    mileageAllowanceRelief: Option[BigDecimal] = None)
 
 object Expenses {
   implicit val format: OFormat[Expenses] = Json.format[Expenses]

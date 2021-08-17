@@ -16,18 +16,20 @@
 
 package controllers.employment
 
+import models.{IncomeTaxUserData, User}
+import models.mongo.{EmploymentCYAModel, EmploymentUserData, ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
 import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.ws.WSResponse
-import utils.{IntegrationTest, ViewHelpers}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 
-class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach {
+class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper{
 
-  val url = s"$appUrl/$taxYear/check-employment-expenses"
+  def url(taxYearToUse: Int = taxYear) = s"$appUrl/$taxYearToUse/check-employment-expenses"
 
   object Selectors {
     val headingSelector = "#main-content > div > div > header > h1"
@@ -43,16 +45,16 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedH1: String
     val expectedTitle: String
     val expectedContent: String
-    val expectedInsetText: String
+    def expectedInsetText(taxYear:Int = taxYear): String
   }
 
   trait CommonExpectedResults {
-    val expectedCaption: String
+    def expectedCaption(taxYear:Int = taxYear): String
     val fieldNames: Seq[String]
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    def expectedCaption(taxYear:Int = taxYear) = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val fieldNames = Seq("Amount for business travel and subsistence expenses",
       "Job expenses",
       "Uniform, work cloths and tools (Flat rate expenses)",
@@ -64,7 +66,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    def expectedCaption(taxYear:Int = taxYear) = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val fieldNames = Seq("Amount for business travel and subsistence expenses",
       "Job expenses",
       "Uniform, work cloths and tools (Flat rate expenses)",
@@ -80,7 +82,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedTitle = "Check your employment expenses"
     val expectedContent = "Your employment expenses are based on the information we already hold about you. " +
       "This is a total of expenses from all employment in the tax year."
-    val expectedInsetText = s"You cannot update your employment expenses until 6 April $taxYear."
+    def expectedInsetText(taxYear:Int = taxYear) = s"You cannot update your employment expenses until 6 April $taxYear."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -88,7 +90,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedTitle = "Check your client’s employment expenses"
     val expectedContent = "Your client’s employment expenses are based on information we already hold about them. " +
       "This is a total of expenses from all employment in the tax year."
-    val expectedInsetText = s"You cannot update your client’s employment expenses until 6 April $taxYear."
+    def expectedInsetText(taxYear:Int = taxYear) = s"You cannot update your client’s employment expenses until 6 April $taxYear."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -96,7 +98,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedTitle = "Check your employment expenses"
     val expectedContent = "Your employment expenses are based on the information we already hold about you. " +
       "This is a total of expenses from all employment in the tax year."
-    val expectedInsetText = s"You cannot update your employment expenses until 6 April $taxYear."
+    def expectedInsetText(taxYear:Int = taxYear) = s"You cannot update your employment expenses until 6 April $taxYear."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -104,7 +106,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedTitle = "Check your client’s employment expenses"
     val expectedContent = "Your client’s employment expenses are based on information we already hold about them. " +
       "This is a total of expenses from all employment in the tax year."
-    val expectedInsetText = s"You cannot update your client’s employment expenses until 6 April $taxYear."
+    def expectedInsetText(taxYear:Int = taxYear) = s"You cannot update your client’s employment expenses until 6 April $taxYear."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -123,18 +125,131 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         "return a fully populated page when all the fields are populated" which {
 
           implicit lazy val result: WSResponse = {
+            dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
-            urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(url(), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(user.commonExpectedResults.expectedCaption)
+          captionCheck(user.commonExpectedResults.expectedCaption())
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedInsetText, insetTextSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedInsetText(), insetTextSelector)
+          textOnPageCheck(user.commonExpectedResults.fieldNames.head, summaryListRowFieldNameSelector(1))
+          textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(1), summaryListRowFieldNameSelector(2))
+          textOnPageCheck("£2", summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(2), summaryListRowFieldNameSelector(3))
+          textOnPageCheck("£3", summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(3), summaryListRowFieldNameSelector(4))
+          textOnPageCheck("£4", summaryListRowFieldAmountSelector(4))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(4), summaryListRowFieldNameSelector(5))
+          textOnPageCheck("£5", summaryListRowFieldAmountSelector(5))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(5), summaryListRowFieldNameSelector(6))
+          textOnPageCheck("£6", summaryListRowFieldAmountSelector(6))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(6), summaryListRowFieldNameSelector(7))
+          textOnPageCheck("£7", summaryListRowFieldAmountSelector(7))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(7), summaryListRowFieldNameSelector(8))
+          textOnPageCheck("£8", summaryListRowFieldAmountSelector(8))
+          welshToggleCheck(user.isWelsh)
+        }
+
+        "return a fully populated page when all the fields are populated at the end of the year" which {
+
+          implicit lazy val result: WSResponse = {
+            dropExpensesDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear-1)
+            urlGet(url(taxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYear-1))
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedInsetText(taxYear-1), insetTextSelector)
+          textOnPageCheck(user.commonExpectedResults.fieldNames.head, summaryListRowFieldNameSelector(1))
+          textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(1), summaryListRowFieldNameSelector(2))
+          textOnPageCheck("£2", summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(2), summaryListRowFieldNameSelector(3))
+          textOnPageCheck("£3", summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(3), summaryListRowFieldNameSelector(4))
+          textOnPageCheck("£4", summaryListRowFieldAmountSelector(4))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(4), summaryListRowFieldNameSelector(5))
+          textOnPageCheck("£5", summaryListRowFieldAmountSelector(5))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(5), summaryListRowFieldNameSelector(6))
+          textOnPageCheck("£6", summaryListRowFieldAmountSelector(6))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(6), summaryListRowFieldNameSelector(7))
+          textOnPageCheck("£7", summaryListRowFieldAmountSelector(7))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(7), summaryListRowFieldNameSelector(8))
+          textOnPageCheck("£8", summaryListRowFieldAmountSelector(8))
+          welshToggleCheck(user.isWelsh)
+        }
+        "return a empty populated page when all the fields are empty at the end of the year" which {
+
+          implicit lazy val result: WSResponse = {
+            dropExpensesDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(fullEmploymentsModel(None).copy(hmrcExpenses = None)), nino, taxYear-1)
+            urlGet(url(taxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYear-1))
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedInsetText(taxYear-1), insetTextSelector)
+          welshToggleCheck(user.isWelsh)
+        }
+        "return a empty populated page when there is no prior data at the end of the year" which {
+
+          implicit lazy val result: WSResponse = {
+            dropExpensesDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(IncomeTaxUserData(), nino, taxYear-1)
+            urlGet(url(taxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYear-1))
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedInsetText(taxYear-1), insetTextSelector)
+          welshToggleCheck(user.isWelsh)
+        }
+
+        "return a fully populated page when all the fields are populated at the end of the year when there is CYA data" which {
+
+          def expensesUserData(isPrior: Boolean, employmentCyaModel: ExpensesCYAModel): ExpensesUserData =
+            ExpensesUserData(sessionId, mtditid, nino, taxYear-1, isPriorSubmission = isPrior, employmentCyaModel)
+
+          val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+
+          implicit lazy val result: WSResponse = {
+            dropExpensesDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            insertExpensesCyaData(expensesUserData(true,ExpensesCYAModel(employmentExpenses.expenses.get,true)),userRequest)
+            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear-1)
+            urlGet(url(taxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYear-1))
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedInsetText(taxYear-1), insetTextSelector)
           textOnPageCheck(user.commonExpectedResults.fieldNames.head, summaryListRowFieldNameSelector(1))
           textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
           textOnPageCheck(user.commonExpectedResults.fieldNames(1), summaryListRowFieldNameSelector(2))
@@ -157,9 +272,10 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         "redirect to overview page when theres no expenses" in {
 
           lazy val result: WSResponse = {
+            dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(userData(fullEmploymentsModel(None).copy(hmrcExpenses = None)),nino,taxYear)
-            urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(url(), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           result.status shouldBe SEE_OTHER
@@ -168,11 +284,72 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
         "returns an action when auth call fails" which {
           lazy val result: WSResponse = {
+            dropExpensesDB()
             unauthorisedAgentOrIndividual(user.isAgent)
-            urlGet(url, welsh = user.isWelsh)
+            urlGet(url(), welsh = user.isWelsh)
           }
           "has an UNAUTHORIZED(401) status" in {
             result.status shouldBe UNAUTHORIZED
+          }
+        }
+      }
+    }
+  }
+
+  ".submit" when {
+
+    userScenarios.foreach { user =>
+      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+
+        "return a redirect when in year" which {
+
+          implicit lazy val result: WSResponse = {
+            dropExpensesDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
+            urlPost(url(), body = "{}", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has a url of overview page" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+          }
+        }
+
+        "return internal server error page whilst not implemented" in {
+          def expensesUserData(isPrior: Boolean, employmentCyaModel: ExpensesCYAModel): ExpensesUserData =
+            ExpensesUserData(sessionId, mtditid, nino, taxYear-1, isPriorSubmission = isPrior, employmentCyaModel)
+
+          val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+
+          implicit lazy val result: WSResponse = {
+            dropExpensesDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            insertExpensesCyaData(expensesUserData(true,ExpensesCYAModel(employmentExpenses.expenses.get,true)),userRequest)
+            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear-1)
+            urlPost(url(taxYear-1), body = "{}", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          result.status shouldBe INTERNAL_SERVER_ERROR
+        }
+        "return a redirect to show method when at end of year" which {
+
+          implicit lazy val result: WSResponse = {
+            dropExpensesDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear-1)
+            urlPost(url(taxYear-1), body = "{}", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has a url of expenses show method" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-expenses")
           }
         }
       }

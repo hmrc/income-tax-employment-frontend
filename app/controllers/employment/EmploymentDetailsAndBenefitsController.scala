@@ -18,8 +18,8 @@ package controllers.employment
 
 import config.AppConfig
 import controllers.predicates.{AuthorisedAction, InYearAction}
-
 import javax.inject.Inject
+import models.employment.EmploymentSource
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
@@ -44,22 +44,20 @@ class EmploymentDetailsAndBenefitsController @Inject()(implicit val cc: Messages
     employmentSessionService.findPreviousEmploymentUserData(user, taxYear){ allEmploymentData =>
 
       val isInYear: Boolean = inYearAction.inYear(taxYear)
+
       val latestExpenses = employmentSessionService.getLatestExpenses(allEmploymentData, isInYear)
       val doExpensesExist = latestExpenses.isDefined
 
-      val unignoredHMRCEmployments = allEmploymentData.hmrcEmploymentData.filter(_.dateIgnored.isEmpty)
-      val unignoredCustomerEmployments = allEmploymentData.customerEmploymentData.filter(_.dateIgnored.isEmpty)
+      val employments: Seq[EmploymentSource] = employmentSessionService.getLatestEmploymentData(allEmploymentData,isInYear)
 
-      val isSingleEmployment: Boolean = unignoredHMRCEmployments.filter(_.employmentId != employmentId).isEmpty &&
-        unignoredCustomerEmployments.filter(_.employmentId != employmentId).isEmpty
+      val isSingleEmployment: Boolean = employments.length == 1
 
       val source = employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear)
-
 
       source match {
         case Some((source, _)) =>
           val (name, benefitsIsDefined) = (source.employerName, source.employmentBenefits.isDefined)
-          Ok(employmentDetailsAndBenefitsView(name, employmentId, benefitsIsDefined, taxYear, isInYear, doExpensesExist ,isSingleEmployment))
+          Ok(employmentDetailsAndBenefitsView(name, employmentId, benefitsIsDefined, taxYear, isInYear, doExpensesExist, isSingleEmployment))
         case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }

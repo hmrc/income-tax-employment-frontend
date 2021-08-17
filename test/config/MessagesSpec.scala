@@ -41,7 +41,8 @@ class MessagesSpec extends ViewTest with GuiceOneAppPerSuite {
     "betaBar.banner.message.2",
     "betaBar.banner.message.3",
     "language.day.plural",
-    "language.day.singular"
+    "language.day.singular",
+    "back.text"
   )
 
   lazy val allLanguages: Map[String, Map[String, String]] = app.injector.instanceOf[MessagesApi].messages
