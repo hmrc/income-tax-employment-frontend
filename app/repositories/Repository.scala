@@ -28,6 +28,13 @@ trait Repository {
     equal("taxYear", toBson(taxYear)),
     equal("employmentId", toBson(employmentId))
   )
+
+  def filterExpenses(sessionId: String, mtdItId: String, nino: String, taxYear: Int): Bson = and(
+    equal("sessionId", toBson(sessionId)),
+    equal("mtdItId", toBson(mtdItId)),
+    equal("nino", toBson(nino)),
+    equal("taxYear", toBson(taxYear))
+  )
 }
 
 object Repository extends Repository

@@ -39,7 +39,10 @@ object EmploymentStartDateForm {
       )(EmploymentDate.apply)(EmploymentDate.unapply)
     )
 
-  def fifthAprilDate(taxYear: Int): LocalDate = LocalDate.of(taxYear, 4, 5)
+  val april = 4
+  val startDay = 5
+
+  def fifthAprilDate(taxYear: Int): LocalDate = LocalDate.of(taxYear, april, startDay)
 
   def areDatesEmpty(date: EmploymentDate, isAgent: Boolean): Seq[FormError] = {
     val agentCheck: String = if (isAgent) "agent" else "individual"
