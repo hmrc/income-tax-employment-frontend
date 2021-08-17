@@ -18,8 +18,8 @@ package controllers.employment
 
 import audit.{AuditService, ViewEmploymentExpensesAudit}
 import config.AppConfig
-import controllers.predicates.AuthorisedAction
-import models.employment.EmploymentExpenses
+import controllers.predicates.{AuthorisedAction, InYearAction}
+import models.employment.{EmploymentExpenses, EmploymentSource}
 
 import javax.inject.Inject
 import play.api.i18n.I18nSupport
@@ -35,19 +35,24 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
                                                   checkEmploymentExpensesView: CheckEmploymentExpensesView,
                                                   employmentSessionService: EmploymentSessionService,
                                                   auditService: AuditService,
+                                                  inYearAction: InYearAction,
                                                   implicit val appConfig: AppConfig,
                                                   implicit val mcc: MessagesControllerComponents,
                                                   implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int): Action[AnyContent] = authorisedAction.async { implicit user =>
 
-    employmentSessionService.findPreviousEmploymentUserData(user, taxYear)(allEmploymentData =>
+    employmentSessionService.findPreviousEmploymentUserData(user, taxYear){allEmploymentData =>
+    val isInYear: Boolean = inYearAction.inYear(taxYear)
+    val employments: Seq[EmploymentSource] = employmentSessionService.getLatestEmploymentData(allEmploymentData,isInYear)
+
+    val isSingleEmployment: Boolean = employments.length == 1
       allEmploymentData.hmrcExpenses match {
       case Some(employmentExpenses@EmploymentExpenses(_, _, _, Some(expenses))) =>
         val auditModel = ViewEmploymentExpensesAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, expenses)
         auditService.auditModel[ViewEmploymentExpensesAudit](auditModel.toAuditModel)
-        Ok(checkEmploymentExpensesView(taxYear, employmentExpenses))
+        Ok(checkEmploymentExpensesView(taxYear, employmentExpenses,isSingleEmployment))
       case _ => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-    })
+    }}
   }
 }

@@ -38,7 +38,7 @@
 
 
 @showRows(item: String, value: Option[BigDecimal]) = @{
-    summaryListRow(HtmlContent(messages(item)),HtmlContent(bigDecimalCurrency(value.getOrElse("0").toString)),actions = Seq(), keyClasses="govuk-!-width-two-thirds")
+    summaryListRow(HtmlContent(messages(item)),HtmlContent(bigDecimalCurrency(value.getOrElse("0").toString)),actions = Seq(), keyClasses="govuk-!-width-two-thirds",valueClasses = "govuk-!-width-one-third right-align")
 }
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear)) {

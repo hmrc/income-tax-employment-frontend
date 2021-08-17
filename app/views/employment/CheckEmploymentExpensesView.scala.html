@@ -32,7 +32,7 @@
         link: Link,
 )
 
-@(taxYear: Int, employmentExpenses: EmploymentExpenses)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, employmentExpenses: EmploymentExpenses, isSingleEmployment: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = messages(s"employment.expenses.title.${if(user.isAgent) "agent" else "individual"}"), taxYear = Some(taxYear), isAgent = user.isAgent) {
     @heading(
@@ -41,7 +41,7 @@
         "govuk-!-margin-bottom-3"
     )
 
-    <p class="govuk-body">@messages(s"employment.expenses.sub-heading.${if(user.isAgent) "agent" else "individual"}")</p>
+    <p class="govuk-body">@messages(s"employment.expenses.sub-heading.${if(user.isAgent) "agent" else "individual"}.${if(isSingleEmployment) "single" else "multiple"}")</p>
 
     @{
         govukInsetText(InsetText(
@@ -58,6 +58,7 @@
                     HtmlContent(key),
                     HtmlContent(bigDecimalCurrency(amount.toString)),
                     keyClasses = "govuk-!-width-two-thirds",
+                    valueClasses = "govuk-!-width-one-third right-align",
                     actions = Seq()
                 )
             }
