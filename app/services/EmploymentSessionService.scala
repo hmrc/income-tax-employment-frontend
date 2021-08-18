@@ -229,10 +229,10 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   def createOrUpdateEmploymentResult(taxYear: Int, employmentRequest: CreateUpdateEmploymentRequest)
-                              (implicit user: User[_], hc: HeaderCarrier): Future[Result] ={
+                              (implicit user: User[_], hc: HeaderCarrier): Future[Either[Result,Result]] ={
     createOrUpdateEmployment(taxYear,employmentRequest).map {
-      case Left(error) => errorHandler.handleError(error.status)
-      case Right(_) => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      case Left(error) => Left(errorHandler.handleError(error.status))
+      case Right(_) => Right(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     }
   }
 

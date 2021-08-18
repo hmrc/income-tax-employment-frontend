@@ -28,8 +28,8 @@ import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.employment.AddEmploymentView
-
 import javax.inject.Inject
+import services.RedirectService.employmentDetailsRedirect
 import scala.concurrent.{ExecutionContext, Future}
 
 class AddEmploymentController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -44,36 +44,54 @@ class AddEmploymentController @Inject()(implicit val cc: MessagesControllerCompo
 
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
-    redirectOrRenderView(taxYear){
+    redirectOrRenderView(taxYear) {
       val form = if (getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID).isEmpty) buildForm else buildForm.fill(value = true)
       Future(Ok(addEmploymentView(form, taxYear)))
     }
   }
 
   def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
-    redirectOrRenderView(taxYear){
+    redirectOrRenderView(taxYear) {
       submitForm(taxYear)
     }
+  }
+
+  private def submitForm(taxYear: Int)(implicit user: User[_]): Future[Result] = {
+
+    val idInSession: Option[String] = getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)
+
+    buildForm.bindFromRequest().fold(
+      { formWithErrors =>
+        Future.successful(BadRequest(addEmploymentView(formWithErrors, taxYear)))
+      },
+      {
+        case true => idInSession.fold {
+          val id = UUID.randomUUID
+          Future.successful(Redirect(controllers.employment.routes.EmployerNameController.show(taxYear, id))
+            .addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> id))
+        }{
+          id =>
+            employmentSessionService.getSessionData(taxYear,id).map{
+              _.fold(Redirect(controllers.employment.routes.EmployerNameController.show(taxYear, id))){
+                  cya =>
+                    employmentDetailsRedirect(cya.employment,taxYear,id,cya.isPriorSubmission)
+                }
+            }
+        }
+        case _ =>
+          val redirect = Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+          idInSession.fold(Future.successful(redirect)){
+            id =>
+              employmentSessionService.clear(taxYear,id)(errorHandler.internalServerError())(redirect.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID))
+          }
+      })
   }
 
   private def buildForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
     missingInputError = "AddEmployment.error"
   )
 
-  private def submitForm(taxYear:Int)(implicit user:User[_]): Future[Result] = {
-    buildForm.bindFromRequest().fold(
-      { formWithErrors =>
-        Future.successful(BadRequest(addEmploymentView(formWithErrors, taxYear)))
-      },
-      {
-        case true => val id = UUID.randomUUID
-          Future.successful(Redirect(controllers.employment.routes.EmployerNameController.show(taxYear, id))
-            .addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> id))
-        case _ => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-      })
-  }
-
-  private def redirectOrRenderView(taxYear:Int)(block: => Future[Result])(implicit user:User[_]): Future[Result] = {
+  private def redirectOrRenderView(taxYear: Int)(block: => Future[Result])(implicit user: User[_]): Future[Result] = {
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getPriorData(taxYear).flatMap {
         case Right(IncomeTaxUserData(Some(_))) => Future(Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear)))

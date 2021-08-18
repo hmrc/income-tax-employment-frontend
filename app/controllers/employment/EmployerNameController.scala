@@ -19,17 +19,18 @@ package controllers.employment
 import common.SessionValues
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthorisedAction, InYearAction}
+import forms.employment.EmployerNameForm
+import javax.inject.Inject
+import models.mongo.{EmploymentCYAModel, EmploymentDetails}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
+import services.RedirectService.employmentDetailsRedirect
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.EmployerNameView
-import forms.employment.EmployerNameForm
-import models.mongo.{EmploymentCYAModel, EmploymentDetails}
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
@@ -73,18 +74,13 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
               val updatedCya = cya.copy(cya.employmentDetails.copy(employerName = submittedName))
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
-                if(data.isPriorSubmission){
-                  Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId))
-                }
-                else {
-                  Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)) //TODO direct to next question page during wireup
-                }
+                employmentDetailsRedirect(data.employment,taxYear,employmentId,data.isPriorSubmission)
               }
             case None =>
+              val isPrior = false
               val newCya = EmploymentCYAModel(EmploymentDetails(employerName = submittedName, currentDataIsHmrcHeld = false))
-              employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear, false)(errorHandler.internalServerError()) {
-                Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-                  .removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID) //TODO direct to next question page during wireup
+              employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear, isPrior)(errorHandler.internalServerError()) {
+                employmentDetailsRedirect(newCya,taxYear,employmentId,isPrior)
               }
           }
         }

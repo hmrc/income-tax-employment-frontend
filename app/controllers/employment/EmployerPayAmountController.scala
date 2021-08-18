@@ -19,16 +19,17 @@ package controllers.employment
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.AmountForm
+import javax.inject.Inject
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
+import services.RedirectService.employmentDetailsRedirect
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.EmployerPayAmountView
 
-import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerComponents,
                                             authAction: AuthorisedAction,
@@ -61,21 +62,18 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
       val redirectUrl = controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId).url
 
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { data =>
-
         buildForm(user.isAgent).bindFromRequest().fold(
-          {
-            formWithErrors =>
-              Future.successful(BadRequest(employerPayAmountView(taxYear, formWithErrors,
-                data.employment.employmentDetails.taxablePayToDate, data.employment.employmentDetails.employerName, employmentId)))
-          }
-          ,
+          { formWithErrors =>
+            Future.successful(BadRequest(employerPayAmountView(taxYear, formWithErrors,
+              data.employment.employmentDetails.taxablePayToDate, data.employment.employmentDetails.employerName, employmentId)))
+          },
           {
             amount =>
               val cya = data.employment
               val updatedCyaModel = cya.copy(employmentDetails = cya.employmentDetails.copy(taxablePayToDate = Some(amount)))
               employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
                 isPriorSubmission = data.isPriorSubmission)(errorHandler.internalServerError()) {
-                Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId))
+                employmentDetailsRedirect(updatedCyaModel,taxYear,employmentId,data.isPriorSubmission)
               }
           }
         )

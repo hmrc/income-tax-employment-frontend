@@ -17,17 +17,19 @@
 package controllers.employment
 
 import config.{AppConfig, ErrorHandler}
+import controllers.employment.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.AmountForm
+import javax.inject.Inject
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
+import services.RedirectService.employmentDetailsRedirect
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.EmploymentTaxView
 
-import javax.inject.Inject
 import scala.concurrent.Future
 
 class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComponents,
@@ -39,48 +41,49 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
                                         errorHandler: ErrorHandler,
                                         implicit val clock: Clock
                                        )
-  extends FrontendController(mcc) with I18nSupport with SessionHelper{
+  extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   implicit val ec = mcc.executionContext
 
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+    inYearAction.notInYear(taxYear) {
+      employmentSessionService.getSessionData(taxYear, employmentId).map {
+        case Some(cya) =>
+          val totalTaxToDate = cya.employment.employmentDetails.totalTaxToDate
+          Ok(employmentTaxView(taxYear, user.isAgent, cya.employment.employmentDetails.employerName,
+            controllers.employment.routes.EmploymentTaxController.submit(taxYear, employmentId),
+            totalTaxToDate.fold(form(user.isAgent))(form(user.isAgent).fill), totalTaxToDate))
+        case None => Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId))
+      }
+    }
+  }
+
   def form(isAgent: Boolean): Form[BigDecimal] = {
     AmountForm.amountForm(
-      s"employment.employmentTax.error.noEntry.${if(isAgent) "agent" else "individual"}",
+      s"employment.employmentTax.error.noEntry.${if (isAgent) "agent" else "individual"}",
       "employment.employmentTax.error.format",
       "employment.employmentTax.error.max"
     )
   }
 
-  def show(taxYear: Int, employmentId: String):Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionData(taxYear, employmentId).map {
-          case Some(cya) =>
-            val totalTaxToDate = cya.employment.employmentDetails.totalTaxToDate
-            Ok(employmentTaxView(taxYear, user.isAgent, cya.employment.employmentDetails.employerName,
-              controllers.employment.routes.EmploymentTaxController.submit(taxYear, employmentId),
-              totalTaxToDate.fold(form(user.isAgent))(form(user.isAgent).fill), totalTaxToDate))
-          case None => Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId))
-        }
-      }
-    }
 
-  def submit(taxYear: Int, employmentId: String):Action[AnyContent] = authAction.async { implicit user =>
-    inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionData(taxYear, employmentId).flatMap {
-        case Some(cya) =>
-          form(user.isAgent).bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(employmentTaxView(taxYear, user.isAgent, cya.employment.employmentDetails.employerName,
-              controllers.employment.routes.EmploymentTaxController.submit(taxYear, employmentId),
-              formWithErrors, cya.employment.employmentDetails.totalTaxToDate))),
-            completeForm => {
-              val employmentCYAModel = cya.employment.copy(employmentDetails = cya.employment.employmentDetails.copy(totalTaxToDate = Some(completeForm)))
-              employmentSessionService.createOrUpdateSessionData(
-                employmentId, employmentCYAModel, taxYear, cya.isPriorSubmission)(errorHandler.internalServerError()){
-                Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId))
-              }
+      val redirectUrl = CheckEmploymentDetailsController.show(taxYear, employmentId).url
+
+      employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
+        form(user.isAgent).bindFromRequest().fold(
+          formWithErrors => Future.successful(BadRequest(employmentTaxView(taxYear, user.isAgent, cya.employment.employmentDetails.employerName,
+            controllers.employment.routes.EmploymentTaxController.submit(taxYear, employmentId),
+            formWithErrors, cya.employment.employmentDetails.totalTaxToDate))),
+          completeForm => {
+            val employmentCYAModel = cya.employment.copy(employmentDetails = cya.employment.employmentDetails.copy(totalTaxToDate = Some(completeForm)))
+            employmentSessionService.createOrUpdateSessionData(
+              employmentId, employmentCYAModel, taxYear, cya.isPriorSubmission)(errorHandler.internalServerError()) {
+              employmentDetailsRedirect(employmentCYAModel,taxYear,employmentId,cya.isPriorSubmission)
             }
-          )
-        case None => Future.successful(Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId)))
+          }
+        )
       }
     }
   }
