@@ -16,21 +16,23 @@
 
 package controllers.employment
 
+import java.time.LocalDate
+
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.employment.EmploymentStartDateForm
+import javax.inject.Inject
 import models.employment.EmploymentDate
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
+import services.RedirectService.employmentDetailsRedirect
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.DateTimeUtil.localDateTimeFormat
 import utils.{Clock, SessionHelper}
 import views.html.employment.EmployerStartDateView
 
-import java.time.LocalDate
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
@@ -73,9 +75,8 @@ class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
           { submittedDate =>
             val cya = data.employment
             val updatedCya = cya.copy(cya.employmentDetails.copy(startDate = Some(submittedDate.toLocalDate.toString)))
-            employmentSessionService.createOrUpdateSessionData(
-              employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
-              Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId))
+            employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
+              employmentDetailsRedirect(updatedCya,taxYear,employmentId,data.isPriorSubmission)
             }
           }
         )
