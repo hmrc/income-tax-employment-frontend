@@ -13,7 +13,7 @@
         inputText: InputText
 )
 
-@(taxYear: Int, isAgent: Boolean, employerName: String, action: Call, form: Form[BigDecimal], amount: Option[BigDecimal])(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, employmentId:String, employerName: String, form: Form[BigDecimal], amount: Option[BigDecimal])(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
 
 @titleForUse = @{messages(s"employment.employmentTax.title.${if(user.isAgent) "agent" else "individual"}")}
 @headingForUse = @{messages(s"employment.employmentTax.heading.${if(user.isAgent) "agent" else "individual"}", employerName)}
@@ -39,7 +39,7 @@
 
         @errorSummary(form.errors)
 
-        @formWithCSRF(action = action) {
+        @formWithCSRF(action = controllers.employment.routes.EmploymentTaxController.submit(taxYear, employmentId)) {
                 @inputText(
                         form,
                         id = "amount",
