@@ -202,8 +202,8 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
       val response = service.createOrUpdateEmploymentResult(taxYear,model)
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "/overview"
+      status(response.map(_.right.get)) shouldBe SEE_OTHER
+      redirectUrl(response.map(_.right.get)) shouldBe "/overview"
     }
     "use the request model to make the api call  and handle an error" in {
 
@@ -211,7 +211,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
       val response = service.createOrUpdateEmploymentResult(taxYear,model)
 
-      status(response) shouldBe INTERNAL_SERVER_ERROR
+      status(response.map(_.left.get)) shouldBe INTERNAL_SERVER_ERROR
     }
   }
 
