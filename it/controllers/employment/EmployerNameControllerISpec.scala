@@ -256,7 +256,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
           "redirects to the next question page (PAYE reference)" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYearEOY/view") //TODO - update redirect to next page during wireup
+            result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/employer-paye-reference?employmentId=001")
             lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
             cyamodel.employment.employmentDetails.employerName shouldBe employerName
           }
@@ -276,7 +276,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
           "redirects to the next question page (PAYE reference)" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYearEOY/view") //TODO - update redirect to next page during wireup
+            result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/employer-paye-reference?employmentId=001")
             lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
             cyamodel.employment.employmentDetails.employerName shouldBe employerName
           }
