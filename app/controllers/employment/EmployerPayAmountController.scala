@@ -52,11 +52,11 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
           case Some(cya) =>
             val cyaAmount = cya.employment.employmentDetails.taxablePayToDate
             val priorEmployment = prior.map(priorEmp => employmentSessionService.getLatestEmploymentData(priorEmp, isInYear = false)
-              .filter(priorEmp => priorEmp.employmentId.equals(employmentId))).getOrElse(Seq.empty)
-            val priorAmount = priorEmployment.headOption.flatMap(emp => emp.employmentData.flatMap(empData => empData.pay.flatMap(pay => pay.taxablePayToDate)))
+              .filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
+            val priorAmount = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)))
             lazy val unfilledForm = buildForm(user.isAgent)
             val form: Form[BigDecimal] = cyaAmount.fold(unfilledForm)(
-              cya => if(priorAmount.map(prior => prior.equals(cya)).getOrElse(true)) unfilledForm else buildForm(user.isAgent).fill(cya))
+              cyaPay => if(priorAmount.map(_.equals(cyaPay)).getOrElse(true)) unfilledForm else buildForm(user.isAgent).fill(cyaPay))
 
             Future.successful(Ok(employerPayAmountView(taxYear, form,
               cyaAmount, cya.employment.employmentDetails.employerName, employmentId)))

@@ -53,7 +53,7 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
     )
   }
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String):Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
@@ -61,13 +61,13 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
           case Some(cya) =>
             val cyaTax = cya.employment.employmentDetails.totalTaxToDate
             val priorEmployment = prior.map(priorEmp => employmentSessionService.getLatestEmploymentData(priorEmp, isInYear = false)
-              .filter(priorEmp => priorEmp.employmentId.equals(employmentId))).getOrElse(Seq.empty)
-            val priorTax = priorEmployment.headOption.flatMap(emp => emp.employmentData.flatMap(empData => empData.pay.flatMap(pay => pay.totalTaxToDate)))
+              .filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
+            val priorTax = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)))
             lazy val unfilledForm = buildForm(user.isAgent)
             val form: Form[BigDecimal] = cyaTax.fold(unfilledForm)(
-              cya => if (priorTax.map(prior => prior.equals(cya)).getOrElse(true)) unfilledForm else buildForm(user.isAgent).fill(cya))
+              cyaTaxed => if(priorTax.map(_.equals(cyaTaxed)).getOrElse(true)) unfilledForm else buildForm(user.isAgent).fill(cyaTaxed))
 
-            Future.successful(Ok(employmentTaxView(taxYear, employmentId, cya.employment.employmentDetails.employerName, form, cyaTax)))
+            Future.successful(Ok(employmentTaxView(taxYear, employmentId, cya.employment.employmentDetails.employerName,form, cyaTax)))
 
 
           case None => Future.successful(

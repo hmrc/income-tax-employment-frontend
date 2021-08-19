@@ -60,12 +60,11 @@ class OtherPaymentsAmountController @Inject()(implicit val cc: MessagesControlle
           case Some(cya) if cya.employment.employmentDetails.tipsAndOtherPaymentsQuestion.getOrElse(false) => {
             val cyaTips = cya.employment.employmentDetails.tipsAndOtherPayments
             val priorEmployment = prior.map(priorEmp => employmentSessionService.getLatestEmploymentData(priorEmp, isInYear = false)
-              .filter(priorEmp => priorEmp.employmentId.equals(employmentId))).getOrElse(Seq.empty)
-            val priorTips = priorEmployment.headOption.flatMap(emp => emp.employmentData.flatMap(empData =>
-              empData.pay.flatMap(pay => pay.tipsAndOtherPayments)))
+              .filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
+            val priorTips = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.tipsAndOtherPayments)))
             lazy val unfilledForm = buildForm(user.isAgent)
             val form: Form[BigDecimal] = cyaTips.fold(unfilledForm)(
-              cya => if (priorTips.map(prior => prior.equals(cya)).getOrElse(true)) unfilledForm else buildForm(user.isAgent).fill(cya))
+              cyaOther => if (priorTips.map(_.equals(cyaOther)).getOrElse(true)) unfilledForm else buildForm(user.isAgent).fill(cyaOther))
             Future.successful(Ok(otherPaymentsAmountView(form, taxYear, employmentId, cyaTips)))
           }
           case _ => Future.successful(
