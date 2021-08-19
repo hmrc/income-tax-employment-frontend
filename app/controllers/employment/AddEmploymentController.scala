@@ -31,6 +31,7 @@ import views.html.employment.AddEmploymentView
 import javax.inject.Inject
 import services.RedirectService.employmentDetailsRedirect
 import scala.concurrent.{ExecutionContext, Future}
+import controllers.employment.routes.EmployerNameController
 
 class AddEmploymentController @Inject()(implicit val cc: MessagesControllerComponents,
                                         authAction: AuthorisedAction,
@@ -67,23 +68,17 @@ class AddEmploymentController @Inject()(implicit val cc: MessagesControllerCompo
       {
         case true => idInSession.fold {
           val id = UUID.randomUUID
-          Future.successful(Redirect(controllers.employment.routes.EmployerNameController.show(taxYear, id))
-            .addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> id))
-        }{
+          Future.successful(Redirect(EmployerNameController.show(taxYear, id)).addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> id))
+        } {
           id =>
-            employmentSessionService.getSessionData(taxYear,id).map{
-              _.fold(Redirect(controllers.employment.routes.EmployerNameController.show(taxYear, id))){
-                  cya =>
-                    employmentDetailsRedirect(cya.employment,taxYear,id,cya.isPriorSubmission)
-                }
+            employmentSessionService.getSessionData(taxYear, id).map {
+              _.fold(Redirect(EmployerNameController.show(taxYear, id)))( cya => employmentDetailsRedirect(cya.employment, taxYear, id, cya.isPriorSubmission))
             }
         }
         case _ =>
           val redirect = Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-          idInSession.fold(Future.successful(redirect)){
-            id =>
-              employmentSessionService.clear(taxYear,id)(errorHandler.internalServerError())(redirect.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID))
-          }
+          idInSession.fold(Future.successful(redirect))(employmentSessionService.clear(taxYear, _)(
+            redirect.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)))
       })
   }
 

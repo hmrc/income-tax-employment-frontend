@@ -633,7 +633,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
       mockClear(taxYear, "employmentId", true)
 
-      val response = service.clear(taxYear, "employmentId")(Redirect("400"))(Redirect("303"))
+      val response = service.clear(taxYear, "employmentId")(Redirect("303"))
 
       status(response) shouldBe SEE_OTHER
       redirectUrl(response) shouldBe "303"
@@ -642,10 +642,9 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
       mockClear(taxYear, "employmentId", false)
 
-      val response = service.clear(taxYear, "employmentId")(Redirect("400"))(Redirect("303"))
+      val response = service.clear(taxYear, "employmentId")(Redirect("303"))
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "400"
+      status(response) shouldBe INTERNAL_SERVER_ERROR
     }
   }
 

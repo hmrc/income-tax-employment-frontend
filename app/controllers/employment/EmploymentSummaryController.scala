@@ -16,8 +16,8 @@
 
 package controllers.employment
 
-import common.UUID
-import config.AppConfig
+import common.{SessionValues, UUID}
+import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import play.api.i18n.I18nSupport
@@ -40,7 +40,8 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
                                             multipleEmploymentsSummaryView: MultipleEmploymentsSummaryView,
                                             singleEmploymentSummaryEOYView: SingleEmploymentSummaryViewEOY,
                                             employmentSessionService: EmploymentSessionService,
-                                            inYearAction: InYearAction
+                                            inYearAction: InYearAction,
+                                            errorHandler: ErrorHandler,
                                            ) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   implicit val executionContext: ExecutionContext = mcc.executionContext
@@ -79,10 +80,20 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
       yesNoForm.bindFromRequest().fold(
         formWithErrors => findPriorDataAndReturnResult(taxYear, false, formWithErrors),
         yesNo => {
+
+          val idInSession: Option[String] = getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)
+          val newId = UUID.randomUUID
+          val redirect = Redirect(EmployerNameController.show(taxYear, newId))
+
           if (yesNo) {
-            Future.successful(Redirect(EmployerNameController.show(taxYear, UUID.randomUUID)))
+            idInSession.fold(Future.successful(redirect.addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> newId)))(
+              employmentSessionService.clear(taxYear,_)(redirect.addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> newId)))
+
           } else {
-            Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+            val redirect = Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+
+            idInSession.fold(Future.successful(redirect))(employmentSessionService.clear(taxYear,_)(
+              redirect.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)))
           }
         }
       )

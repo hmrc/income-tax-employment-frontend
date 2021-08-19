@@ -284,10 +284,10 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     result.flatten
   }
 
-  def clear[R](taxYear: Int, employmentId: String)(onFail: R)(onSuccess: R)(implicit user: User[_]): Future[R] = {
+  def clear(taxYear: Int, employmentId: String)(onSuccess: Result)(implicit user: User[_]): Future[Result] = {
     employmentUserDataRepository.clear(taxYear, employmentId).map {
       case true => onSuccess
-      case false => onFail
+      case false => errorHandler.internalServerError()
     }
   }
 
