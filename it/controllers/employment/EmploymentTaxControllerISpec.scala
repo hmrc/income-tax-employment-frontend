@@ -16,12 +16,13 @@
 
 package controllers.employment
 
+import controllers.employment.routes.CheckEmploymentDetailsController
 import models.User
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
-import play.api.http.Status.OK
+import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -179,7 +180,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
               implicit lazy val result: WSResponse = {
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
-                userDataStub(userData(multipleEmployments), nino, taxYear)
+                noUserDataStub(nino, taxYear)
                 insertCyaData(cya(None, isPriorSubmission = false), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
                 urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
@@ -221,6 +222,34 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
 
               inputFieldValueCheck("100", inputAmountField)
             }
+
+            "cya amount field is filled and prior data is none (i.e user has added a new employment and updated their tax but now want to change it)" when {
+              implicit lazy val result: WSResponse = {
+                authoriseAgentOrIndividual(user.isAgent)
+                dropEmploymentDB()
+                noUserDataStub(nino, taxYear)
+                insertCyaData(cya(Some(100.00), isPriorSubmission = false), User(mtditid, None, nino, sessionId, "agent")(fakeRequest))
+                urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              }
+              implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+              inputFieldValueCheck("100", inputAmountField)
+            }
+          }
+        }
+        "redirect to the CheckYourEmploymentDetails page there is no CYA data" which {
+          lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+          "has an SEE_OTHER status" in {
+            result.status shouldBe SEE_OTHER
+          }
+
+          "redirect to OtherPayments not on P60 page" in {
+            result.header(HeaderNames.LOCATION) shouldBe Some(CheckEmploymentDetailsController.show(taxYear, "001").url)
           }
         }
       }

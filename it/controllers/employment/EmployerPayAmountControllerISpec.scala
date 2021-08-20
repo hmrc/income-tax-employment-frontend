@@ -219,7 +219,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
               implicit lazy val result: WSResponse = {
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
-                userDataStub(userData(multipleEmployments), nino, taxYearEOY)
+                noUserDataStub(nino, taxYearEOY)
                 insertCyaData(cya(payToDate = None, isPriorSubmission = false), User(mtditid, None, nino, sessionId, "agent"))
                 urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
@@ -254,6 +254,19 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
                 dropEmploymentDB()
                 userDataStub(userData(multipleEmployments), nino, taxYearEOY)
                 insertCyaData(cya(Some(100.00)), User(mtditid, None, nino, sessionId, "agent"))
+                urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              }
+
+              implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+              inputFieldValueCheck("100", inputAmountField)
+            }
+            "cya amount field is filled and prior data is none (i.e user has added a new employment and updated their pay but now want to change it)" when {
+              implicit lazy val result: WSResponse = {
+                authoriseAgentOrIndividual(user.isAgent)
+                dropEmploymentDB()
+                noUserDataStub(nino, taxYearEOY)
+                insertCyaData(cya(Some(100.00), isPriorSubmission = false), User(mtditid, None, nino, sessionId, "agent"))
                 urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 

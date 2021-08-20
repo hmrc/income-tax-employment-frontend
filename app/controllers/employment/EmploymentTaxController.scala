@@ -65,7 +65,7 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
             val priorTax = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)))
             lazy val unfilledForm = buildForm(user.isAgent)
             val form: Form[BigDecimal] = cyaTax.fold(unfilledForm)(
-              cyaTaxed => if(priorTax.map(_.equals(cyaTaxed)).getOrElse(true)) unfilledForm else buildForm(user.isAgent).fill(cyaTaxed))
+              cyaTaxed => if(priorTax.map(_.equals(cyaTaxed)).getOrElse(false)) unfilledForm else buildForm(user.isAgent).fill(cyaTaxed))
 
             Future.successful(Ok(employmentTaxView(taxYear, employmentId, cya.employment.employmentDetails.employerName,form, cyaTax)))
 

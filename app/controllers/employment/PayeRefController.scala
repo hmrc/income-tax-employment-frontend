@@ -53,7 +53,7 @@ class PayeRefController @Inject()(implicit val authorisedAction: AuthorisedActio
             val priorRef = priorEmployment.headOption.flatMap(_.employerRef)
             lazy val unfilledForm = PayeForm.payeRefForm(user.isAgent)
             val form: Form[String] = cyaRef.fold(unfilledForm)(
-              cyaPaye => if(priorRef.map(_.equals(cyaPaye)).getOrElse(true)) unfilledForm else PayeForm.payeRefForm(user.isAgent).fill(cyaPaye))
+              cyaPaye => if(priorRef.map(_.equals(cyaPaye)).getOrElse(false)) unfilledForm else PayeForm.payeRefForm(user.isAgent).fill(cyaPaye))
             val employerName = cya.employment.employmentDetails.employerName
             Future.successful(Ok(payeRefView(form, taxYear, employerName, cyaRef, employmentId)))
 

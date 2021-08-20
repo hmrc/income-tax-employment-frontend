@@ -210,7 +210,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
               implicit lazy val result: WSResponse = {
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
-                userDataStub(userData(multipleEmployments), nino, taxYearEOY)
+                noUserDataStub(nino, taxYearEOY)
                 insertCyaData(cya(None, isPriorSubmission = false), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
                 urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
               }
@@ -246,6 +246,20 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
                 userDataStub(userData(multipleEmployments), nino, taxYearEOY)
                 insertCyaData(cya(Some("123/BB124")), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
                 urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              }
+
+              implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+              inputFieldValueCheck("123/BB124", inputAmountField)
+            }
+
+            "cya amount field is filled and prior data is none (i.e user has added a new employment and updated their payeRef but now want to change it)" when {
+              implicit lazy val result: WSResponse = {
+                authoriseAgentOrIndividual(user.isAgent)
+                dropEmploymentDB()
+                noUserDataStub(nino, taxYearEOY)
+                insertCyaData(cya(Some("123/BB124"), isPriorSubmission = false), User(mtditid, None, nino, sessionId, "agent"))
+                urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)

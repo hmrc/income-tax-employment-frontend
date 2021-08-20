@@ -209,8 +209,8 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
               implicit lazy val result: WSResponse = {
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
-                userDataStub(userData(multipleEmployments), nino, taxYearEOY)
-                insertCyaData(cya(None, isPriorSubmission = false), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+                noUserDataStub(nino, taxYearEOY)
+                insertCyaData(cya(tipsAmount = None, isPriorSubmission = false), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
                 urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
               }
 
@@ -243,13 +243,27 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 userDataStub(userData(multipleEmployments), nino, taxYearEOY)
-                insertCyaData(cya(tipsAmount=Some(100.10)), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+                insertCyaData(cya(tipsAmount = Some(100.10)), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
                 urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
               }
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
               inputFieldValueCheck("100.10", Selectors.inputAmountField)
+            }
+
+            "cya amount field is filled and prior data is none (i.e user has added a new employment and updated their tips but now want to change it)" when {
+              implicit lazy val result: WSResponse = {
+                authoriseAgentOrIndividual(user.isAgent)
+                dropEmploymentDB()
+                noUserDataStub(nino, taxYearEOY)
+                insertCyaData(cya(tipsQuestion=Some(true), tipsAmount = Some(100.00), isPriorSubmission = false), User(mtditid, None, nino, sessionId, "agent"))
+                urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              }
+
+              implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+              inputFieldValueCheck("100", Selectors.inputAmountField)
             }
           }
         }
