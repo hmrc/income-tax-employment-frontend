@@ -32,7 +32,15 @@ case class EmploymentDetails(employerName: String,
                              totalTaxToDate: Option[BigDecimal] = None,
                              tipsAndOtherPaymentsQuestion: Option[Boolean] = None,
                              tipsAndOtherPayments: Option[BigDecimal] = None,
-                             currentDataIsHmrcHeld: Boolean)
+                             currentDataIsHmrcHeld: Boolean){
+
+  val isFinished: Boolean = {
+    employerRef.isDefined &&
+      startDate.isDefined &&
+      taxablePayToDate.isDefined &&
+      totalTaxToDate.isDefined //TODO Add extra mandatory fields such as cessationDateQuestion when introduced.
+  }
+}
 
 object EmploymentDetails {
   implicit val format: OFormat[EmploymentDetails] = Json.format[EmploymentDetails]

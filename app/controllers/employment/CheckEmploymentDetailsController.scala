@@ -28,7 +28,7 @@ import models.mongo.EmploymentCYAModel
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.CheckEmploymentDetailsView
@@ -83,10 +83,13 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     } else {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
-          case Some(cya) => Future(
-            performAuditAndRenderView(cya.employment.toEmploymentDetailsView(employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld),
-              taxYear, isInYear)
-          )
+          case Some(cya) =>
+            if(!cya.isPriorSubmission && !cya.employment.employmentDetails.isFinished){
+              Future.successful(RedirectService.employmentDetailsRedirect(cya.employment,taxYear,employmentId,cya.isPriorSubmission))
+            } else {
+              Future.successful(performAuditAndRenderView(cya.employment.toEmploymentDetailsView(
+                employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld), taxYear, isInYear))
+            }
           case None =>
             prior.fold(Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))) {
               saveCYAAndReturnEndOfYearResult
