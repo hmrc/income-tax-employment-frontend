@@ -16,18 +16,21 @@
 
 package controllers.employment
 
+import common.{SessionValues, UUID}
 import controllers.employment.EmploymentSummaryControllerISpec.FullModel._
 import controllers.employment.routes._
-import models.IncomeTaxUserData
+import forms.YesNoForm
+import models.{IncomeTaxUserData, User}
 import models.employment._
+import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.ws.WSResponse
-import utils.{IntegrationTest, ViewHelpers}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
-class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers {
+class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   val url = s"$appUrl/$taxYear/employment-summary"
 
@@ -280,6 +283,69 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           }
           "has an UNAUTHORIZED(401) status" in {
             result.status shouldBe UNAUTHORIZED
+          }
+        }
+      }
+    }
+  }
+
+  ".submit" when {
+    import Selectors._
+
+    val employmentId = UUID.randomUUID
+
+    val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+
+    def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
+      EmploymentUserData(sessionId, mtditid, nino, taxYear -1, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
+
+    def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc))
+
+    val yesNoFormYes: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
+    val yesNoFormNo: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
+    val yesNoFormEmpty: Map[String, String] = Map[String, String]()
+
+    userScenarios.foreach { user =>
+      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+
+        "redirect to name page and  clear any existing new employments" which {
+
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
+            userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear-1)
+            urlPost(s"$appUrl/${taxYear-1}/employment-summary", follow=false, body=yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1,
+              extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "status SEE OTHER" in {
+            result.status shouldBe SEE_OTHER
+          }
+
+          "redirect to employer name page" in {
+            result.header(HeaderNames.LOCATION).get.contains("/income-through-software/return/employment-income/2021/employer-name") shouldBe true
+          }
+        }
+        "redirect to overview page and  clear any existing new employments when selected no" which {
+
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
+            userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear-1)
+            urlPost(s"$appUrl/${taxYear-1}/employment-summary", follow=false, body=yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1,
+              extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "status SEE OTHER" in {
+            result.status shouldBe SEE_OTHER
+          }
+
+          "redirect to employer name page" in {
+            result.header(HeaderNames.LOCATION).get shouldBe "http://localhost:11111/income-through-software/return/2021/view"
           }
         }
       }
