@@ -44,8 +44,9 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   trait SpecificExpectedResults {
     val expectedH1: String
     val expectedTitle: String
-    val expectedContent: String
     def expectedInsetText(taxYear:Int = taxYear): String
+    val expectedContentSingle: String
+    val expectedContentMultiple: String
   }
 
   trait CommonExpectedResults {
@@ -80,7 +81,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedH1 = "Check your employment expenses"
     val expectedTitle = "Check your employment expenses"
-    val expectedContent = "Your employment expenses are based on the information we already hold about you. " +
+    val expectedContentSingle = "Your employment expenses are based on the information we already hold about you."
+    val expectedContentMultiple = "Your employment expenses are based on the information we already hold about you. " +
       "This is a total of expenses from all employment in the tax year."
     def expectedInsetText(taxYear:Int = taxYear) = s"You cannot update your employment expenses until 6 April $taxYear."
   }
@@ -88,7 +90,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedH1 = "Check your client’s employment expenses"
     val expectedTitle = "Check your client’s employment expenses"
-    val expectedContent = "Your client’s employment expenses are based on information we already hold about them. " +
+    val expectedContentSingle = "Your client’s employment expenses are based on information we already hold about them."
+    val expectedContentMultiple = "Your client’s employment expenses are based on information we already hold about them. " +
       "This is a total of expenses from all employment in the tax year."
     def expectedInsetText(taxYear:Int = taxYear) = s"You cannot update your client’s employment expenses until 6 April $taxYear."
   }
@@ -96,7 +99,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedH1 = "Check your employment expenses"
     val expectedTitle = "Check your employment expenses"
-    val expectedContent = "Your employment expenses are based on the information we already hold about you. " +
+    val expectedContentSingle = "Your employment expenses are based on the information we already hold about you."
+    val expectedContentMultiple = "Your employment expenses are based on the information we already hold about you. " +
       "This is a total of expenses from all employment in the tax year."
     def expectedInsetText(taxYear:Int = taxYear) = s"You cannot update your employment expenses until 6 April $taxYear."
   }
@@ -104,7 +108,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedH1 = "Check your client’s employment expenses"
     val expectedTitle = "Check your client’s employment expenses"
-    val expectedContent = "Your client’s employment expenses are based on information we already hold about them. " +
+    val expectedContentSingle = "Your client’s employment expenses are based on information we already hold about them."
+    val expectedContentMultiple = "Your client’s employment expenses are based on information we already hold about them. " +
       "This is a total of expenses from all employment in the tax year."
     def expectedInsetText(taxYear:Int = taxYear) = s"You cannot update your client’s employment expenses until 6 April $taxYear."
   }
@@ -116,6 +121,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
 
+  val multipleEmployments= fullEmploymentsModel(None).copy(hmrcEmploymentData = Seq(employmentDetailsAndBenefitsModel(None,"002"),
+    employmentDetailsAndBenefitsModel(None,"001")))
   ".show" when {
     import Selectors._
 
@@ -136,7 +143,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption())
-          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContentSingle, contentSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetText(), insetTextSelector)
           textOnPageCheck(user.commonExpectedResults.fieldNames.head, summaryListRowFieldNameSelector(1))
           textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
@@ -171,7 +178,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear-1))
-          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContentSingle, contentSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetText(taxYear-1), insetTextSelector)
           textOnPageCheck(user.commonExpectedResults.fieldNames.head, summaryListRowFieldNameSelector(1))
           textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
@@ -205,7 +212,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear-1))
-          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContentSingle, contentSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetText(taxYear-1), insetTextSelector)
           welshToggleCheck(user.isWelsh)
         }
@@ -223,7 +230,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear-1))
-          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContentSingle, contentSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetText(taxYear-1), insetTextSelector)
           welshToggleCheck(user.isWelsh)
         }
@@ -248,7 +255,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear-1))
-          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContentSingle, contentSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetText(taxYear-1), insetTextSelector)
           textOnPageCheck(user.commonExpectedResults.fieldNames.head, summaryListRowFieldNameSelector(1))
           textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
@@ -268,6 +275,41 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           textOnPageCheck("£8", summaryListRowFieldAmountSelector(8))
           welshToggleCheck(user.isWelsh)
         }
+
+        "return a fully populated page with correct paragraph text when all the fields are populated and there are multiple employments" which {
+
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(multipleEmployments), nino, taxYear)
+            urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYear))
+          textOnPageCheck(user.specificExpectedResults.get.expectedContentMultiple, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedInsetText(taxYear), insetTextSelector)
+          textOnPageCheck(user.commonExpectedResults.fieldNames.head, summaryListRowFieldNameSelector(1))
+          textOnPageCheck("£1", summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(1), summaryListRowFieldNameSelector(2))
+          textOnPageCheck("£2", summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(2), summaryListRowFieldNameSelector(3))
+          textOnPageCheck("£3", summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(3), summaryListRowFieldNameSelector(4))
+          textOnPageCheck("£4", summaryListRowFieldAmountSelector(4))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(4), summaryListRowFieldNameSelector(5))
+          textOnPageCheck("£5", summaryListRowFieldAmountSelector(5))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(5), summaryListRowFieldNameSelector(6))
+          textOnPageCheck("£6", summaryListRowFieldAmountSelector(6))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(6), summaryListRowFieldNameSelector(7))
+          textOnPageCheck("£7", summaryListRowFieldAmountSelector(7))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(7), summaryListRowFieldNameSelector(8))
+          textOnPageCheck("£8", summaryListRowFieldAmountSelector(8))
+          welshToggleCheck(user.isWelsh)
+        }
+
 
         "redirect to overview page when theres no expenses" in {
 

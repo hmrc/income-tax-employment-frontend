@@ -20,7 +20,8 @@ import audit.{AuditService, ViewEmploymentExpensesAudit}
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckEmploymentExpensesController
 import controllers.predicates.{AuthorisedAction, InYearAction}
-import models.employment.{AllEmploymentData, EmploymentExpenses, Expenses}
+import models.employment.{AllEmploymentData, EmploymentExpenses, EmploymentSource, Expenses}
+
 import javax.inject.Inject
 import models.User
 import models.mongo.ExpensesCYAModel
@@ -48,9 +49,14 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
 
     val isInYear: Boolean = inYearAction.inYear(taxYear)
 
+    def isMultipleEmployments(allEmploymentData: AllEmploymentData): Boolean = {
+      employmentSessionService.getLatestEmploymentData(allEmploymentData, isInYear).length > 1
+    }
+
     def inYearResult(allEmploymentData: AllEmploymentData): Result = {
       allEmploymentData.hmrcExpenses match {
-        case Some(EmploymentExpenses(_, _, _, Some(expenses))) => performAuditAndRenderView(expenses,taxYear,isInYear)
+        case Some(EmploymentExpenses(_, _, _, Some(expenses))) => performAuditAndRenderView(expenses, taxYear, isInYear,
+          isMultipleEmployments(allEmploymentData))
         case _ => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
@@ -63,11 +69,12 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
               employmentSessionService.createOrUpdateExpensesSessionData(ExpensesCYAModel.makeModel(expenses, isUsingCustomerData),
                 taxYear, isPriorSubmission = true
               )(errorHandler.internalServerError()) {
-                performAuditAndRenderView(expenses, taxYear, isInYear)
+                performAuditAndRenderView(expenses, taxYear, isInYear, isMultipleEmployments(allEmploymentData))
               }
-            case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear))
+            case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear, isMultipleEmployments(allEmploymentData)))
           }
-        case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear))
+          //No employments is ok?
+        case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear, isMultipleEmployments = false))
       }
     }
 
@@ -78,7 +85,7 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
         cya match {
           case Some(cya) =>
             val expenses = cya.expensesCya
-            Future(performAuditAndRenderView(expenses.expenses, taxYear, isInYear))
+            Future(performAuditAndRenderView(expenses.expenses, taxYear, isInYear, prior.map(isMultipleEmployments).getOrElse(false)))
           case None =>
             saveCYAAndReturnEndOfYearResult(prior)
         }
@@ -86,16 +93,16 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
     }
   }
 
-  def performAuditAndRenderView(expenses:Expenses, taxYear: Int, isInYear: Boolean)
-                               (implicit user: User[AnyContent]): Result ={
+  def performAuditAndRenderView(expenses: Expenses, taxYear: Int, isInYear: Boolean, isMultipleEmployments: Boolean)
+                               (implicit user: User[AnyContent]): Result = {
     val auditModel = ViewEmploymentExpensesAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, expenses)
     auditService.auditModel[ViewEmploymentExpensesAudit](auditModel.toAuditModel)
-    Ok(checkEmploymentExpensesView(taxYear, expenses, isInYear))
+    Ok(checkEmploymentExpensesView(taxYear, expenses, isInYear, isMultipleEmployments))
   }
 
-  def submit(taxYear:Int): Action[AnyContent] = authorisedAction.async { implicit user =>
+  def submit(taxYear: Int): Action[AnyContent] = authorisedAction.async { implicit user =>
 
-    inYearAction.notInYear(taxYear){
+    inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandleExpenses(taxYear) { (cya, prior) =>
         cya match {
           case Some(cya) =>

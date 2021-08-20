@@ -196,70 +196,44 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   def fullEmploymentsModel(benefits: Option[EmploymentBenefits]): AllEmploymentData = AllEmploymentData(
-    hmrcEmploymentData = Seq(
-      EmploymentSource(
-        employmentId = "001",
-        employerName = "maggie",
-        employerRef = Some("223/AB12399"),
-        payrollId = Some("123456789999"),
-        startDate = Some("2019-04-21"),
-        cessationDate = Some("2020-03-11"),
-        dateIgnored = None,
-        submittedOn = Some("2020-01-04T05:01:01Z"),
-        employmentData = Some(EmploymentData(
-          submittedOn = "2020-02-12",
-          employmentSequenceNumber = Some("123456789999"),
-          companyDirector = Some(true),
-          closeCompany = Some(false),
-          directorshipCeasedDate = Some("2020-02-12"),
-          occPen = Some(false),
-          disguisedRemuneration = Some(false),
-          pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
-          Some(Deductions(
-            studentLoans = Some(StudentLoans(
-              uglDeductionAmount = Some(100.00),
-              pglDeductionAmount = Some(100.00)
-            ))
-          ))
-        )),
-        employmentBenefits = benefits
-      )
-
-    ),
+    hmrcEmploymentData = Seq(employmentDetailsAndBenefitsModel(benefits,"001")),
     hmrcExpenses = Some(employmentExpenses),
     customerEmploymentData = Seq(),
     customerExpenses = None)
 
+  def employmentDetailsAndBenefitsModel(benefits: Option[EmploymentBenefits],employmentId:String): EmploymentSource =
+    EmploymentSource(
+      employmentId = employmentId,
+      employerName = "maggie",
+      employerRef = Some("223/AB12399"),
+
+      payrollId = Some("123456789999"),
+      startDate = Some("2019-04-21"),
+      cessationDate = Some("2020-03-11"),
+      dateIgnored = None,
+      submittedOn = Some("2020-01-04T05:01:01Z"),
+      employmentData = Some(EmploymentData(
+        submittedOn = "2020-02-12",
+        employmentSequenceNumber = Some("123456789999"),
+        companyDirector = Some(true),
+        closeCompany = Some(false),
+        directorshipCeasedDate = Some("2020-02-12"),
+        occPen = Some(false),
+        disguisedRemuneration = Some(false),
+        pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+        Some(Deductions(
+          studentLoans = Some(StudentLoans(
+            uglDeductionAmount = Some(100.00),
+            pglDeductionAmount = Some(100.00)
+          ))
+        ))
+      )),
+      employmentBenefits = benefits
+    )
+
   def fullEmploymentsModelWithUnignored(benefits: Option[EmploymentBenefits]): AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(
-      EmploymentSource(
-        employmentId = "001",
-        employerName = "maggie",
-        employerRef = Some("223/AB12399"),
-        payrollId = Some("123456789999"),
-        startDate = Some("2019-04-21"),
-        cessationDate = Some("2020-03-11"),
-        dateIgnored = None,
-        submittedOn = Some("2020-01-04T05:01:01Z"),
-        employmentData = Some(EmploymentData(
-          submittedOn = "2020-02-12",
-          employmentSequenceNumber = Some("123456789999"),
-          companyDirector = Some(true),
-          closeCompany = Some(false),
-          directorshipCeasedDate = Some("2020-02-12"),
-          occPen = Some(false),
-          disguisedRemuneration = Some(false),
-          pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
-          Some(Deductions(
-            studentLoans = Some(StudentLoans(
-              uglDeductionAmount = Some(100.00),
-              pglDeductionAmount = Some(100.00)
-            ))
-          ))
-        )),
-        employmentBenefits = benefits
-      )
-
+     employmentDetailsAndBenefitsModel(benefits,"001").copy(dateIgnored = None)
     ),
     hmrcExpenses = Some(employmentExpenses),
     customerEmploymentData = Seq(
