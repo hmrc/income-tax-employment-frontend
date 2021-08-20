@@ -112,7 +112,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
     )
 
 
-  val multipleEmployments = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(), employmentDetailsAndBenefits(employmentId = "002")))
+  val multipleEmployments = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"), employmentDetailsAndBenefits()))
 
   ".show" when {
 

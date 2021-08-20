@@ -132,8 +132,9 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
 
-  val multipleEmployments = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employerRef=Some(payeRef)),
-    employmentDetailsAndBenefits(employmentId = "002")))
+  val multipleEmployments = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"),
+    employmentDetailsAndBenefits(employerRef=Some(payeRef))
+    ))
 
   ".show" when {
 

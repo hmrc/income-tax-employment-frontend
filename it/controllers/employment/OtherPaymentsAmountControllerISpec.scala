@@ -136,8 +136,8 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
     )
     )
   }
-  val multipleEmployments = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(tipsAndOtherPay=Some(100.00)),
-    employmentDetailsAndBenefits(employmentId = "002")))
+  val multipleEmployments = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"),
+    employmentDetailsAndBenefits(tipsAndOtherPay=Some(100.00))))
 
 
   ".show" should {
