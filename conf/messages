@@ -308,7 +308,7 @@ payeRef.heading = What’s the PAYE reference of {0}?
 
 payeRef.paragraphNew.individual = You can find this on your P60 or on letters about PAYE. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’.
 payeRef.paragraphNew.agent = You can find this on P60 forms or on letters about PAYE. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’.
-payeRef.paragraph = If the PAYE reference {0} is wrong, tell us the correct reference.
+payeRef.paragraph = If the PAYE reference is not {0}, tell us the correct reference.
 payeRef.hint = For example, 123/AB456
 payeRef.errors.empty = Enter a PAYE reference
 payeRef.errors.wrongFormat = Enter a PAYE reference in the correct format
