@@ -73,7 +73,6 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
               }
             case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear, isMultipleEmployments(allEmploymentData)))
           }
-          //No employments is ok?
         case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear, isMultipleEmployments = false))
       }
     }

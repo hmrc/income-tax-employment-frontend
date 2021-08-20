@@ -226,7 +226,7 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 userDataStub(userData(multipleEmployments), nino, taxYearEOY)
-                insertCyaData(cya(), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+                insertCyaData(cya(tipsAmount = Some(100.00)), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
                 urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
               }
 

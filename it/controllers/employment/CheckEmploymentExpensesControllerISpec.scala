@@ -121,8 +121,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
 
-  val multipleEmployments= fullEmploymentsModel(None).copy(hmrcEmploymentData = Seq(employmentDetailsAndBenefitsModel(None,"002"),
-    employmentDetailsAndBenefitsModel(None,"001")))
+  val multipleEmployments = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"), employmentDetailsAndBenefits()))
+
   ".show" when {
     import Selectors._
 
