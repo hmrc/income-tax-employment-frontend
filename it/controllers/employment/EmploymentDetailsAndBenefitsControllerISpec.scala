@@ -141,7 +141,7 @@ val taxYearEOY=taxYear -1
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
             urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -170,7 +170,8 @@ val taxYearEOY=taxYear -1
         "render the page with unignored employments " which {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModelWithUnignored(None)), nino, taxYear)
+            val otherEmployment=employmentDetailsAndBenefits(employmentId = "004", employerName = "rosa")
+            userDataStub(userData(fullEmploymentsModel(Seq(employmentDetailsAndBenefits(), otherEmployment))), nino, taxYear)
             urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -199,7 +200,7 @@ val taxYearEOY=taxYear -1
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYearEOY)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
             urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -224,7 +225,7 @@ val taxYearEOY=taxYear -1
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None).copy(hmrcExpenses = None)), nino, taxYearEOY)
+            userDataStub(userData(fullEmploymentsModel().copy(hmrcExpenses = None)), nino, taxYearEOY)
             urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -249,7 +250,7 @@ val taxYearEOY=taxYear -1
 
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None).copy(hmrcEmploymentData = Seq())), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel().copy(hmrcEmploymentData = Seq())), nino, taxYear)
             urlGet(url(taxYear), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -261,7 +262,7 @@ val taxYearEOY=taxYear -1
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(fullBenefits)), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel(Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear)
             urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -293,7 +294,7 @@ val taxYearEOY=taxYear -1
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear-1)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear-1)
             urlGet(url(taxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
           }
 
@@ -324,7 +325,7 @@ val taxYearEOY=taxYear -1
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(fullBenefits)), nino, taxYear-1)
+            userDataStub(userData(fullEmploymentsModel(Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear-1)
             urlGet(url(taxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
           }
 

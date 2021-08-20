@@ -98,24 +98,25 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
     val currencyBox = "#amount"
     val continueButton = "#continue"
     val caption = "#main-content > div > div > form > div > label > header > p"
+    val inputAmountField = "#amount"
   }
 
-  object Model {
 
-    val employmentSource1 = EmploymentDetails(
-      "Mishima Zaibatsu",
-      employerRef = Some("223/AB12399"),
-      startDate = Some("2019-04-21"),
-      currentDataIsHmrcHeld = true
+
+    def cya(taxToDate:Option[BigDecimal] =Some(6782.92), isPriorSubmission:Boolean=true): EmploymentUserData =
+      EmploymentUserData (sessionId, mtditid,nino, taxYear, "001", isPriorSubmission,
+      EmploymentCYAModel(
+        EmploymentDetails("maggie", totalTaxToDate = taxToDate, currentDataIsHmrcHeld = false),
+        None
+      )
     )
-    val employmentId = "223/AB12399"
-    val employmentCyaModel = EmploymentCYAModel(employmentSource1)
-    val employmentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, employmentId, false, employmentCyaModel)
-  }
+
+
+  val multipleEmployments = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(), employmentDetailsAndBenefits(employmentId = "002")))
 
   ".show" when {
 
-    userScenarios.foreach{ user =>
+    userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
         import Selectors._
 
@@ -125,20 +126,11 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(EmploymentUserData(
-              sessionId,
-              mtditid,
-              nino,
-              taxYear,
-              "001",
-              isPriorSubmission = true,
-              EmploymentCYAModel(
-                fullEmploymentsModel(None).hmrcEmploymentData.head.toEmploymentDetails(false),
-                None
-              )
-            ),User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
+            insertCyaData(cya(), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
             urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
+
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           "has an OK status" in {
@@ -160,20 +152,10 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(EmploymentUserData(
-              sessionId,
-              mtditid,
-              nino,
-              taxYear,
-              "001",
-              isPriorSubmission = true,
-              EmploymentCYAModel(
-                fullEmploymentsModel(None).hmrcEmploymentData.head.toEmploymentDetails(false).copy(totalTaxToDate = None),
-                None
-              )
-            ),User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
+            insertCyaData(cya(None), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
             urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
+
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           "has an OK status" in {
@@ -188,8 +170,60 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           textOnPageCheck(user.commonExpectedResults.hint, hintText)
           inputFieldCheck(user.commonExpectedResults.amount, currencyBox)
         }
+
+
+        "The input field" should {
+
+          "be empty" when {
+            "there is cya data with taxToDate field empty and no prior(i.e. user is adding a new employment)" when {
+              implicit lazy val result: WSResponse = {
+                authoriseAgentOrIndividual(user.isAgent)
+                dropEmploymentDB()
+                userDataStub(userData(multipleEmployments), nino, taxYear)
+                insertCyaData(cya(None, isPriorSubmission = false), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+                urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              }
+
+              implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+              inputFieldValueCheck("", inputAmountField)
+
+            }
+
+
+            "cya data and prior data are the same(i.e. user has clicked on change link)" when {
+              implicit lazy val result: WSResponse = {
+                authoriseAgentOrIndividual(user.isAgent)
+                dropEmploymentDB()
+                userDataStub(userData(multipleEmployments), nino, taxYear)
+                insertCyaData(cya(), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+                urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              }
+
+              implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+              inputFieldValueCheck("", inputAmountField)
+
+            }
+          }
+
+          "be filled" when {
+            "cya data and prior data differ (i.e user has updated their pay)" when {
+              implicit lazy val result: WSResponse = {
+                authoriseAgentOrIndividual(user.isAgent)
+                dropEmploymentDB()
+                userDataStub(userData(multipleEmployments), nino, taxYear)
+                insertCyaData(cya(Some(100.00)), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+                urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              }
+
+              implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+              inputFieldValueCheck("100", inputAmountField)
+            }
+          }
+        }
       }
     }
   }
-
 }

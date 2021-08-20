@@ -58,15 +58,16 @@ class OtherPaymentsAmountController @Inject()(implicit val cc: MessagesControlle
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
           case Some(cya) if cya.employment.employmentDetails.tipsAndOtherPaymentsQuestion.getOrElse(false) => {
-            val cyaTips = cya.employment.employmentDetails.tipsAndOtherPayments
-            val priorEmployment = prior.map(priorEmp => employmentSessionService.getLatestEmploymentData(priorEmp, isInYear = false)
-              .filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
-            val priorTips = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.tipsAndOtherPayments)))
-            lazy val unfilledForm = buildForm(user.isAgent)
-            val form: Form[BigDecimal] = cyaTips.fold(unfilledForm)(
-              cyaOther => if (priorTips.map(_.equals(cyaOther)).getOrElse(true)) unfilledForm else buildForm(user.isAgent).fill(cyaOther))
-            Future.successful(Ok(otherPaymentsAmountView(form, taxYear, employmentId, cyaTips)))
-          }
+              val cyaTips = cya.employment.employmentDetails.tipsAndOtherPayments
+              val priorEmployment = prior.map(priorEmp => employmentSessionService.getLatestEmploymentData(priorEmp, isInYear = false)
+                .filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
+              val priorTips = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.tipsAndOtherPayments)))
+              lazy val unfilledForm = buildForm(user.isAgent)
+              val form: Form[BigDecimal] = cyaTips.fold(unfilledForm)(
+                cyaOther => if (priorTips.map(_.equals(cyaOther)).getOrElse(true)) unfilledForm else buildForm(user.isAgent).fill(cyaOther))
+              Future.successful(Ok(otherPaymentsAmountView(form, taxYear, employmentId, cyaTips)))
+            }
+          case Some(_) => Future.successful(Redirect(controllers.employment.routes.OtherPaymentsController.show(taxYear, employmentId)))
           case _ => Future.successful(
             Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId)))
         }

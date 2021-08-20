@@ -185,7 +185,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
             urlGet(url(taxYear), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -203,7 +203,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
             urlGet(url(taxYear), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -351,7 +351,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
             urlPost(url(validTaxYear2021), follow=false, body=yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
           }
 
@@ -368,7 +368,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
             urlPost(url(taxYear), follow=false, body=yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 

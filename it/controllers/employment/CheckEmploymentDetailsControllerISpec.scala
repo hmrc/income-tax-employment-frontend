@@ -328,7 +328,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, 2021)
+            userDataStub(userData(fullEmploymentsModel()), nino, 2021)
             urlGet(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
           }
 
@@ -365,12 +365,12 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               "001",
               isPriorSubmission = true,
               EmploymentCYAModel(
-                fullEmploymentsModel(None).hmrcEmploymentData.head.toEmploymentDetails(false),
+                fullEmploymentsModel().hmrcEmploymentData.head.toEmploymentDetails(false),
                 None
               )
             ), User(mtditid, if (user.isAgent) Some("12345678") else None, nino, sessionId, if (user.isAgent) "Agent" else "Individual")(fakeRequest))
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, 2021)
+            userDataStub(userData(fullEmploymentsModel()), nino, 2021)
             urlGet(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
           }
 
@@ -439,7 +439,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
             urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -474,7 +474,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear - 1)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear - 1)
             urlGet(s"$appUrl/${taxYear - 1}/check-employment-details?employmentId=$employmentId", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -639,7 +639,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(userData(
-              fullEmploymentsModel(None).copy(hmrcEmploymentData = Seq.empty)
+              fullEmploymentsModel().copy(hmrcEmploymentData = Seq.empty)
             ), nino, taxYear)
             urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
@@ -663,7 +663,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, 2022)
+            userDataStub(userData(fullEmploymentsModel()), nino, 2022)
             urlPost(s"$appUrl/2022/check-employment-details?employmentId=employmentId", follow = false,
               welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)),body = "{}")
           }
@@ -679,7 +679,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, 2021)
+            userDataStub(userData(fullEmploymentsModel()), nino, 2021)
             urlPost(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false,
               welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)),body = "{}")
           }
@@ -710,7 +710,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(employmentUserData.copy(employment = employmentData),userRequest)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, 2021)
+            userDataStub(userData(fullEmploymentsModel()), nino, 2021)
 
             val model = CreateUpdateEmploymentRequest(
               None,
@@ -753,7 +753,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(employmentUserData,userRequest)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, 2021)
+            userDataStub(userData(fullEmploymentsModel()), nino, 2021)
             urlPost(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false,
               welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)),body = "{}")
           }

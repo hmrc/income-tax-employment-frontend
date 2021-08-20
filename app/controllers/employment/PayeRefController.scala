@@ -57,7 +57,7 @@ class PayeRefController @Inject()(implicit val authorisedAction: AuthorisedActio
             val employerName = cya.employment.employmentDetails.employerName
             Future.successful(Ok(payeRefView(form, taxYear, employerName, cyaRef, employmentId)))
 
-          case None => Future.successful(
+          case _ => Future.successful(
             Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId)))
         }
       }

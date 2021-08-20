@@ -134,7 +134,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
             urlGet(url(), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -169,7 +169,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear-1)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear-1)
             urlGet(url(taxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
           }
 
@@ -203,7 +203,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None).copy(hmrcExpenses = None)), nino, taxYear-1)
+            userDataStub(userData(fullEmploymentsModel().copy(hmrcExpenses = None)), nino, taxYear-1)
             urlGet(url(taxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
           }
 
@@ -246,7 +246,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(true,ExpensesCYAModel(employmentExpenses.expenses.get,true)),userRequest)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear-1)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear-1)
             urlGet(url(taxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
           }
 
@@ -316,7 +316,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None).copy(hmrcExpenses = None)),nino,taxYear)
+            userDataStub(userData(fullEmploymentsModel().copy(hmrcExpenses = None)),nino,taxYear)
             urlGet(url(), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -348,7 +348,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
             urlPost(url(), body = "{}", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -370,7 +370,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(true,ExpensesCYAModel(employmentExpenses.expenses.get,true)),userRequest)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear-1)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear-1)
             urlPost(url(taxYear-1), body = "{}", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
           }
 
@@ -383,7 +383,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear-1)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear-1)
             urlPost(url(taxYear-1), body = "{}", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
           }
 

@@ -114,15 +114,16 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
     val expectedContentNewAccount: String = "You can find this on P60 forms or on letters about PAYE. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’."
   }
 
-  object CyaModel {
-    val cya = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, "001", true,
+
+    def cya(paye:Option[String]=Some(payeRef), isPriorSubmission:Boolean=true): EmploymentUserData =
+      EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, "001", isPriorSubmission,
       EmploymentCYAModel(
-        EmploymentDetails("maggie", employerRef = Some("123/AA12345"), currentDataIsHmrcHeld = false),
+        EmploymentDetails("maggie", employerRef = paye, currentDataIsHmrcHeld = false),
         None
       )
     )
 
-  }
+
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
@@ -130,6 +131,9 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
       UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
+
+  val multipleEmployments = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employerRef=Some(payeRef)),
+    employmentDetailsAndBenefits(employmentId = "002")))
 
   ".show" when {
 
@@ -144,10 +148,11 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
         "should render What's the PAYE reference of xxx? page with cya payeRef in paragraph text when there is cya data" which {
 
           implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(CyaModel.cya, userRequest)
-            urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            authoriseAgentOrIndividual(user.isAgent)
+            insertCyaData(cya(), userRequest)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+            urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -162,7 +167,6 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
           textOnPageCheck(expectedContent, contentSelector)
           textOnPageCheck(hintText, hintTestSelector)
           inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck(payeRef, inputAmountField)
 
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
@@ -174,10 +178,9 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            val newCya = CyaModel.cya.copy(employment = CyaModel.cya.employment.copy
-            (employmentDetails = CyaModel.cya.employment.employmentDetails.copy(employerRef = None)))
-            insertCyaData(newCya, userRequest)
-            urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            insertCyaData(cya(None), userRequest)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+            urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -192,12 +195,63 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
           textOnPageCheck(hintText, hintTestSelector)
           textOnPageCheck(get.expectedContentNewAccount, contentSelector)
           inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("", inputAmountField)
 
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
 
+        }
+
+        "The input field" should {
+
+          "be empty" when {
+            "there is cya data with PAYEref field empty but no prior(i.e. user is adding a new employment)" when {
+              implicit lazy val result: WSResponse = {
+                authoriseAgentOrIndividual(user.isAgent)
+                dropEmploymentDB()
+                userDataStub(userData(multipleEmployments), nino, taxYearEOY)
+                insertCyaData(cya(None, isPriorSubmission = false), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+                urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              }
+
+              implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+              inputFieldValueCheck("", inputAmountField)
+
+            }
+
+
+            "cya data and prior data are the same(i.e. user has clicked on change link)" when {
+              implicit lazy val result: WSResponse = {
+                authoriseAgentOrIndividual(user.isAgent)
+                dropEmploymentDB()
+                userDataStub(userData(multipleEmployments), nino, taxYearEOY)
+                insertCyaData(cya(), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+                urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              }
+
+              implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+              inputFieldValueCheck("", inputAmountField)
+
+            }
+          }
+
+          "be filled" when {
+            "cya data and prior data differ (i.e user has updated their pay)" when {
+              implicit lazy val result: WSResponse = {
+                authoriseAgentOrIndividual(user.isAgent)
+                dropEmploymentDB()
+                userDataStub(userData(multipleEmployments), nino, taxYearEOY)
+                insertCyaData(cya(Some("123/BB124")), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+                urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              }
+
+              implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+              inputFieldValueCheck("123/BB124", inputAmountField)
+            }
+          }
         }
         "redirect  to check employment details page when there is no cya data in session" when {
           implicit lazy val result: WSResponse = {
@@ -217,7 +271,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(CyaModel.cya, userRequest)
+            insertCyaData(cya(), userRequest)
             urlGet(url(taxYear), welsh=user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -246,7 +300,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(CyaModel.cya, userRequest)
+            insertCyaData(cya(), userRequest)
             urlPost(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
           }
 
@@ -268,7 +322,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(CyaModel.cya, userRequest)
+            insertCyaData(cya(), userRequest)
             urlPost(url(taxYearEOY), welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("payeRef" -> invalidPaye))
           }
@@ -288,7 +342,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(CyaModel.cya, userRequest)
+            insertCyaData(cya(), userRequest)
             urlPost(url(taxYearEOY), follow=false,
               welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("payeRef" -> payeRef))
           }
