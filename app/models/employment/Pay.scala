@@ -20,7 +20,6 @@ import play.api.libs.json.{Json, OFormat}
 
 case class Pay(taxablePayToDate: Option[BigDecimal],
                totalTaxToDate: Option[BigDecimal],
-               tipsAndOtherPayments: Option[BigDecimal],
                payFrequency: Option[String],
                paymentDate: Option[String],
                taxWeekNo: Option[Int],

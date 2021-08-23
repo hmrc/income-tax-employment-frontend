@@ -66,8 +66,6 @@ case class EmploymentSource(employmentId: String,
       employmentDetailsSubmittedOn = employmentData.map(_.submittedOn),
       taxablePayToDate = employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
       totalTaxToDate = employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
-      tipsAndOtherPaymentsQuestion = employmentData.map(_.pay.exists(_.tipsAndOtherPayments.isDefined)),
-      tipsAndOtherPayments = employmentData.flatMap(_.pay.flatMap(_.tipsAndOtherPayments)),
       currentDataIsHmrcHeld = !isUsingCustomerData
     )
   }
@@ -82,8 +80,6 @@ case class EmploymentSource(employmentId: String,
       cessationDate,
       employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
       employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
-      employmentData.map(_.pay.exists(_.tipsAndOtherPayments.isDefined)),
-      employmentData.flatMap(_.pay.flatMap(_.tipsAndOtherPayments)),
       isUsingCustomerData
     )
   }

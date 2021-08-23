@@ -191,9 +191,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
   }
 
   object ChangeLinks {
-    val otherPaymentsQuestionPageHref: Call = controllers.employment.routes.OtherPaymentsController.show(taxYear-1, employmentId)
     val employerPayAmountControllerHref: Call = controllers.employment.routes.EmployerPayAmountController.show(taxYear-1, employmentId)
-    val otherPaymentsAmountPageHref: Call = controllers.employment.routes.OtherPaymentsAmountController.show(taxYear-1, employmentId)
     val employerNameHref: Call = controllers.employment.routes.EmployerNameController.show(taxYear-1, employmentId)
     val payeRefHref: Call = controllers.employment.routes.PayeRefController.show(taxYear-1, employmentId)
     val changeEmploymentStartDateHref: Call = controllers.employment.routes.EmployerStartDateController.show(taxYear-1, employmentId)
@@ -226,7 +224,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             directorshipCeasedDate = None,
             occPen = None,
             disguisedRemuneration = None,
-            pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None, None)),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None)),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
                 uglDeductionAmount = Some(100.00),
@@ -263,7 +261,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             directorshipCeasedDate = None,
             occPen = None,
             disguisedRemuneration = None,
-            pay = Some(Pay(Some(34234.50), Some(6782.90), None, None, None, None, None)),
+            pay = Some(Pay(Some(34234.50), Some(6782.90), None, None, None, None)),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
                 uglDeductionAmount = Some(100.00),
@@ -298,7 +296,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             directorshipCeasedDate = Some("14/07/1990"),
             occPen = None,
             disguisedRemuneration = None,
-            pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None, None)),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None)),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
                 uglDeductionAmount = Some(100.00),
@@ -514,12 +512,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             cyaChangeLink(5), taxHref)
           textOnPageCheck(user.specificExpectedResults.get.employeeFieldName7, summaryListRowFieldNameSelector(6))
           textOnPageCheck(user.commonExpectedResults.paymentsNotOnP60Yes, summaryListRowFieldAmountSelector(6))
-          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.paymentsNotOnP60HiddenText}",
-            cyaChangeLink(6), otherPaymentsQuestionPageHref.url)
           textOnPageCheck(user.specificExpectedResults.get.employeeFieldName8, summaryListRowFieldNameSelector(7))
           textOnPageCheck(ContentValues.paymentsNotOnP60, summaryListRowFieldAmountSelector(7))
-          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.amountOfPaymentsNotOnP60HiddenText}",
-            cyaChangeLink(7), otherPaymentsAmountPageHref.url)
         }
 
 
@@ -587,8 +581,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             cyaChangeLink(3), taxHref)
           textOnPageCheck(user.specificExpectedResults.get.employeeFieldName7, summaryListRowFieldNameSelector(4))
           textOnPageCheck(user.commonExpectedResults.paymentsNotOnP60No, summaryListRowFieldAmountSelector(4))
-          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.paymentsNotOnP60HiddenText}",
-            cyaChangeLink(4), otherPaymentsQuestionPageHref.url)
 
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           formPostLinkCheck(user.commonExpectedResults.continueButtonLink, continueButtonFormSelector)
@@ -700,7 +692,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               startDate = Some("2020-11-11"),
               taxablePayToDate= Some(55.99),
               totalTaxToDate= Some(3453453.00),
-              tipsAndOtherPayments= Some(5345.55),
               currentDataIsHmrcHeld = false
             ))
           }
@@ -725,8 +716,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
                 CreateUpdateEmploymentData(
                   pay = CreateUpdatePay(
                     employmentData.employmentDetails.taxablePayToDate.get,
-                    employmentData.employmentDetails.totalTaxToDate.get,
-                    employmentData.employmentDetails.tipsAndOtherPayments
+                    employmentData.employmentDetails.totalTaxToDate.get
                   )
                 )
               )

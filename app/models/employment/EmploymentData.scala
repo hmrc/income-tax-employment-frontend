@@ -32,8 +32,7 @@ case class EmploymentData(submittedOn: String,
 
   def dataHasNotChanged(createUpdatePay: CreateUpdatePay): Boolean = {
     pay.flatMap(_.taxablePayToDate).contains(createUpdatePay.taxablePayToDate) &&
-    pay.flatMap(_.totalTaxToDate).contains(createUpdatePay.totalTaxToDate) &&
-    pay.flatMap(_.tipsAndOtherPayments) == createUpdatePay.tipsAndOtherPayments
+    pay.flatMap(_.totalTaxToDate).contains(createUpdatePay.totalTaxToDate)
   }
 }
 
