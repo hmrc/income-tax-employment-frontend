@@ -16,7 +16,7 @@
 
 package models.mongo
 
-import controllers.employment.routes.{OtherPaymentsAmountController, CheckEmploymentDetailsController, OtherPaymentsController}
+import controllers.employment.routes.CheckEmploymentDetailsController
 import models.question.{Question, QuestionsJourney}
 import models.question.Question.{WithDependency, WithoutDependency}
 import org.joda.time.{DateTime, DateTimeZone}
@@ -45,9 +45,6 @@ object EmploymentUserData extends MongoJodaFormats {
     override def questions(m: EmploymentUserData): Set[Question] = {
       val model = m.employment.employmentDetails
       Set(
-        WithoutDependency(model.tipsAndOtherPaymentsQuestion, OtherPaymentsController.show(taxYear, employmentId)),
-        WithDependency(model.tipsAndOtherPayments, model.tipsAndOtherPaymentsQuestion,
-          OtherPaymentsAmountController.show(taxYear, employmentId), OtherPaymentsController.show(taxYear, employmentId))
       )
     }
   }

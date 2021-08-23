@@ -40,20 +40,17 @@
 
     @errorSummary(form.errors.distinct)
 
-    @formWithCsrf(action = controllers.employment.routes.OtherPaymentsController.submit(taxYear, employmentId)) {
-
-        @inputRadio(
-            form = form,
-            heading = headingForUse,
-            hint = None,
-            classes = "govuk-!-margin-bottom-4",
-            content = Some(detailsHtml),
-            inline = true,
-            subheading = Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString))
-        )
-
-        @button()
-    }
+<!--    formWithCsrf(action = controllers.employment.routes.OtherPaymentsController.submit(taxYear, employmentId)) {-->
+<!--        inputRadio(-->
+<!--            form = form,-->
+<!--            heading = headingForUse,-->
+<!--            hint = Some(detailsHtml),-->
+<!--            classes = "govuk-!-margin-bottom-4",-->
+<!--            inline = true,-->
+<!--            subheading = Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString))-->
+<!--        )-->
+<!--        button()-->
+<!--    }-->
 }
 
 @{

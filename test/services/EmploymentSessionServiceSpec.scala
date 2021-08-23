@@ -77,7 +77,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
           directorshipCeasedDate = None,
           occPen = None,
           disguisedRemuneration = None,
-          pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None, None)),
+          pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None)),
           Some(Deductions(
             studentLoans = Some(StudentLoans(
               uglDeductionAmount = Some(100.00),
@@ -119,7 +119,6 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
         startDate = Some("2020-11-11"),
         taxablePayToDate= Some(55.99),
         totalTaxToDate= Some(3453453.00),
-        tipsAndOtherPayments= Some(5345.55),
         employmentSubmittedOn = Some("2020-04-04T01:01:01Z"),
         employmentDetailsSubmittedOn = Some("2020-04-04T01:01:01Z"),
         currentDataIsHmrcHeld = false
@@ -142,8 +141,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       CreateUpdateEmploymentData(
         pay = CreateUpdatePay(
           employmentCYA.employmentDetails.taxablePayToDate.get,
-          employmentCYA.employmentDetails.totalTaxToDate.get,
-          employmentCYA.employmentDetails.tipsAndOtherPayments
+          employmentCYA.employmentDetails.totalTaxToDate.get
         )
       )
     )
@@ -236,7 +234,6 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
                   Some(Pay(
                     employmentDataFull.employment.employmentDetails.taxablePayToDate,
                     employmentDataFull.employment.employmentDetails.totalTaxToDate,
-                    employmentDataFull.employment.employmentDetails.tipsAndOtherPayments,
                     None,None, None,None
                   )),None
                 )),
@@ -313,7 +310,6 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
                   Some(Pay(
                     employmentDataFull.employment.employmentDetails.taxablePayToDate,
                     employmentDataFull.employment.employmentDetails.totalTaxToDate,
-                    employmentDataFull.employment.employmentDetails.tipsAndOtherPayments,
                     None,None, None,None
                   )),None
                 )),
@@ -349,7 +345,6 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
                   Some(Pay(
                     Some(3455545.55),
                     employmentDataFull.employment.employmentDetails.totalTaxToDate,
-                    employmentDataFull.employment.employmentDetails.tipsAndOtherPayments,
                     None,None, None,None
                   )),None
                 )),
