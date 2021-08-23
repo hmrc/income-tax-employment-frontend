@@ -286,8 +286,63 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             result.status shouldBe SEE_OTHER
           }
 
-          "redirect to EmploymentSummaryPage page" in {
+          "redirect to employer name page" in {
             result.header(HeaderNames.LOCATION).toString.contains("/income-through-software/return/employment-income/2021/employer-name?employmentId=") shouldBe true
+          }
+        }
+
+        "redirect to Employer Name page when radio button yes is selected when an id is in session" when {
+          lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(IncomeTaxUserData(None), nino, taxYear-1)
+            urlPost(url(validTaxYear2021),follow=false, body=yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021,
+              extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
+          }
+
+          "status SEE_OTHER" in {
+            result.status shouldBe SEE_OTHER
+          }
+
+          "redirect to employer name page" in {
+            result.header(HeaderNames.LOCATION).toString.contains(s"/income-through-software/return/employment-income/2021/employer-name?employmentId=$employmentId") shouldBe true
+          }
+        }
+
+        "redirect to Employer Reference page when radio button yes is selected when an id is in session and there is cya data" when {
+          lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
+            userDataStub(IncomeTaxUserData(None), nino, taxYear-1)
+            urlPost(url(validTaxYear2021),follow=false, body=yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021,
+              extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
+          }
+
+          "status SEE_OTHER" in {
+            result.status shouldBe SEE_OTHER
+          }
+
+          "redirect to paye ref page" in {
+            result.header(HeaderNames.LOCATION).get shouldBe s"/income-through-software/return/employment-income/2021/employer-paye-reference?employmentId=$employmentId"
+          }
+        }
+        "redirect to overview page when radio button no is selected when an id is in session and there is cya data" when {
+          lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
+            userDataStub(IncomeTaxUserData(None), nino, taxYear-1)
+            urlPost(url(validTaxYear2021),follow=false, body=yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021,
+              extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
+          }
+
+          "status SEE_OTHER" in {
+            result.status shouldBe SEE_OTHER
+          }
+
+          "redirect to overview page" in {
+            result.header(HeaderNames.LOCATION).get shouldBe "http://localhost:11111/income-through-software/return/2021/view"
           }
         }
 
@@ -304,7 +359,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             result.status shouldBe SEE_OTHER
           }
 
-          "redirect to Check Employment Details page" in {
+          "redirect to Employment summary page" in {
             result.header(HeaderNames.LOCATION) shouldBe Some(EmploymentSummaryController.show(taxYear).url)
           }
         }

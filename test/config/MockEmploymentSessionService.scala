@@ -18,9 +18,11 @@ package config
 
 import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData, User}
-import models.employment.AllEmploymentData
+import models.employment.{AllEmploymentData, EmploymentData}
+import models.mongo.EmploymentUserData
 import org.scalamock.handlers.{CallHandler3, CallHandler5}
 import org.scalamock.scalatest.MockFactory
+import play.api.mvc.Results.Ok
 import play.api.mvc.{Request, Result}
 import services.EmploymentSessionService
 import uk.gov.hmrc.http.HeaderCarrier
