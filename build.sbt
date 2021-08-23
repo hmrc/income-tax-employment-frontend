@@ -41,7 +41,6 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 lazy val twirlImports: Seq[String] = Seq(
   "config.AppConfig",
   "uk.gov.hmrc.govukfrontend.views.html.components._",
-  "uk.gov.hmrc.govukfrontend.views.html.helpers._",
   "uk.gov.hmrc.hmrcfrontend.views.html.components._",
   "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
 )

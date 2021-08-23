@@ -19,7 +19,6 @@ package controllers.employment
 import models.User
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.employment.{AllEmploymentData, Deductions, EmploymentData, EmploymentSource, Pay, StudentLoans}
-import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -27,6 +26,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
+import play.api.mvc.Call
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -95,7 +95,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val changeLinkExpected = "Change"
     val continueButtonText = "Save and continue"
     val continueButtonLink = "/income-through-software/return/employment-income/2021/check-employment-details?employmentId=001"
@@ -111,7 +111,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val changeLinkExpected = "Change"
     val continueButtonText = "Save and continue"
     val continueButtonLink = "/income-through-software/return/employment-income/2021/check-employment-details?employmentId=001"
@@ -135,7 +135,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldName8 = "Amount of payments not on your P60"
     val changeEmploymentStartDateHiddenText = s"your start date for ${ContentValues.employerName}"
     val changePAYERefHiddenText: String = "your PAYE reference number"
-    val changePayReceivedHiddenText: String = "the amount of pay you got from this employer"
+    val changePayReceivedHiddenText: String = s"the amount of pay you got from ${ContentValues.employerName}"
     val taxTakenFromPayHiddenText: String = "the amount of tax you paid"
     val paymentsNotOnP60HiddenText: String = "if you got payments that are not on your P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "the amount of payments that were not on your P60"
@@ -151,7 +151,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldName8 = "Amount of payments not on your client’s P60"
     val changeEmploymentStartDateHiddenText = s"your client’s start date for ${ContentValues.employerName}"
     val changePAYERefHiddenText: String = "your client’s PAYE reference number"
-    val changePayReceivedHiddenText: String = "the amount of pay your client got from this employer"
+    val changePayReceivedHiddenText: String = s"the amount of pay your client got from ${ContentValues.employerName}"
     val taxTakenFromPayHiddenText: String = "the amount of tax your client paid"
     val paymentsNotOnP60HiddenText: String = "if your client got payments that are not on their P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "the amount of payments that were not on your client’s P60"
@@ -167,7 +167,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldName8 = "Amount of payments not on your P60"
     val changeEmploymentStartDateHiddenText = s"your start date for ${ContentValues.employerName}"
     val changePAYERefHiddenText: String = "your PAYE reference number"
-    val changePayReceivedHiddenText: String = "the amount of pay you got from this employer"
+    val changePayReceivedHiddenText: String = s"the amount of pay you got from ${ContentValues.employerName}"
     val taxTakenFromPayHiddenText: String = "the amount of tax you paid"
     val paymentsNotOnP60HiddenText: String = "if you got payments that are not on your P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "the amount of payments that were not on your P60"
@@ -183,7 +183,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employeeFieldName8 = "Amount of payments not on your client’s P60"
     val changeEmploymentStartDateHiddenText = s"your client’s start date for ${ContentValues.employerName}"
     val changePAYERefHiddenText: String = "your client’s PAYE reference number"
-    val changePayReceivedHiddenText: String = "the amount of pay your client got from this employer"
+    val changePayReceivedHiddenText: String = s"the amount of pay your client got from ${ContentValues.employerName}"
     val taxTakenFromPayHiddenText: String = "the amount of tax your client paid"
     val paymentsNotOnP60HiddenText: String = "if your client got payments that are not on their P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "the amount of payments that were not on your client’s P60"
@@ -191,12 +191,12 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
   }
 
   object ChangeLinks {
-    val otherPaymentsQuestionPageHref = controllers.employment.routes.OtherPaymentsController.show(taxYear-1, employmentId)
-    val employerPayAmountControllerHref = controllers.employment.routes.EmployerPayAmountController.show(taxYear-1, employmentId)
-    val otherPaymentsAmountPageHref = controllers.employment.routes.OtherPaymentsAmountController.show(taxYear-1, employmentId)
-    val employerNameHref = controllers.employment.routes.EmployerNameController.show(taxYear-1, employmentId)
-    val payeRefHref = controllers.employment.routes.PayeRefController.show(taxYear-1, employmentId)
-    val changeEmploymentStartDateHref = controllers.employment.routes.EmployerStartDateController.show(taxYear-1, employmentId)
+    val otherPaymentsQuestionPageHref: Call = controllers.employment.routes.OtherPaymentsController.show(taxYear-1, employmentId)
+    val employerPayAmountControllerHref: Call = controllers.employment.routes.EmployerPayAmountController.show(taxYear-1, employmentId)
+    val otherPaymentsAmountPageHref: Call = controllers.employment.routes.OtherPaymentsAmountController.show(taxYear-1, employmentId)
+    val employerNameHref: Call = controllers.employment.routes.EmployerNameController.show(taxYear-1, employmentId)
+    val payeRefHref: Call = controllers.employment.routes.PayeRefController.show(taxYear-1, employmentId)
+    val changeEmploymentStartDateHref: Call = controllers.employment.routes.EmployerStartDateController.show(taxYear-1, employmentId)
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -653,8 +653,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
 
   ".submit" when {
-    import Selectors._
-    import ChangeLinks._
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {

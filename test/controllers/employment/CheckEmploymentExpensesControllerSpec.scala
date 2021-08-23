@@ -73,7 +73,7 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
           )
 
         val responseF: Future[Result] = {
-          mockFind(taxYear,Ok(view(taxYear, employmentsModel.hmrcExpenses.get.expenses.get,true)))
+          mockFind(taxYear,Ok(view(taxYear, employmentsModel.hmrcExpenses.get.expenses.get,true, true)))
           controller.show(taxYear)(request)
         }
 
@@ -102,7 +102,7 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
         val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequestWithMtditidAndNino
 
         val responseF: Future[Result] = {
-          mockFind(taxYear,Ok(view(taxYear, employmentsModel.hmrcExpenses.get.expenses.get, true)))
+          mockFind(taxYear,Ok(view(taxYear, employmentsModel.hmrcExpenses.get.expenses.get, true, true)))
           controller.show(taxYear)(request)
         }
 
