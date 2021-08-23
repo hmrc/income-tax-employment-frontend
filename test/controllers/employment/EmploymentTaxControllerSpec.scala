@@ -19,6 +19,7 @@ package controllers.employment
 import common.SessionValues
 import config.MockEmploymentSessionService
 import controllers.employment.routes.CheckEmploymentDetailsController
+import forms.AmountForm
 import models.User
 import models.employment.EmploymentDetailsViewModel
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -85,12 +86,10 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp with MockEmploymentSes
       s"Has a $SEE_OTHER status when cya in session" in new TestWithAuth {
         val result: Future[Result] = {
 
-          (mockIncomeTaxUserDataService.getSessionData(_: Int, _: String)(_: User[_])).expects(taxYear, employmentId, *)
-            .returns(Future(Some(Model.employmentUserData)))
-          (mockIncomeTaxUserDataService.createOrUpdateSessionData[Result](_: String, _: EmploymentCYAModel, _: Int,
-            _: Boolean)(_: Result)(_: Result)(_: User[_], _: Clock)).expects(*,*,*,*,*,*,*,*)
-            .returns(Future(Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId))))
-          (mockErrorHandler.internalServerError()(_: User[_])).expects(*).returns(InternalServerError)
+          val redirect = CheckEmploymentDetailsController.show(taxYear, employmentId).url
+
+          (mockIncomeTaxUserDataService.getSessionDataAndReturnResult(_: Int, _: String)(_: String)(
+            _:EmploymentUserData => Future[Result])(_: User[_])).expects(taxYear, employmentId, redirect, *, *).returns(Future(Redirect(redirect)))
 
           controller.submit(taxYear, employmentId = employmentId)(fakeRequest.withFormUrlEncodedBody("amount" -> "32").withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
@@ -99,35 +98,6 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp with MockEmploymentSes
 
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId).url
-      }
-
-      s"Has a $BAD_REQUEST status when cya in session " in new TestWithAuth {
-        val result: Future[Result] = {
-
-          (mockIncomeTaxUserDataService.getSessionData(_: Int, _: String)(_: User[_])).expects(taxYear, employmentId, *)
-            .returns(Future(Some(Model.employmentUserData)))
-
-          controller.submit(taxYear, employmentId = employmentId)(fakeRequest.withFormUrlEncodedBody("amount" -> "32biscuits").withSession(
-            SessionValues.TAX_YEAR -> taxYear.toString
-          ))
-        }
-
-        status(result) shouldBe BAD_REQUEST
-      }
-
-      s"Has a $SEE_OTHER status when no cya in session" in new TestWithAuth {
-        val result: Future[Result] = {
-
-          (mockIncomeTaxUserDataService.getSessionData(_: Int, _: String)(_: User[_])).expects(taxYear, employmentId, *)
-            .returns(Future(None))
-
-          controller.submit(taxYear, employmentId = employmentId)(fakeRequest.withFormUrlEncodedBody("amount" -> "32").withSession(
-            SessionValues.TAX_YEAR -> taxYear.toString
-          ))
-        }
-
-        status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe "/income-through-software/return/employment-income/2021/check-employment-details?employmentId=223%2FAB12399"
       }
     }
   }

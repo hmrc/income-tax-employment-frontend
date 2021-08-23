@@ -65,7 +65,7 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
             val priorTax = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)))
             lazy val unfilledForm = buildForm(user.isAgent)
             val form: Form[BigDecimal] = cyaTax.fold(unfilledForm)(
-              cyaTaxed => if(priorTax.map(_.equals(cyaTaxed)).getOrElse(false)) unfilledForm else buildForm(user.isAgent).fill(cyaTaxed))
+              cyaTaxed => if(priorTax.exists(_.equals(cyaTaxed))) unfilledForm else buildForm(user.isAgent).fill(cyaTaxed))
 
             Future.successful(Ok(employmentTaxView(taxYear, employmentId, cya.employment.employmentDetails.employerName,form, cyaTax)))
 
@@ -86,8 +86,7 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
 
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
         buildForm(user.isAgent).bindFromRequest().fold(
-          formWithErrors => Future.successful(BadRequest(employmentTaxView(taxYear, user.isAgent, cya.employment.employmentDetails.employerName,
-            controllers.employment.routes.EmploymentTaxController.submit(taxYear, employmentId),
+          formWithErrors => Future.successful(BadRequest(employmentTaxView(taxYear, employmentId, cya.employment.employmentDetails.employerName,
             formWithErrors, cya.employment.employmentDetails.totalTaxToDate))),
           completeForm => {
             val employmentCYAModel = cya.employment.copy(employmentDetails = cya.employment.employmentDetails.copy(totalTaxToDate = Some(completeForm)))

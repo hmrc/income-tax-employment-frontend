@@ -413,12 +413,12 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               "001",
               isPriorSubmission = false,
               EmploymentCYAModel(
-                fullEmploymentsModel(None).hmrcEmploymentData.head.toEmploymentDetails(false).copy(employerRef = None),
+                fullEmploymentsModel().hmrcEmploymentData.head.toEmploymentDetails(false).copy(employerRef = None),
                 None
               )
             ), User(mtditid, if (user.isAgent) Some("12345678") else None, nino, sessionId, if (user.isAgent) "Agent" else "Individual")(fakeRequest))
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, 2021)
+            userDataStub(userData(fullEmploymentsModel()), nino, 2021)
             urlGet(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
           }
 

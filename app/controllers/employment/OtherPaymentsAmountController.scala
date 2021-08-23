@@ -64,7 +64,7 @@ class OtherPaymentsAmountController @Inject()(implicit val cc: MessagesControlle
               val priorTips = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.tipsAndOtherPayments)))
               lazy val unfilledForm = buildForm(user.isAgent)
               val form: Form[BigDecimal] = cyaTips.fold(unfilledForm)(
-                cyaOther => if (priorTips.map(_.equals(cyaOther)).getOrElse(false)) unfilledForm else buildForm(user.isAgent).fill(cyaOther))
+                cyaOther => if (priorTips.exists(_.equals(cyaOther))) unfilledForm else buildForm(user.isAgent).fill(cyaOther))
               Future.successful(Ok(otherPaymentsAmountView(form, taxYear, employmentId, cyaTips)))
             }
           case Some(_) => Future.successful(Redirect(controllers.employment.routes.OtherPaymentsController.show(taxYear, employmentId)))

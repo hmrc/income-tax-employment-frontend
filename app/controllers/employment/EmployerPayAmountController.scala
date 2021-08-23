@@ -45,7 +45,6 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
 
     inYearAction.notInYear(taxYear) {
-      val redirectUrl = controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId).url
 
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
@@ -56,7 +55,7 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
             val priorAmount = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)))
             lazy val unfilledForm = buildForm(user.isAgent)
             val form: Form[BigDecimal] = cyaAmount.fold(unfilledForm)(
-              cyaPay => if(priorAmount.map(_.equals(cyaPay)).getOrElse(false)) unfilledForm else buildForm(user.isAgent).fill(cyaPay))
+              cyaPay => if(priorAmount.exists(_.equals(cyaPay))) unfilledForm else buildForm(user.isAgent).fill(cyaPay))
 
             Future.successful(Ok(employerPayAmountView(taxYear, form,
               cyaAmount, cya.employment.employmentDetails.employerName, employmentId)))
