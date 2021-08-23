@@ -73,8 +73,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
     val expectedH1: String = "What’s the PAYE reference of maggie?"
     val continueButtonText = "Continue"
     val hintText = "For example, 123/AB456"
-    val expectedContent: String = "If the PAYE reference 123/AA12345 is wrong, tell us the correct reference."
-
+    val expectedContent: String = "If the PAYE reference is not 123/AA12345, tell us the correct reference."
     val emptyErrorText: String = "Enter a PAYE reference"
     val wrongFormatErrorText: String = "Enter a PAYE reference in the correct format"
 
@@ -85,7 +84,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
     val expectedH1: String = "What’s the PAYE reference of maggie?"
     val continueButtonText = "Continue"
     val hintText = "For example, 123/AB456"
-    val expectedContent: String = "If the PAYE reference 123/AA12345 is wrong, tell us the correct reference."
+    val expectedContent: String = "If the PAYE reference is not 123/AA12345, tell us the correct reference."
     val expectedContentNewAccount: String = "You can find this on your P60 or on letters about PAYE. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’."
     val emptyErrorText: String = "Enter a PAYE reference"
     val wrongFormatErrorText: String = "Enter a PAYE reference in the correct format"
