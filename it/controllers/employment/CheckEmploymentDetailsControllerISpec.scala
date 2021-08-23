@@ -400,6 +400,38 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.specificExpectedResults.get.employeeFieldName8, summaryListRowFieldNameSelector(7))
           textOnPageCheck(ContentValues.paymentsNotOnP60, summaryListRowFieldAmountSelector(7))
         }
+        //noinspection ScalaStyle
+        "for end of year return a redirect when cya data exists but not finished when its a new employment" which {
+
+          implicit lazy val result: WSResponse = {
+            dropEmploymentDB()
+            insertCyaData(EmploymentUserData(
+              sessionId,
+              "1234567890",
+              "AA123456A",
+              2021,
+              "001",
+              isPriorSubmission = false,
+              EmploymentCYAModel(
+                fullEmploymentsModel(None).hmrcEmploymentData.head.toEmploymentDetails(false).copy(employerRef = None),
+                None
+              )
+            ), User(mtditid, if (user.isAgent) Some("12345678") else None, nino, sessionId, if (user.isAgent) "Agent" else "Individual")(fakeRequest))
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(fullEmploymentsModel(None)), nino, 2021)
+            urlGet(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has an SEE OTHER status" in {
+            result.status shouldBe SEE_OTHER
+          }
+
+          "has a redirect url of employer reference page" in {
+            result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/employer-paye-reference?employmentId=001")
+          }
+        }
 
         //noinspection ScalaStyle
         "for in year return a fully populated page when all the fields are populated" which {

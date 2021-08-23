@@ -17,18 +17,20 @@
 package controllers.employment
 
 import config.{AppConfig, ErrorHandler}
+import controllers.employment.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.employment.PayeForm
+import javax.inject.Inject
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
+import services.RedirectService.employmentDetailsRedirect
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.PayeRefView
 
-import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class PayeRefController @Inject()(implicit val authorisedAction: AuthorisedAction,
                                   mcc: MessagesControllerComponents,
@@ -42,7 +44,7 @@ class PayeRefController @Inject()(implicit val authorisedAction: AuthorisedActio
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
 
     inYearAction.notInYear(taxYear) {
-      val redirectUrl = controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId).url
+      val redirectUrl = CheckEmploymentDetailsController.show(taxYear, employmentId).url
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { data =>
         val payeRef = data.employment.employmentDetails.employerRef
         val employerName = data.employment.employmentDetails.employerName
@@ -56,7 +58,7 @@ class PayeRefController @Inject()(implicit val authorisedAction: AuthorisedActio
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
 
     inYearAction.notInYear(taxYear) {
-      val redirectUrl = controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId).url
+      val redirectUrl = CheckEmploymentDetailsController.show(taxYear, employmentId).url
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { data =>
         PayeForm.payeRefForm(user.isAgent).bindFromRequest().fold(
           { formWithErrors =>
@@ -67,9 +69,8 @@ class PayeRefController @Inject()(implicit val authorisedAction: AuthorisedActio
           { payeRef =>
             val cya = data.employment
             val updatedCya = cya.copy(cya.employmentDetails.copy(employerRef = Some(payeRef)))
-            employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear,
-              data.isPriorSubmission)(errorHandler.internalServerError()) {
-              Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId))
+            employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
+              employmentDetailsRedirect(updatedCya,taxYear,employmentId,data.isPriorSubmission)
             }
           }
         )

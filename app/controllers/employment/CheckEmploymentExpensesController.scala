@@ -85,7 +85,7 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
         cya match {
           case Some(cya) =>
             val expenses = cya.expensesCya
-            Future(performAuditAndRenderView(expenses.expenses, taxYear, isInYear, prior.map(isMultipleEmployments).getOrElse(false)))
+            Future(performAuditAndRenderView(expenses.expenses, taxYear, isInYear, prior.exists(isMultipleEmployments)))
           case None =>
             saveCYAAndReturnEndOfYearResult(prior)
         }
