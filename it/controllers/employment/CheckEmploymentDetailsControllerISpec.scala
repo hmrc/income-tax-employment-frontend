@@ -56,8 +56,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val expectedTitle: String
     val expectedContent: String
     val expectedInsetText: String
-    val employeeFieldName7: String
-    val employeeFieldName8: String
     val changeEmploymentStartDateHiddenText: String
     val paymentsNotOnYourP60: String
     val changePAYERefHiddenText: String
@@ -78,8 +76,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payeReferenceField2: String
     val payReceivedField3: String
     val taxField4: String
-    val paymentsNotOnP60Yes: String
-    val paymentsNotOnP60No: String
     val changeEmployerNameHiddenText: String
   }
 
@@ -91,7 +87,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payReceivedB = "£34234.50"
     val taxTakenFromPay = "£6782.92"
     val taxTakenFromPayB = "£6782.90"
-    val paymentsNotOnP60 = "£67676"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -105,8 +100,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payeReferenceField2 = "PAYE reference"
     val payReceivedField3 = "Pay received"
     val taxField4 = "UK tax taken from pay"
-    val paymentsNotOnP60Yes = "Yes"
-    val paymentsNotOnP60No = "No"
     val changeEmployerNameHiddenText: String = "the name of this employer"
   }
 
@@ -121,8 +114,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payeReferenceField2 = "PAYE reference"
     val payReceivedField3 = "Pay received"
     val taxField4 = "UK tax taken from pay"
-    val paymentsNotOnP60Yes = "Yes"
-    val paymentsNotOnP60No = "No"
     val changeEmployerNameHiddenText: String = "the name of this employer"
   }
 
@@ -147,8 +138,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val expectedTitle = "Check your client’s employment details"
     val expectedContent = "Your client’s employment details are based on the information we already hold about them."
     val expectedInsetText = s"You cannot update your client’s employment details until 6 April $taxYear."
-    val employeeFieldName7 = "Payments not on your client’s P60"
-    val employeeFieldName8 = "Amount of payments not on your client’s P60"
     val changeEmploymentStartDateHiddenText = s"your client’s start date for ${ContentValues.employerName}"
     val changePAYERefHiddenText: String = "your client’s PAYE reference number"
     val changePayReceivedHiddenText: String = s"the amount of pay your client got from ${ContentValues.employerName}"
@@ -163,8 +152,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val expectedTitle = "Check your employment details"
     val expectedContent = "Your employment details are based on the information we already hold about you."
     val expectedInsetText = s"You cannot update your employment details until 6 April $taxYear."
-    val employeeFieldName7 = "Payments not on your P60"
-    val employeeFieldName8 = "Amount of payments not on your P60"
     val changeEmploymentStartDateHiddenText = s"your start date for ${ContentValues.employerName}"
     val changePAYERefHiddenText: String = "your PAYE reference number"
     val changePayReceivedHiddenText: String = s"the amount of pay you got from ${ContentValues.employerName}"
@@ -393,10 +380,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(4))
           textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(5))
           textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(5))
-          textOnPageCheck(user.specificExpectedResults.get.paymentsNotOnYourP60, summaryListRowFieldNameSelector(6))
-          textOnPageCheck(user.commonExpectedResults.paymentsNotOnP60Yes, summaryListRowFieldAmountSelector(6))
-          textOnPageCheck(user.specificExpectedResults.get.employeeFieldName8, summaryListRowFieldNameSelector(7))
-          textOnPageCheck(ContentValues.paymentsNotOnP60, summaryListRowFieldAmountSelector(7))
         }
         //noinspection ScalaStyle
         "for end of year return a redirect when cya data exists but not finished when its a new employment" which {
@@ -463,9 +446,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(4))
           textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(5))
           textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(5))
-          textOnPageCheck(user.specificExpectedResults.get.employeeFieldName8, summaryListRowFieldNameSelector(6))
-          textOnPageCheck(ContentValues.paymentsNotOnP60, summaryListRowFieldAmountSelector(6))
-
         }
         //noinspection ScalaStyle
         "for end of year return a fully populated page, with change links, when all the fields are populated" which {
@@ -510,10 +490,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(5))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.taxTakenFromPayHiddenText}",
             cyaChangeLink(5), taxHref)
-          textOnPageCheck(user.specificExpectedResults.get.employeeFieldName7, summaryListRowFieldNameSelector(6))
-          textOnPageCheck(user.commonExpectedResults.paymentsNotOnP60Yes, summaryListRowFieldAmountSelector(6))
-          textOnPageCheck(user.specificExpectedResults.get.employeeFieldName8, summaryListRowFieldNameSelector(7))
-          textOnPageCheck(ContentValues.paymentsNotOnP60, summaryListRowFieldAmountSelector(7))
         }
 
 
@@ -579,8 +555,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.taxTakenFromPayB, summaryListRowFieldAmountSelector(3))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.taxTakenFromPayHiddenText}",
             cyaChangeLink(3), taxHref)
-          textOnPageCheck(user.specificExpectedResults.get.employeeFieldName7, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(user.commonExpectedResults.paymentsNotOnP60No, summaryListRowFieldAmountSelector(4))
 
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           formPostLinkCheck(user.commonExpectedResults.continueButtonLink, continueButtonFormSelector)
@@ -716,7 +690,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
                 CreateUpdateEmploymentData(
                   pay = CreateUpdatePay(
                     employmentData.employmentDetails.taxablePayToDate.get,
-                    employmentData.employmentDetails.totalTaxToDate.get
+                    employmentData.employmentDetails.totalTaxToDate.get,
                   )
                 )
               )
