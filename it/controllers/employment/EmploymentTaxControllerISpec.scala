@@ -16,12 +16,13 @@
 
 package controllers.employment
 
+import controllers.employment.routes.CheckEmploymentDetailsController
 import models.User
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
-import play.api.http.Status.OK
+import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -98,24 +99,25 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
     val currencyBox = "#amount"
     val continueButton = "#continue"
     val caption = "#main-content > div > div > form > div > label > header > p"
+    val inputAmountField = "#amount"
   }
 
-  object Model {
 
-    val employmentSource1 = EmploymentDetails(
-      "Mishima Zaibatsu",
-      employerRef = Some("223/AB12399"),
-      startDate = Some("2019-04-21"),
-      currentDataIsHmrcHeld = true
+
+    def cya(taxToDate:Option[BigDecimal] =Some(6782.92), isPriorSubmission:Boolean=true): EmploymentUserData =
+      EmploymentUserData (sessionId, mtditid,nino, taxYear, "001", isPriorSubmission,
+      EmploymentCYAModel(
+        EmploymentDetails("maggie", totalTaxToDate = taxToDate, currentDataIsHmrcHeld = false),
+        None
+      )
     )
-    val employmentId = "223/AB12399"
-    val employmentCyaModel = EmploymentCYAModel(employmentSource1)
-    val employmentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, employmentId, false, employmentCyaModel)
-  }
+
+
+  val multipleEmployments = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"), employmentDetailsAndBenefits()))
 
   ".show" when {
 
-    userScenarios.foreach{ user =>
+    userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
         import Selectors._
 
@@ -125,20 +127,11 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(EmploymentUserData(
-              sessionId,
-              mtditid,
-              nino,
-              taxYear,
-              "001",
-              isPriorSubmission = true,
-              EmploymentCYAModel(
-                fullEmploymentsModel(None).hmrcEmploymentData.head.toEmploymentDetails(false),
-                None
-              )
-            ),User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
+            insertCyaData(cya(), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
             urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
+
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           "has an OK status" in {
@@ -160,20 +153,10 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(EmploymentUserData(
-              sessionId,
-              mtditid,
-              nino,
-              taxYear,
-              "001",
-              isPriorSubmission = true,
-              EmploymentCYAModel(
-                fullEmploymentsModel(None).hmrcEmploymentData.head.toEmploymentDetails(false).copy(totalTaxToDate = None),
-                None
-              )
-            ),User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
+            insertCyaData(cya(None), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
             urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
+
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           "has an OK status" in {
@@ -188,8 +171,88 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           textOnPageCheck(user.commonExpectedResults.hint, hintText)
           inputFieldCheck(user.commonExpectedResults.amount, currencyBox)
         }
+
+
+        "The input field" should {
+
+          "be empty" when {
+            "there is cya data with taxToDate field empty and no prior(i.e. user is adding a new employment)" when {
+              implicit lazy val result: WSResponse = {
+                authoriseAgentOrIndividual(user.isAgent)
+                dropEmploymentDB()
+                noUserDataStub(nino, taxYear)
+                insertCyaData(cya(None, isPriorSubmission = false), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+                urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              }
+
+              implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+              inputFieldValueCheck("", inputAmountField)
+
+            }
+
+
+            "cya data and prior data are the same(i.e. user has clicked on change link)" when {
+              implicit lazy val result: WSResponse = {
+                authoriseAgentOrIndividual(user.isAgent)
+                dropEmploymentDB()
+                userDataStub(userData(multipleEmployments), nino, taxYear)
+                insertCyaData(cya(), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+                urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              }
+
+              implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+              inputFieldValueCheck("", inputAmountField)
+
+            }
+          }
+
+          "be filled" when {
+            "cya data and prior data differ (i.e user has updated their pay)" when {
+              implicit lazy val result: WSResponse = {
+                authoriseAgentOrIndividual(user.isAgent)
+                dropEmploymentDB()
+                userDataStub(userData(multipleEmployments), nino, taxYear)
+                insertCyaData(cya(Some(100.00)), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+                urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              }
+
+              implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+              inputFieldValueCheck("100", inputAmountField)
+            }
+
+            "cya amount field is filled and prior data is none (i.e user has added a new employment and updated their tax but now want to change it)" when {
+              implicit lazy val result: WSResponse = {
+                authoriseAgentOrIndividual(user.isAgent)
+                dropEmploymentDB()
+                noUserDataStub(nino, taxYear)
+                insertCyaData(cya(Some(100.00), isPriorSubmission = false), User(mtditid, None, nino, sessionId, "agent")(fakeRequest))
+                urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              }
+              implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+              inputFieldValueCheck("100", inputAmountField)
+            }
+          }
+        }
+        "redirect to the CheckYourEmploymentDetails page there is no CYA data" which {
+          lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+          "has an SEE_OTHER status" in {
+            result.status shouldBe SEE_OTHER
+          }
+
+          "redirect to OtherPayments not on P60 page" in {
+            result.header(HeaderNames.LOCATION) shouldBe Some(CheckEmploymentDetailsController.show(taxYear, "001").url)
+          }
+        }
       }
     }
   }
-
 }

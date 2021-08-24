@@ -213,7 +213,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(fullBenefits)), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel(Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear)
             urlGet(url(), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -296,7 +296,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(fullBenefits)), nino, taxYear-1)
+            userDataStub(userData(fullEmploymentsModel(Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear-1)
             urlGet(url(defaultTaxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
           }
 
@@ -379,7 +379,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(fullBenefits)), nino, taxYear-1)
+            userDataStub(userData(fullEmploymentsModel(Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear-1)
             urlGet(s"$appUrl/${taxYear-1}/check-employment-benefits?employmentId=0022", welsh = user.isWelsh, follow=false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
           }
@@ -411,7 +411,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             insertCyaData(employmentUserData.copy(employment = employmentData.copy(employmentBenefits = fullBenefits)).copy(employmentId = "001"),userRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(fullBenefits)), nino, taxYear-1)
+            userDataStub(userData(fullEmploymentsModel(Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear-1)
             urlGet(url(defaultTaxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
           }
 
@@ -510,7 +510,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             insertCyaData(employmentUserData.copy(employment = employmentData).copy(employmentId = "001"),userRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(fullBenefits)), nino, taxYear-1)
+            userDataStub(userData(fullEmploymentsModel(Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear-1)
             urlGet(url(defaultTaxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
           }
 
@@ -529,7 +529,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, defaultTaxYear)
+            userDataStub(userData(fullEmploymentsModel()), nino, defaultTaxYear)
             urlGet(url(), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -543,7 +543,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(filteredBenefits)), nino, defaultTaxYear)
+            userDataStub(userData(fullEmploymentsModel(Seq(employmentDetailsAndBenefits(filteredBenefits)))), nino, defaultTaxYear)
             urlGet(url(), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -627,7 +627,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
             urlPost(url(), body = "{}", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -658,7 +658,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(employmentUserData.copy(employment = employmentData).copy(employmentId = "001"),userRequest)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear-1)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear-1)
             urlPost(url(taxYear-1), body = "{}", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
           }
 
@@ -671,7 +671,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(None)), nino, taxYear-1)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear-1)
             urlPost(url(taxYear-1), body = "{}", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
           }
 
