@@ -17,12 +17,11 @@
 package config
 
 import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
-import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData, User}
-import models.employment.{AllEmploymentData, EmploymentData}
+import models.employment.AllEmploymentData
 import models.mongo.EmploymentUserData
-import org.scalamock.handlers.{CallHandler3, CallHandler5}
+import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData, User}
+import org.scalamock.handlers.{CallHandler3, CallHandler5, CallHandler6}
 import org.scalamock.scalatest.MockFactory
-import play.api.mvc.Results.Ok
 import play.api.mvc.{Request, Result}
 import services.EmploymentSessionService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -34,9 +33,18 @@ trait MockEmploymentSessionService extends MockFactory {
   val mockIncomeTaxUserDataService: EmploymentSessionService = mock[EmploymentSessionService]
 
   def mockFind(taxYear: Int, result: Result): CallHandler5[User[_], Int, AllEmploymentData => Result, Request[_], HeaderCarrier, Future[Result]] = {
-    (mockIncomeTaxUserDataService.findPreviousEmploymentUserData(_: User[_],_: Int)
+    (mockIncomeTaxUserDataService.findPreviousEmploymentUserData(_: User[_], _: Int)
     (_: AllEmploymentData => Result)(_: Request[_], _: HeaderCarrier))
       .expects(*, taxYear, *, *, *)
+      .returns(Future.successful(result))
+      .anyNumberOfTimes()
+  }
+
+  def mockGetAndHandle(taxYear: Int, result: Result): CallHandler6[Int, String, Boolean, (Option[EmploymentUserData],
+    Option[AllEmploymentData]) => Future[Result], User[_], HeaderCarrier, Future[Result]] = {
+    (mockIncomeTaxUserDataService.getAndHandle(_: Int, _: String, _: Boolean)
+    (_: (Option[EmploymentUserData], Option[AllEmploymentData]) => Future[Result])(_: User[_], _: HeaderCarrier))
+      .expects(taxYear, *, *, *, *, *)
       .returns(Future.successful(result))
       .anyNumberOfTimes()
   }

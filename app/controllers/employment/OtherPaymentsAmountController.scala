@@ -46,7 +46,7 @@ class OtherPaymentsAmountController @Inject()(implicit val cc: MessagesControlle
 
   def agentOrIndividual(implicit isAgent: Boolean): String = if (isAgent) "agent" else "individual"
 
-  def form(implicit isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
+  def buildForm(implicit isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
     emptyFieldKey = "otherPaymentsAmount.error.noEntry." + agentOrIndividual,
     wrongFormatKey = "otherPaymentsAmount.incorrectFormat",
     exceedsMaxAmountKey = "otherPaymentsAmount.maximum"
@@ -54,14 +54,23 @@ class OtherPaymentsAmountController @Inject()(implicit val cc: MessagesControlle
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      implicit val journey: QuestionsJourney[EmploymentUserData] = EmploymentUserData.journey(taxYear, employmentId)
 
-      val cyaFuture = employmentSessionService.getSessionData(taxYear,employmentId)
-      questionsJourneyValidator.validate(OtherPaymentsAmountController.show(taxYear, employmentId),
-        cyaFuture)(CheckEmploymentDetailsController.show(taxYear, employmentId).url) { data =>
-        val amount = data.employment.employmentDetails.tipsAndOtherPayments
-        val filledForm = amount.fold(form(user.isAgent))(x => form(user.isAgent).fill(x))
-        Future.successful(Ok(otherPaymentsAmountView(filledForm,taxYear, employmentId, amount)))
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
+        cya match {
+          case Some(cya) if cya.employment.employmentDetails.tipsAndOtherPaymentsQuestion.getOrElse(false) => {
+              val cyaTips = cya.employment.employmentDetails.tipsAndOtherPayments
+              val priorEmployment = prior.map(priorEmp => employmentSessionService.getLatestEmploymentData(priorEmp, isInYear = false)
+                .filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
+              val priorTips = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.tipsAndOtherPayments)))
+              lazy val unfilledForm = buildForm(user.isAgent)
+              val form: Form[BigDecimal] = cyaTips.fold(unfilledForm)(
+                cyaOther => if (priorTips.exists(_.equals(cyaOther))) unfilledForm else buildForm(user.isAgent).fill(cyaOther))
+              Future.successful(Ok(otherPaymentsAmountView(form, taxYear, employmentId, cyaTips)))
+            }
+          case Some(_) => Future.successful(Redirect(controllers.employment.routes.OtherPaymentsController.show(taxYear, employmentId)))
+          case _ => Future.successful(
+            Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId)))
+        }
       }
     }
   }
@@ -71,7 +80,7 @@ class OtherPaymentsAmountController @Inject()(implicit val cc: MessagesControlle
 
       val checkEmploymentDetailsUrl  = CheckEmploymentDetailsController.show(taxYear, employmentId)
 
-      form(user.isAgent).bindFromRequest().fold(
+      buildForm(user.isAgent).bindFromRequest().fold(
         { formWithErrors =>
           Future.successful(BadRequest(otherPaymentsAmountView(formWithErrors,taxYear, employmentId, None)))
         },

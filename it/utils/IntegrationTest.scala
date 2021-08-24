@@ -195,23 +195,35 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  def fullEmploymentsModel(benefits: Option[EmploymentBenefits]): AllEmploymentData = AllEmploymentData(
-    hmrcEmploymentData = Seq(employmentDetailsAndBenefitsModel(benefits,"001")),
-    hmrcExpenses = Some(employmentExpenses),
-    customerEmploymentData = Seq(),
-    customerExpenses = None)
+  def fullEmploymentsModel(hmrcEmployment:Seq[EmploymentSource]=Seq(employmentDetailsAndBenefits()),
+                           hmrcExpenses:Option[EmploymentExpenses]=Some(employmentExpenses),
+                           customerEmployment:Seq[EmploymentSource]=Seq(),
+                           customerExpenses:Option[EmploymentExpenses]=None): AllEmploymentData = AllEmploymentData(
+    hmrcEmploymentData = hmrcEmployment,
+    hmrcExpenses = hmrcExpenses,
+    customerEmploymentData = customerEmployment,
+    customerExpenses = customerExpenses)
 
-  def employmentDetailsAndBenefitsModel(benefits: Option[EmploymentBenefits],employmentId:String): EmploymentSource =
+  //scalastyle:off
+  def employmentDetailsAndBenefits(benefits: Option[EmploymentBenefits]=None,
+                                   employmentId:String= "001",
+                                   employerName:String="maggie",
+                                   employerRef:Option[String]=Some("223/AB12399"),
+                                   startDate:Option[String]=Some("2019-04-21"),
+                                   dateIgnored: Option[String]=None,
+                                   submittedOn: Option[String]=Some("2020-01-04T05:01:01Z"),
+                                   taxablePayToDate:Option[BigDecimal]=Some(34234.15),
+                                   totalTaxToDate:Option[BigDecimal]=Some(6782.92),
+                                   tipsAndOtherPay:Option[BigDecimal]=Some(67676)): EmploymentSource = {
     EmploymentSource(
       employmentId = employmentId,
-      employerName = "maggie",
-      employerRef = Some("223/AB12399"),
-
+      employerName = employerName,
+      employerRef = employerRef,
       payrollId = Some("123456789999"),
-      startDate = Some("2019-04-21"),
+      startDate = startDate,
       cessationDate = Some("2020-03-11"),
-      dateIgnored = None,
-      submittedOn = Some("2020-01-04T05:01:01Z"),
+      dateIgnored = dateIgnored,
+      submittedOn = submittedOn,
       employmentData = Some(EmploymentData(
         submittedOn = "2020-02-12",
         employmentSequenceNumber = Some("123456789999"),
@@ -220,7 +232,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
         directorshipCeasedDate = Some("2020-02-12"),
         occPen = Some(false),
         disguisedRemuneration = Some(false),
-        pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+        pay = Some(Pay(taxablePayToDate, totalTaxToDate, tipsAndOtherPay, Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
         Some(Deductions(
           studentLoans = Some(StudentLoans(
             uglDeductionAmount = Some(100.00),
@@ -230,44 +242,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
       )),
       employmentBenefits = benefits
     )
-
-  def fullEmploymentsModelWithUnignored(benefits: Option[EmploymentBenefits]): AllEmploymentData = AllEmploymentData(
-    hmrcEmploymentData = Seq(
-     employmentDetailsAndBenefitsModel(benefits,"001").copy(dateIgnored = None)
-    ),
-    hmrcExpenses = Some(employmentExpenses),
-    customerEmploymentData = Seq(
-      EmploymentSource(
-        employmentId = "004",
-        employerName = "rosa",
-        employerRef = Some("223/AB12399"),
-        payrollId = Some("123456789999"),
-        startDate = Some("2019-04-21"),
-        cessationDate = Some("2020-03-11"),
-        dateIgnored = None,
-        submittedOn = Some("2020-01-04T05:01:01Z"),
-        employmentData = Some(EmploymentData(
-          submittedOn = "2020-02-12",
-          employmentSequenceNumber = Some("123456789999"),
-          companyDirector = Some(true),
-          closeCompany = Some(false),
-          directorshipCeasedDate = Some("2020-02-12"),
-          occPen = Some(false),
-          disguisedRemuneration = Some(false),
-          pay = Some(Pay(Some(34234.15), Some(6782.92), Some(67676), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
-          Some(Deductions(
-            studentLoans = Some(StudentLoans(
-              uglDeductionAmount = Some(100.00),
-              pglDeductionAmount = Some(100.00)
-            ))
-          ))
-        )),
-        employmentBenefits = benefits
-      )
-
-    ),
-    customerExpenses = None)
-
+  }
 
 
   lazy val expenses: Expenses = Expenses(
@@ -290,7 +265,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   )
   )
 
-  lazy val fullBenefits: Some [EmploymentBenefits] = Some(EmploymentBenefits(
+  lazy val fullBenefits: Some[EmploymentBenefits] = Some(EmploymentBenefits(
     submittedOn = "2020-02-12",
     benefits = Some(Benefits(
       car = Some(1.23),

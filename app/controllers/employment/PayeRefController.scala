@@ -44,12 +44,22 @@ class PayeRefController @Inject()(implicit val authorisedAction: AuthorisedActio
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
 
     inYearAction.notInYear(taxYear) {
-      val redirectUrl = CheckEmploymentDetailsController.show(taxYear, employmentId).url
-      employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { data =>
-        val payeRef = data.employment.employmentDetails.employerRef
-        val employerName = data.employment.employmentDetails.employerName
-        val form: Form[String] = payeRef.fold(PayeForm.payeRefForm(user.isAgent))(ref => PayeForm.payeRefForm(user.isAgent).fill(ref))
-        Future.successful(Ok(payeRefView(form, taxYear, employerName, payeRef,  employmentId)))
+      employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
+        cya match {
+          case Some(cya) =>
+            val cyaRef = cya.employment.employmentDetails.employerRef
+            val priorEmployment = prior.map(priorEmp => employmentSessionService.getLatestEmploymentData(priorEmp, isInYear = false)
+              .filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
+            val priorRef = priorEmployment.headOption.flatMap(_.employerRef)
+            lazy val unfilledForm = PayeForm.payeRefForm(user.isAgent)
+            val form: Form[String] = cyaRef.fold(unfilledForm)(
+              cyaPaye => if(priorRef.exists(_.equals(cyaPaye))) unfilledForm else PayeForm.payeRefForm(user.isAgent).fill(cyaPaye))
+            val employerName = cya.employment.employmentDetails.employerName
+            Future.successful(Ok(payeRefView(form, taxYear, employerName, cyaRef, employmentId)))
+
+          case _ => Future.successful(
+            Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId)))
+        }
       }
     }
   }

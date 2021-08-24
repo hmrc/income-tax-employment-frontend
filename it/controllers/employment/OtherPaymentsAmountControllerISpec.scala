@@ -18,22 +18,28 @@ package controllers.employment
 
 import controllers.employment.routes.{CheckEmploymentDetailsController, OtherPaymentsController}
 import models.User
-import models.mongo.EmploymentUserData
+import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
+import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper{
 
-  val employmentId = "employmentId"
+  val employmentId = "001"
   val otherPaymentsAmountPageUrl = s"$appUrl/2021/amount-of-payments-not-on-p60?employmentId=$employmentId"
-  val continueLink = "/income-through-software/return/employment-income/2021/amount-of-payments-not-on-p60?employmentId=employmentId"
+  val continueLink = "/income-through-software/return/employment-income/2021/amount-of-payments-not-on-p60?employmentId=001"
 
   val amount: String = "100"
   val maxLimit: String = "100,000,000,000"
+
+  val taxYearEOY = taxYear-1
+
+  implicit val request = FakeRequest()
+  private val userRequest: User[_]=  User(mtditid, None, nino, sessionId, affinityGroup)
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > label > header > p"
@@ -42,6 +48,7 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val ifItWasNotSelector: String = "#main-content > div > div > form > div > label > p"
+    val inputAmountField:String = "#amount"
   }
 
   trait SpecificExpectedResults {
@@ -121,9 +128,17 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
 
-  val employmentUserDataWithTipsAndOtherPayments: EmploymentUserData = employmentUserData.copy(employment = employmentUserData.employment.copy(employmentUserData.employment.employmentDetails.copy(tipsAndOtherPayments = Some(100.00))))
-  val empDataWithNoToTipsQuestion: EmploymentUserData = employmentUserData.copy(employment = employmentUserData.employment.copy(employmentUserData.employment.employmentDetails.copy(tipsAndOtherPaymentsQuestion = Some(false))))
-  val empDataWithUnansweredTipsQuestion: EmploymentUserData = employmentUserData.copy(employment = employmentUserData.employment.copy(employmentUserData.employment.employmentDetails.copy(tipsAndOtherPaymentsQuestion = None)))
+  def cya(tipsQuestion:Option[Boolean]=Some(true), tipsAmount:Option[BigDecimal]=None, isPriorSubmission:Boolean=true): EmploymentUserData = {
+    EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, "001", isPriorSubmission,
+    EmploymentCYAModel(
+      EmploymentDetails("maggie", tipsAndOtherPaymentsQuestion = tipsQuestion, tipsAndOtherPayments = tipsAmount, currentDataIsHmrcHeld = false),
+      None
+    )
+    )
+  }
+  val multipleEmployments = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"),
+    employmentDetailsAndBenefits(tipsAndOtherPay=Some(100.00))))
+
 
   ".show" should {
 
@@ -134,8 +149,9 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData, User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
-            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+            insertCyaData(cya(), userRequest)
+            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -161,8 +177,9 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserDataWithTipsAndOtherPayments, User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
-            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+            insertCyaData(cya(tipsAmount=Some(100.00)), userRequest)
+            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -185,11 +202,77 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
           welshToggleCheck(user.isWelsh)
         }
 
+        "The input field" should {
+
+          "be empty" when {
+            "there is cya data with taxToDate field empty and no prior(i.e. user is adding a new employment)" when {
+              implicit lazy val result: WSResponse = {
+                authoriseAgentOrIndividual(user.isAgent)
+                dropEmploymentDB()
+                noUserDataStub(nino, taxYearEOY)
+                insertCyaData(cya(tipsAmount = None, isPriorSubmission = false), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+                urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              }
+
+              implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+              inputFieldValueCheck("", Selectors.inputAmountField)
+
+            }
+
+
+            "cya data and prior data are the same(i.e. user has clicked on change link)" when {
+              implicit lazy val result: WSResponse = {
+                authoriseAgentOrIndividual(user.isAgent)
+                dropEmploymentDB()
+                userDataStub(userData(multipleEmployments), nino, taxYearEOY)
+                insertCyaData(cya(tipsAmount = Some(100.00)), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+                urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              }
+
+              implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+              inputFieldValueCheck("", Selectors.inputAmountField)
+
+            }
+          }
+
+          "be filled" when {
+            "cya data and prior data differ (i.e user has updated their pay)" when {
+              implicit lazy val result: WSResponse = {
+                authoriseAgentOrIndividual(user.isAgent)
+                dropEmploymentDB()
+                userDataStub(userData(multipleEmployments), nino, taxYearEOY)
+                insertCyaData(cya(tipsAmount = Some(100.10)), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+                urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              }
+
+              implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+              inputFieldValueCheck("100.10", Selectors.inputAmountField)
+            }
+
+            "cya amount field is filled and prior data is none (i.e user has added a new employment and updated their tips but now want to change it)" when {
+              implicit lazy val result: WSResponse = {
+                authoriseAgentOrIndividual(user.isAgent)
+                dropEmploymentDB()
+                noUserDataStub(nino, taxYearEOY)
+                insertCyaData(cya(tipsQuestion=Some(true), tipsAmount = Some(100.00), isPriorSubmission = false), User(mtditid, None, nino, sessionId, "agent"))
+                urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              }
+
+              implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+              inputFieldValueCheck("100", Selectors.inputAmountField)
+            }
+          }
+        }
+
         "redirect to the CheckYourEmploymentDetails page there is no CYA data" which {
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "has an SEE_OTHER status" in {
@@ -197,7 +280,7 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "redirect to OtherPayments not on P60 page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some(CheckEmploymentDetailsController.show(2021, employmentId).url)
+            result.header(HeaderNames.LOCATION) shouldBe Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId).url)
           }
         }
 
@@ -205,8 +288,8 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(empDataWithNoToTipsQuestion, User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
-            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+            insertCyaData(cya(tipsQuestion = Some(false)), userRequest)
+            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "has an SEE_OTHER status" in {
@@ -214,7 +297,7 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "redirect to OtherPayments not on P60 page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some(OtherPaymentsController.show(2021, employmentId).url)
+            result.header(HeaderNames.LOCATION) shouldBe Some(OtherPaymentsController.show(taxYearEOY, employmentId).url)
           }
         }
 
@@ -222,16 +305,15 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(empDataWithUnansweredTipsQuestion, User(mtditid,None,nino,sessionId,"Individual")(fakeRequest))
-            insertCyaData(empDataWithUnansweredTipsQuestion, User(mtditid,if(user.isAgent) Some("12345678") else None,nino,sessionId,if(user.isAgent) "Agent" else "Individual")(fakeRequest))
-            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+            insertCyaData(cya(tipsQuestion = Some(false)), User(mtditid,None,nino,sessionId,"Individual")(fakeRequest))
+            urlGet(otherPaymentsAmountPageUrl, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
           }
 
           "redirect to OtherPayments not on P60 page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some(OtherPaymentsController.show(2021, employmentId).url)
+            result.header(HeaderNames.LOCATION) shouldBe Some(OtherPaymentsController.show(taxYearEOY, employmentId).url)
           }
         }
       }
@@ -240,19 +322,39 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
 
   ".submit" should {
 
-    val validAmountForm = Map("amount" -> Seq(amount))
+    val validAmountForm = Map("amount" -> Seq("2000.53"))
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "return an OK" in {
+        "update cya when the previous question has been answered(i.e. journey is valid)" in {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            insertCyaData(cya(tipsQuestion = Some(true)), userRequest)
+            urlPost(otherPaymentsAmountPageUrl, body = validAmountForm, welsh = user.isWelsh,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+
+          lazy val updatedCya = findCyaData(taxYearEOY, employmentId, userRequest)
+
+          updatedCya.get.employment.employmentDetails.tipsAndOtherPayments.get shouldBe 2000.53
+        }
+
+        "redirect to check your employment details page when there is no cya data" when{
+
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(otherPaymentsAmountPageUrl, body = validAmountForm, follow = false, welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            dropEmploymentDB()
+            urlPost(otherPaymentsAmountPageUrl, body = validAmountForm, welsh = user.isWelsh, follow = false,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          result.status shouldBe SEE_OTHER
+          "has an SEE_OTHER status" in {
+            result.status shouldBe SEE_OTHER
+          }
+
+          "redirect to Check Employment Details page" in {
+            result.header(HeaderNames.LOCATION) shouldBe Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId).url)
+          }
         }
 
         "redirect to the 'did you receive any payments that are not on your p60' page" when {
@@ -260,8 +362,9 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
             lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
-              insertCyaData(empDataWithNoToTipsQuestion, User(mtditid, if (user.isAgent) Some("12345678") else None, nino, sessionId, if (user.isAgent) "Agent" else "Individual")(fakeRequest))
-              urlPost(otherPaymentsAmountPageUrl, body = validAmountForm, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+              insertCyaData(cya(tipsQuestion = Some(false)), userRequest)
+              urlPost(otherPaymentsAmountPageUrl, body = validAmountForm, welsh = user.isWelsh, follow = false,
+                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has an SEE_OTHER status" in {
@@ -269,7 +372,7 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
             }
 
             "redirect to OtherPayments not on P60 page" in {
-              result.header(HeaderNames.LOCATION) shouldBe Some(OtherPaymentsController.show(2021, employmentId).url)
+              result.header(HeaderNames.LOCATION) shouldBe Some(OtherPaymentsController.show(taxYearEOY, employmentId).url)
             }
           }
 
@@ -277,8 +380,9 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
             lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
-              insertCyaData(empDataWithUnansweredTipsQuestion, User(mtditid, if (user.isAgent) Some("12345678") else None, nino, sessionId, if (user.isAgent) "Agent" else "Individual")(fakeRequest))
-              urlPost(otherPaymentsAmountPageUrl, body = validAmountForm, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+              insertCyaData(cya(tipsQuestion = None), userRequest)
+              urlPost(otherPaymentsAmountPageUrl, body = validAmountForm, welsh = user.isWelsh, follow = false,
+                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has an SEE_OTHER status" in {
