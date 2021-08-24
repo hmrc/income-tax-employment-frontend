@@ -322,19 +322,39 @@ class OtherPaymentsAmountControllerISpec extends IntegrationTest with ViewHelper
 
   ".submit" should {
 
-    val validAmountForm = Map("amount" -> Seq(amount))
+    val validAmountForm = Map("amount" -> Seq("2000.53"))
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "return an OK" in {
+        "update cya when the previous question has been answered(i.e. journey is valid)" in {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            insertCyaData(cya(tipsQuestion = Some(true)), userRequest)
+            urlPost(otherPaymentsAmountPageUrl, body = validAmountForm, welsh = user.isWelsh,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+
+          lazy val updatedCya = findCyaData(taxYearEOY, employmentId, userRequest)
+
+          updatedCya.get.employment.employmentDetails.tipsAndOtherPayments.get shouldBe 2000.53
+        }
+
+        "redirect to check your employment details page when there is no cya data" when{
+
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(otherPaymentsAmountPageUrl, body = validAmountForm, follow = false, welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            dropEmploymentDB()
+            urlPost(otherPaymentsAmountPageUrl, body = validAmountForm, welsh = user.isWelsh, follow = false,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          result.status shouldBe SEE_OTHER
+          "has an SEE_OTHER status" in {
+            result.status shouldBe SEE_OTHER
+          }
+
+          "redirect to Check Employment Details page" in {
+            result.header(HeaderNames.LOCATION) shouldBe Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId).url)
+          }
         }
 
         "redirect to the 'did you receive any payments that are not on your p60' page" when {
