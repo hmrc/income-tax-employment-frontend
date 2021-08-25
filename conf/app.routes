@@ -37,7 +37,10 @@ GET        /:taxYear/how-much-pay                           controllers.employme
 POST       /:taxYear/how-much-pay                           controllers.employment.EmployerPayAmountController.submit(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/add-employment                         controllers.employment.AddEmploymentController.show(taxYear: Int)
-POST       /:taxYear/add-employment                        controllers.employment.AddEmploymentController.submit(taxYear: Int)
+POST       /:taxYear/add-employment                         controllers.employment.AddEmploymentController.submit(taxYear: Int)
+
+GET        /:taxYear/remove-employment                      controllers.employment.RemoveEmploymentController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/remove-employment                      controllers.employment.RemoveEmploymentController.submit(taxYear: Int, employmentId: String)
 
 GET        /sign-out                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
@@ -52,11 +55,11 @@ GET        /error/not-authorised-to-use-service             controllers.errors.U
 GET        /:taxYear/employment-summary                     controllers.employment.EmploymentSummaryController.show(taxYear: Int)
 POST       /:taxYear/employment-summary                     controllers.employment.EmploymentSummaryController.submit(taxYear: Int)
 
-GET        /:taxYear/uk-tax                                controllers.employment.EmploymentTaxController.show(taxYear: Int, employmentId: String)
+GET        /:taxYear/uk-tax                                 controllers.employment.EmploymentTaxController.show(taxYear: Int, employmentId: String)
 
-POST       /:taxYear/uk-tax                                controllers.employment.EmploymentTaxController.submit(taxYear: Int, employmentId: String)
+POST       /:taxYear/uk-tax                                 controllers.employment.EmploymentTaxController.submit(taxYear: Int, employmentId: String)
 
-GET        /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
+GET        /language/:lang                                  controllers.LanguageSwitchController.switchToLanguage(lang: String)
 
 GET        /error/you-need-agent-services-account           controllers.errors.YouNeedAgentServicesController.show
 

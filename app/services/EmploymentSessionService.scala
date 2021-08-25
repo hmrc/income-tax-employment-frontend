@@ -50,14 +50,14 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
                                          createUpdateEmploymentDataConnector: CreateUpdateEmploymentDataConnector,
                                          implicit val ec: ExecutionContext) extends Logging {
 
-  def findPreviousEmploymentUserData(user: User[_], taxYear: Int)(result: AllEmploymentData => Result)
+  def findPreviousEmploymentUserData(user: User[_], taxYear: Int, overrideRedirect: Option[Result] = None)(result: AllEmploymentData => Result)
                                     (implicit request: Request[_], hc: HeaderCarrier): Future[Result] = {
 
     getPriorData(taxYear)(user,hc).map {
       case Right(IncomeTaxUserData(Some(employmentData))) => result(employmentData)
       case Right(IncomeTaxUserData(None)) =>
         logger.info(s"[EmploymentSessionService][findPreviousEmploymentUserData] No employment data found for user. SessionId: ${user.sessionId}")
-        Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        overrideRedirect.fold(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))(redirect => redirect)
       case Left(error) => errorHandler.handleError(error.status)
     }
   }

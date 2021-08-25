@@ -29,7 +29,7 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.http.Status.{NOT_FOUND, NO_CONTENT}
+import play.api.http.Status.NO_CONTENT
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
@@ -186,6 +186,14 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
       s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,
       Json.toJson(userData).toString(), ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
   }
+
+  def userDataStubDeleteOrIgnoreEmployment(userData: IncomeTaxUserData, nino: String, taxYear: Int, employmentId: String, sourceType: String): StubMapping = {
+
+    stubDeleteWithHeadersCheck(
+      s"/income-tax-employment/income-tax/nino/$nino/sources/$employmentId/$sourceType\\?taxYear=$taxYear", NO_CONTENT,
+      Json.toJson(userData).toString(), "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+  }
+
   def noUserDataStub(nino: String, taxYear: Int): StubMapping = {
 
     stubGetWithHeadersCheck(
