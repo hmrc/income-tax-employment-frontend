@@ -57,7 +57,6 @@
             <span class="govuk-visually-hidden">@messages("employment.hiddenText", employmentName)</span>
         </span>
         <span class="hmrc-add-to-a-list__remove">
-            <!--TODO Update Link to go to remove employment page-->
             <a class="govuk-link" href="@removeLink">@messages("common.remove")</a>
             <span class="govuk-visually-hidden">@messages("employment.hiddenText", employmentName)</span>
         </span>
@@ -72,7 +71,7 @@
                     @if(isInYear){
                         @employmentRow(employment.employerName, controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employment.employmentId))
                     } else {
-                        @employmentRowEOY(employment.employerName, controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employment.employmentId), controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employment.employmentId))
+                        @employmentRowEOY(employment.employerName, controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employment.employmentId), controllers.employment.routes.RemoveEmploymentController.show(taxYear, employment.employmentId))
                     }
                 }
             </ul>
