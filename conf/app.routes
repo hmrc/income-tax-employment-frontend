@@ -26,13 +26,6 @@ POST       /:taxYear/employment-start-date                  controllers.employme
 GET        /:taxYear/employer-paye-reference                controllers.employment.PayeRefController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/employer-paye-reference                controllers.employment.PayeRefController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/amount-of-payments-not-on-p60          controllers.employment.OtherPaymentsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/amount-of-payments-not-on-p60          controllers.employment.OtherPaymentsAmountController.submit(taxYear: Int, employmentId: String)
-
-
-GET        /:taxYear/payments-not-on-p60                    controllers.employment.OtherPaymentsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/payments-not-on-p60                    controllers.employment.OtherPaymentsController.submit(taxYear: Int, employmentId: String)
-
 GET        /:taxYear/how-much-pay                           controllers.employment.EmployerPayAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/how-much-pay                           controllers.employment.EmployerPayAmountController.submit(taxYear: Int, employmentId: String)
 

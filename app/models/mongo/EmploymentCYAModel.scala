@@ -30,9 +30,7 @@ case class EmploymentDetails(employerName: String,
                              employmentDetailsSubmittedOn: Option[String] = None,
                              taxablePayToDate: Option[BigDecimal] = None,
                              totalTaxToDate: Option[BigDecimal] = None,
-                             tipsAndOtherPaymentsQuestion: Option[Boolean] = None,
-                             tipsAndOtherPayments: Option[BigDecimal] = None,
-                             currentDataIsHmrcHeld: Boolean){
+                             currentDataIsHmrcHeld: Boolean) {
 
   val isFinished: Boolean = {
     employerRef.isDefined &&
@@ -41,7 +39,6 @@ case class EmploymentDetails(employerName: String,
       totalTaxToDate.isDefined //TODO Add extra mandatory fields such as cessationDateQuestion when introduced.
   }
 }
-
 object EmploymentDetails {
   implicit val format: OFormat[EmploymentDetails] = Json.format[EmploymentDetails]
 }
@@ -60,8 +57,6 @@ case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
       employmentDetails.cessationDate,
       employmentDetails.taxablePayToDate,
       employmentDetails.totalTaxToDate,
-      employmentDetails.tipsAndOtherPaymentsQuestion,
-      employmentDetails.tipsAndOtherPayments,
       isUsingCustomerData)
   }
 }

@@ -201,8 +201,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       CreateUpdateEmploymentData(
         CreateUpdatePay(
           taxablePayToDate = cya.employment.employmentDetails.taxablePayToDate.get, //.get on purpose to provoke no such element exception and route them to finish journey.
-          totalTaxToDate = cya.employment.employmentDetails.totalTaxToDate.get, //.get on purpose to provoke no such element exception and route them to finish journey.
-          tipsAndOtherPayments = cya.employment.employmentDetails.tipsAndOtherPayments
+          totalTaxToDate = cya.employment.employmentDetails.totalTaxToDate.get //.get on purpose to provoke no such element exception and route them to finish journey.
         ),
         benefitsInKind = benefits,
         deductions = deductions
