@@ -47,8 +47,7 @@ object CreateUpdateEmploymentData {
 }
 
 case class CreateUpdatePay(taxablePayToDate: BigDecimal,
-                           totalTaxToDate: BigDecimal,
-                           tipsAndOtherPayments: Option[BigDecimal])
+                           totalTaxToDate: BigDecimal)
 
 object CreateUpdatePay {
   implicit val formats: OFormat[CreateUpdatePay] = Json.format[CreateUpdatePay]

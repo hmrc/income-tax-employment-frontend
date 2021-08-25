@@ -400,7 +400,6 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
               startDate = Some("2020-11-11"),
               taxablePayToDate= Some(55.99),
               totalTaxToDate= Some(3453453.00),
-              tipsAndOtherPayments= Some(5345.55),
               currentDataIsHmrcHeld = false
             ))
           }
@@ -499,7 +498,6 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
               startDate = Some("2020-11-11"),
               taxablePayToDate= Some(55.99),
               totalTaxToDate= Some(3453453.00),
-              tipsAndOtherPayments= Some(5345.55),
               currentDataIsHmrcHeld = false
             ))
           }
@@ -648,7 +646,6 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
               startDate = Some("2020-11-11"),
               taxablePayToDate= Some(55.99),
               totalTaxToDate= Some(3453453.00),
-              tipsAndOtherPayments= Some(5345.55),
               currentDataIsHmrcHeld = false
             ))
           }
