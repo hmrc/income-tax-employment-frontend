@@ -79,20 +79,8 @@
         employmentDetails.totalTaxToDate.map(amount => bigDecimalCurrency(amount.toString)), employmentTaxCall,
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.totalTaxToDate", user.isAgent)))
 
-        val paymentsNotOnYourP60 = EmploymentDataForView(messages(getAgentDynamicContent(s"$msgKeyGeneric.paymentNotOnYourP60",user.isAgent)),
-        convertBoolToYesOrNo(employmentDetails.tipsAndOtherPaymentsQuestion), controllers.employment.routes.OtherPaymentsController.show(taxYear, employmentDetails.employmentId),
-        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.paymentNotOnYourP60", user.isAgent)))
-
-        val tipsAndOtherPaymentsAmount = EmploymentDataForView(messages(getAgentDynamicContent(s"$msgKeyGeneric.tipsAndOtherPayments", user.isAgent)),
-        employmentDetails.tipsAndOtherPayments.map(amount => bigDecimalCurrency(amount.toString)), controllers.employment.routes.OtherPaymentsAmountController.show(taxYear, employmentDetails.employmentId),
-        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.tipsAndOtherPayments", user.isAgent)))
-
         val employmentDataFields = {
-            if(isInYear) {
-                List(employerName, employmentStartDate, payeRef, payReceived, totalTaxToDate, tipsAndOtherPaymentsAmount)
-            } else {
-                List(employerName, employmentStartDate, payeRef, payReceived, totalTaxToDate, paymentsNotOnYourP60, tipsAndOtherPaymentsAmount)
-            }
+                List(employerName, employmentStartDate, payeRef, payReceived, totalTaxToDate)
         }
 
         govukSummaryList(

@@ -50,8 +50,7 @@ class CreateUpdateEmploymentDataConnectorSpec extends IntegrationTest {
       CreateUpdateEmploymentData(
         CreateUpdatePay(
           564563456345.55,
-          34523523454.44,
-          None
+          34523523454.44
         ),
         None,
         benefitsInKind = fullBenefits.head.benefits

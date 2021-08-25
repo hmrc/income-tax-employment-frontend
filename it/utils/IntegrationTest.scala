@@ -221,8 +221,8 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
                                    dateIgnored: Option[String]=None,
                                    submittedOn: Option[String]=Some("2020-01-04T05:01:01Z"),
                                    taxablePayToDate:Option[BigDecimal]=Some(34234.15),
-                                   totalTaxToDate:Option[BigDecimal]=Some(6782.92),
-                                   tipsAndOtherPay:Option[BigDecimal]=Some(67676)): EmploymentSource = {
+                                   totalTaxToDate:Option[BigDecimal]=Some(6782.92)
+                                   ): EmploymentSource = {
     EmploymentSource(
       employmentId = employmentId,
       employerName = employerName,
@@ -240,7 +240,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
         directorshipCeasedDate = Some("2020-02-12"),
         occPen = Some(false),
         disguisedRemuneration = Some(false),
-        pay = Some(Pay(taxablePayToDate, totalTaxToDate, tipsAndOtherPay, Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+        pay = Some(Pay(taxablePayToDate, totalTaxToDate, Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
         Some(Deductions(
           studentLoans = Some(StudentLoans(
             uglDeductionAmount = Some(100.00),
@@ -316,7 +316,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "employmentId",
     isPriorSubmission = true,
     EmploymentCYAModel(
-      EmploymentDetails("Employer Name",currentDataIsHmrcHeld = true, tipsAndOtherPaymentsQuestion = Some(true)),
+      EmploymentDetails("Employer Name",currentDataIsHmrcHeld = true),
       None
     )
   )
