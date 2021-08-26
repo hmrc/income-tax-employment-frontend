@@ -32,22 +32,34 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
 
   object Selectors {
     val valueHref = "#value"
+
     def yourEmpInfoSelector(nthChild: Int) = s"#main-content > div > div > p:nth-child($nthChild)"
+
     def employerName1Selector(nthChild: Int) = s"#main-content > div > div > div:nth-child($nthChild) > ul > li:nth-child(1) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
+
     def changeLink1Selector(nthChild: Int) = s"#main-content > div > div > div:nth-child($nthChild) > ul > li:nth-child(1) > span.hmrc-add-to-a-list__change > a"
+
     def removeLink1Selector(nthChild: Int) = s"#main-content > div > div > div:nth-child($nthChild) > ul > li:nth-child(1) > span.hmrc-add-to-a-list__remove > a"
+
     def employerName2Selector(nthChild: Int) = s"#main-content > div > div > div:nth-child($nthChild) > ul > li:nth-child(2) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
+
     def changeLink2Selector(nthChild: Int) = s"#main-content > div > div > div:nth-child($nthChild) > ul > li:nth-child(2) > span.hmrc-add-to-a-list__change > a"
+
     def removeLink2Selector(nthChild: Int) = s"#main-content > div > div > div:nth-child($nthChild) > ul > li:nth-child(2) > span.hmrc-add-to-a-list__remove > a"
+
     val doYouNeedAnotherSelector = "#main-content > div > div > form > div > fieldset > legend"
     val youMustTellSelector = "#value-hint"
     val continueButtonSelector = "#continue"
     val formSelector = "#main-content > div > div > form"
     val formRadioButtonValueSelector = "#value"
     val expensesHeaderSelector = "#main-content > div > div > p.govuk-label--m"
+
     def thisIsATotalSelector(nthChild: Int) = s"#main-content > div > div > p:nth-child($nthChild)"
+
     def expensesSelector(nthChild: Int) = s"#main-content > div > div > div:nth-child($nthChild) > ul > li > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
+
     def changeExpensesSelector(nthChild: Int) = s"#main-content > div > div > div:nth-child($nthChild) > ul > li > span.hmrc-add-to-a-list__change > a"
+
     def removeExpensesSelector(nthChild: Int) = s"#main-content > div > div > div:nth-child($nthChild) > ul > li > span.hmrc-add-to-a-list__remove > a"
   }
 
@@ -139,9 +151,13 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
   }
 
   private def url(taxYear: Int) = s"$appUrl/$taxYear/employment-summary"
-  val employmentId1= "001"
+
+  val employmentId1 = "001"
   val employmentId2 = "002"
-  def changeRemoveLinkHref(empId: String) =s"/income-through-software/return/employment-income/$validTaxYear2021/employer-details-and-benefits?employmentId=$empId"
+
+  def changeLinkHref(empId: String) = s"/income-through-software/return/employment-income/$validTaxYear2021/employer-details-and-benefits?employmentId=$empId"
+
+  def removeLinkHref(empId: String) = s"/income-through-software/return/employment-income/$validTaxYear2021/remove-employment?employmentId=$empId"
 
   val employmentSource: EmploymentSource = EmploymentSource(
     employmentId = employmentId1,
@@ -186,7 +202,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true,  CommonExpectedEN, Some(ExpectedAgentEN)),
+      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
       UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
@@ -224,11 +240,11 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
 
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(2))
             textOnPageCheck(employerName, employerName1Selector(3))
-            linkCheck(change, changeLink1Selector(3), changeRemoveLinkHref(employmentId1))
-            linkCheck(remove, removeLink1Selector(3), changeRemoveLinkHref(employmentId1))
+            linkCheck(change, changeLink1Selector(3), changeLinkHref(employmentId1))
+            linkCheck(remove, removeLink1Selector(3), removeLinkHref(employmentId1))
             textOnPageCheck(employerName2, employerName2Selector(3))
-            linkCheck(change, changeLink2Selector(3), changeRemoveLinkHref(employmentId2))
-            linkCheck(remove, removeLink2Selector(3), changeRemoveLinkHref(employmentId2))
+            linkCheck(change, changeLink2Selector(3), changeLinkHref(employmentId2))
+            linkCheck(remove, removeLink2Selector(3), removeLinkHref(employmentId2))
             textOnPageCheck(expensesText, expensesHeaderSelector)
             textOnPageCheck(thisIsATotal, thisIsATotalSelector(5))
             "has an expenses section" should {
@@ -267,11 +283,11 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
 
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(2))
             textOnPageCheck(employerName, employerName1Selector(3))
-            linkCheck(change, changeLink1Selector(3), changeRemoveLinkHref(employmentId1))
-            linkCheck(remove, removeLink1Selector(3), changeRemoveLinkHref(employmentId1))
+            linkCheck(change, changeLink1Selector(3), changeLinkHref(employmentId1))
+            linkCheck(remove, removeLink1Selector(3), removeLinkHref(employmentId1))
             textOnPageCheck(employerName2, employerName2Selector(3))
-            linkCheck(change, changeLink2Selector(3), changeRemoveLinkHref(employmentId2))
-            linkCheck(remove, removeLink2Selector(3), changeRemoveLinkHref(employmentId2))
+            linkCheck(change, changeLink2Selector(3), changeLinkHref(employmentId2))
+            linkCheck(remove, removeLink2Selector(3), removeLinkHref(employmentId2))
             textOnPageCheck(expensesText, expensesHeaderSelector)
             textOnPageCheck(thisIsATotal, thisIsATotalSelector(5))
             "has an expenses section" should {
@@ -368,11 +384,11 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
 
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(3))
             textOnPageCheck(employerName, employerName1Selector(4))
-            linkCheck(change, changeLink1Selector(4), changeRemoveLinkHref(employmentId1))
-            linkCheck(remove, removeLink1Selector(4), changeRemoveLinkHref(employmentId1))
+            linkCheck(change, changeLink1Selector(4), changeLinkHref(employmentId1))
+            linkCheck(remove, removeLink1Selector(4), removeLinkHref(employmentId1))
             textOnPageCheck(employerName2, employerName2Selector(4))
-            linkCheck(change, changeLink2Selector(4), changeRemoveLinkHref(employmentId2))
-            linkCheck(remove, removeLink2Selector(4), changeRemoveLinkHref(employmentId2))
+            linkCheck(change, changeLink2Selector(4), changeLinkHref(employmentId2))
+            linkCheck(remove, removeLink2Selector(4), removeLinkHref(employmentId2))
             textOnPageCheck(expensesText, expensesHeaderSelector)
             textOnPageCheck(thisIsATotal, thisIsATotalSelector(6))
             "has an expenses section" should {

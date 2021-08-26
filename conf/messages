@@ -318,3 +318,8 @@ payeRef.errors.wrongFormat = Enter a PAYE reference in the correct format
 
 AddEmployment.error = Select yes if you want to add an employment
 AddEmployment.header = Do you want to add an employment?
+
+employment.removeEmployment.title = Are you sure you want to remove this employment?
+employment.removeEmployment.heading = Are you sure you want to remove {0}?
+employment.removeEmployment.paragraph = This will also remove any benefits and expenses you told us about for this employment.
+employment.removeEmployment.error.no-entry = Select yes if you want to remove this employment

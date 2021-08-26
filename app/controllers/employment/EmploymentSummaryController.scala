@@ -19,6 +19,7 @@ package controllers.employment
 import common.{SessionValues, UUID}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthorisedAction, InYearAction}
+import controllers.employment.routes.AddEmploymentController
 import forms.YesNoForm
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -59,7 +60,9 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
 
     val status = if(yesNoForm.hasErrors) BadRequest else Ok
 
-    employmentSessionService.findPreviousEmploymentUserData(user, taxYear) { allEmploymentData =>
+    val overrideRedirect = if(isInYear) None else Some(Redirect(AddEmploymentController.show(taxYear)))
+
+    employmentSessionService.findPreviousEmploymentUserData(user, taxYear, overrideRedirect) { allEmploymentData =>
 
       val latestExpenses = employmentSessionService.getLatestExpenses(allEmploymentData, isInYear)
       val doExpensesExist = latestExpenses.isDefined
@@ -67,7 +70,8 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
       val employmentData = employmentSessionService.getLatestEmploymentData(allEmploymentData, isInYear)
 
       employmentData match {
-        case Seq() => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        case Seq() if isInYear =>  Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        case Seq() if !isInYear =>  Redirect(AddEmploymentController.show(taxYear))
         case Seq(employment) if isInYear => status(singleEmploymentSummaryView(taxYear, employment, doExpensesExist))
         case Seq(employment) if !isInYear => status(singleEmploymentSummaryEOYView(taxYear, employment, yesNoForm))
         case _ => status(multipleEmploymentsSummaryView(taxYear, employmentData, doExpensesExist, isInYear, yesNoForm))
