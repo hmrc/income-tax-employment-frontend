@@ -82,6 +82,6 @@ object ViewUtils {
   def bigDecimalCurrency(value: String, currencySymbol: String = "£"): String = {
     Try(BigDecimal(value))
       .map(amount => currencySymbol + f"$amount%1.2f".replace(".00", ""))
-      .getOrElse("")
+      .getOrElse(value)
   }
 }

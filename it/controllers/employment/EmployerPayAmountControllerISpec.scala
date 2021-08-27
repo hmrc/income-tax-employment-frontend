@@ -355,7 +355,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           titleCheck(get.expectedErrorTitle)
-          inputFieldValueCheck("", inputAmountField)
+          inputFieldValueCheck("|", inputAmountField)
           errorSummaryCheck(wrongFormatErrorText, expectedErrorHref)
         }
 
