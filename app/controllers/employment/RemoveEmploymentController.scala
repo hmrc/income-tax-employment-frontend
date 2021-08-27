@@ -49,10 +49,12 @@ class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerCo
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.findPreviousEmploymentUserData(user, taxYear) { allEmploymentData =>
+        val totalEmployments = employmentSessionService.getLatestEmploymentData(allEmploymentData, false).length
+        val lastEmployment = if(totalEmployments == 1) true else false
         val source = employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear = false)
         source match {
           case Some((source, _)) => val employerName = source.employerName
-            Ok(removeEmploymentView(form, taxYear, employmentId, employerName))
+            Ok(removeEmploymentView(form, taxYear, employmentId, employerName, lastEmployment))
           case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
         }
       }
@@ -63,12 +65,14 @@ class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerCo
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getPriorData(taxYear).flatMap {
         case Right(IncomeTaxUserData(Some(allEmploymentData))) =>
+          val totalEmployments = employmentSessionService.getLatestEmploymentData(allEmploymentData, false).length
+          val lastEmployment = if(totalEmployments == 1) true else false
           val source = employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear = false)
           source match {
             case Some((source, _)) => val employerName = source.employerName
               form.bindFromRequest().fold(
                 { formWithErrors =>
-                  Future.successful(BadRequest(removeEmploymentView(formWithErrors, taxYear, employmentId, employerName)))
+                  Future.successful(BadRequest(removeEmploymentView(formWithErrors, taxYear, employmentId, employerName, lastEmployment)))
                 },
                 {
                   case true =>

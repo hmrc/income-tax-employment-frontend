@@ -61,7 +61,7 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp with MockEmployment
     "return a result" which {
 
       s"has an OK($OK) status when there is employment data" in new TestWithAuth {
-        mockFind(validTaxYearEOY, Ok(view(form, validTaxYearEOY, employmentId, employerName)))
+        mockFind(validTaxYearEOY, Ok(view(form, validTaxYearEOY, employmentId, employerName, false)))
 
         val result: Future[Result] = controller.show(validTaxYearEOY, employmentId)(fakeRequest.withSession(
           SessionValues.TAX_YEAR -> validTaxYearEOY.toString
@@ -107,6 +107,7 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp with MockEmployment
     s"return a BAD_REQUEST($BAD_REQUEST) status when there a form is submitted with no entry" in new TestWithAuth {
 
       mockGetPriorRight(validTaxYearEOY, Some(employmentsModel))
+      mockGetLatestEmploymentDataEOY(employmentsModel, false)
       mockEmploymentSourceToUseHMRC(employmentsModel, employmentId, isInYear = false)
 
 
@@ -123,6 +124,7 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp with MockEmployment
       s"the 'yes' radio button is submitted" in new TestWithAuth {
 
         mockGetPriorRight(validTaxYearEOY, Some(employmentsModel))
+        mockGetLatestEmploymentDataEOY(employmentsModel, false)
         mockEmploymentSourceToUseHMRC(employmentsModel, employmentId, isInYear = false)
         mockDeleteOrIgnore(user, employmentsModel, validTaxYearEOY, employmentId)(Redirect(EmploymentSummaryController.show(validTaxYearEOY)))
 
@@ -141,6 +143,7 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp with MockEmployment
       s"the 'no' radio button is submitted" in new TestWithAuth {
 
         mockGetPriorRight(validTaxYearEOY, Some(employmentsModel))
+        mockGetLatestEmploymentDataEOY(employmentsModel, false)
         mockEmploymentSourceToUseHMRC(employmentsModel, employmentId, isInYear = false)
 
         val result: Future[Result] = {
@@ -161,6 +164,7 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp with MockEmployment
       "there's no employment data found for that employmentId" in new TestWithAuth {
 
         mockGetPriorRight(validTaxYearEOY, Some(employmentsModel))
+        mockGetLatestEmploymentDataEOY(employmentsModel, false)
         mockEmploymentSourceToUseNone(employmentsModel, employmentId, isInYear = false)
 
         val result: Future[Result] = controller.submit(validTaxYearEOY, employmentId)(fakeRequest.withSession(
