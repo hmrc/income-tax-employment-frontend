@@ -49,8 +49,8 @@ class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerCo
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.findPreviousEmploymentUserData(user, taxYear) { allEmploymentData =>
-        val totalEmployments = employmentSessionService.getLatestEmploymentData(allEmploymentData, false).length
-        val lastEmployment = if(totalEmployments == 1) true else false
+        val totalEmployments = employmentSessionService.getLatestEmploymentData(allEmploymentData, isInYear = false).length
+        val lastEmployment: Boolean = totalEmployments == 1
         val source = employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear = false)
         source match {
           case Some((source, _)) => val employerName = source.employerName
@@ -65,8 +65,8 @@ class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerCo
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getPriorData(taxYear).flatMap {
         case Right(IncomeTaxUserData(Some(allEmploymentData))) =>
-          val totalEmployments = employmentSessionService.getLatestEmploymentData(allEmploymentData, false).length
-          val lastEmployment = if(totalEmployments == 1) true else false
+          val totalEmployments = employmentSessionService.getLatestEmploymentData(allEmploymentData, isInYear = false).length
+          val lastEmployment: Boolean = totalEmployments == 1
           val source = employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear = false)
           source match {
             case Some((source, _)) => val employerName = source.employerName
