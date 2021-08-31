@@ -104,6 +104,28 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
     }
   }
 
+  def changeAmountRowCheck(item: String, value: String, itemSelector: String, valueSelector: String, changeSelector: String,
+                           changeHiddenText: String, href: String)
+                          (implicit document: () => Document): Unit = {
+    textOnPageCheck(item, itemSelector)
+    textOnPageCheck(value, valueSelector)
+    linkCheck(changeHiddenText, changeSelector, href)
+  }
+
+  def changeAmountRowCheck(item: String, value: String, section: Int, row: Int, changeHiddenText: String, href: String)
+                          (implicit document: () => Document): Unit = {
+
+    def benefitsItemSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dt"
+    def benefitsAmountSelector(section: Int, row: Int): String =
+      s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dd.govuk-summary-list__value"
+    def benefitsChangeLinkSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dd > a"
+
+    textOnPageCheck(item, benefitsItemSelector(section, row))
+    textOnPageCheck(value, benefitsAmountSelector(section, row), s"for the value of the $item field")
+    linkCheck(changeHiddenText, benefitsChangeLinkSelector(section, row), href)
+
+  }
+
   def formRadioValueCheck(selected: Boolean, selector: String)(implicit document: () => Document): Unit = {
     s"have a radio button form with the value set to '$selected'" in {
       document().select(selector).attr("value") shouldBe selected.toString

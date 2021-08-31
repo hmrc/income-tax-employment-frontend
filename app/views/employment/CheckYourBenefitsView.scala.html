@@ -30,15 +30,14 @@
     govukInsetText: GovukInsetText,
 )
 
-@(taxYear: Int, benefits: Benefits, isInYear: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, benefits: Benefits)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @headingForUse = @{messages(s"checkYourBenefits.heading.${if(user.isAgent) "agent" else "individual"}")}
 
 @titleForUse = @{messages(s"checkYourBenefits.heading.${if(user.isAgent) "agent" else "individual"}")}
 
-
 @showRows(item: String, value: Option[BigDecimal]) = @{
-    summaryListRow(HtmlContent(messages(item)),HtmlContent(bigDecimalCurrency(value.getOrElse("0").toString)),actions = Seq(), keyClasses="govuk-!-width-two-thirds",valueClasses = "govuk-!-width-one-third right-align")
+    summaryListRow(HtmlContent(messages(item)),HtmlContent(bigDecimalCurrency(value.getOrElse("0").toString)),actions = Seq(), keyClasses="govuk-!-width-two-thirds", valueClasses = "govuk-!-width-one-third right-align")
 }
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear)) {

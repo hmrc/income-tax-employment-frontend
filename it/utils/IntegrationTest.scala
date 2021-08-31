@@ -212,7 +212,6 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     customerEmploymentData = customerEmployment,
     customerExpenses = customerExpenses)
 
-  //scalastyle:off
   def employmentDetailsAndBenefits(benefits: Option[EmploymentBenefits]=None,
                                    employmentId:String= "001",
                                    employerName:String="maggie",

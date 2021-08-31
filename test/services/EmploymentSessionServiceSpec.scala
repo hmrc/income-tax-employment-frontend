@@ -111,7 +111,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
   val employmentCYA: EmploymentCYAModel = {
     EmploymentCYAModel(
-      EmploymentDetails(
+      employmentDetails = EmploymentDetails(
         "Employer Name",
         employerRef = Some(
           "123/12345"
@@ -122,6 +122,11 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
         employmentSubmittedOn = Some("2020-04-04T01:01:01Z"),
         employmentDetailsSubmittedOn = Some("2020-04-04T01:01:01Z"),
         currentDataIsHmrcHeld = false
+      ),
+      employmentBenefits = Some(
+        BenefitsViewModel(
+          Some(100), submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true
+        )
       ))
   }
 
@@ -237,7 +242,8 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
                     None,None, None,None
                   )),None
                 )),
-                employmentBenefits = employmentDataFull.employment.employmentBenefits
+                employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
+                  Some(employmentDataFull.employment.employmentBenefits.get.toBenefits)))
               )
             ),None,Seq(),None
           )
@@ -313,7 +319,8 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
                     None,None, None,None
                   )),None
                 )),
-                employmentBenefits = employmentDataFull.employment.employmentBenefits
+                employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
+                  Some(employmentDataFull.employment.employmentBenefits.get.toBenefits)))
               )
             ),None
           )
@@ -348,7 +355,8 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
                     None,None, None,None
                   )),None
                 )),
-                employmentBenefits = employmentDataFull.employment.employmentBenefits
+                employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
+                  Some(employmentDataFull.employment.employmentBenefits.get.toBenefits)))
               )
             ),None
           )
