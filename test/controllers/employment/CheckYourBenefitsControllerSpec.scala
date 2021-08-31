@@ -22,20 +22,22 @@ import play.api.http.Status._
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
 import utils.{UnitTest, UnitTestWithApp}
-import views.html.employment.CheckYourBenefitsView
+import views.html.employment.{CheckYourBenefitsView, CheckYourBenefitsViewEOY}
 
 import scala.concurrent.Future
 
 class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockEmploymentSessionService with UnitTest with MockAuditService{
 
 
-  lazy val view: CheckYourBenefitsView= app.injector.instanceOf[CheckYourBenefitsView]
+  lazy val view: CheckYourBenefitsView = app.injector.instanceOf[CheckYourBenefitsView]
+  lazy val viewEOY: CheckYourBenefitsViewEOY = app.injector.instanceOf[CheckYourBenefitsViewEOY]
 
   lazy val controller = new CheckYourBenefitsController(
     authorisedAction,
     mockMessagesControllerComponents,
     mockAppConfig,
     view,
+    viewEOY,
     mockIncomeTaxUserDataService,
     mockAuditService,
     inYearAction,
@@ -53,7 +55,22 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockEmploymen
 
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {
-          mockFind(taxYear,Ok(view(taxYear, employmentsModel.hmrcEmploymentData.head.employmentBenefits.get.benefits.get, true)))
+          mockFind(taxYear,Ok(view(taxYear, employmentsModel.hmrcEmploymentData.head.employmentBenefits.get.benefits.get)))
+          controller.show(taxYear, employmentId)(fakeRequest.withSession(
+            SessionValues.TAX_YEAR -> taxYear.toString
+          ))
+        }
+
+        status(result) shouldBe OK
+      }
+    }
+
+    "return a result when all data is in Session for EOY" which {
+
+      s"has an OK($OK) status" in new TestWithAuth {
+        val result: Future[Result] = {
+          mockFind(taxYear, Ok(viewEOY(taxYear, employmentsModel.hmrcEmploymentData.head.employmentBenefits.get.benefits.get.toBenefitsViewModel(true),
+            employmentId = employmentId, isUsingCustomerData = true)))
           controller.show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))
