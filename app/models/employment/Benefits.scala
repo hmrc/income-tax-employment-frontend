@@ -72,6 +72,45 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
 
   val assetsDetailsPopulated: Boolean =
     assets.isDefined || assetTransfer.isDefined
+
+  def toBenefitsViewModel(isUsingCustomerData: Boolean, submittedOn: Option[String] = None): BenefitsViewModel = {
+    BenefitsViewModel(
+      accommodation, assets, assetTransfer, beneficialLoan, car, carFuel, educationalServices, entertaining, expenses, medicalInsurance,
+      telephone, service, taxableExpenses, van, vanFuel, mileage, nonQualifyingRelocationExpenses, nurseryPlaces, otherItems,
+      paymentsOnEmployeesBehalf, personalIncidentalExpenses, qualifyingRelocationExpenses, employerProvidedProfessionalSubscriptions,
+      employerProvidedServices, incomeTaxPaidByDirector, travelAndSubsistence, vouchersAndCreditCards, nonCash,
+      accommodationQuestion = Some(accommodation.isDefined),
+      assetsQuestion = Some(assets.isDefined),
+      assetTransferQuestion = Some(assetTransfer.isDefined),
+      beneficialLoanQuestion = Some(beneficialLoan.isDefined),
+      carQuestion = Some(car.isDefined),
+      carFuelQuestion = Some(carFuel.isDefined),
+      educationalServicesQuestion = Some(educationalServices.isDefined),
+      entertainingQuestion = Some(entertaining.isDefined),
+      expensesQuestion = Some(expenses.isDefined),
+      medicalInsuranceQuestion = Some(medicalInsurance.isDefined),
+      telephoneQuestion = Some(telephone.isDefined),
+      serviceQuestion = Some(service.isDefined),
+      taxableExpensesQuestion = Some(taxableExpenses.isDefined),
+      vanQuestion = Some(van.isDefined),
+      vanFuelQuestion = Some(vanFuel.isDefined),
+      mileageQuestion = Some(mileage.isDefined),
+      nonQualifyingRelocationExpensesQuestion = Some(nonQualifyingRelocationExpenses.isDefined),
+      nurseryPlacesQuestion = Some(nurseryPlaces.isDefined),
+      otherItemsQuestion = Some(otherItems.isDefined),
+      paymentsOnEmployeesBehalfQuestion = Some(paymentsOnEmployeesBehalf.isDefined),
+      personalIncidentalExpensesQuestion = Some(personalIncidentalExpenses.isDefined),
+      qualifyingRelocationExpensesQuestion = Some(qualifyingRelocationExpenses.isDefined),
+      employerProvidedProfessionalSubscriptionsQuestion = Some(employerProvidedProfessionalSubscriptions.isDefined),
+      employerProvidedServicesQuestion = Some(employerProvidedServices.isDefined),
+      incomeTaxPaidByDirectorQuestion = Some(incomeTaxPaidByDirector.isDefined),
+      travelAndSubsistenceQuestion = Some(travelAndSubsistence.isDefined),
+      vouchersAndCreditCardsQuestion = Some(vouchersAndCreditCards.isDefined),
+      nonCashQuestion = Some(nonCash.isDefined),
+      submittedOn = submittedOn,
+      isUsingCustomerData = isUsingCustomerData
+    )
+  }
 }
 
 object Benefits {

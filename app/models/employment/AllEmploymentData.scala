@@ -53,6 +53,12 @@ case class EmploymentSource(employmentId: String,
       payrollId == createUpdateEmployment.payrollId
   }
 
+  def toBenefitsViewModel(isUsingCustomerData: Boolean): Option[BenefitsViewModel] ={
+    val submittedOn: Option[String] = employmentBenefits.map(_.submittedOn)
+
+    employmentBenefits.flatMap(_.benefits.map(_.toBenefitsViewModel(isUsingCustomerData,submittedOn)))
+  }
+
   def toEmploymentDetails(isUsingCustomerData: Boolean): EmploymentDetails = {
     EmploymentDetails(
       employerName = employerName,
