@@ -59,7 +59,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
   )
 
   object Selectors {
-    val thisWillAlsoTextSelector = "#main-content > div > div > form > div > fieldset > legend > p"
+    val paragraphTextSelector = "#main-content > div > div > form > div > fieldset > legend > p"
     val radioButtonSelector = "#main-content > div > div > form > div > fieldset > div"
     val yesRadioButtonSelector = "#value"
     val noRadioButtonSelector = "#value-no"
@@ -69,19 +69,22 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
   trait CommonExpectedResults {
     val expectedCaption: String
-    val expectedParagraphText: String
+    val expectedRemoveAccountText: String
+    val expectedLastAccountText: String
     val continueButton: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedParagraphText = "This will also remove any benefits and expenses you told us about for this employment."
+    val expectedRemoveAccountText = "This will also remove any benefits you told us about for this employment."
+    val expectedLastAccountText = "This will remove all your employment for this tax year."
     val continueButton = "Continue"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedParagraphText = "This will also remove any benefits and expenses you told us about for this employment."
+    val expectedRemoveAccountText = "This will also remove any benefits you told us about for this employment."
+    val expectedLastAccountText = "This will remove all your employment for this tax year."
     val continueButton = "Continue"
   }
 
@@ -138,7 +141,33 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "render the remove employment page" which {
+        "render the remove employment page for when it isn't the last employment" which {
+
+          lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(IncomeTaxUserData(Some(model)), nino, taxYearEOY)
+            urlGet(url(taxYearEOY, employmentId), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          s"has an OK ($OK) status" in {
+            result.status shouldBe OK
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          welshToggleCheck(user.isWelsh)
+
+          titleCheck(specific.expectedTitle)
+          h1Check(specific.expectedHeading)
+          captionCheck(common.expectedCaption)
+          textOnPageCheck(common.expectedRemoveAccountText, paragraphTextSelector)
+          radioButtonCheck("Yes", 1)
+          radioButtonCheck("No", 2)
+          buttonCheck(common.continueButton, continueButtonSelector)
+        }
+
+        "render the remove employment page for when it's the last employment" which {
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
@@ -158,7 +187,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           titleCheck(specific.expectedTitle)
           h1Check(specific.expectedHeading)
           captionCheck(common.expectedCaption)
-          textOnPageCheck(common.expectedParagraphText, thisWillAlsoTextSelector)
+          textOnPageCheck(common.expectedLastAccountText, paragraphTextSelector)
           radioButtonCheck("Yes", 1)
           radioButtonCheck("No", 2)
           buttonCheck(common.continueButton, continueButtonSelector)
@@ -309,7 +338,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(IncomeTaxUserData(Some(modelToDelete)), nino, taxYearEOY)
+            userDataStub(IncomeTaxUserData(Some(model)), nino, taxYearEOY)
             urlPost(url(taxYearEOY, employmentId), body = form, user.isWelsh, follow = false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -323,7 +352,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           titleCheck(specific.expectedErrorTitle)
           h1Check(specific.expectedHeading)
           captionCheck(common.expectedCaption)
-          textOnPageCheck(common.expectedParagraphText, thisWillAlsoTextSelector)
+          textOnPageCheck(common.expectedRemoveAccountText, paragraphTextSelector)
           buttonCheck(common.continueButton)
           errorSummaryCheck(specific.expectedErrorNoEntry, yesRadioButtonSelector)
           formPostLinkCheck(continueLink(taxYearEOY, employmentId), formSelector)

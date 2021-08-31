@@ -24,7 +24,7 @@
     errorSummary: ErrorSummary,
     button: Button
 )
-@(form: Form[Boolean], taxYear: Int, employmentId:String, employerName: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[Boolean], taxYear: Int, employmentId:String, employerName: String, lastEmployment: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @hasFormErrors = @{form.hasErrors}
 
@@ -57,7 +57,11 @@
 }
 
 @contentHtml = {
-    <p>@messages("employment.removeEmployment.paragraph")</p>
+    @if(lastEmployment) {
+        <p>@messages("employment.removeEmployment.remove-all-paragraph")</p>
+    } else {
+        <p>@messages("employment.removeEmployment.remove-paragraph")</p>
+    }
 }
 
 @{

@@ -20,10 +20,9 @@ import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataRespo
 import models.employment.AllEmploymentData
 import models.mongo.EmploymentUserData
 import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData, User}
-import org.scalamock.handlers.{CallHandler3, CallHandler5, CallHandler6}
+import org.scalamock.handlers.{CallHandler2, CallHandler3, CallHandler5, CallHandler6}
 import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData, User}
 import models.employment.{AllEmploymentData, EmploymentSource}
-import org.scalamock.handlers.{CallHandler3, CallHandler6}
 import org.scalamock.scalatest.MockFactory
 import play.api.mvc.{Request, Result}
 import services.EmploymentSessionService
@@ -86,4 +85,12 @@ trait MockEmploymentSessionService extends MockFactory {
         .returns(None)
         .anyNumberOfTimes()
     }
+
+  def mockGetLatestEmploymentDataEOY(allEmploymentData: AllEmploymentData, isInYear: Boolean): CallHandler2[AllEmploymentData, Boolean, Seq[EmploymentSource]] = {
+    (mockIncomeTaxUserDataService.getLatestEmploymentData(_: AllEmploymentData, _: Boolean))
+      .expects(allEmploymentData, isInYear)
+      .returns(allEmploymentData.hmrcEmploymentData.filter(_.dateIgnored.isEmpty) ++ allEmploymentData.customerEmploymentData)
+      .anyNumberOfTimes()
+
+  }
 }
