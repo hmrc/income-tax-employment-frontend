@@ -17,8 +17,8 @@
 package controllers.employment
 
 import models.User
-import models.employment.EmploymentBenefits
-import models.mongo.EmploymentCYAModel
+import models.employment.BenefitsViewModel
+import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
@@ -30,14 +30,15 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper{
 
   val defaultTaxYear = 2022
-  def url(taxYear: Int = defaultTaxYear) = s"$appUrl/$taxYear/check-employment-benefits?employmentId=001"
+  def url(taxYear: Int = defaultTaxYear): String = s"$appUrl/$taxYear/check-employment-benefits?employmentId=001"
 
   object Selectors {
     val p1 = "#main-content > div > div > p.govuk-body"
     val p2 = "#main-content > div > div > div.govuk-inset-text"
-    def fieldNameSelector(section: Int, row: Int) = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dt"
-    def fieldAmountSelector(section: Int, row: Int) = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dd"
-    def fieldHeaderSelector(i: Int) = s"#main-content > div > div > p:nth-child($i)"
+    def fieldNameSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dt"
+    def fieldAmountSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dd.govuk-summary-list__value"
+    def fieldChangeLinkSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dd > a"
+    def fieldHeaderSelector(i: Int): String = s"#main-content > div > div > p:nth-child($i)"
   }
 
   trait SpecificExpectedResults {
@@ -45,6 +46,71 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedTitle: String
     val expectedP1: String
     def expectedP2(year: Int = defaultTaxYear): String
+    val companyCarHiddenText: String
+    val fuelForCompanyCarHiddenText: String
+    val companyVanHiddenText: String
+    val fuelForCompanyVanHiddenText: String
+    val mileageBenefitHiddenText: String
+    val accommodationHiddenText: String
+    val qualifyingRelocationCostsHiddenText: String
+    val nonQualifyingRelocationCostsHiddenText: String
+    val travelAndSubsistenceHiddenText: String
+    val personalCostsHiddenText: String
+    val entertainmentHiddenText: String
+    val telephoneHiddenText: String
+    val servicesProvidedHiddenText: String
+    val profSubscriptionsHiddenText: String
+    val otherServicesHiddenText: String
+    val medicalInsHiddenText: String
+    val nurseryHiddenText: String
+    val beneficialLoansHiddenText: String
+    val educationalHiddenText: String
+    val incomeTaxPaidHiddenText: String
+    val incurredCostsPaidHiddenText: String
+    val nonTaxableHiddenText: String
+    val taxableCostsHiddenText: String
+    val vouchersHiddenText: String
+    val nonCashHiddenText: String
+    val otherBenefitsHiddenText: String
+    val assetsHiddenText: String
+    val assetTransfersHiddenText: String
+    val companyCarAmountHiddenText: String
+    val fuelForCompanyCarAmountHiddenText: String
+    val companyVanAmountHiddenText: String
+    val fuelForCompanyVanAmountHiddenText: String
+    val mileageBenefitAmountHiddenText: String
+    val accommodationAmountHiddenText: String
+    val qualifyingRelocationCostsAmountHiddenText: String
+    val nonQualifyingRelocationCostsAmountHiddenText: String
+    val travelAndSubsistenceAmountHiddenText: String
+    val personalCostsAmountHiddenText: String
+    val entertainmentAmountHiddenText: String
+    val telephoneAmountHiddenText: String
+    val servicesProvidedAmountHiddenText: String
+    val profSubscriptionsAmountHiddenText: String
+    val otherServicesAmountHiddenText: String
+    val medicalInsAmountHiddenText: String
+    val nurseryAmountHiddenText: String
+    val beneficialLoansAmountHiddenText: String
+    val educationalAmountHiddenText: String
+    val incomeTaxPaidAmountHiddenText: String
+    val incurredCostsPaidAmountHiddenText: String
+    val nonTaxableAmountHiddenText: String
+    val taxableCostsAmountHiddenText: String
+    val vouchersAmountHiddenText: String
+    val nonCashAmountHiddenText: String
+    val otherBenefitsAmountHiddenText: String
+    val assetsAmountHiddenText: String
+    val assetTransfersAmountHiddenText: String
+    val carSubheadingHiddenText: String
+    val accommodationSubheadingHiddenText: String
+    val travelSubheadingHiddenText: String
+    val utilitiesSubheadingHiddenText: String
+    val medicalSubheadingHiddenText: String
+    val incomeTaxSubheadingHiddenText: String
+    val reimbursedSubheadingHiddenText: String
+    val assetsSubheadingHiddenText: String
+    val benefitsReceivedHiddenText: String
   }
 
   trait CommonExpectedResults {
@@ -85,10 +151,50 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val assetsHeader: String
     val assets: String
     val assetTransfers: String
+    val companyCarAmount: String
+    val fuelForCompanyCarAmount: String
+    val companyVanAmount: String
+    val fuelForCompanyVanAmount: String
+    val mileageBenefitAmount: String
+    val accommodationAmount: String
+    val qualifyingRelocationCostsAmount: String
+    val nonQualifyingRelocationCostsAmount: String
+    val travelAndSubsistenceAmount: String
+    val personalCostsAmount: String
+    val entertainmentAmount: String
+    val telephoneAmount: String
+    val servicesProvidedAmount: String
+    val profSubscriptionsAmount: String
+    val otherServicesAmount: String
+    val medicalInsAmount: String
+    val nurseryAmount: String
+    val beneficialLoansAmount: String
+    val educationalAmount: String
+    val incomeTaxPaidAmount: String
+    val incurredCostsPaidAmount: String
+    val nonTaxableAmount: String
+    val taxableCostsAmount: String
+    val vouchersAmount: String
+    val nonCashAmount: String
+    val otherBenefitsAmount: String
+    val assetsAmount: String
+    val assetTransfersAmount: String
+    val carSubheading: String
+    val accommodationSubheading: String
+    val travelSubheading: String
+    val utilitiesSubheading: String
+    val medicalSubheading: String
+    val incomeTaxSubheading: String
+    val reimbursedSubheading: String
+    val assetsSubheading: String
+    val yes: String
+    val no: String
+    val benefitsReceived: String
+    val saveAndContinue: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    def expectedCaption(year: Int = defaultTaxYear) = s"Employment for 6 April ${year-1} to 5 April $year"
+    def expectedCaption(year: Int = defaultTaxYear): String = s"Employment for 6 April ${year-1} to 5 April $year"
     val vehicleHeader = "Vehicles, fuel and mileage"
     val companyCar = "Company car"
     val fuelForCompanyCar = "Fuel for company car"
@@ -109,26 +215,66 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val profSubscriptions = "Professional subscriptions"
     val otherServices = "Other services"
     val medicalHeader = "Medical insurance, nursery, loans and education"
-    val medicalIns = "Medical insurance"
-    val nursery = "Nursery places"
+    val medicalIns = "Medical or dental insurance"
+    val nursery = "Childcare"
     val beneficialLoans = "Beneficial loans"
     val educational = "Educational services"
     val incomeTaxHeader = "Income tax and incurred costs"
-    val incomeTaxPaid = "Income tax paid by employer"
+    val incomeTaxPaid = "Income Tax paid by employer"
     val incurredCostsPaid = "Incurred costs paid by employer"
     val reimbursedHeader = "Reimbursed costs, vouchers, and non-cash benefits"
     val nonTaxable = "Non-taxable costs reimbursed by employer"
     val taxableCosts = "Taxable costs reimbursed by employer"
-    val vouchers = "Vouchers, credit cards or excess mileage allowance"
+    val vouchers = "Vouchers, credit cards or mileage allowance"
     val nonCash = "Non-cash benefits"
     val otherBenefits = "Other benefits"
     val assetsHeader = "Assets and asset transfers"
     val assets = "Assets"
-    val assetTransfers = "Asset transfers"
+    val assetTransfers = "Benefits for asset transfers"
+    val companyCarAmount = "Amount for company car"
+    val fuelForCompanyCarAmount = "Amount of company car fuel"
+    val companyVanAmount = "Amount for company van"
+    val fuelForCompanyVanAmount = "Amount for company van fuel"
+    val mileageBenefitAmount = "Amount for mileage benefit"
+    val accommodationAmount = "Amount for accommodation"
+    val qualifyingRelocationCostsAmount = "Amount for qualifying relocation costs"
+    val nonQualifyingRelocationCostsAmount = "Amount for non-qualifying relocation costs"
+    val travelAndSubsistenceAmount = "Amount for travel and subsistence"
+    val personalCostsAmount = "Amount for personal incidental costs"
+    val entertainmentAmount = "Amount of entertainment"
+    val telephoneAmount = "Amount for telephone"
+    val servicesProvidedAmount = "Amount for services provided by employer"
+    val profSubscriptionsAmount = "Amount for professional subscriptions"
+    val otherServicesAmount = "Amount for other services"
+    val medicalInsAmount = "Amount for medical or dental insurance"
+    val nurseryAmount = "Amount for childcare"
+    val beneficialLoansAmount = "Amount for beneficial loans"
+    val educationalAmount = "Amount for educational services"
+    val incomeTaxPaidAmount = "Amount of Income Tax paid by employer"
+    val incurredCostsPaidAmount = "Amount of incurred costs paid by employer"
+    val nonTaxableAmount = "Amount for non-taxable costs reimbursed by employer"
+    val taxableCostsAmount = "Amount for taxable costs reimbursed by employer"
+    val vouchersAmount = "Amount for vouchers, credit cards or mileage allowance"
+    val nonCashAmount = "Amount for non-cash benefits"
+    val otherBenefitsAmount = "Amount for other benefits"
+    val assetsAmount = "Amount for assets"
+    val assetTransfersAmount = "Amount for asset transfers"
+    val carSubheading: String = "Car, van or fuel"
+    val accommodationSubheading: String = "Accommodation or relocation"
+    val travelSubheading: String = "Travel or entertainment"
+    val utilitiesSubheading: String = "Utilities or general services"
+    val medicalSubheading: String = "Medical insurance, nursery, education benefits or loans"
+    val incomeTaxSubheading: String = "Income Tax or incurred costs"
+    val reimbursedSubheading: String = "Vouchers, non-cash benefits or reimbursed costs"
+    val assetsSubheading: String = "Assets or asset transfers"
+    val yes: String = "Yes"
+    val no: String = "No"
+    val benefitsReceived = "Benefits received"
+    val saveAndContinue: String = "Save and continue"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    def expectedCaption(year: Int = defaultTaxYear) = s"Employment for 6 April ${year-1} to 5 April $year"
+    def expectedCaption(year: Int = defaultTaxYear): String = s"Employment for 6 April ${year-1} to 5 April $year"
     val vehicleHeader = "Vehicles, fuel and mileage"
     val companyCar = "Company car"
     val fuelForCompanyCar = "Fuel for company car"
@@ -149,22 +295,62 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val profSubscriptions = "Professional subscriptions"
     val otherServices = "Other services"
     val medicalHeader = "Medical insurance, nursery, loans and education"
-    val medicalIns = "Medical insurance"
-    val nursery = "Nursery places"
+    val medicalIns = "Medical or dental insurance"
+    val nursery = "Childcare"
     val beneficialLoans = "Beneficial loans"
     val educational = "Educational services"
     val incomeTaxHeader = "Income tax and incurred costs"
-    val incomeTaxPaid = "Income tax paid by employer"
+    val incomeTaxPaid = "Income Tax paid by employer"
     val incurredCostsPaid = "Incurred costs paid by employer"
     val reimbursedHeader = "Reimbursed costs, vouchers, and non-cash benefits"
     val nonTaxable = "Non-taxable costs reimbursed by employer"
     val taxableCosts = "Taxable costs reimbursed by employer"
-    val vouchers = "Vouchers, credit cards or excess mileage allowance"
+    val vouchers = "Vouchers, credit cards or mileage allowance"
     val nonCash = "Non-cash benefits"
     val otherBenefits = "Other benefits"
     val assetsHeader = "Assets and asset transfers"
     val assets = "Assets"
-    val assetTransfers = "Asset transfers"
+    val assetTransfers = "Benefits for asset transfers"
+    val companyCarAmount = "Amount for company car"
+    val fuelForCompanyCarAmount = "Amount of company car fuel"
+    val companyVanAmount = "Amount for company van"
+    val fuelForCompanyVanAmount = "Amount for company van fuel"
+    val mileageBenefitAmount = "Amount for mileage benefit"
+    val accommodationAmount = "Amount for accommodation"
+    val qualifyingRelocationCostsAmount = "Amount for qualifying relocation costs"
+    val nonQualifyingRelocationCostsAmount = "Amount for non-qualifying relocation costs"
+    val travelAndSubsistenceAmount = "Amount for travel and subsistence"
+    val personalCostsAmount = "Amount for personal incidental costs"
+    val entertainmentAmount = "Amount of entertainment"
+    val telephoneAmount = "Amount for telephone"
+    val servicesProvidedAmount = "Amount for services provided by employer"
+    val profSubscriptionsAmount = "Amount for professional subscriptions"
+    val otherServicesAmount = "Amount for other services"
+    val medicalInsAmount = "Amount for medical or dental insurance"
+    val nurseryAmount = "Amount for childcare"
+    val beneficialLoansAmount = "Amount for beneficial loans"
+    val educationalAmount = "Amount for educational services"
+    val incomeTaxPaidAmount = "Amount of Income Tax paid by employer"
+    val incurredCostsPaidAmount = "Amount of incurred costs paid by employer"
+    val nonTaxableAmount = "Amount for non-taxable costs reimbursed by employer"
+    val taxableCostsAmount = "Amount for taxable costs reimbursed by employer"
+    val vouchersAmount = "Amount for vouchers, credit cards or mileage allowance"
+    val nonCashAmount = "Amount for non-cash benefits"
+    val otherBenefitsAmount = "Amount for other benefits"
+    val assetsAmount = "Amount for assets"
+    val assetTransfersAmount = "Amount for asset transfers"
+    val carSubheading: String = "Car, van or fuel"
+    val accommodationSubheading: String = "Accommodation or relocation"
+    val travelSubheading: String = "Travel or entertainment"
+    val utilitiesSubheading: String = "Utilities or general services"
+    val medicalSubheading: String = "Medical insurance, nursery, education benefits or loans"
+    val incomeTaxSubheading: String = "Income Tax or incurred costs"
+    val reimbursedSubheading: String = "Vouchers, non-cash benefits or reimbursed costs"
+    val assetsSubheading: String = "Assets or asset transfers"
+    val yes: String = "Yes"
+    val no: String = "No"
+    val benefitsReceived = "Benefits received"
+    val saveAndContinue: String = "Save and continue"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -172,6 +358,71 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedTitle: String = "Check your employment benefits"
     val expectedP1: String = "Your employment benefits are based on the information we already hold about you."
     def expectedP2(year: Int = defaultTaxYear): String = s"You cannot update your employment benefits until 6 April $year."
+    val companyCarHiddenText: String = "Change if you got a company car as an employment benefit from this company"
+    val fuelForCompanyCarHiddenText: String = "Change if you got a company car fuel as an employment benefit from this company"
+    val companyVanHiddenText: String = "Change if you got a company van as an employment benefit from this company"
+    val fuelForCompanyVanHiddenText: String = "Change if you got a company van fuel as an employment benefit from this company"
+    val mileageBenefitHiddenText: String = "Change if you got mileage as an employment benefit for using your own car"
+    val accommodationHiddenText: String = "Change if you got accommodation as an employment benefit from this company"
+    val qualifyingRelocationCostsHiddenText: String = "Change if you got qualifying relocation costs as an employment benefit from this company"
+    val nonQualifyingRelocationCostsHiddenText: String = "Change if you got non-qualifying relocation costs as an employment benefit from this company"
+    val travelAndSubsistenceHiddenText: String = "Change if you got travel and overnight stays as an employment benefit from this company"
+    val personalCostsHiddenText: String = "Change if you got personal incidental costs as an employment benefit from this company"
+    val entertainmentHiddenText: String = "Change if you got entertainment as an employment benefit from this company"
+    val telephoneHiddenText: String = "Change if you got a telephone as an employment benefit from this company"
+    val servicesProvidedHiddenText: String = "Change if you got services provided by your employer as an employment benefit from this company"
+    val profSubscriptionsHiddenText: String = "Change if you got professional subscriptions as an employment benefit from this company"
+    val otherServicesHiddenText: String = "Change if you got other services as an employment benefit from this company"
+    val medicalInsHiddenText: String = "Change if you got medical or dental insurance as an employment benefit from this company"
+    val nurseryHiddenText: String = "Change if you got childcare as an employment benefit from this company"
+    val beneficialLoansHiddenText: String = "Change if you got beneficial loans as an employment benefit from this company"
+    val educationalHiddenText: String = "Change if you got educational services as an employment benefit from this company"
+    val incomeTaxPaidHiddenText: String = "Change if you got Income Tax paid as an employment benefit from this company"
+    val incurredCostsPaidHiddenText: String = "Change if you got incurred costs paid as an employment benefit from this company"
+    val nonTaxableHiddenText: String = "Change if you got non-taxable costs reimbursed as an employment benefit from this company"
+    val taxableCostsHiddenText: String = "Change if you got taxable costs reimbursed as an employment benefit from this company"
+    val vouchersHiddenText: String = "Change if you got vouchers, credit cards, or mileage allowance as an employment benefit from this company"
+    val nonCashHiddenText: String = "Change if you got non-cash employment benefit from this company"
+    val otherBenefitsHiddenText: String = "Change if you got other employment benefit from this company"
+    val assetsHiddenText: String = "Change if you got assets as an employment benefit from this company"
+    val assetTransfersHiddenText: String = "Change if you got asset transfer as an employment benefit from this company"
+    val companyCarAmountHiddenText: String = "Change the amount for company car as an employment benefit you got"
+    val fuelForCompanyCarAmountHiddenText: String = "Change the amount for company car fuel as an employment benefit you got from this company"
+    val companyVanAmountHiddenText: String = "Change the amount for company van as an employment benefit you got"
+    val fuelForCompanyVanAmountHiddenText: String = "Change the amount for company van fuel as an employment benefit you got from this company"
+    val mileageBenefitAmountHiddenText: String = "Change the amount for mileage as an employment benefit you got for using your own car"
+    val accommodationAmountHiddenText: String = "Change the amount for accommodation as an employment benefit you got from this company"
+    val qualifyingRelocationCostsAmountHiddenText: String = "Change the amount for qualifying relocation costs as an employment benefit you got from this company"
+    val nonQualifyingRelocationCostsAmountHiddenText: String = "Change the amount for non-qualifying relocation costs as an employment benefit you got from this company"
+    val travelAndSubsistenceAmountHiddenText: String = "Change the amount for travel or overnight stays as an employment benefit you got from this company"
+    val personalCostsAmountHiddenText: String = "Change the amount for personal incidental costs as an employment benefit you got from this company"
+    val entertainmentAmountHiddenText: String = "Change the amount for entertainment as an employment benefit you got from this company"
+    val telephoneAmountHiddenText: String = "Change the amount for telephone as an employment benefit you got from this company"
+    val servicesProvidedAmountHiddenText: String = "Change the amount for services provided by your employer as an employment benefit you got from this company"
+    val profSubscriptionsAmountHiddenText: String = "Change the amount for professional subscriptions as an employment benefit you got from this company"
+    val otherServicesAmountHiddenText: String = "Change the amount for other services as an employment benefit you got from this company"
+    val medicalInsAmountHiddenText: String = "Change the amount for medical or dental insurance as an employment benefit you got from this company"
+    val nurseryAmountHiddenText: String = "Change the amount for childcare employment benefit you got from this company"
+    val beneficialLoansAmountHiddenText: String = "Change the amount for beneficial loans as an employment benefit you got from this company"
+    val educationalAmountHiddenText: String = "Change the amount for educational services as an employment benefit you got from this company"
+    val incomeTaxPaidAmountHiddenText: String = "Change the amount for Income Tax paid as an employment benefit you got from this company"
+    val incurredCostsPaidAmountHiddenText: String = "Change the amount for incurred costs paid as an employment benefit you got from this company"
+    val nonTaxableAmountHiddenText: String = "Change the amount you got for non-taxable costs reimbursed as an employment benefit from this company"
+    val taxableCostsAmountHiddenText: String = "Change the amount you got for taxable costs reimbursed as an employment benefit from this company"
+    val vouchersAmountHiddenText: String = "Change the amount you got for vouchers, credit cards, or mileage allowance as an employment benefit from this company"
+    val nonCashAmountHiddenText: String = "Change the amount you got for non-cash employment benefit from this company"
+    val otherBenefitsAmountHiddenText: String = "Change the amount you got for other employment benefit from this company"
+    val assetsAmountHiddenText: String = "Change the amount you got for assets as an employment benefit from this company"
+    val assetTransfersAmountHiddenText: String = "Change the amount you got for asset transfers as an employment benefit from this company"
+    val carSubheadingHiddenText: String = "Change if you got a car, van or fuel as an employment benefit from this company"
+    val accommodationSubheadingHiddenText: String = "Change if you got accommodation or relocation as an employment benefit from this company"
+    val travelSubheadingHiddenText: String = "Change if you got travel or entertainment as an employment benefit from this company"
+    val utilitiesSubheadingHiddenText: String = "Change if you got utilities or general services as an employment benefit from this company"
+    val medicalSubheadingHiddenText: String = "Change if you got medical insurance, nursery, education or loans as an employment benefit from this company"
+    val incomeTaxSubheadingHiddenText: String = "Change if you got Income Tax or incurred costs paid as an employment benefit from this company"
+    val reimbursedSubheadingHiddenText: String = "Change if you got vouchers, non-cash benefits or reimbursed costs as an employment benefit from this company"
+    val assetsSubheadingHiddenText: String = "Change if you got asset or asset transfer as an employment benefit from this company"
+    val benefitsReceivedHiddenText: String = "Change if you got employment benefits from this company"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -179,6 +430,72 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedTitle: String = "Check your client’s employment benefits"
     val expectedP1: String = "Your client’s employment benefits are based on the information we already hold about them."
     def expectedP2(year: Int = defaultTaxYear): String = s"You cannot update your client’s employment benefits until 6 April $year."
+    val companyCarHiddenText: String = "Change if your client got a company car as an employment benefit from this company"
+    val fuelForCompanyCarHiddenText: String = "Change if your client got a company car fuel as an employment benefit from this company"
+    val companyVanHiddenText: String = "Change if your client got a company van as an employment benefit from this company"
+    val fuelForCompanyVanHiddenText: String = "Change if your client got a company van fuel as an employment benefit from this company"
+    val mileageBenefitHiddenText: String = "Change if your client got mileage as an employment benefit for using their own car"
+    val accommodationHiddenText: String = "Change if your client got accommodation as an employment benefit from this company"
+    val qualifyingRelocationCostsHiddenText: String = "Change if your client got qualifying relocation costs as an employment benefit from this company"
+    val nonQualifyingRelocationCostsHiddenText: String = "Change if your client got non-qualifying relocation costs as an employment benefit from this company"
+    val travelAndSubsistenceHiddenText: String = "Change if your client got travel and overnight stays as an employment benefit from this company"
+    val personalCostsHiddenText: String = "Change if your client got personal incidental costs as an employment benefit from this company"
+    val entertainmentHiddenText: String = "Change if your client got entertainment as an employment benefit from this company"
+    val telephoneHiddenText: String = "Change if your client got a telephone as an employment benefit from this company"
+    val servicesProvidedHiddenText: String = "Change if your client got services provided by their employer as an employment benefit from this company"
+    val profSubscriptionsHiddenText: String = "Change if your client got professional subscriptions as an employment benefit from this company"
+    val otherServicesHiddenText: String = "Change if your client got other services as an employment benefit from this company"
+    val medicalInsHiddenText: String = "Change if your client got medical or dental insurance as an employment benefit from this company"
+    val nurseryHiddenText: String = "Change if your client got childcare as an employment benefit from this company"
+    val beneficialLoansHiddenText: String = "Change if your client got beneficial loans as an employment benefit from this company"
+    val educationalHiddenText: String = "Change if your client got educational services as an employment benefit from this company"
+    val incomeTaxPaidHiddenText: String = "Change if your client got Income Tax paid as an employment benefit from this company"
+    val incurredCostsPaidHiddenText: String = "Change if your client got incurred costs paid as an employment benefit from this company"
+    val nonTaxableHiddenText: String = "Change if your client got non-taxable costs reimbursed as an employment benefit from this company"
+    val taxableCostsHiddenText: String = "Change if your client got taxable costs reimbursed as an employment benefit from this company"
+    val vouchersHiddenText: String = "Change if your client got vouchers, credit cards, or mileage allowance as an employment benefit from this company"
+    val nonCashHiddenText: String = "Change if your client got non-cash employment benefit from this company"
+    val otherBenefitsHiddenText: String = "Change if your client got other employment benefit from this company"
+    val assetsHiddenText: String = "Change if your client got assets as an employment benefit from this company"
+    val assetTransfersHiddenText: String = "Change if your client got asset transfer as an employment benefit from this company"
+    val companyCarAmountHiddenText: String = "Change the amount for company car as an employment benefit your client got"
+    val fuelForCompanyCarAmountHiddenText: String = "Change the amount for company car fuel as an employment benefit your client got from this company"
+    val companyVanAmountHiddenText: String = "Change the amount for company van as an employment benefit your client got"
+    val fuelForCompanyVanAmountHiddenText: String = "Change the amount for company van fuel as an employment benefit your client got from this company"
+    val mileageBenefitAmountHiddenText: String = "Change the amount for mileage as an employment benefit your client got for using their own car"
+    val accommodationAmountHiddenText: String = "Change the amount for accommodation as an employment benefit your client got from this company"
+    val qualifyingRelocationCostsAmountHiddenText: String = "Change the amount for qualifying relocation costs as an employment benefit your client got from this company"
+    val nonQualifyingRelocationCostsAmountHiddenText: String =
+      "Change the amount for non-qualifying relocation costs as an employment benefit your client got from this company"
+    val travelAndSubsistenceAmountHiddenText: String = "Change the amount for travel or overnight stays as an employment benefit your client got from this company"
+    val personalCostsAmountHiddenText: String = "Change the amount for personal incidental costs as an employment benefit your client got from this company"
+    val entertainmentAmountHiddenText: String = "Change the amount for entertainment as an employment benefit your client got from this company"
+    val telephoneAmountHiddenText: String = "Change the amount for telephone as an employment benefit your client got from this company"
+    val servicesProvidedAmountHiddenText: String = "Change the amount for services provided by your client’s employer as an employment benefit they got from this company"
+    val profSubscriptionsAmountHiddenText: String = "Change the amount for professional subscriptions as an employment benefit your client got from this company"
+    val otherServicesAmountHiddenText: String = "Change the amount for other services as an employment benefit your client got from this company"
+    val medicalInsAmountHiddenText: String = "Change the amount for medical or dental insurance as an employment benefit your client got from this company"
+    val nurseryAmountHiddenText: String = "Change the amount for childcare employment benefit your client got from this company"
+    val beneficialLoansAmountHiddenText: String = "Change the amount for beneficial loans as an employment benefit your client got from this company"
+    val educationalAmountHiddenText: String = "Change the amount for educational services as an employment benefit your client got from this company"
+    val incomeTaxPaidAmountHiddenText: String = "Change the amount for Income Tax paid as an employment benefit your client got from this company"
+    val incurredCostsPaidAmountHiddenText: String = "Change the amount for incurred costs paid as an employment benefit your client got from this company"
+    val nonTaxableAmountHiddenText: String = "Change the amount your client got for non-taxable costs reimbursed as an employment benefit from this company"
+    val taxableCostsAmountHiddenText: String = "Change the amount your client got for taxable costs reimbursed as an employment benefit from this company"
+    val vouchersAmountHiddenText: String = "Change the amount your client got for vouchers, credit cards, or mileage allowance as an employment benefit from this company"
+    val nonCashAmountHiddenText: String = "Change the amount your client got for non-cash employment benefit from this company"
+    val otherBenefitsAmountHiddenText: String = "Change the amount your client got for other employment benefit from this company"
+    val assetsAmountHiddenText: String = "Change the amount your client got for assets as an employment benefit from this company"
+    val assetTransfersAmountHiddenText: String = "Change the amount your client got for asset transfers as an employment benefit from this company"
+    val carSubheadingHiddenText: String = "Change if your client got a car, van or fuel as an employment benefit from this company"
+    val accommodationSubheadingHiddenText: String = "Change if your client got accommodation or relocation as an employment benefit from this company"
+    val travelSubheadingHiddenText: String = "Change if your client got travel or entertainment as an employment benefit from this company"
+    val utilitiesSubheadingHiddenText: String = "Change if your client got utilities or general services as an employment benefit from this company"
+    val medicalSubheadingHiddenText: String = "Change if your client got medical insurance, nursery, education or loans as an employment benefit from this company"
+    val incomeTaxSubheadingHiddenText: String = "Change if your client got Income Tax or incurred costs paid as an employment benefit from this company"
+    val reimbursedSubheadingHiddenText: String = "Change if your client got vouchers, non-cash benefits or reimbursed costs as an employment benefit from this company"
+    val assetsSubheadingHiddenText: String = "Change if your client got asset or asset transfer as an employment benefit from this company"
+    val benefitsReceivedHiddenText: String = "Change if your client got employment benefits from this company"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -186,6 +503,71 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedTitle: String = "Check your employment benefits"
     val expectedP1: String = "Your employment benefits are based on the information we already hold about you."
     def expectedP2(year: Int = defaultTaxYear): String = s"You cannot update your employment benefits until 6 April $year."
+    val companyCarHiddenText: String = "Change if you got a company car as an employment benefit from this company"
+    val fuelForCompanyCarHiddenText: String = "Change if you got a company car fuel as an employment benefit from this company"
+    val companyVanHiddenText: String = "Change if you got a company van as an employment benefit from this company"
+    val fuelForCompanyVanHiddenText: String = "Change if you got a company van fuel as an employment benefit from this company"
+    val mileageBenefitHiddenText: String = "Change if you got mileage as an employment benefit for using your own car"
+    val accommodationHiddenText: String = "Change if you got accommodation as an employment benefit from this company"
+    val qualifyingRelocationCostsHiddenText: String = "Change if you got qualifying relocation costs as an employment benefit from this company"
+    val nonQualifyingRelocationCostsHiddenText: String = "Change if you got non-qualifying relocation costs as an employment benefit from this company"
+    val travelAndSubsistenceHiddenText: String = "Change if you got travel and overnight stays as an employment benefit from this company"
+    val personalCostsHiddenText: String = "Change if you got personal incidental costs as an employment benefit from this company"
+    val entertainmentHiddenText: String = "Change if you got entertainment as an employment benefit from this company"
+    val telephoneHiddenText: String = "Change if you got a telephone as an employment benefit from this company"
+    val servicesProvidedHiddenText: String = "Change if you got services provided by your employer as an employment benefit from this company"
+    val profSubscriptionsHiddenText: String = "Change if you got professional subscriptions as an employment benefit from this company"
+    val otherServicesHiddenText: String = "Change if you got other services as an employment benefit from this company"
+    val medicalInsHiddenText: String = "Change if you got medical or dental insurance as an employment benefit from this company"
+    val nurseryHiddenText: String = "Change if you got childcare as an employment benefit from this company"
+    val beneficialLoansHiddenText: String = "Change if you got beneficial loans as an employment benefit from this company"
+    val educationalHiddenText: String = "Change if you got educational services as an employment benefit from this company"
+    val incomeTaxPaidHiddenText: String = "Change if you got Income Tax paid as an employment benefit from this company"
+    val incurredCostsPaidHiddenText: String = "Change if you got incurred costs paid as an employment benefit from this company"
+    val nonTaxableHiddenText: String = "Change if you got non-taxable costs reimbursed as an employment benefit from this company"
+    val taxableCostsHiddenText: String = "Change if you got taxable costs reimbursed as an employment benefit from this company"
+    val vouchersHiddenText: String = "Change if you got vouchers, credit cards, or mileage allowance as an employment benefit from this company"
+    val nonCashHiddenText: String = "Change if you got non-cash employment benefit from this company"
+    val otherBenefitsHiddenText: String = "Change if you got other employment benefit from this company"
+    val assetsHiddenText: String = "Change if you got assets as an employment benefit from this company"
+    val assetTransfersHiddenText: String = "Change if you got asset transfer as an employment benefit from this company"
+    val companyCarAmountHiddenText: String = "Change the amount for company car as an employment benefit you got"
+    val fuelForCompanyCarAmountHiddenText: String = "Change the amount for company car fuel as an employment benefit you got from this company"
+    val companyVanAmountHiddenText: String = "Change the amount for company van as an employment benefit you got"
+    val fuelForCompanyVanAmountHiddenText: String = "Change the amount for company van fuel as an employment benefit you got from this company"
+    val mileageBenefitAmountHiddenText: String = "Change the amount for mileage as an employment benefit you got for using your own car"
+    val accommodationAmountHiddenText: String = "Change the amount for accommodation as an employment benefit you got from this company"
+    val qualifyingRelocationCostsAmountHiddenText: String = "Change the amount for qualifying relocation costs as an employment benefit you got from this company"
+    val nonQualifyingRelocationCostsAmountHiddenText: String = "Change the amount for non-qualifying relocation costs as an employment benefit you got from this company"
+    val travelAndSubsistenceAmountHiddenText: String = "Change the amount for travel or overnight stays as an employment benefit you got from this company"
+    val personalCostsAmountHiddenText: String = "Change the amount for personal incidental costs as an employment benefit you got from this company"
+    val entertainmentAmountHiddenText: String = "Change the amount for entertainment as an employment benefit you got from this company"
+    val telephoneAmountHiddenText: String = "Change the amount for telephone as an employment benefit you got from this company"
+    val servicesProvidedAmountHiddenText: String = "Change the amount for services provided by your employer as an employment benefit you got from this company"
+    val profSubscriptionsAmountHiddenText: String = "Change the amount for professional subscriptions as an employment benefit you got from this company"
+    val otherServicesAmountHiddenText: String = "Change the amount for other services as an employment benefit you got from this company"
+    val medicalInsAmountHiddenText: String = "Change the amount for medical or dental insurance as an employment benefit you got from this company"
+    val nurseryAmountHiddenText: String = "Change the amount for childcare employment benefit you got from this company"
+    val beneficialLoansAmountHiddenText: String = "Change the amount for beneficial loans as an employment benefit you got from this company"
+    val educationalAmountHiddenText: String = "Change the amount for educational services as an employment benefit you got from this company"
+    val incomeTaxPaidAmountHiddenText: String = "Change the amount for Income Tax paid as an employment benefit you got from this company"
+    val incurredCostsPaidAmountHiddenText: String = "Change the amount for incurred costs paid as an employment benefit you got from this company"
+    val nonTaxableAmountHiddenText: String = "Change the amount you got for non-taxable costs reimbursed as an employment benefit from this company"
+    val taxableCostsAmountHiddenText: String = "Change the amount you got for taxable costs reimbursed as an employment benefit from this company"
+    val vouchersAmountHiddenText: String = "Change the amount you got for vouchers, credit cards, or mileage allowance as an employment benefit from this company"
+    val nonCashAmountHiddenText: String = "Change the amount you got for non-cash employment benefit from this company"
+    val otherBenefitsAmountHiddenText: String = "Change the amount you got for other employment benefit from this company"
+    val assetsAmountHiddenText: String = "Change the amount you got for assets as an employment benefit from this company"
+    val assetTransfersAmountHiddenText: String = "Change the amount you got for asset transfers as an employment benefit from this company"
+    val carSubheadingHiddenText: String = "Change if you got a car, van or fuel as an employment benefit from this company"
+    val accommodationSubheadingHiddenText: String = "Change if you got accommodation or relocation as an employment benefit from this company"
+    val travelSubheadingHiddenText: String = "Change if you got travel or entertainment as an employment benefit from this company"
+    val utilitiesSubheadingHiddenText: String = "Change if you got utilities or general services as an employment benefit from this company"
+    val medicalSubheadingHiddenText: String = "Change if you got medical insurance, nursery, education or loans as an employment benefit from this company"
+    val incomeTaxSubheadingHiddenText: String = "Change if you got Income Tax or incurred costs paid as an employment benefit from this company"
+    val reimbursedSubheadingHiddenText: String = "Change if you got vouchers, non-cash benefits or reimbursed costs as an employment benefit from this company"
+    val assetsSubheadingHiddenText: String = "Change if you got asset or asset transfer as an employment benefit from this company"
+    val benefitsReceivedHiddenText: String = "Change if you got employment benefits from this company"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -193,6 +575,72 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedTitle: String = "Check your client’s employment benefits"
     val expectedP1: String = "Your client’s employment benefits are based on the information we already hold about them."
     def expectedP2(year: Int = defaultTaxYear): String = s"You cannot update your client’s employment benefits until 6 April $year."
+    val companyCarHiddenText: String = "Change if your client got a company car as an employment benefit from this company"
+    val fuelForCompanyCarHiddenText: String = "Change if your client got a company car fuel as an employment benefit from this company"
+    val companyVanHiddenText: String = "Change if your client got a company van as an employment benefit from this company"
+    val fuelForCompanyVanHiddenText: String = "Change if your client got a company van fuel as an employment benefit from this company"
+    val mileageBenefitHiddenText: String = "Change if your client got mileage as an employment benefit for using their own car"
+    val accommodationHiddenText: String = "Change if your client got accommodation as an employment benefit from this company"
+    val qualifyingRelocationCostsHiddenText: String = "Change if your client got qualifying relocation costs as an employment benefit from this company"
+    val nonQualifyingRelocationCostsHiddenText: String = "Change if your client got non-qualifying relocation costs as an employment benefit from this company"
+    val travelAndSubsistenceHiddenText: String = "Change if your client got travel and overnight stays as an employment benefit from this company"
+    val personalCostsHiddenText: String = "Change if your client got personal incidental costs as an employment benefit from this company"
+    val entertainmentHiddenText: String = "Change if your client got entertainment as an employment benefit from this company"
+    val telephoneHiddenText: String = "Change if your client got a telephone as an employment benefit from this company"
+    val servicesProvidedHiddenText: String = "Change if your client got services provided by their employer as an employment benefit from this company"
+    val profSubscriptionsHiddenText: String = "Change if your client got professional subscriptions as an employment benefit from this company"
+    val otherServicesHiddenText: String = "Change if your client got other services as an employment benefit from this company"
+    val medicalInsHiddenText: String = "Change if your client got medical or dental insurance as an employment benefit from this company"
+    val nurseryHiddenText: String = "Change if your client got childcare as an employment benefit from this company"
+    val beneficialLoansHiddenText: String = "Change if your client got beneficial loans as an employment benefit from this company"
+    val educationalHiddenText: String = "Change if your client got educational services as an employment benefit from this company"
+    val incomeTaxPaidHiddenText: String = "Change if your client got Income Tax paid as an employment benefit from this company"
+    val incurredCostsPaidHiddenText: String = "Change if your client got incurred costs paid as an employment benefit from this company"
+    val nonTaxableHiddenText: String = "Change if your client got non-taxable costs reimbursed as an employment benefit from this company"
+    val taxableCostsHiddenText: String = "Change if your client got taxable costs reimbursed as an employment benefit from this company"
+    val vouchersHiddenText: String = "Change if your client got vouchers, credit cards, or mileage allowance as an employment benefit from this company"
+    val nonCashHiddenText: String = "Change if your client got non-cash employment benefit from this company"
+    val otherBenefitsHiddenText: String = "Change if your client got other employment benefit from this company"
+    val assetsHiddenText: String = "Change if your client got assets as an employment benefit from this company"
+    val assetTransfersHiddenText: String = "Change if your client got asset transfer as an employment benefit from this company"
+    val companyCarAmountHiddenText: String = "Change the amount for company car as an employment benefit your client got"
+    val fuelForCompanyCarAmountHiddenText: String = "Change the amount for company car fuel as an employment benefit your client got from this company"
+    val companyVanAmountHiddenText: String = "Change the amount for company van as an employment benefit your client got"
+    val fuelForCompanyVanAmountHiddenText: String = "Change the amount for company van fuel as an employment benefit your client got from this company"
+    val mileageBenefitAmountHiddenText: String = "Change the amount for mileage as an employment benefit your client got for using their own car"
+    val accommodationAmountHiddenText: String = "Change the amount for accommodation as an employment benefit your client got from this company"
+    val qualifyingRelocationCostsAmountHiddenText: String = "Change the amount for qualifying relocation costs as an employment benefit your client got from this company"
+    val nonQualifyingRelocationCostsAmountHiddenText: String =
+      "Change the amount for non-qualifying relocation costs as an employment benefit your client got from this company"
+    val travelAndSubsistenceAmountHiddenText: String = "Change the amount for travel or overnight stays as an employment benefit your client got from this company"
+    val personalCostsAmountHiddenText: String = "Change the amount for personal incidental costs as an employment benefit your client got from this company"
+    val entertainmentAmountHiddenText: String = "Change the amount for entertainment as an employment benefit your client got from this company"
+    val telephoneAmountHiddenText: String = "Change the amount for telephone as an employment benefit your client got from this company"
+    val servicesProvidedAmountHiddenText: String = "Change the amount for services provided by your client’s employer as an employment benefit they got from this company"
+    val profSubscriptionsAmountHiddenText: String = "Change the amount for professional subscriptions as an employment benefit your client got from this company"
+    val otherServicesAmountHiddenText: String = "Change the amount for other services as an employment benefit your client got from this company"
+    val medicalInsAmountHiddenText: String = "Change the amount for medical or dental insurance as an employment benefit your client got from this company"
+    val nurseryAmountHiddenText: String = "Change the amount for childcare employment benefit your client got from this company"
+    val beneficialLoansAmountHiddenText: String = "Change the amount for beneficial loans as an employment benefit your client got from this company"
+    val educationalAmountHiddenText: String = "Change the amount for educational services as an employment benefit your client got from this company"
+    val incomeTaxPaidAmountHiddenText: String = "Change the amount for Income Tax paid as an employment benefit your client got from this company"
+    val incurredCostsPaidAmountHiddenText: String = "Change the amount for incurred costs paid as an employment benefit your client got from this company"
+    val nonTaxableAmountHiddenText: String = "Change the amount your client got for non-taxable costs reimbursed as an employment benefit from this company"
+    val taxableCostsAmountHiddenText: String = "Change the amount your client got for taxable costs reimbursed as an employment benefit from this company"
+    val vouchersAmountHiddenText: String = "Change the amount your client got for vouchers, credit cards, or mileage allowance as an employment benefit from this company"
+    val nonCashAmountHiddenText: String = "Change the amount your client got for non-cash employment benefit from this company"
+    val otherBenefitsAmountHiddenText: String = "Change the amount your client got for other employment benefit from this company"
+    val assetsAmountHiddenText: String = "Change the amount your client got for assets as an employment benefit from this company"
+    val assetTransfersAmountHiddenText: String = "Change the amount your client got for asset transfers as an employment benefit from this company"
+    val carSubheadingHiddenText: String = "Change if your client got a car, van or fuel as an employment benefit from this company"
+    val accommodationSubheadingHiddenText: String = "Change if your client got accommodation or relocation as an employment benefit from this company"
+    val travelSubheadingHiddenText: String = "Change if your client got travel or entertainment as an employment benefit from this company"
+    val utilitiesSubheadingHiddenText: String = "Change if your client got utilities or general services as an employment benefit from this company"
+    val medicalSubheadingHiddenText: String = "Change if your client got medical insurance, nursery, education or loans as an employment benefit from this company"
+    val incomeTaxSubheadingHiddenText: String = "Change if your client got Income Tax or incurred costs paid as an employment benefit from this company"
+    val reimbursedSubheadingHiddenText: String = "Change if your client got vouchers, non-cash benefits or reimbursed costs as an employment benefit from this company"
+    val assetsSubheadingHiddenText: String = "Change if your client got asset or asset transfer as an employment benefit from this company"
+    val benefitsReceivedHiddenText: String = "Change if your client got employment benefits from this company"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -208,12 +656,12 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "return a fully populated page when all the fields are populated" which {
+        "return a fully populated page when all the fields are populated for in year" which {
 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear)
+            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear)
             urlGet(url(), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -296,81 +744,105 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear-1)
+            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear-1)
             urlGet(url(defaultTaxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
           }
 
+          val specificResults = user.specificExpectedResults.get
+          val commonResults = user.commonExpectedResults
+          val dummyHref = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/check-employment-benefits?employmentId=001"
+
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
-          h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(user.commonExpectedResults.expectedCaption(defaultTaxYear  -1))
-          textOnPageCheck(user.specificExpectedResults.get.expectedP1, Selectors.p1)
-          textOnPageCheck(user.specificExpectedResults.get.expectedP2(defaultTaxYear - 1), Selectors.p2)
-          textOnPageCheck(user.commonExpectedResults.vehicleHeader, fieldHeaderSelector(4))
-          textOnPageCheck(user.commonExpectedResults.companyCar, fieldNameSelector(5, 1))
-          textOnPageCheck("£1.23", fieldAmountSelector(5, 1))
-          textOnPageCheck(user.commonExpectedResults.fuelForCompanyCar, fieldNameSelector(5, 2))
-          textOnPageCheck("£2", fieldAmountSelector(5, 2))
-          textOnPageCheck(user.commonExpectedResults.companyVan, fieldNameSelector(5, 3))
-          textOnPageCheck("£3", fieldAmountSelector(5, 3))
-          textOnPageCheck(user.commonExpectedResults.fuelForCompanyVan, fieldNameSelector(5, 4))
-          textOnPageCheck("£4", fieldAmountSelector(5, 4))
-          textOnPageCheck(user.commonExpectedResults.mileageBenefit, fieldNameSelector(5, 5))
-          textOnPageCheck("£5", fieldAmountSelector(5, 5))
-          textOnPageCheck(user.commonExpectedResults.accommodationHeader, fieldHeaderSelector(6))
-          textOnPageCheck(user.commonExpectedResults.accommodation, fieldNameSelector(7, 1))
-          textOnPageCheck("£6", fieldAmountSelector(7, 1))
-          textOnPageCheck(user.commonExpectedResults.qualifyingRelocationCosts, fieldNameSelector(7, 2))
-          textOnPageCheck("£7", fieldAmountSelector(7, 2))
-          textOnPageCheck(user.commonExpectedResults.nonQualifyingRelocationCosts, fieldNameSelector(7, 3))
-          textOnPageCheck("£8", fieldAmountSelector(7, 3))
-          textOnPageCheck(user.commonExpectedResults.travelHeader, fieldHeaderSelector(8))
-          textOnPageCheck(user.commonExpectedResults.travelAndSubsistence, fieldNameSelector(9, 1))
-          textOnPageCheck("£9", fieldAmountSelector(9, 1))
-          textOnPageCheck(user.commonExpectedResults.personalCosts, fieldNameSelector(9, 2))
-          textOnPageCheck("£10", fieldAmountSelector(9, 2))
-          textOnPageCheck(user.commonExpectedResults.entertainment, fieldNameSelector(9, 3))
-          textOnPageCheck("£11", fieldAmountSelector(9, 3))
-          textOnPageCheck(user.commonExpectedResults.utilitiesHeader, fieldHeaderSelector(10))
-          textOnPageCheck(user.commonExpectedResults.telephone, fieldNameSelector(11, 1))
-          textOnPageCheck("£12", fieldAmountSelector(11, 1))
-          textOnPageCheck(user.commonExpectedResults.servicesProvided, fieldNameSelector(11, 2))
-          textOnPageCheck("£13", fieldAmountSelector(11, 2))
-          textOnPageCheck(user.commonExpectedResults.profSubscriptions, fieldNameSelector(11, 3))
-          textOnPageCheck("£14", fieldAmountSelector(11, 3))
-          textOnPageCheck(user.commonExpectedResults.otherServices, fieldNameSelector(11, 4))
-          textOnPageCheck("£15", fieldAmountSelector(11, 4))
-          textOnPageCheck(user.commonExpectedResults.medicalHeader, fieldHeaderSelector(12))
-          textOnPageCheck(user.commonExpectedResults.medicalIns, fieldNameSelector(13, 1))
-          textOnPageCheck("£16", fieldAmountSelector(13, 1))
-          textOnPageCheck(user.commonExpectedResults.nursery, fieldNameSelector(13, 2))
-          textOnPageCheck("£17", fieldAmountSelector(13, 2))
-          textOnPageCheck(user.commonExpectedResults.beneficialLoans, fieldNameSelector(13, 3))
-          textOnPageCheck("£18", fieldAmountSelector(13, 3))
-          textOnPageCheck(user.commonExpectedResults.educational, fieldNameSelector(13, 4))
-          textOnPageCheck("£19", fieldAmountSelector(13, 4))
-          textOnPageCheck(user.commonExpectedResults.incomeTaxHeader, fieldHeaderSelector(14))
-          textOnPageCheck(user.commonExpectedResults.incomeTaxPaid, fieldNameSelector(15, 1))
-          textOnPageCheck("£20", fieldAmountSelector(15, 1))
-          textOnPageCheck(user.commonExpectedResults.incurredCostsPaid, fieldNameSelector(15, 2))
-          textOnPageCheck("£21", fieldAmountSelector(15, 2))
-          textOnPageCheck(user.commonExpectedResults.reimbursedHeader, fieldHeaderSelector(16))
-          textOnPageCheck(user.commonExpectedResults.nonTaxable, fieldNameSelector(17, 1))
-          textOnPageCheck("£22", fieldAmountSelector(17, 1))
-          textOnPageCheck(user.commonExpectedResults.taxableCosts, fieldNameSelector(17, 2))
-          textOnPageCheck("£23", fieldAmountSelector(17, 2))
-          textOnPageCheck(user.commonExpectedResults.vouchers, fieldNameSelector(17, 3))
-          textOnPageCheck("£24", fieldAmountSelector(17, 3))
-          textOnPageCheck(user.commonExpectedResults.nonCash, fieldNameSelector(17, 4))
-          textOnPageCheck("£25", fieldAmountSelector(17, 4))
-          textOnPageCheck(user.commonExpectedResults.otherBenefits, fieldNameSelector(17, 5))
-          textOnPageCheck("£26", fieldAmountSelector(17, 5))
-          textOnPageCheck(user.commonExpectedResults.assetsHeader, fieldHeaderSelector(18))
-          textOnPageCheck(user.commonExpectedResults.assets, fieldNameSelector(19, 1))
-          textOnPageCheck("£27", fieldAmountSelector(19, 1))
-          textOnPageCheck(user.commonExpectedResults.assetTransfers, fieldNameSelector(19, 2))
-          textOnPageCheck("£280000", fieldAmountSelector(19, 2))
+          titleCheck(specificResults.expectedTitle)
+          h1Check(specificResults.expectedH1)
+          captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
+          textOnPageCheck(specificResults.expectedP1, Selectors.p1)
+
+          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 3, 1, specificResults.benefitsReceivedHiddenText, dummyHref)
+
+          textOnPageCheck(commonResults.vehicleHeader, fieldHeaderSelector(4))
+          changeAmountRowCheck(commonResults.carSubheading, commonResults.yes, 5, 1, specificResults.carSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.companyCar, commonResults.yes, 5, 2, specificResults.companyCarHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.companyCarAmount, "£1.23", 5, 3, specificResults.companyCarAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.fuelForCompanyCar, commonResults.yes, 5, 4, specificResults.fuelForCompanyCarHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.fuelForCompanyCarAmount, "£2", 5, 5, specificResults.fuelForCompanyCarAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.companyVan, commonResults.yes, 5, 6, specificResults.companyVanHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.companyVanAmount, "£3", 5, 7, specificResults.companyVanAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.fuelForCompanyVan, commonResults.yes, 5, 8, specificResults.fuelForCompanyVanHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.fuelForCompanyVanAmount, "£4", 5, 9, specificResults.fuelForCompanyVanAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.mileageBenefit, commonResults.yes, 5, 10, specificResults.mileageBenefitHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.mileageBenefitAmount, "£5", 5, 11, specificResults.mileageBenefitAmountHiddenText, dummyHref)
+
+          textOnPageCheck(commonResults.accommodationHeader, fieldHeaderSelector(6))
+          changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.yes, 7, 1, specificResults.accommodationSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.accommodation, commonResults.yes, 7, 2, specificResults.accommodationHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.accommodationAmount, "£6", 7, 3, specificResults.accommodationAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.qualifyingRelocationCosts, commonResults.yes, 7, 4, specificResults.qualifyingRelocationCostsHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.qualifyingRelocationCostsAmount, "£7", 7, 5, specificResults.qualifyingRelocationCostsAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.nonQualifyingRelocationCosts, commonResults.yes, 7, 6, specificResults.nonQualifyingRelocationCostsHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.nonQualifyingRelocationCostsAmount, "£8", 7, 7, specificResults.nonQualifyingRelocationCostsAmountHiddenText, dummyHref)
+
+          textOnPageCheck(commonResults.travelHeader, fieldHeaderSelector(8))
+          changeAmountRowCheck(commonResults.travelSubheading, commonResults.yes, 9, 1, specificResults.travelSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.travelAndSubsistence, commonResults.yes, 9, 2, specificResults.travelAndSubsistenceHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.travelAndSubsistenceAmount, "£9", 9, 3, specificResults.travelAndSubsistenceAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.personalCosts, commonResults.yes, 9, 4, specificResults.personalCostsHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.personalCostsAmount, "£10", 9, 5, specificResults.personalCostsAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.entertainment, commonResults.yes, 9, 6, specificResults.entertainmentHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.entertainmentAmount, "£11", 9, 7, specificResults.entertainmentAmountHiddenText, dummyHref)
+
+          textOnPageCheck(commonResults.utilitiesHeader, fieldHeaderSelector(10))
+          changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.yes, 11, 1, specificResults.utilitiesSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.telephone, commonResults.yes, 11, 2, specificResults.telephoneHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.telephoneAmount, "£12", 11, 3, specificResults.telephoneAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.servicesProvided, commonResults.yes, 11, 4, specificResults.servicesProvidedHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.servicesProvidedAmount, "£13", 11, 5, specificResults.servicesProvidedAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.profSubscriptions, commonResults.yes, 11, 6, specificResults.profSubscriptionsHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.profSubscriptionsAmount, "£14", 11, 7, specificResults.profSubscriptionsAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.otherServices, commonResults.yes, 11, 8, specificResults.otherServicesHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.otherServicesAmount, "£15", 11, 9, specificResults.otherServicesAmountHiddenText, dummyHref)
+
+          textOnPageCheck(commonResults.medicalHeader, fieldHeaderSelector(12))
+          changeAmountRowCheck(commonResults.medicalSubheading, commonResults.yes, 13, 1, specificResults.medicalSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.medicalIns, commonResults.yes, 13, 2, specificResults.medicalInsHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.medicalInsAmount, "£16", 13, 3, specificResults.medicalInsAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.nursery, commonResults.yes, 13, 4, specificResults.nurseryHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.nurseryAmount, "£17", 13, 5, specificResults.nurseryAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.beneficialLoans, commonResults.yes, 13, 6, specificResults.beneficialLoansHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.beneficialLoansAmount, "£18", 13, 7, specificResults.beneficialLoansAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.educational, commonResults.yes, 13, 8, specificResults.educationalHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.educationalAmount, "£19", 13, 9, specificResults.educationalAmountHiddenText, dummyHref)
+
+          textOnPageCheck(commonResults.incomeTaxHeader, fieldHeaderSelector(14))
+          changeAmountRowCheck(commonResults.incomeTaxSubheading, commonResults.yes, 15, 1, specificResults.incomeTaxSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.incomeTaxPaid, commonResults.yes, 15, 2, specificResults.incomeTaxPaidHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.incomeTaxPaidAmount, "£20", 15, 3, specificResults.incomeTaxPaidAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.incurredCostsPaid, commonResults.yes, 15, 4, specificResults.incurredCostsPaidHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.incurredCostsPaidAmount, "£21", 15, 5, specificResults.incurredCostsPaidAmountHiddenText, dummyHref)
+
+          textOnPageCheck(commonResults.reimbursedHeader, fieldHeaderSelector(16))
+          changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.yes, 17, 1, specificResults.reimbursedSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.nonTaxable, commonResults.yes, 17, 2, specificResults.nonTaxableHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.nonTaxableAmount, "£22", 17, 3, specificResults.nonTaxableAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.taxableCosts, commonResults.yes, 17, 4, specificResults.taxableCostsHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.taxableCostsAmount, "£23", 17, 5, specificResults.taxableCostsAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.vouchers, commonResults.yes, 17, 6, specificResults.vouchersHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.vouchersAmount, "£24", 17, 7, specificResults.vouchersAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.nonCash, commonResults.yes, 17, 8, specificResults.nonCashHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.nonCashAmount, "£25", 17, 9, specificResults.nonCashAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.otherBenefits, commonResults.yes, 17, 10, specificResults.otherBenefitsHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.otherBenefitsAmount, "£26", 17, 11, specificResults.otherBenefitsAmountHiddenText, dummyHref)
+
+          textOnPageCheck(commonResults.assetsHeader, fieldHeaderSelector(18))
+          changeAmountRowCheck(commonResults.assetsSubheading, commonResults.yes, 19, 1, specificResults.assetsSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.assets, commonResults.yes, 19, 2, specificResults.assetsHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.assetsAmount, "£27", 19, 3, specificResults.assetsAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.assetTransfers, commonResults.yes, 19, 4, specificResults.assetTransfersHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.assetTransfersAmount, "£280000", 19, 5, specificResults.assetTransfersAmountHiddenText, dummyHref)
+
+          buttonCheck(commonResults.saveAndContinue)
+
           welshToggleCheck(user.isWelsh)
         }
 
@@ -379,7 +851,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear-1)
+            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear-1)
             urlGet(s"$appUrl/${taxYear-1}/check-employment-benefits?employmentId=0022", welsh = user.isWelsh, follow=false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
           }
@@ -390,125 +862,253 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2021/view")
         }
 
-        "return a fully populated page when all the fields are populated when at the end of the year when there is CYA data" which {
+        "return only the relevant data on the page when only certain data items are in mongo for EOY" which {
 
-          val employmentData: EmploymentCYAModel = {
-            employmentUserData.employment.copy(employmentDetails = employmentUserData.employment.employmentDetails.copy(
-              employerRef = Some(
-                "123/12345"
-              ),
-              startDate = Some("2020-11-11"),
-              taxablePayToDate= Some(55.99),
-              totalTaxToDate= Some(3453453.00),
-              currentDataIsHmrcHeld = false
-            ))
-          }
-
-          val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
-
-          implicit lazy val result: WSResponse = {
+          lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData.copy(employment = employmentData.copy(employmentBenefits = fullBenefits)).copy(employmentId = "001"),userRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear-1)
-            urlGet(url(defaultTaxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(filteredBenefits)))), nino, defaultTaxYear-1)
+            urlGet(url(defaultTaxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear-1)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
-          h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(user.commonExpectedResults.expectedCaption(defaultTaxYear  -1))
-          textOnPageCheck(user.specificExpectedResults.get.expectedP1, Selectors.p1)
-          textOnPageCheck(user.specificExpectedResults.get.expectedP2(defaultTaxYear - 1), Selectors.p2)
-          textOnPageCheck(user.commonExpectedResults.vehicleHeader, fieldHeaderSelector(4))
-          textOnPageCheck(user.commonExpectedResults.companyCar, fieldNameSelector(5, 1))
-          textOnPageCheck("£1.23", fieldAmountSelector(5, 1))
-          textOnPageCheck(user.commonExpectedResults.fuelForCompanyCar, fieldNameSelector(5, 2))
-          textOnPageCheck("£2", fieldAmountSelector(5, 2))
-          textOnPageCheck(user.commonExpectedResults.companyVan, fieldNameSelector(5, 3))
-          textOnPageCheck("£3", fieldAmountSelector(5, 3))
-          textOnPageCheck(user.commonExpectedResults.fuelForCompanyVan, fieldNameSelector(5, 4))
-          textOnPageCheck("£4", fieldAmountSelector(5, 4))
-          textOnPageCheck(user.commonExpectedResults.mileageBenefit, fieldNameSelector(5, 5))
-          textOnPageCheck("£5", fieldAmountSelector(5, 5))
+          val specificResults = user.specificExpectedResults.get
+          val commonResults = user.commonExpectedResults
+          val dummyHref = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/check-employment-benefits?employmentId=001"
+
+          titleCheck(specificResults.expectedTitle)
+          h1Check(specificResults.expectedH1)
+          captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
+          textOnPageCheck(specificResults.expectedP1, Selectors.p1)
+
+          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 3, 1, specificResults.benefitsReceivedHiddenText, dummyHref)
+
+          textOnPageCheck(commonResults.vehicleHeader, fieldHeaderSelector(4))
+          changeAmountRowCheck(commonResults.carSubheading, commonResults.yes, 5, 1, specificResults.carSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.companyCar, commonResults.no, 5, 2, specificResults.companyCarHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.fuelForCompanyCar, commonResults.no, 5, 3, specificResults.fuelForCompanyCarHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.companyVan, commonResults.yes, 5, 4, specificResults.companyVanHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.companyVanAmount, "£3", 5, 5, specificResults.companyVanAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.fuelForCompanyVan, commonResults.yes, 5, 6, specificResults.fuelForCompanyVanHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.fuelForCompanyVanAmount, "£4", 5, 7, specificResults.fuelForCompanyVanAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.mileageBenefit, commonResults.yes, 5, 8, specificResults.mileageBenefitHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.mileageBenefitAmount, "£5", 5, 9, specificResults.mileageBenefitAmountHiddenText, dummyHref)
+
           textOnPageCheck(user.commonExpectedResults.accommodationHeader, fieldHeaderSelector(6))
-          textOnPageCheck(user.commonExpectedResults.accommodation, fieldNameSelector(7, 1))
-          textOnPageCheck("£6", fieldAmountSelector(7, 1))
-          textOnPageCheck(user.commonExpectedResults.qualifyingRelocationCosts, fieldNameSelector(7, 2))
-          textOnPageCheck("£7", fieldAmountSelector(7, 2))
-          textOnPageCheck(user.commonExpectedResults.nonQualifyingRelocationCosts, fieldNameSelector(7, 3))
-          textOnPageCheck("£8", fieldAmountSelector(7, 3))
+          changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.no, 7, 1, specificResults.accommodationSubheadingHiddenText, dummyHref)
+          
           textOnPageCheck(user.commonExpectedResults.travelHeader, fieldHeaderSelector(8))
-          textOnPageCheck(user.commonExpectedResults.travelAndSubsistence, fieldNameSelector(9, 1))
-          textOnPageCheck("£9", fieldAmountSelector(9, 1))
-          textOnPageCheck(user.commonExpectedResults.personalCosts, fieldNameSelector(9, 2))
-          textOnPageCheck("£10", fieldAmountSelector(9, 2))
-          textOnPageCheck(user.commonExpectedResults.entertainment, fieldNameSelector(9, 3))
-          textOnPageCheck("£11", fieldAmountSelector(9, 3))
+          changeAmountRowCheck(commonResults.travelSubheading, commonResults.no, 9, 1, specificResults.travelSubheadingHiddenText, dummyHref)
+
           textOnPageCheck(user.commonExpectedResults.utilitiesHeader, fieldHeaderSelector(10))
-          textOnPageCheck(user.commonExpectedResults.telephone, fieldNameSelector(11, 1))
-          textOnPageCheck("£12", fieldAmountSelector(11, 1))
-          textOnPageCheck(user.commonExpectedResults.servicesProvided, fieldNameSelector(11, 2))
-          textOnPageCheck("£13", fieldAmountSelector(11, 2))
-          textOnPageCheck(user.commonExpectedResults.profSubscriptions, fieldNameSelector(11, 3))
-          textOnPageCheck("£14", fieldAmountSelector(11, 3))
-          textOnPageCheck(user.commonExpectedResults.otherServices, fieldNameSelector(11, 4))
-          textOnPageCheck("£15", fieldAmountSelector(11, 4))
+          changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.no, 11, 1, specificResults.utilitiesSubheadingHiddenText, dummyHref)
+          
           textOnPageCheck(user.commonExpectedResults.medicalHeader, fieldHeaderSelector(12))
-          textOnPageCheck(user.commonExpectedResults.medicalIns, fieldNameSelector(13, 1))
-          textOnPageCheck("£16", fieldAmountSelector(13, 1))
-          textOnPageCheck(user.commonExpectedResults.nursery, fieldNameSelector(13, 2))
-          textOnPageCheck("£17", fieldAmountSelector(13, 2))
-          textOnPageCheck(user.commonExpectedResults.beneficialLoans, fieldNameSelector(13, 3))
-          textOnPageCheck("£18", fieldAmountSelector(13, 3))
-          textOnPageCheck(user.commonExpectedResults.educational, fieldNameSelector(13, 4))
-          textOnPageCheck("£19", fieldAmountSelector(13, 4))
+          changeAmountRowCheck(commonResults.medicalSubheading, commonResults.no, 13, 1, specificResults.medicalSubheadingHiddenText, dummyHref)
+          
           textOnPageCheck(user.commonExpectedResults.incomeTaxHeader, fieldHeaderSelector(14))
-          textOnPageCheck(user.commonExpectedResults.incomeTaxPaid, fieldNameSelector(15, 1))
-          textOnPageCheck("£20", fieldAmountSelector(15, 1))
-          textOnPageCheck(user.commonExpectedResults.incurredCostsPaid, fieldNameSelector(15, 2))
-          textOnPageCheck("£21", fieldAmountSelector(15, 2))
+          changeAmountRowCheck(commonResults.incomeTaxSubheading, commonResults.no, 15, 1, specificResults.incomeTaxSubheadingHiddenText, dummyHref)
+          
           textOnPageCheck(user.commonExpectedResults.reimbursedHeader, fieldHeaderSelector(16))
-          textOnPageCheck(user.commonExpectedResults.nonTaxable, fieldNameSelector(17, 1))
-          textOnPageCheck("£22", fieldAmountSelector(17, 1))
-          textOnPageCheck(user.commonExpectedResults.taxableCosts, fieldNameSelector(17, 2))
-          textOnPageCheck("£23", fieldAmountSelector(17, 2))
-          textOnPageCheck(user.commonExpectedResults.vouchers, fieldNameSelector(17, 3))
-          textOnPageCheck("£24", fieldAmountSelector(17, 3))
-          textOnPageCheck(user.commonExpectedResults.nonCash, fieldNameSelector(17, 4))
-          textOnPageCheck("£25", fieldAmountSelector(17, 4))
-          textOnPageCheck(user.commonExpectedResults.otherBenefits, fieldNameSelector(17, 5))
-          textOnPageCheck("£26", fieldAmountSelector(17, 5))
+          changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.no, 17, 1, specificResults.reimbursedSubheadingHiddenText, dummyHref)
+          
           textOnPageCheck(user.commonExpectedResults.assetsHeader, fieldHeaderSelector(18))
-          textOnPageCheck(user.commonExpectedResults.assets, fieldNameSelector(19, 1))
-          textOnPageCheck("£27", fieldAmountSelector(19, 1))
-          textOnPageCheck(user.commonExpectedResults.assetTransfers, fieldNameSelector(19, 2))
-          textOnPageCheck("£280000", fieldAmountSelector(19, 2))
+          changeAmountRowCheck(commonResults.assetsSubheading, commonResults.no, 19, 1, specificResults.assetsSubheadingHiddenText, dummyHref)
+
+          buttonCheck(commonResults.saveAndContinue)
+
           welshToggleCheck(user.isWelsh)
+
+          s"should not display the following values" in {
+            document().body().toString.contains(commonResults.qualifyingRelocationCosts) shouldBe false
+            document().body().toString.contains(commonResults.nonQualifyingRelocationCosts) shouldBe false
+            document().body().toString.contains(commonResults.travelAndSubsistence) shouldBe false
+            document().body().toString.contains(commonResults.personalCosts) shouldBe false
+            document().body().toString.contains(commonResults.entertainment) shouldBe false
+            document().body().toString.contains(commonResults.telephone) shouldBe false
+            document().body().toString.contains(commonResults.servicesProvided) shouldBe false
+            document().body().toString.contains(commonResults.profSubscriptions) shouldBe false
+            document().body().toString.contains(commonResults.otherServices) shouldBe false
+            document().body().toString.contains(commonResults.nursery) shouldBe false
+            document().body().toString.contains(commonResults.beneficialLoans) shouldBe false
+            document().body().toString.contains(commonResults.educational) shouldBe false
+            document().body().toString.contains(commonResults.incomeTaxPaid) shouldBe false
+            document().body().toString.contains(commonResults.incurredCostsPaid) shouldBe false
+            document().body().toString.contains(commonResults.nonTaxable) shouldBe false
+            document().body().toString.contains(commonResults.taxableCosts) shouldBe false
+            document().body().toString.contains(commonResults.vouchers) shouldBe false
+            document().body().toString.contains(commonResults.nonCash) shouldBe false
+            document().body().toString.contains(commonResults.otherBenefits) shouldBe false
+            document().body().toString.contains(commonResults.assetTransfers) shouldBe false
+            document().body().toString.contains(commonResults.companyCarAmount) shouldBe false
+            document().body().toString.contains(commonResults.fuelForCompanyCarAmount) shouldBe false
+            document().body().toString.contains(commonResults.accommodationAmount) shouldBe false
+            document().body().toString.contains(commonResults.qualifyingRelocationCostsAmount) shouldBe false
+            document().body().toString.contains(commonResults.nonQualifyingRelocationCostsAmount) shouldBe false
+            document().body().toString.contains(commonResults.travelAndSubsistenceAmount) shouldBe false
+            document().body().toString.contains(commonResults.personalCostsAmount) shouldBe false
+            document().body().toString.contains(commonResults.entertainmentAmount) shouldBe false
+            document().body().toString.contains(commonResults.telephoneAmount) shouldBe false
+            document().body().toString.contains(commonResults.servicesProvidedAmount) shouldBe false
+            document().body().toString.contains(commonResults.profSubscriptionsAmount) shouldBe false
+            document().body().toString.contains(commonResults.otherServicesAmount) shouldBe false
+            document().body().toString.contains(commonResults.medicalInsAmount) shouldBe false
+            document().body().toString.contains(commonResults.nurseryAmount) shouldBe false
+            document().body().toString.contains(commonResults.beneficialLoansAmount) shouldBe false
+            document().body().toString.contains(commonResults.educationalAmount) shouldBe false
+            document().body().toString.contains(commonResults.incomeTaxPaidAmount) shouldBe false
+            document().body().toString.contains(commonResults.incurredCostsPaidAmount) shouldBe false
+            document().body().toString.contains(commonResults.nonTaxableAmount) shouldBe false
+            document().body().toString.contains(commonResults.taxableCostsAmount) shouldBe false
+            document().body().toString.contains(commonResults.vouchersAmount) shouldBe false
+            document().body().toString.contains(commonResults.nonCashAmount) shouldBe false
+            document().body().toString.contains(commonResults.otherBenefitsAmount) shouldBe false
+            document().body().toString.contains(commonResults.assetsAmount) shouldBe false
+            document().body().toString.contains(commonResults.assetTransfersAmount) shouldBe false
+          }
         }
 
-        "return a fully populated page when all the fields are populated when at the end of the year when there is CYA data but no benefits" which {
-
-          val employmentData: EmploymentCYAModel = {
-            employmentUserData.employment.copy(employmentDetails = employmentUserData.employment.employmentDetails.copy(
-              employerRef = Some(
-                "123/12345"
-              ),
-              startDate = Some("2020-11-11"),
-              taxablePayToDate= Some(55.99),
-              totalTaxToDate= Some(3453453.00),
-              currentDataIsHmrcHeld = false
-            ))
-          }
+        "return only the relevant data on the page when other certain data items are in CYA for EOY, customerData = true " +
+          "to check help text isn't shown" which {
 
           val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+          def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
+            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear-1, "001", isPriorSubmission = isPrior, employmentCyaModel)
+          def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
+            EmploymentCYAModel(
+              EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc),
+              Some(BenefitsViewModel(
+                accommodation = Some(3.00), isUsingCustomerData = true
+              ))
+            )
+
+          lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
+            urlGet(url(defaultTaxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear-1)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          val specificResults = user.specificExpectedResults.get
+          val commonResults = user.commonExpectedResults
+          val dummyHref = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/check-employment-benefits?employmentId=001"
+
+          titleCheck(specificResults.expectedTitle)
+          h1Check(specificResults.expectedH1)
+          captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
+
+          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 2, 1, specificResults.benefitsReceivedHiddenText, dummyHref)
+
+          textOnPageCheck(commonResults.vehicleHeader, fieldHeaderSelector(3))
+          changeAmountRowCheck(commonResults.carSubheading, commonResults.no, 4, 1, specificResults.carSubheadingHiddenText, dummyHref)
+
+          textOnPageCheck(user.commonExpectedResults.accommodationHeader, fieldHeaderSelector(5))
+          changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.yes, 6, 1, specificResults.accommodationSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.accommodation, commonResults.yes, 6, 2, specificResults.accommodationHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.accommodationAmount, "£3", 6, 3, specificResults.accommodationAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.qualifyingRelocationCosts, commonResults.no, 6, 4, specificResults.qualifyingRelocationCostsHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.nonQualifyingRelocationCosts, commonResults.no, 6, 5, specificResults.nonQualifyingRelocationCostsHiddenText, dummyHref)
+
+          textOnPageCheck(user.commonExpectedResults.travelHeader, fieldHeaderSelector(7))
+          changeAmountRowCheck(commonResults.travelSubheading, commonResults.no, 8, 1, specificResults.travelSubheadingHiddenText, dummyHref)
+
+          textOnPageCheck(user.commonExpectedResults.utilitiesHeader, fieldHeaderSelector(9))
+          changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.no, 10, 1, specificResults.utilitiesSubheadingHiddenText, dummyHref)
+
+          textOnPageCheck(user.commonExpectedResults.medicalHeader, fieldHeaderSelector(11))
+          changeAmountRowCheck(commonResults.medicalSubheading, commonResults.no, 12, 1, specificResults.medicalSubheadingHiddenText, dummyHref)
+
+          textOnPageCheck(user.commonExpectedResults.incomeTaxHeader, fieldHeaderSelector(13))
+          changeAmountRowCheck(commonResults.incomeTaxSubheading, commonResults.no, 14, 1, specificResults.incomeTaxSubheadingHiddenText, dummyHref)
+
+          textOnPageCheck(user.commonExpectedResults.reimbursedHeader, fieldHeaderSelector(15))
+          changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.no, 16, 1, specificResults.reimbursedSubheadingHiddenText, dummyHref)
+
+          textOnPageCheck(user.commonExpectedResults.assetsHeader, fieldHeaderSelector(17))
+          changeAmountRowCheck(commonResults.assetsSubheading, commonResults.no, 18, 1, specificResults.assetsSubheadingHiddenText, dummyHref)
+
+          buttonCheck(commonResults.saveAndContinue)
+
+          welshToggleCheck(user.isWelsh)
+
+          s"should not display the following values" in {
+            document().body().toString.contains(specificResults.expectedP1) shouldBe false
+            document().body().toString.contains(commonResults.companyCar) shouldBe false
+            document().body().toString.contains(commonResults.fuelForCompanyCar) shouldBe false
+            document().body().toString.contains(commonResults.companyVan) shouldBe false
+            document().body().toString.contains(commonResults.fuelForCompanyVan) shouldBe false
+            document().body().toString.contains(commonResults.mileageBenefit) shouldBe false
+            document().body().toString.contains(commonResults.travelAndSubsistence) shouldBe false
+            document().body().toString.contains(commonResults.personalCosts) shouldBe false
+            document().body().toString.contains(commonResults.entertainment) shouldBe false
+            document().body().toString.contains(commonResults.telephone) shouldBe false
+            document().body().toString.contains(commonResults.servicesProvided) shouldBe false
+            document().body().toString.contains(commonResults.profSubscriptions) shouldBe false
+            document().body().toString.contains(commonResults.otherServices) shouldBe false
+            document().body().toString.contains(commonResults.nursery) shouldBe false
+            document().body().toString.contains(commonResults.beneficialLoans) shouldBe false
+            document().body().toString.contains(commonResults.educational) shouldBe false
+            document().body().toString.contains(commonResults.incomeTaxPaid) shouldBe false
+            document().body().toString.contains(commonResults.incurredCostsPaid) shouldBe false
+            document().body().toString.contains(commonResults.nonTaxable) shouldBe false
+            document().body().toString.contains(commonResults.taxableCosts) shouldBe false
+            document().body().toString.contains(commonResults.vouchers) shouldBe false
+            document().body().toString.contains(commonResults.nonCash) shouldBe false
+            document().body().toString.contains(commonResults.otherBenefits) shouldBe false
+            document().body().toString.contains(commonResults.assetTransfers) shouldBe false
+            document().body().toString.contains(commonResults.companyCarAmount) shouldBe false
+            document().body().toString.contains(commonResults.fuelForCompanyCarAmount) shouldBe false
+            document().body().toString.contains(commonResults.companyVanAmount) shouldBe false
+            document().body().toString.contains(commonResults.fuelForCompanyVanAmount) shouldBe false
+            document().body().toString.contains(commonResults.mileageBenefitAmount) shouldBe false
+            document().body().toString.contains(commonResults.travelAndSubsistenceAmount) shouldBe false
+            document().body().toString.contains(commonResults.personalCostsAmount) shouldBe false
+            document().body().toString.contains(commonResults.entertainmentAmount) shouldBe false
+            document().body().toString.contains(commonResults.telephoneAmount) shouldBe false
+            document().body().toString.contains(commonResults.servicesProvidedAmount) shouldBe false
+            document().body().toString.contains(commonResults.profSubscriptionsAmount) shouldBe false
+            document().body().toString.contains(commonResults.otherServicesAmount) shouldBe false
+            document().body().toString.contains(commonResults.medicalInsAmount) shouldBe false
+            document().body().toString.contains(commonResults.nurseryAmount) shouldBe false
+            document().body().toString.contains(commonResults.beneficialLoansAmount) shouldBe false
+            document().body().toString.contains(commonResults.educationalAmount) shouldBe false
+            document().body().toString.contains(commonResults.incomeTaxPaidAmount) shouldBe false
+            document().body().toString.contains(commonResults.incurredCostsPaidAmount) shouldBe false
+            document().body().toString.contains(commonResults.nonTaxableAmount) shouldBe false
+            document().body().toString.contains(commonResults.taxableCostsAmount) shouldBe false
+            document().body().toString.contains(commonResults.vouchersAmount) shouldBe false
+            document().body().toString.contains(commonResults.nonCashAmount) shouldBe false
+            document().body().toString.contains(commonResults.otherBenefitsAmount) shouldBe false
+            document().body().toString.contains(commonResults.assetsAmount) shouldBe false
+            document().body().toString.contains(commonResults.assetTransfersAmount) shouldBe false
+          }
+        }
+
+        "return a page with only the benefits received subheading when its EOY and no benefits" which {
+
+          def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
+            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear-1, "001", isPriorSubmission = isPrior, employmentCyaModel)
+
+          def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
+            EmploymentCYAModel(
+              EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc),
+              Some(BenefitsViewModel(
+                isUsingCustomerData = false
+              ))
+            )
+
+          val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+          val dummyHref = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/check-employment-benefits?employmentId=001"
+          val commonResults = user.commonExpectedResults
 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData.copy(employment = employmentData).copy(employmentId = "001"),userRequest)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear-1)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear-1)
             urlGet(url(defaultTaxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
           }
 
@@ -516,13 +1116,28 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(user.commonExpectedResults.expectedCaption(defaultTaxYear  -1))
+          captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
           textOnPageCheck(user.specificExpectedResults.get.expectedP1, Selectors.p1)
-          textOnPageCheck(user.specificExpectedResults.get.expectedP2(defaultTaxYear - 1), Selectors.p2)
+
+          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.no, 3, 1, user.specificExpectedResults.get.benefitsReceivedHiddenText, dummyHref)
+
+          buttonCheck(user.commonExpectedResults.saveAndContinue)
+
           welshToggleCheck(user.isWelsh)
+
+          s"should not display the following values" in {
+            document().body().toString.contains(commonResults.carSubheading) shouldBe false
+            document().body().toString.contains(commonResults.accommodationSubheading) shouldBe false
+            document().body().toString.contains(commonResults.travelSubheading) shouldBe false
+            document().body().toString.contains(commonResults.utilitiesSubheading) shouldBe false
+            document().body().toString.contains(commonResults.medicalSubheading) shouldBe false
+            document().body().toString.contains(commonResults.incomeTaxSubheading) shouldBe false
+            document().body().toString.contains(commonResults.reimbursedSubheading) shouldBe false
+            document().body().toString.contains(commonResults.assetsSubheading) shouldBe false
+          }
         }
 
-        "redirect to overview page when theres no benefits" in {
+        "redirect to overview page when theres no benefits and in year" in {
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
@@ -535,13 +1150,12 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
         }
 
-
-        "return only the relevant data on the page when only certain data items are in mongo" which {
+        "return only the relevant data on the page when only certain data items are in mongo and in year" which {
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(Seq(employmentDetailsAndBenefits(filteredBenefits)))), nino, defaultTaxYear)
+            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(filteredBenefits)))), nino, defaultTaxYear)
             urlGet(url(), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -565,10 +1179,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           s"should not display the following values" in {
 
-            document().body().toString.contains(user.commonExpectedResults.companyCar) shouldBe false
-            document().body().toString.contains(user.commonExpectedResults.fuelForCompanyCar) shouldBe false
             document().body().toString.contains(user.commonExpectedResults.accommodationHeader) shouldBe false
-            document().body().toString.contains(user.commonExpectedResults.accommodation) shouldBe false
             document().body().toString.contains(user.commonExpectedResults.qualifyingRelocationCosts) shouldBe false
             document().body().toString.contains(user.commonExpectedResults.nonQualifyingRelocationCosts) shouldBe false
             document().body().toString.contains(user.commonExpectedResults.travelHeader) shouldBe false
@@ -581,7 +1192,6 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             document().body().toString.contains(user.commonExpectedResults.profSubscriptions) shouldBe false
             document().body().toString.contains(user.commonExpectedResults.otherServices) shouldBe false
             document().body().toString.contains(user.commonExpectedResults.medicalHeader) shouldBe false
-            document().body().toString.contains(user.commonExpectedResults.medicalIns) shouldBe false
             document().body().toString.contains(user.commonExpectedResults.nursery) shouldBe false
             document().body().toString.contains(user.commonExpectedResults.beneficialLoans) shouldBe false
             document().body().toString.contains(user.commonExpectedResults.educational) shouldBe false
@@ -595,12 +1205,11 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             document().body().toString.contains(user.commonExpectedResults.nonCash) shouldBe false
             document().body().toString.contains(user.commonExpectedResults.otherBenefits) shouldBe false
             document().body().toString.contains(user.commonExpectedResults.assetsHeader) shouldBe false
-            document().body().toString.contains(user.commonExpectedResults.assets) shouldBe false
             document().body().toString.contains(user.commonExpectedResults.assetTransfers) shouldBe false
           }
         }
 
-        "render Unauthorised user error page" which {
+        "render Unauthorised user error page when the user is unauthorized" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             unauthorisedAgentOrIndividual(user.isAgent)
@@ -663,6 +1272,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           result.status shouldBe INTERNAL_SERVER_ERROR
         }
+
         "return a redirect to show method when at end of year" which {
 
           implicit lazy val result: WSResponse = {
