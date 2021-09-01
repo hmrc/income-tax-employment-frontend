@@ -16,20 +16,18 @@
 
 package controllers.benefits
 
-import common.{SessionValues, UUID}
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.EmployerNameController
+import controllers.employment.routes.{CheckEmploymentDetailsController, CheckYourBenefitsController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import models.{IncomeTaxUserData, User}
+import models.User
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
-import services.RedirectService.employmentDetailsRedirect
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.SessionHelper
-import views.html.employment.AddEmploymentView
+import utils.{Clock, SessionHelper}
+import views.html.benefits.ReceiveAnyBenefitsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,61 +35,44 @@ import scala.concurrent.{ExecutionContext, Future}
 class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
                                              authAction: AuthorisedAction,
                                              inYearAction: InYearAction,
+                                             receiveAnyBenefitsView: ReceiveAnyBenefitsView,
                                              appConfig: AppConfig,
                                              employmentSessionService: EmploymentSessionService,
                                              errorHandler: ErrorHandler,
-                                             ec: ExecutionContext
-                                       ) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                             ec: ExecutionContext,
+                                             clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
-
-  def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
-    redirectOrRenderView(taxYear) {
-      val form = if (getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID).isEmpty) buildForm else buildForm.fill(value = true)
-      Future(Ok(addEmploymentView(form, taxYear)))
-    }
-  }
-
-  def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
-    redirectOrRenderView(taxYear) {
-      submitForm(taxYear)
-    }
-  }
-
-  private def submitForm(taxYear: Int)(implicit user: User[_]): Future[Result] = {
-
-    val idInSession: Option[String] = getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)
-
-    buildForm.bindFromRequest().fold(
-      { formWithErrors =>
-        Future.successful(BadRequest(addEmploymentView(formWithErrors, taxYear)))
-      },
-      {
-        case true => idInSession.fold {
-          val id = UUID.randomUUID
-          Future.successful(Redirect(EmployerNameController.show(taxYear, id)).addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> id))
-        } {
-          id =>
-            employmentSessionService.getSessionData(taxYear, id).map {
-              _.fold(Redirect(EmployerNameController.show(taxYear, id)))( cya => employmentDetailsRedirect(cya.employment, taxYear, id, cya.isPriorSubmission))
-            }
-        }
-        case _ =>
-          val redirect = Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-          idInSession.fold(Future.successful(redirect))(employmentSessionService.clear(taxYear, _)(
-            redirect.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)))
-      })
-  }
-
-  private def buildForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = "AddEmployment.error"
+  def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"receiveAnyBenefits.errors.noRadioSelected.${if (user.isAgent) "agent" else "individual"}"
   )
 
-  private def redirectOrRenderView(taxYear: Int)(block: => Future[Result])(implicit user: User[_]): Future[Result] = {
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getPriorData(taxYear).flatMap {
-        case Right(IncomeTaxUserData(Some(_))) => Future(Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear)))
-        case Right(IncomeTaxUserData(None)) => block
-        case Left(error) => Future(errorHandler.handleError(error.status))
+      employmentSessionService.getSessionData(taxYear, employmentId).map {
+        case Some(_) =>
+          Ok(receiveAnyBenefitsView(yesNoForm, taxYear, employmentId))
+        case None => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+      }
+    }
+  }
+
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+    inYearAction.notInYear(taxYear) {
+      employmentSessionService.getSessionData(taxYear, employmentId).flatMap {
+        case Some(_) =>
+          yesNoForm.bindFromRequest().fold({
+            formWithErrors => Future.successful(BadRequest(receiveAnyBenefitsView(formWithErrors, taxYear, employmentId)))
+          }, { yesNo =>
+            if (yesNo) {
+              Future.successful(Redirect(CheckYourBenefitsController.show(taxYear, employmentId))) //TODO Redirect To Next Page
+            }
+            else {
+              employmentSessionService.clear(taxYear, employmentId) {
+                Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+              }
+            }
+          })
+        case None => Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
       }
     }
   }

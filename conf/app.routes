@@ -35,6 +35,10 @@ POST       /:taxYear/add-employment                         controllers.employme
 GET        /:taxYear/remove-employment                      controllers.employment.RemoveEmploymentController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/remove-employment                      controllers.employment.RemoveEmploymentController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/company-benefits              controllers.benefits.ReceiveAnyBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/company-benefits              controllers.benefits.ReceiveAnyBenefitsController.submit(taxYear: Int, employmentId: String)
+
+
 GET        /sign-out                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
 GET        /error/you-need-to-sign-up                       controllers.errors.IndividualAuthErrorController.show

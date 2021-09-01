@@ -18,6 +18,7 @@
 @import views.html.templates.helpers.ErrorSummary
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.InputRadio
+@import utils.ViewUtils._
 
 @this(
   layout: Layout,
@@ -27,10 +28,12 @@
   button: Button
 )
 
-@(form: Form[Boolean], taxYear: Int)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[Boolean], taxYear: Int, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
-@titleForUse = @{messages("AddEmployment.header")}
+@titleForUse = @{messages(getAgentDynamicContent("receiveAnyBenefits.title", user.isAgent))}
 @headingForUse = @{titleForUse}
+
+@paragraphText = {<p class="govuk-body">@messages("receiveAnyBenefits.paragraph")</p>}
 
 @hasFormErrors = @{form.hasErrors}
 
@@ -38,12 +41,13 @@
 
   @errorSummary(form.errors.distinct)
 
-  @formWithCsrf(action = controllers.employment.routes.AddEmploymentController.submit(taxYear)) {
+  @formWithCsrf(action = controllers.benefits.routes.ReceiveAnyBenefitsController.submit(taxYear, employmentId)) {
 
     @inputRadio(
       form = form,
       heading = headingForUse,
       hint = None,
+      content = Some(paragraphText),
       inline = true,
       subheading = Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString))
     )
