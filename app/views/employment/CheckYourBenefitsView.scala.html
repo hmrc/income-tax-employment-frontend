@@ -147,11 +147,11 @@
                 benefits.nurseryPlaces.map{
                 BigDecimal => showRows("checkYourBenefits.nursery", benefits.nurseryPlaces)
                 },
-                benefits.beneficialLoan.map{
-                BigDecimal => showRows("checkYourBenefits.beneficialLoans", benefits.beneficialLoan)
-                },
                 benefits.educationalServices.map{
                 BigDecimal => showRows("checkYourBenefits.educational", benefits.educationalServices)
+                },
+                benefits.beneficialLoan.map{
+                BigDecimal => showRows("checkYourBenefits.beneficialLoans", benefits.beneficialLoan)
                 }
             ).flatten
 
