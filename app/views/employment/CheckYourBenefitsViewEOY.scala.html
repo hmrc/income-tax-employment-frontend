@@ -213,17 +213,17 @@
                 benefits.nurseryPlaces.map{
                     nurseryPlaces => showRows("checkYourBenefits.nurseryAmount", nurseryPlaces)
                 },
-                benefits.beneficialLoanQuestion.map{
-                    beneficialLoanQuestion => showQuestionRow("checkYourBenefits.beneficialLoans", beneficialLoanQuestion)
-                },
-                benefits.beneficialLoan.map{
-                    beneficialLoan => showRows("checkYourBenefits.beneficialLoansAmount", beneficialLoan)
-                },
                 benefits.educationalServicesQuestion.map{
                     educationalServicesQuestion => showQuestionRow("checkYourBenefits.educational", educationalServicesQuestion)
                 },
                 benefits.educationalServices.map{
                     educationalServices => showRows("checkYourBenefits.educationalAmount", educationalServices)
+                },
+                benefits.beneficialLoanQuestion.map{
+                    beneficialLoanQuestion => showQuestionRow("checkYourBenefits.beneficialLoans", beneficialLoanQuestion)
+                },
+                benefits.beneficialLoan.map{
+                    beneficialLoan => showRows("checkYourBenefits.beneficialLoansAmount", beneficialLoan)
                 }
             ).flatten
         } else { Seq() }

@@ -214,12 +214,12 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val servicesProvided = "Services provided by employer"
     val profSubscriptions = "Professional subscriptions"
     val otherServices = "Other services"
-    val medicalHeader = "Medical insurance, nursery, loans and education"
+    val medicalHeader = "Medical, dental, childcare, education benefits or loans"
     val medicalIns = "Medical or dental insurance"
     val nursery = "Childcare"
     val beneficialLoans = "Beneficial loans"
     val educational = "Educational services"
-    val incomeTaxHeader = "Income tax and incurred costs"
+    val incomeTaxHeader = "Income Tax and incurred costs"
     val incomeTaxPaid = "Income Tax paid by employer"
     val incurredCostsPaid = "Incurred costs paid by employer"
     val reimbursedHeader = "Reimbursed costs, vouchers, and non-cash benefits"
@@ -294,12 +294,12 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val servicesProvided = "Services provided by employer"
     val profSubscriptions = "Professional subscriptions"
     val otherServices = "Other services"
-    val medicalHeader = "Medical insurance, nursery, loans and education"
+    val medicalHeader = "Medical, dental, childcare, education benefits or loans"
     val medicalIns = "Medical or dental insurance"
     val nursery = "Childcare"
     val beneficialLoans = "Beneficial loans"
     val educational = "Educational services"
-    val incomeTaxHeader = "Income tax and incurred costs"
+    val incomeTaxHeader = "Income Tax and incurred costs"
     val incomeTaxPaid = "Income Tax paid by employer"
     val incurredCostsPaid = "Incurred costs paid by employer"
     val reimbursedHeader = "Reimbursed costs, vouchers, and non-cash benefits"
@@ -385,7 +385,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val nonCashHiddenText: String = "Change if you got non-cash employment benefit from this company"
     val otherBenefitsHiddenText: String = "Change if you got other employment benefit from this company"
     val assetsHiddenText: String = "Change if you got assets as an employment benefit from this company"
-    val assetTransfersHiddenText: String = "Change if you got asset transfer as an employment benefit from this company"
+    val assetTransfersHiddenText: String = "Change if you got asset transfers as an employment benefit from this company"
     val companyCarAmountHiddenText: String = "Change the amount for company car as an employment benefit you got"
     val fuelForCompanyCarAmountHiddenText: String = "Change the amount for company car fuel as an employment benefit you got from this company"
     val companyVanAmountHiddenText: String = "Change the amount for company van as an employment benefit you got"
@@ -421,7 +421,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val medicalSubheadingHiddenText: String = "Change if you got medical insurance, nursery, education or loans as an employment benefit from this company"
     val incomeTaxSubheadingHiddenText: String = "Change if you got Income Tax or incurred costs paid as an employment benefit from this company"
     val reimbursedSubheadingHiddenText: String = "Change if you got vouchers, non-cash benefits or reimbursed costs as an employment benefit from this company"
-    val assetsSubheadingHiddenText: String = "Change if you got asset or asset transfer as an employment benefit from this company"
+    val assetsSubheadingHiddenText: String = "Change if you got asset or asset transfers as an employment benefit from this company"
     val benefitsReceivedHiddenText: String = "Change if you got employment benefits from this company"
   }
 
@@ -457,7 +457,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val nonCashHiddenText: String = "Change if your client got non-cash employment benefit from this company"
     val otherBenefitsHiddenText: String = "Change if your client got other employment benefit from this company"
     val assetsHiddenText: String = "Change if your client got assets as an employment benefit from this company"
-    val assetTransfersHiddenText: String = "Change if your client got asset transfer as an employment benefit from this company"
+    val assetTransfersHiddenText: String = "Change if your client got asset transfers as an employment benefit from this company"
     val companyCarAmountHiddenText: String = "Change the amount for company car as an employment benefit your client got"
     val fuelForCompanyCarAmountHiddenText: String = "Change the amount for company car fuel as an employment benefit your client got from this company"
     val companyVanAmountHiddenText: String = "Change the amount for company van as an employment benefit your client got"
@@ -494,7 +494,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val medicalSubheadingHiddenText: String = "Change if your client got medical insurance, nursery, education or loans as an employment benefit from this company"
     val incomeTaxSubheadingHiddenText: String = "Change if your client got Income Tax or incurred costs paid as an employment benefit from this company"
     val reimbursedSubheadingHiddenText: String = "Change if your client got vouchers, non-cash benefits or reimbursed costs as an employment benefit from this company"
-    val assetsSubheadingHiddenText: String = "Change if your client got asset or asset transfer as an employment benefit from this company"
+    val assetsSubheadingHiddenText: String = "Change if your client got asset or asset transfers as an employment benefit from this company"
     val benefitsReceivedHiddenText: String = "Change if your client got employment benefits from this company"
   }
 
@@ -530,7 +530,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val nonCashHiddenText: String = "Change if you got non-cash employment benefit from this company"
     val otherBenefitsHiddenText: String = "Change if you got other employment benefit from this company"
     val assetsHiddenText: String = "Change if you got assets as an employment benefit from this company"
-    val assetTransfersHiddenText: String = "Change if you got asset transfer as an employment benefit from this company"
+    val assetTransfersHiddenText: String = "Change if you got asset transfers as an employment benefit from this company"
     val companyCarAmountHiddenText: String = "Change the amount for company car as an employment benefit you got"
     val fuelForCompanyCarAmountHiddenText: String = "Change the amount for company car fuel as an employment benefit you got from this company"
     val companyVanAmountHiddenText: String = "Change the amount for company van as an employment benefit you got"
@@ -566,7 +566,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val medicalSubheadingHiddenText: String = "Change if you got medical insurance, nursery, education or loans as an employment benefit from this company"
     val incomeTaxSubheadingHiddenText: String = "Change if you got Income Tax or incurred costs paid as an employment benefit from this company"
     val reimbursedSubheadingHiddenText: String = "Change if you got vouchers, non-cash benefits or reimbursed costs as an employment benefit from this company"
-    val assetsSubheadingHiddenText: String = "Change if you got asset or asset transfer as an employment benefit from this company"
+    val assetsSubheadingHiddenText: String = "Change if you got asset or asset transfers as an employment benefit from this company"
     val benefitsReceivedHiddenText: String = "Change if you got employment benefits from this company"
   }
 
@@ -602,7 +602,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val nonCashHiddenText: String = "Change if your client got non-cash employment benefit from this company"
     val otherBenefitsHiddenText: String = "Change if your client got other employment benefit from this company"
     val assetsHiddenText: String = "Change if your client got assets as an employment benefit from this company"
-    val assetTransfersHiddenText: String = "Change if your client got asset transfer as an employment benefit from this company"
+    val assetTransfersHiddenText: String = "Change if your client got asset transfers as an employment benefit from this company"
     val companyCarAmountHiddenText: String = "Change the amount for company car as an employment benefit your client got"
     val fuelForCompanyCarAmountHiddenText: String = "Change the amount for company car fuel as an employment benefit your client got from this company"
     val companyVanAmountHiddenText: String = "Change the amount for company van as an employment benefit your client got"
@@ -639,7 +639,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val medicalSubheadingHiddenText: String = "Change if your client got medical insurance, nursery, education or loans as an employment benefit from this company"
     val incomeTaxSubheadingHiddenText: String = "Change if your client got Income Tax or incurred costs paid as an employment benefit from this company"
     val reimbursedSubheadingHiddenText: String = "Change if your client got vouchers, non-cash benefits or reimbursed costs as an employment benefit from this company"
-    val assetsSubheadingHiddenText: String = "Change if your client got asset or asset transfer as an employment benefit from this company"
+    val assetsSubheadingHiddenText: String = "Change if your client got asset or asset transfers as an employment benefit from this company"
     val benefitsReceivedHiddenText: String = "Change if your client got employment benefits from this company"
   }
 
@@ -711,10 +711,10 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck("£16", fieldAmountSelector(13, 1))
           textOnPageCheck(user.commonExpectedResults.nursery, fieldNameSelector(13, 2))
           textOnPageCheck("£17", fieldAmountSelector(13, 2))
-          textOnPageCheck(user.commonExpectedResults.beneficialLoans, fieldNameSelector(13, 3))
-          textOnPageCheck("£18", fieldAmountSelector(13, 3))
-          textOnPageCheck(user.commonExpectedResults.educational, fieldNameSelector(13, 4))
-          textOnPageCheck("£19", fieldAmountSelector(13, 4))
+          textOnPageCheck(user.commonExpectedResults.educational, fieldNameSelector(13, 3))
+          textOnPageCheck("£19", fieldAmountSelector(13, 3))
+          textOnPageCheck(user.commonExpectedResults.beneficialLoans, fieldNameSelector(13, 4))
+          textOnPageCheck("£18", fieldAmountSelector(13, 4))
           textOnPageCheck(user.commonExpectedResults.incomeTaxHeader, fieldHeaderSelector(14))
           textOnPageCheck(user.commonExpectedResults.incomeTaxPaid, fieldNameSelector(15, 1))
           textOnPageCheck("£20", fieldAmountSelector(15, 1))
@@ -809,10 +809,10 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.medicalInsAmount, "£16", 13, 3, specificResults.medicalInsAmountHiddenText, dummyHref)
           changeAmountRowCheck(commonResults.nursery, commonResults.yes, 13, 4, specificResults.nurseryHiddenText, dummyHref)
           changeAmountRowCheck(commonResults.nurseryAmount, "£17", 13, 5, specificResults.nurseryAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.beneficialLoans, commonResults.yes, 13, 6, specificResults.beneficialLoansHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.beneficialLoansAmount, "£18", 13, 7, specificResults.beneficialLoansAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.educational, commonResults.yes, 13, 8, specificResults.educationalHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.educationalAmount, "£19", 13, 9, specificResults.educationalAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.educational, commonResults.yes, 13, 6, specificResults.educationalHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.educationalAmount, "£19", 13, 7, specificResults.educationalAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.beneficialLoans, commonResults.yes, 13, 8, specificResults.beneficialLoansHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.beneficialLoansAmount, "£18", 13, 9, specificResults.beneficialLoansAmountHiddenText, dummyHref)
 
           textOnPageCheck(commonResults.incomeTaxHeader, fieldHeaderSelector(14))
           changeAmountRowCheck(commonResults.incomeTaxSubheading, commonResults.yes, 15, 1, specificResults.incomeTaxSubheadingHiddenText, dummyHref)
