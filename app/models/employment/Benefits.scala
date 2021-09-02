@@ -16,7 +16,6 @@
 
 package models.employment
 
-import models.mongo.EmploymentCYAModel
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.{OFormat, __}
 
