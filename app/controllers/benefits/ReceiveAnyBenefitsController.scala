@@ -58,6 +58,7 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
+
       employmentSessionService.getSessionData(taxYear, employmentId).flatMap {
         case Some(_) =>
           yesNoForm.bindFromRequest().fold({
@@ -68,7 +69,7 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
             }
             else {
               employmentSessionService.clear(taxYear, employmentId) {
-                Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+                (Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
               }
             }
           })
