@@ -51,8 +51,10 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionData(taxYear, employmentId).map {
         case Some(data) =>
-          val prefillAmount = data.employment.employmentBenefits.get.carVanFuelQuestion.getOrElse(false)
-          Ok(carVanFuelBenefitsView(yesNoForm.fill(prefillAmount), taxYear, employmentId))
+          data.employment.employmentBenefits.flatMap(_.carVanFuelQuestion) match {
+            case Some(questionResult) => Ok(carVanFuelBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId))
+            case None => Ok(carVanFuelBenefitsView(yesNoForm, taxYear, employmentId))
+          }
         case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
@@ -67,19 +69,24 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
             yesNo => {
               val cya = data.employment
               val updatedCyaModel: EmploymentCYAModel = {
-                if (yesNo) {
-                  cya.copy(employmentBenefits = Some(cya.employmentBenefits.get.copy(
-                    carVanFuelQuestion = Some(true)
-                  )))
-                } else {
-                  cya.copy(employmentBenefits = Some(cya.employmentBenefits.get.copy(
-                    carVanFuelQuestion = Some(false),
-                    carFuel = None,
-                    car = None,
-                    van = None,
-                    vanFuel = None,
-                    mileage = None
-                  )))
+                if (cya.employmentBenefits.isDefined) {
+                  if (yesNo) {
+                    cya.copy(employmentBenefits = Some(cya.employmentBenefits.get.copy(
+                      carVanFuelQuestion = Some(true)
+                    )))
+                  } else {
+                    cya.copy(employmentBenefits = Some(cya.employmentBenefits.get.copy(
+                      carVanFuelQuestion = Some(false),
+                      carFuel = None,
+                      car = None,
+                      van = None,
+                      vanFuel = None,
+                      mileage = None
+                    )))
+                  }
+                } else{
+//                  TODO: Need to potentially update this to make a cya or something
+                  cya
                 }
               }
 
