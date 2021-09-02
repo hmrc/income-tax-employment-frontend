@@ -643,6 +643,10 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val benefitsReceivedHiddenText: String = "Change if your client got employment benefits from this company"
   }
 
+  object Hrefs{
+    val receiveAnyBenefitsHref = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/company-benefits?employmentId=001"
+  }
+
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
       UserScenario(isWelsh = false, isAgent = true,  CommonExpectedEN, Some(ExpectedAgentEN)),
@@ -652,6 +656,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
   ".show" when {
     import Selectors._
+    import Hrefs._
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
@@ -759,7 +764,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
           textOnPageCheck(specificResults.expectedP1, Selectors.p1)
 
-          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 3, 1, specificResults.benefitsReceivedHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 3, 1, specificResults.benefitsReceivedHiddenText, receiveAnyBenefitsHref)
 
           textOnPageCheck(commonResults.vehicleHeader, fieldHeaderSelector(4))
           changeAmountRowCheck(commonResults.carSubheading, commonResults.yes, 5, 1, specificResults.carSubheadingHiddenText, dummyHref)
@@ -882,7 +887,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
           textOnPageCheck(specificResults.expectedP1, Selectors.p1)
 
-          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 3, 1, specificResults.benefitsReceivedHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 3, 1, specificResults.benefitsReceivedHiddenText, receiveAnyBenefitsHref)
 
           textOnPageCheck(commonResults.vehicleHeader, fieldHeaderSelector(4))
           changeAmountRowCheck(commonResults.carSubheading, commonResults.yes, 5, 1, specificResults.carSubheadingHiddenText, dummyHref)
@@ -1000,7 +1005,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           h1Check(specificResults.expectedH1)
           captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
 
-          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 2, 1, specificResults.benefitsReceivedHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 2, 1, specificResults.benefitsReceivedHiddenText, receiveAnyBenefitsHref)
 
           textOnPageCheck(commonResults.vehicleHeader, fieldHeaderSelector(3))
           changeAmountRowCheck(commonResults.carSubheading, commonResults.no, 4, 1, specificResults.carSubheadingHiddenText, dummyHref)
@@ -1119,7 +1124,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
           textOnPageCheck(user.specificExpectedResults.get.expectedP1, Selectors.p1)
 
-          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.no, 3, 1, user.specificExpectedResults.get.benefitsReceivedHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.no, 3, 1, user.specificExpectedResults.get.benefitsReceivedHiddenText,receiveAnyBenefitsHref)
 
           buttonCheck(user.commonExpectedResults.saveAndContinue)
 

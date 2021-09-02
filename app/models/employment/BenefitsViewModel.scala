@@ -20,65 +20,66 @@ import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.{OFormat, __}
 
 case class BenefitsViewModel(
-                        accommodation: Option[BigDecimal] = None,
-                        assets: Option[BigDecimal] = None,
-                        assetTransfer: Option[BigDecimal] = None,
-                        beneficialLoan: Option[BigDecimal] = None,
-                        car: Option[BigDecimal] = None,
-                        carFuel: Option[BigDecimal] = None,
-                        educationalServices: Option[BigDecimal] = None,
-                        entertaining: Option[BigDecimal] = None,
-                        expenses: Option[BigDecimal] = None,
-                        medicalInsurance: Option[BigDecimal] = None,
-                        telephone: Option[BigDecimal] = None,
-                        service: Option[BigDecimal] = None,
-                        taxableExpenses: Option[BigDecimal] = None,
-                        van: Option[BigDecimal] = None,
-                        vanFuel: Option[BigDecimal] = None,
-                        mileage: Option[BigDecimal] = None,
-                        nonQualifyingRelocationExpenses: Option[BigDecimal] = None,
-                        nurseryPlaces: Option[BigDecimal] = None,
-                        otherItems: Option[BigDecimal] = None,
-                        paymentsOnEmployeesBehalf: Option[BigDecimal] = None,
-                        personalIncidentalExpenses: Option[BigDecimal] = None,
-                        qualifyingRelocationExpenses: Option[BigDecimal] = None,
-                        employerProvidedProfessionalSubscriptions: Option[BigDecimal] = None,
-                        employerProvidedServices: Option[BigDecimal] = None,
-                        incomeTaxPaidByDirector: Option[BigDecimal] = None,
-                        travelAndSubsistence: Option[BigDecimal] = None,
-                        vouchersAndCreditCards: Option[BigDecimal] = None,
-                        nonCash: Option[BigDecimal] = None,
-                        accommodationQuestion: Option[Boolean] = None,
-                        assetsQuestion: Option[Boolean] = None,
-                        assetTransferQuestion: Option[Boolean] = None,
-                        beneficialLoanQuestion: Option[Boolean] = None,
-                        carQuestion: Option[Boolean] = None,
-                        carFuelQuestion: Option[Boolean] = None,
-                        educationalServicesQuestion: Option[Boolean] = None,
-                        entertainingQuestion: Option[Boolean] = None,
-                        expensesQuestion: Option[Boolean] = None,
-                        medicalInsuranceQuestion: Option[Boolean] = None,
-                        telephoneQuestion: Option[Boolean] = None,
-                        serviceQuestion: Option[Boolean] = None,
-                        taxableExpensesQuestion: Option[Boolean] = None,
-                        vanQuestion: Option[Boolean] = None,
-                        vanFuelQuestion: Option[Boolean] = None,
-                        mileageQuestion: Option[Boolean] = None,
-                        nonQualifyingRelocationExpensesQuestion: Option[Boolean] = None,
-                        nurseryPlacesQuestion: Option[Boolean] = None,
-                        otherItemsQuestion: Option[Boolean] = None,
-                        paymentsOnEmployeesBehalfQuestion: Option[Boolean] = None,
-                        personalIncidentalExpensesQuestion: Option[Boolean] = None,
-                        qualifyingRelocationExpensesQuestion: Option[Boolean] = None,
-                        employerProvidedProfessionalSubscriptionsQuestion: Option[Boolean] = None,
-                        employerProvidedServicesQuestion: Option[Boolean] = None,
-                        incomeTaxPaidByDirectorQuestion: Option[Boolean] = None,
-                        travelAndSubsistenceQuestion: Option[Boolean] = None,
-                        vouchersAndCreditCardsQuestion: Option[Boolean] = None,
-                        nonCashQuestion: Option[Boolean] = None,
-                        submittedOn: Option[String] = None,
-                        isUsingCustomerData: Boolean
-                       ){
+                              accommodation: Option[BigDecimal] = None,
+                              assets: Option[BigDecimal] = None,
+                              assetTransfer: Option[BigDecimal] = None,
+                              beneficialLoan: Option[BigDecimal] = None,
+                              car: Option[BigDecimal] = None,
+                              carFuel: Option[BigDecimal] = None,
+                              educationalServices: Option[BigDecimal] = None,
+                              entertaining: Option[BigDecimal] = None,
+                              expenses: Option[BigDecimal] = None,
+                              medicalInsurance: Option[BigDecimal] = None,
+                              telephone: Option[BigDecimal] = None,
+                              service: Option[BigDecimal] = None,
+                              taxableExpenses: Option[BigDecimal] = None,
+                              van: Option[BigDecimal] = None,
+                              vanFuel: Option[BigDecimal] = None,
+                              mileage: Option[BigDecimal] = None,
+                              nonQualifyingRelocationExpenses: Option[BigDecimal] = None,
+                              nurseryPlaces: Option[BigDecimal] = None,
+                              otherItems: Option[BigDecimal] = None,
+                              paymentsOnEmployeesBehalf: Option[BigDecimal] = None,
+                              personalIncidentalExpenses: Option[BigDecimal] = None,
+                              qualifyingRelocationExpenses: Option[BigDecimal] = None,
+                              employerProvidedProfessionalSubscriptions: Option[BigDecimal] = None,
+                              employerProvidedServices: Option[BigDecimal] = None,
+                              incomeTaxPaidByDirector: Option[BigDecimal] = None,
+                              travelAndSubsistence: Option[BigDecimal] = None,
+                              vouchersAndCreditCards: Option[BigDecimal] = None,
+                              nonCash: Option[BigDecimal] = None,
+                              accommodationQuestion: Option[Boolean] = None,
+                              assetsQuestion: Option[Boolean] = None,
+                              assetTransferQuestion: Option[Boolean] = None,
+                              beneficialLoanQuestion: Option[Boolean] = None,
+                              carQuestion: Option[Boolean] = None,
+                              carFuelQuestion: Option[Boolean] = None,
+                              educationalServicesQuestion: Option[Boolean] = None,
+                              entertainingQuestion: Option[Boolean] = None,
+                              expensesQuestion: Option[Boolean] = None,
+                              medicalInsuranceQuestion: Option[Boolean] = None,
+                              telephoneQuestion: Option[Boolean] = None,
+                              serviceQuestion: Option[Boolean] = None,
+                              taxableExpensesQuestion: Option[Boolean] = None,
+                              vanQuestion: Option[Boolean] = None,
+                              vanFuelQuestion: Option[Boolean] = None,
+                              mileageQuestion: Option[Boolean] = None,
+                              nonQualifyingRelocationExpensesQuestion: Option[Boolean] = None,
+                              nurseryPlacesQuestion: Option[Boolean] = None,
+                              otherItemsQuestion: Option[Boolean] = None,
+                              paymentsOnEmployeesBehalfQuestion: Option[Boolean] = None,
+                              personalIncidentalExpensesQuestion: Option[Boolean] = None,
+                              qualifyingRelocationExpensesQuestion: Option[Boolean] = None,
+                              employerProvidedProfessionalSubscriptionsQuestion: Option[Boolean] = None,
+                              employerProvidedServicesQuestion: Option[Boolean] = None,
+                              incomeTaxPaidByDirectorQuestion: Option[Boolean] = None,
+                              travelAndSubsistenceQuestion: Option[Boolean] = None,
+                              vouchersAndCreditCardsQuestion: Option[Boolean] = None,
+                              nonCashQuestion: Option[Boolean] = None,
+                              submittedOn: Option[String] = None,
+                              isUsingCustomerData: Boolean,
+                              isBenefitsReceived:Option[Boolean] = None
+                            ){
 
   def toBenefits: Benefits ={
     Benefits(
@@ -113,11 +114,15 @@ case class BenefitsViewModel(
   val assetsDetailsPopulated: Boolean =
     assets.isDefined || assetTransfer.isDefined
 
-  val benefitsPopulated: Boolean = vehicleDetailsPopulated || accommodationDetailsPopulated || travelDetailsPopulated ||
-    utilitiesDetailsPopulated || medicalDetailsPopulated || incomeTaxDetailsPopulated || reimbursedDetailsPopulated || assetsDetailsPopulated
+  val benefitsPopulated: Boolean = isBenefitsReceived.getOrElse(vehicleDetailsPopulated || accommodationDetailsPopulated || travelDetailsPopulated ||
+    utilitiesDetailsPopulated || medicalDetailsPopulated || incomeTaxDetailsPopulated || reimbursedDetailsPopulated || assetsDetailsPopulated)
 }
 
 object BenefitsViewModel {
+
+  def clear(isUsingCustomerData:Boolean):BenefitsViewModel =
+    BenefitsViewModel(isBenefitsReceived = Some(false), isUsingCustomerData = isUsingCustomerData)
+
   val firstSetOfFields: OFormat[(Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal],
     Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal],
     Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal],
@@ -187,7 +192,7 @@ object BenefitsViewModel {
     ).tupled
 
   val fourthSetOfFields: OFormat[(Option[Boolean], Option[Boolean], Option[Boolean], Option[Boolean],
-    Option[Boolean], Option[Boolean], Option[String], Boolean)] = (
+    Option[Boolean], Option[Boolean], Option[String], Boolean, Option[Boolean])] = (
     (__ \ "employerProvidedProfessionalSubscriptionsQuestion").formatNullable[Boolean] and
       (__ \ "employerProvidedServicesQuestion").formatNullable[Boolean] and
       (__ \ "incomeTaxPaidByDirectorQuestion").formatNullable[Boolean] and
@@ -195,7 +200,8 @@ object BenefitsViewModel {
       (__ \ "vouchersAndCreditCardsQuestion").formatNullable[Boolean] and
       (__ \ "nonCashQuestion").formatNullable[Boolean] and
       (__ \ "submittedOn").formatNullable[String] and
-      (__ \ "isUsingCustomerData").format[Boolean]
+      (__ \ "isUsingCustomerData").format[Boolean] and
+      (__ \ "isBenefitsReceived").formatNullable[Boolean]
     ).tupled
 
   implicit val format: OFormat[BenefitsViewModel] = {
@@ -212,7 +218,7 @@ object BenefitsViewModel {
         nonQualifyingRelocationExpensesQuestion,
         nurseryPlacesQuestion, otherItemsQuestion, paymentsOnEmployeesBehalfQuestion, personalIncidentalExpensesQuestion, qualifyingRelocationExpensesQuestion),
         (employerProvidedProfessionalSubscriptionsQuestion, employerProvidedServicesQuestion, incomeTaxPaidByDirectorQuestion, travelAndSubsistenceQuestion,
-        vouchersAndCreditCardsQuestion, nonCashQuestion, submittedOn, isUsingCustomerData)
+        vouchersAndCreditCardsQuestion, nonCashQuestion, submittedOn, isUsingCustomerData, isBenefitsReceived)
         ) =>
         BenefitsViewModel(
           accommodation, assets, assetTransfer, beneficialLoan, car, carFuel, educationalServices, entertaining, expenses,
@@ -226,7 +232,7 @@ object BenefitsViewModel {
           nonQualifyingRelocationExpensesQuestion,
           nurseryPlacesQuestion, otherItemsQuestion, paymentsOnEmployeesBehalfQuestion, personalIncidentalExpensesQuestion, qualifyingRelocationExpensesQuestion,
           employerProvidedProfessionalSubscriptionsQuestion, employerProvidedServicesQuestion, incomeTaxPaidByDirectorQuestion, travelAndSubsistenceQuestion,
-          vouchersAndCreditCardsQuestion, nonCashQuestion, submittedOn, isUsingCustomerData
+          vouchersAndCreditCardsQuestion, nonCashQuestion, submittedOn, isUsingCustomerData, isBenefitsReceived
         )
     }, {
       benefits =>
@@ -244,7 +250,7 @@ object BenefitsViewModel {
             benefits.nonQualifyingRelocationExpensesQuestion, benefits.nurseryPlacesQuestion, benefits.otherItemsQuestion, benefits.paymentsOnEmployeesBehalfQuestion,
             benefits.personalIncidentalExpensesQuestion, benefits.qualifyingRelocationExpensesQuestion),
           (benefits.employerProvidedProfessionalSubscriptionsQuestion, benefits.employerProvidedServicesQuestion, benefits.incomeTaxPaidByDirectorQuestion,
-            benefits.travelAndSubsistenceQuestion, benefits.vouchersAndCreditCardsQuestion, benefits.nonCashQuestion, benefits.submittedOn, benefits.isUsingCustomerData)
+            benefits.travelAndSubsistenceQuestion, benefits.vouchersAndCreditCardsQuestion, benefits.nonCashQuestion, benefits.submittedOn, benefits.isUsingCustomerData, benefits.isBenefitsReceived)
         )
     })
   }

@@ -22,11 +22,11 @@
 @import utils.ViewUtils.bigDecimalCurrency
 
 @this(
-    layout: Layout,
-    formWithCSRF: FormWithCSRF,
-    button: Button,
-    heading: Heading,
-    govukSummaryList: GovukSummaryList
+layout: Layout,
+formWithCSRF: FormWithCSRF,
+button: Button,
+heading: Heading,
+govukSummaryList: GovukSummaryList
 )
 
 @(taxYear: Int, benefits: BenefitsViewModel, employmentId: String, isUsingCustomerData: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
@@ -38,292 +38,292 @@
 @hiddenText(item:String) = @{Some(messages(s"$item.hiddenText.${if(user.isAgent) "agent" else "individual"}"))}
 
 @showRows(item: String, value: BigDecimal) = @{
-    summaryListRow(HtmlContent(messages(item)),HtmlContent(bigDecimalCurrency(value.toString)),actions = Seq((controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId), messages("common.change"), hiddenText(item))), keyClasses="govuk-!-width-two-thirds")
+summaryListRow(HtmlContent(messages(item)),HtmlContent(bigDecimalCurrency(value.toString)),actions = Seq((controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId), messages("common.change"), hiddenText(item))), keyClasses="govuk-!-width-two-thirds")
 }
 
-@showQuestionRow(item: String, value: Boolean) = @{
-    summaryListRow(HtmlContent(messages(item)),HtmlContent(if(value){messages("common.yes")} else {messages("common.no")}),actions = Seq((controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId), messages("common.change"), hiddenText(item))), keyClasses="govuk-!-width-two-thirds")
+@showQuestionRow(item: String, value: Boolean, action:Call=controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId)) = @{
+summaryListRow(HtmlContent(messages(item)),HtmlContent(if(value){messages("common.yes")} else {messages("common.no")}),actions = Seq((action, messages("common.change"), hiddenText(item))), keyClasses="govuk-!-width-two-thirds")
 }
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear)) {
 
-    @heading(headingForUse, Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-5")
+@heading(headingForUse, Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-5")
 
-    @if(!isUsingCustomerData){
-        <p class="govuk-body">@messages(s"checkYourBenefits.p1.${if(user.isAgent) "agent" else "individual"}")</p>
-    }
+@if(!isUsingCustomerData){
+<p class="govuk-body">@messages(s"checkYourBenefits.p1.${if(user.isAgent) "agent" else "individual"}")</p>
+}
 
-    @govukSummaryList(SummaryList(Seq(showQuestionRow("checkYourBenefits.benefitsReceived", benefits.benefitsPopulated))))
+@govukSummaryList(SummaryList(Seq(showQuestionRow("checkYourBenefits.benefitsReceived", benefits.benefitsPopulated, controllers.benefits.routes.ReceiveAnyBenefitsController.show(taxYear, employmentId)))))
 
-    @if(benefits.benefitsPopulated){
+@if(benefits.benefitsPopulated){
 
-    <p class="govuk-label--m">@messages("checkYourBenefits.vehicleHeader")</p>
-        @{
-            val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.carSubheading", benefits.vehicleDetailsPopulated))
-            val rows: Seq[SummaryListRow] =
-            if(benefits.vehicleDetailsPopulated){
-                Seq(
-                    benefits.carQuestion.map{
-                        carQuestion => showQuestionRow("checkYourBenefits.companyCar", carQuestion)
-                    },
-                    benefits.car.map{
-                        car => showRows("checkYourBenefits.companyCarAmount", car)
-                    },
-                    benefits.carFuelQuestion.map{
-                        carFuelQuestion => showQuestionRow("checkYourBenefits.fuelForCompanyCar", carFuelQuestion)
-                    },
-                    benefits.carFuel.map{
-                        carFuel => showRows("checkYourBenefits.fuelForCompanyCarAmount", carFuel)
-                    },
-                    benefits.vanQuestion.map{
-                        vanQuestion => showQuestionRow("checkYourBenefits.companyVan", vanQuestion)
-                    },
-                    benefits.van.map{
-                        van => showRows("checkYourBenefits.companyVanAmount", van)
-                    },
-                    benefits.vanFuelQuestion.map{
-                        vanFuelQuestion => showQuestionRow("checkYourBenefits.fuelForCompanyVan", vanFuelQuestion)
-                    },
-                    benefits.vanFuel.map{
-                        vanFuel => showRows("checkYourBenefits.fuelForCompanyVanAmount", vanFuel)
-                    },
-                    benefits.mileageQuestion.map{
-                        mileageQuestion => showQuestionRow("checkYourBenefits.mileageBenefit", mileageQuestion)
-                    },
-                    benefits.mileage.map{
-                        mileage => showRows("checkYourBenefits.mileageBenefitAmount", mileage)
-                    }
-                ).flatten
-            } else { Seq() }
+<p class="govuk-label--m">@messages("checkYourBenefits.vehicleHeader")</p>
+@{
+val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.carSubheading", benefits.vehicleDetailsPopulated))
+val rows: Seq[SummaryListRow] =
+if(benefits.vehicleDetailsPopulated){
+Seq(
+benefits.carQuestion.map{
+carQuestion => showQuestionRow("checkYourBenefits.companyCar", carQuestion)
+},
+benefits.car.map{
+car => showRows("checkYourBenefits.companyCarAmount", car)
+},
+benefits.carFuelQuestion.map{
+carFuelQuestion => showQuestionRow("checkYourBenefits.fuelForCompanyCar", carFuelQuestion)
+},
+benefits.carFuel.map{
+carFuel => showRows("checkYourBenefits.fuelForCompanyCarAmount", carFuel)
+},
+benefits.vanQuestion.map{
+vanQuestion => showQuestionRow("checkYourBenefits.companyVan", vanQuestion)
+},
+benefits.van.map{
+van => showRows("checkYourBenefits.companyVanAmount", van)
+},
+benefits.vanFuelQuestion.map{
+vanFuelQuestion => showQuestionRow("checkYourBenefits.fuelForCompanyVan", vanFuelQuestion)
+},
+benefits.vanFuel.map{
+vanFuel => showRows("checkYourBenefits.fuelForCompanyVanAmount", vanFuel)
+},
+benefits.mileageQuestion.map{
+mileageQuestion => showQuestionRow("checkYourBenefits.mileageBenefit", mileageQuestion)
+},
+benefits.mileage.map{
+mileage => showRows("checkYourBenefits.mileageBenefitAmount", mileage)
+}
+).flatten
+} else { Seq() }
 
-            govukSummaryList(SummaryList(header ++ rows))
-    }
+govukSummaryList(SummaryList(header ++ rows))
+}
 
-    <p class="govuk-label--m">@messages("checkYourBenefits.accommodationHeader")</p>
-    @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.accommodationSubheading", benefits.accommodationDetailsPopulated))
-        val rows: Seq[SummaryListRow] =
-        if(benefits.accommodationDetailsPopulated){
-            Seq(
-                benefits.accommodationQuestion.map{
-                    accommodationQuestion => showQuestionRow("checkYourBenefits.accommodation", accommodationQuestion)
-                },
-                benefits.accommodation.map{
-                    accommodation => showRows("checkYourBenefits.accommodationAmount", accommodation)
-                },
-                benefits.qualifyingRelocationExpensesQuestion.map{
-                    qualifyingRelocationExpensesQuestion => showQuestionRow("checkYourBenefits.qualifyingRelocationCosts", qualifyingRelocationExpensesQuestion)
-                },
-                benefits.qualifyingRelocationExpenses.map{
-                    qualifyingRelocationExpenses => showRows("checkYourBenefits.qualifyingRelocationCostsAmount", qualifyingRelocationExpenses)
-                },
-                benefits.nonQualifyingRelocationExpensesQuestion.map{
-                    nonQualifyingRelocationExpensesQuestion => showQuestionRow("checkYourBenefits.nonQualifyingRelocationCosts", nonQualifyingRelocationExpensesQuestion)
-                },
-                benefits.nonQualifyingRelocationExpenses.map{
-                    nonQualifyingRelocationExpenses => showRows("checkYourBenefits.nonQualifyingRelocationCostsAmount", nonQualifyingRelocationExpenses)
-                }
-            ).flatten
-        } else { Seq() }
+<p class="govuk-label--m">@messages("checkYourBenefits.accommodationHeader")</p>
+@{
+val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.accommodationSubheading", benefits.accommodationDetailsPopulated))
+val rows: Seq[SummaryListRow] =
+if(benefits.accommodationDetailsPopulated){
+Seq(
+benefits.accommodationQuestion.map{
+accommodationQuestion => showQuestionRow("checkYourBenefits.accommodation", accommodationQuestion)
+},
+benefits.accommodation.map{
+accommodation => showRows("checkYourBenefits.accommodationAmount", accommodation)
+},
+benefits.qualifyingRelocationExpensesQuestion.map{
+qualifyingRelocationExpensesQuestion => showQuestionRow("checkYourBenefits.qualifyingRelocationCosts", qualifyingRelocationExpensesQuestion)
+},
+benefits.qualifyingRelocationExpenses.map{
+qualifyingRelocationExpenses => showRows("checkYourBenefits.qualifyingRelocationCostsAmount", qualifyingRelocationExpenses)
+},
+benefits.nonQualifyingRelocationExpensesQuestion.map{
+nonQualifyingRelocationExpensesQuestion => showQuestionRow("checkYourBenefits.nonQualifyingRelocationCosts", nonQualifyingRelocationExpensesQuestion)
+},
+benefits.nonQualifyingRelocationExpenses.map{
+nonQualifyingRelocationExpenses => showRows("checkYourBenefits.nonQualifyingRelocationCostsAmount", nonQualifyingRelocationExpenses)
+}
+).flatten
+} else { Seq() }
 
-        govukSummaryList(SummaryList(header ++ rows))
-    }
+govukSummaryList(SummaryList(header ++ rows))
+}
 
-    <p class="govuk-label--m">@messages("checkYourBenefits.travelHeader")</p>
-    @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.travelSubheading", benefits.travelDetailsPopulated))
-        val rows: Seq[SummaryListRow] =
-        if(benefits.travelDetailsPopulated){
-            Seq(
-                benefits.travelAndSubsistenceQuestion.map{
-                    travelAndSubsistenceQuestion => showQuestionRow("checkYourBenefits.travelAndSubsistence", travelAndSubsistenceQuestion)
-                },
-                benefits.travelAndSubsistence.map{
-                    travelAndSubsistence => showRows("checkYourBenefits.travelAndSubsistenceAmount", travelAndSubsistence)
-                },
-                benefits.personalIncidentalExpensesQuestion.map{
-                    personalIncidentalExpensesQuestion => showQuestionRow("checkYourBenefits.personalCosts", personalIncidentalExpensesQuestion)
-                },
-                benefits.personalIncidentalExpenses.map{
-                    personalIncidentalExpenses => showRows("checkYourBenefits.personalCostsAmount", personalIncidentalExpenses)
-                },
-                benefits.entertainingQuestion.map{
-                    entertainingQuestion => showQuestionRow("checkYourBenefits.entertainment", entertainingQuestion)
-                },
-                benefits.entertaining.map{
-                    entertaining => showRows("checkYourBenefits.entertainmentAmount", entertaining)
-                }
-            ).flatten
-        } else { Seq() }
+<p class="govuk-label--m">@messages("checkYourBenefits.travelHeader")</p>
+@{
+val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.travelSubheading", benefits.travelDetailsPopulated))
+val rows: Seq[SummaryListRow] =
+if(benefits.travelDetailsPopulated){
+Seq(
+benefits.travelAndSubsistenceQuestion.map{
+travelAndSubsistenceQuestion => showQuestionRow("checkYourBenefits.travelAndSubsistence", travelAndSubsistenceQuestion)
+},
+benefits.travelAndSubsistence.map{
+travelAndSubsistence => showRows("checkYourBenefits.travelAndSubsistenceAmount", travelAndSubsistence)
+},
+benefits.personalIncidentalExpensesQuestion.map{
+personalIncidentalExpensesQuestion => showQuestionRow("checkYourBenefits.personalCosts", personalIncidentalExpensesQuestion)
+},
+benefits.personalIncidentalExpenses.map{
+personalIncidentalExpenses => showRows("checkYourBenefits.personalCostsAmount", personalIncidentalExpenses)
+},
+benefits.entertainingQuestion.map{
+entertainingQuestion => showQuestionRow("checkYourBenefits.entertainment", entertainingQuestion)
+},
+benefits.entertaining.map{
+entertaining => showRows("checkYourBenefits.entertainmentAmount", entertaining)
+}
+).flatten
+} else { Seq() }
 
-        govukSummaryList(SummaryList(header ++ rows))
-    }
+govukSummaryList(SummaryList(header ++ rows))
+}
 
-    <p class="govuk-label--m">@messages("checkYourBenefits.utilitiesHeader")</p>
-    @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.utilitiesSubheading", benefits.utilitiesDetailsPopulated))
-        val rows: Seq[SummaryListRow] =
-        if(benefits.utilitiesDetailsPopulated){
-            Seq(
-                benefits.telephoneQuestion.map{
-                    telephoneQuestion => showQuestionRow("checkYourBenefits.telephone", telephoneQuestion)
-                },
-                benefits.telephone.map{
-                    telephone => showRows("checkYourBenefits.telephoneAmount", telephone)
-                },
-                benefits.employerProvidedServicesQuestion.map{
-                    employerProvidedServicesQuestion => showQuestionRow("checkYourBenefits.servicesProvided", employerProvidedServicesQuestion)
-                },
-                benefits.employerProvidedServices.map{
-                    employerProvidedServices => showRows("checkYourBenefits.servicesProvidedAmount", employerProvidedServices)
-                },
-                benefits.employerProvidedProfessionalSubscriptionsQuestion.map{
-                    employerProvidedProfessionalSubscriptionsQuestion => showQuestionRow("checkYourBenefits.profSubscriptions", employerProvidedProfessionalSubscriptionsQuestion)
-                },
-                benefits.employerProvidedProfessionalSubscriptions.map{
-                    employerProvidedProfessionalSubscriptions => showRows("checkYourBenefits.profSubscriptionsAmount", employerProvidedProfessionalSubscriptions)
-                },
-                benefits.serviceQuestion.map{
-                    serviceQuestion => showQuestionRow("checkYourBenefits.otherServices", serviceQuestion)
-                },
-                benefits.service.map{
-                    service => showRows("checkYourBenefits.otherServicesAmount", service)
-                }
-            ).flatten
-        } else { Seq() }
+<p class="govuk-label--m">@messages("checkYourBenefits.utilitiesHeader")</p>
+@{
+val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.utilitiesSubheading", benefits.utilitiesDetailsPopulated))
+val rows: Seq[SummaryListRow] =
+if(benefits.utilitiesDetailsPopulated){
+Seq(
+benefits.telephoneQuestion.map{
+telephoneQuestion => showQuestionRow("checkYourBenefits.telephone", telephoneQuestion)
+},
+benefits.telephone.map{
+telephone => showRows("checkYourBenefits.telephoneAmount", telephone)
+},
+benefits.employerProvidedServicesQuestion.map{
+employerProvidedServicesQuestion => showQuestionRow("checkYourBenefits.servicesProvided", employerProvidedServicesQuestion)
+},
+benefits.employerProvidedServices.map{
+employerProvidedServices => showRows("checkYourBenefits.servicesProvidedAmount", employerProvidedServices)
+},
+benefits.employerProvidedProfessionalSubscriptionsQuestion.map{
+employerProvidedProfessionalSubscriptionsQuestion => showQuestionRow("checkYourBenefits.profSubscriptions", employerProvidedProfessionalSubscriptionsQuestion)
+},
+benefits.employerProvidedProfessionalSubscriptions.map{
+employerProvidedProfessionalSubscriptions => showRows("checkYourBenefits.profSubscriptionsAmount", employerProvidedProfessionalSubscriptions)
+},
+benefits.serviceQuestion.map{
+serviceQuestion => showQuestionRow("checkYourBenefits.otherServices", serviceQuestion)
+},
+benefits.service.map{
+service => showRows("checkYourBenefits.otherServicesAmount", service)
+}
+).flatten
+} else { Seq() }
 
-        govukSummaryList(SummaryList(header ++ rows))
-    }
+govukSummaryList(SummaryList(header ++ rows))
+}
 
-    <p class="govuk-label--m">@messages("checkYourBenefits.medicalHeader")</p>
-    @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.medicalSubheading", benefits.medicalDetailsPopulated))
-        val rows: Seq[SummaryListRow] =
-        if(benefits.medicalDetailsPopulated){
-            Seq(
-                benefits.medicalInsuranceQuestion.map{
-                    medicalInsuranceQuestion => showQuestionRow("checkYourBenefits.medicalIns", medicalInsuranceQuestion)
-                },
-                benefits.medicalInsurance.map{
-                    medicalInsurance => showRows("checkYourBenefits.medicalInsAmount", medicalInsurance)
-                },
-                benefits.nurseryPlacesQuestion.map{
-                    nurseryPlacesQuestion => showQuestionRow("checkYourBenefits.nursery", nurseryPlacesQuestion)
-                },
-                benefits.nurseryPlaces.map{
-                    nurseryPlaces => showRows("checkYourBenefits.nurseryAmount", nurseryPlaces)
-                },
-                benefits.educationalServicesQuestion.map{
-                    educationalServicesQuestion => showQuestionRow("checkYourBenefits.educational", educationalServicesQuestion)
-                },
-                benefits.educationalServices.map{
-                    educationalServices => showRows("checkYourBenefits.educationalAmount", educationalServices)
-                },
-                benefits.beneficialLoanQuestion.map{
-                    beneficialLoanQuestion => showQuestionRow("checkYourBenefits.beneficialLoans", beneficialLoanQuestion)
-                },
-                benefits.beneficialLoan.map{
-                    beneficialLoan => showRows("checkYourBenefits.beneficialLoansAmount", beneficialLoan)
-                }
-            ).flatten
-        } else { Seq() }
+<p class="govuk-label--m">@messages("checkYourBenefits.medicalHeader")</p>
+@{
+val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.medicalSubheading", benefits.medicalDetailsPopulated))
+val rows: Seq[SummaryListRow] =
+if(benefits.medicalDetailsPopulated){
+Seq(
+benefits.medicalInsuranceQuestion.map{
+medicalInsuranceQuestion => showQuestionRow("checkYourBenefits.medicalIns", medicalInsuranceQuestion)
+},
+benefits.medicalInsurance.map{
+medicalInsurance => showRows("checkYourBenefits.medicalInsAmount", medicalInsurance)
+},
+benefits.nurseryPlacesQuestion.map{
+nurseryPlacesQuestion => showQuestionRow("checkYourBenefits.nursery", nurseryPlacesQuestion)
+},
+benefits.nurseryPlaces.map{
+nurseryPlaces => showRows("checkYourBenefits.nurseryAmount", nurseryPlaces)
+},
+benefits.educationalServicesQuestion.map{
+educationalServicesQuestion => showQuestionRow("checkYourBenefits.educational", educationalServicesQuestion)
+},
+benefits.educationalServices.map{
+educationalServices => showRows("checkYourBenefits.educationalAmount", educationalServices)
+},
+benefits.beneficialLoanQuestion.map{
+beneficialLoanQuestion => showQuestionRow("checkYourBenefits.beneficialLoans", beneficialLoanQuestion)
+},
+benefits.beneficialLoan.map{
+beneficialLoan => showRows("checkYourBenefits.beneficialLoansAmount", beneficialLoan)
+}
+).flatten
+} else { Seq() }
 
-        govukSummaryList(SummaryList(header ++ rows))
-    }
+govukSummaryList(SummaryList(header ++ rows))
+}
 
-    <p class="govuk-label--m">@messages("checkYourBenefits.incomeTaxHeader")</p>
-    @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.incomeTaxSubheading", benefits.incomeTaxDetailsPopulated))
-        val rows: Seq[SummaryListRow] =
-        if(benefits.incomeTaxDetailsPopulated){
-            Seq(
-                benefits.incomeTaxPaidByDirectorQuestion.map{
-                incomeTaxPaidByDirectorQuestion => showQuestionRow("checkYourBenefits.incomeTaxPaid", incomeTaxPaidByDirectorQuestion)
-                },
-                benefits.incomeTaxPaidByDirector.map{
-                    incomeTaxPaidByDirector => showRows("checkYourBenefits.incomeTaxPaidAmount", incomeTaxPaidByDirector)
-                },
-                benefits.paymentsOnEmployeesBehalfQuestion.map{
-                    paymentsOnEmployeesBehalfQuestion => showQuestionRow("checkYourBenefits.incurredCostsPaid", paymentsOnEmployeesBehalfQuestion)
-                },
-                benefits.paymentsOnEmployeesBehalf.map{
-                    paymentsOnEmployeesBehalf => showRows("checkYourBenefits.incurredCostsPaidAmount", paymentsOnEmployeesBehalf)
-                }
-            ).flatten
-        } else { Seq() }
+<p class="govuk-label--m">@messages("checkYourBenefits.incomeTaxHeader")</p>
+@{
+val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.incomeTaxSubheading", benefits.incomeTaxDetailsPopulated))
+val rows: Seq[SummaryListRow] =
+if(benefits.incomeTaxDetailsPopulated){
+Seq(
+benefits.incomeTaxPaidByDirectorQuestion.map{
+incomeTaxPaidByDirectorQuestion => showQuestionRow("checkYourBenefits.incomeTaxPaid", incomeTaxPaidByDirectorQuestion)
+},
+benefits.incomeTaxPaidByDirector.map{
+incomeTaxPaidByDirector => showRows("checkYourBenefits.incomeTaxPaidAmount", incomeTaxPaidByDirector)
+},
+benefits.paymentsOnEmployeesBehalfQuestion.map{
+paymentsOnEmployeesBehalfQuestion => showQuestionRow("checkYourBenefits.incurredCostsPaid", paymentsOnEmployeesBehalfQuestion)
+},
+benefits.paymentsOnEmployeesBehalf.map{
+paymentsOnEmployeesBehalf => showRows("checkYourBenefits.incurredCostsPaidAmount", paymentsOnEmployeesBehalf)
+}
+).flatten
+} else { Seq() }
 
-        govukSummaryList(SummaryList(header ++ rows))
-    }
+govukSummaryList(SummaryList(header ++ rows))
+}
 
-    <p class="govuk-label--m">@messages("checkYourBenefits.reimbursedHeader")</p>
-    @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.reimbursedSubheading", benefits.reimbursedDetailsPopulated))
-        val rows: Seq[SummaryListRow] =
-        if(benefits.reimbursedDetailsPopulated){
-            Seq(
-                benefits.expensesQuestion.map{
-                    expensesQuestion => showQuestionRow("checkYourBenefits.nonTaxable", expensesQuestion)
-                },
-                benefits.expenses.map{
-                    expenses => showRows("checkYourBenefits.nonTaxableAmount", expenses)
-                },
-                benefits.taxableExpensesQuestion.map{
-                    taxableExpensesQuestion => showQuestionRow("checkYourBenefits.taxableCosts", taxableExpensesQuestion)
-                },
-                benefits.taxableExpenses.map{
-                    taxableExpenses => showRows("checkYourBenefits.taxableCostsAmount", taxableExpenses)
-                },
-                benefits.vouchersAndCreditCardsQuestion.map{
-                    vouchersAndCreditCardsQuestion => showQuestionRow("checkYourBenefits.vouchers", vouchersAndCreditCardsQuestion)
-                },
-                benefits.vouchersAndCreditCards.map{
-                    vouchersAndCreditCards => showRows("checkYourBenefits.vouchersAmount", vouchersAndCreditCards)
-                },
-                benefits.nonCashQuestion.map{
-                    nonCashQuestion => showQuestionRow("checkYourBenefits.nonCash", nonCashQuestion)
-                },
-                benefits.nonCash.map{
-                    nonCash => showRows("checkYourBenefits.nonCashAmount", nonCash)
-                },
-                benefits.otherItemsQuestion.map{
-                    otherItemsQuestion => showQuestionRow("checkYourBenefits.otherBenefits", otherItemsQuestion)
-                },
-                benefits.otherItems.map{
-                    otherItems => showRows("checkYourBenefits.otherBenefitsAmount", otherItems)
-                }
-            ).flatten
-        } else { Seq() }
+<p class="govuk-label--m">@messages("checkYourBenefits.reimbursedHeader")</p>
+@{
+val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.reimbursedSubheading", benefits.reimbursedDetailsPopulated))
+val rows: Seq[SummaryListRow] =
+if(benefits.reimbursedDetailsPopulated){
+Seq(
+benefits.expensesQuestion.map{
+expensesQuestion => showQuestionRow("checkYourBenefits.nonTaxable", expensesQuestion)
+},
+benefits.expenses.map{
+expenses => showRows("checkYourBenefits.nonTaxableAmount", expenses)
+},
+benefits.taxableExpensesQuestion.map{
+taxableExpensesQuestion => showQuestionRow("checkYourBenefits.taxableCosts", taxableExpensesQuestion)
+},
+benefits.taxableExpenses.map{
+taxableExpenses => showRows("checkYourBenefits.taxableCostsAmount", taxableExpenses)
+},
+benefits.vouchersAndCreditCardsQuestion.map{
+vouchersAndCreditCardsQuestion => showQuestionRow("checkYourBenefits.vouchers", vouchersAndCreditCardsQuestion)
+},
+benefits.vouchersAndCreditCards.map{
+vouchersAndCreditCards => showRows("checkYourBenefits.vouchersAmount", vouchersAndCreditCards)
+},
+benefits.nonCashQuestion.map{
+nonCashQuestion => showQuestionRow("checkYourBenefits.nonCash", nonCashQuestion)
+},
+benefits.nonCash.map{
+nonCash => showRows("checkYourBenefits.nonCashAmount", nonCash)
+},
+benefits.otherItemsQuestion.map{
+otherItemsQuestion => showQuestionRow("checkYourBenefits.otherBenefits", otherItemsQuestion)
+},
+benefits.otherItems.map{
+otherItems => showRows("checkYourBenefits.otherBenefitsAmount", otherItems)
+}
+).flatten
+} else { Seq() }
 
-        govukSummaryList(SummaryList(header ++ rows))
-    }
+govukSummaryList(SummaryList(header ++ rows))
+}
 
-    <p class="govuk-label--m">@messages("checkYourBenefits.assetsHeader")</p>
-    @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.assetsSubheading", benefits.assetsDetailsPopulated))
-        val rows: Seq[SummaryListRow] =
-        if(benefits.assetsDetailsPopulated){
-            Seq(
-                benefits.assetsQuestion.map{
-                    assetsQuestion => showQuestionRow("checkYourBenefits.assets", assetsQuestion)
-                },
-                benefits.assets.map{
-                    assets => showRows("checkYourBenefits.assetsAmount", assets)
-                },
-                benefits.assetTransferQuestion.map{
-                    assetTransferQuestion => showQuestionRow("checkYourBenefits.assetTransfers", assetTransferQuestion)
-                },
-                benefits.assetTransfer.map{
-                    assetTransfer => showRows("checkYourBenefits.assetTransfersAmount", assetTransfer)
-                }
-            ).flatten
-        } else { Seq() }
+<p class="govuk-label--m">@messages("checkYourBenefits.assetsHeader")</p>
+@{
+val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.assetsSubheading", benefits.assetsDetailsPopulated))
+val rows: Seq[SummaryListRow] =
+if(benefits.assetsDetailsPopulated){
+Seq(
+benefits.assetsQuestion.map{
+assetsQuestion => showQuestionRow("checkYourBenefits.assets", assetsQuestion)
+},
+benefits.assets.map{
+assets => showRows("checkYourBenefits.assetsAmount", assets)
+},
+benefits.assetTransferQuestion.map{
+assetTransferQuestion => showQuestionRow("checkYourBenefits.assetTransfers", assetTransferQuestion)
+},
+benefits.assetTransfer.map{
+assetTransfer => showRows("checkYourBenefits.assetTransfersAmount", assetTransfer)
+}
+).flatten
+} else { Seq() }
 
-        govukSummaryList(SummaryList(header ++ rows))
-    }
+govukSummaryList(SummaryList(header ++ rows))
+}
 
-    }
+}
 
-    @button("common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))
+@button("common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))
 }
 
 @{

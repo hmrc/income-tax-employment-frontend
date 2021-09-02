@@ -21,6 +21,7 @@ import controllers.employment.routes.{CheckEmploymentDetailsController, CheckYou
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
+import models.employment.BenefitsViewModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -49,8 +50,9 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionData(taxYear, employmentId).map {
-        case Some(_) =>
-          Ok(receiveAnyBenefitsView(yesNoForm, taxYear, employmentId))
+        case Some(cya) =>
+          val form  = cya.employment.employmentBenefits.map(_.isBenefitsReceived.fold(yesNoForm)(received => yesNoForm.fill(received))).getOrElse(yesNoForm)
+          Ok(receiveAnyBenefitsView(form, taxYear, employmentId))
         case None => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
       }
     }
@@ -58,18 +60,23 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-
       employmentSessionService.getSessionData(taxYear, employmentId).flatMap {
-        case Some(_) =>
+        case Some(cya) =>
           yesNoForm.bindFromRequest().fold({
             formWithErrors => Future.successful(BadRequest(receiveAnyBenefitsView(formWithErrors, taxYear, employmentId)))
           }, { yesNo =>
             if (yesNo) {
-              Future.successful(Redirect(CheckYourBenefitsController.show(taxYear, employmentId))) //TODO Redirect To Next Page
+              val newBenefits = cya.employment.employmentBenefits.map(_.copy(isBenefitsReceived = Some(true)))
+              val newCya = cya.employment.copy(employmentBenefits = newBenefits)
+              employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear,cya.isPriorSubmission)(errorHandler.internalServerError()) {
+                Redirect(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO Redirect To Next Page
+              }
             }
             else {
-              employmentSessionService.clear(taxYear, employmentId) {
-                (Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
+              val newBenefits = BenefitsViewModel.clear(cya.employment.employmentBenefits.map(_.isUsingCustomerData).getOrElse(true))
+              val newCya = cya.employment.copy(employmentBenefits = Some(newBenefits))
+              employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear,cya.isPriorSubmission)(errorHandler.internalServerError()) {
+                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
               }
             }
           })
