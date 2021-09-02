@@ -16,6 +16,7 @@
 
 package models.employment
 
+import models.mongo.EmploymentCYAModel
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.{OFormat, __}
 
@@ -73,7 +74,8 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
   val assetsDetailsPopulated: Boolean =
     assets.isDefined || assetTransfer.isDefined
 
-  def toBenefitsViewModel(isUsingCustomerData: Boolean, submittedOn: Option[String] = None): BenefitsViewModel = {
+  def toBenefitsViewModel(isUsingCustomerData: Boolean, submittedOn: Option[String] = None,
+                          cyaBenefits: Option[BenefitsViewModel] = None): BenefitsViewModel = {
     BenefitsViewModel(
       accommodation, assets, assetTransfer, beneficialLoan, car, carFuel, educationalServices, entertaining, expenses, medicalInsurance,
       telephone, service, taxableExpenses, van, vanFuel, mileage, nonQualifyingRelocationExpenses, nurseryPlaces, otherItems,
@@ -107,6 +109,16 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
       travelAndSubsistenceQuestion = Some(travelAndSubsistence.isDefined),
       vouchersAndCreditCardsQuestion = Some(vouchersAndCreditCards.isDefined),
       nonCashQuestion = Some(nonCash.isDefined),
+
+      carVanFuelQuestion =
+        if (cyaBenefits.isDefined)
+          {
+            cyaBenefits.get.carVanFuelQuestion
+          } else
+        {
+          Some(vehicleDetailsPopulated)
+        },
+
       submittedOn = submittedOn,
       isUsingCustomerData = isUsingCustomerData
     )

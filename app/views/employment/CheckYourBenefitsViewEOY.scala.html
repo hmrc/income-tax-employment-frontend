@@ -41,8 +41,8 @@
     summaryListRow(HtmlContent(messages(item)),HtmlContent(bigDecimalCurrency(value.toString)),actions = Seq((controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId), messages("common.change"), hiddenText(item))), keyClasses="govuk-!-width-two-thirds")
 }
 
-@showQuestionRow(item: String, value: Boolean) = @{
-    summaryListRow(HtmlContent(messages(item)),HtmlContent(if(value){messages("common.yes")} else {messages("common.no")}),actions = Seq((controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId), messages("common.change"), hiddenText(item))), keyClasses="govuk-!-width-two-thirds")
+@showQuestionRow(item: String, value: Boolean, route: Call = controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId)) = @{
+    summaryListRow(HtmlContent(messages(item)),HtmlContent(if(value){messages("common.yes")} else {messages("common.no")}),actions = Seq((route, messages("common.change"), hiddenText(item))), keyClasses="govuk-!-width-two-thirds")
 }
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear)) {
@@ -59,7 +59,7 @@
 
     <p class="govuk-label--m">@messages("checkYourBenefits.vehicleHeader")</p>
         @{
-            val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.carSubheading", benefits.vehicleDetailsPopulated))
+            val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.carSubheading", benefits.carVanFuelQuestion.get, controllers.employment.routes.CarVanFuelBenefitsController.show(taxYear, employmentId)))
             val rows: Seq[SummaryListRow] =
             if(benefits.vehicleDetailsPopulated){
                 Seq(

@@ -76,6 +76,7 @@ case class BenefitsViewModel(
                         travelAndSubsistenceQuestion: Option[Boolean] = None,
                         vouchersAndCreditCardsQuestion: Option[Boolean] = None,
                         nonCashQuestion: Option[Boolean] = None,
+                        carVanFuelQuestion: Option[Boolean] = None,
                         submittedOn: Option[String] = None,
                         isUsingCustomerData: Boolean
                        ){
@@ -187,13 +188,14 @@ object BenefitsViewModel {
     ).tupled
 
   val fourthSetOfFields: OFormat[(Option[Boolean], Option[Boolean], Option[Boolean], Option[Boolean],
-    Option[Boolean], Option[Boolean], Option[String], Boolean)] = (
+    Option[Boolean], Option[Boolean], Option[Boolean], Option[String], Boolean)] = (
     (__ \ "employerProvidedProfessionalSubscriptionsQuestion").formatNullable[Boolean] and
       (__ \ "employerProvidedServicesQuestion").formatNullable[Boolean] and
       (__ \ "incomeTaxPaidByDirectorQuestion").formatNullable[Boolean] and
       (__ \ "travelAndSubsistenceQuestion").formatNullable[Boolean] and
       (__ \ "vouchersAndCreditCardsQuestion").formatNullable[Boolean] and
       (__ \ "nonCashQuestion").formatNullable[Boolean] and
+      (__ \ "carVanFuelQuestion").formatNullable[Boolean] and
       (__ \ "submittedOn").formatNullable[String] and
       (__ \ "isUsingCustomerData").format[Boolean]
     ).tupled
@@ -212,7 +214,7 @@ object BenefitsViewModel {
         nonQualifyingRelocationExpensesQuestion,
         nurseryPlacesQuestion, otherItemsQuestion, paymentsOnEmployeesBehalfQuestion, personalIncidentalExpensesQuestion, qualifyingRelocationExpensesQuestion),
         (employerProvidedProfessionalSubscriptionsQuestion, employerProvidedServicesQuestion, incomeTaxPaidByDirectorQuestion, travelAndSubsistenceQuestion,
-        vouchersAndCreditCardsQuestion, nonCashQuestion, submittedOn, isUsingCustomerData)
+        vouchersAndCreditCardsQuestion, nonCashQuestion, carVanFuelQuestion, submittedOn, isUsingCustomerData)
         ) =>
         BenefitsViewModel(
           accommodation, assets, assetTransfer, beneficialLoan, car, carFuel, educationalServices, entertaining, expenses,
@@ -226,7 +228,7 @@ object BenefitsViewModel {
           nonQualifyingRelocationExpensesQuestion,
           nurseryPlacesQuestion, otherItemsQuestion, paymentsOnEmployeesBehalfQuestion, personalIncidentalExpensesQuestion, qualifyingRelocationExpensesQuestion,
           employerProvidedProfessionalSubscriptionsQuestion, employerProvidedServicesQuestion, incomeTaxPaidByDirectorQuestion, travelAndSubsistenceQuestion,
-          vouchersAndCreditCardsQuestion, nonCashQuestion, submittedOn, isUsingCustomerData
+          vouchersAndCreditCardsQuestion, nonCashQuestion, carVanFuelQuestion, submittedOn, isUsingCustomerData
         )
     }, {
       benefits =>
@@ -244,7 +246,7 @@ object BenefitsViewModel {
             benefits.nonQualifyingRelocationExpensesQuestion, benefits.nurseryPlacesQuestion, benefits.otherItemsQuestion, benefits.paymentsOnEmployeesBehalfQuestion,
             benefits.personalIncidentalExpensesQuestion, benefits.qualifyingRelocationExpensesQuestion),
           (benefits.employerProvidedProfessionalSubscriptionsQuestion, benefits.employerProvidedServicesQuestion, benefits.incomeTaxPaidByDirectorQuestion,
-            benefits.travelAndSubsistenceQuestion, benefits.vouchersAndCreditCardsQuestion, benefits.nonCashQuestion, benefits.submittedOn, benefits.isUsingCustomerData)
+            benefits.travelAndSubsistenceQuestion, benefits.vouchersAndCreditCardsQuestion, benefits.nonCashQuestion, benefits.carVanFuelQuestion, benefits.submittedOn, benefits.isUsingCustomerData)
         )
     })
   }
