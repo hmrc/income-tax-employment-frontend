@@ -92,7 +92,7 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
           case Some(cya) =>
             val benefits: Benefits = cya.employment.employmentBenefits.toBenefits
             val isUsingCustomer = cya.employment.employmentBenefits.isUsingCustomerData
-            Future(performAuditAndRenderView(benefits, taxYear, isInYear, employmentId, isUsingCustomer, cya.employment.employmentBenefits))
+            Future(performAuditAndRenderView(benefits, taxYear, isInYear, employmentId, isUsingCustomer, Some(cya.employment.employmentBenefits)))
 
           case None => saveCYAAndReturnEndOfYearResult(prior.get)
         }

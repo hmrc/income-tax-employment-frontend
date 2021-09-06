@@ -52,7 +52,7 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionData(taxYear, employmentId).map {
         case Some(data) =>
-          data.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion)) match {
+          data.employment.employmentBenefits.carVanFuelModel.flatMap(_.carVanFuelQuestion) match {
             case Some(questionResult) => Ok(carVanFuelBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId))
             case None => Ok(carVanFuelBenefitsView(yesNoForm, taxYear, employmentId))
           }
@@ -70,16 +70,16 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
             yesNo => {
               val cya = data.employment
               val updatedCyaModel: EmploymentCYAModel = {
-                cya.employmentBenefits.flatMap(_.carVanFuelModel) match {
+                cya.employmentBenefits.carVanFuelModel match {
                   case Some(model) =>
                     if(yesNo){
-                      cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
+                      cya.copy(employmentBenefits = cya.employmentBenefits.copy(
                         carVanFuelModel = Some(model.copy(carVanFuelQuestion = Some(true)))
-                      )))
+                      ))
                     } else {
-                      cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
+                      cya.copy(employmentBenefits = cya.employmentBenefits.copy(
                         carVanFuelModel = Some(CarVanFuelModel.clear)
-                      )))
+                      ))
                     }
                   case None =>
 //                  TODO: Need to potentially update this to make a cya or something
