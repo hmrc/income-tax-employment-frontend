@@ -22,7 +22,7 @@ import controllers.predicates.{AuthorisedAction, InYearAction}
 
 import javax.inject.Inject
 import models.User
-import models.employment.{AllEmploymentData, Benefits}
+import models.employment.{AllEmploymentData, Benefits, BenefitsViewModel}
 import models.mongo.EmploymentCYAModel
 import play.api.Logging
 import play.api.i18n.I18nSupport
@@ -93,7 +93,7 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
           case Some(cya) =>
             val benefits: Option[Benefits] = cya.employment.employmentBenefits.map(_.toBenefits)
             val isUsingCustomer = cya.employment.employmentBenefits.map(_.isUsingCustomerData).getOrElse(true)
-            Future(performAuditAndRenderView(benefits.getOrElse(Benefits()), taxYear, isInYear, employmentId, isUsingCustomer))
+            Future(performAuditAndRenderView(benefits.getOrElse(Benefits()), taxYear, isInYear, employmentId, isUsingCustomer, cya.employment.employmentBenefits))
 
           case None => saveCYAAndReturnEndOfYearResult(prior.get)
         }
@@ -102,13 +102,13 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
   }
 
   def performAuditAndRenderView(benefits: Benefits, taxYear: Int, isInYear: Boolean,
-                                employmentId: String, isUsingCustomerData: Boolean)(implicit user: User[AnyContent]): Result ={
+                                employmentId: String, isUsingCustomerData: Boolean, cya: Option[BenefitsViewModel] = None)(implicit user: User[AnyContent]): Result ={
     val auditModel = ViewEmploymentBenefitsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, benefits)
     auditService.auditModel[ViewEmploymentBenefitsAudit](auditModel.toAuditModel)
     if(isInYear){
       Ok(checkYourBenefitsView(taxYear, benefits))
     } else {
-      Ok(checkYourBenefitsViewEOY(taxYear, benefits.toBenefitsViewModel(isUsingCustomerData), employmentId, isUsingCustomerData))
+      Ok(checkYourBenefitsViewEOY(taxYear, benefits.toBenefitsViewModel(isUsingCustomerData, cyaBenefits = cya), employmentId, isUsingCustomerData))
     }
   }
 

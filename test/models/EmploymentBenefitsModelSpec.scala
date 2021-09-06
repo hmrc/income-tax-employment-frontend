@@ -17,7 +17,7 @@
 package models
 
 import com.codahale.metrics.SharedMetricRegistries
-import models.employment.Benefits
+import models.employment.{Benefits, BenefitsViewModel, CarVanFuelModel}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.libs.json.{JsValue, Json}
 import utils.UnitTest
@@ -32,6 +32,16 @@ class EmploymentBenefitsModelSpec extends UnitTest {
         Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
         Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount)
       )
+
+  val benefitsViewModel: BenefitsViewModel = BenefitsViewModel(
+    Some(CarVanFuelModel(
+      Some(true), Some(true), Some(100), Some(true), Some(100), Some(true), Some(100), Some(true), Some(100), Some(true), Some(100)
+    )
+    ), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
+    Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
+    Some(amount), Some(amount), Some(amount), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
+    Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
+    Some(true), Some(true), Some(true), None, isUsingCustomerData = true)
 
   val jsonModel: JsValue = Json.obj(
         "accommodation" -> 100,
@@ -73,6 +83,15 @@ class EmploymentBenefitsModelSpec extends UnitTest {
     "parse from Json" in {
       jsonModel.as[Benefits] mustBe model
     }
-  }
 
+    "parse from a benefits model to a benefitsViewModel" in {
+      val modelToBenefitsModel: BenefitsViewModel = model.toBenefitsViewModel(isUsingCustomerData = true)
+      modelToBenefitsModel mustBe benefitsViewModel
+    }
+
+    "parse from a benefitsView model to a benefits model" in {
+      val modelToBenefitsModel: Benefits = benefitsViewModel.toBenefits
+      modelToBenefitsModel mustBe model
+    }
+  }
 }

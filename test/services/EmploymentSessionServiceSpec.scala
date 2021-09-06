@@ -125,7 +125,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       ),
       employmentBenefits = Some(
         BenefitsViewModel(
-          Some(100), submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true
+          accommodation = Some(100), submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true
         )
       ))
   }
