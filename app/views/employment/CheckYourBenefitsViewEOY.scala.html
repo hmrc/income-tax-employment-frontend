@@ -53,13 +53,13 @@
         <p class="govuk-body">@messages(s"checkYourBenefits.p1.${if(user.isAgent) "agent" else "individual"}")</p>
     }
 
-    @govukSummaryList(SummaryList(Seq(showQuestionRow("checkYourBenefits.benefitsReceived", benefits.benefitsPopulated, controllers.benefits.routes.ReceiveAnyBenefitsController.show(taxYear, employmentId)))))
+    @govukSummaryList(SummaryList(Seq(showQuestionRow("checkYourBenefits.benefitsReceived", benefits.isBenefitsReceived, controllers.benefits.routes.ReceiveAnyBenefitsController.show(taxYear, employmentId)))))
 
-    @if(benefits.benefitsPopulated){
+    @if(benefits.isBenefitsReceived){
 
     <p class="govuk-label--m">@messages("checkYourBenefits.vehicleHeader")</p>
         @{
-            val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.carSubheading", benefits.carVanFuelModel.flatMap(_.carVanFuelQuestion).getOrElse(false), controllers.employment.routes.CarVanFuelBenefitsController.show(taxYear, employmentId)))
+            val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.carSubheading", benefits.carVanFuelModel.flatMap(_.carVanFuelQuestion).getOrElse(false), controllers.benefits.routes.CarVanFuelBenefitsController.show(taxYear, employmentId)))
             val rows: Seq[SummaryListRow] =
             if(benefits.vehicleDetailsPopulated){
                 Seq(

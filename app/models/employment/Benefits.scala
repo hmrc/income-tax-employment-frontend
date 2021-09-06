@@ -93,6 +93,13 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
     }
   }
 
+  def benefitsPopulated(cyaBenefits: Option[BenefitsViewModel] = None): Boolean = {
+    val hasBenefits: Boolean = cyaBenefits.exists(_.isBenefitsReceived)
+      hasBenefits || vehicleDetailsPopulated || accommodationDetailsPopulated || travelDetailsPopulated || utilitiesDetailsPopulated ||
+      medicalDetailsPopulated || incomeTaxDetailsPopulated || reimbursedDetailsPopulated || assetsDetailsPopulated
+  }
+
+
   def toBenefitsViewModel(isUsingCustomerData: Boolean, submittedOn: Option[String] = None,
                           cyaBenefits: Option[BenefitsViewModel] = None): BenefitsViewModel = {
     BenefitsViewModel(
@@ -126,7 +133,7 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
       nonCashQuestion = Some(nonCash.isDefined),
       submittedOn = submittedOn,
       isUsingCustomerData = isUsingCustomerData,
-      isBenefitsReceived = None //set to none so it's not pre-filled first time user hits did you receive any benefits page
+      isBenefitsReceived = benefitsPopulated(cyaBenefits)
     )
   }
 }

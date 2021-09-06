@@ -17,11 +17,10 @@
 package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.{CheckEmploymentDetailsController, CheckYourBenefitsController, EmploymentSummaryController}
+import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
-import models.benefits.IncomeTaxDetails
 import models.employment.BenefitsViewModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -52,8 +51,8 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionData(taxYear, employmentId).map {
         case Some(cya) =>
-          val form  = cya.employment.employmentBenefits.isBenefitsReceived.fold(yesNoForm)(received => yesNoForm.fill(received))
-          Ok(receiveAnyBenefitsView(form, taxYear, employmentId))
+          val hasBenefits = cya.employment.employmentBenefits.isBenefitsReceived
+          Ok(receiveAnyBenefitsView(yesNoForm.fill(hasBenefits), taxYear, employmentId))
         case None => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
       }
     }
@@ -67,7 +66,7 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
             formWithErrors => Future.successful(BadRequest(receiveAnyBenefitsView(formWithErrors, taxYear, employmentId)))
           }, { yesNo =>
             if (yesNo) {
-              val newBenefits = cya.employment.employmentBenefits.copy(isBenefitsReceived = Some(true))
+              val newBenefits = cya.employment.employmentBenefits.copy(isBenefitsReceived = true)
               val newCya = cya.employment.copy(employmentBenefits = newBenefits)
               employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear,cya.isPriorSubmission)(errorHandler.internalServerError()) {
                 Redirect(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO Redirect To Next Page

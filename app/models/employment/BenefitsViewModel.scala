@@ -69,7 +69,7 @@ case class BenefitsViewModel(
                         nonCashQuestion: Option[Boolean] = None,
                         submittedOn: Option[String] = None,
                         isUsingCustomerData: Boolean,
-                        isBenefitsReceived: Option[Boolean] = None
+                        isBenefitsReceived: Boolean = false
                        ){
 
   def toBenefits: Benefits ={
@@ -107,14 +107,12 @@ case class BenefitsViewModel(
   val assetsDetailsPopulated: Boolean =
     assets.isDefined || assetTransfer.isDefined
 
-  val benefitsPopulated: Boolean = isBenefitsReceived.getOrElse(vehicleDetailsPopulated || accommodationDetailsPopulated || travelDetailsPopulated ||
-    utilitiesDetailsPopulated || medicalDetailsPopulated || incomeTaxDetailsPopulated || reimbursedDetailsPopulated || assetsDetailsPopulated)
 }
 
 object BenefitsViewModel {
 
   def clear(isUsingCustomerData:Boolean):BenefitsViewModel =
-    BenefitsViewModel(isBenefitsReceived = Some(false), isUsingCustomerData = isUsingCustomerData)
+    BenefitsViewModel(isBenefitsReceived = false, isUsingCustomerData = isUsingCustomerData)
 
   val firstSetOfFields: OFormat[(Option[CarVanFuelModel], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal],
     Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal],
@@ -174,7 +172,7 @@ object BenefitsViewModel {
     ).tupled
 
   val fourthSetOfFields: OFormat[(Option[Boolean], Option[Boolean], Option[Boolean], Option[Boolean],
-    Option[Boolean], Option[Boolean], Option[String], Boolean, Option[Boolean])] = (
+    Option[Boolean], Option[Boolean], Option[String], Boolean, Boolean)] = (
     (__ \ "employerProvidedProfessionalSubscriptionsQuestion").formatNullable[Boolean] and
       (__ \ "employerProvidedServicesQuestion").formatNullable[Boolean] and
       (__ \ "incomeTaxPaidByDirectorQuestion").formatNullable[Boolean] and
@@ -183,7 +181,7 @@ object BenefitsViewModel {
       (__ \ "nonCashQuestion").formatNullable[Boolean] and
       (__ \ "submittedOn").formatNullable[String] and
       (__ \ "isUsingCustomerData").format[Boolean] and
-      (__ \ "isBenefitsReceived").formatNullable[Boolean]
+      (__ \ "isBenefitsReceived").format[Boolean]
     ).tupled
 
   implicit val format: OFormat[BenefitsViewModel] = {
