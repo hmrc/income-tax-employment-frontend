@@ -123,10 +123,10 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
         employmentDetailsSubmittedOn = Some("2020-04-04T01:01:01Z"),
         currentDataIsHmrcHeld = false
       ),
-      employmentBenefits = Some(
+      employmentBenefits =
         BenefitsViewModel(
           accommodation = Some(100), submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true
-        )
+
       ))
   }
 
@@ -242,8 +242,8 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
                     None,None, None,None
                   )),None
                 )),
-                employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
-                  Some(employmentDataFull.employment.employmentBenefits.get.toBenefits)))
+                employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.submittedOn.get,
+                  Some(employmentDataFull.employment.employmentBenefits.toBenefits)))
               )
             ),None,Seq(),None
           )
@@ -319,8 +319,8 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
                     None,None, None,None
                   )),None
                 )),
-                employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
-                  Some(employmentDataFull.employment.employmentBenefits.get.toBenefits)))
+                employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.submittedOn.get,
+                  Some(employmentDataFull.employment.employmentBenefits.toBenefits)))
               )
             ),None
           )
@@ -355,8 +355,8 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
                     None,None, None,None
                   )),None
                 )),
-                employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.get.submittedOn.get,
-                  Some(employmentDataFull.employment.employmentBenefits.get.toBenefits)))
+                employmentBenefits = Some(EmploymentBenefits(employmentDataFull.employment.employmentBenefits.submittedOn.get,
+                  Some(employmentDataFull.employment.employmentBenefits.toBenefits)))
               )
             ),None
           )
@@ -387,7 +387,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
     val cya: EmploymentCYAModel = EmploymentCYAModel(
       EmploymentDetails("Employer Name", currentDataIsHmrcHeld = true),
-      None
+      BenefitsViewModel(isUsingCustomerData = true)
     )
     val employmentData: EmploymentUserData = EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", true, cya, testClock.now())
 
@@ -407,7 +407,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
       val cya = EmploymentCYAModel(
         EmploymentDetails("Employer Name", currentDataIsHmrcHeld = true),
-        None
+        BenefitsViewModel(isUsingCustomerData = true)
       )
 
       mockCreateOrUpdate(employmentData, None)
@@ -425,7 +425,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
     val cya: EmploymentCYAModel = EmploymentCYAModel(
       EmploymentDetails("Employer Name", currentDataIsHmrcHeld = true),
-      None
+      BenefitsViewModel(isUsingCustomerData = true)
     )
     val employmentData: EmploymentUserData = EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", true, cya, testClock.now())
 

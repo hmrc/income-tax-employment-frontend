@@ -19,6 +19,7 @@ package repositories
 import com.mongodb.MongoTimeoutException
 import common.UUID
 import models.User
+import models.employment.BenefitsViewModel
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.joda.time.{DateTime, DateTimeZone}
 import org.mongodb.scala.bson.conversions.Bson
@@ -69,7 +70,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     isPriorSubmission = true,
     EmploymentCYAModel(
       EmploymentDetails("Tesco", currentDataIsHmrcHeld = true),
-      None
+      BenefitsViewModel(isUsingCustomerData = false)
     ),
     lastUpdated = now
   )
@@ -83,7 +84,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     isPriorSubmission = true,
     EmploymentCYAModel(
       EmploymentDetails("Argos", currentDataIsHmrcHeld = true),
-      None
+      BenefitsViewModel(isUsingCustomerData = false)
     ),
     lastUpdated = now
   )

@@ -20,6 +20,8 @@ import common.SessionValues
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.employment.EmployerNameForm
+import models.employment.BenefitsViewModel
+
 import javax.inject.Inject
 import models.mongo.{EmploymentCYAModel, EmploymentDetails}
 import play.api.data.Form
@@ -78,7 +80,8 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
               }
             case None =>
               val isPrior = false
-              val newCya = EmploymentCYAModel(EmploymentDetails(employerName = submittedName, currentDataIsHmrcHeld = false))
+              val newCya = EmploymentCYAModel(EmploymentDetails(employerName = submittedName, currentDataIsHmrcHeld = false),
+                BenefitsViewModel(isUsingCustomerData = true))
               employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear, isPrior)(errorHandler.internalServerError()) {
                 employmentDetailsRedirect(newCya,taxYear,employmentId,isPrior)
               }

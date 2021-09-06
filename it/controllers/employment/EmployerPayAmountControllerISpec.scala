@@ -17,6 +17,7 @@
 package controllers.employment
 
 import models.User
+import models.employment.BenefitsViewModel
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.eclipse.jetty.http.HttpParser.RequestHandler
 import org.jsoup.Jsoup
@@ -130,7 +131,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
     EmploymentUserData = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, "001", isPriorSubmission,
       EmploymentCYAModel(
         EmploymentDetails("maggie", taxablePayToDate =payToDate, currentDataIsHmrcHeld = false),
-        None
+        BenefitsViewModel(isUsingCustomerData = true)
       )
     )
 

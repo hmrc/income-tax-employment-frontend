@@ -53,7 +53,7 @@
         <p class="govuk-body">@messages(s"checkYourBenefits.p1.${if(user.isAgent) "agent" else "individual"}")</p>
     }
 
-    @govukSummaryList(SummaryList(Seq(showQuestionRow("checkYourBenefits.benefitsReceived", benefits.benefitsPopulated))))
+    @govukSummaryList(SummaryList(Seq(showQuestionRow("checkYourBenefits.benefitsReceived", benefits.benefitsPopulated, controllers.benefits.routes.ReceiveAnyBenefitsController.show(taxYear, employmentId)))))
 
     @if(benefits.benefitsPopulated){
 

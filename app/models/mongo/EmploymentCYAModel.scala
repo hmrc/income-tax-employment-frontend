@@ -44,7 +44,7 @@ object EmploymentDetails {
 }
 
 case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
-                              employmentBenefits: Option[BenefitsViewModel] = None){
+                              employmentBenefits: BenefitsViewModel){
 
   def toEmploymentDetailsView(employmentId: String, isUsingCustomerData: Boolean): EmploymentDetailsViewModel = {
     EmploymentDetailsViewModel(
@@ -65,6 +65,6 @@ object EmploymentCYAModel {
 
   def apply(employmentSource: EmploymentSource, isUsingCustomerData: Boolean): EmploymentCYAModel = EmploymentCYAModel(
     employmentDetails = employmentSource.toEmploymentDetails(isUsingCustomerData),
-    employmentBenefits = employmentSource.toBenefitsViewModel(isUsingCustomerData)
+    employmentBenefits = employmentSource.toBenefitsViewModel(isUsingCustomerData).getOrElse(BenefitsViewModel(isUsingCustomerData = isUsingCustomerData))
   )
 }

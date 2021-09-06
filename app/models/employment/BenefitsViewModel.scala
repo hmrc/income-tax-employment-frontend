@@ -68,7 +68,8 @@ case class BenefitsViewModel(
                         vouchersAndCreditCardsQuestion: Option[Boolean] = None,
                         nonCashQuestion: Option[Boolean] = None,
                         submittedOn: Option[String] = None,
-                        isUsingCustomerData: Boolean
+                        isUsingCustomerData: Boolean,
+                        isBenefitsReceived: Option[Boolean] = None
                        ){
 
   def toBenefits: Benefits ={
@@ -106,11 +107,15 @@ case class BenefitsViewModel(
   val assetsDetailsPopulated: Boolean =
     assets.isDefined || assetTransfer.isDefined
 
-  val benefitsPopulated: Boolean = vehicleDetailsPopulated || accommodationDetailsPopulated || travelDetailsPopulated ||
-    utilitiesDetailsPopulated || medicalDetailsPopulated || incomeTaxDetailsPopulated || reimbursedDetailsPopulated || assetsDetailsPopulated
+  val benefitsPopulated: Boolean = isBenefitsReceived.getOrElse(vehicleDetailsPopulated || accommodationDetailsPopulated || travelDetailsPopulated ||
+    utilitiesDetailsPopulated || medicalDetailsPopulated || incomeTaxDetailsPopulated || reimbursedDetailsPopulated || assetsDetailsPopulated)
 }
 
 object BenefitsViewModel {
+
+  def clear(isUsingCustomerData:Boolean):BenefitsViewModel =
+    BenefitsViewModel(isBenefitsReceived = Some(false), isUsingCustomerData = isUsingCustomerData)
+
   val firstSetOfFields: OFormat[(Option[CarVanFuelModel], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal],
     Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal],
     Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal],
@@ -169,7 +174,7 @@ object BenefitsViewModel {
     ).tupled
 
   val fourthSetOfFields: OFormat[(Option[Boolean], Option[Boolean], Option[Boolean], Option[Boolean],
-    Option[Boolean], Option[Boolean], Option[String], Boolean)] = (
+    Option[Boolean], Option[Boolean], Option[String], Boolean, Option[Boolean])] = (
     (__ \ "employerProvidedProfessionalSubscriptionsQuestion").formatNullable[Boolean] and
       (__ \ "employerProvidedServicesQuestion").formatNullable[Boolean] and
       (__ \ "incomeTaxPaidByDirectorQuestion").formatNullable[Boolean] and
@@ -177,7 +182,8 @@ object BenefitsViewModel {
       (__ \ "vouchersAndCreditCardsQuestion").formatNullable[Boolean] and
       (__ \ "nonCashQuestion").formatNullable[Boolean] and
       (__ \ "submittedOn").formatNullable[String] and
-      (__ \ "isUsingCustomerData").format[Boolean]
+      (__ \ "isUsingCustomerData").format[Boolean] and
+      (__ \ "isBenefitsReceived").formatNullable[Boolean]
     ).tupled
 
   implicit val format: OFormat[BenefitsViewModel] = {
@@ -194,7 +200,7 @@ object BenefitsViewModel {
         nonQualifyingRelocationExpensesQuestion,
         nurseryPlacesQuestion, otherItemsQuestion, paymentsOnEmployeesBehalfQuestion, personalIncidentalExpensesQuestion, qualifyingRelocationExpensesQuestion),
         (employerProvidedProfessionalSubscriptionsQuestion, employerProvidedServicesQuestion, incomeTaxPaidByDirectorQuestion, travelAndSubsistenceQuestion,
-        vouchersAndCreditCardsQuestion, nonCashQuestion, submittedOn, isUsingCustomerData)
+        vouchersAndCreditCardsQuestion, nonCashQuestion, submittedOn, isUsingCustomerData, isBenefitsReceived)
         ) =>
         BenefitsViewModel(
           carVanFuelModel, accommodation, assets, assetTransfer, beneficialLoan, educationalServices, entertaining, expenses,
@@ -208,7 +214,7 @@ object BenefitsViewModel {
           nonQualifyingRelocationExpensesQuestion,
           nurseryPlacesQuestion, otherItemsQuestion, paymentsOnEmployeesBehalfQuestion, personalIncidentalExpensesQuestion, qualifyingRelocationExpensesQuestion,
           employerProvidedProfessionalSubscriptionsQuestion, employerProvidedServicesQuestion, incomeTaxPaidByDirectorQuestion, travelAndSubsistenceQuestion,
-          vouchersAndCreditCardsQuestion, nonCashQuestion, submittedOn, isUsingCustomerData
+          vouchersAndCreditCardsQuestion, nonCashQuestion, submittedOn, isUsingCustomerData, isBenefitsReceived
         )
     }, {
       benefits =>
@@ -226,7 +232,7 @@ object BenefitsViewModel {
             benefits.nonQualifyingRelocationExpensesQuestion, benefits.nurseryPlacesQuestion, benefits.otherItemsQuestion, benefits.paymentsOnEmployeesBehalfQuestion,
             benefits.personalIncidentalExpensesQuestion, benefits.qualifyingRelocationExpensesQuestion),
           (benefits.employerProvidedProfessionalSubscriptionsQuestion, benefits.employerProvidedServicesQuestion, benefits.incomeTaxPaidByDirectorQuestion,
-            benefits.travelAndSubsistenceQuestion, benefits.vouchersAndCreditCardsQuestion, benefits.nonCashQuestion,benefits.submittedOn, benefits.isUsingCustomerData)
+            benefits.travelAndSubsistenceQuestion, benefits.vouchersAndCreditCardsQuestion, benefits.nonCashQuestion, benefits.submittedOn, benefits.isUsingCustomerData, benefits.isBenefitsReceived)
         )
     })
   }

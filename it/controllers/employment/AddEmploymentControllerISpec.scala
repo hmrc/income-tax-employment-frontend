@@ -19,6 +19,7 @@ package controllers.employment
 import common.{SessionValues, UUID}
 import controllers.employment.routes._
 import forms.YesNoForm
+import models.employment.BenefitsViewModel
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import models.{IncomeTaxUserData, User}
 import org.jsoup.Jsoup
@@ -109,7 +110,8 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     EmploymentUserData(sessionId, mtditid, nino, validTaxYear2021, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
 
-  def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc))
+  def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName,
+    currentDataIsHmrcHeld = !hmrc), BenefitsViewModel(isUsingCustomerData = hmrc))
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),

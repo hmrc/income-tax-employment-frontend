@@ -34,6 +34,9 @@ POST       /:taxYear/add-employment                         controllers.employme
 GET        /:taxYear/remove-employment                      controllers.employment.RemoveEmploymentController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/remove-employment                      controllers.employment.RemoveEmploymentController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/company-benefits              controllers.benefits.ReceiveAnyBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/company-benefits              controllers.benefits.ReceiveAnyBenefitsController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/benefits/car-van-fuel                  controllers.employment.CarVanFuelBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/car-van-fuel                  controllers.employment.CarVanFuelBenefitsController.submit(taxYear: Int, employmentId: String)
 

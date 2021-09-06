@@ -18,7 +18,7 @@ package controllers.employment
 
 import models.User
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
-import models.employment.{AllEmploymentData, Deductions, EmploymentData, EmploymentSource, Pay, StudentLoans}
+import models.employment.{AllEmploymentData, BenefitsViewModel, Deductions, EmploymentData, EmploymentSource, Pay, StudentLoans}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -351,7 +351,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               isPriorSubmission = true,
               EmploymentCYAModel(
                 fullEmploymentsModel().hmrcEmploymentData.head.toEmploymentDetails(false),
-                None
+                BenefitsViewModel(isUsingCustomerData = true)
               )
             ), User(mtditid, if (user.isAgent) Some("12345678") else None, nino, sessionId, if (user.isAgent) "Agent" else "Individual")(fakeRequest))
             authoriseAgentOrIndividual(user.isAgent)
@@ -395,7 +395,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               isPriorSubmission = false,
               EmploymentCYAModel(
                 fullEmploymentsModel().hmrcEmploymentData.head.toEmploymentDetails(false).copy(employerRef = None),
-                None
+                BenefitsViewModel(isUsingCustomerData = true)
               )
             ), User(mtditid, if (user.isAgent) Some("12345678") else None, nino, sessionId, if (user.isAgent) "Agent" else "Individual")(fakeRequest))
             authoriseAgentOrIndividual(user.isAgent)

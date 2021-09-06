@@ -16,6 +16,7 @@
 
 package services
 
+import models.employment.BenefitsViewModel
 import models.mongo.{EmploymentCYAModel, EmploymentDetails}
 import play.api.http.Status.SEE_OTHER
 import utils.UnitTest
@@ -25,7 +26,7 @@ import scala.concurrent.Future
 class RedirectServiceSpec extends UnitTest {
 
 
-  val cyaModel = EmploymentCYAModel(EmploymentDetails("employerName", currentDataIsHmrcHeld = true))
+  val cyaModel = EmploymentCYAModel(EmploymentDetails("employerName", currentDataIsHmrcHeld = true),BenefitsViewModel(isUsingCustomerData = false))
   val taxYear = 2021
 
   "employmentDetailsRedirect" should {

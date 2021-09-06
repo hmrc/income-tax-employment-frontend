@@ -18,6 +18,7 @@ package controllers.employment
 
 import forms.employment.EmploymentStartDateForm
 import models.User
+import models.employment.BenefitsViewModel
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -45,7 +46,8 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
 
 
-  def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc))
+  def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc),
+    BenefitsViewModel(isUsingCustomerData = !hmrc))
 
   private def employerStartDatePageUrl(taxYear: Int) = s"$appUrl/$taxYear/employment-start-date?employmentId=$employmentId"
 
@@ -179,7 +181,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
     val cya: EmploymentUserData = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, employmentId, isPriorSubmission = true,
       EmploymentCYAModel(
         EmploymentDetails(employerName, startDate = Some("2020-01-01"), currentDataIsHmrcHeld = false),
-        None
+        BenefitsViewModel(isUsingCustomerData = true)
       )
     )
   }

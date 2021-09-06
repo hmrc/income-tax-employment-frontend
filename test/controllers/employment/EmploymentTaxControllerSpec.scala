@@ -21,7 +21,7 @@ import config.MockEmploymentSessionService
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.AmountForm
 import models.User
-import models.employment.EmploymentDetailsViewModel
+import models.employment.{BenefitsViewModel, EmploymentDetailsViewModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.mvc.Result
@@ -41,7 +41,7 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp with MockEmploymentSes
       startDate = Some("2019-04-21"),
       currentDataIsHmrcHeld = true
     )
-    val employmentCyaModel = EmploymentCYAModel(employmentSource1)
+    val employmentCyaModel = EmploymentCYAModel(employmentSource1, BenefitsViewModel(isUsingCustomerData = false))
     val employmentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, employmentId, false, employmentCyaModel)
   }
 

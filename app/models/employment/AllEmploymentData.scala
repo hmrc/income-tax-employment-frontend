@@ -55,7 +55,6 @@ case class EmploymentSource(employmentId: String,
 
   def toBenefitsViewModel(isUsingCustomerData: Boolean): Option[BenefitsViewModel] ={
     val submittedOn: Option[String] = employmentBenefits.map(_.submittedOn)
-
     employmentBenefits.flatMap(_.benefits.map(_.toBenefitsViewModel(isUsingCustomerData,submittedOn)))
   }
 

@@ -17,6 +17,7 @@
 package controllers.employment
 
 import models.User
+import models.employment.BenefitsViewModel
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -119,7 +120,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
       EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, "001", isPriorSubmission,
       EmploymentCYAModel(
         EmploymentDetails("maggie", employerRef = paye, currentDataIsHmrcHeld = false),
-        None
+        BenefitsViewModel(isUsingCustomerData = true)
       )
     )
 

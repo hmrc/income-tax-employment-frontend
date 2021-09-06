@@ -125,7 +125,8 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
       vouchersAndCreditCardsQuestion = Some(vouchersAndCreditCards.isDefined),
       nonCashQuestion = Some(nonCash.isDefined),
       submittedOn = submittedOn,
-      isUsingCustomerData = isUsingCustomerData
+      isUsingCustomerData = isUsingCustomerData,
+      isBenefitsReceived = None //set to none so it's not pre-filled first time user hits did you receive any benefits page
     )
   }
 }

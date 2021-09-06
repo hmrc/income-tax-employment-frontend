@@ -18,6 +18,7 @@ package controllers.employment
 
 import controllers.employment.routes.CheckEmploymentDetailsController
 import models.User
+import models.employment.BenefitsViewModel
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -108,7 +109,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
       EmploymentUserData (sessionId, mtditid,nino, taxYear, "001", isPriorSubmission,
       EmploymentCYAModel(
         EmploymentDetails("maggie", totalTaxToDate = taxToDate, currentDataIsHmrcHeld = false),
-        None
+        BenefitsViewModel(isUsingCustomerData = true)
       )
     )
 

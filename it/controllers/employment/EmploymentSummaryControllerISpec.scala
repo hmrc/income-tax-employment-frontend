@@ -299,7 +299,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
       EmploymentUserData(sessionId, mtditid, nino, taxYear -1, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
 
-    def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc))
+    def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc),
+      BenefitsViewModel(isUsingCustomerData = !hmrc))
 
     val yesNoFormYes: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
     val yesNoFormNo: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
