@@ -73,18 +73,38 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
   val assetsDetailsPopulated: Boolean =
     assets.isDefined || assetTransfer.isDefined
 
-  def toBenefitsViewModel(isUsingCustomerData: Boolean, submittedOn: Option[String] = None): BenefitsViewModel = {
+  def carVanFuelSection(cyaBenefits: Option[BenefitsViewModel] = None): Option[CarVanFuelModel] = {
+    if (cyaBenefits.isDefined && cyaBenefits.map(_.carVanFuelModel).isDefined){
+      cyaBenefits.flatMap(_.carVanFuelModel)
+    } else {
+      Some(CarVanFuelModel(
+        Some(vehicleDetailsPopulated),
+        carQuestion = Some(car.isDefined),
+        car = car,
+        carFuelQuestion = Some(carFuel.isDefined),
+        carFuel = carFuel,
+        vanQuestion = Some(van.isDefined),
+        van = van,
+        vanFuelQuestion = Some(vanFuel.isDefined),
+        vanFuel = vanFuel,
+        mileageQuestion = Some(mileage.isDefined),
+        mileage = mileage
+      ))
+    }
+  }
+
+  def toBenefitsViewModel(isUsingCustomerData: Boolean, submittedOn: Option[String] = None,
+                          cyaBenefits: Option[BenefitsViewModel] = None): BenefitsViewModel = {
     BenefitsViewModel(
-      accommodation, assets, assetTransfer, beneficialLoan, car, carFuel, educationalServices, entertaining, expenses, medicalInsurance,
-      telephone, service, taxableExpenses, van, vanFuel, mileage, nonQualifyingRelocationExpenses, nurseryPlaces, otherItems,
+      carVanFuelModel = carVanFuelSection(cyaBenefits),
+      accommodation, assets, assetTransfer, beneficialLoan, educationalServices, entertaining, expenses, medicalInsurance,
+      telephone, service, taxableExpenses,  nonQualifyingRelocationExpenses, nurseryPlaces, otherItems,
       paymentsOnEmployeesBehalf, personalIncidentalExpenses, qualifyingRelocationExpenses, employerProvidedProfessionalSubscriptions,
       employerProvidedServices, incomeTaxPaidByDirector, travelAndSubsistence, vouchersAndCreditCards, nonCash,
       accommodationQuestion = Some(accommodation.isDefined),
       assetsQuestion = Some(assets.isDefined),
       assetTransferQuestion = Some(assetTransfer.isDefined),
       beneficialLoanQuestion = Some(beneficialLoan.isDefined),
-      carQuestion = Some(car.isDefined),
-      carFuelQuestion = Some(carFuel.isDefined),
       educationalServicesQuestion = Some(educationalServices.isDefined),
       entertainingQuestion = Some(entertaining.isDefined),
       expensesQuestion = Some(expenses.isDefined),
@@ -92,9 +112,6 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
       telephoneQuestion = Some(telephone.isDefined),
       serviceQuestion = Some(service.isDefined),
       taxableExpensesQuestion = Some(taxableExpenses.isDefined),
-      vanQuestion = Some(van.isDefined),
-      vanFuelQuestion = Some(vanFuel.isDefined),
-      mileageQuestion = Some(mileage.isDefined),
       nonQualifyingRelocationExpensesQuestion = Some(nonQualifyingRelocationExpenses.isDefined),
       nurseryPlacesQuestion = Some(nurseryPlaces.isDefined),
       otherItemsQuestion = Some(otherItems.isDefined),

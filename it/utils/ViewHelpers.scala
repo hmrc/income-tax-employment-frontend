@@ -169,7 +169,7 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
     }
   }
 
-  def radioButtonCheck(text: String, radioNumber: Int)(implicit document: () => Document): Unit = {
+  def radioButtonCheck(text: String, radioNumber: Int, checked: Option[Boolean] = None)(implicit document: () => Document): Unit = {
     s"have a $text radio button" which {
       s"is of type radio button" in {
         val selector = ".govuk-radios__item > input"
@@ -178,6 +178,12 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
       s"has the text $text" in {
         val selector = ".govuk-radios__item > label"
         document().select(selector).get(radioNumber - 1).text() shouldBe text
+      }
+      if (checked.isDefined) {
+        s"has the checked value set to ${checked.get}" in {
+          val selector = ".govuk-radios__item > input"
+          document().select(selector).get(radioNumber - 1).hasAttr("checked") shouldBe checked.get
+        }
       }
     }
   }
