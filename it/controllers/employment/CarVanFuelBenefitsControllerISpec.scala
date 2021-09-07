@@ -68,7 +68,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
-    val thisIncludesSelector: String = "#value-hint"
+    val thisIncludesSelector: String = "#main-content > div > div > form > div > fieldset > legend > div"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
