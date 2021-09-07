@@ -206,7 +206,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       val response = service.createOrUpdateEmploymentResult(taxYear,model)
 
       status(response.map(_.right.get)) shouldBe SEE_OTHER
-      redirectUrl(response.map(_.right.get)) shouldBe "/overview"
+      redirectUrl(response.map(_.right.get)) shouldBe s"/income-through-software/return/employment-income/$taxYear/employment-summary"
     }
     "use the request model to make the api call  and handle an error" in {
 
@@ -251,7 +251,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       )(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "/overview"
+      redirectUrl(response) shouldBe s"/income-through-software/return/employment-income/$taxYear/employment-summary"
     }
     "create the model to send and return the correct result" in {
 
