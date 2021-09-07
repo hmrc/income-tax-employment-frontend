@@ -16,7 +16,6 @@
 
 package controllers.employment
 
-import controllers.employment.routes.AddEmploymentController
 import forms.YesNoForm
 import models.IncomeTaxUserData
 import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource, Pay}
@@ -313,23 +312,6 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
             "has an UNAUTHORIZED(401) status" in {
               result.status shouldBe UNAUTHORIZED
             }
-          }
-
-        }
-
-        "redirect the user to the Add Employment page no data in session" which {
-          lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(IncomeTaxUserData(Some(fullEmploymentsModel(hmrcEmployment =
-              Seq(EmploymentSource(employmentId = "001", employerName = "maggie",
-                None, None, None, None, dateIgnored = Some("2020-03-11"), None, None, None))
-            ))), nino, validTaxYear2021)
-            urlGet(url(validTaxYear2021), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
-          }
-
-          "has an SEE_OTHER(303) status" in {
-            result.status shouldBe SEE_OTHER
-            result.header(HeaderNames.LOCATION) shouldBe Some(AddEmploymentController.show(validTaxYear2021).url)
           }
 
         }

@@ -28,6 +28,7 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Call
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import controllers.employment.routes.EmploymentSummaryController
 
 class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -705,7 +706,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           "has an SEE OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2021/view")
+            result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear-1).url)
             findCyaData(taxYear,employmentId,userRequest) shouldBe None
           }
         }
