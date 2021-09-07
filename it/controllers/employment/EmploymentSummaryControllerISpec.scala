@@ -276,6 +276,23 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
         }
 
+        "redirect the user to the Add Employment page when no data is in session EOY" which {
+          lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(IncomeTaxUserData(Some(fullEmploymentsModel(hmrcEmployment =
+              Seq(EmploymentSource(employmentId = "001", employerName = "maggie",
+                None, None, None, None, dateIgnored = Some("2020-03-11"), None, None, None))
+            ))), nino, taxYear-1)
+            urlGet(s"$appUrl/${taxYear-1}/employment-summary", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+          }
+
+          "has an SEE_OTHER(303) status" in {
+            result.status shouldBe SEE_OTHER
+            result.header(HeaderNames.LOCATION) shouldBe Some(AddEmploymentController.show(taxYear-1).url)
+          }
+
+        }
+
         "returns an action when auth call fails" which {
           lazy val result: WSResponse = {
             unauthorisedAgentOrIndividual(user.isAgent)

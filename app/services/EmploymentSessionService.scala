@@ -17,12 +17,12 @@
 package services
 
 import java.util.NoSuchElementException
-
 import config.{AppConfig, ErrorHandler}
 import connectors.httpParsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmploymentDataResponse
 import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import connectors.{CreateUpdateEmploymentDataConnector, IncomeTaxUserDataConnector}
-import controllers.employment.routes.CheckEmploymentDetailsController
+import controllers.employment.routes.{CheckEmploymentDetailsController, EmploymentSummaryController}
+
 import javax.inject.{Inject, Singleton}
 import models.employment.createUpdate._
 import models.employment._
@@ -127,7 +127,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   def createModelAndReturnResult(cya: EmploymentUserData, prior: Option[AllEmploymentData], taxYear: Int)
                                 (result: CreateUpdateEmploymentRequest => Future[Result])(implicit user: User[_]): Future[Result] = {
     cyaAndPriorToCreateUpdateEmploymentRequest(cya, prior) match {
-      case Left(NothingToUpdate) => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+      case Left(NothingToUpdate) => Future.successful(Redirect(EmploymentSummaryController.show(taxYear)))
       case Left(JourneyNotFinished) =>
         //TODO Route to: journey not finished page / show banner saying not finished / hide submit button when not complete?
        Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear,cya.employmentId)))
@@ -231,7 +231,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
                               (implicit user: User[_], hc: HeaderCarrier): Future[Either[Result,Result]] ={
     createOrUpdateEmployment(taxYear,employmentRequest).map {
       case Left(error) => Left(errorHandler.handleError(error.status))
-      case Right(_) => Right(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+      case Right(_) => Right(Redirect(EmploymentSummaryController.show(taxYear)))
     }
   }
 
