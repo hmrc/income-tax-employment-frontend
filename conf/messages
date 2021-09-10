@@ -491,6 +491,14 @@ employment.removeEmployment.remove-paragraph = This will also remove any benefit
 employment.removeEmployment.remove-all-paragraph = This will remove all your employment for this tax year.
 employment.removeEmployment.error.no-entry = Select yes if you want to remove this employment
 
+#####Benefits Pages#######
+
+receiveAnyBenefits.title.agent = Did your client receive any benefits from this company?
+receiveAnyBenefits.title.individual = Did you receive any benefits from this company?
+receiveAnyBenefits.paragraph = This includes benefits such as company car or van, fuel allowance and medical insurance.
+receiveAnyBenefits.errors.noRadioSelected.agent = Select yes if your client got any benefits from this company
+receiveAnyBenefits.errors.noRadioSelected.individual = Select yes if you got any benefits from this company
+
 benefits.carVanFuel.title.individual = Did you receive any car, van or fuel benefits from this company?
 benefits.carVanFuel.title.agent = Did your client receive any car, van or fuel benefits from this company?
 benefits.carVanFuel.thisIncludes = This includes benefits such as company cars or vans, company cars or van fuel, and privately owned vehicle mileage allowances.
