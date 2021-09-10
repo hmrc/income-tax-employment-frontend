@@ -309,8 +309,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
         }
 
-//        TODO: Needs updating when we decide what to do when submitting without data
-        "Do nothing when theres no CYA data" which {
+        "Create CYA data and make the CarVanFuelQuestion value yes and when the user chooses yes and has no CYA data" which {
 
           lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
@@ -327,9 +326,8 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             result.header("location") shouldBe
               Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
             lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-            cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel).isDefined shouldBe false
+            cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion)) shouldBe Some(true)
           }
-
         }
 
         s"return a BAD_REQUEST($BAD_REQUEST) status" when {

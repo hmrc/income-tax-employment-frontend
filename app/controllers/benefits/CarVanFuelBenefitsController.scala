@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package controllers.employment
+package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
-import models.employment.CarVanFuelModel
+import models.employment.{BenefitsViewModel, CarVanFuelModel}
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -82,8 +82,8 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
                       )))
                     }
                   case None =>
-//                  TODO: Need to potentially update this to make a cya or something
-                  cya
+                  cya.copy(employmentBenefits = Some(BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true,
+                    carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(yesNo))))))
                 }
               }
 

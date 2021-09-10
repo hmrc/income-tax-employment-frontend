@@ -41,7 +41,7 @@ class EmploymentBenefitsModelSpec extends UnitTest {
     Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
     Some(amount), Some(amount), Some(amount), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
     Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
-    Some(true), Some(true), Some(true), None, isUsingCustomerData = true)
+    Some(true), Some(true), Some(true), None, isUsingCustomerData = true, true)
 
   val jsonModel: JsValue = Json.obj(
         "accommodation" -> 100,
