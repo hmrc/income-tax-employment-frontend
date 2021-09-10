@@ -643,6 +643,10 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val benefitsReceivedHiddenText: String = "Change if your client got employment benefits from this company"
   }
 
+  object Hrefs{
+    val receiveAnyBenefitsHref = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/company-benefits?employmentId=001"
+  }
+
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
       UserScenario(isWelsh = false, isAgent = true,  CommonExpectedEN, Some(ExpectedAgentEN)),
@@ -654,6 +658,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
   ".show" when {
     import Selectors._
+    import Hrefs._
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
@@ -761,7 +766,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
           textOnPageCheck(specificResults.expectedP1, Selectors.p1)
 
-          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 3, 1, specificResults.benefitsReceivedHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 3, 1, specificResults.benefitsReceivedHiddenText, receiveAnyBenefitsHref)
 
           textOnPageCheck(commonResults.vehicleHeader, fieldHeaderSelector(4))
           changeAmountRowCheck(commonResults.carSubheading, commonResults.yes, 5, 1, specificResults.carSubheadingHiddenText, carFanFuelBenefitsHref)
@@ -884,7 +889,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
           textOnPageCheck(specificResults.expectedP1, Selectors.p1)
 
-          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 3, 1, specificResults.benefitsReceivedHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 3, 1, specificResults.benefitsReceivedHiddenText, receiveAnyBenefitsHref)
 
           textOnPageCheck(commonResults.vehicleHeader, fieldHeaderSelector(4))
           changeAmountRowCheck(commonResults.carSubheading, commonResults.yes, 5, 1, specificResults.carSubheadingHiddenText, carFanFuelBenefitsHref)
@@ -1002,7 +1007,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           h1Check(specificResults.expectedH1)
           captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
 
-          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 2, 1, specificResults.benefitsReceivedHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 2, 1, specificResults.benefitsReceivedHiddenText, receiveAnyBenefitsHref)
 
           textOnPageCheck(commonResults.vehicleHeader, fieldHeaderSelector(3))
           changeAmountRowCheck(commonResults.carSubheading, commonResults.no, 4, 1, specificResults.carSubheadingHiddenText, carFanFuelBenefitsHref)
@@ -1089,7 +1094,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           }
         }
 
-        "return a page with only the benefits received subheading when its EOY and no benefits" which {
+        "return a page with only the benefits received subheading when its EOY and only the benefits question answered as no" which {
 
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
             EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear-1, "001", isPriorSubmission = isPrior, employmentCyaModel)
@@ -1098,12 +1103,11 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             EmploymentCYAModel(
               EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc),
               Some(BenefitsViewModel(
-                isUsingCustomerData = false
+                isUsingCustomerData = false, isBenefitsReceived = false
               ))
             )
 
           val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
-          val dummyHref = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/check-employment-benefits?employmentId=001"
           val commonResults = user.commonExpectedResults
 
           implicit lazy val result: WSResponse = {
@@ -1121,7 +1125,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
           textOnPageCheck(user.specificExpectedResults.get.expectedP1, Selectors.p1)
 
-          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.no, 3, 1, user.specificExpectedResults.get.benefitsReceivedHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.no, 3, 1, user.specificExpectedResults.get.benefitsReceivedHiddenText, receiveAnyBenefitsHref)
 
           buttonCheck(user.commonExpectedResults.saveAndContinue)
 
@@ -1137,6 +1141,51 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             document().body().toString.contains(commonResults.reimbursedSubheading) shouldBe false
             document().body().toString.contains(commonResults.assetsSubheading) shouldBe false
           }
+        }
+
+        "redirect to the Did your client receive any benefits page when its EOY and theres no benefits model in the session data" in {
+
+          def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
+            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear-1, "001", isPriorSubmission = isPrior, employmentCyaModel)
+
+          def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
+            EmploymentCYAModel(
+              EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc),
+              None
+            )
+
+          val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+
+          implicit lazy val result: WSResponse = {
+            dropEmploymentDB()
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear-1)
+            urlGet(url(defaultTaxYear-1), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+          }
+
+          result.status shouldBe SEE_OTHER
+          result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/company-benefits?employmentId=001")
+
+        }
+
+        "redirect to the Did your client receive any benefits page when its EOY and theres no benefits model in the mongo data" in {
+
+          def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
+            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear-1, "001", isPriorSubmission = isPrior, employmentCyaModel)
+
+          val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+
+          implicit lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(None)))), nino, defaultTaxYear)
+            urlGet(url(defaultTaxYear-1), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+          }
+
+          result.status shouldBe SEE_OTHER
+          result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/company-benefits?employmentId=001")
+
         }
 
         "redirect to overview page when theres no benefits and in year" in {

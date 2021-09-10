@@ -18,43 +18,43 @@
 @import views.html.templates.helpers.ErrorSummary
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.InputRadio
+@import utils.ViewUtils._
 
 @this(
-        layout: Layout,
-        inputRadio: InputRadio,
-        formWithCsrf: FormWithCSRF,
-        errorSummary: ErrorSummary,
-        button: Button
+  layout: Layout,
+  inputRadio: InputRadio,
+  formWithCsrf: FormWithCSRF,
+  errorSummary: ErrorSummary,
+  button: Button
 )
 
 @(form: Form[Boolean], taxYear: Int, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
-@titleForUse = @{messages(s"benefits.carVanFuel.title.${if(user.isAgent) "agent" else "individual"}")}
+@titleForUse = @{messages(getAgentDynamicContent("receiveAnyBenefits.title", user.isAgent))}
 @headingForUse = @{titleForUse}
+
+@paragraphText = {<p class="govuk-body">@messages("receiveAnyBenefits.paragraph")</p>}
 
 @hasFormErrors = @{form.hasErrors}
 
-@contentHtml = {
-    <div>@{messages("benefits.carVanFuel.thisIncludes")}</div>
-}
-
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
 
-@errorSummary(form.errors.distinct)
+  @errorSummary(form.errors.distinct)
 
-    @formWithCsrf(action = controllers.benefits.routes.CarVanFuelBenefitsController.submit(taxYear, employmentId)) {
-        @inputRadio(
-            form = form,
-            heading = headingForUse,
-            content = Some(contentHtml),
-            classes = "govuk-!-margin-bottom-4",
-            inline = true,
-            subheading = Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString))
-        )
-        @button()
-    }
+  @formWithCsrf(action = controllers.benefits.routes.ReceiveAnyBenefitsController.submit(taxYear, employmentId)) {
+
+    @inputRadio(
+      form = form,
+      heading = headingForUse,
+      content = Some(paragraphText),
+      inline = true,
+      subheading = Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString))
+    )
+
+    @button()
+  }
 }
 
 @{
-// $COVERAGE-OFF$
+  // $COVERAGE-OFF$
 }
