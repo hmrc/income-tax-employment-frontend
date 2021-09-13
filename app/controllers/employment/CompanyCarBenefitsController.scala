@@ -67,28 +67,32 @@ class CompanyCarBenefitsController @Inject()(implicit val cc: MessagesController
             formWithErrors => Future.successful(BadRequest(companyCarBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => {
               val cya = data.employment
-              val updatedCyaModel: EmploymentCYAModel = {
+              val updatedCyaModel: Option[EmploymentCYAModel] = {
                 cya.employmentBenefits.flatMap(_.carVanFuelModel) match {
                   case Some(model) =>
                     if(yesNo){
-                      cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
+                      Some(cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
                         carVanFuelModel = Some(model.copy(carQuestion = Some(true)))
-                      )))
+                      ))))
                     } else {
-                      cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
+                      Some(cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
                         carVanFuelModel = Some(model.copy(carQuestion = Some(false), car = None))
-                      )))
+                      ))))
                     }
                   case None =>
                     //                  TODO: Need to potentially update this to make a cya or something
-                    cya
+                    None
                 }
               }
 
-              employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()){
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-              }
+                if(updatedCyaModel.isDefined) {
+                  employmentSessionService.createOrUpdateSessionData(
+                    employmentId, updatedCyaModel.get, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
+                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                  }
+                } else {
+                  Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+                }
             }
           )
         case None => Future(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
