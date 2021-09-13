@@ -22,7 +22,9 @@ import common.{EnrolmentIdentifiers, EnrolmentKeys, SessionValues}
 import config.{AppConfig, ErrorHandler, MockAppConfig}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.employment._
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.{IncomeTaxUserData, User}
+import org.joda.time.{DateTime, DateTimeZone}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers

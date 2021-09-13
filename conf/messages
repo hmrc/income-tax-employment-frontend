@@ -485,6 +485,10 @@ payeRef.errors.wrongFormat = Enter a PAYE reference in the correct format
 AddEmployment.error = Select yes if you want to add an employment
 AddEmployment.header = Do you want to add an employment?
 
+CompanyCarBenefits.error = Select yes if you received a benefit for a company car
+CompanyCarBenefits.header.individual = Did you receive a benefit for a company car?
+CompanyCarBenefits.header.agent = Did your client receive a benefit for a company car?
+
 employment.removeEmployment.title = Are you sure you want to remove this employment?
 employment.removeEmployment.heading = Are you sure you want to remove {0}?
 employment.removeEmployment.remove-paragraph = This will also remove any benefits you told us about for this employment.
