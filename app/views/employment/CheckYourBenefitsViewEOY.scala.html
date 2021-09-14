@@ -64,7 +64,7 @@
             if(benefits.vehicleDetailsPopulated){
                 Seq(
                     benefits.carVanFuelModel.flatMap(_.carQuestion).map{
-                        carQuestion => showQuestionRow("checkYourBenefits.companyCar", carQuestion)
+                        carQuestion => showQuestionRow("checkYourBenefits.companyCar", carQuestion, controllers.employment.routes.CompanyCarBenefitsController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.car).map{
                         car => showRows("checkYourBenefits.companyCarAmount", car)
