@@ -17,19 +17,20 @@
 package services
 
 import java.util.NoSuchElementException
+
 import config.{AppConfig, ErrorHandler}
 import connectors.httpParsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmploymentDataResponse
 import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import connectors.{CreateUpdateEmploymentDataConnector, IncomeTaxUserDataConnector}
 import controllers.employment.routes.{CheckEmploymentDetailsController, EmploymentSummaryController}
-
 import javax.inject.{Inject, Singleton}
 import models.employment.createUpdate._
 import models.employment._
-import models.mongo.{EmploymentCYAModel, EmploymentUserData, ExpensesCYAModel, ExpensesUserData}
+import models.mongo.{DatabaseError, EmploymentCYAModel, EmploymentUserData, ExpensesCYAModel, ExpensesUserData}
 import models.{IncomeTaxUserData, User}
 import org.joda.time.DateTimeZone
 import play.api.Logging
+import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.i18n.MessagesApi
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, Result}
@@ -66,7 +67,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     incomeTaxUserDataConnector.getUserData(user.nino, taxYear)(hc.withExtraHeaders("mtditid" -> user.mtditid))
   }
 
-  def getSessionData(taxYear: Int, employmentId: String)(implicit user: User[_]): Future[Option[EmploymentUserData]] = {
+  def getSessionData(taxYear: Int, employmentId: String)(implicit user: User[_]): Future[Either[DatabaseError, Option[EmploymentUserData]]] = {
     employmentUserDataRepository.find(taxYear, employmentId)
   }
 
@@ -79,8 +80,9 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
                                    (implicit user: User[_]): Future[Result] = {
 
     employmentUserDataRepository.find(taxYear, employmentId).flatMap {
-      case Some(employmentUserData: EmploymentUserData) => result(employmentUserData)
-      case None => Future(Redirect(redirectUrl))
+      case Right(Some(employmentUserData: EmploymentUserData)) => result(employmentUserData)
+      case Right(None) => Future.successful(Redirect(redirectUrl))
+      case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
     }
   }
 
@@ -100,8 +102,8 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     )
 
     employmentUserDataRepository.createOrUpdate(userData).map {
-      case Some(_) => onSuccess
-      case None => onFail
+      case Right(_) => onSuccess
+      case Left(_) => onFail
     }
   }
 
