@@ -52,11 +52,15 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionData(taxYear, employmentId).map {
         case Some(data) =>
-          data.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion)) match {
-            case Some(questionResult) => Ok(carVanFuelBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId))
-            case None => Ok(carVanFuelBenefitsView(yesNoForm, taxYear, employmentId))
+          data.employment.employmentBenefits match {
+            case Some(model) if model.isBenefitsReceived =>
+              model.carVanFuelModel.flatMap(_.carVanFuelQuestion) match {
+                case Some(questionResult) => Ok(carVanFuelBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId))
+                case None => Ok(carVanFuelBenefitsView(yesNoForm, taxYear, employmentId))
           }
-        case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+            case _ => Ok(carVanFuelBenefitsView(yesNoForm, taxYear, employmentId))
+          }
+        case None => Ok(carVanFuelBenefitsView(yesNoForm, taxYear, employmentId))
       }
     }
   }
@@ -70,20 +74,21 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
             yesNo => {
               val cya = data.employment
               val updatedCyaModel: EmploymentCYAModel = {
-                cya.employmentBenefits.flatMap(_.carVanFuelModel) match {
-                  case Some(model) =>
-                    if(yesNo){
-                      cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
-                        carVanFuelModel = Some(model.copy(carVanFuelQuestion = Some(true)))
-                      )))
-                    } else {
-                      cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
-                        carVanFuelModel = Some(CarVanFuelModel.clear)
-                      )))
+                cya.employmentBenefits match {
+                  case Some(benefitsModel) if benefitsModel.isBenefitsReceived =>
+                    benefitsModel.carVanFuelModel match {
+                      case Some(carVanFuelModel) if yesNo =>
+                        cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
+                          carVanFuelModel = Some(carVanFuelModel.copy(carVanFuelQuestion = Some(true))))))
+                      case Some(carVanFuelModel) =>
+                        cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
+                          carVanFuelModel = Some(CarVanFuelModel.clear))))
+                      case _ =>
+//                        TOOD: Would this redirect to checkYourBenefits? or create a new model like below?
+                        cya.copy(employmentBenefits = Some(BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true,
+                          carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(yesNo))))))
                     }
-                  case None =>
-                  cya.copy(employmentBenefits = Some(BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true,
-                    carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(yesNo))))))
+                  case _ => cya
                 }
               }
 
