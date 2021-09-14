@@ -236,35 +236,4 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
     assetTransfer = Some(280000.00)
   )
 
-  lazy val benefitsNoCarVan: Benefits = Benefits(
-    car = None,
-    carFuel = None,
-    van = None,
-    vanFuel = None,
-    mileage = None,
-    accommodation = Some(6.00),
-    qualifyingRelocationExpenses = Some(7.00),
-    nonQualifyingRelocationExpenses = Some(8.00),
-    travelAndSubsistence = Some(9.00),
-    personalIncidentalExpenses = Some(10.00),
-    entertaining = Some(11.00),
-    telephone = Some(12.00),
-    employerProvidedServices = Some(13.00),
-    employerProvidedProfessionalSubscriptions = Some(14.00),
-    service = Some(15.00),
-    medicalInsurance = Some(16.00),
-    nurseryPlaces = Some(17.00),
-    beneficialLoan = Some(18.00),
-    educationalServices = Some(19.00),
-    incomeTaxPaidByDirector = Some(20.00),
-    paymentsOnEmployeesBehalf = Some(21.00),
-    expenses = Some(22.00),
-    taxableExpenses = Some(23.00),
-    vouchersAndCreditCards = Some(24.00),
-    nonCash = Some(25.00),
-    otherItems = Some(26.00),
-    assets = Some(27.00),
-    assetTransfer = Some(280000.00)
-  )
-
 }
