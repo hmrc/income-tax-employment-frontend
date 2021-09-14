@@ -17,8 +17,9 @@
 package config
 
 import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
+import controllers.employment.routes.CheckYourBenefitsController
 import models.employment.AllEmploymentData
-import models.mongo.EmploymentUserData
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData, User}
 import org.scalamock.handlers.{CallHandler2, CallHandler3, CallHandler5, CallHandler6}
 import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData, User}
@@ -27,8 +28,9 @@ import org.scalamock.scalatest.MockFactory
 import play.api.mvc.{Request, Result}
 import services.EmploymentSessionService
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.Clock
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait MockEmploymentSessionService extends MockFactory {
 
@@ -92,5 +94,11 @@ trait MockEmploymentSessionService extends MockFactory {
       .returns(allEmploymentData.hmrcEmploymentData.filter(_.dateIgnored.isEmpty) ++ allEmploymentData.customerEmploymentData)
       .anyNumberOfTimes()
 
+  }
+
+  def mockGetSessionData(taxYear: Int, employmentId: String, employmentUserData: Option[EmploymentUserData])(implicit executionContext: ExecutionContext) = {
+    (mockIncomeTaxUserDataService.getSessionData(_: Int, _: String)(_: User[_]))
+      .expects(taxYear, employmentId, *)
+      .returns(Future(employmentUserData))
   }
 }

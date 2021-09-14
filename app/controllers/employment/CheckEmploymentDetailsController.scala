@@ -115,7 +115,8 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
             employmentSessionService.createModelAndReturnResult(cya,prior,taxYear){
               model =>
                 employmentSessionService.createOrUpdateEmploymentResult(taxYear,model).flatMap {
-                  case Left(result) => Future.successful(result)
+                  case Left(result) =>
+                    Future.successful(result)
                   case Right(result) =>
                     employmentSessionService.clear(taxYear, employmentId)(
                       result.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)
