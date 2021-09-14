@@ -96,9 +96,9 @@ trait MockEmploymentSessionService extends MockFactory {
 
   }
 
-  def mockGetSessionData(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData)(implicit executionContext: ExecutionContext) = {
+  def mockGetSessionData(taxYear: Int, employmentId: String, employmentUserData: Option[EmploymentUserData])(implicit executionContext: ExecutionContext) = {
     (mockIncomeTaxUserDataService.getSessionData(_: Int, _: String)(_: User[_]))
       .expects(taxYear, employmentId, *)
-      .returns(Future(Some(employmentUserData)))
+      .returns(Future(employmentUserData))
   }
 }
