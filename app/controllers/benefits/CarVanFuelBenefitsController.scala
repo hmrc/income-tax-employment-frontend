@@ -73,28 +73,28 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
             formWithErrors => Future.successful(BadRequest(carVanFuelBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => {
               val cya = data.employment
-              val updatedCyaModel: EmploymentCYAModel = {
+              val updatedCyaModel: Option[EmploymentCYAModel] = {
                 cya.employmentBenefits match {
                   case Some(benefitsModel) if benefitsModel.isBenefitsReceived =>
                     benefitsModel.carVanFuelModel match {
                       case Some(carVanFuelModel) if yesNo =>
-                        cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
-                          carVanFuelModel = Some(carVanFuelModel.copy(carVanFuelQuestion = Some(true))))))
+                        Some(cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
+                          carVanFuelModel = Some(carVanFuelModel.copy(carVanFuelQuestion = Some(true)))))))
                       case Some(carVanFuelModel) =>
-                        cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
-                          carVanFuelModel = Some(CarVanFuelModel.clear))))
-                      case _ =>
-//                        TOOD: Would this redirect to checkYourBenefits? or create a new model like below?
-                        cya.copy(employmentBenefits = Some(BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true,
-                          carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(yesNo))))))
+                        Some(cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
+                          carVanFuelModel = Some(CarVanFuelModel.clear)))))
+                      case _ => None
                     }
-                  case _ => cya
+                  case _ => None
                 }
               }
-
-              employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()){
-                  Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+              updatedCyaModel match {
+                case Some(model) =>
+                  employmentSessionService.createOrUpdateSessionData(
+                    employmentId, model, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()){
+                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                  }
+                case None => Future(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
               }
             }
           )
