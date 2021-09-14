@@ -58,13 +58,14 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
                 case Some(questionResult) => Ok(carVanFuelBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId))
                 case None => Ok(carVanFuelBenefitsView(yesNoForm, taxYear, employmentId))
           }
-            case _ => Ok(carVanFuelBenefitsView(yesNoForm, taxYear, employmentId))
+            case _ => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
           }
-        case None => Ok(carVanFuelBenefitsView(yesNoForm, taxYear, employmentId))
+        case None => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
       }
     }
   }
 
+  //scalastyle:off
   def submit(taxYear:Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionData(taxYear, employmentId).flatMap {
@@ -78,12 +79,11 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
                   case Some(benefitsModel) if benefitsModel.isBenefitsReceived =>
                     benefitsModel.carVanFuelModel match {
                       case Some(carVanFuelModel) if yesNo =>
-                        Some(cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
-                          carVanFuelModel = Some(carVanFuelModel.copy(carVanFuelQuestion = Some(true)))))))
-                      case Some(carVanFuelModel) =>
-                        Some(cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
-                          carVanFuelModel = Some(CarVanFuelModel.clear)))))
-                      case _ => None
+                        Some(cya.copy(employmentBenefits = Some(benefitsModel.copy(carVanFuelModel = Some(carVanFuelModel.copy(carVanFuelQuestion = Some(true)))))))
+                      case Some(_) =>
+                        Some(cya.copy(employmentBenefits = Some(benefitsModel.copy(carVanFuelModel = Some(CarVanFuelModel.clear)))))
+                      case _ =>
+                        Some(cya.copy(employmentBenefits = Some(benefitsModel.copy(carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(yesNo)))))))
                     }
                   case _ => None
                 }
