@@ -26,6 +26,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import controllers.employment.routes.CheckYourBenefitsController
 
 class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -214,7 +215,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYearEOY/view")
+            result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
           }
         }
       }
@@ -300,7 +301,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
           s"has a SEE_OTHER($SEE_OTHER) status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYearEOY/view")
+            result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
           }
 
         }
