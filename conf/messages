@@ -445,6 +445,7 @@ checkYourBenefits.incomeTaxSubheading.hiddenText.agent = if your client got Inco
 checkYourBenefits.reimbursedSubheading.hiddenText.agent = if your client got vouchers, non-cash benefits or reimbursed costs as an employment benefit from this company
 checkYourBenefits.assetsSubheading.hiddenText.agent = if your client got asset or asset transfers as an employment benefit from this company
 
+
 otherPaymentsAmount.heading.individual = What is the total amount of payments not included on your P60?
 otherPaymentsAmount.heading.agent = What is the total amount of payments not included on your client’s P60?
 otherPaymentsAmount.error.noEntry.individual =  Enter the amount of payments not included on your P60
@@ -508,3 +509,8 @@ benefits.carVanFuel.title.agent = Did your client receive any car, van or fuel b
 benefits.carVanFuel.thisIncludes = This includes benefits such as company cars or vans, company cars or van fuel, and privately owned vehicle mileage allowances.
 benefits.carVanFuel.error.individual = Select yes if you got car, van or fuel benefits
 benefits.carVanFuel.error.agent = Select yes if your client got car, van or fuel benefits
+
+benefits.companyCarFuelBenefits.title.individual = Did you get fuel benefit for a company car?
+benefits.companyCarFuelBenefits.title.agent = Did your client get fuel benefit for a company car?
+benefits.companyCarFuelBenefits.error.individual = Select yes if you got fuel benefit for a company car
+benefits.companyCarFuelBenefits.error.agent = Select yes if your client got fuel benefit for a company car

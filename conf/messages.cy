@@ -510,3 +510,8 @@ benefits.carVanFuel.title.agent = Did your client receive any car, van or fuel b
 benefits.carVanFuel.thisIncludes = This includes benefits such as company cars or vans, company cars or van fuel, and privately owned vehicle mileage allowances.
 benefits.carVanFuel.error.individual = Select yes if you got car, van or fuel benefits
 benefits.carVanFuel.error.agent = Select yes if your client got car, van or fuel benefits
+
+benefits.companyCarFuelBenefits.title.individual = Did you get fuel benefit for a company car?
+benefits.companyCarFuelBenefits.title.agent = Did your client get fuel benefit for a company car?
+benefits.companyCarFuelBenefits.error.individual = Select yes if you got fuel benefit for a company car
+benefits.companyCarFuelBenefits.error.agent = Select yes if your client got fuel benefit for a company car
