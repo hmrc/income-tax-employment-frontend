@@ -21,7 +21,6 @@ import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
-import models.employment.{BenefitsViewModel, CarVanFuelModel}
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -44,7 +43,7 @@ class CompanyCarBenefitsController @Inject()(implicit val cc: MessagesController
                                              clock: Clock
                                             ) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
-  implicit val ec = cc.executionContext
+  implicit val ec: ExecutionContext = cc.executionContext
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -54,7 +53,7 @@ class CompanyCarBenefitsController @Inject()(implicit val cc: MessagesController
             case Some(value) => Ok(companyCarBenefitsView(buildForm.fill(value), taxYear, employmentId))
             case None => Ok(companyCarBenefitsView(buildForm, taxYear, employmentId))
           }
-        case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        case None => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
       }
     }
   }
@@ -91,7 +90,7 @@ class CompanyCarBenefitsController @Inject()(implicit val cc: MessagesController
                     Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                   }
                 } else {
-                  Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+                  Future(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
                 }
             }
           )

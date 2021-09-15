@@ -21,7 +21,6 @@ import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
-import models.employment.{BenefitsViewModel, CarVanFuelModel}
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -56,7 +55,7 @@ class CompanyVanBenefitsController @Inject()(implicit val cc: MessagesController
             case Some(questionResult) => Ok(companyVanBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId))
             case None => Ok(companyVanBenefitsView(yesNoForm, taxYear, employmentId))
           }
-        case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        case None => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
       }
     }
   }
@@ -93,7 +92,7 @@ class CompanyVanBenefitsController @Inject()(implicit val cc: MessagesController
                   Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                 }
               } else {
-                Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+                Future(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
               }
             }
           )

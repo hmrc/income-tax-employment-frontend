@@ -206,7 +206,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
             s"has an SEE_OTHER($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYearEOY/view")
+              result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
             }
 
           }
@@ -254,7 +254,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
             s"has a SEE_OTHER($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYearEOY/view")
+              result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
               lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
               cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel) shouldBe None
             }
