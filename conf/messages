@@ -445,6 +445,7 @@ checkYourBenefits.incomeTaxSubheading.hiddenText.agent = if your client got Inco
 checkYourBenefits.reimbursedSubheading.hiddenText.agent = if your client got vouchers, non-cash benefits or reimbursed costs as an employment benefit from this company
 checkYourBenefits.assetsSubheading.hiddenText.agent = if your client got asset or asset transfers as an employment benefit from this company
 
+
 otherPaymentsAmount.heading.individual = What is the total amount of payments not included on your P60?
 otherPaymentsAmount.heading.agent = What is the total amount of payments not included on your client’s P60?
 otherPaymentsAmount.error.noEntry.individual =  Enter the amount of payments not included on your P60
@@ -514,3 +515,4 @@ benefits.companyVanBenefits.title.individual = Did you get a company van benefit
 benefits.companyVanBenefits.title.agent = Did your client get a company van benefit?
 benefits.companyVanBenefits.error.individual = Select yes if you got a company van benefit
 benefits.companyVanBenefits.error.agent = Select yes if your client got a company van benefit
+

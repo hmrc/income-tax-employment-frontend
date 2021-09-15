@@ -514,3 +514,4 @@ benefits.companyVanBenefits.title.individual = Did you get a company van benefit
 benefits.companyVanBenefits.title.agent = Did your client get a company van benefit?
 benefits.companyVanBenefits.error.individual = Select yes if you got a company van benefit
 benefits.companyVanBenefits.error.agent = Select yes if your client got a company van benefit
+
