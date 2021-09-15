@@ -29,7 +29,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.employment.{CarVanFuelBenefitsView, CompanyCarFuelBenefitsView}
+import views.html.employment.{ CompanyCarFuelBenefitsView}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -56,7 +56,7 @@ class CompanyCarFuelBenefitsController @Inject()(implicit val cc: MessagesContro
             case Some(questionResult) => Ok(companyCarFuelBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId))
             case None => Ok(companyCarFuelBenefitsView(yesNoForm, taxYear, employmentId))
           }
-        case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        case None => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
       }
     }
   }
@@ -93,7 +93,7 @@ class CompanyCarFuelBenefitsController @Inject()(implicit val cc: MessagesContro
                   Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                 }
               } else {
-                Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+                Future(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
               }
             }
           )
