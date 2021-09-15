@@ -47,14 +47,14 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
 
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionData(taxYear, employmentId).map {
+      employmentSessionService.getSessionDataResult(taxYear, employmentId){
         case Some(data) =>
           val employerName = data.employment.employmentDetails.employerName
           val prefilledForm: Form[String] = EmployerNameForm.employerNameForm(user.isAgent).fill(employerName)
-          Ok(employerNameView(prefilledForm, taxYear, employmentId))
+          Future.successful(Ok(employerNameView(prefilledForm, taxYear, employmentId)))
         case None =>
           val form: Form[String] = EmployerNameForm.employerNameForm(user.isAgent)
-          Ok(employerNameView(form, taxYear, employmentId))
+          Future.successful(Ok(employerNameView(form, taxYear, employmentId)))
       }
     }
   }
@@ -69,7 +69,7 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
           Future.successful(BadRequest(employerNameView(formWithErrors, taxYear, employmentId)))
         },
         { submittedName =>
-          employmentSessionService.getSessionData(taxYear, employmentId).flatMap {
+          employmentSessionService.getSessionDataResult(taxYear, employmentId){
             case Some(data) =>
               val cya = data.employment
               val updatedCya = cya.copy(cya.employmentDetails.copy(employerName = submittedName))

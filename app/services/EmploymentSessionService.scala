@@ -24,9 +24,9 @@ import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataRespo
 import connectors.{CreateUpdateEmploymentDataConnector, IncomeTaxUserDataConnector}
 import controllers.employment.routes.{CheckEmploymentDetailsController, EmploymentSummaryController}
 import javax.inject.{Inject, Singleton}
-import models.employment.createUpdate._
 import models.employment._
-import models.mongo.{DatabaseError, EmploymentCYAModel, EmploymentUserData, ExpensesCYAModel, ExpensesUserData}
+import models.employment.createUpdate._
+import models.mongo.{EmploymentCYAModel, EmploymentUserData, ExpensesCYAModel, ExpensesUserData}
 import models.{IncomeTaxUserData, User}
 import org.joda.time.DateTimeZone
 import play.api.Logging
@@ -67,12 +67,27 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     incomeTaxUserDataConnector.getUserData(user.nino, taxYear)(hc.withExtraHeaders("mtditid" -> user.mtditid))
   }
 
-  def getSessionData(taxYear: Int, employmentId: String)(implicit user: User[_]): Future[Either[DatabaseError, Option[EmploymentUserData]]] = {
-    employmentUserDataRepository.find(taxYear, employmentId)
+  def getSessionDataResult(taxYear: Int, employmentId: String)(result: Option[EmploymentUserData] => Future[Result])
+                          (implicit user: User[_], request: Request[_]): Future[Result] = {
+    employmentUserDataRepository.find(taxYear, employmentId).flatMap {
+      case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+      case Right(value) => result(value)
+    }
   }
 
-  def getExpensesSessionData(taxYear: Int)(implicit user: User[_]): Future[Option[ExpensesUserData]] = {
-    expensesUserDataRepository.find(taxYear)
+  def getSessionData(taxYear: Int, employmentId: String)
+                    (implicit user: User[_], request: Request[_]): Future[Either[Result,Option[EmploymentUserData]]] = {
+    employmentUserDataRepository.find(taxYear, employmentId).map {
+      case Left(_) => Left(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+      case Right(value) => Right(value)
+    }
+  }
+
+  def getExpensesSessionData(taxYear: Int)(implicit user: User[_]): Future[Either[Result,Option[ExpensesUserData]]] = {
+    expensesUserDataRepository.find(taxYear).map{
+      case Left(_) => Left(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+      case Right(value) => Right(value)
+    }
   }
 
   def getSessionDataAndReturnResult(taxYear: Int, employmentId: String)(redirectUrl:String = appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
@@ -121,8 +136,8 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     )
 
     expensesUserDataRepository.createOrUpdate(userData).map {
-      case Some(_) => onSuccess
-      case None => onFail
+      case Right(_) => onSuccess
+      case Left(_) => onFail
     }
   }
 
@@ -249,16 +264,19 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       priorDataResponse <- getPriorData(taxYear)
     } yield {
 
-      if(optionalCya.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandle] No employment CYA data found for user. SessionId: ${user.sessionId}")
+      if(optionalCya.isRight){
+        if(optionalCya.right.get.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandle] No employment CYA data found for user. SessionId: ${user.sessionId}")
+      }
 
       val employmentDataResponse = priorDataResponse.map(_.employment)
 
       (optionalCya,employmentDataResponse) match {
-        case (None, Right(None)) if redirectWhenNoPrior => logger.info(s"[EmploymentSessionService][getAndHandle] No employment data found for user." +
+        case (Right(None), Right(None)) if redirectWhenNoPrior => logger.info(s"[EmploymentSessionService][getAndHandle] No employment data found for user." +
           s"Redirecting to overview page. SessionId: ${user.sessionId}")
           Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-        case (_, Right(employmentData)) => block(optionalCya, employmentData)
+        case (Right(optionalCya), Right(employmentData)) => block(optionalCya, employmentData)
         case (_, Left(error)) => Future(errorHandler.handleError(error.status))
+        case (Left(_), _) => Future(errorHandler.handleError(INTERNAL_SERVER_ERROR))
       }
     }
 
@@ -272,13 +290,16 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       priorDataResponse <- getPriorData(taxYear)
     } yield {
 
-      if(optionalCya.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandleExpenses] No employment expenses CYA data found for user. SessionId: ${user.sessionId}")
+      if(optionalCya.isRight){
+        if(optionalCya.right.get.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandleExpenses] No employment expenses CYA data found for user. SessionId: ${user.sessionId}")
+      }
 
       val employmentDataResponse = priorDataResponse.map(_.employment)
 
       (optionalCya,employmentDataResponse) match {
-        case (_, Right(employmentData)) => block(optionalCya, employmentData)
+        case (Right(optionalCya), Right(employmentData)) => block(optionalCya, employmentData)
         case (_, Left(error)) => Future(errorHandler.handleError(error.status))
+        case (Left(error), _) => Future(errorHandler.handleError(INTERNAL_SERVER_ERROR))
       }
     }
 

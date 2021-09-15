@@ -288,121 +288,81 @@ case class EncryptedBenefitsViewModel(
                         submittedOn: Option[EncryptedValue] = None,
                         isUsingCustomerData: EncryptedValue,
                         isBenefitsReceived: EncryptedValue
-                       ){
-
-  def toBenefits: Benefits ={
-    Benefits(
-      accommodation, assets, assetTransfer, beneficialLoan, carVanFuelModel.flatMap(_.car), carVanFuelModel.flatMap(_.carFuel), educationalServices, entertaining, expenses, medicalInsurance,
-      telephone, service, taxableExpenses, carVanFuelModel.flatMap(_.van), carVanFuelModel.flatMap(_.vanFuel), carVanFuelModel.flatMap(_.mileage), nonQualifyingRelocationExpenses, nurseryPlaces, otherItems,
-      paymentsOnEmployeesBehalf, personalIncidentalExpenses, qualifyingRelocationExpenses, employerProvidedProfessionalSubscriptions,
-      employerProvidedServices, incomeTaxPaidByDirector, travelAndSubsistence, vouchersAndCreditCards, nonCash
-    )
-  }
-
-  val vehicleDetailsPopulated: Boolean =
-    carVanFuelModel.flatMap(_.car).isDefined || carVanFuelModel.flatMap(_.carFuel).isDefined ||
-    carVanFuelModel.flatMap(_.van).isDefined || carVanFuelModel.flatMap(_.vanFuel).isDefined ||
-    carVanFuelModel.flatMap(_.mileage).isDefined
-
-  val accommodationDetailsPopulated: Boolean =
-    accommodation.isDefined || nonQualifyingRelocationExpenses.isDefined || qualifyingRelocationExpenses.isDefined
-
-  val travelDetailsPopulated: Boolean =
-    travelAndSubsistence.isDefined || personalIncidentalExpenses.isDefined || entertaining.isDefined
-
-  val utilitiesDetailsPopulated: Boolean =
-    telephone.isDefined || employerProvidedServices.isDefined || employerProvidedProfessionalSubscriptions.isDefined || service.isDefined
-
-  val medicalDetailsPopulated: Boolean =
-    medicalInsurance.isDefined || nurseryPlaces.isDefined || beneficialLoan.isDefined || educationalServices.isDefined
-
-  val incomeTaxDetailsPopulated: Boolean =
-    incomeTaxPaidByDirector.isDefined || paymentsOnEmployeesBehalf.isDefined
-
-  val reimbursedDetailsPopulated: Boolean =
-    expenses.isDefined || taxableExpenses.isDefined || vouchersAndCreditCards.isDefined || nonCash.isDefined || otherItems.isDefined
-
-  val assetsDetailsPopulated: Boolean =
-    assets.isDefined || assetTransfer.isDefined
-
-}
+                       )
 
 object EncryptedBenefitsViewModel {
 
-  def clear(isUsingCustomerData:Boolean):BenefitsViewModel =
-    BenefitsViewModel(isBenefitsReceived = false, isUsingCustomerData = isUsingCustomerData)
-
-  val firstSetOfFields: OFormat[(Option[CarVanFuelModel], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal],
-    Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal],
-    Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal],
-    Option[BigDecimal], Option[BigDecimal], Option[BigDecimal])] = (
-    (__ \ "carVanFuel").formatNullable[CarVanFuelModel] and
-    (__ \ "accommodation").formatNullable[BigDecimal] and
-      (__ \ "assets").formatNullable[BigDecimal] and
-      (__ \ "assetTransfer").formatNullable[BigDecimal] and
-      (__ \ "beneficialLoan").formatNullable[BigDecimal] and
-      (__ \ "educationalServices").formatNullable[BigDecimal] and
-      (__ \ "entertaining").formatNullable[BigDecimal] and
-      (__ \ "expenses").formatNullable[BigDecimal] and
-      (__ \ "medicalInsurance").formatNullable[BigDecimal] and
-      (__ \ "telephone").formatNullable[BigDecimal] and
-      (__ \ "service").formatNullable[BigDecimal] and
-      (__ \ "taxableExpenses").formatNullable[BigDecimal] and
-      (__ \ "nonQualifyingRelocationExpenses").formatNullable[BigDecimal] and
-      (__ \ "nurseryPlaces").formatNullable[BigDecimal] and
-      (__ \ "otherItems").formatNullable[BigDecimal] and
-      (__ \ "paymentsOnEmployeesBehalf").formatNullable[BigDecimal] and
-      (__ \ "personalIncidentalExpenses").formatNullable[BigDecimal] and
-      (__ \ "qualifyingRelocationExpenses").formatNullable[BigDecimal]
+  val firstSetOfFields: OFormat[(Option[EncryptedCarVanFuelModel], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
+    Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
+    Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
+    Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue])] = (
+    (__ \ "carVanFuel").formatNullable[EncryptedCarVanFuelModel] and
+    (__ \ "accommodation").formatNullable[EncryptedValue] and
+      (__ \ "assets").formatNullable[EncryptedValue] and
+      (__ \ "assetTransfer").formatNullable[EncryptedValue] and
+      (__ \ "beneficialLoan").formatNullable[EncryptedValue] and
+      (__ \ "educationalServices").formatNullable[EncryptedValue] and
+      (__ \ "entertaining").formatNullable[EncryptedValue] and
+      (__ \ "expenses").formatNullable[EncryptedValue] and
+      (__ \ "medicalInsurance").formatNullable[EncryptedValue] and
+      (__ \ "telephone").formatNullable[EncryptedValue] and
+      (__ \ "service").formatNullable[EncryptedValue] and
+      (__ \ "taxableExpenses").formatNullable[EncryptedValue] and
+      (__ \ "nonQualifyingRelocationExpenses").formatNullable[EncryptedValue] and
+      (__ \ "nurseryPlaces").formatNullable[EncryptedValue] and
+      (__ \ "otherItems").formatNullable[EncryptedValue] and
+      (__ \ "paymentsOnEmployeesBehalf").formatNullable[EncryptedValue] and
+      (__ \ "personalIncidentalExpenses").formatNullable[EncryptedValue] and
+      (__ \ "qualifyingRelocationExpenses").formatNullable[EncryptedValue]
     ).tupled
 
-  val secondSetOfFields: OFormat[(Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal],
-    Option[BigDecimal], Option[BigDecimal])] = (
-    (__ \ "employerProvidedProfessionalSubscriptions").formatNullable[BigDecimal] and
-      (__ \ "employerProvidedServices").formatNullable[BigDecimal] and
-      (__ \ "incomeTaxPaidByDirector").formatNullable[BigDecimal] and
-      (__ \ "travelAndSubsistence").formatNullable[BigDecimal] and
-      (__ \ "vouchersAndCreditCards").formatNullable[BigDecimal] and
-      (__ \ "nonCash").formatNullable[BigDecimal]
+  val secondSetOfFields: OFormat[(Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
+    Option[EncryptedValue], Option[EncryptedValue])] = (
+    (__ \ "employerProvidedProfessionalSubscriptions").formatNullable[EncryptedValue] and
+      (__ \ "employerProvidedServices").formatNullable[EncryptedValue] and
+      (__ \ "incomeTaxPaidByDirector").formatNullable[EncryptedValue] and
+      (__ \ "travelAndSubsistence").formatNullable[EncryptedValue] and
+      (__ \ "vouchersAndCreditCards").formatNullable[EncryptedValue] and
+      (__ \ "nonCash").formatNullable[EncryptedValue]
     ).tupled
 
-  val thirdSetOfFields: OFormat[(Option[Boolean], Option[Boolean], Option[Boolean], Option[Boolean],
-    Option[Boolean], Option[Boolean], Option[Boolean], Option[Boolean], Option[Boolean],
-    Option[Boolean], Option[Boolean], Option[Boolean], Option[Boolean], Option[Boolean],
-    Option[Boolean], Option[Boolean], Option[Boolean])] = (
-    (__ \ "accommodationQuestion").formatNullable[Boolean] and
-      (__ \ "assetsQuestion").formatNullable[Boolean] and
-      (__ \ "assetTransferQuestion").formatNullable[Boolean] and
-      (__ \ "beneficialLoanQuestion").formatNullable[Boolean] and
-      (__ \ "educationalServicesQuestion").formatNullable[Boolean] and
-      (__ \ "entertainingQuestion").formatNullable[Boolean] and
-      (__ \ "expensesQuestion").formatNullable[Boolean] and
-      (__ \ "medicalInsuranceQuestion").formatNullable[Boolean] and
-      (__ \ "telephoneQuestion").formatNullable[Boolean] and
-      (__ \ "serviceQuestion").formatNullable[Boolean] and
-      (__ \ "taxableExpensesQuestion").formatNullable[Boolean] and
-      (__ \ "nonQualifyingRelocationExpensesQuestion").formatNullable[Boolean] and
-      (__ \ "nurseryPlacesQuestion").formatNullable[Boolean] and
-      (__ \ "otherItemsQuestion").formatNullable[Boolean] and
-      (__ \ "paymentsOnEmployeesBehalfQuestion").formatNullable[Boolean] and
-      (__ \ "personalIncidentalExpensesQuestion").formatNullable[Boolean] and
-      (__ \ "qualifyingRelocationExpensesQuestion").formatNullable[Boolean]
+  val thirdSetOfFields: OFormat[(Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
+    Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
+    Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
+    Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue])] = (
+    (__ \ "accommodationQuestion").formatNullable[EncryptedValue] and
+      (__ \ "assetsQuestion").formatNullable[EncryptedValue] and
+      (__ \ "assetTransferQuestion").formatNullable[EncryptedValue] and
+      (__ \ "beneficialLoanQuestion").formatNullable[EncryptedValue] and
+      (__ \ "educationalServicesQuestion").formatNullable[EncryptedValue] and
+      (__ \ "entertainingQuestion").formatNullable[EncryptedValue] and
+      (__ \ "expensesQuestion").formatNullable[EncryptedValue] and
+      (__ \ "medicalInsuranceQuestion").formatNullable[EncryptedValue] and
+      (__ \ "telephoneQuestion").formatNullable[EncryptedValue] and
+      (__ \ "serviceQuestion").formatNullable[EncryptedValue] and
+      (__ \ "taxableExpensesQuestion").formatNullable[EncryptedValue] and
+      (__ \ "nonQualifyingRelocationExpensesQuestion").formatNullable[EncryptedValue] and
+      (__ \ "nurseryPlacesQuestion").formatNullable[EncryptedValue] and
+      (__ \ "otherItemsQuestion").formatNullable[EncryptedValue] and
+      (__ \ "paymentsOnEmployeesBehalfQuestion").formatNullable[EncryptedValue] and
+      (__ \ "personalIncidentalExpensesQuestion").formatNullable[EncryptedValue] and
+      (__ \ "qualifyingRelocationExpensesQuestion").formatNullable[EncryptedValue]
     ).tupled
 
-  val fourthSetOfFields: OFormat[(Option[Boolean], Option[Boolean], Option[Boolean], Option[Boolean],
-    Option[Boolean], Option[Boolean], Option[String], Boolean, Boolean)] = (
-    (__ \ "employerProvidedProfessionalSubscriptionsQuestion").formatNullable[Boolean] and
-      (__ \ "employerProvidedServicesQuestion").formatNullable[Boolean] and
-      (__ \ "incomeTaxPaidByDirectorQuestion").formatNullable[Boolean] and
-      (__ \ "travelAndSubsistenceQuestion").formatNullable[Boolean] and
-      (__ \ "vouchersAndCreditCardsQuestion").formatNullable[Boolean] and
-      (__ \ "nonCashQuestion").formatNullable[Boolean] and
-      (__ \ "submittedOn").formatNullable[String] and
-      (__ \ "isUsingCustomerData").format[Boolean] and
-      (__ \ "isBenefitsReceived").format[Boolean]
+  val fourthSetOfFields: OFormat[(Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
+    Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], EncryptedValue, EncryptedValue)] = (
+    (__ \ "employerProvidedProfessionalSubscriptionsQuestion").formatNullable[EncryptedValue] and
+      (__ \ "employerProvidedServicesQuestion").formatNullable[EncryptedValue] and
+      (__ \ "incomeTaxPaidByDirectorQuestion").formatNullable[EncryptedValue] and
+      (__ \ "travelAndSubsistenceQuestion").formatNullable[EncryptedValue] and
+      (__ \ "vouchersAndCreditCardsQuestion").formatNullable[EncryptedValue] and
+      (__ \ "nonCashQuestion").formatNullable[EncryptedValue] and
+      (__ \ "submittedOn").formatNullable[EncryptedValue] and
+      (__ \ "isUsingCustomerData").format[EncryptedValue] and
+      (__ \ "isBenefitsReceived").format[EncryptedValue]
     ).tupled
 
-  implicit val format: OFormat[BenefitsViewModel] = {
+  implicit val format: OFormat[EncryptedBenefitsViewModel] = {
     (firstSetOfFields and secondSetOfFields and thirdSetOfFields and fourthSetOfFields).apply({
       case (
         (carVanFuelModel, accommodation, assets, assetTransfer, beneficialLoan, educationalServices, entertaining,
@@ -418,7 +378,7 @@ object EncryptedBenefitsViewModel {
         (employerProvidedProfessionalSubscriptionsQuestion, employerProvidedServicesQuestion, incomeTaxPaidByDirectorQuestion, travelAndSubsistenceQuestion,
         vouchersAndCreditCardsQuestion, nonCashQuestion, submittedOn, isUsingCustomerData, isBenefitsReceived)
         ) =>
-        BenefitsViewModel(
+        EncryptedBenefitsViewModel(
           carVanFuelModel, accommodation, assets, assetTransfer, beneficialLoan, educationalServices, entertaining, expenses,
           medicalInsurance, telephone, service, taxableExpenses, nonQualifyingRelocationExpenses,
           nurseryPlaces, otherItems, paymentsOnEmployeesBehalf, personalIncidentalExpenses, qualifyingRelocationExpenses,

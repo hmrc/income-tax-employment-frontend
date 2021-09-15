@@ -21,52 +21,88 @@ import com.mongodb.client.model.Updates.set
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import models.User
-import models.mongo.ExpensesUserData
+import models.mongo.{DataNotUpdated, DatabaseError, EmploymentUserData, EncryptedExpensesUserData, ExpensesUserData, MongoError}
 import org.joda.time.{DateTime, DateTimeZone}
 import org.mongodb.scala.MongoException
 import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions}
 import play.api.Logging
+import services.EncryptionService
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
-import utils.PagerDutyHelper.PagerDutyKeys.{FAILED_TO_CREATE_UPDATE_EXPENSES_DATA, FAILED_TO_ClEAR_EXPENSES_DATA, FAILED_TO_FIND_EXPENSES_DATA}
+import utils.PagerDutyHelper.PagerDutyKeys.{FAILED_TO_CREATE_UPDATE_EXPENSES_DATA, FAILED_TO_ClEAR_EXPENSES_DATA, FAILED_TO_FIND_DATA, FAILED_TO_FIND_EXPENSES_DATA, FAILED_TO_UPDATE_DATA}
 import utils.PagerDutyHelper.{PagerDutyKeys, pagerDutyLog}
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 @Singleton
-class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig: AppConfig)(implicit ec: ExecutionContext
-) extends PlayMongoRepository[ExpensesUserData](
+class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig: AppConfig,
+                                               encryptionService: EncryptionService)(implicit ec: ExecutionContext
+) extends PlayMongoRepository[EncryptedExpensesUserData](
   mongoComponent = mongo,
   collectionName = "expensesUserData",
-  domainFormat   = ExpensesUserData.format,
+  domainFormat   = EncryptedExpensesUserData.format,
   indexes        = ExpensesUserDataIndexes.indexes(appConfig)
 ) with Repository with ExpensesUserDataRepository with Logging {
 
-  def find[T](taxYear: Int)(implicit user: User[T]): Future[Option[ExpensesUserData]] = {
+  def find[T](taxYear: Int)(implicit user: User[T]): Future[Either[DatabaseError, Option[ExpensesUserData]]] = {
+
+    lazy val start = "[ExpensesUserDataRepositoryImpl][find]"
+
     val queryFilter = filterExpenses(user.sessionId, user.mtditid, user.nino, taxYear)
     val update = set("lastUpdated", toBson(DateTime.now(DateTimeZone.UTC))(MongoJodaFormats.dateTimeWrites))
     val options = FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
 
-    collection.findOneAndUpdate(queryFilter, update, options)
-      .toFutureOption()
-      .map{
-        case Some(data) => Some(data)
-        case None =>
-          logger.info(s"[ExpensesUserDataRepositoryImpl][find] No employment CYA data found for user. SessionId: ${user.sessionId}")
-          None
-      }.recover(mongoRecover("Find", FAILED_TO_FIND_EXPENSES_DATA))
+    val findResult = collection.findOneAndUpdate(queryFilter, update, options).toFutureOption().map {
+      case Some(data) => Right(Some(data))
+      case None =>
+        logger.info(s"[ExpensesUserDataRepositoryImpl][find] No employment CYA data found for user. SessionId: ${user.sessionId}")
+        Right(None)
+    }.recover {
+      case exception: Exception =>
+        pagerDutyLog(FAILED_TO_FIND_DATA, s"$start Failed to find expenses user data. Exception: ${exception.getMessage}")
+        Left(MongoError(exception.getMessage))
+    }
+
+    findResult.map {
+      case Left(error) => Left(error)
+      case Right(encryptedData) =>
+        Try {
+          encryptedData.map(encryptionService.decryptExpenses)
+        }.toEither match {
+          case Left(exception: Exception) => handleEncryptionDecryptionException(exception, start)
+          case Right(decryptedData) => Right(decryptedData)
+        }
+    }
   }
 
-  def createOrUpdate[T](expensesUserData: ExpensesUserData)(implicit user: User[T]): Future[Option[ExpensesUserData]] = {
-    val queryFilter = filterExpenses(expensesUserData.sessionId, expensesUserData.mtdItId, expensesUserData.nino, expensesUserData.taxYear)
-    val replacement = expensesUserData
-    val options = FindOneAndReplaceOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
+  def createOrUpdate[T](expensesUserData: ExpensesUserData)(implicit user: User[T]): Future[Either[DatabaseError, Unit]] = {
 
-    collection.findOneAndReplace(queryFilter, replacement, options)
-      .toFutureOption()
-      .recover(mongoRecover("CreateOrUpdate", FAILED_TO_CREATE_UPDATE_EXPENSES_DATA))
+    lazy val start = "[ExpensesUserDataRepositoryImpl][update]"
+
+    Try {
+      encryptionService.encryptExpenses(expensesUserData)
+    }.toEither match {
+      case Left(exception: Exception) => Future.successful(handleEncryptionDecryptionException(exception, start))
+      case Right(encryptedData) =>
+
+        val queryFilter = filterExpenses(encryptedData.sessionId, encryptedData.mtdItId, encryptedData.nino, encryptedData.taxYear)
+        val replacement = encryptedData
+        val options = FindOneAndReplaceOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
+
+        collection.findOneAndReplace(queryFilter, replacement, options).toFutureOption().map {
+          case Some(_) => Right()
+          case None =>
+            pagerDutyLog(FAILED_TO_UPDATE_DATA, s"$start Failed to update user data.")
+            Left(DataNotUpdated)
+        }.recover {
+          case exception: Exception =>
+            pagerDutyLog(FAILED_TO_CREATE_UPDATE_EXPENSES_DATA, s"$start Failed to update expenses user data. Exception: ${exception.getMessage}")
+            Left(MongoError(exception.getMessage))
+        }
+    }
   }
 
   def clear[T](taxYear: Int)(implicit user: User[T]): Future[Boolean] =
@@ -91,7 +127,7 @@ class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig:
 }
 
 trait ExpensesUserDataRepository {
-  def createOrUpdate[T](expensesUserData: ExpensesUserData)(implicit user: User[T]): Future[Option[ExpensesUserData]]
-  def find[T](taxYear: Int)(implicit user: User[T]): Future[Option[ExpensesUserData]]
+  def createOrUpdate[T](expensesUserData: ExpensesUserData)(implicit user: User[T]): Future[Either[DatabaseError, Unit]]
+  def find[T](taxYear: Int)(implicit user: User[T]): Future[Either[DatabaseError, Option[ExpensesUserData]]]
   def clear[T](taxYear: Int)(implicit user: User[T]): Future[Boolean]
 }

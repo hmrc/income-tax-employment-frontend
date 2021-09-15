@@ -21,7 +21,7 @@ import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
-import models.employment.{BenefitsViewModel, CarVanFuelModel}
+import models.employment.CarVanFuelModel
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -35,14 +35,14 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
-                                        authAction: AuthorisedAction,
-                                        inYearAction: InYearAction,
-                                        carVanFuelBenefitsView: CarVanFuelBenefitsView,
-                                        appConfig: AppConfig,
-                                        employmentSessionService: EmploymentSessionService,
-                                        errorHandler: ErrorHandler,
-                                        ec: ExecutionContext,
-                                        clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                             authAction: AuthorisedAction,
+                                             inYearAction: InYearAction,
+                                             carVanFuelBenefitsView: CarVanFuelBenefitsView,
+                                             appConfig: AppConfig,
+                                             employmentSessionService: EmploymentSessionService,
+                                             errorHandler: ErrorHandler,
+                                             ec: ExecutionContext,
+                                             clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
     missingInputError = s"benefits.carVanFuel.error.${if (user.isAgent) "agent" else "individual"}"
@@ -50,25 +50,25 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionData(taxYear, employmentId).map {
+      employmentSessionService.getSessionDataResult(taxYear, employmentId) {
         case Some(data) =>
           data.employment.employmentBenefits match {
             case Some(model) if model.isBenefitsReceived =>
               model.carVanFuelModel.flatMap(_.carVanFuelQuestion) match {
-                case Some(questionResult) => Ok(carVanFuelBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId))
-                case None => Ok(carVanFuelBenefitsView(yesNoForm, taxYear, employmentId))
+                case Some(questionResult) => Future.successful(Ok(carVanFuelBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
+                case None => Future.successful(Ok(carVanFuelBenefitsView(yesNoForm, taxYear, employmentId)))
+              }
+            case _ => Future.successful(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
           }
-            case _ => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-          }
-        case None => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+        case None => Future.successful(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
       }
     }
   }
 
   //scalastyle:off
-  def submit(taxYear:Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionData(taxYear, employmentId).flatMap {
+      employmentSessionService.getSessionDataResult(taxYear, employmentId) {
         case Some(data) =>
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(carVanFuelBenefitsView(formWithErrors, taxYear, employmentId))),
@@ -91,7 +91,7 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
               updatedCyaModel match {
                 case Some(model) =>
                   employmentSessionService.createOrUpdateSessionData(
-                    employmentId, model, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()){
+                    employmentId, model, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
                     Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                   }
                 case None => Future(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
