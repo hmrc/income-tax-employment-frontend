@@ -52,15 +52,20 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionData(taxYear, employmentId).map {
         case Some(data) =>
-          data.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion)) match {
-            case Some(questionResult) => Ok(carVanFuelBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId))
-            case None => Ok(carVanFuelBenefitsView(yesNoForm, taxYear, employmentId))
+          data.employment.employmentBenefits match {
+            case Some(model) if model.isBenefitsReceived =>
+              model.carVanFuelModel.flatMap(_.carVanFuelQuestion) match {
+                case Some(questionResult) => Ok(carVanFuelBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId))
+                case None => Ok(carVanFuelBenefitsView(yesNoForm, taxYear, employmentId))
           }
-        case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+            case _ => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+          }
+        case None => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
       }
     }
   }
 
+  //scalastyle:off
   def submit(taxYear:Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionData(taxYear, employmentId).flatMap {
@@ -69,27 +74,27 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
             formWithErrors => Future.successful(BadRequest(carVanFuelBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => {
               val cya = data.employment
-              val updatedCyaModel: EmploymentCYAModel = {
-                cya.employmentBenefits.flatMap(_.carVanFuelModel) match {
-                  case Some(model) =>
-                    if(yesNo){
-                      cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
-                        carVanFuelModel = Some(model.copy(carVanFuelQuestion = Some(true)))
-                      )))
-                    } else {
-                      cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
-                        carVanFuelModel = Some(CarVanFuelModel.clear)
-                      )))
+              val updatedCyaModel: Option[EmploymentCYAModel] = {
+                cya.employmentBenefits match {
+                  case Some(benefitsModel) if benefitsModel.isBenefitsReceived =>
+                    benefitsModel.carVanFuelModel match {
+                      case Some(carVanFuelModel) if yesNo =>
+                        Some(cya.copy(employmentBenefits = Some(benefitsModel.copy(carVanFuelModel = Some(carVanFuelModel.copy(carVanFuelQuestion = Some(true)))))))
+                      case Some(_) =>
+                        Some(cya.copy(employmentBenefits = Some(benefitsModel.copy(carVanFuelModel = Some(CarVanFuelModel.clear)))))
+                      case _ =>
+                        Some(cya.copy(employmentBenefits = Some(benefitsModel.copy(carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(yesNo)))))))
                     }
-                  case None =>
-                  cya.copy(employmentBenefits = Some(BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true,
-                    carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(yesNo))))))
+                  case _ => None
                 }
               }
-
-              employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()){
-                  Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+              updatedCyaModel match {
+                case Some(model) =>
+                  employmentSessionService.createOrUpdateSessionData(
+                    employmentId, model, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()){
+                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                  }
+                case None => Future(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
               }
             }
           )
