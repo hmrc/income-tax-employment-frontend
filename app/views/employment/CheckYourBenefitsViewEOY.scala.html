@@ -57,7 +57,7 @@
 
     @if(benefits.isBenefitsReceived){
 
-    <p class="govuk-label--m">@messages("checkYourBenefits.vehicleHeader")</p>
+    <h2 class="govuk-label--m">@messages("checkYourBenefits.vehicleHeader")</h2>
         @{
             val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.carSubheading", benefits.carVanFuelModel.flatMap(_.carVanFuelQuestion).getOrElse(false), controllers.benefits.routes.CarVanFuelBenefitsController.show(taxYear, employmentId)))
             val rows: Seq[SummaryListRow] =
@@ -99,7 +99,7 @@
             govukSummaryList(SummaryList(header ++ rows))
     }
 
-    <p class="govuk-label--m">@messages("checkYourBenefits.accommodationHeader")</p>
+    <h2 class="govuk-label--m">@messages("checkYourBenefits.accommodationHeader")</h2>
     @{
         val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.accommodationSubheading", benefits.accommodationDetailsPopulated))
         val rows: Seq[SummaryListRow] =
@@ -129,7 +129,7 @@
         govukSummaryList(SummaryList(header ++ rows))
     }
 
-    <p class="govuk-label--m">@messages("checkYourBenefits.travelHeader")</p>
+    <h2 class="govuk-label--m">@messages("checkYourBenefits.travelHeader")</h2>
     @{
         val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.travelSubheading", benefits.travelDetailsPopulated))
         val rows: Seq[SummaryListRow] =
@@ -159,7 +159,7 @@
         govukSummaryList(SummaryList(header ++ rows))
     }
 
-    <p class="govuk-label--m">@messages("checkYourBenefits.utilitiesHeader")</p>
+    <h2 class="govuk-label--m">@messages("checkYourBenefits.utilitiesHeader")</h2>
     @{
         val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.utilitiesSubheading", benefits.utilitiesDetailsPopulated))
         val rows: Seq[SummaryListRow] =
@@ -195,7 +195,7 @@
         govukSummaryList(SummaryList(header ++ rows))
     }
 
-    <p class="govuk-label--m">@messages("checkYourBenefits.medicalHeader")</p>
+    <h2 class="govuk-label--m">@messages("checkYourBenefits.medicalHeader")</h2>
     @{
         val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.medicalSubheading", benefits.medicalDetailsPopulated))
         val rows: Seq[SummaryListRow] =
@@ -231,7 +231,7 @@
         govukSummaryList(SummaryList(header ++ rows))
     }
 
-    <p class="govuk-label--m">@messages("checkYourBenefits.incomeTaxHeader")</p>
+    <h2 class="govuk-label--m">@messages("checkYourBenefits.incomeTaxHeader")</h2>
     @{
         val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.incomeTaxSubheading", benefits.incomeTaxDetailsPopulated))
         val rows: Seq[SummaryListRow] =
@@ -255,7 +255,7 @@
         govukSummaryList(SummaryList(header ++ rows))
     }
 
-    <p class="govuk-label--m">@messages("checkYourBenefits.reimbursedHeader")</p>
+    <h2 class="govuk-label--m">@messages("checkYourBenefits.reimbursedHeader")</h2>
     @{
         val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.reimbursedSubheading", benefits.reimbursedDetailsPopulated))
         val rows: Seq[SummaryListRow] =
@@ -297,7 +297,7 @@
         govukSummaryList(SummaryList(header ++ rows))
     }
 
-    <p class="govuk-label--m">@messages("checkYourBenefits.assetsHeader")</p>
+    <h2 class="govuk-label--m">@messages("checkYourBenefits.assetsHeader")</h2>
     @{
         val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.assetsSubheading", benefits.assetsDetailsPopulated))
         val rows: Seq[SummaryListRow] =

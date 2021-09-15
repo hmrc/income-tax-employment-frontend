@@ -52,7 +52,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val continueButtonSelector = "#continue"
     val formSelector = "#main-content > div > div > form"
     val formRadioButtonValueSelector = "#value"
-    val expensesHeaderSelector = "#main-content > div > div > p.govuk-label--m"
+    val expensesHeaderSelector = "#main-content > div > div > h2.govuk-label--m"
 
     def thisIsATotalSelector(nthChild: Int) = s"#main-content > div > div > p:nth-child($nthChild)"
 

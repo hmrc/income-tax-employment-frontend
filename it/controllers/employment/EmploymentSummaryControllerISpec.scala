@@ -46,7 +46,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     val employmentExpensesRowSelector: String =
       s"#main-content > div > div > div.govuk-form-group > ul > li:nth-child(3) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
     val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
-    val expensesParagraphHeadingSelector = "#main-content > div > div > p.govuk-label--m"
+    val expensesParagraphHeadingSelector = "#main-content > div > div > h2.govuk-label--m"
     val expensesParagraphSubheadingSelector = "#main-content > div > div > p:nth-child(6)"
     val expensesSummaryListRowFieldNameSelector = s"#main-content > div > div > div:nth-child(7) > ul > li > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
     val expensesSummaryListRowFieldActionSelector = s"#main-content > div > div > div:nth-child(7) > ul > li > span.hmrc-add-to-a-list__change"

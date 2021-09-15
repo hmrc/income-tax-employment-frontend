@@ -53,7 +53,7 @@
     }
 
     @if(benefits.vehicleDetailsPopulated){
-        <p class="govuk-label--m">@messages("checkYourBenefits.vehicleHeader")</p>
+        <h2 class="govuk-label--m">@messages("checkYourBenefits.vehicleHeader")</h2>
         @{
             val rows: Seq[SummaryListRow] = Seq(
                 benefits.car.map{
@@ -78,7 +78,7 @@
     }
 
     @if(benefits.accommodationDetailsPopulated){
-        <p class="govuk-label--m">@messages("checkYourBenefits.accommodationHeader")</p>
+        <h2 class="govuk-label--m">@messages("checkYourBenefits.accommodationHeader")</h2>
         @{
             val rows: Seq[SummaryListRow] = Seq(
                 benefits.accommodation.map{
@@ -97,7 +97,7 @@
     }
 
     @if(benefits.travelDetailsPopulated){
-        <p class="govuk-label--m">@messages("checkYourBenefits.travelHeader")</p>
+        <h2 class="govuk-label--m">@messages("checkYourBenefits.travelHeader")</h2>
         @{
             val rows: Seq[SummaryListRow] = Seq(
                 benefits.travelAndSubsistence.map{
@@ -116,7 +116,7 @@
     }
 
     @if(benefits.utilitiesDetailsPopulated){
-        <p class="govuk-label--m">@messages("checkYourBenefits.utilitiesHeader")</p>
+        <h2 class="govuk-label--m">@messages("checkYourBenefits.utilitiesHeader")</h2>
         @{
             val rows: Seq[SummaryListRow] = Seq(
                 benefits.telephone.map{
@@ -138,7 +138,7 @@
     }
 
     @if(benefits.medicalDetailsPopulated){
-        <p class="govuk-label--m">@messages("checkYourBenefits.medicalHeader")</p>
+        <h2 class="govuk-label--m">@messages("checkYourBenefits.medicalHeader")</h2>
         @{
             val rows: Seq[SummaryListRow] = Seq(
                 benefits.medicalInsurance.map{
@@ -160,7 +160,7 @@
     }
 
     @if(benefits.incomeTaxDetailsPopulated){
-        <p class="govuk-label--m">@messages("checkYourBenefits.incomeTaxHeader")</p>
+        <h2 class="govuk-label--m">@messages("checkYourBenefits.incomeTaxHeader")</h2>
         @{
             val rows: Seq[SummaryListRow] = Seq(
                 benefits.incomeTaxPaidByDirector.map{
@@ -176,7 +176,7 @@
     }
 
     @if(benefits.reimbursedDetailsPopulated){
-        <p class="govuk-label--m">@messages("checkYourBenefits.reimbursedHeader")</p>
+        <h2 class="govuk-label--m">@messages("checkYourBenefits.reimbursedHeader")</h2>
         @{
             val rows: Seq[SummaryListRow] = Seq(
                 benefits.expenses.map{
@@ -201,7 +201,7 @@
     }
 
     @if(benefits.assetsDetailsPopulated){
-        <p class="govuk-label--m">@messages("checkYourBenefits.assetsHeader")</p>
+        <h2 class="govuk-label--m">@messages("checkYourBenefits.assetsHeader")</h2>
         @{
             val rows: Seq[SummaryListRow] = Seq(
                 benefits.assets.map{
