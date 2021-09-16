@@ -66,6 +66,11 @@
         val employmentStartDate = EmploymentDataForView(messages(s"$msgKeyGeneric.startDate"), employmentDetails.startDate.flatMap(dateFormatter), controllers.employment.routes.EmployerStartDateController.show(taxYear, employmentDetails.employmentId),
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", user.isAgent), employmentDetails.employerName))
 
+        val stillWorkingForemployer = EmploymentDataForView(messages(s"$msgKeyGeneric.stillWorkingForEmployer"),
+        Some(if(employmentDetails.stillWorkingQuestion.contains(true)) {messages("common.yes")} else{messages("common.no")}),
+        controllers.employment.routes.StillWorkingForEmployerController.show(taxYear, employmentDetails.employmentId),
+        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.stillWorkingForEmployer", user.isAgent), employmentDetails.employerName))
+
         val payeRef = EmploymentDataForView(messages(msgKeyGeneric + ".payeRef"), employmentDetails.employerRef,
         controllers.employment.routes.PayeRefController.show(taxYear, employmentDetails.employmentId),
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payeRef", user.isAgent)))
@@ -80,7 +85,7 @@
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.totalTaxToDate", user.isAgent)))
 
         val employmentDataFields = {
-                List(employerName, employmentStartDate, payeRef, payReceived, totalTaxToDate)
+                List(employerName, employmentStartDate, stillWorkingForemployer, payeRef, payReceived, totalTaxToDate)
         }
 
         govukSummaryList(

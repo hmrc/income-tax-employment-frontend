@@ -61,6 +61,7 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockEmpl
               employerRef = Some("reference"),
               employmentId = "id",
               startDate = Some("2020-02-12"),
+              stillWorkingQuestion = Some(false),
               cessationDateQuestion = Some(true),
               cessationDate = Some("2020-02-12"),
               taxablePayToDate = Some(34234.15),
