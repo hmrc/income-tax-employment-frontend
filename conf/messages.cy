@@ -490,7 +490,6 @@ CompanyCarBenefits.error.agent = Select yes if your client got a company car ben
 CompanyCarBenefits.header.individual = Did you get a company car benefit?
 CompanyCarBenefits.header.agent = Did your client get a company car benefit?
 
->>>>>>> 8470614 (Content changes from review)
 employment.removeEmployment.title = Are you sure you want to remove this employment?
 employment.removeEmployment.heading = Are you sure you want to remove {0}?
 employment.removeEmployment.remove-paragraph = This will also remove any benefits you told us about for this employment.
