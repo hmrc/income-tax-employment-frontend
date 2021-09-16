@@ -31,7 +31,7 @@ import utils.{Clock, SessionHelper}
 import views.html.employment.CompanyCarBenefitsView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class CompanyCarBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
                                              authAction: AuthorisedAction,
@@ -101,7 +101,7 @@ class CompanyCarBenefitsController @Inject()(implicit val cc: MessagesController
 
 
   private def buildForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = "CompanyCarBenefits.error"
+    missingInputError = s"CompanyCarBenefits.error.${if(user.isAgent) "agent" else "individual"}"
   )
 
 }
