@@ -485,12 +485,6 @@ payeRef.errors.wrongFormat = Enter a PAYE reference in the correct format
 AddEmployment.error = Select yes if you want to add an employment
 AddEmployment.header = Do you want to add an employment?
 
-
-CompanyCarBenefits.error = Select yes if you received a benefit for a company car
-CompanyCarBenefits.header.individual = Did you receive a benefit for a company car?
-CompanyCarBenefits.header.agent = Did your client receive a benefit for a company car?
-
-
 employment.removeEmployment.title = Are you sure you want to remove this employment?
 employment.removeEmployment.heading = Are you sure you want to remove {0}?
 employment.removeEmployment.remove-paragraph = This will also remove any benefits you told us about for this employment.
@@ -510,3 +504,12 @@ benefits.carVanFuel.title.agent = Did your client receive any car, van or fuel b
 benefits.carVanFuel.thisIncludes = This includes benefits such as company cars or vans, company cars or van fuel, and privately owned vehicle mileage allowances.
 benefits.carVanFuel.error.individual = Select yes if you got car, van or fuel benefits
 benefits.carVanFuel.error.agent = Select yes if your client got car, van or fuel benefits
+
+CompanyCarBenefits.error = Select yes if you received a benefit for a company car
+CompanyCarBenefits.header.individual = Did you receive a benefit for a company car?
+CompanyCarBenefits.header.agent = Did your client receive a benefit for a company car?
+
+benefits.companyVanBenefits.title.individual = Did you get a company van benefit?
+benefits.companyVanBenefits.title.agent = Did your client get a company van benefit?
+benefits.companyVanBenefits.error.individual = Select yes if you got a company van benefit
+benefits.companyVanBenefits.error.agent = Select yes if your client got a company van benefit
