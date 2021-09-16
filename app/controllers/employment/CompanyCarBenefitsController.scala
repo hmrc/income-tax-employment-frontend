@@ -31,7 +31,7 @@ import utils.{Clock, SessionHelper}
 import views.html.employment.CompanyCarBenefitsView
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class CompanyCarBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
                                              authAction: AuthorisedAction,
