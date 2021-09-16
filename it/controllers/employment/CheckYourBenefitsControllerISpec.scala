@@ -32,14 +32,13 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   val defaultTaxYear = 2022
   def url(taxYear: Int = defaultTaxYear): String = s"$appUrl/$taxYear/check-employment-benefits?employmentId=001"
 
-
   object Selectors {
     val p1 = "#main-content > div > div > p.govuk-body"
     val p2 = "#main-content > div > div > div.govuk-inset-text"
     def fieldNameSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dt"
     def fieldAmountSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dd.govuk-summary-list__value"
     def fieldChangeLinkSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dd > a"
-    def fieldHeaderSelector(i: Int): String = s"#main-content > div > div > p:nth-child($i)"
+    def fieldHeaderSelector(i: Int): String = s"#main-content > div > div > h2:nth-child($i)"
   }
 
   trait SpecificExpectedResults {
@@ -657,6 +656,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
   val carVanFuelBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/car-van-fuel?employmentId=001"
   val companyCarHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/company-car?employmentId=001"
+  val companyVanBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/company-van?employmentId=001"
   val companyCarFuelBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/car-fuel?employmentId=001"
 
   ".show" when {
@@ -762,7 +762,6 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           val commonResults = user.commonExpectedResults
           val dummyHref = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/check-employment-benefits?employmentId=001"
 
-
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(specificResults.expectedTitle)
@@ -778,7 +777,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.companyCarAmount, "£1.23", 5, 3, specificResults.companyCarAmountHiddenText, dummyHref)
           changeAmountRowCheck(commonResults.fuelForCompanyCar, commonResults.yes, 5, 4, specificResults.fuelForCompanyCarHiddenText, companyCarFuelBenefitsHref)
           changeAmountRowCheck(commonResults.fuelForCompanyCarAmount, "£2", 5, 5, specificResults.fuelForCompanyCarAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.companyVan, commonResults.yes, 5, 6, specificResults.companyVanHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.companyVan, commonResults.yes, 5, 6, specificResults.companyVanHiddenText, companyVanBenefitsHref)
           changeAmountRowCheck(commonResults.companyVanAmount, "£3", 5, 7, specificResults.companyVanAmountHiddenText, dummyHref)
           changeAmountRowCheck(commonResults.fuelForCompanyVan, commonResults.yes, 5, 8, specificResults.fuelForCompanyVanHiddenText, dummyHref)
           changeAmountRowCheck(commonResults.fuelForCompanyVanAmount, "£4", 5, 9, specificResults.fuelForCompanyVanAmountHiddenText, dummyHref)
@@ -899,7 +898,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.carSubheading, commonResults.yes, 5, 1, specificResults.carSubheadingHiddenText, carVanFuelBenefitsHref)
           changeAmountRowCheck(commonResults.companyCar, commonResults.no, 5, 2, specificResults.companyCarHiddenText, companyCarHref)
           changeAmountRowCheck(commonResults.fuelForCompanyCar, commonResults.no, 5, 3, specificResults.fuelForCompanyCarHiddenText, companyCarFuelBenefitsHref)
-          changeAmountRowCheck(commonResults.companyVan, commonResults.yes, 5, 4, specificResults.companyVanHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.companyVan, commonResults.yes, 5, 4, specificResults.companyVanHiddenText, companyVanBenefitsHref)
           changeAmountRowCheck(commonResults.companyVanAmount, "£3", 5, 5, specificResults.companyVanAmountHiddenText, dummyHref)
           changeAmountRowCheck(commonResults.fuelForCompanyVan, commonResults.yes, 5, 6, specificResults.fuelForCompanyVanHiddenText, dummyHref)
           changeAmountRowCheck(commonResults.fuelForCompanyVanAmount, "£4", 5, 7, specificResults.fuelForCompanyVanAmountHiddenText, dummyHref)

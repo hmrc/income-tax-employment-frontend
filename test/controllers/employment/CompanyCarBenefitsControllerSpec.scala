@@ -17,14 +17,15 @@
 package controllers.employment
 
 import config.MockEmploymentSessionService
-import controllers.employment.routes.CompanyCarBenefitsController
+import controllers.employment.routes.{CheckYourBenefitsController, CompanyCarBenefitsController}
 import forms.YesNoForm
-import models.employment.EmploymentBenefits
-import models.{User, mongo}
+import models.employment.EmploymentSource
+import models.User
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
+import play.api.data.Form
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
-import play.api.mvc.Results.{InternalServerError, Ok, Redirect, ServiceUnavailable}
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.mvc.Results.{InternalServerError, Redirect}
+import play.api.mvc.Result
 import utils.{Clock, UnitTestWithApp}
 import views.html.employment.CompanyCarBenefitsView
 
@@ -34,11 +35,11 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
 
   val taxYear = 2021
   val employmentId = "223/AB12399"
-  lazy val view = app.injector.instanceOf[CompanyCarBenefitsView]
-  val form = YesNoForm.yesNoForm(
+  lazy val view: CompanyCarBenefitsView = app.injector.instanceOf[CompanyCarBenefitsView]
+  val form: Form[Boolean] = YesNoForm.yesNoForm(
     missingInputError = "CompanyCarBenefits.error"
   )
-  lazy val employmentsCYAFill = employmentsModel.hmrcEmploymentData.head
+  lazy val employmentsCYAFill: EmploymentSource = employmentsModel.hmrcEmploymentData.head
 
   lazy val employmentUserData = new EmploymentUserData(
     sessionId,
@@ -47,7 +48,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
     taxYear,
     employmentId,
     false,
-    EmploymentCYAModel(employmentsCYAFill, false)
+    EmploymentCYAModel(employmentsCYAFill, isUsingCustomerData = false)
   )
 
   lazy val employmentUserDataNoCarVanFuel = new EmploymentUserData(
@@ -57,7 +58,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
     taxYear,
     employmentId,
     false,
-    EmploymentCYAModel(employmentsCYAFill.copy(employmentBenefits = None), false)
+    EmploymentCYAModel(employmentsCYAFill.copy(employmentBenefits = None), isUsingCustomerData = false)
   )
 
   lazy val controller = new CompanyCarBenefitsController()(
@@ -109,6 +110,8 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
           controller.submit(taxYear, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "true"))
         }
         status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe CompanyCarBenefitsController.show(taxYear, employmentId).url
+
       }
 
       "has a SEE_OTHER status with valid form body false" in new TestWithAuth {
@@ -124,16 +127,17 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
           controller.submit(taxYear, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "false"))
         }
         status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe CompanyCarBenefitsController.show(taxYear, employmentId).url
       }
 
       "has a SEE_OTHER status with valid form body true but no carVanFuel benefits in session" in new TestWithAuth {
         val result: Future[Result] = {
           mockGetSessionData(taxYear, employmentId, Some(employmentUserDataNoCarVanFuel))
-          val redirect = CompanyCarBenefitsController.show(taxYear, employmentId).url
 
           controller.submit(taxYear, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "false"))
         }
         status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
 
       "has a SEE_OTHER status with valid form body but no session" in new TestWithAuth {
@@ -143,6 +147,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
           controller.submit(taxYear, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "false"))
         }
         status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
 
       "has a BAD_REQUEST status with invalid form body" in new TestWithAuth {

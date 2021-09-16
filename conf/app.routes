@@ -1,6 +1,5 @@
 # microservice specific routes
 
-->         /govuk-frontend          govuk.Routes
 ->         /hmrc-frontend           hmrcfrontend.Routes
 
 GET        /assets/*file                                    controllers.Assets.versioned(path = "/public", file: Asset)
@@ -39,6 +38,9 @@ POST       /:taxYear/benefits/company-benefits              controllers.benefits
 
 GET        /:taxYear/benefits/car-van-fuel                  controllers.benefits.CarVanFuelBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/car-van-fuel                  controllers.benefits.CarVanFuelBenefitsController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/benefits/company-van                   controllers.benefits.CompanyVanBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/company-van                   controllers.benefits.CompanyVanBenefitsController.submit(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/benefits/car-fuel                      controllers.employment.CompanyCarFuelBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/car-fuel                      controllers.employment.CompanyCarFuelBenefitsController.submit(taxYear: Int, employmentId: String)
