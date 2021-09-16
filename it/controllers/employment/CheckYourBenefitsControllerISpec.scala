@@ -38,7 +38,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     def fieldNameSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dt"
     def fieldAmountSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dd.govuk-summary-list__value"
     def fieldChangeLinkSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dd > a"
-    def fieldHeaderSelector(i: Int): String = s"#main-content > div > div > p:nth-child($i)"
+    def fieldHeaderSelector(i: Int): String = s"#main-content > div > div > h2:nth-child($i)"
   }
 
   trait SpecificExpectedResults {
