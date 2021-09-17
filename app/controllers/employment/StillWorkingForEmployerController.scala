@@ -86,7 +86,7 @@ class StillWorkingForEmployerController @Inject()(authorisedAction: AuthorisedAc
             val updatedCya = cya.copy(cya.employmentDetails.copy(cessationDateQuestion = Some(yesNo), cessationDate = cessationDateUpdated))
             employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear,
               data.isPriorSubmission)(errorHandler.internalServerError()) {
-              //TODO: if value is true - change redirect to cessation date when page is available otherwise taxablePayToDate
+              //TODO: if value is false - change redirect to cessation date when page is available otherwise to usual taxablePayToDate
               employmentDetailsRedirect(updatedCya, taxYear, employmentId, data.isPriorSubmission)
             }
           }
