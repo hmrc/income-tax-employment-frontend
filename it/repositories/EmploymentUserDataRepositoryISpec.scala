@@ -19,15 +19,14 @@ package repositories
 import com.mongodb.MongoTimeoutException
 import common.UUID
 import models.User
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData, EncryptedEmploymentUserData}
 import org.joda.time.{DateTime, DateTimeZone}
-import org.mongodb.scala.bson.conversions.Bson
 import org.mongodb.scala.{MongoException, MongoInternalException, MongoWriteException}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.mvc.AnyContent
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import uk.gov.hmrc.auth.core.AffinityGroup
-import uk.gov.hmrc.mongo.play.json.Codecs.toBson
+import services.EncryptionService
+import uk.gov.hmrc.auth.core.AffinityGroup.Individual
 import utils.IntegrationTest
 import utils.PagerDutyHelper.PagerDutyKeys.FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA
 
@@ -35,11 +34,12 @@ import scala.concurrent.Future
 
 class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwaits with DefaultAwaitTimeout {
 
-  val employmentRepo: EmploymentUserDataRepositoryImpl = app.injector.instanceOf[EmploymentUserDataRepositoryImpl]
+  private val employmentRepo: EmploymentUserDataRepositoryImpl = app.injector.instanceOf[EmploymentUserDataRepositoryImpl]
+  private val encryptionService = app.injector.instanceOf[EncryptionService]
 
   private def count = await(employmentRepo.collection.countDocuments().toFuture())
 
-  private def find(employmentUserData: EmploymentUserData)(implicit user: User[_]): Future[Option[EmploymentUserData]] = {
+  private def find(employmentUserData: EmploymentUserData)(implicit user: User[_]): Future[Option[EncryptedEmploymentUserData]] = {
     employmentRepo.collection
       .find(filter = Repository.filter(user.sessionId, user.mtditid, user.nino, employmentUserData.taxYear, employmentUserData.employmentId))
       .toFuture()
@@ -90,18 +90,16 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
 
   implicit val request: FakeRequest[AnyContent] = fakeRequest
 
-  val userOne = User(employmentUserDataOne.mtdItId, None, employmentUserDataOne.nino, employmentUserDataOne.sessionId, AffinityGroup.Individual.toString)
-  val userTwo = User(employmentUserDataTwo.mtdItId, None, employmentUserDataTwo.nino, employmentUserDataTwo.sessionId, AffinityGroup.Individual.toString)
+  private val userOne = User(employmentUserDataOne.mtdItId, None, employmentUserDataOne.nino, employmentUserDataOne.sessionId, Individual.toString)
+  private val userTwo = User(employmentUserDataTwo.mtdItId, None, employmentUserDataTwo.nino, employmentUserDataTwo.sessionId, Individual.toString)
 
   "clear" should {
     "remove a record" in new EmptyDatabase {
       count mustBe 0
-      val createAttempt: Option[EmploymentUserData] = await(employmentRepo.createOrUpdate(employmentUserDataOne)(userOne))
-      createAttempt mustBe Some(employmentUserDataOne)
+      await(employmentRepo.createOrUpdate(employmentUserDataOne)(userOne)) mustBe Right()
       count mustBe 1
 
-      val clearAttempt: Boolean = await(employmentRepo.clear(taxYear, employmentUserDataOne.employmentId)(userOne))
-      clearAttempt mustBe true
+      await(employmentRepo.clear(taxYear, employmentUserDataOne.employmentId)(userOne)) mustBe true
       count mustBe 0
     }
   }
@@ -109,53 +107,45 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
   "createOrUpdate" should {
 
     "create a document in collection when one does not exist" in new EmptyDatabase {
-      val createAttempt: Option[EmploymentUserData] = await(employmentRepo.createOrUpdate(employmentUserDataOne)(userOne))
-      createAttempt mustBe Some(employmentUserDataOne)
+      await(employmentRepo.createOrUpdate(employmentUserDataOne)(userOne)) mustBe Right()
       count mustBe 1
     }
 
     "update a document in collection when one already exists" in new EmptyDatabase {
-      val createAttempt: Option[EmploymentUserData] = await(employmentRepo.createOrUpdate(employmentUserDataOne)(userOne))
-      createAttempt.get mustBe employmentUserDataOne
+      await(employmentRepo.createOrUpdate(employmentUserDataOne)(userOne)) mustBe Right()
       count mustBe 1
 
-      val updatedEmploymentDetails = employmentUserDataOne.employment.employmentDetails.copy(employerName = "Different_Employer_Name")
-      val updatedEmploymentCyaModel = employmentUserDataOne.employment.copy(employmentDetails = updatedEmploymentDetails)
-      val updatedEmploymentUserData = employmentUserDataOne.copy(employment = updatedEmploymentCyaModel)
+      private val updatedEmploymentDetails = employmentUserDataOne.employment.employmentDetails.copy(employerName = "Different_Employer_Name")
+      private val updatedEmploymentCyaModel = employmentUserDataOne.employment.copy(employmentDetails = updatedEmploymentDetails)
+      private val updatedEmploymentUserData = employmentUserDataOne.copy(employment = updatedEmploymentCyaModel)
 
-      val updateAttempt: Option[EmploymentUserData] = await(employmentRepo.createOrUpdate(updatedEmploymentUserData)(userOne))
-      updateAttempt mustBe Some(updatedEmploymentUserData)
+      await(employmentRepo.createOrUpdate(updatedEmploymentUserData)(userOne)) mustBe Right()
       count mustBe 1
     }
 
     "update a single document when one already exists and collection has multiple documents" in new EmptyDatabase {
-      val createOne: Option[EmploymentUserData] = await(employmentRepo.createOrUpdate(employmentUserDataOne)(userOne))
-      val createTwo: Option[EmploymentUserData] = await(employmentRepo.createOrUpdate(employmentUserDataTwo)(userTwo))
-
-      createOne mustBe Some(employmentUserDataOne)
-      createTwo mustBe Some(employmentUserDataTwo)
+      await(employmentRepo.createOrUpdate(employmentUserDataOne)(userOne)) mustBe Right()
+      await(employmentRepo.createOrUpdate(employmentUserDataTwo)(userTwo)) mustBe Right()
       count mustBe 2
 
-      val updatedEmploymentDetails = employmentUserDataOne.employment.employmentDetails.copy(employerName = "Different_Employer_Name")
-      val updatedEmploymentCyaModel = employmentUserDataOne.employment.copy(employmentDetails = updatedEmploymentDetails)
-      val updatedEmploymentUserDataOne = employmentUserDataOne.copy(employment = updatedEmploymentCyaModel)
+      private val updatedEmploymentDetails = employmentUserDataOne.employment.employmentDetails.copy(employerName = "Different_Employer_Name")
+      private val updatedEmploymentCyaModel = employmentUserDataOne.employment.copy(employmentDetails = updatedEmploymentDetails)
+      private val updatedEmploymentUserDataOne = employmentUserDataOne.copy(employment = updatedEmploymentCyaModel)
 
-      val updateAttempt: Option[EmploymentUserData] = await(employmentRepo.createOrUpdate(updatedEmploymentUserDataOne)(userOne))
-      updateAttempt mustBe Some(updatedEmploymentUserDataOne)
+      await(employmentRepo.createOrUpdate(updatedEmploymentUserDataOne)(userOne)) mustBe Right()
 
       count mustBe 2
-      await(find(employmentUserDataTwo)(userTwo)) mustBe createTwo
+      private val maybeData: Option[EncryptedEmploymentUserData] = await(find(employmentUserDataTwo)(userTwo))
+      encryptionService.decryptUserData(maybeData.get) mustBe employmentUserDataTwo
     }
 
     "create a new document when the same documents exists but the sessionId is different" in new EmptyDatabase {
-      val createOne: Option[EmploymentUserData] = await(employmentRepo.createOrUpdate(employmentUserDataOne)(userOne))
-      createOne mustBe Some(employmentUserDataOne)
+      await(employmentRepo.createOrUpdate(employmentUserDataOne)(userOne)) mustBe Right()
       count mustBe 1
 
       val newUserData = employmentUserDataOne.copy(sessionId = UUID.randomUUID)
-      val createSameWithDifferentSessionId: Option[EmploymentUserData] = await(employmentRepo.createOrUpdate(newUserData)(userOne))
 
-      createSameWithDifferentSessionId mustBe Some(newUserData)
+      await(employmentRepo.createOrUpdate(newUserData)(userOne)) mustBe Right()
       count mustBe 2
     }
   }
@@ -165,33 +155,32 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
       val now = DateTime.now(DateTimeZone.UTC)
       val data = employmentUserDataOne.copy(lastUpdated = now)
 
-      val createResult: Option[EmploymentUserData] = await(employmentRepo.createOrUpdate(data)(userOne))
-      createResult mustBe Some(data)
+      await(employmentRepo.createOrUpdate(data)(userOne)) mustBe Right()
       count mustBe 1
 
       val findResult = await(employmentRepo.find(data.taxYear, data.employmentId)(userOne))
 
-      findResult.map(_.copy(lastUpdated = data.lastUpdated)) mustBe Some(data)
-      findResult.map(_.lastUpdated.isAfter(data.lastUpdated)) mustBe Some(true)
+      findResult.right.get.map(_.copy(lastUpdated = data.lastUpdated)) mustBe Some(data)
+      findResult.right.get.map(_.lastUpdated.isAfter(data.lastUpdated)) mustBe Some(true)
     }
 
     "return None when find operation succeeds but no data is found for the given inputs" in new EmptyDatabase {
       val taxYear = 2021
-      val findResult = await(employmentRepo.find(taxYear, "employmentId")(userOne))
-
-      findResult mustBe None
+      await(employmentRepo.find(taxYear, "employmentId")(userOne)) mustBe Right(None)
     }
   }
 
   "the set indexes" should {
     "enforce uniqueness" in new EmptyDatabase {
-      val createResult: Option[EmploymentUserData] = await(employmentRepo.createOrUpdate(employmentUserDataOne)(userOne))
-      createResult mustBe Some(employmentUserDataOne)
+      await(employmentRepo.createOrUpdate(employmentUserDataOne)(userOne)) mustBe Right()
       count mustBe 1
 
-      val caught = intercept[MongoWriteException](await(employmentRepo.collection.insertOne(employmentUserDataOne).toFuture()))
+      private val encryptedEmploymentUserData: EncryptedEmploymentUserData = encryptionService.encryptUserData(employmentUserDataOne)
 
-      caught.getMessage must include("E11000 duplicate key error collection: income-tax-employment-frontend.employmentUserData index: UserDataLookupIndex dup key:")
+      val caught = intercept[MongoWriteException](await(employmentRepo.collection.insertOne(encryptedEmploymentUserData).toFuture()))
+
+      caught.getMessage must
+        include("E11000 duplicate key error collection: income-tax-employment-frontend.employmentUserData index: UserDataLookupIndex dup key:")
     }
   }
 

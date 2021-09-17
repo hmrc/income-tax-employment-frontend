@@ -20,12 +20,13 @@ import com.mongodb.MongoTimeoutException
 import common.UUID
 import models.User
 import models.employment.Expenses
-import models.mongo.{ExpensesCYAModel, ExpensesUserData}
+import models.mongo.{EncryptedExpensesUserData, ExpensesCYAModel, ExpensesUserData}
 import org.joda.time.{DateTime, DateTimeZone}
 import org.mongodb.scala.{MongoException, MongoInternalException, MongoWriteException}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.mvc.AnyContent
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
+import services.EncryptionService
 import uk.gov.hmrc.auth.core.AffinityGroup
 import utils.IntegrationTest
 import utils.PagerDutyHelper.PagerDutyKeys.FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA
@@ -34,11 +35,12 @@ import scala.concurrent.Future
 
 class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits with DefaultAwaitTimeout {
 
-  val repo: ExpensesUserDataRepositoryImpl = app.injector.instanceOf[ExpensesUserDataRepositoryImpl]
+  private val repo: ExpensesUserDataRepositoryImpl = app.injector.instanceOf[ExpensesUserDataRepositoryImpl]
+  private val encryptionService = app.injector.instanceOf[EncryptionService]
 
   private def count = await(repo.collection.countDocuments().toFuture())
 
-  private def find(expensesUserData: ExpensesUserData)(implicit user: User[_]): Future[Option[ExpensesUserData]] = {
+  private def find(expensesUserData: ExpensesUserData)(implicit user: User[_]): Future[Option[EncryptedExpensesUserData]] = {
     repo.collection
       .find(filter = Repository.filterExpenses(user.sessionId, user.mtditid, user.nino, expensesUserData.taxYear))
       .toFuture()
@@ -99,8 +101,7 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
   "clear" should {
     "remove a record" in new EmptyDatabase {
       count mustBe 0
-      val createAttempt: Option[ExpensesUserData] = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
-      createAttempt mustBe Some(expensesUserDataOne)
+      await(repo.createOrUpdate(expensesUserDataOne)(userOne)) mustBe Right()
       count mustBe 1
 
       val clearAttempt: Boolean = await(repo.clear(taxYear)(userOne))
@@ -112,22 +113,20 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
   "createOrUpdate" should {
 
     "create a document in collection when one does not exist" in new EmptyDatabase {
-      val createAttempt: Option[ExpensesUserData] = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
-      createAttempt mustBe Some(expensesUserDataOne)
+      await(repo.createOrUpdate(expensesUserDataOne)(userOne)) mustBe Right()
       count mustBe 1
     }
 
     "update a document in collection when one already exists" in new EmptyDatabase {
-      val createAttempt: Option[ExpensesUserData] = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
-      createAttempt.get mustBe expensesUserDataOne
+      val createAttempt = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
+      createAttempt mustBe Right()
       count mustBe 1
 
       val updatedEmploymentDetails = expensesUserDataOne.expensesCya.expenses.copy(jobExpenses = Some(34234))
       val updatedEmploymentCyaModel = expensesUserDataOne.expensesCya.copy(expenses = updatedEmploymentDetails)
       val updatedEmploymentUserData = expensesUserDataOne.copy(expensesCya = updatedEmploymentCyaModel)
 
-      val updateAttempt: Option[ExpensesUserData] = await(repo.createOrUpdate(updatedEmploymentUserData)(userOne))
-      updateAttempt mustBe Some(updatedEmploymentUserData)
+      await(repo.createOrUpdate(updatedEmploymentUserData)(userOne)) mustBe Right()
       count mustBe 1
     }
   }
@@ -137,31 +136,29 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
       val now = DateTime.now(DateTimeZone.UTC)
       val data = expensesUserDataOne.copy(lastUpdated = now)
 
-      val createResult: Option[ExpensesUserData] = await(repo.createOrUpdate(data)(userOne))
-      createResult mustBe Some(data)
+      await(repo.createOrUpdate(data)(userOne)) mustBe Right()
       count mustBe 1
 
       val findResult = await(repo.find(data.taxYear)(userOne))
 
-      findResult.map(_.copy(lastUpdated = data.lastUpdated)) mustBe Some(data)
-      findResult.map(_.lastUpdated.isAfter(data.lastUpdated)) mustBe Some(true)
+      findResult.right.get.map(_.copy(lastUpdated = data.lastUpdated)) mustBe Some(data)
+      findResult.right.get.map(_.lastUpdated.isAfter(data.lastUpdated)) mustBe Some(true)
     }
 
     "return None when find operation succeeds but no data is found for the given inputs" in new EmptyDatabase {
       val taxYear = 2021
-      val findResult = await(repo.find(taxYear)(userOne))
-
-      findResult mustBe None
+      await(repo.find(taxYear)(userOne)) mustBe Right(None)
     }
   }
 
   "the set indexes" should {
     "enforce uniqueness" in new EmptyDatabase {
-      val createResult: Option[ExpensesUserData] = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
-      createResult mustBe Some(expensesUserDataOne)
+      await(repo.createOrUpdate(expensesUserDataOne)(userOne)) mustBe Right()
       count mustBe 1
 
-      val caught = intercept[MongoWriteException](await(repo.collection.insertOne(expensesUserDataOne).toFuture()))
+      private val encryptedExpensesUserData: EncryptedExpensesUserData = encryptionService.encryptExpenses(expensesUserDataOne)
+
+      val caught = intercept[MongoWriteException](await(repo.collection.insertOne(encryptedExpensesUserData).toFuture()))
 
       caught.getMessage must include("E11000 duplicate key error collection: income-tax-employment-frontend.expensesUserData index: UserDataLookupIndex dup key:")
     }

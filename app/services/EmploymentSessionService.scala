@@ -16,14 +16,11 @@
 
 package services
 
-import java.util.NoSuchElementException
-
 import config.{AppConfig, ErrorHandler}
 import connectors.httpParsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmploymentDataResponse
 import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import connectors.{CreateUpdateEmploymentDataConnector, IncomeTaxUserDataConnector}
 import controllers.employment.routes.{CheckEmploymentDetailsController, EmploymentSummaryController}
-import javax.inject.{Inject, Singleton}
 import models.employment._
 import models.employment.createUpdate._
 import models.mongo.{EmploymentCYAModel, EmploymentUserData, ExpensesCYAModel, ExpensesUserData}
@@ -38,6 +35,8 @@ import repositories.{EmploymentUserDataRepository, ExpensesUserDataRepository}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Clock
 
+import java.util.NoSuchElementException
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
@@ -54,7 +53,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   def findPreviousEmploymentUserData(user: User[_], taxYear: Int, overrideRedirect: Option[Result] = None)(result: AllEmploymentData => Result)
                                     (implicit request: Request[_], hc: HeaderCarrier): Future[Result] = {
 
-    getPriorData(taxYear)(user,hc).map {
+    getPriorData(taxYear)(user, hc).map {
       case Right(IncomeTaxUserData(Some(employmentData))) => result(employmentData)
       case Right(IncomeTaxUserData(None)) =>
         logger.info(s"[EmploymentSessionService][findPreviousEmploymentUserData] No employment data found for user. SessionId: ${user.sessionId}")
@@ -76,21 +75,21 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   def getSessionData(taxYear: Int, employmentId: String)
-                    (implicit user: User[_], request: Request[_]): Future[Either[Result,Option[EmploymentUserData]]] = {
+                    (implicit user: User[_], request: Request[_]): Future[Either[Result, Option[EmploymentUserData]]] = {
     employmentUserDataRepository.find(taxYear, employmentId).map {
       case Left(_) => Left(errorHandler.handleError(INTERNAL_SERVER_ERROR))
       case Right(value) => Right(value)
     }
   }
 
-  def getExpensesSessionData(taxYear: Int)(implicit user: User[_]): Future[Either[Result,Option[ExpensesUserData]]] = {
-    expensesUserDataRepository.find(taxYear).map{
+  def getExpensesSessionData(taxYear: Int)(implicit user: User[_]): Future[Either[Result, Option[ExpensesUserData]]] = {
+    expensesUserDataRepository.find(taxYear).map {
       case Left(_) => Left(errorHandler.handleError(INTERNAL_SERVER_ERROR))
       case Right(value) => Right(value)
     }
   }
 
-  def getSessionDataAndReturnResult(taxYear: Int, employmentId: String)(redirectUrl:String = appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+  def getSessionDataAndReturnResult(taxYear: Int, employmentId: String)(redirectUrl: String = appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
                                    (result: EmploymentUserData => Future[Result])
                                    (implicit user: User[_]): Future[Result] = {
 
@@ -124,7 +123,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
   //scalastyle:off
   def createOrUpdateExpensesSessionData[A](cyaModel: ExpensesCYAModel, taxYear: Int, isPriorSubmission: Boolean)
-                                  (onFail: A)(onSuccess: A)(implicit user: User[_], clock: Clock): Future[A] = {
+                                          (onFail: A)(onSuccess: A)(implicit user: User[_], clock: Clock): Future[A] = {
     val userData = ExpensesUserData(
       user.sessionId,
       user.mtditid,
@@ -147,7 +146,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       case Left(NothingToUpdate) => Future.successful(Redirect(EmploymentSummaryController.show(taxYear)))
       case Left(JourneyNotFinished) =>
         //TODO Route to: journey not finished page / show banner saying not finished / hide submit button when not complete?
-       Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear,cya.employmentId)))
+        Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, cya.employmentId)))
       case Right(model) => result(model)
     }
   }
@@ -176,7 +175,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
         )
       }
     }.toEither match {
-      case Left(error:NoSuchElementException) =>
+      case Left(error: NoSuchElementException) =>
         logger.warn(s"[EmploymentSessionService][cyaAndPriorToCreateUpdateEmploymentRequest] " +
           s"Could not create request model. Journey is not finished. SessionId: ${user.sessionId}.")
         Left(JourneyNotFinished)
@@ -200,12 +199,12 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       )
     }
 
-    lazy val default = EmploymentDataAndDataRemainsUnchanged(newCreateUpdateEmployment,dataHasNotChanged = false)
+    lazy val default = EmploymentDataAndDataRemainsUnchanged(newCreateUpdateEmployment, dataHasNotChanged = false)
     prior.fold[EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmployment]](default) {
       prior =>
         val priorData: Option[EmploymentSource] = employmentSourceToUse(prior, cya.employmentId, false).map(_._1)
 
-        priorData.fold[EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmployment]](default){
+        priorData.fold[EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmployment]](default) {
           prior =>
             EmploymentDataAndDataRemainsUnchanged(newCreateUpdateEmployment, prior.dataHasNotChanged(newCreateUpdateEmployment))
         }
@@ -225,7 +224,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       )
     }
 
-    lazy val default = EmploymentDataAndDataRemainsUnchanged(createUpdateEmploymentData(),dataHasNotChanged = false)
+    lazy val default = EmploymentDataAndDataRemainsUnchanged(createUpdateEmploymentData(), dataHasNotChanged = false)
 
     prior.fold[EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmploymentData]](default) {
       prior =>
@@ -245,16 +244,16 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   def createOrUpdateEmploymentResult(taxYear: Int, employmentRequest: CreateUpdateEmploymentRequest)
-                              (implicit user: User[_], hc: HeaderCarrier): Future[Either[Result,Result]] ={
-    createOrUpdateEmployment(taxYear,employmentRequest).map {
+                                    (implicit user: User[_], hc: HeaderCarrier): Future[Either[Result, Result]] = {
+    createOrUpdateEmployment(taxYear, employmentRequest).map {
       case Left(error) => Left(errorHandler.handleError(error.status))
       case Right(_) => Right(Redirect(EmploymentSummaryController.show(taxYear)))
     }
   }
 
   private def createOrUpdateEmployment(taxYear: Int, employmentRequest: CreateUpdateEmploymentRequest)
-                              (implicit user: User[_], hc: HeaderCarrier): Future[CreateUpdateEmploymentDataResponse] ={
-    createUpdateEmploymentDataConnector.createUpdateEmploymentData(user.nino,taxYear,employmentRequest)(hc.withExtraHeaders("mtditid" -> user.mtditid))
+                                      (implicit user: User[_], hc: HeaderCarrier): Future[CreateUpdateEmploymentDataResponse] = {
+    createUpdateEmploymentDataConnector.createUpdateEmploymentData(user.nino, taxYear, employmentRequest)(hc.withExtraHeaders("mtditid" -> user.mtditid))
   }
 
   def getAndHandle(taxYear: Int, employmentId: String, redirectWhenNoPrior: Boolean = false)(block: (Option[EmploymentUserData], Option[AllEmploymentData]) => Future[Result])
@@ -263,14 +262,13 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       optionalCya <- getSessionData(taxYear, employmentId)
       priorDataResponse <- getPriorData(taxYear)
     } yield {
-
-      if(optionalCya.isRight){
-        if(optionalCya.right.get.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandle] No employment CYA data found for user. SessionId: ${user.sessionId}")
+      if (optionalCya.isRight) {
+        if (optionalCya.right.get.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandle] No employment CYA data found for user. SessionId: ${user.sessionId}")
       }
 
       val employmentDataResponse = priorDataResponse.map(_.employment)
 
-      (optionalCya,employmentDataResponse) match {
+      (optionalCya, employmentDataResponse) match {
         case (Right(None), Right(None)) if redirectWhenNoPrior => logger.info(s"[EmploymentSessionService][getAndHandle] No employment data found for user." +
           s"Redirecting to overview page. SessionId: ${user.sessionId}")
           Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
@@ -284,22 +282,22 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   def getAndHandleExpenses(taxYear: Int)(block: (Option[ExpensesUserData], Option[AllEmploymentData]) => Future[Result])
-                  (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
+                          (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
     val result = for {
       optionalCya <- getExpensesSessionData(taxYear)
       priorDataResponse <- getPriorData(taxYear)
     } yield {
 
-      if(optionalCya.isRight){
-        if(optionalCya.right.get.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandleExpenses] No employment expenses CYA data found for user. SessionId: ${user.sessionId}")
+      if (optionalCya.isRight) {
+        if (optionalCya.right.get.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandleExpenses] No employment expenses CYA data found for user. SessionId: ${user.sessionId}")
       }
 
       val employmentDataResponse = priorDataResponse.map(_.employment)
 
-      (optionalCya,employmentDataResponse) match {
+      (optionalCya, employmentDataResponse) match {
         case (Right(optionalCya), Right(employmentData)) => block(optionalCya, employmentData)
         case (_, Left(error)) => Future(errorHandler.handleError(error.status))
-        case (Left(error), _) => Future(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+        case (Left(_), _) => Future(errorHandler.handleError(INTERNAL_SERVER_ERROR))
       }
     }
 
@@ -313,20 +311,20 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
   }
 
-  def employmentSourceToUse(allEmploymentData: AllEmploymentData, employmentId: String, isInYear: Boolean): Option[(EmploymentSource,Boolean)] = {
-    if(isInYear){
-      allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId)).map((_,false))
+  def employmentSourceToUse(allEmploymentData: AllEmploymentData, employmentId: String, isInYear: Boolean): Option[(EmploymentSource, Boolean)] = {
+    if (isInYear) {
+      allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId)).map((_, false))
     } else {
 
       val hmrcRecord = allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId) && source.dateIgnored.isEmpty)
       val customerRecord = allEmploymentData.customerEmploymentData.find(source => source.employmentId.equals(employmentId))
 
-      customerRecord.fold(hmrcRecord.map((_,false)))(customerRecord => Some(customerRecord,true))
+      customerRecord.fold(hmrcRecord.map((_, false)))(customerRecord => Some(customerRecord, true))
     }
   }
 
-  def getLatestEmploymentData(allEmploymentData: AllEmploymentData, isInYear: Boolean): Seq[EmploymentSource] ={
-    (if(isInYear){
+  def getLatestEmploymentData(allEmploymentData: AllEmploymentData, isInYear: Boolean): Seq[EmploymentSource] = {
+    (if (isInYear) {
       allEmploymentData.hmrcEmploymentData
     } else {
       //Filters out hmrc data that has been ignored
@@ -336,18 +334,18 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }).sorted(Ordering.by((_: EmploymentSource).submittedOn).reverse)
   }
 
-  def getLatestExpenses(allEmploymentData: AllEmploymentData, isInYear: Boolean): Option[(EmploymentExpenses, Boolean)] ={
-    if(isInYear){
-      allEmploymentData.hmrcExpenses.map((_,false))
+  def getLatestExpenses(allEmploymentData: AllEmploymentData, isInYear: Boolean): Option[(EmploymentExpenses, Boolean)] = {
+    if (isInYear) {
+      allEmploymentData.hmrcExpenses.map((_, false))
     } else {
       val hmrcExpenses = allEmploymentData.hmrcExpenses.filter(_.dateIgnored.isEmpty)
       val customerExpenses = allEmploymentData.customerExpenses
 
-      if(hmrcExpenses.isDefined && customerExpenses.isDefined && hmrcExpenses.get.dateIgnored.isEmpty){
+      if (hmrcExpenses.isDefined && customerExpenses.isDefined && hmrcExpenses.get.dateIgnored.isEmpty) {
         logger.warn("[EmploymentSessionService][getLatestExpenses] Hmrc expenses and customer expenses exist but hmrc expenses have not been ignored")
       }
 
-      allEmploymentData.customerExpenses.fold(allEmploymentData.hmrcExpenses.map((_,false)))(customerExpenses => Some(customerExpenses,true))
+      allEmploymentData.customerExpenses.fold(allEmploymentData.hmrcExpenses.map((_, false)))(customerExpenses => Some(customerExpenses, true))
     }
   }
 }

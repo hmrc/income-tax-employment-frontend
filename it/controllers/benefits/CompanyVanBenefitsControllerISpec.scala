@@ -16,6 +16,7 @@
 
 package controllers.benefits
 
+import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.employment.{BenefitsViewModel, CarVanFuelModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -26,7 +27,6 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import controllers.employment.routes.CheckYourBenefitsController
 
 class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -57,6 +57,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
     )
 
   def emptyCarVanFuelModel: CarVanFuelModel = CarVanFuelModel(None)
+
   def emptyCompanyVanModel: CarVanFuelModel = fullCarVanFuelModel.copy(vanQuestion = None, van = None)
 
   def benefits(carModel: CarVanFuelModel): BenefitsViewModel = BenefitsViewModel(Some(carModel), isUsingCustomerData = true)
@@ -139,9 +140,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "render the company van benefits question page with no pre-filled radio buttons" which {
-
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true)), userRequest)
@@ -363,13 +362,9 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, yesRadioButtonSelector)
 
           welshToggleCheck(user.isWelsh)
-
         }
       }
-
     }
-
   }
-
 }
 

@@ -16,18 +16,17 @@
 
 package utils
 
-import java.security.{InvalidAlgorithmParameterException, InvalidKeyException, NoSuchAlgorithmException, SecureRandom}
-import java.util.Base64
-
 import config.AppConfig
-import javax.crypto._
-import javax.crypto.spec.{GCMParameterSpec, SecretKeySpec}
-import javax.inject.{Inject, Singleton}
 import models.mongo.TextAndKey
 import play.api.Logging
 import play.api.libs.json.{Json, OFormat}
 import utils.TypeCaster.Converter
 
+import java.security.{InvalidAlgorithmParameterException, InvalidKeyException, NoSuchAlgorithmException, SecureRandom}
+import java.util.Base64
+import javax.crypto._
+import javax.crypto.spec.{GCMParameterSpec, SecretKeySpec}
+import javax.inject.{Inject, Singleton}
 import scala.util.{Failure, Success, Try}
 
 case class EncryptedValue(value: String, nonce: String)
@@ -55,7 +54,7 @@ class SecureGCMCipher @Inject()(implicit private val appConfig: AppConfig) exten
   private[utils] def getCipherInstance: Cipher = Cipher.getInstance(ALGORITHM_TO_TRANSFORM_STRING)
 
   def encrypt[T](valueToEncrypt: T)(implicit textAndKey: TextAndKey): EncryptedValue = {
-    if(appConfig.useEncryption){
+    if (appConfig.useEncryption) {
       val initialisationVector = generateInitialisationVector
       val nonce = new String(Base64.getEncoder.encode(initialisationVector))
       val gcmParameterSpec = new GCMParameterSpec(TAG_BIT_LENGTH, initialisationVector)
@@ -70,7 +69,7 @@ class SecureGCMCipher @Inject()(implicit private val appConfig: AppConfig) exten
   }
 
   def decrypt[T](valueToDecrypt: String, nonce: String)(implicit textAndKey: TextAndKey, converter: Converter[T]): T = {
-    if(appConfig.useEncryption) {
+    if (appConfig.useEncryption) {
       val initialisationVector = Base64.getDecoder.decode(nonce)
       val gcmParameterSpec = new GCMParameterSpec(TAG_BIT_LENGTH, initialisationVector)
       val secretKey = validateSecretKey(textAndKey.aesKey, METHOD_DECRYPT)
@@ -95,7 +94,7 @@ class SecureGCMCipher @Inject()(implicit private val appConfig: AppConfig) exten
 
   private def validateSecretKey(key: String, method: String): SecretKey = Try {
     val decodedKey = Base64.getDecoder.decode(key)
-    new SecretKeySpec(decodedKey, 0 , decodedKey.length, ALGORITHM_KEY)
+    new SecretKeySpec(decodedKey, 0, decodedKey.length, ALGORITHM_KEY)
   } match {
     case Success(secretKey) => secretKey
     case Failure(ex) => throw new EncryptionDecryptionException(method, "The key provided is invalid", ex.getMessage)

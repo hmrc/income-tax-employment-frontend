@@ -203,25 +203,25 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  def fullEmploymentsModel(hmrcEmployment:Seq[EmploymentSource]=Seq(employmentDetailsAndBenefits()),
-                           hmrcExpenses:Option[EmploymentExpenses]=Some(employmentExpenses),
-                           customerEmployment:Seq[EmploymentSource]=Seq(),
-                           customerExpenses:Option[EmploymentExpenses]=None): AllEmploymentData = AllEmploymentData(
+  def fullEmploymentsModel(hmrcEmployment: Seq[EmploymentSource] = Seq(employmentDetailsAndBenefits()),
+                           hmrcExpenses: Option[EmploymentExpenses] = Some(employmentExpenses),
+                           customerEmployment: Seq[EmploymentSource] = Seq(),
+                           customerExpenses: Option[EmploymentExpenses] = None): AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = hmrcEmployment,
     hmrcExpenses = hmrcExpenses,
     customerEmploymentData = customerEmployment,
     customerExpenses = customerExpenses)
 
-  def employmentDetailsAndBenefits(benefits: Option[EmploymentBenefits]=None,
-                                   employmentId:String= "001",
-                                   employerName:String="maggie",
-                                   employerRef:Option[String]=Some("223/AB12399"),
-                                   startDate:Option[String]=Some("2019-04-21"),
-                                   dateIgnored: Option[String]=None,
-                                   submittedOn: Option[String]=Some("2020-01-04T05:01:01Z"),
-                                   taxablePayToDate:Option[BigDecimal]=Some(34234.15),
-                                   totalTaxToDate:Option[BigDecimal]=Some(6782.92)
-                                   ): EmploymentSource = {
+  def employmentDetailsAndBenefits(benefits: Option[EmploymentBenefits] = None,
+                                   employmentId: String = "001",
+                                   employerName: String = "maggie",
+                                   employerRef: Option[String] = Some("223/AB12399"),
+                                   startDate: Option[String] = Some("2019-04-21"),
+                                   dateIgnored: Option[String] = None,
+                                   submittedOn: Option[String] = Some("2020-01-04T05:01:01Z"),
+                                   taxablePayToDate: Option[BigDecimal] = Some(34234.15),
+                                   totalTaxToDate: Option[BigDecimal] = Some(6782.92)
+                                  ): EmploymentSource = {
     EmploymentSource(
       employmentId = employmentId,
       employerName = employerName,
@@ -315,9 +315,8 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "employmentId",
     isPriorSubmission = true,
     EmploymentCYAModel(
-      EmploymentDetails("Employer Name",currentDataIsHmrcHeld = true),
+      EmploymentDetails("Employer Name", currentDataIsHmrcHeld = true),
       None
     )
   )
-
 }
