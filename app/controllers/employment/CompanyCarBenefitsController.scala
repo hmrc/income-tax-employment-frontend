@@ -101,7 +101,7 @@ class CompanyCarBenefitsController @Inject()(implicit val cc: MessagesController
 
 
   private def buildForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = "CompanyCarBenefits.error"
+    missingInputError = s"CompanyCarBenefits.error.${if(user.isAgent) "agent" else "individual"}"
   )
 
 }
