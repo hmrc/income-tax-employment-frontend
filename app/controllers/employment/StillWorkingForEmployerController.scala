@@ -19,36 +19,28 @@ package controllers.employment
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import forms.employment.EmploymentStartDateForm
 import models.User
-import models.employment.EmploymentDate
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
 import services.RedirectService.employmentDetailsRedirect
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.DateTimeUtil.localDateTimeFormat
 import utils.{Clock, SessionHelper}
-import views.html.employment.EmployerStartDateView
 import views.html.employment.StillWorkingForEmployerView
-import java.time.LocalDate
+
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class StillWorkingForEmployerController @Inject()(authorisedAction: AuthorisedAction,
                                                   val mcc: MessagesControllerComponents,
                                                   implicit val appConfig: AppConfig,
-                                                  //employerStartDateView: EmployerStartDateView,
                                                   stillWorkingForEmployerView: StillWorkingForEmployerView,
                                                   inYearAction: InYearAction,
                                                   errorHandler: ErrorHandler,
                                                   employmentSessionService: EmploymentSessionService,
                                                   implicit val clock: Clock,
                                                   implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
-
-
-  //def form: Form[EmploymentDate] = EmploymentStartDateForm.employmentStartDateForm
 
   def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
     missingInputError = s"employment.stillWorkingForEmployer.error.${if (user.isAgent) "agent" else "individual"}"
@@ -57,83 +49,49 @@ class StillWorkingForEmployerController @Inject()(authorisedAction: AuthorisedAc
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
-        data.employment.employmentDetails.stillWorkingQuestion match {
+        data.employment.employmentDetails.cessationDateQuestion match {
           case Some(isStillWorkingForEmployer) =>
-            //val parsedDate: LocalDate = LocalDate.parse(startDate, localDateTimeFormat)
-            //val filledForm: Form[EmploymentDate] = form.fill(
-              //EmploymentDate(parsedDate.getDayOfMonth.toString,parsedDate.getMonthValue.toString, parsedDate.getYear.toString))
-            //Future.successful(Ok(employerStartDateView(filledForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
-
             Future.successful(Ok(stillWorkingForEmployerView(yesNoForm.fill(isStillWorkingForEmployer), taxYear,
-              employmentId,data.employment.employmentDetails.employerName)))
+              employmentId, data.employment.employmentDetails.employerName)))
           case None =>
-            Future.successful(Ok(stillWorkingForEmployerView(yesNoForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
+            if (data.isPriorSubmission) {
+              // prepopulation
+              val isStillWorkingForEmployer = data.employment.employmentDetails.cessationDate.isEmpty
+              Future.successful(Ok(stillWorkingForEmployerView(yesNoForm.fill(isStillWorkingForEmployer), taxYear,
+                employmentId, data.employment.employmentDetails.employerName)))
+            }
+            else {
+              Future.successful(Ok(stillWorkingForEmployerView(yesNoForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
+            }
         }
       }
     }
   }
 
-    def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
-      inYearAction.notInYear(taxYear) {
-        employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
-          yesNoForm.bindFromRequest().fold(
-            { formWithErrors =>
-              Future.successful(BadRequest(stillWorkingForEmployerView(formWithErrors, taxYear, employmentId,
-                data.employment.employmentDetails.employerName)))
-            },
-            { yesNo =>
-              val cya = data.employment
-              val updatedCya = cya.copy(cya.employmentDetails.copy(stillWorkingQuestion = Some(yesNo)))
-              employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear,
-                data.isPriorSubmission)(errorHandler.internalServerError()) {
-                employmentDetailsRedirect(updatedCya, taxYear, employmentId, data.isPriorSubmission)
-              }
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
+    inYearAction.notInYear(taxYear) {
+      employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
+        yesNoForm.bindFromRequest().fold(
+          { formWithErrors =>
+            Future.successful(BadRequest(stillWorkingForEmployerView(formWithErrors, taxYear, employmentId,
+              data.employment.employmentDetails.employerName)))
+          },
+          { yesNo =>
+            val cya = data.employment
+            val cessationDateUpdated = if (yesNo) {
+              None
+            } else {
+              cya.employmentDetails.cessationDate
             }
-          )
-        }
+            val updatedCya = cya.copy(cya.employmentDetails.copy(cessationDateQuestion = Some(yesNo), cessationDate = cessationDateUpdated))
+            employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear,
+              data.isPriorSubmission)(errorHandler.internalServerError()) {
+              //TODO: if value is true - change redirect to cessation date when page is available otherwise taxablePayToDate
+              employmentDetailsRedirect(updatedCya, taxYear, employmentId, data.isPriorSubmission)
+            }
+          }
+        )
       }
-    }}
-
-//    def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
-//      inYearAction.notInYear(taxYear) {
-//
-//        employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
-//
-//          yesNoForm.bindFromRequest().fold(
-//            formWithErrors => Future.successful(BadRequest(stillWorkingForEmployerView(formWithErrors, taxYear, employmentId))),
-//            yesNo => {
-//              val cya = data.employment
-//              val updatedCya = cya.copy(cya.employmentDetails.copy(stillWorkingQuestion = Some(yesNo)))
-//              employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
-//                employmentDetailsRedirect(updatedCya,taxYear,employmentId,data.isPriorSubmission)
-//              }
-//            }
-//
-//
-//
-//
-//
-//    }
-//
-
-
-//  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
-//    inYearAction.notInYear(taxYear) {
-//      employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
-//        val newForm = form.bindFromRequest()
-//          newForm.copy(errors = EmploymentStartDateForm.verifyNewDate(newForm.get, taxYear, user.isAgent)).fold(
-//          { formWithErrors =>
-//            Future.successful(BadRequest(employerStartDateView(formWithErrors, taxYear, employmentId, data.employment.employmentDetails.employerName)))
-//          },
-//          { submittedDate =>
-//            val cya = data.employment
-//            val updatedCya = cya.copy(cya.employmentDetails.copy(startDate = Some(submittedDate.toLocalDate.toString)))
-//            employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
-//              employmentDetailsRedirect(updatedCya,taxYear,employmentId,data.isPriorSubmission)
-//            }
-//          }
-//        )
-//      }
-//    }
-//  }
-
+    }
+  }
+}

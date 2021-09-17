@@ -22,7 +22,6 @@ import play.api.libs.json.{Json, OFormat}
 case class EmploymentDetails(employerName: String,
                              employerRef: Option[String] = None,
                              startDate: Option[String] = None,
-                             stillWorkingQuestion: Option[Boolean] = None,
                              payrollId: Option[String] = None,
                              cessationDateQuestion: Option[Boolean] = None,
                              cessationDate: Option[String] = None,
@@ -37,7 +36,8 @@ case class EmploymentDetails(employerName: String,
     employerRef.isDefined &&
       startDate.isDefined &&
       taxablePayToDate.isDefined &&
-      totalTaxToDate.isDefined //TODO Add extra mandatory fields such as cessationDateQuestion when introduced.
+      totalTaxToDate.isDefined &&
+      cessationDateQuestion.isDefined //TODO Add extra mandatory fields such as cessationDateQuestion when introduced.
   }
 }
 object EmploymentDetails {
@@ -53,8 +53,9 @@ case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
       employmentDetails.employerRef,
       employmentId,
       employmentDetails.startDate,
-      employmentDetails.stillWorkingQuestion,
-      Some(employmentDetails.cessationDate.isDefined),
+      //TODO: could use the below for cessationDateQuestion when cessation date is implemented
+      //cessationDateQuestion = Some(employmentDetails.cessationDate.isEmpty),
+      employmentDetails.cessationDateQuestion,
       employmentDetails.cessationDate,
       employmentDetails.taxablePayToDate,
       employmentDetails.totalTaxToDate,

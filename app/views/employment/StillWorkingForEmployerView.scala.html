@@ -34,9 +34,7 @@
 
 @hasFormErrors = @{form.hasErrors}
 
-@contentHtml = {
-    <div>@{messages("benefits.carVanFuel.thisIncludes")}</div>
-}
+
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
 
@@ -46,7 +44,7 @@
         @inputRadio(
             form = form,
             heading = headingForUse,
-            content = Some(contentHtml),
+            content = None,
             classes = "govuk-!-margin-bottom-4",
             inline = true,
             subheading = Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString))
