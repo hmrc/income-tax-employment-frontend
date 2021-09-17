@@ -505,9 +505,10 @@ benefits.carVanFuel.thisIncludes = This includes benefits such as company cars o
 benefits.carVanFuel.error.individual = Select yes if you got car, van or fuel benefits
 benefits.carVanFuel.error.agent = Select yes if your client got car, van or fuel benefits
 
-CompanyCarBenefits.error = Select yes if you received a benefit for a company car
-CompanyCarBenefits.header.individual = Did you receive a benefit for a company car?
-CompanyCarBenefits.header.agent = Did your client receive a benefit for a company car?
+CompanyCarBenefits.error.individual = Select yes if you got a company car benefit
+CompanyCarBenefits.error.agent = Select yes if your client got a company car benefit
+CompanyCarBenefits.header.individual = Did you get a company car benefit?
+CompanyCarBenefits.header.agent = Did your client get a company car benefit?
 
 benefits.companyVanBenefits.title.individual = Did you get a company van benefit?
 benefits.companyVanBenefits.title.agent = Did your client get a company van benefit?

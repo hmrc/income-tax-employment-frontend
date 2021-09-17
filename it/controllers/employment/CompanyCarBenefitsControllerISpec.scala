@@ -16,6 +16,7 @@
 
 package controllers.employment
 
+import forms.YesNoForm
 import models.User
 import models.employment.BenefitsViewModel
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -40,13 +41,14 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
   object Selectors {
-
+    val yesSelector = "#value"
+    val noSelector = "#value-no"
   }
 
   trait SpecificExpectedResults {
     val expectedTitle: String
     val expectedH1: String
-
+    val expectedError: String
   }
 
 
@@ -57,27 +59,28 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle: String = "Did you receive a benefit for a company car?"
-    val expectedH1: String = "Did you receive a benefit for a company car?"
+    val expectedTitle: String = "Did you get a company car benefit?"
+    val expectedH1: String = "Did you get a company car benefit?"
+    val expectedError: String = "Select yes if you got a company car benefit"
 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "Did you receive a benefit for a company car?"
-    val expectedH1: String = "Did you receive a benefit for a company car?"
-
+    val expectedTitle: String = "Did you get a company car benefit?"
+    val expectedH1: String = "Did you get a company car benefit?"
+    val expectedError: String = "Select yes if you got a company car benefit"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle: String = "Did your client receive a benefit for a company car?"
-    val expectedH1: String = "Did your client receive a benefit for a company car?"
-
+    val expectedTitle: String = "Did your client get a company car benefit?"
+    val expectedH1: String =  "Did your client get a company car benefit?"
+    val expectedError: String = "Select yes if your client got a company car benefit"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "Did your client receive a benefit for a company car?"
-    val expectedH1: String = "Did your client receive a benefit for a company car?"
-
+    val expectedTitle: String = "Did your client get a company car benefit?"
+    val expectedH1: String =  "Did your client get a company car benefit?"
+    val expectedError: String = "Select yes if your client got a company car benefit"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -122,6 +125,37 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             captionCheck(user.commonExpectedResults.expectedCaption)
             radioButtonCheck(user.commonExpectedResults.radioTextYes, 1)
 
+          radioButtonCheck(user.commonExpectedResults.radioTextNo, 2)
+        }
+      }
+    }
+  }
+
+  ".submit" when {
+    import Selectors._
+
+    userScenarios.foreach { user =>
+      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+
+        "return a radio button page when not in year and a bad for submission" which {
+
+          lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
+
+          implicit lazy val result: WSResponse = {
+            dropEmploymentDB()
+            insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true)), userRequest)
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear)
+            urlPost(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = form)
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          titleCheck("Error: " + user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption)
+          errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
+          errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
+          radioButtonCheck(user.commonExpectedResults.radioTextYes, 1)
           radioButtonCheck(user.commonExpectedResults.radioTextNo, 2)
         }
       }
