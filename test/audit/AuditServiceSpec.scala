@@ -53,7 +53,7 @@ class AuditServiceSpec extends UnitTestWithApp {
           .returns(expected)
 
         val event = AuditModel(auditType, transactionName, eventDetails)
-        target.auditModel(event) shouldBe expected
+        target.sendAudit(event) shouldBe expected
       }
 
 
@@ -70,7 +70,7 @@ class AuditServiceSpec extends UnitTestWithApp {
 
         val event = AuditModel(auditType, transactionName, eventDetails)
 
-        target.auditModel(event)
+        target.sendAudit(event)
       }
 
       "generates an event with the correct auditType" in new Test {
@@ -85,7 +85,7 @@ class AuditServiceSpec extends UnitTestWithApp {
 
         val event = AuditModel(auditType, transactionName, eventDetails)
 
-        target.auditModel(event)
+        target.sendAudit(event)
       }
 
       "generates an event with the correct details" in new Test {
@@ -100,7 +100,7 @@ class AuditServiceSpec extends UnitTestWithApp {
 
         val event = AuditModel(auditType, transactionName, eventDetails)
 
-        target.auditModel(event)
+        target.sendAudit(event)
       }
 
       "generates an event with the correct transactionName" in new Test {
@@ -115,7 +115,7 @@ class AuditServiceSpec extends UnitTestWithApp {
 
         val event = AuditModel(auditType, transactionName, eventDetails)
 
-        target.auditModel(event)
+        target.sendAudit(event)
       }
     }
   }

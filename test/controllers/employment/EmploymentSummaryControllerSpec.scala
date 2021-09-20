@@ -89,7 +89,8 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
       None
     )
 
-    val oneEmploymentSourceData: AllEmploymentData = AllEmploymentData(
+    val oneEmploymentSourceData:
+      AllEmploymentData = AllEmploymentData(
       hmrcEmploymentData = Seq(employmentSource1),
       hmrcExpenses = None,
       customerEmploymentData = Seq(),

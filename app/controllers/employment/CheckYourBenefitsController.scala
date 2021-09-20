@@ -114,7 +114,7 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
   def performAuditAndRenderView(benefits: Benefits, taxYear: Int, isInYear: Boolean,
                                 employmentId: String, isUsingCustomerData: Boolean, cya: Option[BenefitsViewModel] = None)(implicit user: User[AnyContent]): Result ={
     val auditModel = ViewEmploymentBenefitsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, benefits)
-    auditService.auditModel[ViewEmploymentBenefitsAudit](auditModel.toAuditModel)
+    auditService.sendAudit[ViewEmploymentBenefitsAudit](auditModel.toAuditModel)
     if(isInYear){
       Ok(checkYourBenefitsView(taxYear, benefits))
     } else {
