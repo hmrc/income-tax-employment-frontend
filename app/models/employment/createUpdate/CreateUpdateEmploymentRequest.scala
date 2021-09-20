@@ -16,13 +16,74 @@
 
 package models.employment.createUpdate
 
-import models.employment.{Benefits, Deductions}
+import audit.{AmendEmploymentDetailsUpdateAudit, AuditEmploymentData, AuditNewEmploymentData, CreateNewEmploymentDetailsAudit, PriorEmploymentAuditInfo}
+import models.User
+import models.employment.{Benefits, Deductions, EmploymentSource}
 import play.api.libs.json.{Json, OFormat}
 
 case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
                                          employment: Option[CreateUpdateEmployment] = None,
                                          employmentData: Option[CreateUpdateEmploymentData] = None,
-                                         hmrcEmploymentIdToIgnore: Option[String] = None)
+                                         hmrcEmploymentIdToIgnore: Option[String] = None){
+
+  def toCreateAuditModel(taxYear: Int, existingEmployments: Seq[PriorEmploymentAuditInfo])(implicit user: User[_]): CreateNewEmploymentDetailsAudit = {
+
+    CreateNewEmploymentDetailsAudit(
+      taxYear = taxYear,
+      userType = user.affinityGroup.toLowerCase,
+      nino = user.nino,
+      mtditid = user.mtditid,
+      employmentData = AuditNewEmploymentData(
+        employerName = employment.map(_.employerName),
+        employerRef = employment.flatMap(_.employerRef),
+        startDate = employment.map(_.startDate),
+        cessationDate = employment.flatMap(_.cessationDate),
+        taxablePayToDate = employmentData.map(_.pay.taxablePayToDate),
+        totalTaxToDate = employmentData.map(_.pay.totalTaxToDate),
+        payrollId = employment.flatMap(_.payrollId)
+      ),
+      existingEmployments = existingEmployments
+    )
+  }
+
+  def toAmendAuditModel(employmentId: String, taxYear: Int, priorData: EmploymentSource)(implicit user: User[_]): AmendEmploymentDetailsUpdateAudit = {
+
+    def currentOrPrior[T](data: Option[T], priorData: Option[T]): Option[T] ={
+      (data, priorData) match {
+        case (data@Some(_), _) => data
+        case (_, priorData@Some(_)) => priorData
+        case _ => None
+      }
+    }
+
+    AmendEmploymentDetailsUpdateAudit(
+      taxYear = taxYear,
+      userType = user.affinityGroup.toLowerCase,
+      nino = user.nino,
+      mtditid = user.mtditid,
+      priorEmploymentData = AuditEmploymentData(
+        employerName = priorData.employerName,
+        employerRef = priorData.employerRef,
+        employmentId = priorData.employmentId,
+        startDate = priorData.startDate,
+        cessationDate = priorData.cessationDate,
+        taxablePayToDate = priorData.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
+        totalTaxToDate = priorData.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
+        payrollId = priorData.payrollId
+      ),
+      employmentData = AuditEmploymentData(
+        employerName = employment.map(_.employerName).getOrElse(priorData.employerName),
+        employerRef = currentOrPrior(employment.flatMap(_.employerRef), priorData.employerRef),
+        employmentId = employmentId,
+        startDate = currentOrPrior(employment.map(_.startDate), priorData.startDate),
+        cessationDate = currentOrPrior(employment.flatMap(_.cessationDate), priorData.cessationDate),
+        taxablePayToDate =  currentOrPrior(employmentData.map(_.pay.taxablePayToDate), priorData.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate))),
+        totalTaxToDate = currentOrPrior(employmentData.map(_.pay.totalTaxToDate), priorData.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))),
+        payrollId = currentOrPrior(employment.flatMap(_.payrollId), priorData.payrollId)
+      )
+    )
+  }
+}
 
 object CreateUpdateEmploymentRequest {
   implicit val formats: OFormat[CreateUpdateEmploymentRequest] = Json.format[CreateUpdateEmploymentRequest]

@@ -675,8 +675,133 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData.copy(employment = employmentData),userRequest)
+            insertCyaData(employmentUserData.copy(employment = employmentData).copy(employmentId = "001"),userRequest)
+            userDataStub(userData(fullEmploymentsModel().copy(customerEmploymentData = fullEmploymentsModel().hmrcEmploymentData)), nino, 2021)
+
+            val model = CreateUpdateEmploymentRequest(
+              Some("001"),
+              Some(
+                CreateUpdateEmployment(
+                  employmentData.employmentDetails.employerRef,
+                  employmentData.employmentDetails.employerName,
+                  employmentData.employmentDetails.startDate.get
+                )
+              ),
+              Some(
+                CreateUpdateEmploymentData(
+                  pay = CreateUpdatePay(
+                    employmentData.employmentDetails.taxablePayToDate.get,
+                    employmentData.employmentDetails.totalTaxToDate.get,
+                  ),
+                  deductions = Some(
+                    Deductions(
+                      Some(StudentLoans(
+                        Some(100),
+                        Some(100)
+                      ))
+                    )
+                  )
+                )
+              )
+            )
+
+            stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
+              Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+
+            urlPost(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false,
+              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)),body = "{}")
+          }
+
+          "has an SEE OTHER status" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear-1).url)
+            findCyaData(taxYear,employmentId,userRequest) shouldBe None
+          }
+        }
+        //noinspection ScalaStyle
+        "create the model to update the data and return the correct redirect when there is a hmrc employment to ignore" which {
+
+          val employmentData: EmploymentCYAModel = {
+            employmentUserData.employment.copy(employmentDetails = employmentUserData.employment.employmentDetails.copy(
+              employerRef = Some(
+                "123/12345"
+              ),
+              startDate = Some("2020-11-11"),
+              taxablePayToDate= Some(55.99),
+              totalTaxToDate= Some(3453453.00),
+              currentDataIsHmrcHeld = false
+            ))
+          }
+
+          val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+          implicit lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            insertCyaData(employmentUserData.copy(employment = employmentData).copy(employmentId = "001"),userRequest)
             userDataStub(userData(fullEmploymentsModel()), nino, 2021)
+
+            val model = CreateUpdateEmploymentRequest(
+              None,
+              Some(
+                CreateUpdateEmployment(
+                  employmentData.employmentDetails.employerRef,
+                  employmentData.employmentDetails.employerName,
+                  employmentData.employmentDetails.startDate.get
+                )
+              ),
+              Some(
+                CreateUpdateEmploymentData(
+                  pay = CreateUpdatePay(
+                    employmentData.employmentDetails.taxablePayToDate.get,
+                    employmentData.employmentDetails.totalTaxToDate.get,
+                  ),
+                  deductions = Some(
+                    Deductions(
+                      Some(StudentLoans(
+                        Some(100),
+                        Some(100)
+                      ))
+                    )
+                  )
+                )
+              ),
+              Some("001")
+            )
+
+            stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
+              Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+
+            urlPost(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false,
+              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)),body = "{}")
+          }
+
+          "has an SEE OTHER status" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear-1).url)
+            findCyaData(taxYear,employmentId,userRequest) shouldBe None
+          }
+        }
+        //noinspection ScalaStyle
+        "create the model to create the data and return the correct redirect" which {
+
+          val employmentData: EmploymentCYAModel = {
+            employmentUserData.employment.copy(employmentDetails = employmentUserData.employment.employmentDetails.copy(
+              employerRef = Some(
+                "123/12345"
+              ),
+              startDate = Some("2020-11-11"),
+              taxablePayToDate= Some(55.99),
+              totalTaxToDate= Some(3453453.00),
+              currentDataIsHmrcHeld = false
+            ))
+          }
+
+          val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+          implicit lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            insertCyaData(employmentUserData.copy(employment = employmentData),userRequest)
+            noUserDataStub(nino, 2021)
 
             val model = CreateUpdateEmploymentRequest(
               None,
