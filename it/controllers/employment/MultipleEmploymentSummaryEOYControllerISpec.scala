@@ -70,6 +70,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val youMustTell: String
     val expectedErrorText: String
     val yourEmpInfo: String
+    val changeExpenses: String
+    val removeExpenses: String
   }
 
   trait CommonExpectedResults {
@@ -78,8 +80,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val doYouNeedAnother: String
     val yesText: String
     val noText: String
-    val change: String
-    val remove: String
+    def change(employerName: String): String
+    def remove(employerName: String): String
     val employerName: String
     val employerName2: String
     val thisIsATotal: String
@@ -92,8 +94,10 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val doYouNeedAnother: String = "Do you need to add another employment?"
     val yesText: String = "Yes"
     val noText: String = "No"
-    val change: String = "Change"
-    val remove: String = "Remove"
+    def change(employerName: String): String = s"Change Change employment information for $employerName"
+    def remove(employerName: String): String = s"Remove Remove employment information for $employerName"
+    val changeExpenses: String = "Change"
+    val removeExpenses: String = "Remove"
     val employerName: String = "Maggie"
     val employerName2: String = "Argos"
     val thisIsATotal: String = "This is a total of expenses from all employment in the tax year."
@@ -106,8 +110,10 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val doYouNeedAnother: String = "Do you need to add another employment?"
     val yesText: String = "Yes"
     val noText: String = "No"
-    val change: String = "Change"
-    val remove: String = "Remove"
+    def change(employerName: String): String = s"Change Change employment information for $employerName"
+    def remove(employerName: String): String = s"Remove Remove employment information for $employerName"
+    val changeExpenses: String = "Change"
+    val removeExpenses: String = "Remove"
     val employerName: String = "Maggie"
     val employerName2: String = "Argos"
     val thisIsATotal: String = "This is a total of expenses from all employment in the tax year."
@@ -121,6 +127,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val expectedErrorText = "Select yes if you need to add another employment"
     val yourEmpInfo: String = "Your employment information is based on the information we already hold about you."
     val youMustTell: String = "You must tell us about all your employment."
+    val changeExpenses: String = "Change Change your expenses from all employment this tax year"
+    val removeExpenses: String = "Remove Remove your expenses from all employment this tax year"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -130,6 +138,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val expectedErrorText = "Select yes if you need to add another employment"
     val yourEmpInfo: String = "Your client’s employment information is based on the information we already hold about them."
     val youMustTell: String = "You must tell us about all your client’s employment."
+    val changeExpenses: String = "Change Change your client’s expenses from all employment this tax year"
+    val removeExpenses: String = "Remove Remove your client’s expenses from all employment this tax year"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -139,6 +149,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val expectedErrorText = "Select yes if you need to add another employment"
     val yourEmpInfo: String = "Your employment information is based on the information we already hold about you."
     val youMustTell: String = "You must tell us about all your employment."
+    val changeExpenses: String = "Change Change your expenses from all employment this tax year"
+    val removeExpenses: String = "Remove Remove your expenses from all employment this tax year"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -148,6 +160,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val expectedErrorText = "Select yes if you need to add another employment"
     val yourEmpInfo: String = "Your client’s employment information is based on the information we already hold about them."
     val youMustTell: String = "You must tell us about all your client’s employment."
+    val changeExpenses: String = "Change Change your client’s expenses from all employment this tax year"
+    val removeExpenses: String = "Remove Remove your client’s expenses from all employment this tax year"
   }
 
   private def url(taxYear: Int) = s"$appUrl/$taxYear/employment-summary"
@@ -240,17 +254,17 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
 
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(2))
             textOnPageCheck(employerName, employerName1Selector(3))
-            linkCheck(change, changeLink1Selector(3), changeLinkHref(employmentId1))
-            linkCheck(remove, removeLink1Selector(3), removeLinkHref(employmentId1))
+            linkCheck(change(employerName), changeLink1Selector(3), changeLinkHref(employmentId1))
+            linkCheck(remove(employerName), removeLink1Selector(3), removeLinkHref(employmentId1))
             textOnPageCheck(employerName2, employerName2Selector(3))
-            linkCheck(change, changeLink2Selector(3), changeLinkHref(employmentId2))
-            linkCheck(remove, removeLink2Selector(3), removeLinkHref(employmentId2))
+            linkCheck(change(employerName2), changeLink2Selector(3), changeLinkHref(employmentId2))
+            linkCheck(remove(employerName2), removeLink2Selector(3), removeLinkHref(employmentId2))
             textOnPageCheck(expensesText, expensesHeaderSelector)
             textOnPageCheck(thisIsATotal, thisIsATotalSelector(5))
             "has an expenses section" should {
               textOnPageCheck(expensesText, expensesSelector(6))
-              linkCheck(change, changeExpensesSelector(6), "/income-through-software/return/employment-income/2021/check-employment-expenses")
-              linkCheck(remove, removeExpensesSelector(6), "/income-through-software/return/employment-income/2021/check-employment-expenses")
+              linkCheck(specific.changeExpenses, changeExpensesSelector(6), "/income-through-software/return/employment-income/2021/check-employment-expenses")
+              linkCheck(specific.removeExpenses, removeExpensesSelector(6), "/income-through-software/return/employment-income/2021/check-employment-expenses")
             }
             textOnPageCheck(doYouNeedAnother, doYouNeedAnotherSelector)
             textOnPageCheck(specific.youMustTell, youMustTellSelector)
@@ -283,17 +297,17 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
 
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(2))
             textOnPageCheck(employerName, employerName1Selector(3))
-            linkCheck(change, changeLink1Selector(3), changeLinkHref(employmentId1))
-            linkCheck(remove, removeLink1Selector(3), removeLinkHref(employmentId1))
+            linkCheck(change(employerName), changeLink1Selector(3), changeLinkHref(employmentId1))
+            linkCheck(remove(employerName), removeLink1Selector(3), removeLinkHref(employmentId1))
             textOnPageCheck(employerName2, employerName2Selector(3))
-            linkCheck(change, changeLink2Selector(3), changeLinkHref(employmentId2))
-            linkCheck(remove, removeLink2Selector(3), removeLinkHref(employmentId2))
+            linkCheck(change(employerName2), changeLink2Selector(3), changeLinkHref(employmentId2))
+            linkCheck(remove(employerName2), removeLink2Selector(3), removeLinkHref(employmentId2))
             textOnPageCheck(expensesText, expensesHeaderSelector)
             textOnPageCheck(thisIsATotal, thisIsATotalSelector(5))
             "has an expenses section" should {
               textOnPageCheck(expensesText, expensesSelector(6))
-              linkCheck(change, changeExpensesSelector(6), "/income-through-software/return/employment-income/2021/check-employment-expenses")
-              linkCheck(remove, removeExpensesSelector(6), "/income-through-software/return/employment-income/2021/check-employment-expenses")
+              linkCheck(specific.changeExpenses, changeExpensesSelector(6), "/income-through-software/return/employment-income/2021/check-employment-expenses")
+              linkCheck(specific.removeExpenses, removeExpensesSelector(6), "/income-through-software/return/employment-income/2021/check-employment-expenses")
             }
             textOnPageCheck(doYouNeedAnother, doYouNeedAnotherSelector)
             textOnPageCheck(specific.youMustTell, youMustTellSelector)
@@ -384,17 +398,17 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
 
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(3))
             textOnPageCheck(employerName, employerName1Selector(4))
-            linkCheck(change, changeLink1Selector(4), changeLinkHref(employmentId1))
-            linkCheck(remove, removeLink1Selector(4), removeLinkHref(employmentId1))
+            linkCheck(change(employerName), changeLink1Selector(4), changeLinkHref(employmentId1))
+            linkCheck(remove(employerName), removeLink1Selector(4), removeLinkHref(employmentId1))
             textOnPageCheck(employerName2, employerName2Selector(4))
-            linkCheck(change, changeLink2Selector(4), changeLinkHref(employmentId2))
-            linkCheck(remove, removeLink2Selector(4), removeLinkHref(employmentId2))
+            linkCheck(change(employerName2), changeLink2Selector(4), changeLinkHref(employmentId2))
+            linkCheck(remove(employerName2), removeLink2Selector(4), removeLinkHref(employmentId2))
             textOnPageCheck(expensesText, expensesHeaderSelector)
             textOnPageCheck(thisIsATotal, thisIsATotalSelector(6))
             "has an expenses section" should {
               textOnPageCheck(expensesText, expensesSelector(7))
-              linkCheck(change, changeExpensesSelector(7), "/income-through-software/return/employment-income/2021/check-employment-expenses")
-              linkCheck(remove, removeExpensesSelector(7), "/income-through-software/return/employment-income/2021/check-employment-expenses")
+              linkCheck(specific.changeExpenses, changeExpensesSelector(7), "/income-through-software/return/employment-income/2021/check-employment-expenses")
+              linkCheck(specific.removeExpenses, removeExpensesSelector(7), "/income-through-software/return/employment-income/2021/check-employment-expenses")
             }
             textOnPageCheck(doYouNeedAnother, doYouNeedAnotherSelector)
             textOnPageCheck(specific.youMustTell, youMustTellSelector)

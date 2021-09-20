@@ -58,9 +58,9 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
     val doYouNeedAnother: String
     val yesText: String
     val noText: String
+    val name: String
     val change: String
     val remove: String
-    val name: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -69,9 +69,9 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
     val doYouNeedAnother: String = "Do you need to add another employment?"
     val yesText: String = "Yes"
     val noText: String = "No"
-    val change: String = "Change"
-    val remove: String = "Remove"
     val name: String = "Maggie"
+    val change: String = s"Change Change employment information for $name"
+    val remove: String = s"Remove Remove employment information for $name"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -80,9 +80,9 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
     val doYouNeedAnother: String = "Do you need to add another employment?"
     val yesText: String = "Yes"
     val noText: String = "No"
-    val change: String = "Change"
-    val remove: String = "Remove"
     val name: String = "Maggie"
+    val change: String = s"Change Change employment information for $name"
+    val remove: String = s"Remove Remove employment information for $name"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
