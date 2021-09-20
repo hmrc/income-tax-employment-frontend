@@ -56,11 +56,6 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       mileage = Some(400)
     )
 
-  def emptyCarVanFuelModel: CarVanFuelModel =
-    CarVanFuelModel(
-      carVanFuelQuestion = Some(false)
-    )
-
   def benefits(carModel: CarVanFuelModel): BenefitsViewModel = BenefitsViewModel(Some(carModel), isUsingCustomerData = true)
 
   private def carFuelBenefitsPage(taxYear: Int) = s"$appUrl/$taxYear/benefits/car-fuel?employmentId=$employmentId"
@@ -138,21 +133,12 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
 
-  object CyaModel {
-    val cya: EmploymentUserData = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, employmentId, isPriorSubmission = true,
-      EmploymentCYAModel(
-        EmploymentDetails("EmployerName", startDate = Some("2020-01-01"), currentDataIsHmrcHeld = false),
-        None
-      )
-    )
-  }
-
   ".show" should {
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "Render the 'Did you receive car benefits' page with the correct content with no benefits data so no pre-filling" which {
+        "Render the 'Did you receive car fuel benefits' page with the correct content with no benefits data so no pre-filling" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true)), userRequest)
@@ -179,7 +165,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
           welshToggleCheck(user.isWelsh)
         }
 
-        "Render the 'Did you receive car benefits' page with the correct content with cya data and the yes value pre-filled" which {
+        "Render the 'Did you receive car fuel benefits' page with the correct content with cya data and the yes value pre-filled" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true, Some(benefits(fullCarVanFuelModel)))), userRequest)
@@ -206,7 +192,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
           welshToggleCheck(user.isWelsh)
         }
 
-        "Redirect the user to the overview page when theres no session data for that user" which {
+        "Redirect user to the check your benefits page" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -276,7 +262,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          "redirects to the check your details page" in {
+          "redirects to the check your benefits page" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
               Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
@@ -287,7 +273,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
         }
 
-        "Redirect to overview page when theres no CYA data" which {
+        "Redirect to check your benefits page" which {
 
           lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 

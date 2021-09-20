@@ -21,7 +21,6 @@ import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
-import models.employment.CarVanFuelModel
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -29,7 +28,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.employment.{ CompanyCarFuelBenefitsView}
+import views.html.employment.CompanyCarFuelBenefitsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -82,7 +81,6 @@ class CompanyCarFuelBenefitsController @Inject()(implicit val cc: MessagesContro
                       ))))
                     }
                   case None =>
-                    //                  TODO: Need to potentially update this to make a cya or something
                     None
                 }
               }
