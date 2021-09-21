@@ -88,28 +88,28 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
     val expectedTitle = "Did you get fuel benefit for a company car?"
     val expectedH1 = "Did you get fuel benefit for a company car?"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if you got company car fuel benefit"
+    val expectedError = "Select yes if you got fuel benefit for a company car"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get fuel benefit for a company car?"
     val expectedH1 = "Did you get fuel benefit for a company car?"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if you got company car fuel benefit"
+    val expectedError = "Select yes if you got fuel benefit for a company car"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedTitle = "Did your client get fuel benefit for a company car?"
     val expectedH1 = "Did your client get fuel benefit for a company car?"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if your client got company car fuel benefit"
+    val expectedError = "Select yes if your client got fuel benefit for a company car"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get fuel benefit for a company car?"
     val expectedH1 = "Did your client get fuel benefit for a company car?"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if your client got company car fuel benefit"
+    val expectedError = "Select yes if your client got fuel benefit for a company car"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
