@@ -28,6 +28,7 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 import java.time.LocalDate
 
+//scalastyle:off
 class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   val taxYearEOY: Int = taxYear-1
@@ -42,8 +43,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
 
-
-  def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc))
+  def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, cessationDateQuestion = Some(false), currentDataIsHmrcHeld = hmrc))
 
   private def employerEndDatePageUrl(taxYear: Int) = s"$appUrl/$taxYear/employment-end-date?employmentId=$employmentId"
 
@@ -181,7 +181,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
   object CyaModel {
     val cya: EmploymentUserData = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, employmentId, isPriorSubmission = true,
       EmploymentCYAModel(
-        EmploymentDetails(employerName, cessationDate = Some("2021-01-01"), currentDataIsHmrcHeld = false),
+        EmploymentDetails(employerName, cessationDateQuestion = Some(false), cessationDate = Some("2021-01-01"), currentDataIsHmrcHeld = false),
         None
       )
     )
@@ -191,7 +191,40 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+        "redirect when no earlier question answered" which {
+          val cya = cyaModel(employerName, hmrc = true)
 
+          lazy val result: WSResponse = {
+            dropEmploymentDB()
+            insertCyaData(employmentUserData(isPrior = false, cya.copy(employmentDetails = cya.employmentDetails.copy(cessationDateQuestion = None))), userRequest)
+            authoriseAgentOrIndividual(user.isAgent)
+            urlGet(employerEndDatePageUrl(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has an SEE OTHER status" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=001")
+          }
+        }
+        "redirect when earlier question answered true - still with employer" which {
+          val cya = cyaModel(employerName, hmrc = true)
+
+          lazy val result: WSResponse = {
+            dropEmploymentDB()
+            insertCyaData(employmentUserData(isPrior = true, cya.copy(employmentDetails = cya.employmentDetails.copy(cessationDateQuestion = Some(true)))), userRequest)
+            authoriseAgentOrIndividual(user.isAgent)
+            urlGet(employerEndDatePageUrl(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has an SEE OTHER status" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-details?employmentId=001")
+          }
+        }
         "render the 'leave date' page with the correct content" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
@@ -283,6 +316,41 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          }
+        }
+
+        "redirect when no earlier question answered" which {
+          val cya = cyaModel(employerName, hmrc = true)
+
+          lazy val result: WSResponse = {
+            dropEmploymentDB()
+            insertCyaData(employmentUserData(isPrior = true, cya.copy(employmentDetails = cya.employmentDetails.copy(cessationDateQuestion = None))), userRequest)
+            authoriseAgentOrIndividual(user.isAgent)
+            urlPost(employerEndDatePageUrl(taxYearEOY), body = "", follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has an SEE OTHER status" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-details?employmentId=001")
+          }
+        }
+        "redirect when earlier question answered true - still with employer" which {
+          val cya = cyaModel(employerName, hmrc = true)
+
+          lazy val result: WSResponse = {
+            dropEmploymentDB()
+            insertCyaData(employmentUserData(isPrior = true, cya.copy(employmentDetails = cya.employmentDetails.copy(cessationDateQuestion = Some(true)))), userRequest)
+            authoriseAgentOrIndividual(user.isAgent)
+            urlPost(employerEndDatePageUrl(taxYearEOY), body = "", follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has an SEE OTHER status" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-details?employmentId=001")
           }
         }
 

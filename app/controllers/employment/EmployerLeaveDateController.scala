@@ -25,13 +25,14 @@ import javax.inject.Inject
 import models.employment.EmploymentDate
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import services.RedirectService.employmentDetailsRedirect
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.DateTimeUtil.localDateTimeFormat
 import utils.{Clock, SessionHelper}
 import views.html.employment.EmployerLeaveDateView
+import routes.{CheckEmploymentDetailsController, CheckEmploymentExpensesController, CheckYourBenefitsController}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -50,35 +51,59 @@ class EmployerLeaveDateController @Inject()(authorisedAction: AuthorisedAction,
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
-        data.employment.employmentDetails.cessationDate match {
-          case Some(cessationDate) =>
+
+        val cessationDate = data.employment.employmentDetails.cessationDate
+        val cessationDateQuestion = data.employment.employmentDetails.cessationDateQuestion
+
+        (cessationDateQuestion, cessationDate) match {
+          case (None,_) => redirect(taxYear,employmentId,data.isPriorSubmission)
+          case (Some(true),_) => redirect(taxYear,employmentId,data.isPriorSubmission)
+          case (_,Some(cessationDate)) =>
             val parsedDate: LocalDate = LocalDate.parse(cessationDate, localDateTimeFormat)
             val filledForm: Form[EmploymentDate] = form.fill(
               EmploymentDate(parsedDate.getDayOfMonth.toString,parsedDate.getMonthValue.toString, parsedDate.getYear.toString))
             Future.successful(Ok(employerLeaveDateView(filledForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
-          case None =>
+          case (_,None) =>
             Future.successful(Ok(employerLeaveDateView(form, taxYear, employmentId, data.employment.employmentDetails.employerName)))
         }
       }
     }
   }
 
+  private def redirect(taxYear: Int, employmentId: String, isPriorSubmission: Boolean): Future[Result] ={
+    if(isPriorSubmission){
+      Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear,employmentId)))
+    } else {
+      //TODO route to leave radio page
+      Future.successful(Redirect(CheckYourBenefitsController.show(taxYear,employmentId)))
+    }
+  }
+
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
-        val newForm = form.bindFromRequest()
-          newForm.copy(errors = EmploymentDateForm.verifyNewDate(newForm.get, taxYear, user.isAgent, EmploymentDateForm.leaveDate)).fold(
-          { formWithErrors =>
-            Future.successful(BadRequest(employerLeaveDateView(formWithErrors, taxYear, employmentId, data.employment.employmentDetails.employerName)))
-          },
-          { submittedDate =>
-            val cya = data.employment
-            val updatedCya = cya.copy(cya.employmentDetails.copy(cessationDate = Some(submittedDate.toLocalDate.toString)))
-            employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
-              employmentDetailsRedirect(updatedCya,taxYear,employmentId,data.isPriorSubmission)
-            }
-          }
-        )
+
+        val cessationDateQuestion = data.employment.employmentDetails.cessationDateQuestion
+        cessationDateQuestion match {
+          case None => redirect(taxYear,employmentId,data.isPriorSubmission)
+          case Some(true) => redirect(taxYear,employmentId,data.isPriorSubmission)
+          case _ =>
+
+            val newForm = form.bindFromRequest()
+            newForm.copy(errors = EmploymentDateForm.verifyNewDate(newForm.get, taxYear, user.isAgent, EmploymentDateForm.leaveDate)).fold(
+              { formWithErrors =>
+                Future.successful(BadRequest(employerLeaveDateView(formWithErrors, taxYear, employmentId, data.employment.employmentDetails.employerName)))
+              },
+              { submittedDate =>
+                val cya = data.employment
+                val updatedCya = cya.copy(cya.employmentDetails.copy(cessationDate = Some(submittedDate.toLocalDate.toString)))
+                employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission)(
+                  errorHandler.internalServerError()) {
+                  employmentDetailsRedirect(updatedCya, taxYear, employmentId, data.isPriorSubmission)
+                }
+              }
+            )
+        }
       }
     }
   }
