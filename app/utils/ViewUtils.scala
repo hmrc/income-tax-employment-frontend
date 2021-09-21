@@ -70,12 +70,18 @@ object ViewUtils {
       actions = Some(Actions(
         items = actions.map { case (call, linkText, visuallyHiddenText) => ActionItem(
           href = call.url,
-          content = Text(linkText),
+          content = ariaHiddenChangeLink(linkText),
           visuallyHiddenText = visuallyHiddenText
         )
         },
         classes = actionClasses
       ))
+    )
+  }
+
+  def ariaHiddenChangeLink(linkText: String): HtmlContent = {
+    HtmlContent(
+      s"""<span aria-hidden="true">$linkText</span>"""
     )
   }
 

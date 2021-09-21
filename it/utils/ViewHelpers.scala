@@ -188,9 +188,16 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
     }
   }
 
-  def linkCheck(text: String, selector: String, href: String)(implicit document: () => Document): Unit = {
+  def linkCheck(text: String, selector: String, href: String, hiddenTextSelector: Option[String] = None)(implicit document: () => Document): Unit = {
     s"have a $text link" which {
       s"has the text '$text' and a href to '$href'" in {
+
+        if(hiddenTextSelector.isDefined){
+          println(document().select(selector).text())
+          println(document().select(hiddenTextSelector.get).text())
+          document().select(hiddenTextSelector.get).text() shouldBe text.split(" ").drop(1).mkString(" ")
+        }
+
         document().select(selector).text() shouldBe text
         document().select(selector).attr("href") shouldBe href
       }

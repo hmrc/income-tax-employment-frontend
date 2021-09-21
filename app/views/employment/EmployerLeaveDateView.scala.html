@@ -32,11 +32,11 @@
 @hasFormErrors = @{form.hasErrors}
 
 @headingForUse = @{
-messages(s"employment.employmentStartDate.heading.${if(user.isAgent) "agent" else "individual"}", employerName)
+messages(s"employment.employmentLeaveDate.heading.${if(user.isAgent) "agent" else "individual"}", employerName)
 }
 
 @titleForUse = @{
-messages(s"employment.employmentStartDate.title.${if(user.isAgent) "agent" else "individual"}", employerName)
+messages(s"employment.employmentLeaveDate.title.${if(user.isAgent) "agent" else "individual"}", employerName)
 }
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
@@ -50,7 +50,7 @@ messages(s"employment.employmentStartDate.title.${if(user.isAgent) "agent" else 
         }
     })
 
-    @formWithCSRF(action = controllers.employment.routes.EmployerStartDateController.submit(taxYear, employmentId)) {
+    @formWithCSRF(action = controllers.employment.routes.EmployerLeaveDateController.submit(taxYear, employmentId)) {
 
             @dateInput(
                 form,
@@ -59,7 +59,7 @@ messages(s"employment.employmentStartDate.title.${if(user.isAgent) "agent" else 
                 heading = headingForUse,
                 headingClasses = "govuk-!-margin-bottom-2",
                 subheading = Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)),
-                hint = Some(Html(messages("employment.employmentStartDate.forExample"))),
+                hint = Some(Html(messages("employment.commonEmploymentDate.forExample"))),
                 isPageHeading = false,
             )
 

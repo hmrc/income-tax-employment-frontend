@@ -86,14 +86,14 @@ class RedirectServiceSpec extends UnitTest {
       response.header.status shouldBe SEE_OTHER
       redirectUrl(Future(response)) shouldBe "/income-through-software/return/employment-income/2021/check-employment-details?employmentId=employmentId"
     }
-    "redirect to check employment details page when no cessation date" in {
+    "redirect to employment end date page when no cessation date" in {
 
       val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
         employerRef = Some("123/12345"), startDate = Some("2020-11-01"), taxablePayToDate = Some(1), totalTaxToDate = Some(1), payrollId = Some("id"), cessationDateQuestion = Some(true)
       )),taxYear,"employmentId",false)
 
       response.header.status shouldBe SEE_OTHER
-      redirectUrl(Future(response)) shouldBe "/income-through-software/return/employment-income/2021/check-employment-details?employmentId=employmentId"
+      redirectUrl(Future(response)) shouldBe "/income-through-software/return/employment-income/2021/employment-end-date?employmentId=employmentId"
     }
     "redirect to check employment details page when no cessation date but the cessation question is no" in {
 

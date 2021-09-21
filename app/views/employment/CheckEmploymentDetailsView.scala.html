@@ -79,8 +79,11 @@
         employmentDetails.totalTaxToDate.map(amount => bigDecimalCurrency(amount.toString)), employmentTaxCall,
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.totalTaxToDate", user.isAgent)))
 
+        val employmentLeaveDate = EmploymentDataForView(messages(s"$msgKeyGeneric.leaveDate"), employmentDetails.cessationDate.flatMap(dateFormatter), controllers.employment.routes.EmployerLeaveDateController.show(taxYear, employmentDetails.employmentId),
+        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.leaveDate", user.isAgent), employmentDetails.employerName))
+
         val employmentDataFields = {
-                List(employerName, employmentStartDate, payeRef, payReceived, totalTaxToDate)
+                List(employerName, payeRef, employmentStartDate, employmentLeaveDate, payReceived, totalTaxToDate)
         }
 
         govukSummaryList(

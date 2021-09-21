@@ -37,7 +37,7 @@ object RedirectService {
         case EmploymentCYAModel(EmploymentDetails(_,_,_,_,cessationDateQuestion@None,_,_,_,_,_,_,_),_) =>
           CheckEmploymentDetailsController.show(taxYear, employmentId) //TODO cessationDateQuestion page
         case EmploymentCYAModel(EmploymentDetails(_,_,_,_,Some(true),cessationDate@None,_,_,_,_,_,_),_) =>
-          CheckEmploymentDetailsController.show(taxYear, employmentId) //TODO cessationDate page
+          EmployerLeaveDateController.show(taxYear, employmentId)
         case _ => CheckEmploymentDetailsController.show(taxYear, employmentId)
       }
     })
