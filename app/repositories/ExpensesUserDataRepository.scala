@@ -21,7 +21,7 @@ import com.mongodb.client.model.Updates.set
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import models.User
-import models.mongo.{DataNotUpdated, DatabaseError, EmploymentUserData, EncryptedExpensesUserData, ExpensesUserData, MongoError}
+import models.mongo.{DataNotUpdated, DatabaseError, EncryptedExpensesUserData, ExpensesUserData, MongoError}
 import org.joda.time.{DateTime, DateTimeZone}
 import org.mongodb.scala.MongoException
 import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions}
@@ -31,7 +31,8 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
-import utils.PagerDutyHelper.PagerDutyKeys.{FAILED_TO_CREATE_UPDATE_EXPENSES_DATA, FAILED_TO_ClEAR_EXPENSES_DATA, FAILED_TO_FIND_DATA, FAILED_TO_FIND_EXPENSES_DATA, FAILED_TO_UPDATE_DATA}
+import utils.PagerDutyHelper.PagerDutyKeys.{FAILED_TO_CREATE_UPDATE_EXPENSES_DATA,
+  FAILED_TO_ClEAR_EXPENSES_DATA, FAILED_TO_FIND_DATA, FAILED_TO_UPDATE_DATA}
 import utils.PagerDutyHelper.{PagerDutyKeys, pagerDutyLog}
 
 import scala.concurrent.{ExecutionContext, Future}

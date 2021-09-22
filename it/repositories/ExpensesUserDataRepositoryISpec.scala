@@ -164,7 +164,7 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
       count mustBe 1
 
       val res2 = await(repo.createOrUpdate(expensesUserDataOne.copy(sessionId = "1234567890"))(userOne))
-      res2 mustBe Left(MongoError("""Command failed with error 11000 (DuplicateKey): 'E11000 duplicate key error collection: income-tax-employment-frontend.expensesUserData index: fakeIndex dup key: { : 2022 }' on server localhost:27017. The full response is {"ok": 0.0, "errmsg": "E11000 duplicate key error collection: income-tax-employment-frontend.expensesUserData index: fakeIndex dup key: { : 2022 }", "code": 11000, "codeName": "DuplicateKey"}"""))
+      res2.left.get.message must include("Command failed with error 11000 (DuplicateKey)")
       count mustBe 1
     }
 

@@ -75,8 +75,10 @@ case class BenefitsViewModel(
 
   def toBenefits: Benefits ={
     Benefits(
-      accommodation, assets, assetTransfer, beneficialLoan, carVanFuelModel.flatMap(_.car), carVanFuelModel.flatMap(_.carFuel), educationalServices, entertaining, expenses, medicalInsurance,
-      telephone, service, taxableExpenses, carVanFuelModel.flatMap(_.van), carVanFuelModel.flatMap(_.vanFuel), carVanFuelModel.flatMap(_.mileage), nonQualifyingRelocationExpenses, nurseryPlaces, otherItems,
+      accommodation, assets, assetTransfer, beneficialLoan, carVanFuelModel.flatMap(_.car),
+      carVanFuelModel.flatMap(_.carFuel), educationalServices, entertaining, expenses, medicalInsurance,
+      telephone, service, taxableExpenses, carVanFuelModel.flatMap(_.van), carVanFuelModel.flatMap(_.vanFuel),
+      carVanFuelModel.flatMap(_.mileage), nonQualifyingRelocationExpenses, nurseryPlaces, otherItems,
       paymentsOnEmployeesBehalf, personalIncidentalExpenses, qualifyingRelocationExpenses, employerProvidedProfessionalSubscriptions,
       employerProvidedServices, incomeTaxPaidByDirector, travelAndSubsistence, vouchersAndCreditCards, nonCash
     )
@@ -211,7 +213,8 @@ object BenefitsViewModel {
           entertainingQuestion,
           expensesQuestion, medicalInsuranceQuestion, telephoneQuestion, serviceQuestion, taxableExpensesQuestion,
           nonQualifyingRelocationExpensesQuestion,
-          nurseryPlacesQuestion, otherItemsQuestion, paymentsOnEmployeesBehalfQuestion, personalIncidentalExpensesQuestion, qualifyingRelocationExpensesQuestion,
+          nurseryPlacesQuestion, otherItemsQuestion, paymentsOnEmployeesBehalfQuestion,
+          personalIncidentalExpensesQuestion, qualifyingRelocationExpensesQuestion,
           employerProvidedProfessionalSubscriptionsQuestion, employerProvidedServicesQuestion, incomeTaxPaidByDirectorQuestion, travelAndSubsistenceQuestion,
           vouchersAndCreditCardsQuestion, nonCashQuestion, submittedOn, isUsingCustomerData, isBenefitsReceived
         )
@@ -226,12 +229,15 @@ object BenefitsViewModel {
           (benefits.employerProvidedProfessionalSubscriptions, benefits.employerProvidedServices, benefits.incomeTaxPaidByDirector,
             benefits.travelAndSubsistence, benefits.vouchersAndCreditCards, benefits.nonCash),
           (benefits.accommodationQuestion, benefits.assetsQuestion, benefits.assetTransferQuestion, benefits.beneficialLoanQuestion,
-            benefits.educationalServicesQuestion, benefits.entertainingQuestion, benefits.expensesQuestion, benefits.medicalInsuranceQuestion, benefits.telephoneQuestion,
+            benefits.educationalServicesQuestion, benefits.entertainingQuestion, benefits.expensesQuestion,
+            benefits.medicalInsuranceQuestion, benefits.telephoneQuestion,
             benefits.serviceQuestion, benefits.taxableExpensesQuestion,
-            benefits.nonQualifyingRelocationExpensesQuestion, benefits.nurseryPlacesQuestion, benefits.otherItemsQuestion, benefits.paymentsOnEmployeesBehalfQuestion,
+            benefits.nonQualifyingRelocationExpensesQuestion, benefits.nurseryPlacesQuestion,
+            benefits.otherItemsQuestion, benefits.paymentsOnEmployeesBehalfQuestion,
             benefits.personalIncidentalExpensesQuestion, benefits.qualifyingRelocationExpensesQuestion),
           (benefits.employerProvidedProfessionalSubscriptionsQuestion, benefits.employerProvidedServicesQuestion, benefits.incomeTaxPaidByDirectorQuestion,
-            benefits.travelAndSubsistenceQuestion, benefits.vouchersAndCreditCardsQuestion, benefits.nonCashQuestion, benefits.submittedOn, benefits.isUsingCustomerData, benefits.isBenefitsReceived)
+            benefits.travelAndSubsistenceQuestion, benefits.vouchersAndCreditCardsQuestion, benefits.nonCashQuestion,
+            benefits.submittedOn, benefits.isUsingCustomerData, benefits.isBenefitsReceived)
         )
     })
   }
@@ -388,7 +394,8 @@ object EncryptedBenefitsViewModel {
           entertainingQuestion,
           expensesQuestion, medicalInsuranceQuestion, telephoneQuestion, serviceQuestion, taxableExpensesQuestion,
           nonQualifyingRelocationExpensesQuestion,
-          nurseryPlacesQuestion, otherItemsQuestion, paymentsOnEmployeesBehalfQuestion, personalIncidentalExpensesQuestion, qualifyingRelocationExpensesQuestion,
+          nurseryPlacesQuestion, otherItemsQuestion, paymentsOnEmployeesBehalfQuestion,
+          personalIncidentalExpensesQuestion, qualifyingRelocationExpensesQuestion,
           employerProvidedProfessionalSubscriptionsQuestion, employerProvidedServicesQuestion, incomeTaxPaidByDirectorQuestion, travelAndSubsistenceQuestion,
           vouchersAndCreditCardsQuestion, nonCashQuestion, submittedOn, isUsingCustomerData, isBenefitsReceived
         )
@@ -403,12 +410,15 @@ object EncryptedBenefitsViewModel {
           (benefits.employerProvidedProfessionalSubscriptions, benefits.employerProvidedServices, benefits.incomeTaxPaidByDirector,
             benefits.travelAndSubsistence, benefits.vouchersAndCreditCards, benefits.nonCash),
           (benefits.accommodationQuestion, benefits.assetsQuestion, benefits.assetTransferQuestion, benefits.beneficialLoanQuestion,
-            benefits.educationalServicesQuestion, benefits.entertainingQuestion, benefits.expensesQuestion, benefits.medicalInsuranceQuestion, benefits.telephoneQuestion,
+            benefits.educationalServicesQuestion, benefits.entertainingQuestion,
+            benefits.expensesQuestion, benefits.medicalInsuranceQuestion, benefits.telephoneQuestion,
             benefits.serviceQuestion, benefits.taxableExpensesQuestion,
-            benefits.nonQualifyingRelocationExpensesQuestion, benefits.nurseryPlacesQuestion, benefits.otherItemsQuestion, benefits.paymentsOnEmployeesBehalfQuestion,
+            benefits.nonQualifyingRelocationExpensesQuestion, benefits.nurseryPlacesQuestion,
+            benefits.otherItemsQuestion, benefits.paymentsOnEmployeesBehalfQuestion,
             benefits.personalIncidentalExpensesQuestion, benefits.qualifyingRelocationExpensesQuestion),
           (benefits.employerProvidedProfessionalSubscriptionsQuestion, benefits.employerProvidedServicesQuestion, benefits.incomeTaxPaidByDirectorQuestion,
-            benefits.travelAndSubsistenceQuestion, benefits.vouchersAndCreditCardsQuestion, benefits.nonCashQuestion, benefits.submittedOn, benefits.isUsingCustomerData, benefits.isBenefitsReceived)
+            benefits.travelAndSubsistenceQuestion, benefits.vouchersAndCreditCardsQuestion,
+            benefits.nonCashQuestion, benefits.submittedOn, benefits.isUsingCustomerData, benefits.isBenefitsReceived)
         )
     })
   }
