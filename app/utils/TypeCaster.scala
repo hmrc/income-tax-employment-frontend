@@ -24,7 +24,6 @@ object TypeCaster {
 
   object Converter {
     implicit val stringLoader: Converter[String] = (v: String) => v
-    implicit val intLoader: Converter[Int] = (v: String) => v.toInt
     implicit val booleanLoader: Converter[Boolean] = (v: String) => v.toBoolean
     implicit val bigDecimalLoader: Converter[BigDecimal] = (v: String) => BigDecimal(v)
   }

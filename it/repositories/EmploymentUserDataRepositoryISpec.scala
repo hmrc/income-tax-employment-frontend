@@ -19,14 +19,18 @@ package repositories
 import com.mongodb.MongoTimeoutException
 import common.UUID
 import models.User
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData, EncryptedEmploymentUserData}
+import models.employment.{Benefits, BenefitsViewModel, CarVanFuelModel}
+import models.mongo.{DatabaseError, EmploymentCYAModel, EmploymentDetails, EmploymentUserData, EncryptedEmploymentUserData, EncryptionDecryptionError, MongoError}
 import org.joda.time.{DateTime, DateTimeZone}
+import org.mongodb.scala.model.{IndexModel, IndexOptions}
+import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.{MongoException, MongoInternalException, MongoWriteException}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
-import play.api.mvc.AnyContent
+import play.api.mvc.{AnyContent, AnyContentAsEmpty}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.EncryptionService
 import uk.gov.hmrc.auth.core.AffinityGroup.Individual
+import uk.gov.hmrc.mongo.MongoUtils
 import utils.IntegrationTest
 import utils.PagerDutyHelper.PagerDutyKeys.FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA
 
@@ -45,6 +49,8 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
       .toFuture()
       .map(_.headOption)
   }
+
+  private def countFromOtherDatabase = await(employmentRepo.collection.countDocuments().toFuture())
 
   class EmptyDatabase {
     await(employmentRepo.collection.drop().toFuture())
@@ -74,6 +80,46 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     lastUpdated = now
   )
 
+  val amount = 66
+  val benefitsViewModel: BenefitsViewModel = BenefitsViewModel(
+    Some(CarVanFuelModel(
+      Some(true), Some(true), Some(100), Some(true), Some(100), Some(true), Some(100), Some(true), Some(100), Some(true), Some(100)
+    )
+    ), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
+    Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
+    Some(amount), Some(amount), Some(amount), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
+    Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
+    Some(true), Some(true), Some(true), Some("2020-10-10"), isUsingCustomerData = true, true)
+
+  val employmentUserDataFull: EmploymentUserData = EmploymentUserData(
+    sessionIdOne,
+    mtditid,
+    nino,
+    2022,
+    employmentIdOne,
+    isPriorSubmission = true,
+    EmploymentCYAModel(
+      EmploymentDetails(
+        employerName = "Name",
+        employerRef = Some("Ref"),
+        startDate = Some("2020-01-10"),
+        payrollId = Some("12345"),
+        cessationDateQuestion = Some(false),
+        cessationDate = Some("2021-01-01"),
+        dateIgnored = Some("2021-02-02"),
+        employmentSubmittedOn = Some("2021-02-02"),
+        employmentDetailsSubmittedOn = Some("2021-02-02"),
+        taxablePayToDate = Some(55),
+        totalTaxToDate = Some(55),
+        currentDataIsHmrcHeld = false
+      ),
+      Some(
+        benefitsViewModel
+      )
+    ),
+    lastUpdated = now
+  )
+
   val employmentUserDataTwo: EmploymentUserData = EmploymentUserData(
     sessionIdTwo,
     mtditid,
@@ -93,6 +139,36 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
   private val userOne = User(employmentUserDataOne.mtdItId, None, employmentUserDataOne.nino, employmentUserDataOne.sessionId, Individual.toString)
   private val userTwo = User(employmentUserDataTwo.mtdItId, None, employmentUserDataTwo.nino, employmentUserDataTwo.sessionId, Individual.toString)
 
+  val repoWithInvalidEncryption = appWithInvalidEncryptionKey.injector.instanceOf[EmploymentUserDataRepositoryImpl]
+  val serviceWithInvalidEncryption: EncryptionService = appWithInvalidEncryptionKey.injector.instanceOf[EncryptionService]
+
+  "update with invalid encryption" should {
+    "fail to add data" in new EmptyDatabase {
+      countFromOtherDatabase mustBe 0
+      val res: Either[DatabaseError, Unit] = await(repoWithInvalidEncryption.createOrUpdate(employmentUserDataOne)(userOne))
+      res mustBe Left(EncryptionDecryptionError(
+        "Key being used is not valid. It could be due to invalid encoding, wrong length or uninitialized for encrypt Invalid AES key length: 2 bytes"))
+    }
+  }
+
+  "find with invalid encryption" should {
+    "fail to find data" in new EmptyDatabase {
+      countFromOtherDatabase mustBe 0
+      await(repoWithInvalidEncryption.collection.insertOne(encryptionService.encryptUserData(employmentUserDataOne)).toFuture())
+      countFromOtherDatabase mustBe 1
+      val res = await(repoWithInvalidEncryption.find(employmentUserDataOne.taxYear,employmentIdOne)(userOne))
+      res mustBe Left(EncryptionDecryptionError(
+        "Key being used is not valid. It could be due to invalid encoding, wrong length or uninitialized for decrypt Invalid AES key length: 2 bytes"))
+    }
+  }
+
+  "handleEncryptionDecryptionException" should {
+    "handle an exception" in {
+      val res = repoWithInvalidEncryption.handleEncryptionDecryptionException(new Exception("fail"),"")
+      res mustBe Left(EncryptionDecryptionError("fail"))
+    }
+  }
+
   "clear" should {
     "remove a record" in new EmptyDatabase {
       count mustBe 0
@@ -105,9 +181,32 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
   }
 
   "createOrUpdate" should {
+    "fail to add a document to the collection when a mongo error occurs" in new EmptyDatabase {
+
+      def ensureIndexes: Future[Seq[String]] = {
+        val indexes = Seq(IndexModel(ascending("taxYear"), IndexOptions().unique(true).name("fakeIndex")))
+        MongoUtils.ensureIndexes(employmentRepo.collection, indexes, true)
+      }
+
+      ensureIndexes
+      count mustBe 0
+
+      val res = await(employmentRepo.createOrUpdate(employmentUserDataOne)(userOne))
+      res mustBe Right()
+      count mustBe 1
+
+      val res2 = await(employmentRepo.createOrUpdate(employmentUserDataOne.copy(sessionId = "1234567890"))(userOne))
+      res2 mustBe Left(MongoError("""Command failed with error 11000 (DuplicateKey): 'E11000 duplicate key error collection: income-tax-employment-frontend.employmentUserData index: fakeIndex dup key: { : 2022 }' on server localhost:27017. The full response is {"ok": 0.0, "errmsg": "E11000 duplicate key error collection: income-tax-employment-frontend.employmentUserData index: fakeIndex dup key: { : 2022 }", "code": 11000, "codeName": "DuplicateKey"}"""))
+      count mustBe 1
+    }
 
     "create a document in collection when one does not exist" in new EmptyDatabase {
       await(employmentRepo.createOrUpdate(employmentUserDataOne)(userOne)) mustBe Right()
+      count mustBe 1
+    }
+
+    "create a document in collection with all fields present" in new EmptyDatabase {
+      await(employmentRepo.createOrUpdate(employmentUserDataFull)(userOne)) mustBe Right()
       count mustBe 1
     }
 
@@ -162,6 +261,17 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
 
       findResult.right.get.map(_.copy(lastUpdated = data.lastUpdated)) mustBe Some(data)
       findResult.right.get.map(_.lastUpdated.isAfter(data.lastUpdated)) mustBe Some(true)
+    }
+
+    "find a document in collection with all fields present" in new EmptyDatabase {
+      await(employmentRepo.createOrUpdate(employmentUserDataFull)(userOne)) mustBe Right()
+      count mustBe 1
+
+      val findResult: Either[DatabaseError, Option[EmploymentUserData]] = {
+        await(employmentRepo.find(employmentUserDataFull.taxYear, employmentUserDataFull.employmentId)(userOne))
+      }
+
+      findResult mustBe Right(Some(employmentUserDataFull.copy(lastUpdated = findResult.right.get.get.lastUpdated)))
     }
 
     "return None when find operation succeeds but no data is found for the given inputs" in new EmptyDatabase {

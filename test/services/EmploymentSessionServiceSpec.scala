@@ -19,7 +19,7 @@ package services
 import config._
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
-import models.mongo.{DataNotUpdated, EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.mongo.{DataNotFound, DataNotUpdated, EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import models.{APIErrorBodyModel, APIErrorModel, User}
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.i18n.MessagesApi
@@ -170,11 +170,27 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
       status(response) shouldBe INTERNAL_SERVER_ERROR
     }
+    "return an internal server error if the CYA find failed" in {
+      mockFind(taxYear, "employmentId", Left(DataNotFound))
+      mockFindNoContent(nino, taxYear)
+
+      val response = service.getAndHandle(taxYear, "employmentId")((_, _) => Future(Ok))
+
+      status(response) shouldBe INTERNAL_SERVER_ERROR
+    }
   }
   "getAndHandleExpenses" should {
     "return an error if the call failed" in {
       mockFindFail(nino, taxYear)
-      mockFind(taxYear, None)
+      mockFind(taxYear, Right(None))
+
+      val response = service.getAndHandleExpenses(taxYear)((_, _) => Future(Ok))
+
+      status(response) shouldBe INTERNAL_SERVER_ERROR
+    }
+    "return an internal server error if the CYA find failed" in {
+      mockFind(taxYear, Left(DataNotFound))
+      mockFindNoContent(nino, taxYear)
 
       val response = service.getAndHandleExpenses(taxYear)((_, _) => Future(Ok))
 
@@ -683,6 +699,27 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       )
 
       status(response) shouldBe SEE_OTHER
+    }
+  }
+
+  ".getSessionData" should {
+    "return the Internal server error result when DatabaseError" in {
+      mockFind(taxYear, "some-employment-id", Left(DataNotFound))
+
+      val response = await(service.getSessionData(taxYear, "some-employment-id"))
+
+      status(Future.successful(response.left.get)) shouldBe INTERNAL_SERVER_ERROR
+    }
+  }
+
+  ".getExpensesSessionData" should {
+    "return the Internal server error result when DatabaseError" in {
+
+      mockFind(taxYear, Left(DataNotFound))
+
+      val response = await(service.getExpensesSessionData(taxYear))
+
+      status(Future.successful(response.left.get)) shouldBe INTERNAL_SERVER_ERROR
     }
   }
 

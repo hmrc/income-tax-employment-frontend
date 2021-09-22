@@ -20,14 +20,17 @@ import com.mongodb.MongoTimeoutException
 import common.UUID
 import models.User
 import models.employment.Expenses
-import models.mongo.{EncryptedExpensesUserData, ExpensesCYAModel, ExpensesUserData}
+import models.mongo.{DatabaseError, EncryptedExpensesUserData, EncryptionDecryptionError, ExpensesCYAModel, ExpensesUserData, MongoError}
 import org.joda.time.{DateTime, DateTimeZone}
+import org.mongodb.scala.model.IndexModel
+import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.{MongoException, MongoInternalException, MongoWriteException}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.mvc.AnyContent
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.EncryptionService
 import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.mongo.MongoUtils
 import utils.IntegrationTest
 import utils.PagerDutyHelper.PagerDutyKeys.FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA
 
@@ -93,10 +96,43 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
     lastUpdated = now
   )
 
+  private def countFromOtherDatabase = await(repo.collection.countDocuments().toFuture())
+
   implicit val request: FakeRequest[AnyContent] = fakeRequest
 
   val userOne = User(expensesUserDataOne.mtdItId, None, expensesUserDataOne.nino, expensesUserDataOne.sessionId, AffinityGroup.Individual.toString)
   val userTwo = User(expensesUserDataTwo.mtdItId, None, expensesUserDataTwo.nino, expensesUserDataTwo.sessionId, AffinityGroup.Individual.toString)
+
+  val repoWithInvalidEncryption = appWithInvalidEncryptionKey.injector.instanceOf[ExpensesUserDataRepositoryImpl]
+  val serviceWithInvalidEncryption: EncryptionService = appWithInvalidEncryptionKey.injector.instanceOf[EncryptionService]
+
+  "update with invalid encryption" should {
+    "fail to add data" in new EmptyDatabase {
+      countFromOtherDatabase mustBe 0
+      val res: Either[DatabaseError, Unit] = await(repoWithInvalidEncryption.createOrUpdate(expensesUserDataOne)(userOne))
+      res mustBe Left(EncryptionDecryptionError(
+        "Key being used is not valid. It could be due to invalid encoding, wrong length or uninitialized for encrypt Invalid AES key length: 2 bytes"))
+    }
+  }
+
+  "find with invalid encryption" should {
+    "fail to find data" in new EmptyDatabase {
+      countFromOtherDatabase mustBe 0
+      await(repoWithInvalidEncryption.collection.insertOne(encryptionService.encryptExpenses(expensesUserDataOne)).toFuture())
+      countFromOtherDatabase mustBe 1
+      val res = await(repoWithInvalidEncryption.find(expensesUserDataOne.taxYear)(userOne))
+      res mustBe Left(EncryptionDecryptionError(
+        "Key being used is not valid. It could be due to invalid encoding, wrong length or uninitialized for decrypt Invalid AES key length: 2 bytes"))
+    }
+  }
+
+  "handleEncryptionDecryptionException" should {
+    "handle an exception" in {
+      val res = repoWithInvalidEncryption.handleEncryptionDecryptionException(new Exception("fail"), "")
+      res mustBe Left(EncryptionDecryptionError("fail"))
+    }
+  }
+
 
   "clear" should {
     "remove a record" in new EmptyDatabase {
@@ -111,6 +147,26 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
   }
 
   "createOrUpdate" should {
+    "fail to add a document to the collection when a mongo error occurs" in new EmptyDatabase {
+
+      import org.mongodb.scala.model.{IndexModel, IndexOptions}
+
+      def ensureIndexes: Future[Seq[String]] = {
+        val indexes = Seq(IndexModel(ascending("taxYear"), IndexOptions().unique(true).name("fakeIndex")))
+        MongoUtils.ensureIndexes(repo.collection, indexes, true)
+      }
+
+      ensureIndexes
+      count mustBe 0
+
+      val res = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
+      res mustBe Right()
+      count mustBe 1
+
+      val res2 = await(repo.createOrUpdate(expensesUserDataOne.copy(sessionId = "1234567890"))(userOne))
+      res2 mustBe Left(MongoError("""Command failed with error 11000 (DuplicateKey): 'E11000 duplicate key error collection: income-tax-employment-frontend.expensesUserData index: fakeIndex dup key: { : 2022 }' on server localhost:27017. The full response is {"ok": 0.0, "errmsg": "E11000 duplicate key error collection: income-tax-employment-frontend.expensesUserData index: fakeIndex dup key: { : 2022 }", "code": 11000, "codeName": "DuplicateKey"}"""))
+      count mustBe 1
+    }
 
     "create a document in collection when one does not exist" in new EmptyDatabase {
       await(repo.createOrUpdate(expensesUserDataOne)(userOne)) mustBe Right()

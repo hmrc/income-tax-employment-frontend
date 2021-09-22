@@ -22,7 +22,7 @@ import common.SessionValues
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import helpers.{PlaySessionCookieBaker, WireMockHelper, WiremockStubHelpers}
-import models.IncomeTaxUserData
+import models.{IncomeTaxUserData, User}
 import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.scalatest.BeforeAndAfterAll
@@ -82,7 +82,24 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "microservice.services.income-tax-submission.url" -> s"http://$wiremockHost:$wiremockPort",
     "microservice.services.view-and-change.url" -> s"http://$wiremockHost:$wiremockPort",
     "microservice.services.sign-in.url" -> s"/auth-login-stub/gg-sign-in",
-    "taxYearErrorFeatureSwitch" -> "false"
+    "taxYearErrorFeatureSwitch" -> "false",
+    "useEncryption" -> "true"
+  )
+
+  def configWithInvalidEncryptionKey: Map[String, String] = Map(
+    "auditing.enabled" -> "false",
+    "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck",
+    "microservice.services.income-tax-submission-frontend.url" -> s"http://$wiremockHost:$wiremockPort",
+    "microservice.services.auth.host" -> wiremockHost,
+    "microservice.services.auth.port" -> wiremockPort.toString,
+    "microservice.services.income-tax-employment.url" -> s"http://$wiremockHost:$wiremockPort",
+    "microservice.services.income-tax-expenses.url" -> s"http://$wiremockHost:$wiremockPort",
+    "microservice.services.income-tax-submission.url" -> s"http://$wiremockHost:$wiremockPort",
+    "microservice.services.view-and-change.url" -> s"http://$wiremockHost:$wiremockPort",
+    "microservice.services.sign-in.url" -> s"/auth-login-stub/gg-sign-in",
+    "taxYearErrorFeatureSwitch" -> "false",
+    "useEncryption" -> "true",
+    "mongodb.encryption.key" -> "key"
   )
 
   def externalConfig: Map[String, String] = Map(
@@ -103,6 +120,10 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     .in(Environment.simple(mode = Mode.Dev))
     .configure(externalConfig)
     .build
+
+  lazy val appWithInvalidEncryptionKey: Application = GuiceApplicationBuilder()
+    .configure(configWithInvalidEncryptionKey)
+    .build()
 
   implicit lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
