@@ -70,8 +70,8 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
     val yesText: String = "Yes"
     val noText: String = "No"
     val name: String = "Maggie"
-    val change: String = s"Change Change employment information for $name"
-    val remove: String = s"Remove Remove employment information for $name"
+    val change: String = s"Change Change employment information for $name" //change is included twice because selector is for the whole link. First change is the text/link, second change is part of hidden text
+    val remove: String = s"Remove Remove employment information for $name" //remove is included twice because selector is for the whole link. First remove is the text/link, second remove is part of hidden text
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -81,8 +81,8 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
     val yesText: String = "Yes"
     val noText: String = "No"
     val name: String = "Maggie"
-    val change: String = s"Change Change employment information for $name"
-    val remove: String = s"Remove Remove employment information for $name"
+    val change: String = s"Change Change employment information for $name" //First change is the text/link, second change is part of hidden text
+    val remove: String = s"Remove Remove employment information for $name" //First remove is the text/link, second remove is part of hidden text
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {

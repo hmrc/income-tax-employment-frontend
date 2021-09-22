@@ -94,8 +94,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val doYouNeedAnother: String = "Do you need to add another employment?"
     val yesText: String = "Yes"
     val noText: String = "No"
-    def change(employerName: String): String = s"Change Change employment information for $employerName"
-    def remove(employerName: String): String = s"Remove Remove employment information for $employerName"
+    def change(employerName: String): String = s"Change Change employment information for $employerName"  //change is included twice because selector is for the whole link. First change is the text/link, second change is part of hidden text
+    def remove(employerName: String): String = s"Remove Remove employment information for $employerName" //remove is included twice because selector is for the whole link. First remove is the text/link, second remove is part of hidden text
     val changeExpenses: String = "Change"
     val removeExpenses: String = "Remove"
     val employerName: String = "Maggie"
@@ -110,8 +110,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val doYouNeedAnother: String = "Do you need to add another employment?"
     val yesText: String = "Yes"
     val noText: String = "No"
-    def change(employerName: String): String = s"Change Change employment information for $employerName"
-    def remove(employerName: String): String = s"Remove Remove employment information for $employerName"
+    def change(employerName: String): String = s"Change Change employment information for $employerName" //First change is the text/link, second change is part of hidden text
+    def remove(employerName: String): String = s"Remove Remove employment information for $employerName" //First remove is the text/link, second remove is part of hidden text
     val changeExpenses: String = "Change"
     val removeExpenses: String = "Remove"
     val employerName: String = "Maggie"
@@ -127,8 +127,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val expectedErrorText = "Select yes if you need to add another employment"
     val yourEmpInfo: String = "Your employment information is based on the information we already hold about you."
     val youMustTell: String = "You must tell us about all your employment."
-    val changeExpenses: String = "Change Change your expenses from all employment this tax year"
-    val removeExpenses: String = "Remove Remove your expenses from all employment this tax year"
+    val changeExpenses: String = "Change Change your expenses from all employment this tax year" //First change is the text/link, second change is part of hidden text
+    val removeExpenses: String = "Remove Remove your expenses from all employment this tax year" //First remove is the text/link, second remove is part of hidden text
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -138,8 +138,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val expectedErrorText = "Select yes if you need to add another employment"
     val yourEmpInfo: String = "Your client’s employment information is based on the information we already hold about them."
     val youMustTell: String = "You must tell us about all your client’s employment."
-    val changeExpenses: String = "Change Change your client’s expenses from all employment this tax year"
-    val removeExpenses: String = "Remove Remove your client’s expenses from all employment this tax year"
+    val changeExpenses: String = "Change Change your client’s expenses from all employment this tax year" //First change is the text/link, second change is part of hidden text
+    val removeExpenses: String = "Remove Remove your client’s expenses from all employment this tax year" //First remove is the text/link, second remove is part of hidden text
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -149,8 +149,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val expectedErrorText = "Select yes if you need to add another employment"
     val yourEmpInfo: String = "Your employment information is based on the information we already hold about you."
     val youMustTell: String = "You must tell us about all your employment."
-    val changeExpenses: String = "Change Change your expenses from all employment this tax year"
-    val removeExpenses: String = "Remove Remove your expenses from all employment this tax year"
+    val changeExpenses: String = "Change Change your expenses from all employment this tax year" //First change is the text/link, second change is part of hidden text
+    val removeExpenses: String = "Remove Remove your expenses from all employment this tax year" //First remove is the text/link, second remove is part of hidden text
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -160,8 +160,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val expectedErrorText = "Select yes if you need to add another employment"
     val yourEmpInfo: String = "Your client’s employment information is based on the information we already hold about them."
     val youMustTell: String = "You must tell us about all your client’s employment."
-    val changeExpenses: String = "Change Change your client’s expenses from all employment this tax year"
-    val removeExpenses: String = "Remove Remove your client’s expenses from all employment this tax year"
+    val changeExpenses: String = "Change Change your client’s expenses from all employment this tax year" //First change is the text/link, second change is part of hidden text
+    val removeExpenses: String = "Remove Remove your client’s expenses from all employment this tax year" //First remove is the text/link, second remove is part of hidden text
   }
 
   private def url(taxYear: Int) = s"$appUrl/$taxYear/employment-summary"
