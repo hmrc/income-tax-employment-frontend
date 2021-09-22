@@ -66,7 +66,6 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockEmpl
               cessationDate = Some("2020-02-12"),
               taxablePayToDate = Some(34234.15),
               totalTaxToDate = Some(6782.92),
-              payrollId = None,
               isUsingCustomerData = false
             ), taxYear, isInYear = true
           )))

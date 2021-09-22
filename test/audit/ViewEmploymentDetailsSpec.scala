@@ -41,7 +41,6 @@ class ViewEmploymentDetailsSpec extends UnitTestWithApp{
              |		"cessationDate": "2020-02-12",
              |		"taxablePayToDate": 34234.15,
              |		"totalTaxToDate": 6782.92,
-             |    "payrollId": "12345",
              |		"isUsingCustomerData": false
              |	}
              |}""".stripMargin)
@@ -59,8 +58,7 @@ class ViewEmploymentDetailsSpec extends UnitTestWithApp{
             cessationDate = Some("2020-02-12"),
             taxablePayToDate = Some(34234.15),
             totalTaxToDate = Some(6782.92),
-            isUsingCustomerData = false,
-            payrollId = Some("12345")
+            isUsingCustomerData = false
           ))
         Json.toJson(auditModel) shouldBe json
       }
