@@ -509,7 +509,7 @@ employment.payrollId.paragraph1.individual = Your payroll ID must be 38 characte
 employment.payrollId.paragraph1.agent = Your client’s payroll ID must be 38 characters or fewer. It can include:
 employment.payrollId.bullet1 = Upper and lower case letters (a to z)
 employment.payrollId.bullet2 = Numbers
-employment.payrollId.bullet3 = The special characters: .,-()/=!"%&*;<>''’+:\?
+employment.payrollId.bullet3 = The special characters: .,-()/=!"%&*;<>''+:\?
 employment.payrollId.paragraph2.individual = You can find this on your payslip or on your P60. It’s also known as a ‘payroll number’.
 employment.payrollId.paragraph2.agent = You can find this on your client’s payslip or on their P60. It’s also known as a ‘payroll number’.
 employment.payrollId.forExample = For example 123456
