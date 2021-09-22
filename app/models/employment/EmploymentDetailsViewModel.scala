@@ -20,6 +20,7 @@ import play.api.libs.json.{Json, OFormat}
 
 case class EmploymentDetailsViewModel(employerName: String,
                                       employerRef: Option[String],
+                                      payrollId: Option[String],
                                       employmentId: String,
                                       startDate: Option[String],
                                       cessationDateQuestion: Option[Boolean],

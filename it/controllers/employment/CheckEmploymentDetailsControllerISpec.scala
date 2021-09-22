@@ -79,6 +79,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payeReferenceField2: String
     val payReceivedField3: String
     val taxField4: String
+    val payrollIdField: String
+    val payrollIdHiddenText: String
     val changeEmployerNameHiddenText: String
   }
 
@@ -92,6 +94,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val taxTakenFromPayB = "£6782.90"
     val stillWorkingYes = "Yes"
     val stillWorkingNo = "No"
+    val payrollId = "12345678"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -106,6 +109,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payeReferenceField2 = "PAYE reference"
     val payReceivedField3 = "Pay received"
     val taxField4 = "UK tax taken from pay"
+    val payrollIdField: String = "Payroll ID"
+    val payrollIdHiddenText: String = "the payroll ID for this employment"
     val changeEmployerNameHiddenText: String = "the name of this employer"
   }
 
@@ -122,6 +127,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payReceivedField3 = "Pay received"
     val taxField4 = "UK tax taken from pay"
     val changeEmployerNameHiddenText: String = "the name of this employer"
+    val payrollIdField: String = "Payroll ID"
+    val payrollIdHiddenText: String = "the payroll ID for this employment"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -192,6 +199,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employerPayAmountControllerHref: Call = controllers.employment.routes.EmployerPayAmountController.show(taxYear - 1, employmentId)
     val employerNameHref: Call = controllers.employment.routes.EmployerNameController.show(taxYear - 1, employmentId)
     val payeRefHref: Call = controllers.employment.routes.PayeRefController.show(taxYear - 1, employmentId)
+    val payrollIdHref: Call = controllers.employment.routes.EmployerPayrollIdController.show(taxYear-1, employmentId)
     val changeEmploymentStartDateHref: Call = controllers.employment.routes.EmployerStartDateController.show(taxYear - 1, employmentId)
     val changeStillWorkingForEmployerHref: Call = controllers.employment.routes.StillWorkingForEmployerController.show(taxYear - 1, employmentId)
   }
@@ -386,14 +394,12 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
           textOnPageCheck(user.commonExpectedResults.employmentStartDateField1, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.employmentStartDate, summaryListRowFieldAmountSelector(3))
-
           textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(4))
           textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(4))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changeStillWorkingForEmployerHiddenText}",
             cyaChangeLink(4), changeStillWorkingForEmployerHref.url)
-
-          //TODO: insert check for employment end date when page is available
-
+          textOnPageCheck(user.commonExpectedResults.payrollIdField, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(4))
           textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
           textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(5))
@@ -460,11 +466,10 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
           textOnPageCheck(user.commonExpectedResults.employmentStartDateField1, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.employmentStartDate, summaryListRowFieldAmountSelector(3))
-
-
           textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(4))
+          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(5))
           textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(4))
-
           textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
           textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(5))
@@ -512,6 +517,10 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changePAYERefHiddenText}",
             cyaChangeLink(2), payeRefHref.url)
+          textOnPageCheck(user.commonExpectedResults.payrollIdField, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(4))
+          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.commonExpectedResults.payrollIdHiddenText}",
+            cyaChangeLink(4), payrollIdHref.url)
           textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(5))
           textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(5))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changePayReceivedHiddenText}",
@@ -900,5 +909,3 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     }
   }
 }
-
-

@@ -79,6 +79,7 @@ case class EmploymentSource(employmentId: String,
     EmploymentDetailsViewModel(
       employerName,
       employerRef,
+      payrollId,
       employmentId,
       startDate,
       Some(cessationDate.isDefined),
