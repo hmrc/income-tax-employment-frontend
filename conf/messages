@@ -511,10 +511,10 @@ CompanyCarBenefits.error.agent = Select yes if your client got a company car ben
 CompanyCarBenefits.header.individual = Did you get a company car benefit?
 CompanyCarBenefits.header.agent = Did your client get a company car benefit?
 
-benefits.companyCarFuelBenefits.error.individual = Did you get fuel benefit for a company car
-benefits.companyCarFuelBenefits.error.agent = Did your client get fuel benefit for a company car
-benefits.companyCarFuelBenefits.title.individual = Select yes if you got fuel benefit for a company car?
-benefits.companyCarFuelBenefits.title.agent = Select yes if your client got fuel benefit for a company car?
+benefits.companyCarFuelBenefits.title.individual = Did you get fuel benefit for a company car?
+benefits.companyCarFuelBenefits.title.agent = Did your client get fuel benefit for a company car?
+benefits.companyCarFuelBenefits.error.individual = Select yes if you got fuel benefit for a company car
+benefits.companyCarFuelBenefits.error.agent = Select yes if your client got fuel benefit for a company car
 
 benefits.companyVanBenefits.title.individual = Did you get a company van benefit?
 benefits.companyVanBenefits.title.agent = Did your client get a company van benefit?
