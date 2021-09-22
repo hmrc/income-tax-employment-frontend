@@ -79,7 +79,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     val hintText = "For example 123456"
     val bullet1: String = "Upper and lower case letters (a to z)"
     val bullet2: String = "Numbers"
-    val bullet3: String = "The special characters: .,-()/=!\"%&*;<>'’+:\\?"
+    val bullet3: String = "The special characters: .,-()/=!\"%&*;<>'+:\\?"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -88,7 +88,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     val hintText = "For example 123456"
     val bullet1: String = "Upper and lower case letters (a to z)"
     val bullet2: String = "Numbers"
-    val bullet3: String = "The special characters: .,-()/=!\"%&*;<>'’+:\\?"
+    val bullet3: String = "The special characters: .,-()/=!\"%&*;<>'+:\\?"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
