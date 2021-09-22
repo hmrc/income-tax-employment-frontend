@@ -121,10 +121,8 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
     multipleView,
     singleEOYView,
     mockIncomeTaxUserDataService,
-    inYearAction,
-    mockErrorHandler
+    inYearAction
   )
-
 
   val taxYear:Int = mockAppConfig.defaultTaxYear
 
