@@ -133,6 +133,7 @@ employment.employmentDetails.companyDirector =  Company director
 employment.employmentDetails.directorCeasedDate =  Director role end date
 employment.employmentDetails.closeCompany =  Close company
 employment.employmentDetails.payReceived =  Pay received
+employment.employmentDetails.payrollId = Payroll ID
 employment.employmentDetails.totalTaxToDate =  UK tax taken from pay
 employment.employmentDetails.paymentNotOnYourP60.individual =  Payments not on your P60
 employment.employmentDetails.paymentNotOnYourP60.agent =  Payments not on your client’s P60
@@ -148,6 +149,7 @@ employment.employmentDetails.hiddenText.payeRef.individual = your PAYE reference
 employment.employmentDetails.hiddenText.payeRef.agent = your client’s PAYE reference number
 employment.employmentDetails.hiddenText.payReceived.individual = the amount of pay you got from {0}
 employment.employmentDetails.hiddenText.payReceived.agent = the amount of pay your client got from {0}
+employment.employmentDetails.hiddenText.payrollId = the payroll ID for this employment
 employment.employmentDetails.hiddenText.totalTaxToDate.individual = the amount of tax you paid
 employment.employmentDetails.hiddenText.totalTaxToDate.agent = the amount of tax your client paid
 employment.employmentDetails.hiddenText.paymentNotOnYourP60.individual = if you got payments that are not on your P60
@@ -500,6 +502,20 @@ employment.removeEmployment.heading = Are you sure you want to remove {0}?
 employment.removeEmployment.remove-paragraph = This will also remove any benefits you told us about for this employment.
 employment.removeEmployment.remove-all-paragraph = This will remove all your employment for this tax year.
 employment.removeEmployment.error.no-entry = Select yes if you want to remove this employment
+
+employment.payrollId.title.individual = What’s your payroll ID for this employment?
+employment.payrollId.title.agent = What’s your client’s payroll ID for this employment?
+employment.payrollId.paragraph.individual = You can find this on your payslip or on your P60. It’s also known as a ‘payroll number’.
+employment.payrollId.paragraph.agent = You can find this on your client’s payslip or on their P60. It’s also known as a ‘payroll number’.
+employment.payrollId.forExample = For example 123456
+employment.payrollId.error.noEntry.individual = Enter your payroll ID
+employment.payrollId.error.noEntry.agent = Enter your client’s payroll ID
+employment.payrollId.error.notEnough.individual = Your payroll ID should have at least 3 digits
+employment.payrollId.error.notEnough.agent = Your client’s payroll ID should have at least 3 digits
+employment.payrollId.error.tooMany.individual = Your payroll ID cannot have more than 8 digits
+employment.payrollId.error.tooMany.agent = Your client’s payroll ID cannot have more than 8 digits
+employment.payrollId.error.incorrect.individual = Enter your payroll ID in the correct format
+employment.payrollId.error.incorrect.agent = Enter your client’s payroll ID in the correct format
 
 #####Benefits Pages#######
 

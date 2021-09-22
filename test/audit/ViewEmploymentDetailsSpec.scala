@@ -34,6 +34,7 @@ class ViewEmploymentDetailsSpec extends UnitTestWithApp{
              |	"employmentData": {
              |		"employerName": "Dave",
              |		"employerRef": "reference",
+             |		"payrollId": "12345678",
              |		"employmentId": "id",
              |		"startDate": "2020-02-12",
              |		"cessationDateQuestion": true,
@@ -51,6 +52,7 @@ class ViewEmploymentDetailsSpec extends UnitTestWithApp{
           EmploymentDetailsViewModel(
             employerName = "Dave",
             employerRef = Some("reference"),
+            payrollId = Some("12345678"),
             employmentId = "id",
             startDate = Some("2020-02-12"),
             cessationDateQuestion = Some(true),

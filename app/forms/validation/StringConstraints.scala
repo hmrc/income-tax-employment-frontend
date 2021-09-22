@@ -38,4 +38,8 @@ object StringConstraints {
     x => if (x.length <= maxChars) Valid else Invalid(msgKey)
   )
 
+  def validateMinSize(minChars: Int): String => Constraint[String] = msgKey => constraint[String](
+    x => if (x.length >= minChars) Valid else Invalid(msgKey)
+  )
+
 }

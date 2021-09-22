@@ -69,6 +69,7 @@ case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
     EmploymentDetailsViewModel(
       employmentDetails.employerName,
       employmentDetails.employerRef,
+      employmentDetails.payrollId,
       employmentId,
       employmentDetails.startDate,
       //TODO: could use the below for cessationDateQuestion when cessation date is implemented
