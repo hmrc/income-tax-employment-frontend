@@ -31,7 +31,7 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
-import utils.PagerDutyHelper.PagerDutyKeys.{FAILED_TO_ClEAR_EMPLOYMENT_DATA, FAILED_TO_FIND_DATA, FAILED_TO_UPDATE_DATA}
+import utils.PagerDutyHelper.PagerDutyKeys.{FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA, FAILED_TO_ClEAR_EMPLOYMENT_DATA, FAILED_TO_FIND_DATA, FAILED_TO_FIND_EMPLOYMENT_DATA, FAILED_TO_UPDATE_DATA}
 import utils.PagerDutyHelper.{PagerDutyKeys, pagerDutyLog}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -57,7 +57,7 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfi
 
     val findResult = collection.findOneAndUpdate(queryFilter, update, options).toFutureOption().map(Right(_)).recover {
       case exception: Exception =>
-        pagerDutyLog(FAILED_TO_FIND_DATA, s"$start Failed to find user data. Exception: ${exception.getMessage}")
+        pagerDutyLog(FAILED_TO_FIND_EMPLOYMENT_DATA, s"$start Failed to find user data. Exception: ${exception.getMessage}")
         Left(MongoError(exception.getMessage))
     }
 
@@ -90,11 +90,11 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfi
         collection.findOneAndReplace(queryFilter, replacement, options).toFutureOption().map {
           case Some(_) => Right()
           case None =>
-            pagerDutyLog(FAILED_TO_UPDATE_DATA, s"$start Failed to update user data.")
+            pagerDutyLog(FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA, s"$start Failed to update user data.")
             Left(DataNotUpdated)
         }.recover {
           case exception: Exception =>
-            pagerDutyLog(FAILED_TO_UPDATE_DATA, s"$start Failed to update user data. Exception: ${exception.getMessage}")
+            pagerDutyLog(FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA, s"$start Failed to update user data. Exception: ${exception.getMessage}")
             Left(MongoError(exception.getMessage))
         }
     }

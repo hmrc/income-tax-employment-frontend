@@ -31,8 +31,7 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
-import utils.PagerDutyHelper.PagerDutyKeys.{FAILED_TO_CREATE_UPDATE_EXPENSES_DATA,
-  FAILED_TO_ClEAR_EXPENSES_DATA, FAILED_TO_FIND_DATA, FAILED_TO_UPDATE_DATA}
+import utils.PagerDutyHelper.PagerDutyKeys.{FAILED_TO_CREATE_UPDATE_EXPENSES_DATA, FAILED_TO_ClEAR_EXPENSES_DATA, FAILED_TO_FIND_DATA, FAILED_TO_FIND_EXPENSES_DATA, FAILED_TO_UPDATE_DATA}
 import utils.PagerDutyHelper.{PagerDutyKeys, pagerDutyLog}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -63,7 +62,7 @@ class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig:
         Right(None)
     }.recover {
       case exception: Exception =>
-        pagerDutyLog(FAILED_TO_FIND_DATA, s"$start Failed to find expenses user data. Exception: ${exception.getMessage}")
+        pagerDutyLog(FAILED_TO_FIND_EXPENSES_DATA, s"$start Failed to find expenses user data. Exception: ${exception.getMessage}")
         Left(MongoError(exception.getMessage))
     }
 
@@ -96,7 +95,7 @@ class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig:
         collection.findOneAndReplace(queryFilter, replacement, options).toFutureOption().map {
           case Some(_) => Right()
           case None =>
-            pagerDutyLog(FAILED_TO_UPDATE_DATA, s"$start Failed to update user data.")
+            pagerDutyLog(FAILED_TO_CREATE_UPDATE_EXPENSES_DATA, s"$start Failed to update user data.")
             Left(DataNotUpdated)
         }.recover {
           case exception: Exception =>
