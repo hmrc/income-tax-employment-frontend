@@ -40,13 +40,15 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
   private val userRequest: User[_]=  User(mtditid, None, nino, sessionId, affinityGroup)
 
   object Selectors {
-    val contentSelector = "#main-content > div > div > form > div > label > p"
+    val paragraph1Selector = "#main-content > div > div > form > div > label > p:nth-child(2)"
+    val paragraph2Selector = "#main-content > div > div > form > div > label > p:nth-child(4)"
     val hintTextSelector = "#payrollId-hint"
     val inputSelector = "#payrollId"
     val continueButtonSelector = "#continue"
     val continueButtonFormSelector = "#main-content > div > div > form"
     val expectedErrorHref = "#payrollId"
     val inputAmountField = "#payrollId"
+    def bulletSelector(bulletNumber: Int) = s"#main-content > div > div > form > div > label > ul > li:nth-child($bulletNumber)"
   }
 
   val inputName: String = "payrollId"
@@ -58,26 +60,35 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     val emptyErrorText: String
     val wrongFormatErrorText: String
     val tooLongErrorText: String
-    val tooSmallErrorText: String
-    val expectedContent: String
+    val paragraph1: String
+    val paragraph2: String
   }
 
   trait CommonExpectedResults {
     val expectedCaption: String
     val continueButtonText: String
     val hintText: String
+    val bullet1: String
+    val bullet2: String
+    val bullet3: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption: String = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
     val hintText = "For example 123456"
+    val bullet1: String = "Upper and lower case letters (a to z)"
+    val bullet2: String = "Numbers"
+    val bullet3: String = "The special characters: .,-()/=!\"%&*;<>'’+:\\?"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: String = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
     val hintText = "For example 123456"
+    val bullet1: String = "Upper and lower case letters (a to z)"
+    val bullet2: String = "Numbers"
+    val bullet3: String = "The special characters: .,-()/=!\"%&*;<>'’+:\\?"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -86,9 +97,9 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedH1: String = "What’s your payroll ID for this employment?"
     val emptyErrorText: String = "Enter your payroll ID"
     val wrongFormatErrorText: String = "Enter your payroll ID in the correct format"
-    val tooLongErrorText: String = "Your payroll ID cannot have more than 8 digits"
-    val tooSmallErrorText: String = "Your payroll ID should have at least 3 digits"
-    val expectedContent: String = "You can find this on your payslip or on your P60. It’s also known as a ‘payroll number’."
+    val tooLongErrorText: String = "Your payroll ID must be 38 characters or fewer"
+    val paragraph1: String = "Your payroll ID must be 38 characters or fewer. It can include:"
+    val paragraph2: String = "You can find this on your payslip or on your P60. It’s also known as a ‘payroll number’."
     }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -97,9 +108,9 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedH1: String = "What’s your client’s payroll ID for this employment?"
     val emptyErrorText: String = "Enter your client’s payroll ID"
     val wrongFormatErrorText: String = "Enter your client’s payroll ID in the correct format"
-    val tooLongErrorText: String = "Your client’s payroll ID cannot have more than 8 digits"
-    val tooSmallErrorText: String = "Your client’s payroll ID should have at least 3 digits"
-    val expectedContent: String = "You can find this on your client’s payslip or on their P60. It’s also known as a ‘payroll number’."
+    val tooLongErrorText: String = "Your client’s payroll ID must be 38 characters or fewer"
+    val paragraph1: String = "Your client’s payroll ID must be 38 characters or fewer. It can include:"
+    val paragraph2: String = "You can find this on your client’s payslip or on their P60. It’s also known as a ‘payroll number’."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -108,9 +119,9 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedH1: String = "What’s your payroll ID for this employment?"
     val emptyErrorText: String = "Enter your payroll ID"
     val wrongFormatErrorText: String = "Enter your payroll ID in the correct format"
-    val tooLongErrorText: String = "Your payroll ID cannot have more than 8 digits"
-    val tooSmallErrorText: String = "Your payroll ID should have at least 3 digits"
-    val expectedContent: String = "You can find this on your payslip or on your P60. It’s also known as a ‘payroll number’."
+    val tooLongErrorText: String = "Your payroll ID must be 38 characters or fewer"
+    val paragraph1: String = "Your payroll ID must be 38 characters or fewer. It can include:"
+    val paragraph2: String = "You can find this on your payslip or on your P60. It’s also known as a ‘payroll number’."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -119,9 +130,9 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedH1: String = "What’s your client’s payroll ID for this employment?"
     val emptyErrorText: String = "Enter your client’s payroll ID"
     val wrongFormatErrorText: String = "Enter your client’s payroll ID in the correct format"
-    val tooLongErrorText: String = "Your client’s payroll ID cannot have more than 8 digits"
-    val tooSmallErrorText: String = "Your client’s payroll ID should have at least 3 digits"
-    val expectedContent: String = "You can find this on your client’s payslip or on their P60. It’s also known as a ‘payroll number’."
+    val tooLongErrorText: String = "Your client’s payroll ID must be 38 characters or fewer"
+    val paragraph1: String = "Your client’s payroll ID must be 38 characters or fewer. It can include:"
+    val paragraph2: String = "You can find this on your client’s payslip or on their P60. It’s also known as a ‘payroll number’."
   }
 
     def cya(isPriorSubmission:Boolean=true): EmploymentUserData =
@@ -178,7 +189,11 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           titleCheck(get.expectedTitle)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
-          textOnPageCheck(get.expectedContent, contentSelector)
+          textOnPageCheck(get.paragraph1, paragraph1Selector)
+          textOnPageCheck(bullet1, bulletSelector(1))
+          textOnPageCheck(bullet2, bulletSelector(2))
+          textOnPageCheck(bullet3, bulletSelector(3))
+          textOnPageCheck(get.paragraph2, paragraph2Selector)
           textOnPageCheck(hintText, hintTextSelector)
           inputFieldCheck(inputName, inputSelector)
           inputFieldValueCheck("", inputAmountField)
@@ -207,7 +222,11 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           titleCheck(get.expectedTitle)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
-          textOnPageCheck(get.expectedContent, contentSelector)
+          textOnPageCheck(get.paragraph1, paragraph1Selector)
+          textOnPageCheck(bullet1, bulletSelector(1))
+          textOnPageCheck(bullet2, bulletSelector(2))
+          textOnPageCheck(bullet3, bulletSelector(3))
+          textOnPageCheck(get.paragraph2, paragraph2Selector)
           textOnPageCheck(hintText, hintTextSelector)
           inputFieldCheck(inputName, inputSelector)
           inputFieldValueCheck("123456", inputAmountField)
@@ -281,7 +300,11 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           titleCheck(get.expectedErrorTitle)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
-          textOnPageCheck(get.expectedContent, contentSelector)
+          textOnPageCheck(get.paragraph1, paragraph1Selector)
+          textOnPageCheck(bullet1, bulletSelector(1))
+          textOnPageCheck(bullet2, bulletSelector(2))
+          textOnPageCheck(bullet3, bulletSelector(3))
+          textOnPageCheck(get.paragraph2, paragraph2Selector)
           textOnPageCheck(hintText, hintTextSelector)
           inputFieldCheck(inputName, inputSelector)
           inputFieldValueCheck(payrollId, inputAmountField)
@@ -296,7 +319,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
 
         "should render the What's your payrollId? page with an error when the payrollId is input as too long" which {
 
-          val payrollId = "1234567890"
+          val payrollId = "123456789012345678901234567890123456789"
           val body = Map("payrollId" -> payrollId)
 
           implicit lazy val result: WSResponse = {
@@ -316,7 +339,11 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           titleCheck(get.expectedErrorTitle)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
-          textOnPageCheck(get.expectedContent, contentSelector)
+          textOnPageCheck(get.paragraph1, paragraph1Selector)
+          textOnPageCheck(bullet1, bulletSelector(1))
+          textOnPageCheck(bullet2, bulletSelector(2))
+          textOnPageCheck(bullet3, bulletSelector(3))
+          textOnPageCheck(get.paragraph2, paragraph2Selector)
           textOnPageCheck(hintText, hintTextSelector)
           inputFieldCheck(inputName, inputSelector)
           inputFieldValueCheck(payrollId, inputAmountField)
@@ -327,41 +354,6 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
 
           errorSummaryCheck(get.tooLongErrorText, expectedErrorHref)
           errorAboveElementCheck(get.tooLongErrorText)
-        }
-
-        "should render the What's your payrollId? page with an error when the payrollId is input as too small" which {
-
-          val payrollId = "12"
-          val body = Map("payrollId" -> payrollId)
-
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(cya(), userRequest)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-            urlPost(url(taxYearEOY), body, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
-
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-          "has a BAD_REQUEST status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-
-          titleCheck(get.expectedErrorTitle)
-          h1Check(get.expectedH1)
-          captionCheck(expectedCaption)
-          textOnPageCheck(get.expectedContent, contentSelector)
-          textOnPageCheck(hintText, hintTextSelector)
-          inputFieldCheck(inputName, inputSelector)
-          inputFieldValueCheck(payrollId, inputAmountField)
-
-          buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-
-          errorSummaryCheck(get.tooSmallErrorText, expectedErrorHref)
-          errorAboveElementCheck(get.tooSmallErrorText)
         }
 
         "should render the What's your payrollId? page with an error when the payrollId is input as the wrong format" which {
@@ -386,7 +378,11 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           titleCheck(get.expectedErrorTitle)
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
-          textOnPageCheck(get.expectedContent, contentSelector)
+          textOnPageCheck(get.paragraph1, paragraph1Selector)
+          textOnPageCheck(bullet1, bulletSelector(1))
+          textOnPageCheck(bullet2, bulletSelector(2))
+          textOnPageCheck(bullet3, bulletSelector(3))
+          textOnPageCheck(get.paragraph2, paragraph2Selector)
           textOnPageCheck(hintText, hintTextSelector)
           inputFieldCheck(inputName, inputSelector)
           inputFieldValueCheck(payrollId, inputAmountField)

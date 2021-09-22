@@ -35,7 +35,13 @@
 @headingForUse = @{messages(s"employment.payrollId.title.${if(user.isAgent) "agent" else "individual"}")}
 
 @contentHtml = {
-    <p class="govuk-body">@messages(s"employment.payrollId.paragraph.${if(user.isAgent) "agent" else "individual"}")</p>
+    <p class="govuk-body">@messages(s"employment.payrollId.paragraph1.${if(user.isAgent) "agent" else "individual"}")</p>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("employment.payrollId.bullet1")</li>
+        <li>@messages("employment.payrollId.bullet2")</li>
+        <li>@messages("employment.payrollId.bullet3")</li>
+    </ul>
+    <p class="govuk-body">@messages(s"employment.payrollId.paragraph2.${if(user.isAgent) "agent" else "individual"}")</p>
 }
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = form.hasErrors) {

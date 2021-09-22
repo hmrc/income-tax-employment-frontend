@@ -16,7 +16,7 @@
 
 package forms.employment
 
-import forms.validation.StringConstraints.{validateChar, validateMinSize, validateSize}
+import forms.validation.StringConstraints.{validateChar, validateSize}
 import forms.validation.mappings.MappingUtil.trimmedText
 import forms.validation.utils.ConstraintUtil.ConstraintUtil
 import play.api.data.Form
@@ -26,9 +26,8 @@ import play.api.data.validation.Constraints.nonEmpty
 object EmployerPayrollIdForm {
 
   val payrollId: String = "payrollId"
-  val minCharLimit: Int = 3
-  val charLimit: Int = 8
-  val regex: String = "^[A-Za-z0-9.,\\-()/=!\"%&*; <>'+:\\?]{0,38}$"
+  val charLimit: Int = 38
+  val regex: String = "^[A-Za-z0-9.,\\\\\\-()\\/=!\"%&*; <>'’+:\\?]{0,38}$"
 
   def notEmpty(isAgent: Boolean): Constraint[String] =
     nonEmpty(if(isAgent) "employment.payrollId.error.noEntry.agent" else "employment.payrollId.error.noEntry.individual")
@@ -36,15 +35,12 @@ object EmployerPayrollIdForm {
   def notCharLimit(isAgent: Boolean): Constraint[String] =
     validateSize(charLimit)(if(isAgent) "employment.payrollId.error.tooMany.agent" else "employment.payrollId.error.tooMany.individual")
 
-  def notMinCharLimit(isAgent: Boolean): Constraint[String] =
-    validateMinSize(minCharLimit)(if(isAgent) "employment.payrollId.error.notEnough.agent" else "employment.payrollId.error.notEnough.individual")
-
   def validateFormat(isAgent: Boolean): Constraint[String] =
     validateChar(regex)(if(isAgent) "employment.payrollId.error.incorrect.agent" else "employment.payrollId.error.incorrect.individual")
 
   def employerPayrollIdForm(isAgent: Boolean): Form[String] = Form(
     payrollId -> trimmedText.verifying(
-      notEmpty(isAgent) andThen notMinCharLimit(isAgent) andThen notCharLimit(isAgent) andThen validateFormat(isAgent)
+      notEmpty(isAgent) andThen notCharLimit(isAgent) andThen validateFormat(isAgent)
     )
   )
 
