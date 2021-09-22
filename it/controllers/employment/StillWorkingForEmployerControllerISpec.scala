@@ -155,34 +155,6 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = Some("2021-01-01"),
-              cessationDateQuestion = Some(true), hmrc = true)), userRequest)
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(stillWorkingForEmployerPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
-          h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-        }
-
-        "render the 'still working for employer' with the correct content and the no radio populated when its already in session" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = None,
               cessationDateQuestion = Some(false), hmrc = true)), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(stillWorkingForEmployerPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -202,6 +174,34 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
           radioButtonCheck(yesText, 1, Some(false))
           radioButtonCheck(noText, 2, Some(true))
+          buttonCheck(expectedButtonText, continueButtonSelector)
+          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          welshToggleCheck(user.isWelsh)
+        }
+
+        "render the 'still working for employer' with the correct content and the no radio populated when its already in session" which {
+          lazy val result: WSResponse = {
+            dropEmploymentDB()
+            insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = None,
+              cessationDateQuestion = Some(true), hmrc = true)), userRequest)
+            authoriseAgentOrIndividual(user.isAgent)
+            urlGet(stillWorkingForEmployerPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          import Selectors._
+          import user.commonExpectedResults._
+
+          "has an OK status" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+          radioButtonCheck(yesText, 1, Some(true))
+          radioButtonCheck(noText, 2, Some(false))
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)

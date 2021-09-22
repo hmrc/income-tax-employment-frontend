@@ -68,7 +68,7 @@
 
         val stillWorkingForEmployer = EmploymentDataForView(messages(s"$msgKeyGeneric.stillWorkingForEmployer"),
             if(employmentDetails.cessationDate.isDefined) {Some(messages("common.no"))} else {
-                if(employmentDetails.cessationDateQuestion.contains(true)){Some(messages("common.yes"))} else {Some(messages("common.no"))}},
+                if(employmentDetails.cessationDateQuestion.contains(true)){Some(messages("common.no"))} else {Some(messages("common.yes"))}},
             controllers.employment.routes.StillWorkingForEmployerController.show(taxYear, employmentDetails.employmentId),
             messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.stillWorkingForEmployer", user.isAgent), employmentDetails.employerName))
 
@@ -92,7 +92,7 @@
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.totalTaxToDate", user.isAgent)))
 
         val employmentDataFields = {
-                List(employerName, employmentStartDate, stillWorkingForEmployer, payeRef, payReceived, totalTaxToDate)
+                List(employerName, payeRef, employmentStartDate, stillWorkingForEmployer, payReceived, totalTaxToDate)
         }
 
         govukSummaryList(
