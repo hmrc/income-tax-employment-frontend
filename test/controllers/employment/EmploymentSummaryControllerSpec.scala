@@ -89,7 +89,8 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
       None
     )
 
-    val oneEmploymentSourceData: AllEmploymentData = AllEmploymentData(
+    val oneEmploymentSourceData:
+      AllEmploymentData = AllEmploymentData(
       hmrcEmploymentData = Seq(employmentSource1),
       hmrcExpenses = None,
       customerEmploymentData = Seq(),
@@ -120,10 +121,8 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
     multipleView,
     singleEOYView,
     mockIncomeTaxUserDataService,
-    inYearAction,
-    mockErrorHandler
+    inYearAction
   )
-
 
   val taxYear:Int = mockAppConfig.defaultTaxYear
 

@@ -45,6 +45,9 @@ POST       /:taxYear/benefits/car-van-fuel                  controllers.benefits
 GET        /:taxYear/benefits/company-van                   controllers.benefits.CompanyVanBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/company-van                   controllers.benefits.CompanyVanBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/car-fuel                      controllers.employment.CompanyCarFuelBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/car-fuel                      controllers.employment.CompanyCarFuelBenefitsController.submit(taxYear: Int, employmentId: String)
+
 GET        /sign-out                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
 GET        /error/you-need-to-sign-up                       controllers.errors.IndividualAuthErrorController.show

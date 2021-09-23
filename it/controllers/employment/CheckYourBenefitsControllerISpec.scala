@@ -657,9 +657,12 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
 
-  val carFanFuelBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/car-van-fuel?employmentId=001"
+  val carVanFuelBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/car-van-fuel?employmentId=001"
   val companyCarHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/company-car?employmentId=001"
+
   val companyVanBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/company-van?employmentId=001"
+
+  val companyCarFuelBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/car-fuel?employmentId=001"
 
   ".show" when {
     import Selectors._
@@ -774,10 +777,11 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 3, 1, s"${user.commonExpectedResults.changeText} ${specificResults.benefitsReceivedHiddenText}", receiveAnyBenefitsHref)
 
           textOnPageCheck(commonResults.vehicleHeader, fieldHeaderSelector(4))
-          changeAmountRowCheck(commonResults.carSubheading, commonResults.yes, 5, 1, s"${user.commonExpectedResults.changeText} ${specificResults.carSubheadingHiddenText}", carFanFuelBenefitsHref)
+
+          changeAmountRowCheck(commonResults.carSubheading, commonResults.yes, 5, 1, s"${user.commonExpectedResults.changeText} ${specificResults.carSubheadingHiddenText}", carVanFuelBenefitsHref)
           changeAmountRowCheck(commonResults.companyCar, commonResults.yes, 5, 2, s"${user.commonExpectedResults.changeText} ${specificResults.companyCarHiddenText}", companyCarHref)
           changeAmountRowCheck(commonResults.companyCarAmount, "£1.23", 5, 3, s"${user.commonExpectedResults.changeText} ${specificResults.companyCarAmountHiddenText}", dummyHref)
-          changeAmountRowCheck(commonResults.fuelForCompanyCar, commonResults.yes, 5, 4, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyCarHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.fuelForCompanyCar, commonResults.yes, 5, 4, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyCarHiddenText}", companyCarFuelBenefitsHref)
           changeAmountRowCheck(commonResults.fuelForCompanyCarAmount, "£2", 5, 5, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyCarAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.companyVan, commonResults.yes, 5, 6, s"${user.commonExpectedResults.changeText} ${specificResults.companyVanHiddenText}", companyVanBenefitsHref)
           changeAmountRowCheck(commonResults.companyVanAmount, "£3", 5, 7, s"${user.commonExpectedResults.changeText} ${specificResults.companyVanAmountHiddenText}", dummyHref)
@@ -897,9 +901,10 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 3, 1, s"${user.commonExpectedResults.changeText} ${specificResults.benefitsReceivedHiddenText}", receiveAnyBenefitsHref)
 
           textOnPageCheck(commonResults.vehicleHeader, fieldHeaderSelector(4))
-          changeAmountRowCheck(commonResults.carSubheading, commonResults.yes, 5, 1, s"${user.commonExpectedResults.changeText} ${specificResults.carSubheadingHiddenText}", carFanFuelBenefitsHref)
+
+          changeAmountRowCheck(commonResults.carSubheading, commonResults.yes, 5, 1, s"${user.commonExpectedResults.changeText} ${specificResults.carSubheadingHiddenText}", carVanFuelBenefitsHref)
           changeAmountRowCheck(commonResults.companyCar, commonResults.no, 5, 2, s"${user.commonExpectedResults.changeText} ${specificResults.companyCarHiddenText}", companyCarHref)
-          changeAmountRowCheck(commonResults.fuelForCompanyCar, commonResults.no, 5, 3, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyCarHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.fuelForCompanyCar, commonResults.no, 5, 3, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyCarHiddenText}", companyCarFuelBenefitsHref)
           changeAmountRowCheck(commonResults.companyVan, commonResults.yes, 5, 4, s"${user.commonExpectedResults.changeText} ${specificResults.companyVanHiddenText}", companyVanBenefitsHref)
           changeAmountRowCheck(commonResults.companyVanAmount, "£3", 5, 5, s"${user.commonExpectedResults.changeText} ${specificResults.companyVanAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.fuelForCompanyVan, commonResults.yes, 5, 6, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyVanHiddenText}", dummyHref)
@@ -1015,7 +1020,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 2, 1, s"${user.commonExpectedResults.changeText} ${specificResults.benefitsReceivedHiddenText}", receiveAnyBenefitsHref)
 
           textOnPageCheck(commonResults.vehicleHeader, fieldHeaderSelector(3))
-          changeAmountRowCheck(commonResults.carSubheading, commonResults.no, 4, 1, s"${user.commonExpectedResults.changeText} ${specificResults.carSubheadingHiddenText}", carFanFuelBenefitsHref)
+
+          changeAmountRowCheck(commonResults.carSubheading, commonResults.no, 4, 1, s"${user.commonExpectedResults.changeText} ${specificResults.carSubheadingHiddenText}", carVanFuelBenefitsHref)
 
           textOnPageCheck(user.commonExpectedResults.accommodationHeader, fieldHeaderSelector(5))
           changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.yes, 6, 1, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationSubheadingHiddenText}", dummyHref)
