@@ -78,7 +78,6 @@ case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
       employmentDetails.cessationDate,
       employmentDetails.taxablePayToDate,
       employmentDetails.totalTaxToDate,
-      employmentDetails.payrollId,
       isUsingCustomerData)
   }
 }
