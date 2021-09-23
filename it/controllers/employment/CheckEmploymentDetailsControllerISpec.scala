@@ -546,7 +546,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
 
           textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(ContentValues.stillWorkingYes, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(2))
 
 
           textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(3))
@@ -583,7 +583,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             cyaChangeLink(1), employerNameHref.url)
 
           textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(ContentValues.stillWorkingYes, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(2))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changeStillWorkingForEmployerHiddenText}",
             cyaChangeLink(2), changeStillWorkingForEmployerHref.url)
 
@@ -625,7 +625,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
 
           textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(ContentValues.stillWorkingYes, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(2))
 
           textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(3))
