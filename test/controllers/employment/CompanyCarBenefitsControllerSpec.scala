@@ -35,9 +35,6 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
   private val taxYear = 2021
   private val employmentId = "223/AB12399"
   private lazy val view = app.injector.instanceOf[CompanyCarBenefitsView]
-  private val form = YesNoForm.yesNoForm(
-    missingInputError = "CompanyCarBenefits.error"
-  )
   private lazy val employmentsCYAFill: EmploymentSource = employmentsModel.hmrcEmploymentData.head
 
   private lazy val employmentUserData = new EmploymentUserData(

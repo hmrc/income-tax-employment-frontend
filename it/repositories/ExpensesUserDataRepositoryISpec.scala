@@ -20,9 +20,8 @@ import com.mongodb.MongoTimeoutException
 import common.UUID
 import models.User
 import models.employment.Expenses
-import models.mongo.{DatabaseError, EncryptedExpensesUserData, EncryptionDecryptionError, ExpensesCYAModel, ExpensesUserData, MongoError}
+import models.mongo._
 import org.joda.time.{DateTime, DateTimeZone}
-import org.mongodb.scala.model.IndexModel
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.{MongoException, MongoInternalException, MongoWriteException}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper

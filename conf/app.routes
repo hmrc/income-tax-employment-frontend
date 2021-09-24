@@ -21,6 +21,10 @@ POST       /:taxYear/employer-name                          controllers.employme
 GET        /:taxYear/employment-start-date                  controllers.employment.EmployerStartDateController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/employment-start-date                  controllers.employment.EmployerStartDateController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/still-working-for-employer              controllers.employment.StillWorkingForEmployerController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/still-working-for-employer              controllers.employment.StillWorkingForEmployerController.submit(taxYear: Int, employmentId: String)
+
+
 GET        /:taxYear/employer-paye-reference                controllers.employment.PayeRefController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/employer-paye-reference                controllers.employment.PayeRefController.submit(taxYear: Int, employmentId: String)
 
@@ -41,6 +45,9 @@ POST       /:taxYear/benefits/car-van-fuel                  controllers.benefits
 
 GET        /:taxYear/benefits/company-van                   controllers.benefits.CompanyVanBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/company-van                   controllers.benefits.CompanyVanBenefitsController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/benefits/car-fuel                      controllers.employment.CompanyCarFuelBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/car-fuel                      controllers.employment.CompanyCarFuelBenefitsController.submit(taxYear: Int, employmentId: String)
 
 GET        /sign-out                                        controllers.SignOutController.signOut(isAgent: Boolean)
 

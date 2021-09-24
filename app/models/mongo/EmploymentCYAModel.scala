@@ -37,7 +37,8 @@ case class EmploymentDetails(employerName: String,
     employerRef.isDefined &&
       startDate.isDefined &&
       taxablePayToDate.isDefined &&
-      totalTaxToDate.isDefined //TODO Add extra mandatory fields such as cessationDateQuestion when introduced.
+      totalTaxToDate.isDefined &&
+      cessationDateQuestion.isDefined //TODO Add extra mandatory fields such as cessationDateQuestion when introduced.
   }
 }
 object EmploymentDetails {
@@ -70,10 +71,13 @@ case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
       employmentDetails.employerRef,
       employmentId,
       employmentDetails.startDate,
-      Some(employmentDetails.cessationDate.isDefined),
+      //TODO: could use the below for cessationDateQuestion when cessation date is implemented
+      //cessationDateQuestion = Some(employmentDetails.cessationDate.isEmpty),
+      employmentDetails.cessationDateQuestion,
       employmentDetails.cessationDate,
       employmentDetails.taxablePayToDate,
       employmentDetails.totalTaxToDate,
+      employmentDetails.payrollId,
       isUsingCustomerData)
   }
 }

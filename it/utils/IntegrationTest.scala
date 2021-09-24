@@ -22,7 +22,7 @@ import common.SessionValues
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import helpers.{PlaySessionCookieBaker, WireMockHelper, WiremockStubHelpers}
-import models.{IncomeTaxUserData, User}
+import models.IncomeTaxUserData
 import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.scalatest.BeforeAndAfterAll

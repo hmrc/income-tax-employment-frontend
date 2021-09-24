@@ -64,7 +64,7 @@ case class EmploymentSource(employmentId: String,
       employerRef = employerRef,
       startDate = startDate,
       payrollId = payrollId,
-      cessationDateQuestion = Some(cessationDate.isDefined),
+      cessationDateQuestion = Some(cessationDate.isEmpty),
       cessationDate = cessationDate,
       dateIgnored = dateIgnored,
       employmentSubmittedOn = submittedOn,
@@ -85,6 +85,7 @@ case class EmploymentSource(employmentId: String,
       cessationDate,
       employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
       employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
+      payrollId = payrollId,
       isUsingCustomerData
     )
   }

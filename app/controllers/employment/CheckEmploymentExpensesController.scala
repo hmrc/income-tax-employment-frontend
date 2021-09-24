@@ -95,7 +95,7 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
   def performAuditAndRenderView(expenses: Expenses, taxYear: Int, isInYear: Boolean, isMultipleEmployments: Boolean)
                                (implicit user: User[AnyContent]): Result = {
     val auditModel = ViewEmploymentExpensesAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, expenses)
-    auditService.auditModel[ViewEmploymentExpensesAudit](auditModel.toAuditModel)
+    auditService.sendAudit[ViewEmploymentExpensesAudit](auditModel.toAuditModel)
     Ok(checkEmploymentExpensesView(taxYear, expenses, isInYear, isMultipleEmployments))
   }
 

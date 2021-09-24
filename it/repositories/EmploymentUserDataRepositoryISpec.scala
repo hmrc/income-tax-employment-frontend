@@ -19,14 +19,14 @@ package repositories
 import com.mongodb.MongoTimeoutException
 import common.UUID
 import models.User
-import models.employment.{Benefits, BenefitsViewModel, CarVanFuelModel}
-import models.mongo.{DatabaseError, EmploymentCYAModel, EmploymentDetails, EmploymentUserData, EncryptedEmploymentUserData, EncryptionDecryptionError, MongoError}
+import models.employment.{BenefitsViewModel, CarVanFuelModel}
+import models.mongo._
 import org.joda.time.{DateTime, DateTimeZone}
-import org.mongodb.scala.model.{IndexModel, IndexOptions}
 import org.mongodb.scala.model.Indexes.ascending
+import org.mongodb.scala.model.{IndexModel, IndexOptions}
 import org.mongodb.scala.{MongoException, MongoInternalException, MongoWriteException}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
-import play.api.mvc.{AnyContent, AnyContentAsEmpty}
+import play.api.mvc.AnyContent
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import services.EncryptionService
 import uk.gov.hmrc.auth.core.AffinityGroup.Individual

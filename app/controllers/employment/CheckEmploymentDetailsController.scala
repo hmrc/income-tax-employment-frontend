@@ -16,19 +16,22 @@
 
 package controllers.employment
 
-import audit.{AuditService, ViewEmploymentDetailsAudit}
+import audit.{AmendEmploymentDetailsUpdateAudit, AuditModel, AuditService,
+  CreateNewEmploymentDetailsAudit, PriorEmploymentAuditInfo, ViewEmploymentDetailsAudit}
 import common.SessionValues
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckEmploymentDetailsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import javax.inject.Inject
 import models.User
+import models.employment.createUpdate.CreateUpdateEmploymentRequest
 import models.employment.{AllEmploymentData, EmploymentDetailsViewModel}
 import models.mongo.EmploymentCYAModel
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.{EmploymentSessionService, RedirectService}
+import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.CheckEmploymentDetailsView
@@ -101,7 +104,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
 
   def performAuditAndRenderView(employmentDetails: EmploymentDetailsViewModel, taxYear: Int, isInYear: Boolean)(implicit user: User[AnyContent]): Result ={
     val auditModel = ViewEmploymentDetailsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, employmentDetails)
-    auditService.auditModel[ViewEmploymentDetailsAudit](auditModel.toAuditModel)
+    auditService.sendAudit[ViewEmploymentDetailsAudit](auditModel.toAuditModel)
     Ok(employmentDetailsView(employmentDetails, taxYear, isInYear))
   }
 
@@ -114,19 +117,45 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
 
             employmentSessionService.createModelAndReturnResult(cya,prior,taxYear){
               model =>
+
                 employmentSessionService.createOrUpdateEmploymentResult(taxYear,model).flatMap {
                   case Left(result) =>
                     Future.successful(result)
                   case Right(result) =>
+                    performSubmitAudits(model,employmentId,taxYear,prior)
                     employmentSessionService.clear(taxYear, employmentId)(
                       result.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)
                     )
                 }
             }
-
           case None => Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear,employmentId)))
         }
       }
+    }
+  }
+
+  def performSubmitAudits(model: CreateUpdateEmploymentRequest, employmentId: String, taxYear: Int,
+                          prior: Option[AllEmploymentData])(implicit user: User[_]): Future[AuditResult] = {
+
+    val audit: Either[AuditModel[AmendEmploymentDetailsUpdateAudit],AuditModel[CreateNewEmploymentDetailsAudit]] = prior.flatMap{
+      prior =>
+        val priorData = employmentSessionService.employmentSourceToUse(prior,employmentId,isInYear = false)
+        priorData.map(prior => model.toAmendAuditModel(employmentId,taxYear,prior._1).toAuditModel)
+    }.map(Left(_)).getOrElse{
+
+      val existingEmployments = prior.map{
+        prior => employmentSessionService.getLatestEmploymentData(prior,isInYear = false).map{
+          employment =>
+            PriorEmploymentAuditInfo(employment.employerName,employment.employerRef)
+        }
+      }.getOrElse(Seq.empty)
+
+      Right(model.toCreateAuditModel(taxYear,existingEmployments = existingEmployments).toAuditModel)
+    }
+
+    audit match {
+      case Left(amend) => auditService.sendAudit(amend)
+      case Right(create) => auditService.sendAudit(create)
     }
   }
 }
