@@ -70,7 +70,7 @@ class RedirectServiceSpec extends UnitTest {
     "redirect to tax page" in {
 
       val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
-        employerRef = Some("123/12345"), payrollId = Some("id"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), taxablePayToDate = Some(1)
+        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), cessationDate = Some("2020-11-01"), payrollId = Some("id"), taxablePayToDate = Some(1)
       )),taxYear,"employmentId",false)
 
       response.header.status shouldBe SEE_OTHER
