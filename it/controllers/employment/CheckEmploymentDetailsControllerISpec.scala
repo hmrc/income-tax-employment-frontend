@@ -404,10 +404,10 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             cyaChangeLink(4), changeStillWorkingForEmployerHref.url)
           textOnPageCheck(user.commonExpectedResults.employmentEndDateField1, summaryListRowFieldNameSelector(5))
           textOnPageCheck(ContentValues.employmentEndDate, summaryListRowFieldAmountSelector(5))
-          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(5))
-          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(5))
-          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(6))
-          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(6))
+          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(6))
+          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(6))
+          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(7))
+          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(7))
         }
         //noinspection ScalaStyle
         "for end of year return a redirect when cya data exists but not finished when its a new employment" which {
@@ -557,7 +557,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
 
           textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(ContentValues.stillWorkingYes, summaryListRowFieldAmountSelector(2))
 
 
           textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(3))
@@ -593,7 +593,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.commonExpectedResults.changeEmployerNameHiddenText}",
             cyaChangeLink(1), employerNameHref.url, Some(cyaHiddenChangeLink(1)))
           textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(ContentValues.stillWorkingYes, summaryListRowFieldAmountSelector(2))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changeStillWorkingForEmployerHiddenText}",
             cyaChangeLink(2), changeStillWorkingForEmployerHref.url)
           textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(3))
@@ -633,7 +633,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
 
           textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(ContentValues.stillWorkingYes, summaryListRowFieldAmountSelector(2))
 
           textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(3))

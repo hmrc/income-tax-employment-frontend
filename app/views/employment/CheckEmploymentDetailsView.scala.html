@@ -67,7 +67,7 @@
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", user.isAgent), employmentDetails.employerName))
 
         val stillWorkingForEmployer = EmploymentDataForView(messages(s"$msgKeyGeneric.stillWorkingForEmployer"),
-        Some(if(employmentDetails.cessationDate.isDefined) {messages("common.no")} else{messages("common.yes")}),
+        Some(if(employmentDetails.cessationDateQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}),
         controllers.employment.routes.StillWorkingForEmployerController.show(taxYear, employmentDetails.employmentId),
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.stillWorkingForEmployer", user.isAgent), employmentDetails.employerName))
 

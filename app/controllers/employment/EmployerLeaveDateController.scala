@@ -32,7 +32,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.DateTimeUtil.localDateTimeFormat
 import utils.{Clock, SessionHelper}
 import views.html.employment.EmployerLeaveDateView
-import routes.{CheckEmploymentDetailsController, CheckEmploymentExpensesController, CheckYourBenefitsController}
+import routes.{CheckEmploymentDetailsController, CheckEmploymentExpensesController, CheckYourBenefitsController, StillWorkingForEmployerController}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -56,8 +56,8 @@ class EmployerLeaveDateController @Inject()(authorisedAction: AuthorisedAction,
         val cessationDateQuestion = data.employment.employmentDetails.cessationDateQuestion
 
         (cessationDateQuestion, cessationDate) match {
-          case (None,_) => redirect(taxYear,employmentId,data.isPriorSubmission)
-          case (Some(true),_) => redirect(taxYear,employmentId,data.isPriorSubmission)
+          case (None,_) => Future.successful(employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission))
+          case (Some(true),_) => Future.successful(employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission))
           case (_,Some(cessationDate)) =>
             val parsedDate: LocalDate = LocalDate.parse(cessationDate, localDateTimeFormat)
             val filledForm: Form[EmploymentDate] = form.fill(
@@ -70,23 +70,14 @@ class EmployerLeaveDateController @Inject()(authorisedAction: AuthorisedAction,
     }
   }
 
-  private def redirect(taxYear: Int, employmentId: String, isPriorSubmission: Boolean): Future[Result] ={
-    if(isPriorSubmission){
-      Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear,employmentId)))
-    } else {
-      //TODO route to leave radio page
-      Future.successful(Redirect(CheckYourBenefitsController.show(taxYear,employmentId)))
-    }
-  }
-
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
 
         val cessationDateQuestion = data.employment.employmentDetails.cessationDateQuestion
         cessationDateQuestion match {
-          case None => redirect(taxYear,employmentId,data.isPriorSubmission)
-          case Some(true) => redirect(taxYear,employmentId,data.isPriorSubmission)
+          case None => Future.successful(employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission))
+          case Some(true) => Future.successful(employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission))
           case _ =>
 
             val newForm = form.bindFromRequest()

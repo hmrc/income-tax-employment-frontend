@@ -18,28 +18,33 @@ package services
 
 import controllers.employment.routes._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails}
-import play.api.mvc.Result
+import play.api.mvc.{Call, Result}
 import play.api.mvc.Results.Redirect
 
 object RedirectService {
 
-  def employmentDetailsRedirect(cya: EmploymentCYAModel, taxYear: Int, employmentId: String, isPriorSubmission: Boolean): Result ={
-    Redirect(if(isPriorSubmission){
+  def employmentDetailsRedirect(cya: EmploymentCYAModel, taxYear: Int, employmentId: String,
+                                isPriorSubmission: Boolean, isStandaloneQuestion: Boolean = true): Result ={
+    Redirect(if(isPriorSubmission && isStandaloneQuestion){
       CheckEmploymentDetailsController.show(taxYear, employmentId)
     } else {
-      cya match {
-        case EmploymentCYAModel(EmploymentDetails(_,employerRef@None,_,_,_,_,_,_,_,_,_,_),_) => PayeRefController.show(taxYear,employmentId)
-        case EmploymentCYAModel(EmploymentDetails(_,_,startDate@None,_,_,_,_,_,_,_,_,_),_) => EmployerStartDateController.show(taxYear,employmentId)
-        case EmploymentCYAModel(EmploymentDetails(_,_,_,_,cessationDateQuestion@None,_,_,_,_,_,_,_),_) =>
-          StillWorkingForEmployerController.show(taxYear, employmentId)
-        case EmploymentCYAModel(EmploymentDetails(_,_,_,_,Some(false),cessationDate@None,_,_,_,_,_,_),_) =>
-          EmployerLeaveDateController.show(taxYear, employmentId)
-        case EmploymentCYAModel(EmploymentDetails(_,_,_,_,_,_,_,_,_,taxablePayToDate@None,_,_),_) => EmployerPayAmountController.show(taxYear,employmentId)
-        case EmploymentCYAModel(EmploymentDetails(_,_,_,_,_,_,_,_,_,_,totalTaxToDate@None,_),_) => EmploymentTaxController.show(taxYear,employmentId)
-        case EmploymentCYAModel(EmploymentDetails(_,_,_,payrollId@None,_,_,_,_,_,_,_,_),_) =>
-          CheckEmploymentDetailsController.show(taxYear, employmentId) //TODO Payroll page
-        case _ => CheckEmploymentDetailsController.show(taxYear, employmentId)
-      }
+      questionRouting(cya,taxYear,employmentId)
     })
+  }
+
+  def questionRouting(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Call ={
+    cya match {
+      case EmploymentCYAModel(EmploymentDetails(_,employerRef@None,_,_,_,_,_,_,_,_,_,_),_) => PayeRefController.show(taxYear,employmentId)
+      case EmploymentCYAModel(EmploymentDetails(_,_,startDate@None,_,_,_,_,_,_,_,_,_),_) => EmployerStartDateController.show(taxYear,employmentId)
+      case EmploymentCYAModel(EmploymentDetails(_,_,_,_,cessationDateQuestion@None,_,_,_,_,_,_,_),_) =>
+        StillWorkingForEmployerController.show(taxYear, employmentId)
+      case EmploymentCYAModel(EmploymentDetails(_,_,_,_,Some(false),cessationDate@None,_,_,_,_,_,_),_) =>
+        EmployerLeaveDateController.show(taxYear, employmentId)
+      case EmploymentCYAModel(EmploymentDetails(_,_,_,_,_,_,_,_,_,taxablePayToDate@None,_,_),_) => EmployerPayAmountController.show(taxYear,employmentId)
+      case EmploymentCYAModel(EmploymentDetails(_,_,_,_,_,_,_,_,_,_,totalTaxToDate@None,_),_) => EmploymentTaxController.show(taxYear,employmentId)
+      case EmploymentCYAModel(EmploymentDetails(_,_,_,payrollId@None,_,_,_,_,_,_,_,_),_) =>
+        CheckEmploymentDetailsController.show(taxYear, employmentId) //TODO Payroll page
+      case _ => CheckEmploymentDetailsController.show(taxYear, employmentId)
+    }
   }
 }

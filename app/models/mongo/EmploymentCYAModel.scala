@@ -33,11 +33,20 @@ case class EmploymentDetails(employerName: String,
                              currentDataIsHmrcHeld: Boolean) {
 
   val isFinished: Boolean = {
+
+    val cessationSectionFinished = {
+      cessationDateQuestion match {
+        case Some(true) => true
+        case Some(false) => cessationDate.isDefined
+        case None => false
+      }
+    }
+
     employerRef.isDefined &&
       startDate.isDefined &&
       taxablePayToDate.isDefined &&
       totalTaxToDate.isDefined &&
-      cessationDateQuestion.isDefined //TODO Add extra mandatory fields such as cessationDateQuestion when introduced.
+      cessationSectionFinished
   }
 }
 object EmploymentDetails {
