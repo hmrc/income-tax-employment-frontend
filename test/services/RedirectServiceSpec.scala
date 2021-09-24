@@ -88,7 +88,7 @@ class RedirectServiceSpec extends UnitTest {
     "redirect to employment end date page when no cessation date" in {
 
       val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
-        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), taxablePayToDate = Some(1),
+        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(false), taxablePayToDate = Some(1),
         totalTaxToDate = Some(1), payrollId = Some("id")
       )),taxYear,"employmentId",isPriorSubmission = false)
 
@@ -99,7 +99,7 @@ class RedirectServiceSpec extends UnitTest {
 
       val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
         employerRef = Some("123/12345"), startDate = Some("2020-11-01"), taxablePayToDate = Some(1), totalTaxToDate = Some(1),
-        payrollId = Some("id"), cessationDateQuestion = Some(false)
+        payrollId = Some("id"), cessationDateQuestion = Some(true)
       )),taxYear,"employmentId",isPriorSubmission = false)
 
       response.header.status shouldBe SEE_OTHER

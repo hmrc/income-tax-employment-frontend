@@ -55,12 +55,10 @@ class StillWorkingForEmployerController @Inject()(authorisedAction: AuthorisedAc
               employmentId, data.employment.employmentDetails.employerName)))
           case None =>
             if (data.isPriorSubmission) {
-              // prepopulation
               val isStillWorkingForEmployer = data.employment.employmentDetails.cessationDate.isEmpty
               Future.successful(Ok(stillWorkingForEmployerView(yesNoForm.fill(isStillWorkingForEmployer), taxYear,
                 employmentId, data.employment.employmentDetails.employerName)))
-            }
-            else {
+            } else {
               Future.successful(Ok(stillWorkingForEmployerView(yesNoForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
             }
         }
@@ -86,7 +84,6 @@ class StillWorkingForEmployerController @Inject()(authorisedAction: AuthorisedAc
             val updatedCya = cya.copy(cya.employmentDetails.copy(cessationDateQuestion = Some(yesNo), cessationDate = cessationDateUpdated))
             employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear,
               data.isPriorSubmission)(errorHandler.internalServerError()) {
-              //TODO: if value is false - change redirect to cessation date when page is available otherwise to usual taxablePayToDate
               employmentDetailsRedirect(updatedCya, taxYear, employmentId, data.isPriorSubmission)
             }
           }
