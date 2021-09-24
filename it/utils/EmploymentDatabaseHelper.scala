@@ -20,7 +20,8 @@ import models.User
 import models.mongo.{EmploymentUserData, ExpensesUserData}
 import repositories.{EmploymentUserDataRepositoryImpl, ExpensesUserDataRepositoryImpl}
 
-trait EmploymentDatabaseHelper { self: IntegrationTest =>
+trait EmploymentDatabaseHelper {
+  self: IntegrationTest =>
 
   lazy val employmentDatabase: EmploymentUserDataRepositoryImpl = app.injector.instanceOf[EmploymentUserDataRepositoryImpl]
   lazy val expensesDatabase: ExpensesUserDataRepositoryImpl = app.injector.instanceOf[ExpensesUserDataRepositoryImpl]
@@ -38,22 +39,28 @@ trait EmploymentDatabaseHelper { self: IntegrationTest =>
   }
 
   //noinspection ScalaStyle
-  def insertCyaData(cya: EmploymentUserData, user: User[_]): Option[EmploymentUserData] = {
+  def insertCyaData(cya: EmploymentUserData, user: User[_]) {
     await(employmentDatabase.createOrUpdate(cya)(user))
   }
 
   //noinspection ScalaStyle
-  def insertExpensesCyaData(cya: ExpensesUserData, user: User[_]): Option[ExpensesUserData] = {
+  def insertExpensesCyaData(cya: ExpensesUserData, user: User[_]) {
     await(expensesDatabase.createOrUpdate(cya)(user))
   }
 
   //noinspection ScalaStyle
   def findCyaData(taxYear: Int, employmentId: String, user: User[_]): Option[EmploymentUserData] = {
-    await(employmentDatabase.find(taxYear, employmentId)(user))
+    await(employmentDatabase.find(taxYear, employmentId)(user).map {
+      case Left(_) => None
+      case Right(value) => value
+    })
   }
 
   //noinspection ScalaStyle
   def findExpensesCyaData(taxYear: Int, user: User[_]): Option[ExpensesUserData] = {
-    await(expensesDatabase.find(taxYear)(user))
+    await(expensesDatabase.find(taxYear)(user).map {
+      case Left(_) => None
+      case Right(value) => value
+    })
   }
 }

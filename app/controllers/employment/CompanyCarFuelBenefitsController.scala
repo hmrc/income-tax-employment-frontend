@@ -49,20 +49,20 @@ class CompanyCarFuelBenefitsController @Inject()(implicit val cc: MessagesContro
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionData(taxYear, employmentId).map {
+      employmentSessionService.getSessionDataResult(taxYear, employmentId){
         case Some(data) =>
           data.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) match {
-            case Some(questionResult) => Ok(companyCarFuelBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId))
-            case None => Ok(companyCarFuelBenefitsView(yesNoForm, taxYear, employmentId))
+            case Some(questionResult) => Future.successful(Ok(companyCarFuelBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
+            case None => Future.successful(Ok(companyCarFuelBenefitsView(yesNoForm, taxYear, employmentId)))
           }
-        case None => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+        case None => Future.successful(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
       }
     }
   }
 
   def submit(taxYear:Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionData(taxYear, employmentId).flatMap {
+      employmentSessionService.getSessionDataResult(taxYear, employmentId){
         case Some(data) =>
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(companyCarFuelBenefitsView(formWithErrors, taxYear, employmentId))),

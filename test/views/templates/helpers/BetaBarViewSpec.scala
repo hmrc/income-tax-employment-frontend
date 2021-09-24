@@ -34,7 +34,7 @@ class BetaBarViewSpec extends ViewTest {
 
       "use appConfig.feedbackUrl in the beta banner link" which {
 
-        implicit val appConfig: AppConfig = new MockAppConfig().config
+        implicit val appConfig: AppConfig = new MockAppConfig().config()
         implicit val isAgent: Boolean = false
         lazy val view = betaBar(isAgent)(fakeRequest, messages, appConfig)
 

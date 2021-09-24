@@ -20,13 +20,16 @@ import com.mongodb.MongoTimeoutException
 import common.UUID
 import models.User
 import models.employment.Expenses
-import models.mongo.{ExpensesCYAModel, ExpensesUserData}
+import models.mongo._
 import org.joda.time.{DateTime, DateTimeZone}
+import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.{MongoException, MongoInternalException, MongoWriteException}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.mvc.AnyContent
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
+import services.EncryptionService
 import uk.gov.hmrc.auth.core.AffinityGroup
+import uk.gov.hmrc.mongo.MongoUtils
 import utils.IntegrationTest
 import utils.PagerDutyHelper.PagerDutyKeys.FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA
 
@@ -34,11 +37,12 @@ import scala.concurrent.Future
 
 class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits with DefaultAwaitTimeout {
 
-  val repo: ExpensesUserDataRepositoryImpl = app.injector.instanceOf[ExpensesUserDataRepositoryImpl]
+  private val repo: ExpensesUserDataRepositoryImpl = app.injector.instanceOf[ExpensesUserDataRepositoryImpl]
+  private val encryptionService = app.injector.instanceOf[EncryptionService]
 
   private def count = await(repo.collection.countDocuments().toFuture())
 
-  private def find(expensesUserData: ExpensesUserData)(implicit user: User[_]): Future[Option[ExpensesUserData]] = {
+  private def find(expensesUserData: ExpensesUserData)(implicit user: User[_]): Future[Option[EncryptedExpensesUserData]] = {
     repo.collection
       .find(filter = Repository.filterExpenses(user.sessionId, user.mtditid, user.nino, expensesUserData.taxYear))
       .toFuture()
@@ -91,16 +95,48 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
     lastUpdated = now
   )
 
+  private def countFromOtherDatabase = await(repo.collection.countDocuments().toFuture())
+
   implicit val request: FakeRequest[AnyContent] = fakeRequest
 
   val userOne = User(expensesUserDataOne.mtdItId, None, expensesUserDataOne.nino, expensesUserDataOne.sessionId, AffinityGroup.Individual.toString)
   val userTwo = User(expensesUserDataTwo.mtdItId, None, expensesUserDataTwo.nino, expensesUserDataTwo.sessionId, AffinityGroup.Individual.toString)
 
+  val repoWithInvalidEncryption = appWithInvalidEncryptionKey.injector.instanceOf[ExpensesUserDataRepositoryImpl]
+  val serviceWithInvalidEncryption: EncryptionService = appWithInvalidEncryptionKey.injector.instanceOf[EncryptionService]
+
+  "update with invalid encryption" should {
+    "fail to add data" in new EmptyDatabase {
+      countFromOtherDatabase mustBe 0
+      val res: Either[DatabaseError, Unit] = await(repoWithInvalidEncryption.createOrUpdate(expensesUserDataOne)(userOne))
+      res mustBe Left(EncryptionDecryptionError(
+        "Key being used is not valid. It could be due to invalid encoding, wrong length or uninitialized for encrypt Invalid AES key length: 2 bytes"))
+    }
+  }
+
+  "find with invalid encryption" should {
+    "fail to find data" in new EmptyDatabase {
+      countFromOtherDatabase mustBe 0
+      await(repoWithInvalidEncryption.collection.insertOne(encryptionService.encryptExpenses(expensesUserDataOne)).toFuture())
+      countFromOtherDatabase mustBe 1
+      val res = await(repoWithInvalidEncryption.find(expensesUserDataOne.taxYear)(userOne))
+      res mustBe Left(EncryptionDecryptionError(
+        "Key being used is not valid. It could be due to invalid encoding, wrong length or uninitialized for decrypt Invalid AES key length: 2 bytes"))
+    }
+  }
+
+  "handleEncryptionDecryptionException" should {
+    "handle an exception" in {
+      val res = repoWithInvalidEncryption.handleEncryptionDecryptionException(new Exception("fail"), "")
+      res mustBe Left(EncryptionDecryptionError("fail"))
+    }
+  }
+
+
   "clear" should {
     "remove a record" in new EmptyDatabase {
       count mustBe 0
-      val createAttempt: Option[ExpensesUserData] = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
-      createAttempt mustBe Some(expensesUserDataOne)
+      await(repo.createOrUpdate(expensesUserDataOne)(userOne)) mustBe Right()
       count mustBe 1
 
       val clearAttempt: Boolean = await(repo.clear(taxYear)(userOne))
@@ -110,24 +146,42 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
   }
 
   "createOrUpdate" should {
+    "fail to add a document to the collection when a mongo error occurs" in new EmptyDatabase {
+
+      import org.mongodb.scala.model.{IndexModel, IndexOptions}
+
+      def ensureIndexes: Future[Seq[String]] = {
+        val indexes = Seq(IndexModel(ascending("taxYear"), IndexOptions().unique(true).name("fakeIndex")))
+        MongoUtils.ensureIndexes(repo.collection, indexes, true)
+      }
+
+      ensureIndexes
+      count mustBe 0
+
+      val res = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
+      res mustBe Right()
+      count mustBe 1
+
+      val res2 = await(repo.createOrUpdate(expensesUserDataOne.copy(sessionId = "1234567890"))(userOne))
+      res2.left.get.message must include("Command failed with error 11000 (DuplicateKey)")
+      count mustBe 1
+    }
 
     "create a document in collection when one does not exist" in new EmptyDatabase {
-      val createAttempt: Option[ExpensesUserData] = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
-      createAttempt mustBe Some(expensesUserDataOne)
+      await(repo.createOrUpdate(expensesUserDataOne)(userOne)) mustBe Right()
       count mustBe 1
     }
 
     "update a document in collection when one already exists" in new EmptyDatabase {
-      val createAttempt: Option[ExpensesUserData] = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
-      createAttempt.get mustBe expensesUserDataOne
+      val createAttempt = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
+      createAttempt mustBe Right()
       count mustBe 1
 
       val updatedEmploymentDetails = expensesUserDataOne.expensesCya.expenses.copy(jobExpenses = Some(34234))
       val updatedEmploymentCyaModel = expensesUserDataOne.expensesCya.copy(expenses = updatedEmploymentDetails)
       val updatedEmploymentUserData = expensesUserDataOne.copy(expensesCya = updatedEmploymentCyaModel)
 
-      val updateAttempt: Option[ExpensesUserData] = await(repo.createOrUpdate(updatedEmploymentUserData)(userOne))
-      updateAttempt mustBe Some(updatedEmploymentUserData)
+      await(repo.createOrUpdate(updatedEmploymentUserData)(userOne)) mustBe Right()
       count mustBe 1
     }
   }
@@ -137,31 +191,29 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
       val now = DateTime.now(DateTimeZone.UTC)
       val data = expensesUserDataOne.copy(lastUpdated = now)
 
-      val createResult: Option[ExpensesUserData] = await(repo.createOrUpdate(data)(userOne))
-      createResult mustBe Some(data)
+      await(repo.createOrUpdate(data)(userOne)) mustBe Right()
       count mustBe 1
 
       val findResult = await(repo.find(data.taxYear)(userOne))
 
-      findResult.map(_.copy(lastUpdated = data.lastUpdated)) mustBe Some(data)
-      findResult.map(_.lastUpdated.isAfter(data.lastUpdated)) mustBe Some(true)
+      findResult.right.get.map(_.copy(lastUpdated = data.lastUpdated)) mustBe Some(data)
+      findResult.right.get.map(_.lastUpdated.isAfter(data.lastUpdated)) mustBe Some(true)
     }
 
     "return None when find operation succeeds but no data is found for the given inputs" in new EmptyDatabase {
       val taxYear = 2021
-      val findResult = await(repo.find(taxYear)(userOne))
-
-      findResult mustBe None
+      await(repo.find(taxYear)(userOne)) mustBe Right(None)
     }
   }
 
   "the set indexes" should {
     "enforce uniqueness" in new EmptyDatabase {
-      val createResult: Option[ExpensesUserData] = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
-      createResult mustBe Some(expensesUserDataOne)
+      await(repo.createOrUpdate(expensesUserDataOne)(userOne)) mustBe Right()
       count mustBe 1
 
-      val caught = intercept[MongoWriteException](await(repo.collection.insertOne(expensesUserDataOne).toFuture()))
+      private val encryptedExpensesUserData: EncryptedExpensesUserData = encryptionService.encryptExpenses(expensesUserDataOne)
+
+      val caught = intercept[MongoWriteException](await(repo.collection.insertOne(encryptedExpensesUserData).toFuture()))
 
       caught.getMessage must include("E11000 duplicate key error collection: income-tax-employment-frontend.expensesUserData index: UserDataLookupIndex dup key:")
     }

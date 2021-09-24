@@ -48,3 +48,19 @@ object EmploymentUserData extends MongoJodaFormats {
     }
   }
 }
+
+case class EncryptedEmploymentUserData(sessionId: String,
+                                       mtdItId: String,
+                                       nino: String,
+                                       taxYear: Int,
+                                       employmentId: String,
+                                       isPriorSubmission: Boolean,
+                                       employment: EncryptedEmploymentCYAModel,
+                                       lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC))
+
+object EncryptedEmploymentUserData extends MongoJodaFormats {
+
+  implicit val mongoJodaDateTimeFormats: Format[DateTime] = dateTimeFormat
+
+  implicit val formats: Format[EncryptedEmploymentUserData] = Json.format[EncryptedEmploymentUserData]
+}

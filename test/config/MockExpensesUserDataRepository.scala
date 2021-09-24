@@ -17,10 +17,10 @@
 package config
 
 import models.User
-import models.mongo.{EmploymentUserData, ExpensesUserData}
-import org.scalamock.handlers.{CallHandler2, CallHandler3}
+import models.mongo.{DatabaseError, ExpensesUserData}
+import org.scalamock.handlers.CallHandler2
 import org.scalamock.scalatest.MockFactory
-import repositories.{EmploymentUserDataRepository, ExpensesUserDataRepository}
+import repositories.ExpensesUserDataRepository
 
 import scala.concurrent.Future
 
@@ -28,23 +28,26 @@ trait MockExpensesUserDataRepository extends MockFactory {
 
   val mockExpensesUserDataRepository: ExpensesUserDataRepository = mock[ExpensesUserDataRepository]
 
-  def mockFind(taxYear: Int, expenses: Option[ExpensesUserData]): CallHandler2[Int, User[_], Future[Option[ExpensesUserData]]] = {
+  def mockFind(taxYear: Int,
+               response: Either[DatabaseError,Option[ExpensesUserData]]): CallHandler2[Int, User[_], Future[Either[DatabaseError, Option[ExpensesUserData]]]] = {
     (mockExpensesUserDataRepository.find(_: Int)(_: User[_]))
       .expects(taxYear, *)
-      .returns(Future.successful(expenses))
-      .anyNumberOfTimes()
-  }
-  def mockCreateOrUpdate(expenses: ExpensesUserData, response: Option[ExpensesUserData]
-                        ): CallHandler2[ExpensesUserData, User[_], Future[Option[ExpensesUserData]]] = {
-    (mockExpensesUserDataRepository.createOrUpdate(_: ExpensesUserData)(_: User[_]))
-      .expects(expenses, *)
       .returns(Future.successful(response))
       .anyNumberOfTimes()
   }
 
-  def mockClear(taxYear: Int, response:Boolean): Unit ={
+  def mockCreateOrUpdate(expenses: ExpensesUserData,
+                         response: Option[ExpensesUserData]
+                        ): CallHandler2[ExpensesUserData, User[_], Future[Either[DatabaseError, Unit]]] = {
+    (mockExpensesUserDataRepository.createOrUpdate(_: ExpensesUserData)(_: User[_]))
+      .expects(expenses, *)
+      .returns(Future.successful(Right(response)))
+      .anyNumberOfTimes()
+  }
+
+  def mockClear(taxYear: Int, response: Boolean): Unit = {
     (mockExpensesUserDataRepository.clear(_: Int)(_: User[_]))
-      .expects(taxYear,*)
+      .expects(taxYear, *)
       .returns(Future.successful(response))
       .anyNumberOfTimes()
   }

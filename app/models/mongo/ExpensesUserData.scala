@@ -34,3 +34,18 @@ object ExpensesUserData extends MongoJodaFormats {
 
   implicit val format: OFormat[ExpensesUserData] = Json.format[ExpensesUserData]
 }
+
+case class EncryptedExpensesUserData(sessionId: String,
+                                     mtdItId: String,
+                                     nino: String,
+                                     taxYear: Int,
+                                     isPriorSubmission: Boolean,
+                                     expensesCya: EncryptedExpensesCYAModel,
+                                     lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC))
+
+object EncryptedExpensesUserData extends MongoJodaFormats {
+
+  implicit val mongoJodaDateTimeFormats: Format[DateTime] = dateTimeFormat
+
+  implicit val format: OFormat[EncryptedExpensesUserData] = Json.format[EncryptedExpensesUserData]
+}
