@@ -71,8 +71,9 @@ class AddEmploymentController @Inject()(implicit val cc: MessagesControllerCompo
           Future.successful(Redirect(EmployerNameController.show(taxYear, id)).addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> id))
         } {
           id =>
-            employmentSessionService.getSessionData(taxYear, id).map {
-              _.fold(Redirect(EmployerNameController.show(taxYear, id)))( cya => employmentDetailsRedirect(cya.employment, taxYear, id, cya.isPriorSubmission))
+            employmentSessionService.getSessionDataResult(taxYear, id){
+              _.fold(Future.successful(Redirect(EmployerNameController.show(taxYear, id))))( cya => Future.successful(
+                employmentDetailsRedirect(cya.employment, taxYear, id, cya.isPriorSubmission)))
             }
         }
         case _ =>

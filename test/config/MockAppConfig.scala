@@ -22,7 +22,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 class MockAppConfig extends MockFactory {
 
-  val config: AppConfig = new AppConfig(mock[ServicesConfig]) {
+  def config(encrypt: Boolean = true): AppConfig = new AppConfig(mock[ServicesConfig]) {
     override lazy val signInContinueUrl: String = "/continue"
     override lazy val signInUrl: String = "/signIn"
 
@@ -52,5 +52,8 @@ class MockAppConfig extends MockFactory {
     override def incomeTaxSubmissionBaseUrl: String = ""
 
     override def incomeTaxSubmissionIvRedirect: String = "/income-through-software/return/iv-uplift"
+
+    override lazy val encryptionKey: String = "encryptionKey12345"
+    override lazy val useEncryption: Boolean = encrypt
   }
 }

@@ -18,6 +18,7 @@ package models.employment
 
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.{OFormat, __}
+import utils.EncryptedValue
 
 case class BenefitsViewModel(
                         carVanFuelModel: Option[CarVanFuelModel] = None,
@@ -74,8 +75,10 @@ case class BenefitsViewModel(
 
   def toBenefits: Benefits ={
     Benefits(
-      accommodation, assets, assetTransfer, beneficialLoan, carVanFuelModel.flatMap(_.car), carVanFuelModel.flatMap(_.carFuel), educationalServices, entertaining, expenses, medicalInsurance,
-      telephone, service, taxableExpenses, carVanFuelModel.flatMap(_.van), carVanFuelModel.flatMap(_.vanFuel), carVanFuelModel.flatMap(_.mileage), nonQualifyingRelocationExpenses, nurseryPlaces, otherItems,
+      accommodation, assets, assetTransfer, beneficialLoan, carVanFuelModel.flatMap(_.car),
+      carVanFuelModel.flatMap(_.carFuel), educationalServices, entertaining, expenses, medicalInsurance,
+      telephone, service, taxableExpenses, carVanFuelModel.flatMap(_.van), carVanFuelModel.flatMap(_.vanFuel),
+      carVanFuelModel.flatMap(_.mileage), nonQualifyingRelocationExpenses, nurseryPlaces, otherItems,
       paymentsOnEmployeesBehalf, personalIncidentalExpenses, qualifyingRelocationExpenses, employerProvidedProfessionalSubscriptions,
       employerProvidedServices, incomeTaxPaidByDirector, travelAndSubsistence, vouchersAndCreditCards, nonCash
     )
@@ -210,7 +213,8 @@ object BenefitsViewModel {
           entertainingQuestion,
           expensesQuestion, medicalInsuranceQuestion, telephoneQuestion, serviceQuestion, taxableExpensesQuestion,
           nonQualifyingRelocationExpensesQuestion,
-          nurseryPlacesQuestion, otherItemsQuestion, paymentsOnEmployeesBehalfQuestion, personalIncidentalExpensesQuestion, qualifyingRelocationExpensesQuestion,
+          nurseryPlacesQuestion, otherItemsQuestion, paymentsOnEmployeesBehalfQuestion,
+          personalIncidentalExpensesQuestion, qualifyingRelocationExpensesQuestion,
           employerProvidedProfessionalSubscriptionsQuestion, employerProvidedServicesQuestion, incomeTaxPaidByDirectorQuestion, travelAndSubsistenceQuestion,
           vouchersAndCreditCardsQuestion, nonCashQuestion, submittedOn, isUsingCustomerData, isBenefitsReceived
         )
@@ -225,12 +229,196 @@ object BenefitsViewModel {
           (benefits.employerProvidedProfessionalSubscriptions, benefits.employerProvidedServices, benefits.incomeTaxPaidByDirector,
             benefits.travelAndSubsistence, benefits.vouchersAndCreditCards, benefits.nonCash),
           (benefits.accommodationQuestion, benefits.assetsQuestion, benefits.assetTransferQuestion, benefits.beneficialLoanQuestion,
-            benefits.educationalServicesQuestion, benefits.entertainingQuestion, benefits.expensesQuestion, benefits.medicalInsuranceQuestion, benefits.telephoneQuestion,
+            benefits.educationalServicesQuestion, benefits.entertainingQuestion, benefits.expensesQuestion,
+            benefits.medicalInsuranceQuestion, benefits.telephoneQuestion,
             benefits.serviceQuestion, benefits.taxableExpensesQuestion,
-            benefits.nonQualifyingRelocationExpensesQuestion, benefits.nurseryPlacesQuestion, benefits.otherItemsQuestion, benefits.paymentsOnEmployeesBehalfQuestion,
+            benefits.nonQualifyingRelocationExpensesQuestion, benefits.nurseryPlacesQuestion,
+            benefits.otherItemsQuestion, benefits.paymentsOnEmployeesBehalfQuestion,
             benefits.personalIncidentalExpensesQuestion, benefits.qualifyingRelocationExpensesQuestion),
           (benefits.employerProvidedProfessionalSubscriptionsQuestion, benefits.employerProvidedServicesQuestion, benefits.incomeTaxPaidByDirectorQuestion,
-            benefits.travelAndSubsistenceQuestion, benefits.vouchersAndCreditCardsQuestion, benefits.nonCashQuestion, benefits.submittedOn, benefits.isUsingCustomerData, benefits.isBenefitsReceived)
+            benefits.travelAndSubsistenceQuestion, benefits.vouchersAndCreditCardsQuestion, benefits.nonCashQuestion,
+            benefits.submittedOn, benefits.isUsingCustomerData, benefits.isBenefitsReceived)
+        )
+    })
+  }
+}
+
+case class EncryptedBenefitsViewModel(
+                        carVanFuelModel: Option[EncryptedCarVanFuelModel] = None,
+                        accommodation: Option[EncryptedValue] = None,
+                        assets: Option[EncryptedValue] = None,
+                        assetTransfer: Option[EncryptedValue] = None,
+                        beneficialLoan: Option[EncryptedValue] = None,
+                        educationalServices: Option[EncryptedValue] = None,
+                        entertaining: Option[EncryptedValue] = None,
+                        expenses: Option[EncryptedValue] = None,
+                        medicalInsurance: Option[EncryptedValue] = None,
+                        telephone: Option[EncryptedValue] = None,
+                        service: Option[EncryptedValue] = None,
+                        taxableExpenses: Option[EncryptedValue] = None,
+                        nonQualifyingRelocationExpenses: Option[EncryptedValue] = None,
+                        nurseryPlaces: Option[EncryptedValue] = None,
+                        otherItems: Option[EncryptedValue] = None,
+                        paymentsOnEmployeesBehalf: Option[EncryptedValue] = None,
+                        personalIncidentalExpenses: Option[EncryptedValue] = None,
+                        qualifyingRelocationExpenses: Option[EncryptedValue] = None,
+                        employerProvidedProfessionalSubscriptions: Option[EncryptedValue] = None,
+                        employerProvidedServices: Option[EncryptedValue] = None,
+                        incomeTaxPaidByDirector: Option[EncryptedValue] = None,
+                        travelAndSubsistence: Option[EncryptedValue] = None,
+                        vouchersAndCreditCards: Option[EncryptedValue] = None,
+                        nonCash: Option[EncryptedValue] = None,
+                        accommodationQuestion: Option[EncryptedValue] = None,
+                        assetsQuestion: Option[EncryptedValue] = None,
+                        assetTransferQuestion: Option[EncryptedValue] = None,
+                        beneficialLoanQuestion: Option[EncryptedValue] = None,
+                        educationalServicesQuestion: Option[EncryptedValue] = None,
+                        entertainingQuestion: Option[EncryptedValue] = None,
+                        expensesQuestion: Option[EncryptedValue] = None,
+                        medicalInsuranceQuestion: Option[EncryptedValue] = None,
+                        telephoneQuestion: Option[EncryptedValue] = None,
+                        serviceQuestion: Option[EncryptedValue] = None,
+                        taxableExpensesQuestion: Option[EncryptedValue] = None,
+                        nonQualifyingRelocationExpensesQuestion: Option[EncryptedValue] = None,
+                        nurseryPlacesQuestion: Option[EncryptedValue] = None,
+                        otherItemsQuestion: Option[EncryptedValue] = None,
+                        paymentsOnEmployeesBehalfQuestion: Option[EncryptedValue] = None,
+                        personalIncidentalExpensesQuestion: Option[EncryptedValue] = None,
+                        qualifyingRelocationExpensesQuestion: Option[EncryptedValue] = None,
+                        employerProvidedProfessionalSubscriptionsQuestion: Option[EncryptedValue] = None,
+                        employerProvidedServicesQuestion: Option[EncryptedValue] = None,
+                        incomeTaxPaidByDirectorQuestion: Option[EncryptedValue] = None,
+                        travelAndSubsistenceQuestion: Option[EncryptedValue] = None,
+                        vouchersAndCreditCardsQuestion: Option[EncryptedValue] = None,
+                        nonCashQuestion: Option[EncryptedValue] = None,
+                        submittedOn: Option[EncryptedValue] = None,
+                        isUsingCustomerData: EncryptedValue,
+                        isBenefitsReceived: EncryptedValue
+                       )
+
+object EncryptedBenefitsViewModel {
+
+  val firstSetOfFields: OFormat[(Option[EncryptedCarVanFuelModel], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
+    Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
+    Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
+    Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue])] = (
+    (__ \ "carVanFuel").formatNullable[EncryptedCarVanFuelModel] and
+    (__ \ "accommodation").formatNullable[EncryptedValue] and
+      (__ \ "assets").formatNullable[EncryptedValue] and
+      (__ \ "assetTransfer").formatNullable[EncryptedValue] and
+      (__ \ "beneficialLoan").formatNullable[EncryptedValue] and
+      (__ \ "educationalServices").formatNullable[EncryptedValue] and
+      (__ \ "entertaining").formatNullable[EncryptedValue] and
+      (__ \ "expenses").formatNullable[EncryptedValue] and
+      (__ \ "medicalInsurance").formatNullable[EncryptedValue] and
+      (__ \ "telephone").formatNullable[EncryptedValue] and
+      (__ \ "service").formatNullable[EncryptedValue] and
+      (__ \ "taxableExpenses").formatNullable[EncryptedValue] and
+      (__ \ "nonQualifyingRelocationExpenses").formatNullable[EncryptedValue] and
+      (__ \ "nurseryPlaces").formatNullable[EncryptedValue] and
+      (__ \ "otherItems").formatNullable[EncryptedValue] and
+      (__ \ "paymentsOnEmployeesBehalf").formatNullable[EncryptedValue] and
+      (__ \ "personalIncidentalExpenses").formatNullable[EncryptedValue] and
+      (__ \ "qualifyingRelocationExpenses").formatNullable[EncryptedValue]
+    ).tupled
+
+  val secondSetOfFields: OFormat[(Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
+    Option[EncryptedValue], Option[EncryptedValue])] = (
+    (__ \ "employerProvidedProfessionalSubscriptions").formatNullable[EncryptedValue] and
+      (__ \ "employerProvidedServices").formatNullable[EncryptedValue] and
+      (__ \ "incomeTaxPaidByDirector").formatNullable[EncryptedValue] and
+      (__ \ "travelAndSubsistence").formatNullable[EncryptedValue] and
+      (__ \ "vouchersAndCreditCards").formatNullable[EncryptedValue] and
+      (__ \ "nonCash").formatNullable[EncryptedValue]
+    ).tupled
+
+  val thirdSetOfFields: OFormat[(Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
+    Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
+    Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
+    Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue])] = (
+    (__ \ "accommodationQuestion").formatNullable[EncryptedValue] and
+      (__ \ "assetsQuestion").formatNullable[EncryptedValue] and
+      (__ \ "assetTransferQuestion").formatNullable[EncryptedValue] and
+      (__ \ "beneficialLoanQuestion").formatNullable[EncryptedValue] and
+      (__ \ "educationalServicesQuestion").formatNullable[EncryptedValue] and
+      (__ \ "entertainingQuestion").formatNullable[EncryptedValue] and
+      (__ \ "expensesQuestion").formatNullable[EncryptedValue] and
+      (__ \ "medicalInsuranceQuestion").formatNullable[EncryptedValue] and
+      (__ \ "telephoneQuestion").formatNullable[EncryptedValue] and
+      (__ \ "serviceQuestion").formatNullable[EncryptedValue] and
+      (__ \ "taxableExpensesQuestion").formatNullable[EncryptedValue] and
+      (__ \ "nonQualifyingRelocationExpensesQuestion").formatNullable[EncryptedValue] and
+      (__ \ "nurseryPlacesQuestion").formatNullable[EncryptedValue] and
+      (__ \ "otherItemsQuestion").formatNullable[EncryptedValue] and
+      (__ \ "paymentsOnEmployeesBehalfQuestion").formatNullable[EncryptedValue] and
+      (__ \ "personalIncidentalExpensesQuestion").formatNullable[EncryptedValue] and
+      (__ \ "qualifyingRelocationExpensesQuestion").formatNullable[EncryptedValue]
+    ).tupled
+
+  val fourthSetOfFields: OFormat[(Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
+    Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], EncryptedValue, EncryptedValue)] = (
+    (__ \ "employerProvidedProfessionalSubscriptionsQuestion").formatNullable[EncryptedValue] and
+      (__ \ "employerProvidedServicesQuestion").formatNullable[EncryptedValue] and
+      (__ \ "incomeTaxPaidByDirectorQuestion").formatNullable[EncryptedValue] and
+      (__ \ "travelAndSubsistenceQuestion").formatNullable[EncryptedValue] and
+      (__ \ "vouchersAndCreditCardsQuestion").formatNullable[EncryptedValue] and
+      (__ \ "nonCashQuestion").formatNullable[EncryptedValue] and
+      (__ \ "submittedOn").formatNullable[EncryptedValue] and
+      (__ \ "isUsingCustomerData").format[EncryptedValue] and
+      (__ \ "isBenefitsReceived").format[EncryptedValue]
+    ).tupled
+
+  implicit val format: OFormat[EncryptedBenefitsViewModel] = {
+    (firstSetOfFields and secondSetOfFields and thirdSetOfFields and fourthSetOfFields).apply({
+      case (
+        (carVanFuelModel, accommodation, assets, assetTransfer, beneficialLoan, educationalServices, entertaining,
+        expenses, medicalInsurance, telephone, service, taxableExpenses, nonQualifyingRelocationExpenses,
+        nurseryPlaces, otherItems, paymentsOnEmployeesBehalf, personalIncidentalExpenses, qualifyingRelocationExpenses),
+        (employerProvidedProfessionalSubscriptions, employerProvidedServices, incomeTaxPaidByDirector, travelAndSubsistence,
+        vouchersAndCreditCards, nonCash),
+        (accommodationQuestion, assetsQuestion, assetTransferQuestion, beneficialLoanQuestion, educationalServicesQuestion,
+        entertainingQuestion,
+        expensesQuestion, medicalInsuranceQuestion, telephoneQuestion, serviceQuestion, taxableExpensesQuestion,
+        nonQualifyingRelocationExpensesQuestion,
+        nurseryPlacesQuestion, otherItemsQuestion, paymentsOnEmployeesBehalfQuestion, personalIncidentalExpensesQuestion, qualifyingRelocationExpensesQuestion),
+        (employerProvidedProfessionalSubscriptionsQuestion, employerProvidedServicesQuestion, incomeTaxPaidByDirectorQuestion, travelAndSubsistenceQuestion,
+        vouchersAndCreditCardsQuestion, nonCashQuestion, submittedOn, isUsingCustomerData, isBenefitsReceived)
+        ) =>
+        EncryptedBenefitsViewModel(
+          carVanFuelModel, accommodation, assets, assetTransfer, beneficialLoan, educationalServices, entertaining, expenses,
+          medicalInsurance, telephone, service, taxableExpenses, nonQualifyingRelocationExpenses,
+          nurseryPlaces, otherItems, paymentsOnEmployeesBehalf, personalIncidentalExpenses, qualifyingRelocationExpenses,
+          employerProvidedProfessionalSubscriptions, employerProvidedServices, incomeTaxPaidByDirector, travelAndSubsistence,
+          vouchersAndCreditCards, nonCash,
+          accommodationQuestion, assetsQuestion, assetTransferQuestion, beneficialLoanQuestion, educationalServicesQuestion,
+          entertainingQuestion,
+          expensesQuestion, medicalInsuranceQuestion, telephoneQuestion, serviceQuestion, taxableExpensesQuestion,
+          nonQualifyingRelocationExpensesQuestion,
+          nurseryPlacesQuestion, otherItemsQuestion, paymentsOnEmployeesBehalfQuestion,
+          personalIncidentalExpensesQuestion, qualifyingRelocationExpensesQuestion,
+          employerProvidedProfessionalSubscriptionsQuestion, employerProvidedServicesQuestion, incomeTaxPaidByDirectorQuestion, travelAndSubsistenceQuestion,
+          vouchersAndCreditCardsQuestion, nonCashQuestion, submittedOn, isUsingCustomerData, isBenefitsReceived
+        )
+    }, {
+      benefits =>
+        (
+          (benefits.carVanFuelModel, benefits.accommodation, benefits.assets, benefits.assetTransfer, benefits.beneficialLoan,
+            benefits.educationalServices, benefits.entertaining, benefits.expenses, benefits.medicalInsurance, benefits.telephone,
+            benefits.service, benefits.taxableExpenses,
+            benefits.nonQualifyingRelocationExpenses, benefits.nurseryPlaces, benefits.otherItems, benefits.paymentsOnEmployeesBehalf,
+            benefits.personalIncidentalExpenses, benefits.qualifyingRelocationExpenses),
+          (benefits.employerProvidedProfessionalSubscriptions, benefits.employerProvidedServices, benefits.incomeTaxPaidByDirector,
+            benefits.travelAndSubsistence, benefits.vouchersAndCreditCards, benefits.nonCash),
+          (benefits.accommodationQuestion, benefits.assetsQuestion, benefits.assetTransferQuestion, benefits.beneficialLoanQuestion,
+            benefits.educationalServicesQuestion, benefits.entertainingQuestion,
+            benefits.expensesQuestion, benefits.medicalInsuranceQuestion, benefits.telephoneQuestion,
+            benefits.serviceQuestion, benefits.taxableExpensesQuestion,
+            benefits.nonQualifyingRelocationExpensesQuestion, benefits.nurseryPlacesQuestion,
+            benefits.otherItemsQuestion, benefits.paymentsOnEmployeesBehalfQuestion,
+            benefits.personalIncidentalExpensesQuestion, benefits.qualifyingRelocationExpensesQuestion),
+          (benefits.employerProvidedProfessionalSubscriptionsQuestion, benefits.employerProvidedServicesQuestion, benefits.incomeTaxPaidByDirectorQuestion,
+            benefits.travelAndSubsistenceQuestion, benefits.vouchersAndCreditCardsQuestion,
+            benefits.nonCashQuestion, benefits.submittedOn, benefits.isUsingCustomerData, benefits.isBenefitsReceived)
         )
     })
   }

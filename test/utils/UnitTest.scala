@@ -22,9 +22,7 @@ import common.{EnrolmentIdentifiers, EnrolmentKeys, SessionValues}
 import config.{AppConfig, ErrorHandler, MockAppConfig}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.employment._
-import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.{IncomeTaxUserData, User}
-import org.joda.time.{DateTime, DateTimeZone}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
@@ -75,7 +73,7 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
   implicit val headerCarrierWithSession: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sessionId)))
   val emptyHeaderCarrier: HeaderCarrier = HeaderCarrier()
 
-  implicit val mockAppConfig: AppConfig = new MockAppConfig().config
+  implicit val mockAppConfig: AppConfig = new MockAppConfig().config()
   implicit val mockErrorHandler: ErrorHandler = mock[ErrorHandler]
   implicit val mockControllerComponents: ControllerComponents = Helpers.stubControllerComponents()
   implicit val mockExecutionContext: ExecutionContext = ExecutionContext.Implicits.global
@@ -154,7 +152,6 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
   val userData: IncomeTaxUserData = IncomeTaxUserData(
     Some(employmentsModel)
   )
-
 
 
   lazy val employmentsModel: AllEmploymentData = AllEmploymentData(

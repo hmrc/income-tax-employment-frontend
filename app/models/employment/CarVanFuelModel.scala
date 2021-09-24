@@ -17,6 +17,7 @@
 package models.employment
 
 import play.api.libs.json.{Json, OFormat}
+import utils.EncryptedValue
 
 case class CarVanFuelModel(
                             carVanFuelQuestion: Option[Boolean] = None,
@@ -36,4 +37,20 @@ object CarVanFuelModel {
   implicit val formats: OFormat[CarVanFuelModel] = Json.format[CarVanFuelModel]
 
   def clear: CarVanFuelModel = CarVanFuelModel(carVanFuelQuestion = Some(false))
+}
+
+case class EncryptedCarVanFuelModel(carVanFuelQuestion: Option[EncryptedValue] = None,
+                                    carQuestion: Option[EncryptedValue] = None,
+                                    car: Option[EncryptedValue] = None,
+                                    carFuelQuestion: Option[EncryptedValue] = None,
+                                    carFuel: Option[EncryptedValue] = None,
+                                    vanQuestion: Option[EncryptedValue] = None,
+                                    van: Option[EncryptedValue] = None,
+                                    vanFuelQuestion: Option[EncryptedValue] = None,
+                                    vanFuel: Option[EncryptedValue] = None,
+                                    mileageQuestion: Option[EncryptedValue] = None,
+                                    mileage: Option[EncryptedValue] = None)
+
+object EncryptedCarVanFuelModel {
+  implicit val formats: OFormat[EncryptedCarVanFuelModel] = Json.format[EncryptedCarVanFuelModel]
 }

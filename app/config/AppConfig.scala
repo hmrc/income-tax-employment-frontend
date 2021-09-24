@@ -94,4 +94,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
     (lang: String) => controllers.routes.LanguageSwitchController.switchToLanguage(lang)
 
   lazy val welshToggleEnabled: Boolean = servicesConfig.getBoolean("feature-switch.welshToggleEnabled")
+
+  lazy val useEncryption: Boolean = servicesConfig.getBoolean("useEncryption")
 }

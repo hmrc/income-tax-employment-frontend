@@ -16,8 +16,9 @@
 
 package models.mongo
 
-import models.employment.Expenses
+import models.employment.{EncryptedExpenses, Expenses}
 import play.api.libs.json.{Json, OFormat}
+import utils.EncryptedValue
 
 case class ExpensesCYAModel(expenses: Expenses,
                             currentDataIsHmrcHeld: Boolean)
@@ -32,4 +33,10 @@ object ExpensesCYAModel {
     )
   }
 
+}
+
+case class EncryptedExpensesCYAModel(expenses: EncryptedExpenses, currentDataIsHmrcHeld: EncryptedValue)
+
+object EncryptedExpensesCYAModel {
+  implicit val format: OFormat[EncryptedExpensesCYAModel] = Json.format[EncryptedExpensesCYAModel]
 }
