@@ -392,20 +392,20 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(user.commonExpectedResults.employerNameField1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
           textOnPageCheck(user.commonExpectedResults.employmentStartDateField1, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.employmentStartDate, summaryListRowFieldAmountSelector(3))
           textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(4))
           textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(4))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changeStillWorkingForEmployerHiddenText}",
             cyaChangeLink(4), changeStillWorkingForEmployerHref.url)
-          textOnPageCheck(user.commonExpectedResults.payrollIdField, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(4))
-          textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
-          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(5))
-          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(5))
-          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(6))
-          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(6))
+          textOnPageCheck(user.commonExpectedResults.payrollIdField, summaryListRowFieldNameSelector(5))
+          textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(5))
+          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(6))
+          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(6))
+          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(7))
+          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(7))
         }
         //noinspection ScalaStyle
         "for end of year return a redirect when cya data exists but not finished when its a new employment" which {
@@ -464,18 +464,18 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(user.commonExpectedResults.employerNameField1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
           textOnPageCheck(user.commonExpectedResults.employmentStartDateField1, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.employmentStartDate, summaryListRowFieldAmountSelector(3))
           textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(4))
-          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(5))
           textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(4))
-          textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
-          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(5))
-          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(5))
-          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(6))
-          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(6))
+          textOnPageCheck(user.commonExpectedResults.payrollIdField, summaryListRowFieldNameSelector(5))
+          textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(5))
+          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(6))
+          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(6))
+          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(7))
+          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(7))
         }
         //noinspection ScalaStyle
         "for end of year return a fully populated page, with change links, when all the fields are populated" which {
@@ -503,32 +503,30 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.commonExpectedResults.changeEmployerNameHiddenText}",
             cyaChangeLink(1), employerNameHref.url)
-          textOnPageCheck(user.commonExpectedResults.employmentStartDateField1, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(ContentValues.employmentStartDate, summaryListRowFieldAmountSelector(3))
-          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changeEmploymentStartDateHiddenText}",
-            cyaChangeLink(3), changeEmploymentStartDateHref.url)
-
-          textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(4))
-          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changeStillWorkingForEmployerHiddenText}",
-            cyaChangeLink(4), changeStillWorkingForEmployerHref.url)
-
           textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changePAYERefHiddenText}",
             cyaChangeLink(2), payeRefHref.url)
-          textOnPageCheck(user.commonExpectedResults.payrollIdField, summaryListRowFieldNameSelector(4))
-          textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(4))
+          textOnPageCheck(user.commonExpectedResults.employmentStartDateField1, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(ContentValues.employmentStartDate, summaryListRowFieldAmountSelector(3))
+          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changeEmploymentStartDateHiddenText}",
+            cyaChangeLink(3), changeEmploymentStartDateHref.url)
+          textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(4))
+          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changeStillWorkingForEmployerHiddenText}",
+            cyaChangeLink(4), changeStillWorkingForEmployerHref.url)
+          textOnPageCheck(user.commonExpectedResults.payrollIdField, summaryListRowFieldNameSelector(5))
+          textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(5))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.commonExpectedResults.payrollIdHiddenText}",
-            cyaChangeLink(4), payrollIdHref.url)
-          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(5))
-          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(5))
+            cyaChangeLink(5), payrollIdHref.url)
+          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(6))
+          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(6))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changePayReceivedHiddenText}",
-            cyaChangeLink(5), employerPayAmountControllerHref.url)
-          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(6))
-          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(6))
+            cyaChangeLink(6), employerPayAmountControllerHref.url)
+          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(7))
+          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(7))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.taxTakenFromPayHiddenText}",
-            cyaChangeLink(6), taxHref)
+            cyaChangeLink(7), taxHref)
         }
 
         "for in year return a filtered list on page when minimum data is returned" which {
@@ -553,11 +551,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(user.commonExpectedResults.employerNameField1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
-
           textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(2))
-
-
           textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(3))
           textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(4))
@@ -590,13 +585,10 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.commonExpectedResults.changeEmployerNameHiddenText}",
             cyaChangeLink(1), employerNameHref.url)
-
           textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(2))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changeStillWorkingForEmployerHiddenText}",
             cyaChangeLink(2), changeStillWorkingForEmployerHref.url)
-
-
           textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.payReceivedB, summaryListRowFieldAmountSelector(3))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changePayReceivedHiddenText}",
@@ -632,10 +624,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(user.commonExpectedResults.employerNameField1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
-
           textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(2))
-
           textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(3))
           textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(4))

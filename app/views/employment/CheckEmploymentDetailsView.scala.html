@@ -96,7 +96,7 @@
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.totalTaxToDate", user.isAgent)))
 
         val employmentDataFields = {
-                List(employerName, payeRef, payrollId, employmentStartDate, stillWorkingForEmployer, payReceived, totalTaxToDate)
+                List(employerName, payeRef, employmentStartDate, stillWorkingForEmployer, payrollId, payReceived, totalTaxToDate)
         }
 
         govukSummaryList(
