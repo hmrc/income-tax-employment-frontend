@@ -127,6 +127,7 @@ employment.employmentDetails.insetText.agent = You cannot update your client’s
 
 employment.employmentDetails.employer =  Employer
 employment.employmentDetails.startDate =  Employment start date
+employment.employmentDetails.stillWorkingForEmployer = Still working for your employer
 employment.employmentDetails.payeRef =  PAYE reference
 employment.employmentDetails.companyDirector =  Company director
 employment.employmentDetails.directorCeasedDate =  Director role end date
@@ -137,15 +138,18 @@ employment.employmentDetails.paymentNotOnYourP60.individual =  Payments not on y
 employment.employmentDetails.paymentNotOnYourP60.agent =  Payments not on your client’s P60
 employment.employmentDetails.tipsAndOtherPayments.individual =  Amount of payments not on your P60
 employment.employmentDetails.tipsAndOtherPayments.agent =  Amount of payments not on your client’s P60
+
 employment.employmentDetails.leaveDate = Employment end date
 
 employment.employmentDetails.hiddenText.leaveDate.individual = Change your end date for {0}
 employment.employmentDetails.hiddenText.leaveDate.agent = Change your client’s end date for {0}
 employment.employmentDetails.hiddenText.employer = Change the name of this employer
-employment.employmentDetails.hiddenText.startDate.individual = Change your start date for {0}
-employment.employmentDetails.hiddenText.startDate.agent = Change your client’s start date for {0}
 employment.employmentDetails.hiddenText.payeRef.individual = Change your PAYE reference number
 employment.employmentDetails.hiddenText.payeRef.agent = Change your client’s PAYE reference number
+employment.employmentDetails.hiddenText.startDate.individual = Change your start date for {0}
+employment.employmentDetails.hiddenText.startDate.agent = Change your client’s start date for {0}
+employment.employmentDetails.hiddenText.stillWorkingForEmployer.individual = if you are still working for your employer
+employment.employmentDetails.hiddenText.stillWorkingForEmployer.agent = if your client is still working for their employer
 employment.employmentDetails.hiddenText.payReceived.individual = Change the amount of pay you got from {0}
 employment.employmentDetails.hiddenText.payReceived.agent = Change the amount of pay your client got from {0}
 employment.employmentDetails.hiddenText.totalTaxToDate.individual = Change the amount of tax you paid
@@ -224,6 +228,13 @@ employment.employmentLeaveDate.error.tooLongAgo.individual = The date you left y
 employment.employmentLeaveDate.error.tooLongAgo.agent = The date your client left their employment must be after 5 April {0}
 
 ################## Start & Leave Date #################
+
+employment.stillWorkingForEmployer.title.individual = Are you still working for your employer?
+employment.stillWorkingForEmployer.title.agent = Is your client still working for their employer?
+employment.stillWorkingForEmployer.heading.individual = Are you still working at {0}?
+employment.stillWorkingForEmployer.heading.agent = Is your client still working at {0}?
+employment.stillWorkingForEmployer.error.individual = Select yes if you are still working for your employer
+employment.stillWorkingForEmployer.error.agent = Select yes if your client is still working for their employer
 
 employment.employmentTax.title.individual = How much UK tax was taken from your earnings?
 employment.employmentTax.title.agent = How much UK tax was taken from your client’s earnings?
@@ -464,6 +475,7 @@ checkYourBenefits.medicalSubheading.hiddenText.agent = Change if your client got
 checkYourBenefits.incomeTaxSubheading.hiddenText.agent = Change if your client got Income Tax or incurred costs paid as an employment benefit from this company
 checkYourBenefits.reimbursedSubheading.hiddenText.agent = Change if your client got vouchers, non-cash benefits or reimbursed costs as an employment benefit from this company
 checkYourBenefits.assetsSubheading.hiddenText.agent = Change if your client got asset or asset transfers as an employment benefit from this company
+
 
 otherPaymentsAmount.heading.individual = What is the total amount of payments not included on your P60?
 otherPaymentsAmount.heading.agent = What is the total amount of payments not included on your client’s P60?

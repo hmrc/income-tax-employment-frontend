@@ -40,8 +40,6 @@
 
 @layout(pageTitle = headingForUse, taxYear = Some(taxYear), isAgent = user.isAgent) {
 
-
-
     @heading(headingForUse, Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), margin)
 
     @if(!employmentDetails.isUsingCustomerData){
@@ -60,11 +58,18 @@
 
         val msgKeyGeneric = "employment.employmentDetails"
 
-        val employerName = EmploymentDataForView(messages(msgKeyGeneric + ".employer"), Some(employmentDetails.employerName), controllers.employment.routes.EmployerNameController.show(taxYear, employmentDetails.employmentId),
+        val employerName = EmploymentDataForView(messages(msgKeyGeneric + ".employer"), Some(employmentDetails.employerName),
+            controllers.employment.routes.EmployerNameController.show(taxYear, employmentDetails.employmentId),
         messages(s"$msgKeyGeneric.hiddenText.employer"))
 
-        val employmentStartDate = EmploymentDataForView(messages(s"$msgKeyGeneric.startDate"), employmentDetails.startDate.flatMap(dateFormatter), controllers.employment.routes.EmployerStartDateController.show(taxYear, employmentDetails.employmentId),
+        val employmentStartDate = EmploymentDataForView(messages(s"$msgKeyGeneric.startDate"), employmentDetails.startDate.flatMap(dateFormatter),
+            controllers.employment.routes.EmployerStartDateController.show(taxYear, employmentDetails.employmentId),
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", user.isAgent), employmentDetails.employerName))
+
+        val stillWorkingForEmployer = EmploymentDataForView(messages(s"$msgKeyGeneric.stillWorkingForEmployer"),
+        Some(if(employmentDetails.cessationDate.isDefined) {messages("common.no")} else{messages("common.yes")}),
+        controllers.employment.routes.StillWorkingForEmployerController.show(taxYear, employmentDetails.employmentId),
+        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.stillWorkingForEmployer", user.isAgent), employmentDetails.employerName))
 
         val payeRef = EmploymentDataForView(messages(msgKeyGeneric + ".payeRef"), employmentDetails.employerRef,
         controllers.employment.routes.PayeRefController.show(taxYear, employmentDetails.employmentId),
@@ -83,7 +88,7 @@
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.leaveDate", user.isAgent), employmentDetails.employerName))
 
         val employmentDataFields = {
-                List(employerName, payeRef, employmentStartDate, employmentLeaveDate, payReceived, totalTaxToDate)
+            List(employerName, payeRef, employmentStartDate, stillWorkingForEmployer, employmentLeaveDate, payReceived, totalTaxToDate)
         }
 
         govukSummaryList(

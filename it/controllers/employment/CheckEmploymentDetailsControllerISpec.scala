@@ -44,9 +44,9 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val continueButtonSelector = "#continue"
     val continueButtonFormSelector = "#main-content > div > div > form"
 
-    def summaryListRowFieldNameSelector(i: Int) = s"#main-content > div > div > dl > div:nth-child($i) > dt"
+    def summaryListRowFieldNameSelector(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dt"
 
-    def summaryListRowFieldAmountSelector(i: Int) = s"#main-content > div > div > dl > div:nth-child($i) > dd.govuk-summary-list__value"
+    def summaryListRowFieldAmountSelector(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dd.govuk-summary-list__value"
 
     def cyaChangeLink(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dd.govuk-summary-list__actions > a"
     def cyaHiddenChangeLink(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dd.govuk-summary-list__actions > a > span.govuk-visually-hidden"
@@ -59,6 +59,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val expectedInsetText: String
     val changeEmploymentStartDateHiddenText: String
     val changeEmploymentEndDateHiddenText: String
+    val changeStillWorkingForEmployerHiddenText: String
     val paymentsNotOnYourP60: String
     val changePAYERefHiddenText: String
     val changePayReceivedHiddenText: String
@@ -76,6 +77,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employerNameField1: String
     val employmentStartDateField1: String
     val employmentEndDateField1: String
+    val stillWorkingForEmployerField1: String
     val payeReferenceField2: String
     val payReceivedField3: String
     val taxField4: String
@@ -91,6 +93,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payReceivedB = "£34234.50"
     val taxTakenFromPay = "£6782.92"
     val taxTakenFromPayB = "£6782.90"
+    val stillWorkingYes = "Yes"
+    val stillWorkingNo = "No"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -102,6 +106,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employerNameField1 = "Employer"
     val employmentStartDateField1 = "Employment start date"
     val employmentEndDateField1 = "Employment end date"
+    val stillWorkingForEmployerField1 = "Still working for your employer"
     val payeReferenceField2 = "PAYE reference"
     val payReceivedField3 = "Pay received"
     val taxField4 = "UK tax taken from pay"
@@ -117,6 +122,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employerNameField1 = "Employer"
     val employmentStartDateField1 = "Employment start date"
     val employmentEndDateField1 = "Employment end date"
+    val stillWorkingForEmployerField1 = "Still working for your employer"
     val payeReferenceField2 = "PAYE reference"
     val payReceivedField3 = "Pay received"
     val taxField4 = "UK tax taken from pay"
@@ -137,6 +143,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val taxTakenFromPayHiddenText: String = "Change the amount of tax you paid"
     val paymentsNotOnP60HiddenText: String = "Change if you got payments that are not on your P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "Change the amount of payments that were not on your P60"
+    val changeStillWorkingForEmployerHiddenText = "Change if you are still working for your employer"
     val paymentsNotOnYourP60: String = "Payments not on your P60"
   }
 
@@ -152,6 +159,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val taxTakenFromPayHiddenText: String = "Change the amount of tax your client paid"
     val paymentsNotOnP60HiddenText: String = "Change if your client got payments that are not on their P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "Change the amount of payments that were not on your client’s P60"
+    val changeStillWorkingForEmployerHiddenText = "Change if your client is still working for their employer"
     val paymentsNotOnYourP60: String = "Payments not on your client’s P60"
   }
 
@@ -167,6 +175,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val taxTakenFromPayHiddenText: String = "Change the amount of tax you paid"
     val paymentsNotOnP60HiddenText: String = "Change if you got payments that are not on your P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "Change the amount of payments that were not on your P60"
+    val changeStillWorkingForEmployerHiddenText = "Change if you are still working for your employer"
     val paymentsNotOnYourP60: String = "Payments not on your P60"
   }
 
@@ -184,6 +193,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val taxTakenFromPayHiddenText: String = "Change the amount of tax your client paid"
     val paymentsNotOnP60HiddenText: String = "Change if your client got payments that are not on their P60"
     val amountOfPaymentsNotOnP60HiddenText: String = "Change the amount of payments that were not on your client’s P60"
+    val changeStillWorkingForEmployerHiddenText = "Change if your client is still working for their employer"
     val paymentsNotOnYourP60: String = "Payments not on your client’s P60"
   }
 
@@ -193,6 +203,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payeRefHref: Call = controllers.employment.routes.PayeRefController.show(taxYear-1, employmentId)
     val changeEmploymentStartDateHref: Call = controllers.employment.routes.EmployerStartDateController.show(taxYear-1, employmentId)
     val changeEmploymentEndDateHref: Call = controllers.employment.routes.EmployerLeaveDateController.show(taxYear-1, employmentId)
+    val changeStillWorkingForEmployerHref: Call = controllers.employment.routes.StillWorkingForEmployerController.show(taxYear - 1, employmentId)
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -361,7 +372,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               "001",
               isPriorSubmission = true,
               EmploymentCYAModel(
-                fullEmploymentsModel().hmrcEmploymentData.head.toEmploymentDetails(false),
+                fullEmploymentsModel().hmrcEmploymentData.head.toEmploymentDetails(false).copy(cessationDateQuestion = Some(false)),
                 None
               )
             ), User(mtditid, if (user.isAgent) Some("12345678") else None, nino, sessionId, if (user.isAgent) "Agent" else "Individual")(fakeRequest))
@@ -383,12 +394,27 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(user.commonExpectedResults.employerNameField1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
+<<<<<<< HEAD
           textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
           textOnPageCheck(user.commonExpectedResults.employmentStartDateField1, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.employmentStartDate, summaryListRowFieldAmountSelector(3))
           textOnPageCheck(user.commonExpectedResults.employmentEndDateField1, summaryListRowFieldNameSelector(4))
           textOnPageCheck(ContentValues.employmentEndDate, summaryListRowFieldAmountSelector(4))
+=======
+          textOnPageCheck(user.commonExpectedResults.employmentStartDateField1, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(ContentValues.employmentStartDate, summaryListRowFieldAmountSelector(3))
+
+          textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(4))
+          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changeStillWorkingForEmployerHiddenText}",
+            cyaChangeLink(4), changeStillWorkingForEmployerHref.url)
+
+          //TODO: insert check for employment end date when page is available
+
+          textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
+>>>>>>> 8c1de0c9fd947d9afe88512050c25243de866b80
           textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(5))
           textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(5))
           textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(6))
@@ -406,6 +432,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               2021,
               "001",
               isPriorSubmission = false,
+
               EmploymentCYAModel(
                 fullEmploymentsModel().hmrcEmploymentData.head.toEmploymentDetails(false).copy(employerRef = None),
                 None
@@ -426,7 +453,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/employer-paye-reference?employmentId=001")
           }
         }
-
         //noinspection ScalaStyle
         "for in year return a fully populated page when all the fields are populated" which {
 
@@ -451,12 +477,24 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(user.commonExpectedResults.employerNameField1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
+<<<<<<< HEAD
           textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
           textOnPageCheck(user.commonExpectedResults.employmentStartDateField1, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.employmentStartDate, summaryListRowFieldAmountSelector(3))
           textOnPageCheck(user.commonExpectedResults.employmentEndDateField1, summaryListRowFieldNameSelector(4))
           textOnPageCheck(ContentValues.employmentEndDate, summaryListRowFieldAmountSelector(4))
+=======
+          textOnPageCheck(user.commonExpectedResults.employmentStartDateField1, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(ContentValues.employmentStartDate, summaryListRowFieldAmountSelector(3))
+
+
+          textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(4))
+
+          textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
+>>>>>>> 8c1de0c9fd947d9afe88512050c25243de866b80
           textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(5))
           textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(5))
           textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(6))
@@ -479,7 +517,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           val taxHref = "/income-through-software/return/employment-income/2021/uk-tax?employmentId=001"
 
-
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           textOnPageCheck(user.commonExpectedResults.expectedCaption(2021), captionSelector)
@@ -488,6 +525,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.commonExpectedResults.employerNameField1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.commonExpectedResults.changeEmployerNameHiddenText}",
+<<<<<<< HEAD
             cyaChangeLink(1), employerNameHref.url, Some(cyaHiddenChangeLink(1)))
           textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
@@ -509,8 +547,32 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(6))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.taxTakenFromPayHiddenText}",
             cyaChangeLink(6), taxHref, Some(cyaHiddenChangeLink(6)))
-        }
+=======
+            cyaChangeLink(1), employerNameHref.url)
+          textOnPageCheck(user.commonExpectedResults.employmentStartDateField1, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(ContentValues.employmentStartDate, summaryListRowFieldAmountSelector(3))
+          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changeEmploymentStartDateHiddenText}",
+            cyaChangeLink(3), changeEmploymentStartDateHref.url)
 
+          textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(4))
+          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changeStillWorkingForEmployerHiddenText}",
+            cyaChangeLink(4), changeStillWorkingForEmployerHref.url)
+
+          textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
+          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changePAYERefHiddenText}",
+            cyaChangeLink(2), payeRefHref.url)
+          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(5))
+          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(5))
+          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changePayReceivedHiddenText}",
+            cyaChangeLink(5), employerPayAmountControllerHref.url)
+          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(6))
+          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(6))
+          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.taxTakenFromPayHiddenText}",
+            cyaChangeLink(6), taxHref)
+>>>>>>> 8c1de0c9fd947d9afe88512050c25243de866b80
+        }
 
         "for in year return a filtered list on page when minimum data is returned" which {
 
@@ -534,10 +596,15 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(user.commonExpectedResults.employerNameField1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
-          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(2))
-          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(3))
+
+          textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(2))
+
+
+          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(4))
         }
         //noinspection ScalaStyle
         "for end of year return customer employment data if there is both HMRC and customer Employment Data " +
@@ -565,6 +632,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.commonExpectedResults.employerNameField1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.commonExpectedResults.changeEmployerNameHiddenText}",
+<<<<<<< HEAD
             cyaChangeLink(1), employerNameHref.url, Some(cyaHiddenChangeLink(1)))
           textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.payReceivedB, summaryListRowFieldAmountSelector(2))
@@ -574,11 +642,28 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.taxTakenFromPayB, summaryListRowFieldAmountSelector(3))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.taxTakenFromPayHiddenText}",
             cyaChangeLink(3), taxHref, Some(cyaHiddenChangeLink(3)))
+=======
+            cyaChangeLink(1), employerNameHref.url)
+
+          textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(2))
+          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changeStillWorkingForEmployerHiddenText}",
+            cyaChangeLink(2), changeStillWorkingForEmployerHref.url)
+
+
+          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(ContentValues.payReceivedB, summaryListRowFieldAmountSelector(3))
+          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.changePayReceivedHiddenText}",
+            cyaChangeLink(3), employerPayAmountControllerHref.url)
+          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(ContentValues.taxTakenFromPayB, summaryListRowFieldAmountSelector(4))
+          linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.taxTakenFromPayHiddenText}",
+            cyaChangeLink(4), taxHref)
+>>>>>>> 8c1de0c9fd947d9afe88512050c25243de866b80
 
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           formPostLinkCheck(user.commonExpectedResults.continueButtonLink, continueButtonFormSelector)
         }
-
         //noinspection ScalaStyle
         "handle a model with an Invalid date format returned" when {
 
@@ -602,10 +687,14 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(user.commonExpectedResults.employerNameField1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
-          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(2))
-          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(2))
-          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(3))
-          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(3))
+
+          textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(2))
+
+          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(4))
         }
 
         "returns an action when auth call fails" which {
@@ -650,7 +739,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(userData(fullEmploymentsModel()), nino, 2022)
             urlPost(s"$appUrl/2022/check-employment-details?employmentId=employmentId", follow = false,
-              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)),body = "{}")
+              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
           }
 
           "has an SEE OTHER status" in {
@@ -666,7 +755,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(userData(fullEmploymentsModel()), nino, 2021)
             urlPost(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false,
-              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)),body = "{}")
+              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
           }
 
           "has an SEE OTHER status" in {
@@ -683,8 +772,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
                 "123/12345"
               ),
               startDate = Some("2020-11-11"),
-              taxablePayToDate= Some(55.99),
-              totalTaxToDate= Some(3453453.00),
+              taxablePayToDate = Some(55.99),
+              totalTaxToDate = Some(3453453.00),
               currentDataIsHmrcHeld = false
             ))
           }
@@ -844,13 +933,13 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
             urlPost(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false,
-              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)),body = "{}")
+              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
           }
 
           "has an SEE OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear-1).url)
-            findCyaData(taxYear,employmentId,userRequest) shouldBe None
+            result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
+            findCyaData(taxYear, employmentId, userRequest) shouldBe None
           }
         }
         //noinspection ScalaStyle
@@ -860,10 +949,10 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData,userRequest)
+            insertCyaData(employmentUserData, userRequest)
             userDataStub(userData(fullEmploymentsModel()), nino, 2021)
             urlPost(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false,
-              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)),body = "{}")
+              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
           }
 
           "has an SEE OTHER status" in {
@@ -875,3 +964,5 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     }
   }
 }
+
+
