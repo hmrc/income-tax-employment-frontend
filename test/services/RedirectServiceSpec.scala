@@ -61,7 +61,7 @@ class RedirectServiceSpec extends UnitTest {
     "redirect to pay page" in {
 
       val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
-        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true)
+        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), cessationDate = Some("2020-10-01")
       )),taxYear,"employmentId",false)
 
       response.header.status shouldBe SEE_OTHER
@@ -70,7 +70,7 @@ class RedirectServiceSpec extends UnitTest {
     "redirect to tax page" in {
 
       val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
-        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), taxablePayToDate = Some(1)
+        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), cessationDate = Some("2020-10-10"), taxablePayToDate = Some(1)
       )),taxYear,"employmentId",false)
 
       response.header.status shouldBe SEE_OTHER
@@ -79,7 +79,7 @@ class RedirectServiceSpec extends UnitTest {
     "redirect to check employment details page when no payroll id" in {
 
       val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
-        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), taxablePayToDate = Some(1), totalTaxToDate = Some(1)
+        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), cessationDate = Some("2020-10-10"),taxablePayToDate = Some(1), totalTaxToDate = Some(1)
       )),taxYear,"employmentId",false)
 
       response.header.status shouldBe SEE_OTHER
