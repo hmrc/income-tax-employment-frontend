@@ -47,7 +47,7 @@ class EmployerPayrollIdController @Inject()(authorisedAction: AuthorisedAction,
 
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionData(taxYear, employmentId).map{
-          case Some(cya) =>
+          case Right(Some(cya)) =>
             cya.employment.employmentDetails.payrollId match {
               case Some(payrollId) =>
                 val filledForm = emptyForm.fill(payrollId)
