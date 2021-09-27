@@ -41,7 +41,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
   def cyaModel(employerName: String, hmrc: Boolean, startDate: Option[String] = Some(employmentStartDate), cessationDate: Option[String] = None,
                cessationDateQuestion: Option[Boolean] = None): EmploymentCYAModel =
-    EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc, employerRef = Some("123/AB456"),
+    EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc, employerRef = Some("123/AB456"), payrollId = Some("payRollId"),
       startDate = startDate, cessationDate = cessationDate, cessationDateQuestion = cessationDateQuestion), None)
 
   private def stillWorkingForEmployerPageUrl(taxYear: Int) = s"$appUrl/$taxYear/still-working-for-employer?employmentId=$employmentId"
