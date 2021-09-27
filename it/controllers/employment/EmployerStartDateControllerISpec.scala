@@ -45,7 +45,15 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
 
 
-  def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc))
+  def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(
+    employerName,
+    employerRef = Some("123/12345"),
+    cessationDateQuestion = Some(true),
+    currentDataIsHmrcHeld = hmrc,
+    payrollId = Some("12345"),
+    taxablePayToDate = Some(5),
+    totalTaxToDate = Some(5)
+  ))
 
   private def employerStartDatePageUrl(taxYear: Int) = s"$appUrl/$taxYear/employment-start-date?employmentId=$employmentId"
 
@@ -280,6 +288,28 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          }
+        }
+
+        "redirect when the date is now before the end date" which {
+          val cya = cyaModel(employerName, hmrc = true)
+          lazy val form: Map[String, String] = Map(
+            EmploymentDateForm.year -> (taxYearEOY-1).toString,
+            EmploymentDateForm.month -> "11",
+            EmploymentDateForm.day -> "11")
+
+          lazy val result: WSResponse = {
+            dropEmploymentDB()
+            insertCyaData(employmentUserData(isPrior = true, cya.copy(employmentDetails = cya.employmentDetails.copy(
+              cessationDateQuestion= Some(false), cessationDate = Some(s"${taxYearEOY-1}-11-10")))), userRequest)
+            authoriseAgentOrIndividual(user.isAgent)
+            urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          "has the correct status" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe Some(s"/income-through-software/return/employment-income/$taxYearEOY/employment-end-date?employmentId=$employmentId")
+
           }
         }
 

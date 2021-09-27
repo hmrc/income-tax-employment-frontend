@@ -74,9 +74,26 @@ class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
           },
           { submittedDate =>
             val cya = data.employment
-            val updatedCya = cya.copy(cya.employmentDetails.copy(startDate = Some(submittedDate.toLocalDate.toString)))
+            val leaveDate = cya.employmentDetails.cessationDate
+
+            lazy val leaveDateLocalDate = LocalDate.parse(leaveDate.get)
+            lazy val leaveDateIsEqualOrAfterStartDate = !leaveDateLocalDate.isBefore(submittedDate.toLocalDate)
+
+            val resetLeaveDateIfNowInvalid: Option[String] = {
+              if(leaveDate.isDefined && !leaveDateIsEqualOrAfterStartDate){
+                None
+              } else {
+                leaveDate
+              }
+            }
+
+            val updatedCya = cya.copy(cya.employmentDetails.copy(
+              startDate = Some(submittedDate.toLocalDate.toString),
+              cessationDate = resetLeaveDateIfNowInvalid)
+            )
+
             employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
-              employmentDetailsRedirect(updatedCya,taxYear,employmentId,data.isPriorSubmission)
+              employmentDetailsRedirect(updatedCya,taxYear,employmentId,data.isPriorSubmission,isStandaloneQuestion = false)
             }
           }
         )
