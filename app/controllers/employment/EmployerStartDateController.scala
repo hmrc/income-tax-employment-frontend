@@ -68,7 +68,7 @@ class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
         val newForm = form.bindFromRequest()
-          newForm.copy(errors = EmploymentDateForm.verifyNewDate(newForm.get, taxYear, user.isAgent, EmploymentDateForm.startDate)).fold(
+          newForm.copy(errors = EmploymentDateForm.verifyStartDate(newForm.get, taxYear, user.isAgent, EmploymentDateForm.startDate)).fold(
           { formWithErrors =>
             Future.successful(BadRequest(employerStartDateView(formWithErrors, taxYear, employmentId, data.employment.employmentDetails.employerName)))
           },

@@ -226,6 +226,8 @@ employment.employmentLeaveDate.error.tooRecent.individual = The date you left yo
 employment.employmentLeaveDate.error.tooRecent.agent = The date your client left their employment must be before 6 April {0}
 employment.employmentLeaveDate.error.tooLongAgo.individual = The date you left your employment must be after 5 April {0}
 employment.employmentLeaveDate.error.tooLongAgo.agent = The date your client left their employment must be after 5 April {0}
+employment.employmentLeaveDate.error.beforeStartDate.individual = The date you left your employment cannot be before {0}
+employment.employmentLeaveDate.error.beforeStartDate.agent = The date your client left their employment cannot be before {0}
 
 ################## Start & Leave Date #################
 

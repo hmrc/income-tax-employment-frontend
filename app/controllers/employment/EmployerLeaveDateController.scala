@@ -23,16 +23,16 @@ import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.employment.EmploymentDateForm
 import javax.inject.Inject
 import models.employment.EmploymentDate
+import play.api.Logging
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
 import services.RedirectService.employmentDetailsRedirect
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.DateTimeUtil.localDateTimeFormat
 import utils.{Clock, SessionHelper}
 import views.html.employment.EmployerLeaveDateView
-import routes.{CheckEmploymentDetailsController, CheckEmploymentExpensesController, CheckYourBenefitsController, StillWorkingForEmployerController}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,26 +44,36 @@ class EmployerLeaveDateController @Inject()(authorisedAction: AuthorisedAction,
                                             errorHandler: ErrorHandler,
                                             employmentSessionService: EmploymentSessionService,
                                             implicit val clock: Clock,
-                                            implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
+                                            implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport
+  with SessionHelper with Logging {
 
   def form: Form[EmploymentDate] = EmploymentDateForm.employmentStartDateForm
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
+
+    val log = "[EmployerLeaveDateController][show]"
+
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
 
+        val startDate = data.employment.employmentDetails.startDate
         val cessationDate = data.employment.employmentDetails.cessationDate
         val cessationDateQuestion = data.employment.employmentDetails.cessationDateQuestion
 
-        (cessationDateQuestion, cessationDate) match {
-          case (None,_) => Future.successful(employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission))
-          case (Some(true),_) => Future.successful(employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission))
-          case (_,Some(cessationDate)) =>
+        (startDate, cessationDateQuestion, cessationDate) match {
+          case (startDate,cessationDateQuestion,_) if startDate.isEmpty || cessationDateQuestion.isEmpty =>
+            logger.info(s"$log Prior questions for page are not answered. " +
+              s"Start date: ${startDate.getOrElse("None")}, Still working for employer: ${cessationDateQuestion.getOrElse("None")}")
+            Future.successful(employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission))
+          case (_,Some(true),_) =>
+            logger.info(s"$log Still working for employer answer is set to yes. Routing to correct employment redirect.")
+            Future.successful(employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission))
+          case (_,_,Some(cessationDate)) =>
             val parsedDate: LocalDate = LocalDate.parse(cessationDate, localDateTimeFormat)
             val filledForm: Form[EmploymentDate] = form.fill(
               EmploymentDate(parsedDate.getDayOfMonth.toString,parsedDate.getMonthValue.toString, parsedDate.getYear.toString))
             Future.successful(Ok(employerLeaveDateView(filledForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
-          case (_,None) =>
+          case (_,_,None) =>
             Future.successful(Ok(employerLeaveDateView(form, taxYear, employmentId, data.employment.employmentDetails.employerName)))
         }
       }
@@ -71,17 +81,26 @@ class EmployerLeaveDateController @Inject()(authorisedAction: AuthorisedAction,
   }
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
+
+    val log = "[EmployerLeaveDateController][submit]"
+
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
 
+        val startDate = data.employment.employmentDetails.startDate
         val cessationDateQuestion = data.employment.employmentDetails.cessationDateQuestion
-        cessationDateQuestion match {
-          case None => Future.successful(employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission))
-          case Some(true) => Future.successful(employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission))
-          case _ =>
+        (startDate, cessationDateQuestion) match {
+          case (startDate,cessationDateQuestion) if startDate.isEmpty || cessationDateQuestion.isEmpty =>
+            logger.info(s"$log Prior questions for page are not answered. " +
+              s"Start date: ${startDate.getOrElse("None")}, Still working for employer: ${cessationDateQuestion.getOrElse("None")}")
+            Future.successful(employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission))
+          case (_, Some(true)) =>
+            logger.info(s"$log Still working for employer answer is set to yes. Routing to correct employment redirect.")
+            Future.successful(employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission))
+          case (Some(startDate), _) =>
 
             val newForm = form.bindFromRequest()
-            newForm.copy(errors = EmploymentDateForm.verifyNewDate(newForm.get, taxYear, user.isAgent, EmploymentDateForm.leaveDate)).fold(
+            newForm.copy(errors = EmploymentDateForm.verifyLeaveDate(newForm.get, taxYear, user.isAgent, EmploymentDateForm.leaveDate,startDate)).fold(
               { formWithErrors =>
                 Future.successful(BadRequest(employerLeaveDateView(formWithErrors, taxYear, employmentId, data.employment.employmentDetails.employerName)))
               },

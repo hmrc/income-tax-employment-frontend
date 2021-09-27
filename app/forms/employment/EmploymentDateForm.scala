@@ -20,8 +20,10 @@ import forms.validation.mappings.MappingUtil.trimmedText
 import models.employment.EmploymentDate
 import play.api.data.Forms.mapping
 import play.api.data.{Form, FormError}
-
 import java.time.LocalDate
+
+import utils.ViewUtils
+
 import scala.util.Try
 
 object EmploymentDateForm {
@@ -62,19 +64,29 @@ object EmploymentDateForm {
     }
   }
 
-  def verifyNewDate(date: EmploymentDate, taxYear: Int, isAgent: Boolean, key: String): Seq[FormError] = {
+  trait DateValidationRequest
+
+  case object StartDateValidationRequest extends DateValidationRequest
+  case class LeaveDateValidationRequest(startDate: LocalDate) extends DateValidationRequest
+
+  def verifyStartDate(date: EmploymentDate, taxYear: Int, isAgent: Boolean, key: String): Seq[FormError] ={
+    verifyNewDate(date,taxYear,isAgent, key, StartDateValidationRequest, startDateValidation)
+  }
+
+  def verifyLeaveDate(date: EmploymentDate, taxYear: Int, isAgent: Boolean, key: String, startDate: String): Seq[FormError] ={
+    verifyNewDate[LeaveDateValidationRequest](date,taxYear,isAgent, key, LeaveDateValidationRequest(LocalDate.parse(startDate)), leaveDateValidation)
+  }
+
+  private def verifyNewDate[ValidationParameters](date: EmploymentDate, taxYear: Int, isAgent: Boolean, key: String,
+                                                  extraParameters: ValidationParameters, f: (LocalDate,Int,String,ValidationParameters) => Seq[FormError]
+                                                 ): Seq[FormError] = {
+
     val agentCheck = if (isAgent) "agent" else "individual"
     val emptyDatesErrors: Seq[FormError] = areDatesEmpty(date, isAgent, key)
     if(emptyDatesErrors.isEmpty){
       val newDate: Either[Throwable, LocalDate] = Try(LocalDate.of(date.amountYear.toInt, date.amountMonth.toInt, date.amountDay.toInt)).toEither
       newDate match {
-        case Right(date) =>
-
-          key match {
-            case `startDate` => startDateValidation(date,taxYear,agentCheck)
-            case `leaveDate` => leaveDateValidation(date,taxYear,agentCheck)
-          }
-
+        case Right(date) => f(date,taxYear,agentCheck,extraParameters)
         case Left(_) => Seq(FormError("invalidFormat", s"employment.$key.error.invalidDate.$agentCheck"))
       }
     } else {
@@ -82,7 +94,8 @@ object EmploymentDateForm {
     }
   }
 
-  def startDateValidation(date: LocalDate, taxYear: Int, agentCheck: String): Seq[FormError] = {
+  def startDateValidation(date: LocalDate, taxYear: Int, agentCheck: String, s: DateValidationRequest): Seq[FormError] = {
+
     (date.isAfter(LocalDate.now()), date.isBefore(sixthAprilDate(taxYear))) match {
       case (true, _) => Seq(FormError("invalidFormat", s"employment.$startDate.error.notInPast.$agentCheck"))
       case (_, false) => Seq(FormError("invalidFormat", s"employment.$startDate.error.tooRecent.$agentCheck", Seq(taxYear.toString)))
@@ -90,11 +103,14 @@ object EmploymentDateForm {
     }
   }
 
-  def leaveDateValidation(date: LocalDate, taxYear: Int, agentCheck: String): Seq[FormError] = {
-    (date.isAfter(LocalDate.now()), date.isBefore(sixthAprilDate(taxYear)), date.isAfter(fifthAprilDate(taxYear-1))) match {
-      case (true, _,_) => Seq(FormError("invalidFormat", s"employment.$leaveDate.error.notInPast.$agentCheck"))
-      case (_, false,_) => Seq(FormError("invalidFormat", s"employment.$leaveDate.error.tooRecent.$agentCheck", Seq(taxYear.toString)))
-      case (_, _, false) => Seq(FormError("invalidFormat", s"employment.$leaveDate.error.tooLongAgo.$agentCheck", Seq((taxYear-1).toString)))
+  def leaveDateValidation(date: LocalDate, taxYear: Int, agentCheck: String, leaveValidation: LeaveDateValidationRequest): Seq[FormError] = {
+    (date.isAfter(LocalDate.now()), date.isBefore(sixthAprilDate(taxYear)),
+      date.isAfter(fifthAprilDate(taxYear-1)), !date.isBefore(leaveValidation.startDate)) match {
+      case (true,_,_,_) => Seq(FormError("invalidFormat", s"employment.$leaveDate.error.notInPast.$agentCheck"))
+      case (_,false,_,_) => Seq(FormError("invalidFormat", s"employment.$leaveDate.error.tooRecent.$agentCheck", Seq(taxYear.toString)))
+      case (_,_,false,_) => Seq(FormError("invalidFormat", s"employment.$leaveDate.error.tooLongAgo.$agentCheck", Seq((taxYear-1).toString)))
+      case (_,_,_,false) => Seq(FormError("invalidFormat", s"employment.$leaveDate.error.beforeStartDate.$agentCheck",
+        Seq(ViewUtils.dateFormatter(leaveValidation.startDate))))
       case _ => Seq()
     }
   }

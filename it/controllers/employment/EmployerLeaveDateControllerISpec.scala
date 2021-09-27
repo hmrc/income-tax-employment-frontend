@@ -43,7 +43,12 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
 
-  def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, cessationDateQuestion = Some(false), currentDataIsHmrcHeld = hmrc))
+  def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName,
+    employerRef = Some("12345678"),
+    payrollId = Some("12345"),
+    startDate= Some("2021-01-01"),
+    cessationDateQuestion = Some(false),
+    currentDataIsHmrcHeld = hmrc))
 
   private def employerEndDatePageUrl(taxYear: Int) = s"$appUrl/$taxYear/employment-end-date?employmentId=$employmentId"
 
@@ -74,6 +79,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
     val tooRecentDateError: String
     val tooLongAgoDateError: String
     val futureDateError: String
+    val beforeStartDateError: String
   }
 
   trait CommonExpectedResults {
@@ -100,6 +106,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
     val tooRecentDateError = s"The date you left your employment must be before 6 April $taxYearEOY"
     val futureDateError = "The date you left your employment must be in the past"
     val tooLongAgoDateError = s"The date you left your employment must be after 5 April ${taxYearEOY-1}"
+    val beforeStartDateError = s"The date you left your employment cannot be before 1 January 2021"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -117,6 +124,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
     val tooRecentDateError = s"The date you left your employment must be before 6 April $taxYearEOY"
     val futureDateError = "The date you left your employment must be in the past"
     val tooLongAgoDateError = s"The date you left your employment must be after 5 April ${taxYearEOY-1}"
+    val beforeStartDateError = s"The date you left your employment cannot be before 1 January 2021"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -134,6 +142,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
     val tooRecentDateError = s"The date your client left their employment must be before 6 April $taxYearEOY"
     val futureDateError = "The date your client left their employment must be in the past"
     val tooLongAgoDateError = s"The date your client left their employment must be after 5 April ${taxYearEOY-1}"
+    val beforeStartDateError = s"The date your client left their employment cannot be before 1 January 2021"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -151,6 +160,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
     val tooRecentDateError = s"The date your client left their employment must be before 6 April $taxYearEOY"
     val futureDateError = "The date your client left their employment must be in the past"
     val tooLongAgoDateError = s"The date your client left their employment must be after 5 April ${taxYearEOY-1}"
+    val beforeStartDateError = s"The date your client left their employment cannot be before 1 January 2021"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -205,7 +215,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=001")
+            result.header("location") shouldBe Some(s"/income-through-software/return/employment-income/$taxYearEOY/still-working-for-employer?employmentId=001")
           }
         }
         "redirect when earlier question answered true - still with employer" which {
@@ -256,10 +266,12 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "render the 'leave date' page with the correct content and the date prefilled when its already in session" which {
+          val cya = cyaModel(employerName, hmrc = true)
+
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(CyaModel.cya, userRequest)
+            insertCyaData(employmentUserData(isPrior = true, cya.copy(employmentDetails = cya.employmentDetails.copy(cessationDate=Some(employmentLeaveDate),cessationDateQuestion = Some(false)))), userRequest)
             urlGet(employerEndDatePageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -868,6 +880,43 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             errorSummaryCheck(user.specificExpectedResults.get.futureDateError, Selectors.daySelector)
             errorAboveElementCheck(user.specificExpectedResults.get.futureDateError, Some("amount"))
+          }
+          "the date is before the start date" which {
+            val nowDatePlusOne = LocalDate.now().plusDays(1)
+            lazy val form: Map[String, String] = Map(
+              EmploymentDateForm.year -> (taxYearEOY-1).toString,
+              EmploymentDateForm.month -> "12",
+              EmploymentDateForm.day -> "31")
+
+            lazy val result: WSResponse = {
+              dropEmploymentDB()
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              authoriseAgentOrIndividual(user.isAgent)
+              urlPost(employerEndDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            }
+
+            "has the correct status" in {
+              result.status shouldBe BAD_REQUEST
+            }
+
+            implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+            import Selectors._
+            import user.commonExpectedResults._
+
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            h1Check(user.specificExpectedResults.get.expectedH1)
+            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            textOnPageCheck(forExample, forExampleSelector)
+            inputFieldValueCheck(31.toString, Selectors.daySelector)
+            inputFieldValueCheck(12.toString, Selectors.monthSelector)
+            inputFieldValueCheck((taxYearEOY-1).toString, Selectors.yearSelector)
+            buttonCheck(expectedButtonText, continueButtonSelector)
+            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            welshToggleCheck(user.isWelsh)
+
+            errorSummaryCheck(user.specificExpectedResults.get.beforeStartDateError, Selectors.daySelector)
+            errorAboveElementCheck(user.specificExpectedResults.get.beforeStartDateError, Some("amount"))
           }
 
         }

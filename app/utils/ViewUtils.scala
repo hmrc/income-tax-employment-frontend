@@ -47,6 +47,10 @@ object ViewUtils {
     }
   }
 
+  def dateFormatter(date: LocalDate): String = {
+    date.format(DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.UK))
+  }
+
   def getAgentDynamicContent(msgKey:String, isAgent:Boolean): String ={
     s"$msgKey.${if (isAgent) "agent" else "individual"}"
   }
