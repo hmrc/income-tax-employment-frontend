@@ -32,10 +32,9 @@ object RedirectService {
         case EmploymentCYAModel(EmploymentDetails(_,_,startDate@None,_,_,_,_,_,_,_,_,_),_) => EmployerStartDateController.show(taxYear,employmentId)
         case EmploymentCYAModel(EmploymentDetails(_,_,_,_,cessationDateQuestion@None,_,_,_,_,_,_,_),_) =>
           StillWorkingForEmployerController.show(taxYear, employmentId)
+        case EmploymentCYAModel(EmploymentDetails(_,_,_,payrollId@None,_,_,_,_,_,_,_,_),_) => EmployerPayrollIdController.show(taxYear,employmentId)
         case EmploymentCYAModel(EmploymentDetails(_,_,_,_,_,_,_,_,_,taxablePayToDate@None,_,_),_) => EmployerPayAmountController.show(taxYear,employmentId)
         case EmploymentCYAModel(EmploymentDetails(_,_,_,_,_,_,_,_,_,_,totalTaxToDate@None,_),_) => EmploymentTaxController.show(taxYear,employmentId)
-        case EmploymentCYAModel(EmploymentDetails(_,_,_,payrollId@None,_,_,_,_,_,_,_,_),_) =>
-          CheckEmploymentDetailsController.show(taxYear, employmentId) //TODO Payroll page
         case EmploymentCYAModel(EmploymentDetails(_,_,_,_,Some(true),cessationDate@None,_,_,_,_,_,_),_) =>
           CheckEmploymentDetailsController.show(taxYear, employmentId) //TODO cessationDate page
         case _ => CheckEmploymentDetailsController.show(taxYear, employmentId)

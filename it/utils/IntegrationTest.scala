@@ -247,7 +247,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
       employmentId = employmentId,
       employerName = employerName,
       employerRef = employerRef,
-      payrollId = Some("123456789999"),
+      payrollId = Some("12345678"),
       startDate = startDate,
       cessationDate = Some("2020-03-11"),
       dateIgnored = dateIgnored,

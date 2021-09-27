@@ -69,6 +69,7 @@ case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
     EmploymentDetailsViewModel(
       employmentDetails.employerName,
       employmentDetails.employerRef,
+      employmentDetails.payrollId,
       employmentId,
       employmentDetails.startDate,
       //TODO: could use the below for cessationDateQuestion when cessation date is implemented
@@ -77,7 +78,6 @@ case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
       employmentDetails.cessationDate,
       employmentDetails.taxablePayToDate,
       employmentDetails.totalTaxToDate,
-      employmentDetails.payrollId,
       isUsingCustomerData)
   }
 }
