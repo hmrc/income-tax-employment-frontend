@@ -583,6 +583,7 @@ benefits.companyVanBenefits.title.agent = Did your client get a company van bene
 benefits.companyVanBenefits.error.individual = Select yes if you got a company van benefit
 benefits.companyVanBenefits.error.agent = Select yes if your client got a company van benefit
 
+
 benefits.receiveOwnCarMileageBenefit.title.individual = Did you get a mileage benefit for using your own car for work?
 benefits.receiveOwnCarMileageBenefit.title.agent = Did your client get a mileage benefit for using their own car for work?
 benefits.receiveOwnCarMileageBenefit.needToKnow.individual = We only need to know about payments made above our ‘approved amount‘. If you have payments above the ‘approved amount‘, they should be recorded in section E of your P11D form.
@@ -613,4 +614,11 @@ benefits.carFuelAmount.error.incorrectFormat.individual = Enter your company car
 benefits.carFuelAmount.error.incorrectFormat.agent = Enter your client’s company car fuel benefit amount in the correct format
 benefits.carFuelAmount.error.tooMuch.individual = Your company car fuel benefit must be less than £100,000,000,000
 benefits.carFuelAmount.error.tooMuch.agent = Your client’s company car fuel benefit must be less than £100,000,000,000
+
+
+benefits.companyVanFuelBenefits.title.individual = Did you get fuel benefit for a company van?
+benefits.companyVanFuelBenefits.title.agent = Did your client get fuel benefit for a company van?
+benefits.companyVanFuelBenefits.error.individual = Select yes if you got fuel benefit for a company van
+benefits.companyVanFuelBenefits.error.agent = Select yes if your client got fuel benefit for a company van
+
 
