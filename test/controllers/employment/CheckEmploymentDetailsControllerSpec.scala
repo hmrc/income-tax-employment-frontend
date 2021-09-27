@@ -59,13 +59,13 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockEmpl
             EmploymentDetailsViewModel(
               employerName = "Dave",
               employerRef = Some("reference"),
+              payrollId = Some("12345678"),
               employmentId = "id",
               startDate = Some("2020-02-12"),
               cessationDateQuestion = Some(true),
               cessationDate = Some("2020-02-12"),
               taxablePayToDate = Some(34234.15),
               totalTaxToDate = Some(6782.92),
-              payrollId = None,
               isUsingCustomerData = false
             ), taxYear, isInYear = true
           )))
