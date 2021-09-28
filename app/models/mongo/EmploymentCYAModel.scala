@@ -34,11 +34,20 @@ case class EmploymentDetails(employerName: String,
                              currentDataIsHmrcHeld: Boolean) {
 
   val isFinished: Boolean = {
+
+    val cessationSectionFinished = {
+      cessationDateQuestion match {
+        case Some(true) => true
+        case Some(false) => cessationDate.isDefined
+        case None => false
+      }
+    }
+
     employerRef.isDefined &&
       startDate.isDefined &&
       taxablePayToDate.isDefined &&
       totalTaxToDate.isDefined &&
-      cessationDateQuestion.isDefined //TODO Add extra mandatory fields such as cessationDateQuestion when introduced.
+      cessationSectionFinished
   }
 }
 object EmploymentDetails {
@@ -72,8 +81,6 @@ case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
       employmentDetails.payrollId,
       employmentId,
       employmentDetails.startDate,
-      //TODO: could use the below for cessationDateQuestion when cessation date is implemented
-      //cessationDateQuestion = Some(employmentDetails.cessationDate.isEmpty),
       employmentDetails.cessationDateQuestion,
       employmentDetails.cessationDate,
       employmentDetails.taxablePayToDate,

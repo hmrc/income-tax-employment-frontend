@@ -115,6 +115,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
   trait CommonExpectedResults {
     def expectedCaption(year: Int = defaultTaxYear): String
+    val changeText: String
     val vehicleHeader: String
     val companyCar: String
     val fuelForCompanyCar: String
@@ -194,6 +195,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
+    val changeText: String = "Change"
     def expectedCaption(year: Int = defaultTaxYear): String = s"Employment for 6 April ${year-1} to 5 April $year"
     val vehicleHeader = "Vehicles, fuel and mileage"
     val companyCar = "Company car"
@@ -274,6 +276,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
+    val changeText: String = "Change"
     def expectedCaption(year: Int = defaultTaxYear): String = s"Employment for 6 April ${year-1} to 5 April $year"
     val vehicleHeader = "Vehicles, fuel and mileage"
     val companyCar = "Company car"
@@ -771,87 +774,88 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
           textOnPageCheck(specificResults.expectedP1, Selectors.p1)
 
-          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 3, 1, specificResults.benefitsReceivedHiddenText, receiveAnyBenefitsHref)
+          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 3, 1, s"${user.commonExpectedResults.changeText} ${specificResults.benefitsReceivedHiddenText}", receiveAnyBenefitsHref)
 
           textOnPageCheck(commonResults.vehicleHeader, fieldHeaderSelector(4))
-          changeAmountRowCheck(commonResults.carSubheading, commonResults.yes, 5, 1, specificResults.carSubheadingHiddenText, carVanFuelBenefitsHref)
-          changeAmountRowCheck(commonResults.companyCar, commonResults.yes, 5, 2, specificResults.companyCarHiddenText, companyCarHref)
-          changeAmountRowCheck(commonResults.companyCarAmount, "£1.23", 5, 3, specificResults.companyCarAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.fuelForCompanyCar, commonResults.yes, 5, 4, specificResults.fuelForCompanyCarHiddenText, companyCarFuelBenefitsHref)
-          changeAmountRowCheck(commonResults.fuelForCompanyCarAmount, "£2", 5, 5, specificResults.fuelForCompanyCarAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.companyVan, commonResults.yes, 5, 6, specificResults.companyVanHiddenText, companyVanBenefitsHref)
-          changeAmountRowCheck(commonResults.companyVanAmount, "£3", 5, 7, specificResults.companyVanAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.fuelForCompanyVan, commonResults.yes, 5, 8, specificResults.fuelForCompanyVanHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.fuelForCompanyVanAmount, "£4", 5, 9, specificResults.fuelForCompanyVanAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.mileageBenefit, commonResults.yes, 5, 10, specificResults.mileageBenefitHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.mileageBenefitAmount, "£5", 5, 11, specificResults.mileageBenefitAmountHiddenText, dummyHref)
+
+          changeAmountRowCheck(commonResults.carSubheading, commonResults.yes, 5, 1, s"${user.commonExpectedResults.changeText} ${specificResults.carSubheadingHiddenText}", carVanFuelBenefitsHref)
+          changeAmountRowCheck(commonResults.companyCar, commonResults.yes, 5, 2, s"${user.commonExpectedResults.changeText} ${specificResults.companyCarHiddenText}", companyCarHref)
+          changeAmountRowCheck(commonResults.companyCarAmount, "£1.23", 5, 3, s"${user.commonExpectedResults.changeText} ${specificResults.companyCarAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.fuelForCompanyCar, commonResults.yes, 5, 4, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyCarHiddenText}", companyCarFuelBenefitsHref)
+          changeAmountRowCheck(commonResults.fuelForCompanyCarAmount, "£2", 5, 5, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyCarAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.companyVan, commonResults.yes, 5, 6, s"${user.commonExpectedResults.changeText} ${specificResults.companyVanHiddenText}", companyVanBenefitsHref)
+          changeAmountRowCheck(commonResults.companyVanAmount, "£3", 5, 7, s"${user.commonExpectedResults.changeText} ${specificResults.companyVanAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.fuelForCompanyVan, commonResults.yes, 5, 8, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyVanHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.fuelForCompanyVanAmount, "£4", 5, 9, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyVanAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.mileageBenefit, commonResults.yes, 5, 10, s"${user.commonExpectedResults.changeText} ${specificResults.mileageBenefitHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.mileageBenefitAmount, "£5", 5, 11, s"${user.commonExpectedResults.changeText} ${specificResults.mileageBenefitAmountHiddenText}", dummyHref)
 
           textOnPageCheck(commonResults.accommodationHeader, fieldHeaderSelector(6))
-          changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.yes, 7, 1, specificResults.accommodationSubheadingHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.accommodation, commonResults.yes, 7, 2, specificResults.accommodationHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.accommodationAmount, "£6", 7, 3, specificResults.accommodationAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.qualifyingRelocationCosts, commonResults.yes, 7, 4, specificResults.qualifyingRelocationCostsHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.qualifyingRelocationCostsAmount, "£7", 7, 5, specificResults.qualifyingRelocationCostsAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.nonQualifyingRelocationCosts, commonResults.yes, 7, 6, specificResults.nonQualifyingRelocationCostsHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.nonQualifyingRelocationCostsAmount, "£8", 7, 7, specificResults.nonQualifyingRelocationCostsAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.yes, 7, 1, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.accommodation, commonResults.yes, 7, 2, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.accommodationAmount, "£6", 7, 3, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.qualifyingRelocationCosts, commonResults.yes, 7, 4, s"${user.commonExpectedResults.changeText} ${specificResults.qualifyingRelocationCostsHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.qualifyingRelocationCostsAmount, "£7", 7, 5, s"${user.commonExpectedResults.changeText} ${specificResults.qualifyingRelocationCostsAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.nonQualifyingRelocationCosts, commonResults.yes, 7, 6, s"${user.commonExpectedResults.changeText} ${specificResults.nonQualifyingRelocationCostsHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.nonQualifyingRelocationCostsAmount, "£8", 7, 7, s"${user.commonExpectedResults.changeText} ${specificResults.nonQualifyingRelocationCostsAmountHiddenText}", dummyHref)
 
           textOnPageCheck(commonResults.travelHeader, fieldHeaderSelector(8))
-          changeAmountRowCheck(commonResults.travelSubheading, commonResults.yes, 9, 1, specificResults.travelSubheadingHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.travelAndSubsistence, commonResults.yes, 9, 2, specificResults.travelAndSubsistenceHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.travelAndSubsistenceAmount, "£9", 9, 3, specificResults.travelAndSubsistenceAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.personalCosts, commonResults.yes, 9, 4, specificResults.personalCostsHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.personalCostsAmount, "£10", 9, 5, specificResults.personalCostsAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.entertainment, commonResults.yes, 9, 6, specificResults.entertainmentHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.entertainmentAmount, "£11", 9, 7, specificResults.entertainmentAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.travelSubheading, commonResults.yes, 9, 1, s"${user.commonExpectedResults.changeText} ${specificResults.travelSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.travelAndSubsistence, commonResults.yes, 9, 2, s"${user.commonExpectedResults.changeText} ${specificResults.travelAndSubsistenceHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.travelAndSubsistenceAmount, "£9", 9, 3, s"${user.commonExpectedResults.changeText} ${specificResults.travelAndSubsistenceAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.personalCosts, commonResults.yes, 9, 4, s"${user.commonExpectedResults.changeText} ${specificResults.personalCostsHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.personalCostsAmount, "£10", 9, 5, s"${user.commonExpectedResults.changeText} ${specificResults.personalCostsAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.entertainment, commonResults.yes, 9, 6, s"${user.commonExpectedResults.changeText} ${specificResults.entertainmentHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.entertainmentAmount, "£11", 9, 7, s"${user.commonExpectedResults.changeText} ${specificResults.entertainmentAmountHiddenText}", dummyHref)
 
           textOnPageCheck(commonResults.utilitiesHeader, fieldHeaderSelector(10))
-          changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.yes, 11, 1, specificResults.utilitiesSubheadingHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.telephone, commonResults.yes, 11, 2, specificResults.telephoneHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.telephoneAmount, "£12", 11, 3, specificResults.telephoneAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.servicesProvided, commonResults.yes, 11, 4, specificResults.servicesProvidedHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.servicesProvidedAmount, "£13", 11, 5, specificResults.servicesProvidedAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.profSubscriptions, commonResults.yes, 11, 6, specificResults.profSubscriptionsHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.profSubscriptionsAmount, "£14", 11, 7, specificResults.profSubscriptionsAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.otherServices, commonResults.yes, 11, 8, specificResults.otherServicesHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.otherServicesAmount, "£15", 11, 9, specificResults.otherServicesAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.yes, 11, 1, s"${user.commonExpectedResults.changeText} ${specificResults.utilitiesSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.telephone, commonResults.yes, 11, 2, s"${user.commonExpectedResults.changeText} ${specificResults.telephoneHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.telephoneAmount, "£12", 11, 3, s"${user.commonExpectedResults.changeText} ${specificResults.telephoneAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.servicesProvided, commonResults.yes, 11, 4, s"${user.commonExpectedResults.changeText} ${specificResults.servicesProvidedHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.servicesProvidedAmount, "£13", 11, 5, s"${user.commonExpectedResults.changeText} ${specificResults.servicesProvidedAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.profSubscriptions, commonResults.yes, 11, 6, s"${user.commonExpectedResults.changeText} ${specificResults.profSubscriptionsHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.profSubscriptionsAmount, "£14", 11, 7, s"${user.commonExpectedResults.changeText} ${specificResults.profSubscriptionsAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.otherServices, commonResults.yes, 11, 8, s"${user.commonExpectedResults.changeText} ${specificResults.otherServicesHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.otherServicesAmount, "£15", 11, 9, s"${user.commonExpectedResults.changeText} ${specificResults.otherServicesAmountHiddenText}", dummyHref)
 
           textOnPageCheck(commonResults.medicalHeader, fieldHeaderSelector(12))
-          changeAmountRowCheck(commonResults.medicalSubheading, commonResults.yes, 13, 1, specificResults.medicalSubheadingHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.medicalIns, commonResults.yes, 13, 2, specificResults.medicalInsHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.medicalInsAmount, "£16", 13, 3, specificResults.medicalInsAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.nursery, commonResults.yes, 13, 4, specificResults.nurseryHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.nurseryAmount, "£17", 13, 5, specificResults.nurseryAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.educational, commonResults.yes, 13, 6, specificResults.educationalHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.educationalAmount, "£19", 13, 7, specificResults.educationalAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.beneficialLoans, commonResults.yes, 13, 8, specificResults.beneficialLoansHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.beneficialLoansAmount, "£18", 13, 9, specificResults.beneficialLoansAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.medicalSubheading, commonResults.yes, 13, 1, s"${user.commonExpectedResults.changeText} ${specificResults.medicalSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.medicalIns, commonResults.yes, 13, 2, s"${user.commonExpectedResults.changeText} ${specificResults.medicalInsHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.medicalInsAmount, "£16", 13, 3, s"${user.commonExpectedResults.changeText} ${specificResults.medicalInsAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.nursery, commonResults.yes, 13, 4, s"${user.commonExpectedResults.changeText} ${specificResults.nurseryHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.nurseryAmount, "£17", 13, 5, s"${user.commonExpectedResults.changeText} ${specificResults.nurseryAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.educational, commonResults.yes, 13, 6, s"${user.commonExpectedResults.changeText} ${specificResults.educationalHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.educationalAmount, "£19", 13, 7, s"${user.commonExpectedResults.changeText} ${specificResults.educationalAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.beneficialLoans, commonResults.yes, 13, 8, s"${user.commonExpectedResults.changeText} ${specificResults.beneficialLoansHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.beneficialLoansAmount, "£18", 13, 9, s"${user.commonExpectedResults.changeText} ${specificResults.beneficialLoansAmountHiddenText}", dummyHref)
 
           textOnPageCheck(commonResults.incomeTaxHeader, fieldHeaderSelector(14))
-          changeAmountRowCheck(commonResults.incomeTaxSubheading, commonResults.yes, 15, 1, specificResults.incomeTaxSubheadingHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.incomeTaxPaid, commonResults.yes, 15, 2, specificResults.incomeTaxPaidHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.incomeTaxPaidAmount, "£20", 15, 3, specificResults.incomeTaxPaidAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.incurredCostsPaid, commonResults.yes, 15, 4, specificResults.incurredCostsPaidHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.incurredCostsPaidAmount, "£21", 15, 5, specificResults.incurredCostsPaidAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.incomeTaxSubheading, commonResults.yes, 15, 1, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.incomeTaxPaid, commonResults.yes, 15, 2, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxPaidHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.incomeTaxPaidAmount, "£20", 15, 3, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxPaidAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.incurredCostsPaid, commonResults.yes, 15, 4, s"${user.commonExpectedResults.changeText} ${specificResults.incurredCostsPaidHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.incurredCostsPaidAmount, "£21", 15, 5, s"${user.commonExpectedResults.changeText} ${specificResults.incurredCostsPaidAmountHiddenText}", dummyHref)
 
           textOnPageCheck(commonResults.reimbursedHeader, fieldHeaderSelector(16))
-          changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.yes, 17, 1, specificResults.reimbursedSubheadingHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.nonTaxable, commonResults.yes, 17, 2, specificResults.nonTaxableHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.nonTaxableAmount, "£22", 17, 3, specificResults.nonTaxableAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.taxableCosts, commonResults.yes, 17, 4, specificResults.taxableCostsHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.taxableCostsAmount, "£23", 17, 5, specificResults.taxableCostsAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.vouchers, commonResults.yes, 17, 6, specificResults.vouchersHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.vouchersAmount, "£24", 17, 7, specificResults.vouchersAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.nonCash, commonResults.yes, 17, 8, specificResults.nonCashHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.nonCashAmount, "£25", 17, 9, specificResults.nonCashAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.otherBenefits, commonResults.yes, 17, 10, specificResults.otherBenefitsHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.otherBenefitsAmount, "£26", 17, 11, specificResults.otherBenefitsAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.yes, 17, 1, s"${user.commonExpectedResults.changeText} ${specificResults.reimbursedSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.nonTaxable, commonResults.yes, 17, 2, s"${user.commonExpectedResults.changeText} ${specificResults.nonTaxableHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.nonTaxableAmount, "£22", 17, 3, s"${user.commonExpectedResults.changeText} ${specificResults.nonTaxableAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.taxableCosts, commonResults.yes, 17, 4, s"${user.commonExpectedResults.changeText} ${specificResults.taxableCostsHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.taxableCostsAmount, "£23", 17, 5, s"${user.commonExpectedResults.changeText} ${specificResults.taxableCostsAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.vouchers, commonResults.yes, 17, 6, s"${user.commonExpectedResults.changeText} ${specificResults.vouchersHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.vouchersAmount, "£24", 17, 7, s"${user.commonExpectedResults.changeText} ${specificResults.vouchersAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.nonCash, commonResults.yes, 17, 8, s"${user.commonExpectedResults.changeText} ${specificResults.nonCashHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.nonCashAmount, "£25", 17, 9, s"${user.commonExpectedResults.changeText} ${specificResults.nonCashAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.otherBenefits, commonResults.yes, 17, 10, s"${user.commonExpectedResults.changeText} ${specificResults.otherBenefitsHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.otherBenefitsAmount, "£26", 17, 11, s"${user.commonExpectedResults.changeText} ${specificResults.otherBenefitsAmountHiddenText}", dummyHref)
 
           textOnPageCheck(commonResults.assetsHeader, fieldHeaderSelector(18))
-          changeAmountRowCheck(commonResults.assetsSubheading, commonResults.yes, 19, 1, specificResults.assetsSubheadingHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.assets, commonResults.yes, 19, 2, specificResults.assetsHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.assetsAmount, "£27", 19, 3, specificResults.assetsAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.assetTransfers, commonResults.yes, 19, 4, specificResults.assetTransfersHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.assetTransfersAmount, "£280000", 19, 5, specificResults.assetTransfersAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.assetsSubheading, commonResults.yes, 19, 1, s"${user.commonExpectedResults.changeText} ${specificResults.assetsSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.assets, commonResults.yes, 19, 2, s"${user.commonExpectedResults.changeText} ${specificResults.assetsHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.assetsAmount, "£27", 19, 3, s"${user.commonExpectedResults.changeText} ${specificResults.assetsAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.assetTransfers, commonResults.yes, 19, 4, s"${user.commonExpectedResults.changeText} ${specificResults.assetTransfersHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.assetTransfersAmount, "£280000", 19, 5, s"${user.commonExpectedResults.changeText} ${specificResults.assetTransfersAmountHiddenText}", dummyHref)
 
           buttonCheck(commonResults.saveAndContinue)
 
@@ -894,41 +898,40 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
           textOnPageCheck(specificResults.expectedP1, Selectors.p1)
 
-          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 3, 1, specificResults.benefitsReceivedHiddenText, receiveAnyBenefitsHref)
+          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 3, 1, s"${user.commonExpectedResults.changeText} ${specificResults.benefitsReceivedHiddenText}", receiveAnyBenefitsHref)
 
           textOnPageCheck(commonResults.vehicleHeader, fieldHeaderSelector(4))
-          changeAmountRowCheck(commonResults.carSubheading, commonResults.yes, 5, 1, specificResults.carSubheadingHiddenText, carVanFuelBenefitsHref)
-          changeAmountRowCheck(commonResults.companyCar, commonResults.no, 5, 2, specificResults.companyCarHiddenText, companyCarHref)
 
-          changeAmountRowCheck(commonResults.fuelForCompanyCar, commonResults.no, 5, 3, specificResults.fuelForCompanyCarHiddenText, companyCarFuelBenefitsHref)
-          changeAmountRowCheck(commonResults.companyVan, commonResults.yes, 5, 4, specificResults.companyVanHiddenText, companyVanBenefitsHref)
-
-          changeAmountRowCheck(commonResults.companyVanAmount, "£3", 5, 5, specificResults.companyVanAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.fuelForCompanyVan, commonResults.yes, 5, 6, specificResults.fuelForCompanyVanHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.fuelForCompanyVanAmount, "£4", 5, 7, specificResults.fuelForCompanyVanAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.mileageBenefit, commonResults.yes, 5, 8, specificResults.mileageBenefitHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.mileageBenefitAmount, "£5", 5, 9, specificResults.mileageBenefitAmountHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.carSubheading, commonResults.yes, 5, 1, s"${user.commonExpectedResults.changeText} ${specificResults.carSubheadingHiddenText}", carVanFuelBenefitsHref)
+          changeAmountRowCheck(commonResults.companyCar, commonResults.no, 5, 2, s"${user.commonExpectedResults.changeText} ${specificResults.companyCarHiddenText}", companyCarHref)
+          changeAmountRowCheck(commonResults.fuelForCompanyCar, commonResults.no, 5, 3, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyCarHiddenText}", companyCarFuelBenefitsHref)
+          changeAmountRowCheck(commonResults.companyVan, commonResults.yes, 5, 4, s"${user.commonExpectedResults.changeText} ${specificResults.companyVanHiddenText}", companyVanBenefitsHref)
+          changeAmountRowCheck(commonResults.companyVanAmount, "£3", 5, 5, s"${user.commonExpectedResults.changeText} ${specificResults.companyVanAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.fuelForCompanyVan, commonResults.yes, 5, 6, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyVanHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.fuelForCompanyVanAmount, "£4", 5, 7, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyVanAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.mileageBenefit, commonResults.yes, 5, 8, s"${user.commonExpectedResults.changeText} ${specificResults.mileageBenefitHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.mileageBenefitAmount, "£5", 5, 9, s"${user.commonExpectedResults.changeText} ${specificResults.mileageBenefitAmountHiddenText}", dummyHref)
 
           textOnPageCheck(user.commonExpectedResults.accommodationHeader, fieldHeaderSelector(6))
-          changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.no, 7, 1, specificResults.accommodationSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.no, 7, 1, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationSubheadingHiddenText}", dummyHref)
           
           textOnPageCheck(user.commonExpectedResults.travelHeader, fieldHeaderSelector(8))
-          changeAmountRowCheck(commonResults.travelSubheading, commonResults.no, 9, 1, specificResults.travelSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.travelSubheading, commonResults.no, 9, 1, s"${user.commonExpectedResults.changeText} ${specificResults.travelSubheadingHiddenText}", dummyHref)
 
           textOnPageCheck(user.commonExpectedResults.utilitiesHeader, fieldHeaderSelector(10))
-          changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.no, 11, 1, specificResults.utilitiesSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.no, 11, 1, s"${user.commonExpectedResults.changeText} ${specificResults.utilitiesSubheadingHiddenText}", dummyHref)
           
           textOnPageCheck(user.commonExpectedResults.medicalHeader, fieldHeaderSelector(12))
-          changeAmountRowCheck(commonResults.medicalSubheading, commonResults.no, 13, 1, specificResults.medicalSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.medicalSubheading, commonResults.no, 13, 1, s"${user.commonExpectedResults.changeText} ${specificResults.medicalSubheadingHiddenText}", dummyHref)
           
           textOnPageCheck(user.commonExpectedResults.incomeTaxHeader, fieldHeaderSelector(14))
-          changeAmountRowCheck(commonResults.incomeTaxSubheading, commonResults.no, 15, 1, specificResults.incomeTaxSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.incomeTaxSubheading, commonResults.no, 15, 1, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxSubheadingHiddenText}", dummyHref)
           
           textOnPageCheck(user.commonExpectedResults.reimbursedHeader, fieldHeaderSelector(16))
-          changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.no, 17, 1, specificResults.reimbursedSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.no, 17, 1, s"${user.commonExpectedResults.changeText} ${specificResults.reimbursedSubheadingHiddenText}", dummyHref)
           
           textOnPageCheck(user.commonExpectedResults.assetsHeader, fieldHeaderSelector(18))
-          changeAmountRowCheck(commonResults.assetsSubheading, commonResults.no, 19, 1, specificResults.assetsSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.assetsSubheading, commonResults.no, 19, 1, s"${user.commonExpectedResults.changeText} ${specificResults.assetsSubheadingHiddenText}", dummyHref)
 
           buttonCheck(commonResults.saveAndContinue)
 
@@ -1014,35 +1017,36 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           h1Check(specificResults.expectedH1)
           captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
 
-          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 2, 1, specificResults.benefitsReceivedHiddenText, receiveAnyBenefitsHref)
+          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 2, 1, s"${user.commonExpectedResults.changeText} ${specificResults.benefitsReceivedHiddenText}", receiveAnyBenefitsHref)
 
           textOnPageCheck(commonResults.vehicleHeader, fieldHeaderSelector(3))
-          changeAmountRowCheck(commonResults.carSubheading, commonResults.no, 4, 1, specificResults.carSubheadingHiddenText, carVanFuelBenefitsHref)
+
+          changeAmountRowCheck(commonResults.carSubheading, commonResults.no, 4, 1, s"${user.commonExpectedResults.changeText} ${specificResults.carSubheadingHiddenText}", carVanFuelBenefitsHref)
 
           textOnPageCheck(user.commonExpectedResults.accommodationHeader, fieldHeaderSelector(5))
-          changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.yes, 6, 1, specificResults.accommodationSubheadingHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.accommodation, commonResults.yes, 6, 2, specificResults.accommodationHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.accommodationAmount, "£3", 6, 3, specificResults.accommodationAmountHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.qualifyingRelocationCosts, commonResults.no, 6, 4, specificResults.qualifyingRelocationCostsHiddenText, dummyHref)
-          changeAmountRowCheck(commonResults.nonQualifyingRelocationCosts, commonResults.no, 6, 5, specificResults.nonQualifyingRelocationCostsHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.yes, 6, 1, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.accommodation, commonResults.yes, 6, 2, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.accommodationAmount, "£3", 6, 3, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.qualifyingRelocationCosts, commonResults.no, 6, 4, s"${user.commonExpectedResults.changeText} ${specificResults.qualifyingRelocationCostsHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.nonQualifyingRelocationCosts, commonResults.no, 6, 5, s"${user.commonExpectedResults.changeText} ${specificResults.nonQualifyingRelocationCostsHiddenText}", dummyHref)
 
           textOnPageCheck(user.commonExpectedResults.travelHeader, fieldHeaderSelector(7))
-          changeAmountRowCheck(commonResults.travelSubheading, commonResults.no, 8, 1, specificResults.travelSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.travelSubheading, commonResults.no, 8, 1, s"${user.commonExpectedResults.changeText} ${specificResults.travelSubheadingHiddenText}", dummyHref)
 
           textOnPageCheck(user.commonExpectedResults.utilitiesHeader, fieldHeaderSelector(9))
-          changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.no, 10, 1, specificResults.utilitiesSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.no, 10, 1, s"${user.commonExpectedResults.changeText} ${specificResults.utilitiesSubheadingHiddenText}", dummyHref)
 
           textOnPageCheck(user.commonExpectedResults.medicalHeader, fieldHeaderSelector(11))
-          changeAmountRowCheck(commonResults.medicalSubheading, commonResults.no, 12, 1, specificResults.medicalSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.medicalSubheading, commonResults.no, 12, 1, s"${user.commonExpectedResults.changeText} ${specificResults.medicalSubheadingHiddenText}", dummyHref)
 
           textOnPageCheck(user.commonExpectedResults.incomeTaxHeader, fieldHeaderSelector(13))
-          changeAmountRowCheck(commonResults.incomeTaxSubheading, commonResults.no, 14, 1, specificResults.incomeTaxSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.incomeTaxSubheading, commonResults.no, 14, 1, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxSubheadingHiddenText}", dummyHref)
 
           textOnPageCheck(user.commonExpectedResults.reimbursedHeader, fieldHeaderSelector(15))
-          changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.no, 16, 1, specificResults.reimbursedSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.no, 16, 1, s"${user.commonExpectedResults.changeText} ${specificResults.reimbursedSubheadingHiddenText}", dummyHref)
 
           textOnPageCheck(user.commonExpectedResults.assetsHeader, fieldHeaderSelector(17))
-          changeAmountRowCheck(commonResults.assetsSubheading, commonResults.no, 18, 1, specificResults.assetsSubheadingHiddenText, dummyHref)
+          changeAmountRowCheck(commonResults.assetsSubheading, commonResults.no, 18, 1, s"${user.commonExpectedResults.changeText} ${specificResults.assetsSubheadingHiddenText}", dummyHref)
 
           buttonCheck(commonResults.saveAndContinue)
 
@@ -1132,7 +1136,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
           textOnPageCheck(user.specificExpectedResults.get.expectedP1, Selectors.p1)
 
-          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.no, 3, 1, user.specificExpectedResults.get.benefitsReceivedHiddenText, receiveAnyBenefitsHref)
+          changeAmountRowCheck(commonResults.benefitsReceived, commonResults.no, 3, 1, s"${user.commonExpectedResults.changeText} ${user.specificExpectedResults.get.benefitsReceivedHiddenText}", receiveAnyBenefitsHref)
 
           buttonCheck(user.commonExpectedResults.saveAndContinue)
 

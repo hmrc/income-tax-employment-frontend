@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthorisedAction, InYearAction}
-import forms.employment.EmploymentStartDateForm
+import forms.employment.EmploymentDateForm
 import javax.inject.Inject
 import models.employment.EmploymentDate
 import play.api.data.Form
@@ -46,7 +46,7 @@ class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
                                             implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
 
-  def form: Form[EmploymentDate] = EmploymentStartDateForm.employmentStartDateForm
+  def form: Form[EmploymentDate] = EmploymentDateForm.employmentStartDateForm
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -68,15 +68,32 @@ class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
         val newForm = form.bindFromRequest()
-          newForm.copy(errors = EmploymentStartDateForm.verifyNewDate(newForm.get, taxYear, user.isAgent)).fold(
+          newForm.copy(errors = EmploymentDateForm.verifyStartDate(newForm.get, taxYear, user.isAgent, EmploymentDateForm.startDate)).fold(
           { formWithErrors =>
             Future.successful(BadRequest(employerStartDateView(formWithErrors, taxYear, employmentId, data.employment.employmentDetails.employerName)))
           },
           { submittedDate =>
             val cya = data.employment
-            val updatedCya = cya.copy(cya.employmentDetails.copy(startDate = Some(submittedDate.toLocalDate.toString)))
+            val leaveDate = cya.employmentDetails.cessationDate
+
+            lazy val leaveDateLocalDate = LocalDate.parse(leaveDate.get)
+            lazy val leaveDateIsEqualOrAfterStartDate = !leaveDateLocalDate.isBefore(submittedDate.toLocalDate)
+
+            val resetLeaveDateIfNowInvalid: Option[String] = {
+              if(leaveDate.isDefined && !leaveDateIsEqualOrAfterStartDate){
+                None
+              } else {
+                leaveDate
+              }
+            }
+
+            val updatedCya = cya.copy(cya.employmentDetails.copy(
+              startDate = Some(submittedDate.toLocalDate.toString),
+              cessationDate = resetLeaveDateIfNowInvalid)
+            )
+
             employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
-              employmentDetailsRedirect(updatedCya,taxYear,employmentId,data.isPriorSubmission)
+              employmentDetailsRedirect(updatedCya,taxYear,employmentId,data.isPriorSubmission,isStandaloneQuestion = false)
             }
           }
         )

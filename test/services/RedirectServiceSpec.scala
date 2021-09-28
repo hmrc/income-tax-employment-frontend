@@ -61,7 +61,7 @@ class RedirectServiceSpec extends UnitTest {
     "redirect to pay page" in {
 
       val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
-        employerRef = Some("123/12345"), payrollId = Some("id"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true)
+        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), cessationDate = Some("2020-10-01"),payrollId = Some("id")
       )),taxYear,"employmentId",false)
 
       response.header.status shouldBe SEE_OTHER
@@ -70,7 +70,7 @@ class RedirectServiceSpec extends UnitTest {
     "redirect to tax page" in {
 
       val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
-        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), cessationDate = Some("2020-11-01"), payrollId = Some("id"), taxablePayToDate = Some(1)
+        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), cessationDate = Some("2020-10-10"),  payrollId = Some("id"), taxablePayToDate = Some(1)
       )),taxYear,"employmentId",false)
 
       response.header.status shouldBe SEE_OTHER
@@ -79,37 +79,27 @@ class RedirectServiceSpec extends UnitTest {
     "redirect to payroll id page" in {
 
       val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
-        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), taxablePayToDate = Some(1), totalTaxToDate = Some(1)
+        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), cessationDate = Some("2020-10-10"),taxablePayToDate = Some(1), totalTaxToDate = Some(1)
       )),taxYear,"employmentId",false)
 
       response.header.status shouldBe SEE_OTHER
       redirectUrl(Future(response)) shouldBe "/income-through-software/return/employment-income/2021/payroll-id?employmentId=employmentId"
     }
-    "redirect to check employment details page when no cessation date question" in {
+    "redirect to employment end date page when no cessation date" in {
 
       val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
-        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), taxablePayToDate = Some(1),
+        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(false), taxablePayToDate = Some(1),
         totalTaxToDate = Some(1), payrollId = Some("id")
       )),taxYear,"employmentId",isPriorSubmission = false)
 
       response.header.status shouldBe SEE_OTHER
-      redirectUrl(Future(response)) shouldBe "/income-through-software/return/employment-income/2021/check-employment-details?employmentId=employmentId"
-    }
-    "redirect to check employment details page when no cessation date" in {
-
-      val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
-        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), taxablePayToDate = Some(1),
-        totalTaxToDate = Some(1), payrollId = Some("id")
-      )),taxYear,"employmentId",isPriorSubmission = false)
-
-      response.header.status shouldBe SEE_OTHER
-      redirectUrl(Future(response)) shouldBe "/income-through-software/return/employment-income/2021/check-employment-details?employmentId=employmentId"
+      redirectUrl(Future(response)) shouldBe "/income-through-software/return/employment-income/2021/employment-end-date?employmentId=employmentId"
     }
     "redirect to check employment details page when no cessation date but the cessation question is no" in {
 
       val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
         employerRef = Some("123/12345"), startDate = Some("2020-11-01"), taxablePayToDate = Some(1), totalTaxToDate = Some(1),
-        payrollId = Some("id"), cessationDateQuestion = Some(false)
+        payrollId = Some("id"), cessationDateQuestion = Some(true)
       )),taxYear,"employmentId",isPriorSubmission = false)
 
       response.header.status shouldBe SEE_OTHER
