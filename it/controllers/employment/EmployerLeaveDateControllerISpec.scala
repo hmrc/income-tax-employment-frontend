@@ -188,15 +188,6 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
 
-  object CyaModel {
-    val cya: EmploymentUserData = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, employmentId, isPriorSubmission = true,
-      EmploymentCYAModel(
-        EmploymentDetails(employerName, cessationDateQuestion = Some(false), cessationDate = Some("2021-01-01"), currentDataIsHmrcHeld = false),
-        None
-      )
-    )
-  }
-
   ".show" should {
 
     userScenarios.foreach { user =>
@@ -882,7 +873,6 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
             errorAboveElementCheck(user.specificExpectedResults.get.futureDateError, Some("amount"))
           }
           "the date is before the start date" which {
-            val nowDatePlusOne = LocalDate.now().plusDays(1)
             lazy val form: Map[String, String] = Map(
               EmploymentDateForm.year -> (taxYearEOY-1).toString,
               EmploymentDateForm.month -> "12",
