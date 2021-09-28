@@ -298,7 +298,8 @@ case class EncryptedBenefitsViewModel(
 
 object EncryptedBenefitsViewModel {
 
-  val firstSetOfFields: OFormat[(Option[EncryptedCarVanFuelModel], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
+  val firstSetOfFields: OFormat[(Option[EncryptedCarVanFuelModel], Option[EncryptedValue],
+    Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
     Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
     Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue],
     Option[EncryptedValue], Option[EncryptedValue], Option[EncryptedValue])] = (

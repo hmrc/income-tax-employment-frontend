@@ -67,16 +67,9 @@
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", user.isAgent), employmentDetails.employerName))
 
         val stillWorkingForEmployer = EmploymentDataForView(messages(s"$msgKeyGeneric.stillWorkingForEmployer"),
-            if(employmentDetails.cessationDate.isDefined) {Some(messages("common.no"))} else {
-                if(employmentDetails.cessationDateQuestion.contains(true)){Some(messages("common.yes"))} else {Some(messages("common.no"))}},
-            controllers.employment.routes.StillWorkingForEmployerController.show(taxYear, employmentDetails.employmentId),
-            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.stillWorkingForEmployer", user.isAgent), employmentDetails.employerName))
-
-         //TODO: could replace above with code when cessationDate has been implemented
-         // val stillWorkingForEmployer = EmploymentDataForView(messages(s"$msgKeyGeneric.stillWorkingForEmployer"),
-         // Some(if(employmentDetails.cessationDate.isDefined) {messages("common.no")} else{messages("common.yes")}),
-         // controllers.employment.routes.StillWorkingForEmployerController.show(taxYear, employmentDetails.employmentId),
-         // messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.stillWorkingForEmployer", user.isAgent), employmentDetails.employerName))
+        Some(if(employmentDetails.cessationDateQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}),
+        controllers.employment.routes.StillWorkingForEmployerController.show(taxYear, employmentDetails.employmentId),
+        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.stillWorkingForEmployer", user.isAgent), employmentDetails.employerName))
 
         val payeRef = EmploymentDataForView(messages(msgKeyGeneric + ".payeRef"), employmentDetails.employerRef,
         controllers.employment.routes.PayeRefController.show(taxYear, employmentDetails.employmentId),
@@ -95,8 +88,11 @@
         employmentDetails.totalTaxToDate.map(amount => bigDecimalCurrency(amount.toString)), employmentTaxCall,
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.totalTaxToDate", user.isAgent)))
 
+        val employmentLeaveDate = EmploymentDataForView(messages(s"$msgKeyGeneric.leaveDate"), employmentDetails.cessationDate.flatMap(dateFormatter), controllers.employment.routes.EmployerLeaveDateController.show(taxYear, employmentDetails.employmentId),
+        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.leaveDate", user.isAgent), employmentDetails.employerName))
+
         val employmentDataFields = {
-                List(employerName, payeRef, employmentStartDate, stillWorkingForEmployer, payrollId, payReceived, totalTaxToDate)
+            List(employerName, payeRef, employmentStartDate, stillWorkingForEmployer, employmentLeaveDate, payrollId, payReceived, totalTaxToDate)
         }
 
         govukSummaryList(
