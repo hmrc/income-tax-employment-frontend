@@ -79,13 +79,13 @@ case class EmploymentSource(employmentId: String,
     EmploymentDetailsViewModel(
       employerName,
       employerRef,
+      payrollId,
       employmentId,
       startDate,
       Some(cessationDate.isEmpty),
       cessationDate,
       employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
       employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
-      payrollId = payrollId,
       isUsingCustomerData
     )
   }

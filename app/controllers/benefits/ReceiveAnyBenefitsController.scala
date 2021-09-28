@@ -49,20 +49,20 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionData(taxYear, employmentId).map {
+      employmentSessionService.getSessionDataResult(taxYear, employmentId){
         case Some(cya) =>
           cya.employment.employmentBenefits match {
-            case Some(model) => Ok(receiveAnyBenefitsView(yesNoForm.fill(model.isBenefitsReceived), taxYear, employmentId))
-            case None => Ok(receiveAnyBenefitsView(yesNoForm, taxYear, employmentId))
+            case Some(model) => Future.successful(Ok(receiveAnyBenefitsView(yesNoForm.fill(model.isBenefitsReceived), taxYear, employmentId)))
+            case None => Future.successful(Ok(receiveAnyBenefitsView(yesNoForm, taxYear, employmentId)))
           }
-        case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        case None => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
       }
     }
   }
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionData(taxYear, employmentId).flatMap {
+      employmentSessionService.getSessionDataResult(taxYear, employmentId){
         case Some(cya) =>
           yesNoForm.bindFromRequest().fold({
             formWithErrors => Future.successful(BadRequest(receiveAnyBenefitsView(formWithErrors, taxYear, employmentId)))
@@ -86,7 +86,7 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
               }
             }
           })
-        case None => Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+        case None => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
       }
     }
   }

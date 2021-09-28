@@ -17,18 +17,14 @@
 package config
 
 import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
-import controllers.employment.routes.CheckYourBenefitsController
-import models.employment.AllEmploymentData
-import models.mongo.{EmploymentCYAModel, EmploymentUserData}
+import models.employment.{AllEmploymentData, EmploymentSource}
+import models.mongo.EmploymentUserData
 import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData, User}
 import org.scalamock.handlers.{CallHandler2, CallHandler3, CallHandler5, CallHandler6}
-import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData, User}
-import models.employment.{AllEmploymentData, EmploymentSource}
 import org.scalamock.scalatest.MockFactory
 import play.api.mvc.{Request, Result}
 import services.EmploymentSessionService
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.Clock
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -37,7 +33,7 @@ trait MockEmploymentSessionService extends MockFactory {
   val mockIncomeTaxUserDataService: EmploymentSessionService = mock[EmploymentSessionService]
 
   def mockFind(taxYear: Int, result: Result): CallHandler6[User[_], Int, Option[Result], AllEmploymentData => Result, Request[_], HeaderCarrier, Future[Result]] = {
-    (mockIncomeTaxUserDataService.findPreviousEmploymentUserData(_: User[_],_: Int, _:Option[Result])
+    (mockIncomeTaxUserDataService.findPreviousEmploymentUserData(_: User[_], _: Int, _: Option[Result])
     (_: AllEmploymentData => Result)(_: Request[_], _: HeaderCarrier))
       .expects(*, taxYear, *, *, *, *)
       .returns(Future.successful(result))
@@ -71,24 +67,23 @@ trait MockEmploymentSessionService extends MockFactory {
   }
 
   def mockEmploymentSourceToUseHMRC(allEmploymentData: AllEmploymentData, employmentId: String,
-                                isInYear: Boolean): CallHandler3[AllEmploymentData, String, Boolean, Option[(EmploymentSource,Boolean)]] =
-    {
-      (mockIncomeTaxUserDataService.employmentSourceToUse(_: AllEmploymentData, _: String, _: Boolean))
-        .expects(allEmploymentData, employmentId, isInYear)
-        .returns(Some(allEmploymentData.hmrcEmploymentData.head, true))
-        .anyNumberOfTimes()
-    }
+                                    isInYear: Boolean): CallHandler3[AllEmploymentData, String, Boolean, Option[(EmploymentSource, Boolean)]] = {
+    (mockIncomeTaxUserDataService.employmentSourceToUse(_: AllEmploymentData, _: String, _: Boolean))
+      .expects(allEmploymentData, employmentId, isInYear)
+      .returns(Some(allEmploymentData.hmrcEmploymentData.head, true))
+      .anyNumberOfTimes()
+  }
 
   def mockEmploymentSourceToUseNone(allEmploymentData: AllEmploymentData, employmentId: String,
-                                isInYear: Boolean): CallHandler3[AllEmploymentData, String, Boolean, Option[(EmploymentSource,Boolean)]] =
-    {
-      (mockIncomeTaxUserDataService.employmentSourceToUse(_: AllEmploymentData, _: String, _: Boolean))
-        .expects(allEmploymentData, employmentId, isInYear)
-        .returns(None)
-        .anyNumberOfTimes()
-    }
+                                    isInYear: Boolean): CallHandler3[AllEmploymentData, String, Boolean, Option[(EmploymentSource, Boolean)]] = {
+    (mockIncomeTaxUserDataService.employmentSourceToUse(_: AllEmploymentData, _: String, _: Boolean))
+      .expects(allEmploymentData, employmentId, isInYear)
+      .returns(None)
+      .anyNumberOfTimes()
+  }
 
-  def mockGetLatestEmploymentDataEOY(allEmploymentData: AllEmploymentData, isInYear: Boolean): CallHandler2[AllEmploymentData, Boolean, Seq[EmploymentSource]] = {
+  def mockGetLatestEmploymentDataEOY(allEmploymentData: AllEmploymentData,
+                                     isInYear: Boolean): CallHandler2[AllEmploymentData, Boolean, Seq[EmploymentSource]] = {
     (mockIncomeTaxUserDataService.getLatestEmploymentData(_: AllEmploymentData, _: Boolean))
       .expects(allEmploymentData, isInYear)
       .returns(allEmploymentData.hmrcEmploymentData.filter(_.dateIgnored.isEmpty) ++ allEmploymentData.customerEmploymentData)
@@ -96,9 +91,10 @@ trait MockEmploymentSessionService extends MockFactory {
 
   }
 
-  def mockGetSessionData(taxYear: Int, employmentId: String, employmentUserData: Option[EmploymentUserData])(implicit executionContext: ExecutionContext) = {
-    (mockIncomeTaxUserDataService.getSessionData(_: Int, _: String)(_: User[_]))
-      .expects(taxYear, employmentId, *)
-      .returns(Future(employmentUserData))
+  def mockGetSessionData(taxYear: Int, employmentId: String, result: Result)
+                        (implicit executionContext: ExecutionContext): CallHandler5[Int, String, Option[EmploymentUserData] => Future[Result], User[_], Request[_], Future[Result]] = {
+    (mockIncomeTaxUserDataService.getSessionDataResult(_: Int, _: String)(_: Option[EmploymentUserData] => Future[Result])(_: User[_], _: Request[_]))
+      .expects(taxYear, employmentId, *, *, *)
+      .returns(Future(result))
   }
 }

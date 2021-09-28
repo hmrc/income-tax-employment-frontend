@@ -20,13 +20,13 @@ import play.api.libs.json.{Json, OFormat}
 
 case class EmploymentDetailsViewModel(employerName: String,
                                       employerRef: Option[String],
+                                      payrollId: Option[String],
                                       employmentId: String,
                                       startDate: Option[String],
                                       cessationDateQuestion: Option[Boolean],
                                       cessationDate: Option[String],
                                       taxablePayToDate: Option[BigDecimal],
                                       totalTaxToDate: Option[BigDecimal],
-                                      payrollId: Option[String],
                                       isUsingCustomerData: Boolean)
 object EmploymentDetailsViewModel {
   implicit val format: OFormat[EmploymentDetailsViewModel] = Json.format[EmploymentDetailsViewModel]

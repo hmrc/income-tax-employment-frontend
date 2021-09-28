@@ -75,6 +75,10 @@
         controllers.employment.routes.PayeRefController.show(taxYear, employmentDetails.employmentId),
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payeRef", user.isAgent)))
 
+        val payrollId = EmploymentDataForView(messages(msgKeyGeneric + ".payrollId"), employmentDetails.payrollId,
+        controllers.employment.routes.EmployerPayrollIdController.show(taxYear, employmentDetails.employmentId),
+        messages(s"$msgKeyGeneric.hiddenText.payrollId"))
+
         val payReceived = EmploymentDataForView(messages(msgKeyGeneric + ".payReceived"),
         employmentDetails.taxablePayToDate.map(amount => bigDecimalCurrency(amount.toString)),
         controllers.employment.routes.EmployerPayAmountController.show(taxYear, employmentDetails.employmentId),
@@ -88,7 +92,7 @@
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.leaveDate", user.isAgent), employmentDetails.employerName))
 
         val employmentDataFields = {
-            List(employerName, payeRef, employmentStartDate, stillWorkingForEmployer, employmentLeaveDate, payReceived, totalTaxToDate)
+            List(employerName, payeRef, employmentStartDate, stillWorkingForEmployer, employmentLeaveDate, payrollId, payReceived, totalTaxToDate)
         }
 
         govukSummaryList(

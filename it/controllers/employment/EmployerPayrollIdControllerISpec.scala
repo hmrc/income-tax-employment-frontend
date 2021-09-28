@@ -1,0 +1,425 @@
+/*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package controllers.employment
+
+import models.User
+import models.employment.AllEmploymentData
+import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.api.http.HeaderNames
+import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
+import play.api.libs.ws.WSResponse
+import play.api.mvc.AnyContentAsEmpty
+import play.api.test.FakeRequest
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+
+class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper  {
+
+  val taxYearEOY: Int = taxYear - 1
+  val payrollId: String = "123456"
+  def url (taxYear:Int): String = s"$appUrl/${taxYear.toString}/payroll-id?employmentId=001"
+
+  val continueButtonLink: String = "/income-through-software/return/employment-income/2021/payroll-id?employmentId=001"
+
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  private val userRequest: User[_]=  User(mtditid, None, nino, sessionId, affinityGroup)
+
+  object Selectors {
+    val paragraph1Selector = "#main-content > div > div > form > div > label > p:nth-child(2)"
+    val paragraph2Selector = "#main-content > div > div > form > div > label > p:nth-child(4)"
+    val hintTextSelector = "#payrollId-hint"
+    val inputSelector = "#payrollId"
+    val continueButtonSelector = "#continue"
+    val continueButtonFormSelector = "#main-content > div > div > form"
+    val expectedErrorHref = "#payrollId"
+    val inputAmountField = "#payrollId"
+    def bulletSelector(bulletNumber: Int) = s"#main-content > div > div > form > div > label > ul > li:nth-child($bulletNumber)"
+  }
+
+  val inputName: String = "payrollId"
+
+  trait SpecificExpectedResults {
+    val expectedTitle: String
+    val expectedErrorTitle: String
+    val expectedH1: String
+    val emptyErrorText: String
+    val wrongFormatErrorText: String
+    val tooLongErrorText: String
+    val paragraph1: String
+    val paragraph2: String
+  }
+
+  trait CommonExpectedResults {
+    val expectedCaption: String
+    val continueButtonText: String
+    val hintText: String
+    val bullet1: String
+    val bullet2: String
+    val bullet3: String
+  }
+
+  object CommonExpectedEN extends CommonExpectedResults {
+    val expectedCaption: String = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val continueButtonText = "Continue"
+    val hintText = "For example 123456"
+    val bullet1: String = "Upper and lower case letters (a to z)"
+    val bullet2: String = "Numbers"
+    val bullet3: String = "The special characters: .,-()/=!\"%&*;<>'+:\\?"
+  }
+
+  object CommonExpectedCY extends CommonExpectedResults {
+    val expectedCaption: String = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val continueButtonText = "Continue"
+    val hintText = "For example 123456"
+    val bullet1: String = "Upper and lower case letters (a to z)"
+    val bullet2: String = "Numbers"
+    val bullet3: String = "The special characters: .,-()/=!\"%&*;<>'+:\\?"
+  }
+
+  object ExpectedIndividualEN extends SpecificExpectedResults {
+    val expectedTitle: String = "What’s your payroll ID for this employment?"
+    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedH1: String = "What’s your payroll ID for this employment?"
+    val emptyErrorText: String = "Enter your payroll ID"
+    val wrongFormatErrorText: String = "Enter your payroll ID in the correct format"
+    val tooLongErrorText: String = "Your payroll ID must be 38 characters or fewer"
+    val paragraph1: String = "Your payroll ID must be 38 characters or fewer. It can include:"
+    val paragraph2: String = "You can find this on your payslip or on your P60. It’s also known as a ‘payroll number’."
+    }
+
+  object ExpectedAgentEN extends SpecificExpectedResults {
+    val expectedTitle: String = "What’s your client’s payroll ID for this employment?"
+    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedH1: String = "What’s your client’s payroll ID for this employment?"
+    val emptyErrorText: String = "Enter your client’s payroll ID"
+    val wrongFormatErrorText: String = "Enter your client’s payroll ID in the correct format"
+    val tooLongErrorText: String = "Your client’s payroll ID must be 38 characters or fewer"
+    val paragraph1: String = "Your client’s payroll ID must be 38 characters or fewer. It can include:"
+    val paragraph2: String = "You can find this on your client’s payslip or on their P60. It’s also known as a ‘payroll number’."
+  }
+
+  object ExpectedIndividualCY extends SpecificExpectedResults {
+    val expectedTitle: String = "What’s your payroll ID for this employment?"
+    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedH1: String = "What’s your payroll ID for this employment?"
+    val emptyErrorText: String = "Enter your payroll ID"
+    val wrongFormatErrorText: String = "Enter your payroll ID in the correct format"
+    val tooLongErrorText: String = "Your payroll ID must be 38 characters or fewer"
+    val paragraph1: String = "Your payroll ID must be 38 characters or fewer. It can include:"
+    val paragraph2: String = "You can find this on your payslip or on your P60. It’s also known as a ‘payroll number’."
+  }
+
+  object ExpectedAgentCY extends SpecificExpectedResults {
+    val expectedTitle: String = "What’s your client’s payroll ID for this employment?"
+    val expectedErrorTitle: String = s"Error: $expectedTitle"
+    val expectedH1: String = "What’s your client’s payroll ID for this employment?"
+    val emptyErrorText: String = "Enter your client’s payroll ID"
+    val wrongFormatErrorText: String = "Enter your client’s payroll ID in the correct format"
+    val tooLongErrorText: String = "Your client’s payroll ID must be 38 characters or fewer"
+    val paragraph1: String = "Your client’s payroll ID must be 38 characters or fewer. It can include:"
+    val paragraph2: String = "You can find this on your client’s payslip or on their P60. It’s also known as a ‘payroll number’."
+  }
+
+    def cya(isPriorSubmission:Boolean=true): EmploymentUserData =
+      EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, "001", isPriorSubmission,
+      EmploymentCYAModel(
+        EmploymentDetails("maggie", currentDataIsHmrcHeld = false),
+        None
+      )
+    )
+
+  def cyaWithPayrollId(isPriorSubmission:Boolean=true): EmploymentUserData =
+    EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, "001", isPriorSubmission,
+      EmploymentCYAModel(
+        EmploymentDetails("maggie", payrollId = Some("123456"), currentDataIsHmrcHeld = false),
+        None
+      )
+    )
+
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
+    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
+  }
+
+  val multipleEmployments: AllEmploymentData = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"),
+    employmentDetailsAndBenefits()))
+
+  ".show" when {
+
+    userScenarios.foreach { user =>
+      import Selectors._
+      import user.commonExpectedResults._
+      import user.specificExpectedResults._
+
+      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+
+        "should render the What's your payrollId? page with the correct content when theres no payrollId in cya" which {
+
+          implicit lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            insertCyaData(cya(false), userRequest)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+            urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has an OK status" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(get.expectedTitle)
+          h1Check(get.expectedH1)
+          captionCheck(expectedCaption)
+          textOnPageCheck(get.paragraph1, paragraph1Selector)
+          textOnPageCheck(bullet1, bulletSelector(1))
+          textOnPageCheck(bullet2, bulletSelector(2))
+          textOnPageCheck(bullet3, bulletSelector(3))
+          textOnPageCheck(get.paragraph2, paragraph2Selector)
+          textOnPageCheck(hintText, hintTextSelector)
+          inputFieldCheck(inputName, inputSelector)
+          inputFieldValueCheck("", inputAmountField)
+
+          buttonCheck(continueButtonText, continueButtonSelector)
+          formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
+          welshToggleCheck(user.isWelsh)
+        }
+
+        "should render the What's your payrollId? page with the id pre-filled when theres payrollId data in cya" which {
+
+          implicit lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            insertCyaData(cyaWithPayrollId(), userRequest)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+            urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has an OK status" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(get.expectedTitle)
+          h1Check(get.expectedH1)
+          captionCheck(expectedCaption)
+          textOnPageCheck(get.paragraph1, paragraph1Selector)
+          textOnPageCheck(bullet1, bulletSelector(1))
+          textOnPageCheck(bullet2, bulletSelector(2))
+          textOnPageCheck(bullet3, bulletSelector(3))
+          textOnPageCheck(get.paragraph2, paragraph2Selector)
+          textOnPageCheck(hintText, hintTextSelector)
+          inputFieldCheck(inputName, inputSelector)
+          inputFieldValueCheck("123456", inputAmountField)
+
+          buttonCheck(continueButtonText, continueButtonSelector)
+          formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
+          welshToggleCheck(user.isWelsh)
+        }
+
+        "redirect to check employment details page when there is no cya data in session" when {
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            urlGet(url(taxYearEOY), follow = false, welsh=user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+
+          "has an SEE_OTHER status" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-details?employmentId=001")
+          }
+        }
+
+        "redirect to overview page if the user tries to hit this page with current taxYear" when {
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            insertCyaData(cya(), userRequest)
+            urlGet(url(taxYear), welsh=user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+
+          "has an SEE_OTHER status" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+          }
+        }
+
+      }
+    }
+  }
+
+  ".submit" when {
+
+    userScenarios.foreach { user =>
+      import Selectors._
+      import user.commonExpectedResults._
+      import user.specificExpectedResults._
+
+      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+
+        "should render the What's your payrollId? page with an error when the payrollId is input as empty" which {
+
+          val payrollId = ""
+          val body = Map("payrollId" -> payrollId)
+
+          implicit lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            insertCyaData(cya(), userRequest)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+            urlPost(url(taxYearEOY), body, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has a BAD_REQUEST status" in {
+            result.status shouldBe BAD_REQUEST
+          }
+
+          titleCheck(get.expectedErrorTitle)
+          h1Check(get.expectedH1)
+          captionCheck(expectedCaption)
+          textOnPageCheck(get.paragraph1, paragraph1Selector)
+          textOnPageCheck(bullet1, bulletSelector(1))
+          textOnPageCheck(bullet2, bulletSelector(2))
+          textOnPageCheck(bullet3, bulletSelector(3))
+          textOnPageCheck(get.paragraph2, paragraph2Selector)
+          textOnPageCheck(hintText, hintTextSelector)
+          inputFieldCheck(inputName, inputSelector)
+          inputFieldValueCheck(payrollId, inputAmountField)
+
+          buttonCheck(continueButtonText, continueButtonSelector)
+          formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
+          welshToggleCheck(user.isWelsh)
+
+          errorSummaryCheck(get.emptyErrorText, expectedErrorHref)
+          errorAboveElementCheck(get.emptyErrorText)
+        }
+
+        "should render the What's your payrollId? page with an error when the payrollId is input as too long" which {
+
+          val payrollId = "123456789012345678901234567890123456789"
+          val body = Map("payrollId" -> payrollId)
+
+          implicit lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            insertCyaData(cya(), userRequest)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+            urlPost(url(taxYearEOY), body, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has a BAD_REQUEST status" in {
+            result.status shouldBe BAD_REQUEST
+          }
+
+          titleCheck(get.expectedErrorTitle)
+          h1Check(get.expectedH1)
+          captionCheck(expectedCaption)
+          textOnPageCheck(get.paragraph1, paragraph1Selector)
+          textOnPageCheck(bullet1, bulletSelector(1))
+          textOnPageCheck(bullet2, bulletSelector(2))
+          textOnPageCheck(bullet3, bulletSelector(3))
+          textOnPageCheck(get.paragraph2, paragraph2Selector)
+          textOnPageCheck(hintText, hintTextSelector)
+          inputFieldCheck(inputName, inputSelector)
+          inputFieldValueCheck(payrollId, inputAmountField)
+
+          buttonCheck(continueButtonText, continueButtonSelector)
+          formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
+          welshToggleCheck(user.isWelsh)
+
+          errorSummaryCheck(get.tooLongErrorText, expectedErrorHref)
+          errorAboveElementCheck(get.tooLongErrorText)
+        }
+
+        "should render the What's your payrollId? page with an error when the payrollId is input as the wrong format" which {
+
+          val payrollId = "$11223"
+          val body = Map("payrollId" -> payrollId)
+
+          implicit lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            insertCyaData(cya(), userRequest)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+            urlPost(url(taxYearEOY), body, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has a BAD_REQUEST status" in {
+            result.status shouldBe BAD_REQUEST
+          }
+
+          titleCheck(get.expectedErrorTitle)
+          h1Check(get.expectedH1)
+          captionCheck(expectedCaption)
+          textOnPageCheck(get.paragraph1, paragraph1Selector)
+          textOnPageCheck(bullet1, bulletSelector(1))
+          textOnPageCheck(bullet2, bulletSelector(2))
+          textOnPageCheck(bullet3, bulletSelector(3))
+          textOnPageCheck(get.paragraph2, paragraph2Selector)
+          textOnPageCheck(hintText, hintTextSelector)
+          inputFieldCheck(inputName, inputSelector)
+          inputFieldValueCheck(payrollId, inputAmountField)
+
+          buttonCheck(continueButtonText, continueButtonSelector)
+          formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
+          welshToggleCheck(user.isWelsh)
+
+          errorSummaryCheck(get.wrongFormatErrorText, expectedErrorHref)
+          errorAboveElementCheck(get.wrongFormatErrorText)
+        }
+
+        "should update the payrollId when a valid payrollId is submitted and redirect to the check your details controller" when {
+          val payrollId = "123456"
+          val body = Map("payrollId" -> payrollId)
+
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            insertCyaData(cya(), userRequest)
+            urlPost(url(taxYearEOY), body, follow=false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          "status SEE_OTHER" in {
+            result.status shouldBe SEE_OTHER
+          }
+
+          "redirect to the Check Employment Details page" in {
+            result.header(HeaderNames.LOCATION) shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-details?employmentId=001")
+          }
+
+          s"update the cya models payroll id to be $payrollId" in {
+            lazy val cyamodel = findCyaData(taxYearEOY, "001", userRequest).get
+            cyamodel.employment.employmentDetails.payrollId shouldBe Some(payrollId)
+          }
+        }
+      }
+    }
+  }
+}

@@ -82,7 +82,24 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "microservice.services.income-tax-submission.url" -> s"http://$wiremockHost:$wiremockPort",
     "microservice.services.view-and-change.url" -> s"http://$wiremockHost:$wiremockPort",
     "microservice.services.sign-in.url" -> s"/auth-login-stub/gg-sign-in",
-    "taxYearErrorFeatureSwitch" -> "false"
+    "taxYearErrorFeatureSwitch" -> "false",
+    "useEncryption" -> "true"
+  )
+
+  def configWithInvalidEncryptionKey: Map[String, String] = Map(
+    "auditing.enabled" -> "false",
+    "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck",
+    "microservice.services.income-tax-submission-frontend.url" -> s"http://$wiremockHost:$wiremockPort",
+    "microservice.services.auth.host" -> wiremockHost,
+    "microservice.services.auth.port" -> wiremockPort.toString,
+    "microservice.services.income-tax-employment.url" -> s"http://$wiremockHost:$wiremockPort",
+    "microservice.services.income-tax-expenses.url" -> s"http://$wiremockHost:$wiremockPort",
+    "microservice.services.income-tax-submission.url" -> s"http://$wiremockHost:$wiremockPort",
+    "microservice.services.view-and-change.url" -> s"http://$wiremockHost:$wiremockPort",
+    "microservice.services.sign-in.url" -> s"/auth-login-stub/gg-sign-in",
+    "taxYearErrorFeatureSwitch" -> "false",
+    "useEncryption" -> "true",
+    "mongodb.encryption.key" -> "key"
   )
 
   def externalConfig: Map[String, String] = Map(
@@ -103,6 +120,10 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     .in(Environment.simple(mode = Mode.Dev))
     .configure(externalConfig)
     .build
+
+  lazy val appWithInvalidEncryptionKey: Application = GuiceApplicationBuilder()
+    .configure(configWithInvalidEncryptionKey)
+    .build()
 
   implicit lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
@@ -203,30 +224,30 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  def fullEmploymentsModel(hmrcEmployment:Seq[EmploymentSource]=Seq(employmentDetailsAndBenefits()),
-                           hmrcExpenses:Option[EmploymentExpenses]=Some(employmentExpenses),
-                           customerEmployment:Seq[EmploymentSource]=Seq(),
-                           customerExpenses:Option[EmploymentExpenses]=None): AllEmploymentData = AllEmploymentData(
+  def fullEmploymentsModel(hmrcEmployment: Seq[EmploymentSource] = Seq(employmentDetailsAndBenefits()),
+                           hmrcExpenses: Option[EmploymentExpenses] = Some(employmentExpenses),
+                           customerEmployment: Seq[EmploymentSource] = Seq(),
+                           customerExpenses: Option[EmploymentExpenses] = None): AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = hmrcEmployment,
     hmrcExpenses = hmrcExpenses,
     customerEmploymentData = customerEmployment,
     customerExpenses = customerExpenses)
 
-  def employmentDetailsAndBenefits(benefits: Option[EmploymentBenefits]=None,
-                                   employmentId:String= "001",
-                                   employerName:String="maggie",
-                                   employerRef:Option[String]=Some("223/AB12399"),
-                                   startDate:Option[String]=Some("2019-04-21"),
-                                   dateIgnored: Option[String]=None,
-                                   submittedOn: Option[String]=Some("2020-01-04T05:01:01Z"),
-                                   taxablePayToDate:Option[BigDecimal]=Some(34234.15),
-                                   totalTaxToDate:Option[BigDecimal]=Some(6782.92)
-                                   ): EmploymentSource = {
+  def employmentDetailsAndBenefits(benefits: Option[EmploymentBenefits] = None,
+                                   employmentId: String = "001",
+                                   employerName: String = "maggie",
+                                   employerRef: Option[String] = Some("223/AB12399"),
+                                   startDate: Option[String] = Some("2019-04-21"),
+                                   dateIgnored: Option[String] = None,
+                                   submittedOn: Option[String] = Some("2020-01-04T05:01:01Z"),
+                                   taxablePayToDate: Option[BigDecimal] = Some(34234.15),
+                                   totalTaxToDate: Option[BigDecimal] = Some(6782.92)
+                                  ): EmploymentSource = {
     EmploymentSource(
       employmentId = employmentId,
       employerName = employerName,
       employerRef = employerRef,
-      payrollId = Some("123456789999"),
+      payrollId = Some("12345678"),
       startDate = startDate,
       cessationDate = Some("2020-03-11"),
       dateIgnored = dateIgnored,
@@ -315,9 +336,8 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "employmentId",
     isPriorSubmission = true,
     EmploymentCYAModel(
-      EmploymentDetails("Employer Name",currentDataIsHmrcHeld = true),
+      EmploymentDetails("Employer Name", currentDataIsHmrcHeld = true),
       None
     )
   )
-
 }

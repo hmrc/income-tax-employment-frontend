@@ -19,12 +19,14 @@ package repositories
 import com.mongodb.client.model.ReturnDocument
 import com.mongodb.client.model.Updates.set
 import config.AppConfig
+import javax.inject.{Inject, Singleton}
 import models.User
-import models.mongo.EmploymentUserData
+import models.mongo._
 import org.joda.time.{DateTime, DateTimeZone}
 import org.mongodb.scala.MongoException
 import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions}
 import play.api.Logging
+import services.EncryptionService
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
@@ -32,41 +34,70 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
 import utils.PagerDutyHelper.PagerDutyKeys.{FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA, FAILED_TO_ClEAR_EMPLOYMENT_DATA, FAILED_TO_FIND_EMPLOYMENT_DATA}
 import utils.PagerDutyHelper.{PagerDutyKeys, pagerDutyLog}
 
-import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 @Singleton
-class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig: AppConfig)(implicit ec: ExecutionContext
-) extends PlayMongoRepository[EmploymentUserData](
+class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig: AppConfig,
+                                                 encryptionService: EncryptionService)(implicit ec: ExecutionContext
+) extends PlayMongoRepository[EncryptedEmploymentUserData](
   mongoComponent = mongo,
   collectionName = "employmentUserData",
-  domainFormat   = EmploymentUserData.formats,
+  domainFormat   = EncryptedEmploymentUserData.formats,
   indexes        = EmploymentUserDataIndexes.indexes(appConfig)
 ) with Repository with EmploymentUserDataRepository with Logging {
 
-  def find[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Option[EmploymentUserData]] = {
+  def find[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Either[DatabaseError, Option[EmploymentUserData]]] = {
+
+    lazy val start = "[EmploymentUserDataRepositoryImpl][find]"
+
     val queryFilter = filter(user.sessionId, user.mtditid, user.nino, taxYear, employmentId)
     val update = set("lastUpdated", toBson(DateTime.now(DateTimeZone.UTC))(MongoJodaFormats.dateTimeWrites))
     val options = FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
 
-    collection.findOneAndUpdate(queryFilter, update, options)
-      .toFutureOption()
-      .map{
-        case Some(data) => Some(data)
-        case None =>
-          logger.info(s"[EmploymentUserDataRepositoryImpl][find] No employment CYA data found for user. SessionId: ${user.sessionId}")
-          None
-      }.recover(mongoRecover("Find", FAILED_TO_FIND_EMPLOYMENT_DATA))
+    val findResult = collection.findOneAndUpdate(queryFilter, update, options).toFutureOption().map(Right(_)).recover {
+      case exception: Exception =>
+        pagerDutyLog(FAILED_TO_FIND_EMPLOYMENT_DATA, s"$start Failed to find user data. Exception: ${exception.getMessage}")
+        Left(MongoError(exception.getMessage))
+    }
+
+    findResult.map {
+      case Left(error) => Left(error)
+      case Right(encryptedData) =>
+        Try {
+          encryptedData.map(encryptionService.decryptUserData)
+        }.toEither match {
+          case Left(exception: Exception) => handleEncryptionDecryptionException(exception, start)
+          case Right(decryptedData) => Right(decryptedData)
+        }
+    }
   }
 
-  def createOrUpdate[T](data: EmploymentUserData)(implicit user: User[T]): Future[Option[EmploymentUserData]] = {
-    val queryFilter = filter(data.sessionId, data.mtdItId, data.nino, data.taxYear, data.employmentId)
-    val replacement = data
-    val options = FindOneAndReplaceOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
+  def createOrUpdate[T](userData: EmploymentUserData)(implicit user: User[T]): Future[Either[DatabaseError, Unit]] = {
 
-    collection.findOneAndReplace(queryFilter, replacement, options)
-      .toFutureOption()
-      .recover(mongoRecover("CreateOrUpdate", FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA))
+    lazy val start = "[EmploymentUserDataRepositoryImpl][update]"
+
+    Try {
+      encryptionService.encryptUserData(userData)
+    }.toEither match {
+      case Left(exception: Exception) => Future.successful(handleEncryptionDecryptionException(exception, start))
+      case Right(encryptedData) =>
+
+        val queryFilter = filter(encryptedData.sessionId, encryptedData.mtdItId, encryptedData.nino, encryptedData.taxYear, encryptedData.employmentId)
+        val replacement = encryptedData
+        val options = FindOneAndReplaceOptions().upsert(true).returnDocument(ReturnDocument.AFTER)
+
+        collection.findOneAndReplace(queryFilter, replacement, options).toFutureOption().map {
+          case Some(_) => Right()
+          case None =>
+            pagerDutyLog(FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA, s"$start Failed to update user data.")
+            Left(DataNotUpdated)
+        }.recover {
+          case exception: Exception =>
+            pagerDutyLog(FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA, s"$start Failed to update user data. Exception: ${exception.getMessage}")
+            Left(MongoError(exception.getMessage))
+        }
+    }
   }
 
   def clear[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Boolean] =
@@ -91,7 +122,7 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfi
 }
 
 trait EmploymentUserDataRepository {
-  def createOrUpdate[T](employmentUserData: EmploymentUserData)(implicit user: User[T]): Future[Option[EmploymentUserData]]
-  def find[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Option[EmploymentUserData]]
+  def createOrUpdate[T](userData: EmploymentUserData)(implicit user: User[T]): Future[Either[DatabaseError, Unit]]
+  def find[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Either[DatabaseError, Option[EmploymentUserData]]]
   def clear[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Boolean]
 }

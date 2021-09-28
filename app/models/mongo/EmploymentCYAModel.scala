@@ -16,8 +16,9 @@
 
 package models.mongo
 
-import models.employment.{BenefitsViewModel, EmploymentDetailsViewModel, EmploymentSource}
+import models.employment.{BenefitsViewModel, EmploymentDetailsViewModel, EmploymentSource, EncryptedBenefitsViewModel}
 import play.api.libs.json.{Json, OFormat}
+import utils.EncryptedValue
 
 case class EmploymentDetails(employerName: String,
                              employerRef: Option[String] = None,
@@ -53,6 +54,23 @@ object EmploymentDetails {
   implicit val format: OFormat[EmploymentDetails] = Json.format[EmploymentDetails]
 }
 
+case class EncryptedEmploymentDetails(employerName: EncryptedValue,
+                                      employerRef: Option[EncryptedValue] = None,
+                                      startDate: Option[EncryptedValue] = None,
+                                      payrollId: Option[EncryptedValue] = None,
+                                      cessationDateQuestion: Option[EncryptedValue] = None,
+                                      cessationDate: Option[EncryptedValue] = None,
+                                      dateIgnored: Option[EncryptedValue] = None,
+                                      employmentSubmittedOn: Option[EncryptedValue] = None,
+                                      employmentDetailsSubmittedOn: Option[EncryptedValue] = None,
+                                      taxablePayToDate: Option[EncryptedValue] = None,
+                                      totalTaxToDate: Option[EncryptedValue] = None,
+                                      currentDataIsHmrcHeld: EncryptedValue)
+
+object EncryptedEmploymentDetails {
+  implicit val format: OFormat[EncryptedEmploymentDetails] = Json.format[EncryptedEmploymentDetails]
+}
+
 case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
                               employmentBenefits: Option[BenefitsViewModel] = None){
 
@@ -60,6 +78,7 @@ case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
     EmploymentDetailsViewModel(
       employmentDetails.employerName,
       employmentDetails.employerRef,
+      employmentDetails.payrollId,
       employmentId,
       employmentDetails.startDate,
       //TODO: could use the below for cessationDateQuestion when cessation date is implemented
@@ -68,7 +87,6 @@ case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
       employmentDetails.cessationDate,
       employmentDetails.taxablePayToDate,
       employmentDetails.totalTaxToDate,
-      employmentDetails.payrollId,
       isUsingCustomerData)
   }
 }
@@ -80,4 +98,11 @@ object EmploymentCYAModel {
     employmentDetails = employmentSource.toEmploymentDetails(isUsingCustomerData),
     employmentBenefits = employmentSource.toBenefitsViewModel(isUsingCustomerData)
   )
+}
+
+case class EncryptedEmploymentCYAModel(employmentDetails: EncryptedEmploymentDetails,
+                                       employmentBenefits: Option[EncryptedBenefitsViewModel] = None)
+
+object EncryptedEmploymentCYAModel {
+  implicit val format: OFormat[EncryptedEmploymentCYAModel] = Json.format[EncryptedEmploymentCYAModel]
 }

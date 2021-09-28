@@ -30,6 +30,9 @@ POST       /:taxYear/still-working-for-employer              controllers.employm
 GET        /:taxYear/employer-paye-reference                controllers.employment.PayeRefController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/employer-paye-reference                controllers.employment.PayeRefController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/payroll-id                             controllers.employment.EmployerPayrollIdController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/payroll-id                             controllers.employment.EmployerPayrollIdController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/how-much-pay                           controllers.employment.EmployerPayAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/how-much-pay                           controllers.employment.EmployerPayAmountController.submit(taxYear: Int, employmentId: String)
 

@@ -17,31 +17,27 @@
 package controllers.employment
 
 import config.MockEmploymentSessionService
-import controllers.employment.routes.{CheckYourBenefitsController, CompanyCarBenefitsController}
+import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.employment.EmploymentSource
-import models.User
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
-import play.api.data.Form
-import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
-import play.api.mvc.Results.{InternalServerError, Redirect}
+import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.mvc.Result
-import utils.{Clock, UnitTestWithApp}
+import play.api.mvc.Results.{BadRequest, InternalServerError, Ok, Redirect}
+import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout}
+import utils.UnitTestWithApp
 import views.html.employment.CompanyCarBenefitsView
 
 import scala.concurrent.Future
 
 class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmploymentSessionService {
 
-  val taxYear = 2021
-  val employmentId = "223/AB12399"
-  lazy val view: CompanyCarBenefitsView = app.injector.instanceOf[CompanyCarBenefitsView]
-  val form: Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = "CompanyCarBenefits.error"
-  )
-  lazy val employmentsCYAFill: EmploymentSource = employmentsModel.hmrcEmploymentData.head
+  private val taxYear = 2021
+  private val employmentId = "223/AB12399"
+  private lazy val view = app.injector.instanceOf[CompanyCarBenefitsView]
+  private lazy val employmentsCYAFill: EmploymentSource = employmentsModel.hmrcEmploymentData.head
 
-  lazy val employmentUserData = new EmploymentUserData(
+  private lazy val employmentUserData = new EmploymentUserData(
     sessionId,
     mtditid,
     nino,
@@ -51,7 +47,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
     EmploymentCYAModel(employmentsCYAFill, isUsingCustomerData = false)
   )
 
-  lazy val employmentUserDataNoCarVanFuel = new EmploymentUserData(
+  private lazy val employmentUserDataWithoutBenefits = new EmploymentUserData(
     sessionId,
     mtditid,
     nino,
@@ -61,7 +57,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
     EmploymentCYAModel(employmentsCYAFill.copy(employmentBenefits = None), isUsingCustomerData = false)
   )
 
-  lazy val controller = new CompanyCarBenefitsController()(
+  private lazy val controller = new CompanyCarBenefitsController()(
     mockMessagesControllerComponents,
     authorisedAction,
     inYearAction,
@@ -72,92 +68,83 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
     testClock)
 
   ".show" should {
-
-    "return a result" which {
-
-      "has an Ok Status" in new TestWithAuth {
-        val result: Future[Result] = {
-          mockGetSessionData(taxYear, employmentId, Some(employmentUserData))
-          controller.show(taxYear, employmentId)(fakeRequest)
-        }
-        status(result) shouldBe OK
+    "get user session data and return the result from the given execution block" in new TestWithAuth {
+      val anyResult = Ok
+      val result: Future[Result] = {
+        mockGetSessionData(taxYear, employmentId, anyResult)
+        controller.show(taxYear, employmentId)(fakeRequest)
       }
 
-      "have a redirect Status when no session Data" in new TestWithAuth {
-        val result: Future[Result] = {
-          mockGetSessionData(taxYear, employmentId, None)
-          controller.show(taxYear, employmentId)(fakeRequest)
-        }
-        status(result) shouldBe SEE_OTHER
+      status(result) shouldBe anyResult.header.status
+    }
+  }
+
+  ".handleShow" should {
+    "return Redirect result income tax submission overview" when {
+      "when employment user data not present" in {
+        await(controller.handleShow(taxYear, employmentId, None)) shouldBe Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+      }
+    }
+
+    "render page" when {
+      "with empty form when no benefits" in {
+        val result = controller.handleShow(taxYear, employmentId, Some(employmentUserDataWithoutBenefits))
+
+        status(result) shouldBe OK
+        contentAsString(result) shouldNot include("checked")
+      }
+
+      "with non empty form when there are benefits" in {
+        val result = controller.handleShow(taxYear, employmentId, Some(employmentUserData))
+
+        status(result) shouldBe OK
+        contentAsString(result) should include("checked")
       }
     }
   }
 
   ".submit" should {
-
     "return a result" which {
-
       "has a SEE_OTHER status with valid form body true" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetSessionData(taxYear, employmentId, Some(employmentUserData))
-          (mockErrorHandler.internalServerError()(_: User[_])).expects(*).returns(InternalServerError("500"))
-
-          val redirect = CompanyCarBenefitsController.show(taxYear, employmentId).url
-
-          (mockIncomeTaxUserDataService.createOrUpdateSessionData(_: String, _: EmploymentCYAModel, _: Int, _: Boolean)
-          (_: Result)(_: Result)(_: User[_], _: Clock)).expects(*, *, *, *, *, *, *, *).returns(Future(Redirect(redirect, SEE_OTHER)))
-
+          mockGetSessionData(taxYear, employmentId, InternalServerError("500"))
           controller.submit(taxYear, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "true"))
         }
-        status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe CompanyCarBenefitsController.show(taxYear, employmentId).url
-
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
       "has a SEE_OTHER status with valid form body false" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetSessionData(taxYear, employmentId, Some(employmentUserData))
-          (mockErrorHandler.internalServerError()(_: User[_])).expects(*).returns(InternalServerError("500"))
-
-          val redirect = CompanyCarBenefitsController.show(taxYear, employmentId).url
-
-          (mockIncomeTaxUserDataService.createOrUpdateSessionData(_: String, _: EmploymentCYAModel, _: Int, _: Boolean)
-          (_: Result)(_: Result)(_: User[_], _: Clock)).expects(*, *, *, *, *, *, *, *).returns(Future(Redirect(redirect, SEE_OTHER)))
-
+          mockGetSessionData(taxYear, employmentId, InternalServerError("500"))
           controller.submit(taxYear, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "false"))
         }
-        status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe CompanyCarBenefitsController.show(taxYear, employmentId).url
+        status(result) shouldBe INTERNAL_SERVER_ERROR
       }
 
       "has a SEE_OTHER status with valid form body true but no carVanFuel benefits in session" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetSessionData(taxYear, employmentId, Some(employmentUserDataNoCarVanFuel))
-
+          mockGetSessionData(taxYear, employmentId, Redirect("/any-url"))
           controller.submit(taxYear, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "false"))
         }
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
 
       "has a SEE_OTHER status with valid form body but no session" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetSessionData(taxYear, employmentId, None)
+          mockGetSessionData(taxYear, employmentId, Redirect("/any-url"))
 
           controller.submit(taxYear, employmentId)(fakeRequest.withFormUrlEncodedBody("value" -> "false"))
         }
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
 
       "has a BAD_REQUEST status with invalid form body" in new TestWithAuth {
         val result: Future[Result] = {
-          mockGetSessionData(taxYear, employmentId, Some(employmentUserData))
+          mockGetSessionData(taxYear, employmentId, BadRequest)
           controller.submit(taxYear, employmentId)(fakeRequest)
         }
         status(result) shouldBe BAD_REQUEST
       }
     }
   }
-
 }
