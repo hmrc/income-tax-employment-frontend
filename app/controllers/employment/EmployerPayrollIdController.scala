@@ -51,9 +51,9 @@ class EmployerPayrollIdController @Inject()(authorisedAction: AuthorisedAction,
             cya.employment.employmentDetails.payrollId match {
               case Some(payrollId) =>
                 val filledForm = emptyForm.fill(payrollId)
-                Ok(employerPayrollIdView(filledForm, taxYear, employmentId))
+                Ok(employerPayrollIdView(filledForm, taxYear, employmentId, Some(payrollId)))
               case None =>
-                Ok(employerPayrollIdView(emptyForm, taxYear, employmentId))
+                Ok(employerPayrollIdView(emptyForm, taxYear, employmentId, None))
             }
           case _ => Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId))
       }
@@ -66,7 +66,8 @@ class EmployerPayrollIdController @Inject()(authorisedAction: AuthorisedAction,
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { data =>
         EmployerPayrollIdForm.employerPayrollIdForm(user.isAgent).bindFromRequest().fold(
           { formWithErrors =>
-            Future.successful(BadRequest(employerPayrollIdView(formWithErrors, taxYear, employmentId)))
+            val previousData = data.employment.employmentDetails.payrollId
+            Future.successful(BadRequest(employerPayrollIdView(formWithErrors, taxYear, employmentId, previousData)))
           },
           { submittedPayrollId =>
             val cya = data.employment
