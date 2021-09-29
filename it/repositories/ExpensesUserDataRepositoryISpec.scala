@@ -155,7 +155,7 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
         MongoUtils.ensureIndexes(repo.collection, indexes, true)
       }
 
-      ensureIndexes
+      await(ensureIndexes)
       count mustBe 0
 
       val res = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
