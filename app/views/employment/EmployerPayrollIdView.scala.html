@@ -28,15 +28,15 @@
     heading: Heading
 )
 
-@(form: Form[String], taxYear: Int, employmentId: String, previousData: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[String], taxYear: Int, employmentId: String, previousPayRollId: Option[String])(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @titleForUse = @{messages(s"employment.payrollId.title.${if(user.isAgent) "agent" else "individual"}")}
 
 @headingForUse = @{messages(s"employment.payrollId.title.${if(user.isAgent) "agent" else "individual"}")}
 
 @contentHtml = {
-    @if(previousData){
-        <p class="govuk-body">@messages(s"employment.payrollId.previous.paragraph", employmentId)</p>
+    @if(previousPayRollId.isDefined){
+        <p class="govuk-body">@messages(s"employment.payrollId.previous.paragraph", previousPayRollId.get)</p>
     } else {
         <p class="govuk-body">@messages(s"employment.payrollId.paragraph1.${if(user.isAgent) "agent" else "individual"}")</p>
         <ul class="govuk-list govuk-list--bullet">
