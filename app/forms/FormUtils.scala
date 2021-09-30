@@ -16,11 +16,28 @@
 
 package forms
 
+import models.employment.{AllEmploymentData, EmploymentSource}
 import play.api.data.Form
+import services.EmploymentSessionService
 
-object FormUtils {
+trait FormUtils {
 
-  def fillForm(form: Form[BigDecimal], prior: Option[BigDecimal], cya: Option[BigDecimal]): Form[BigDecimal] ={
+  val employmentSessionService: EmploymentSessionService
+
+  def fillFormFromPriorAndCYA(form: Form[BigDecimal], prior: Option[AllEmploymentData],
+                              cya: Option[BigDecimal], employmentId: String)(f: EmploymentSource => Option[BigDecimal]): Form[BigDecimal] ={
+
+    val priorAmount = prior.flatMap { priorEmp =>
+      employmentSessionService.employmentSourceToUse(priorEmp, employmentId, isInYear = false).flatMap {
+        employmentSource =>
+          f(employmentSource._1)
+      }
+    }
+
+    fillForm(form,priorAmount,cya)
+  }
+
+  private def fillForm(form: Form[BigDecimal], prior: Option[BigDecimal], cya: Option[BigDecimal]): Form[BigDecimal] ={
     cya.fold(form)(cya => if(prior.contains(cya)) form else form.fill(cya))
   }
 }
