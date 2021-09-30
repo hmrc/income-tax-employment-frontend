@@ -51,7 +51,7 @@ class CompanyVanFuelBenefitsController @Inject()(implicit val cc: MessagesContro
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataResult(taxYear, employmentId){
         case Some(data) =>
-          data.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) match {
+          data.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuelQuestion)) match {
             case Some(questionResult) => Future.successful(Ok(companyVanFuelBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
             case None => Future.successful(Ok(companyVanFuelBenefitsView(yesNoForm, taxYear, employmentId)))
           }
@@ -73,11 +73,11 @@ class CompanyVanFuelBenefitsController @Inject()(implicit val cc: MessagesContro
                   case Some(model) =>
                     if(yesNo){
                       Some(cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
-                        carVanFuelModel = Some(model.copy(carFuelQuestion = Some(true)))
+                        carVanFuelModel = Some(model.copy(vanFuelQuestion = Some(true)))
                       ))))
                     } else {
                       Some(cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
-                        carVanFuelModel = Some(model.copy(carFuelQuestion = Some(false), carFuel = None))
+                        carVanFuelModel = Some(model.copy(vanFuelQuestion = Some(false), vanFuel = None))
                       ))))
                     }
                   case None =>
