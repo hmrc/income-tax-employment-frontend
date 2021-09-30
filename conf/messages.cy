@@ -539,6 +539,7 @@ employment.payrollId.paragraph2.agent = You can find this on your client’s pay
 employment.payrollId.forExample = For example 123456
 employment.payrollId.error.noEntry.individual = Enter your payroll ID
 employment.payrollId.error.noEntry.agent = Enter your client’s payroll ID
+employment.payrollId.previous.paragraph = If the payroll ID is not {0}, tell us the correct ID.
 employment.payrollId.error.tooMany.individual = Your payroll ID must be 38 characters or fewer
 employment.payrollId.error.tooMany.agent = Your client’s payroll ID must be 38 characters or fewer
 employment.payrollId.error.incorrect.individual = Enter your payroll ID in the correct format
