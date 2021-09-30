@@ -17,11 +17,44 @@
 package services
 
 import controllers.employment.routes._
+import controllers.benefits.routes._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails}
 import play.api.mvc.{Call, Result}
-import play.api.mvc.Results.Redirect
+import play.api.mvc.Results.{Ok, Redirect}
 
 object RedirectService {
+
+  def mileageRedirect(cya: EmploymentCYAModel, taxYear: Int, employmentId: String,
+                      isPriorSubmission: Boolean): Result = {
+
+    val mileageQ = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion))
+    val mileage = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage))
+
+    val redirect: Result = (mileageQ, mileage, isPriorSubmission) match {
+      case (None, _, _) => //TODO GO TO MILEAGE YES / NO QUESTION
+        CheckYourBenefitsController.show(taxYear, employmentId)
+
+        Ok("Mileage yes no question")
+
+      case (Some(true), None, _) => Redirect(MileageBenefitAmountController.show(taxYear, employmentId))
+      case (Some(false), _, true) => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+      case (Some(false), _, false) =>
+        //TODO GO TO Accommodation or relocation QUESTION
+        CheckYourBenefitsController.show(taxYear, employmentId)
+
+        Ok("Accommodation or relocation QUESTION")
+
+      case (Some(true), Some(_), false) =>
+        //TODO GO TO Accommodation or relocation QUESTION
+        CheckYourBenefitsController.show(taxYear, employmentId)
+
+        Ok("Accommodation or relocation QUESTION")
+
+      case (Some(true), Some(_), true) => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+    }
+
+    redirect
+  }
 
   def employmentDetailsRedirect(cya: EmploymentCYAModel, taxYear: Int, employmentId: String,
                                 isPriorSubmission: Boolean, isStandaloneQuestion: Boolean = true): Result ={

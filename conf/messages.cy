@@ -536,10 +536,10 @@ employment.payrollId.bullet2 = Numbers
 employment.payrollId.bullet3 = The special characters: .,-()/=!"%&*;<>''+:\?
 employment.payrollId.paragraph2.individual = You can find this on your payslip or on your P60. It’s also known as a ‘payroll number’.
 employment.payrollId.paragraph2.agent = You can find this on your client’s payslip or on their P60. It’s also known as a ‘payroll number’.
+employment.payrollId.previous.paragraph = If the payroll ID is not {0}, tell us the correct ID.
 employment.payrollId.forExample = For example 123456
 employment.payrollId.error.noEntry.individual = Enter your payroll ID
 employment.payrollId.error.noEntry.agent = Enter your client’s payroll ID
-employment.payrollId.previous.paragraph = If the payroll ID is not {0}, tell us the correct ID.
 employment.payrollId.error.tooMany.individual = Your payroll ID must be 38 characters or fewer
 employment.payrollId.error.tooMany.agent = Your client’s payroll ID must be 38 characters or fewer
 employment.payrollId.error.incorrect.individual = Enter your payroll ID in the correct format
@@ -574,3 +574,15 @@ benefits.companyVanBenefits.title.agent = Did your client get a company van bene
 benefits.companyVanBenefits.error.individual = Select yes if you got a company van benefit
 benefits.companyVanBenefits.error.agent = Select yes if your client got a company van benefit
 
+benefits.mileageBenefitAmount.title.individual = How much mileage benefit did you get in total for using your own car?
+benefits.mileageBenefitAmount.title.agent = How much mileage benefit did your client get in total for using their own car?
+benefits.mileageBenefitAmount.heading.individual = How much mileage benefit did you get in total for using your own car?
+benefits.mileageBenefitAmount.heading.agent = How much mileage benefit did your client get in total for using their own car?
+benefits.mileageBenefitAmount.paragraph.individual = You can find this information on your P11D form in section E, box 12.
+benefits.mileageBenefitAmount.paragraph.agent = You can find this information on your client’s P11D form in section E, box 12.
+benefits.mileageBenefitAmount.error.empty.individual = Enter the amount of mileage benefit you got for using your own car
+benefits.mileageBenefitAmount.error.empty.agent = Enter the amount of mileage benefit your client got for using their own car
+benefits.mileageBenefitAmount.error.wrongFormat.individual = Enter the amount of mileage benefit you got in the correct format
+benefits.mileageBenefitAmount.error.wrongFormat.agent = Enter the amount of mileage benefit your client got in the correct format
+benefits.mileageBenefitAmount.error.amountMaxLimit.individual = Your mileage benefit must be less than £100,000,000,000
+benefits.mileageBenefitAmount.error.amountMaxLimit.agent = Your client’s mileage benefit must be less than £100,000,000,000
