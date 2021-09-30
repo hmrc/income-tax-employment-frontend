@@ -19,7 +19,7 @@ package controllers.benefits
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
-import forms.AmountForm
+import forms.{AmountForm, FormUtils}
 import forms.FormUtils.fillForm
 import javax.inject.Inject
 import play.api.data.Form
@@ -37,9 +37,9 @@ class MileageBenefitAmountController @Inject()(implicit val cc: MessagesControll
                                                mileageBenefitAmountView: MileageBenefitAmountView,
                                                inYearAction: InYearAction,
                                                appConfig: AppConfig,
-                                               employmentSessionService: EmploymentSessionService,
+                                               val employmentSessionService: EmploymentSessionService,
                                                errorHandler: ErrorHandler,
-                                               clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                               clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
@@ -56,14 +56,12 @@ class MileageBenefitAmountController @Inject()(implicit val cc: MessagesControll
 
                 val cyaAmount: Option[BigDecimal] = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage))
 
-                val priorAmount: Option[BigDecimal] = prior.flatMap { priorEmp =>
-                  employmentSessionService.employmentSourceToUse(priorEmp, employmentId, isInYear = false).flatMap {
-                    employmentSource =>
-                      employmentSource._1.employmentBenefits.flatMap(_.benefits.flatMap(_.mileage))
-                  }
-                }
+                val form = fillFormFromPriorAndCYA(buildForm(user.isAgent),prior,cyaAmount,employmentId)(
+                  employment =>
+                    employment.employmentBenefits.flatMap(_.benefits.flatMap(_.mileage))
+                )
 
-                Future.successful(Ok(mileageBenefitAmountView(taxYear, fillForm(buildForm(user.isAgent), priorAmount, cyaAmount),
+                Future.successful(Ok(mileageBenefitAmountView(taxYear, form,
                   cyaAmount, cya.employment.employmentDetails.employerName, employmentId)))
 
               case _ => Future.successful(RedirectService.mileageRedirect(cya.employment,taxYear,employmentId,cya.isPriorSubmission))
