@@ -188,7 +188,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
         MongoUtils.ensureIndexes(employmentRepo.collection, indexes, true)
       }
 
-      ensureIndexes
+      await(ensureIndexes)
       count mustBe 0
 
       val res = await(employmentRepo.createOrUpdate(employmentUserDataOne)(userOne))
