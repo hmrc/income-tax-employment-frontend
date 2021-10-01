@@ -36,7 +36,7 @@ class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp with Mo
     view,
     inYearAction,
     mockAppConfig,
-    mockIncomeTaxUserDataService,
+    mockEmploymentSessionService,
     ec
   )
 

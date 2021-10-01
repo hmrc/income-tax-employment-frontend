@@ -40,7 +40,7 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp with MockEmployment
     inYearAction,
     view,
     mockAppConfig,
-    mockIncomeTaxUserDataService,
+    mockEmploymentSessionService,
     mockDeleteOrIgnoreEmploymentService,
     mockErrorHandler,
     ec
