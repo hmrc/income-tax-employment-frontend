@@ -572,3 +572,12 @@ benefits.companyVanBenefits.title.individual = Did you get a company van benefit
 benefits.companyVanBenefits.title.agent = Did your client get a company van benefit?
 benefits.companyVanBenefits.error.individual = Select yes if you got a company van benefit
 benefits.companyVanBenefits.error.agent = Select yes if your client got a company van benefit
+
+benefits.receiveOwnCarMileageBenefit.title.individual = Did you get a mileage benefit for using your own car for work?
+benefits.receiveOwnCarMileageBenefit.title.agent = Did your client get a mileage benefit for using their own car for work?
+benefits.receiveOwnCarMileageBenefit.needToKnow.individual = We only need to know about payments made above our ‘approved amount‘. If you have payments above the ‘approved amount‘, they should be recorded in section E of your P11D form.
+benefits.receiveOwnCarMileageBenefit.needToKnow.agent = We only need to know about payments made above our ‘approved amount‘. If your client has payments above the ‘approved amount‘, they should be recorded in section E of their P11D form.
+benefits.receiveOwnCarMileageBenefit.check.individual = Check with your employer if you are unsure.
+benefits.receiveOwnCarMileageBenefit.check.agent = Check with your client’s employer if you are unsure.
+benefits.receiveOwnCarMileageBenefit.error.individual = Select yes if you got a mileage benefit for using your own car for work
+benefits.receiveOwnCarMileageBenefit.error.agent = Select yes if your client got a mileage benefit for using your own car for work
