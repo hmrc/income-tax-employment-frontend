@@ -324,7 +324,7 @@
 
           }
 
-          "Update the mileageQuestion to yes and when the user chooses yes" which {
+          "Update the mileageQuestion to yes when the user chooses yes" which {
 
             lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
