@@ -20,12 +20,12 @@ import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
-import forms.FormUtils.fillForm
 import javax.inject.Inject
+import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.ConditionalRedirect
+import services.RedirectService._
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
@@ -42,80 +42,35 @@ class MileageBenefitAmountController @Inject()(implicit val cc: MessagesControll
                                                errorHandler: ErrorHandler,
                                                clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
-//scalastyle:off
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+
+    val cyaMileageQuestion: Option[Boolean] = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion))
+
+    commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(
+      //TODO GO TO MILEAGE YES / NO QUESTION
+      ConditionalRedirect(cyaMileageQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+      //TODO GO TO Accommodation or relocation QUESTION
+      ConditionalRedirect(cyaMileageQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
+      ConditionalRedirect(cyaMileageQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+    )
+  }
+
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
-    inYearAction.notInYear(taxYear) {
+    inYearAction.notInYear(taxYear){
 
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
-        optCya match {
-          case Some(cya) =>
 
-            val cyaMileageQuestion: Option[Boolean] = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion))
+        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, RedirectService.EmploymentBenefits)(redirects(_,taxYear,employmentId))
+        { cya =>
 
-            RedirectService.redirectBasedOnCurrentAnswers(optCya,RedirectService.EmploymentBenefits)(
-              cya =>
+          val cyaAmount: Option[BigDecimal] = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage))
 
-                Seq(
-                  ConditionalRedirect(
-                    cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)).isEmpty, isPriorSubmission = false,
-                    //TODO GO TO MILEAGE YES / NO QUESTION
-                    CheckYourBenefitsController.show(taxYear, employmentId)
-                  ),
-                  ConditionalRedirect(
-                    cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)).contains(false), isPriorSubmission = false,
-                    //TODO GO TO Accommodation or relocation QUESTION
-                    CheckYourBenefitsController.show(taxYear, employmentId)
-                  ),
-                  ConditionalRedirect(
-                    cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)).contains(false), isPriorSubmission = true,
-                    CheckYourBenefitsController.show(taxYear, employmentId)
-                  )
-                )
+          val form = fillFormFromPriorAndCYA(buildForm(user.isAgent), prior, cyaAmount, employmentId)(
+            employment =>
+              employment.employmentBenefits.flatMap(_.benefits.flatMap(_.mileage))
+          )
 
-              //
-//              val redirect: Result = (mileageQ, mileage, isPriorSubmission) match {
-//                case (None, _, _) => //TODO GO TO MILEAGE YES / NO QUESTION
-//                  CheckYourBenefitsController.show(taxYear, employmentId)
-//
-//                  Ok("Mileage yes no question")
-//
-//                case (Some(true), None, _) => Redirect(MileageBenefitAmountController.show(taxYear, employmentId))
-//                case (Some(false), _, true) => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-//                case (Some(false), _, false) =>
-//                  //TODO GO TO Accommodation or relocation QUESTION
-//                  CheckYourBenefitsController.show(taxYear, employmentId)
-//
-//                  Ok("Accommodation or relocation QUESTION")
-//
-//                case (Some(true), Some(_), false) =>
-//                  //TODO GO TO Accommodation or relocation QUESTION
-//                  CheckYourBenefitsController.show(taxYear, employmentId)
-//
-//                  Ok("Accommodation or relocation QUESTION")
-//
-//                case (Some(true), Some(_), true) => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-//              }
-              //
-
-            )
-
-            cyaMileageQuestion match {
-              case Some(true) =>
-
-                val cyaAmount: Option[BigDecimal] = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage))
-
-                val form = fillFormFromPriorAndCYA(buildForm(user.isAgent),prior,cyaAmount,employmentId)(
-                  employment =>
-                    employment.employmentBenefits.flatMap(_.benefits.flatMap(_.mileage))
-                )
-
-                Future.successful(Ok(mileageBenefitAmountView(taxYear, form,
-                  cyaAmount, cya.employment.employmentDetails.employerName, employmentId)))
-
-              case _ => Future.successful(RedirectService.mileageRedirect(cya.employment,taxYear,employmentId,cya.isPriorSubmission))
-            }
-
-          case None => Future.successful(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
+          Future.successful(Ok(mileageBenefitAmountView(taxYear, form, cyaAmount, cya.employment.employmentDetails.employerName, employmentId)))
         }
       }
     }
@@ -134,40 +89,38 @@ class MileageBenefitAmountController @Inject()(implicit val cc: MessagesControll
 
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
 
-        val cyaMileageQuestion: Option[Boolean] = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion))
+        redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), RedirectService.EmploymentBenefits)(redirects(_,taxYear,employmentId))
+        { cya =>
 
-        cyaMileageQuestion match {
-          case Some(true) =>
+          buildForm(user.isAgent).bindFromRequest().fold(
+            { formWithErrors =>
 
-            buildForm(user.isAgent).bindFromRequest().fold(
-              { formWithErrors =>
+              Future.successful(BadRequest(mileageBenefitAmountView(taxYear, formWithErrors,
+                cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)),
+                cya.employment.employmentDetails.employerName, employmentId)))
 
-                Future.successful(BadRequest(mileageBenefitAmountView(taxYear, formWithErrors,
-                  cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)),
-                  cya.employment.employmentDetails.employerName, employmentId)))
+            },{
+              amount =>
 
-              }, {
-                amount =>
+                val cyaModel = cya.employment
+                val benefits = cyaModel.employmentBenefits
+                val carVanFuel = cyaModel.employmentBenefits.flatMap(_.carVanFuelModel)
 
-                  val cyaModel = cya.employment
-                  val benefits = cyaModel.employmentBenefits
-                  val carVanFuel = cyaModel.employmentBenefits.flatMap(_.carVanFuelModel)
+                val updatedCyaModel = cyaModel.copy(
+                  employmentBenefits = benefits.map(_.copy(carVanFuelModel = carVanFuel.map(_.copy(mileage = Some(amount)))))
+                )
 
-                  val updatedCyaModel = cyaModel.copy(
-                    employmentBenefits = benefits.map(_.copy(carVanFuelModel = carVanFuel.map(_.copy(mileage = Some(amount)))))
-                  )
+                employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
+                  isPriorSubmission = cya.isPriorSubmission)(errorHandler.internalServerError()) {
 
-                  employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
-                    isPriorSubmission = cya.isPriorSubmission)(errorHandler.internalServerError()) {
-                    RedirectService.mileageRedirect(updatedCyaModel,taxYear,employmentId,cya.isPriorSubmission)
+                  if (cya.isPriorSubmission) {
+                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                  } else {
+                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                   }
-              }
-            )
-
-          case _ => Future.successful(RedirectService.mileageRedirect(cya.employment,taxYear,employmentId,cya.isPriorSubmission))
-
-//          case Some(false) => Future.successful(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
-//          case None => Future.successful(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
+                }
+            }
+          )
         }
       }
     }
