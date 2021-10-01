@@ -16,11 +16,13 @@
 
 package services
 
-import controllers.employment.routes._
 import controllers.benefits.routes._
-import models.mongo.{EmploymentCYAModel, EmploymentDetails}
+import controllers.employment.routes.{CheckYourBenefitsController, _}
+import controllers.employment.CheckYourBenefitsController
+import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.mvc.{Call, Result}
 import play.api.mvc.Results.{Ok, Redirect}
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 object RedirectService {
 
@@ -54,6 +56,75 @@ object RedirectService {
     }
 
     redirect
+  }
+
+  def x(employmentCYAModel: EmploymentCYAModel, taxYear: Int, employmentId: String): Option[Result] ={
+
+    if(employmentCYAModel.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)).contains(true)){
+      None
+    } else {
+      //TODO GO TO MILEAGE YES / NO QUESTION
+      Some(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
+    }
+  }
+
+  def xx[A](page: A): Unit ={
+
+    //pass in page - get list of pages that should be answered yes to
+
+    page match {
+      case MileageBenefitAmountController =>
+
+
+    }
+
+    ???
+  }
+
+  def test(employmentCYAModel: EmploymentCYAModel, taxYear: Int, employmentId: String, isPriorSubmission: Boolean)
+          (f: List[EmploymentCYAModel => Option[Result]]): Unit ={
+
+    f.map{
+      f =>
+        f(employmentCYAModel)
+    }
+
+    val mileageQ = employmentCYAModel.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion))
+
+    val x = CheckYourBenefitsController
+
+
+    //no to benefits => to benefits yes no
+    //no to car van fuel => to car van fuel yes no
+
+
+  }
+
+  trait EmploymentType
+  case object EmploymentDetails extends EmploymentType
+  case object EmploymentBenefits extends EmploymentType
+
+  case class ConditionalRedirect(condition: Boolean, isPriorSubmission: Boolean, redirect: Call)
+
+  def redirectBasedOnCurrentAnswers(data: Option[EmploymentUserData], employmentType: EmploymentType /*, nextPage: Result*/)
+                                   (cyaConditions: EmploymentCYAModel => Seq[ConditionalRedirect])
+                                   (implicit taxYear: Int, employmentId: String): Option[Result] ={
+
+    data match {
+      case Some(cya) =>
+
+        val possibleRedirects = cyaConditions(cya.employment)
+
+        possibleRedirects.collectFirst {
+          case ConditionalRedirect(condition, isPriorSubmission, result) if condition && isPriorSubmission == cya.isPriorSubmission => Redirect(result)
+        }
+
+      case None =>
+        employmentType match {
+          case EmploymentBenefits => Some(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
+          case EmploymentDetails => Some(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
+        }
+    }
   }
 
   def employmentDetailsRedirect(cya: EmploymentCYAModel, taxYear: Int, employmentId: String,
