@@ -60,7 +60,7 @@ class MileageBenefitAmountController @Inject()(implicit val cc: MessagesControll
 
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
 
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, RedirectService.EmploymentBenefits)(redirects(_,taxYear,employmentId))
+        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_,taxYear,employmentId))
         { cya =>
 
           val cyaAmount: Option[BigDecimal] = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage))
@@ -89,7 +89,7 @@ class MileageBenefitAmountController @Inject()(implicit val cc: MessagesControll
 
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
 
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), RedirectService.EmploymentBenefits)(redirects(_,taxYear,employmentId))
+        redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_,taxYear,employmentId))
         { cya =>
 
           buildForm(user.isAgent).bindFromRequest().fold(

@@ -27,8 +27,8 @@ import scala.concurrent.Future
 object RedirectService {
 
   trait EmploymentType
-  case object EmploymentDetails extends EmploymentType
-  case object EmploymentBenefits extends EmploymentType
+  case object EmploymentDetailsType extends EmploymentType
+  case object EmploymentBenefitsType extends EmploymentType
 
   case class ConditionalRedirect(condition: Boolean, redirect: Call, isPriorSubmission: Option[Boolean] = None)
 
@@ -91,8 +91,8 @@ object RedirectService {
 
   private def employmentTypeRedirect(employmentType: EmploymentType, taxYear: Int, employmentId: String): Either[Result, EmploymentUserData] ={
     employmentType match {
-      case EmploymentBenefits => Left(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
-      case EmploymentDetails => Left(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
+      case EmploymentBenefitsType => Left(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
+      case EmploymentDetailsType => Left(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
     }
   }
 
