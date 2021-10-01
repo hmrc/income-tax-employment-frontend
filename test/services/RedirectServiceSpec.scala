@@ -16,17 +16,120 @@
 
 package services
 
-import models.mongo.{EmploymentCYAModel, EmploymentDetails}
-import play.api.http.Status.SEE_OTHER
+import models.employment.{BenefitsViewModel, CarVanFuelModel}
+import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.mvc.Results.Ok
+import services.RedirectService.EmploymentBenefitsType
 import utils.UnitTest
 
 import scala.concurrent.Future
 
 class RedirectServiceSpec extends UnitTest {
 
-
-  val cyaModel = EmploymentCYAModel(EmploymentDetails("employerName", currentDataIsHmrcHeld = true))
+  val cyaModel: EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails("employerName", currentDataIsHmrcHeld = true))
   val taxYear = 2021
+
+  val employmentCYA: EmploymentCYAModel = {
+    EmploymentCYAModel(
+      employmentDetails = EmploymentDetails(
+        "Employer Name",
+        employerRef = Some(
+          "123/12345"
+        ),
+        startDate = Some("2020-11-11"),
+        taxablePayToDate = Some(55.99),
+        totalTaxToDate = Some(3453453.00),
+        employmentSubmittedOn = Some("2020-04-04T01:01:01Z"),
+        employmentDetailsSubmittedOn = Some("2020-04-04T01:01:01Z"),
+        currentDataIsHmrcHeld = false
+      ),
+      employmentBenefits = Some(
+        BenefitsViewModel(
+          carVanFuelModel = Some(CarVanFuelModel(
+            carVanFuelQuestion = Some(true),
+            mileageQuestion = Some(true)
+          )),
+          accommodation = Some(100), submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true,
+          isBenefitsReceived = true
+        )
+      ))
+  }
+
+  val employmentUserData: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, "001", false, employmentCYA)
+
+  "redirectBasedOnCurrentAnswers" should {
+    "redirect to benefits yes no page" when {
+      "its a new submission" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = None))), EmploymentBenefitsType)(
+          cya => {
+
+            println(cya.employmentBenefits)
+            RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/company-benefits?employmentId=001"
+      }
+    }
+    "redirect to benefits CYA page" when {
+      "its a prior submission" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = None))), EmploymentBenefitsType)(
+          cya => {
+
+            println(cya.employmentBenefits)
+            RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+    }
+    "continue with the request when benefits are setup and car van fuel is setup" when {
+      "its a new submission" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear,"001",
+          Some(employmentUserData),EmploymentBenefitsType)(
+          cya => {
+
+            println(cya.employmentBenefits)
+            RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
+          }
+        ){
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe OK
+        bodyOf(response) shouldBe "Wow"
+      }
+      "its a prior submission" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear,"001",
+          Some(employmentUserData.copy(isPriorSubmission = true)),EmploymentBenefitsType)(
+          cya => {
+
+            println(cya.employmentBenefits)
+            RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
+          }
+        ){
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe OK
+        bodyOf(response) shouldBe "Wow"
+      }
+    }
+  }
 
   "employmentDetailsRedirect" should {
     "redirect to check employment details page" in {
