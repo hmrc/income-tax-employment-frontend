@@ -120,7 +120,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
     singleView,
     multipleView,
     singleEOYView,
-    mockIncomeTaxUserDataService,
+    mockEmploymentSessionService,
     inYearAction
   )
 
