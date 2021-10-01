@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.employment
+package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
