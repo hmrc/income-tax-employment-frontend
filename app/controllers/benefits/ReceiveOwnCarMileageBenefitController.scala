@@ -51,7 +51,7 @@ class ReceiveOwnCarMileageBenefitController @Inject()(implicit val cc: MessagesC
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataResult(taxYear, employmentId){
         case Some(data) =>
-          data.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) match {
+          data.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) match {
             case Some(questionResult) => Future.successful(Ok(receiveOwnCarMileageBenefitView(yesNoForm.fill(questionResult), taxYear, employmentId)))
             case None => Future.successful(Ok(receiveOwnCarMileageBenefitView(yesNoForm, taxYear, employmentId)))
           }
