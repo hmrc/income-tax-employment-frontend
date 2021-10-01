@@ -31,72 +31,72 @@
 // */
 //
 //package controllers.employment
-
-import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.{CheckEmploymentDetailsController, OtherPaymentsAmountController}
-import controllers.predicates.{AuthorisedAction, InYearAction}
-import forms.YesNoForm
-import models.User
-import models.mongo.EmploymentCYAModel
-import play.api.data.Form
-import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
-import views.html.employment.OtherPaymentsView
-
-import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-
-class OtherPaymentsController @Inject()(implicit val cc: MessagesControllerComponents,
-                                        authAction: AuthorisedAction,
-                                        inYearAction: InYearAction,
-                                        otherPaymentsView: OtherPaymentsView,
-                                        appConfig: AppConfig,
-                                        employmentSessionService: EmploymentSessionService,
-                                        errorHandler: ErrorHandler,
-                                        ec: ExecutionContext,
-                                        clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
-
-  def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"employment.other-payments.errors.noRadioSelected.${if (user.isAgent) "agent" else "individual"}"
-  )
-
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
-    inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionData(taxYear, employmentId).map {
-        case Some(data) =>
-          val preFilledForm = data.employment.employmentDetails.tipsAndOtherPaymentsQuestion.map(yesNoForm.fill(_)).getOrElse(yesNoForm)
-          Ok(otherPaymentsView(preFilledForm, taxYear, employmentId))
-        case None => Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId))
-      }
-    }
-  }
-
-  def submit(taxYear:Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
-    inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionData(taxYear, employmentId).flatMap {
-        case Some(data) =>
-          yesNoForm.bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(otherPaymentsView(formWithErrors, taxYear, employmentId))),
-            yesNo => {
-              val cya = data.employment
-              val updatedTipsAndOtherPaymentsAmount = if(yesNo) cya.employmentDetails.tipsAndOtherPayments else None
-              val updatedCyaModel: EmploymentCYAModel = cya.copy(employmentDetails = cya.employmentDetails.copy(
-                  tipsAndOtherPaymentsQuestion = Some(yesNo), tipsAndOtherPayments = updatedTipsAndOtherPaymentsAmount))
-
-              employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()){
-                if(yesNo) { Redirect(OtherPaymentsAmountController.show(taxYear, employmentId)) }
-                // TODO - This would need to change when we introduce the "new Employment Flow (E4)"
-                else { Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)) }
-              }
-            }
-          )
-        case None => Future(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
-      }
-    }
-  }
-
-}
+//
+//import config.{AppConfig, ErrorHandler}
+//import controllers.employment.routes.{CheckEmploymentDetailsController, OtherPaymentsAmountController}
+//import controllers.predicates.{AuthorisedAction, InYearAction}
+//import forms.YesNoForm
+//import models.User
+//import models.mongo.EmploymentCYAModel
+//import play.api.data.Form
+//import play.api.i18n.I18nSupport
+//import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+//import services.EmploymentSessionService
+//import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+//import utils.{Clock, SessionHelper}
+//import views.html.employment.OtherPaymentsView
+//
+//import javax.inject.Inject
+//import scala.concurrent.{ExecutionContext, Future}
+//
+//class OtherPaymentsController @Inject()(implicit val cc: MessagesControllerComponents,
+//                                        authAction: AuthorisedAction,
+//                                        inYearAction: InYearAction,
+//                                        otherPaymentsView: OtherPaymentsView,
+//                                        appConfig: AppConfig,
+//                                        employmentSessionService: EmploymentSessionService,
+//                                        errorHandler: ErrorHandler,
+//                                        ec: ExecutionContext,
+//                                        clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
+//
+//  def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
+//    missingInputError = s"employment.other-payments.errors.noRadioSelected.${if (user.isAgent) "agent" else "individual"}"
+//  )
+//
+//  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+//    inYearAction.notInYear(taxYear) {
+//      employmentSessionService.getSessionData(taxYear, employmentId).map {
+//        case Some(data) =>
+//          val preFilledForm = data.employment.employmentDetails.tipsAndOtherPaymentsQuestion.map(yesNoForm.fill(_)).getOrElse(yesNoForm)
+//          Ok(otherPaymentsView(preFilledForm, taxYear, employmentId))
+//        case None => Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId))
+//      }
+//    }
+//  }
+//
+//  def submit(taxYear:Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+//    inYearAction.notInYear(taxYear) {
+//      employmentSessionService.getSessionData(taxYear, employmentId).flatMap {
+//        case Some(data) =>
+//          yesNoForm.bindFromRequest().fold(
+//            formWithErrors => Future.successful(BadRequest(otherPaymentsView(formWithErrors, taxYear, employmentId))),
+//            yesNo => {
+//              val cya = data.employment
+//              val updatedTipsAndOtherPaymentsAmount = if(yesNo) cya.employmentDetails.tipsAndOtherPayments else None
+//              val updatedCyaModel: EmploymentCYAModel = cya.copy(employmentDetails = cya.employmentDetails.copy(
+//                  tipsAndOtherPaymentsQuestion = Some(yesNo), tipsAndOtherPayments = updatedTipsAndOtherPaymentsAmount))
+//
+//              employmentSessionService.createOrUpdateSessionData(
+//                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()){
+//                if(yesNo) { Redirect(OtherPaymentsAmountController.show(taxYear, employmentId)) }
+//                // TODO - This would need to change when we introduce the "new Employment Flow (E4)"
+//                else { Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)) }
+//              }
+//            }
+//          )
+//        case None => Future(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
+//      }
+//    }
+//  }
+//
+//}
