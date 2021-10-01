@@ -41,7 +41,9 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
 
   object Selectors {
     val paragraph1Selector = "#main-content > div > div > form > div > label > p:nth-child(2)"
-    val paragraph2Selector = "#main-content > div > div > form > div > label > p:nth-child(4)"
+    val paragraph2Selector = "#main-content > div > div > form > div > label > p:nth-child(3)"
+    val paragraph3Selector = "#main-content > div > div > form > div > label > p:nth-child(4)"
+    val paragraph4Selector = "#main-content > div > div > form > div > label > p:nth-child(5)"
     val hintTextSelector = "#payrollId-hint"
     val inputSelector = "#payrollId"
     val continueButtonSelector = "#continue"
@@ -77,20 +79,20 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption: String = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
-    val hintText = "For example 123456"
-    val bullet1: String = "Upper and lower case letters (a to z)"
-    val bullet2: String = "Numbers"
-    val bullet3: String = "The special characters: .,-()/=!\"%&*;<>'+:\\?"
+    val hintText = "For example, 123456"
+    val bullet1: String = "upper and lower case letters (a to z)"
+    val bullet2: String = "numbers"
+    val bullet3: String = "the special characters: .,-()/=!\"%&*;<>'+:\\?"
     val previousParagraph: String = "If the payroll ID is not 123456, tell us the correct ID."
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: String = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
-    val hintText = "For example 123456"
-    val bullet1: String = "Upper and lower case letters (a to z)"
-    val bullet2: String = "Numbers"
-    val bullet3: String = "The special characters: .,-()/=!\"%&*;<>'+:\\?"
+    val hintText = "For example, 123456"
+    val bullet1: String = "upper and lower case letters (a to z)"
+    val bullet2: String = "numbers"
+    val bullet3: String = "the special characters: .,-()/=!\"%&*;<>'+:\\?"
     val previousParagraph: String = "If the payroll ID is not 123456, tell us the correct ID."
   }
 
@@ -196,7 +198,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(bullet1, bulletSelector(1))
           textOnPageCheck(bullet2, bulletSelector(2))
           textOnPageCheck(bullet3, bulletSelector(3))
-          textOnPageCheck(get.paragraph2, paragraph2Selector)
+          textOnPageCheck(get.paragraph2, paragraph3Selector)
           textOnPageCheck(hintText, hintTextSelector)
           inputFieldCheck(inputName, inputSelector)
           inputFieldValueCheck("", inputAmountField)
@@ -226,6 +228,11 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           h1Check(get.expectedH1)
           captionCheck(expectedCaption)
           textOnPageCheck(previousParagraph, paragraph1Selector)
+          textOnPageCheck(get.paragraph1, paragraph2Selector)
+          textOnPageCheck(bullet1, bulletSelector(1))
+          textOnPageCheck(bullet2, bulletSelector(2))
+          textOnPageCheck(bullet3, bulletSelector(3))
+          textOnPageCheck(get.paragraph2, paragraph4Selector)
           textOnPageCheck(hintText, hintTextSelector)
           inputFieldCheck(inputName, inputSelector)
           inputFieldValueCheck("123456", inputAmountField)
@@ -303,7 +310,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(bullet1, bulletSelector(1))
           textOnPageCheck(bullet2, bulletSelector(2))
           textOnPageCheck(bullet3, bulletSelector(3))
-          textOnPageCheck(get.paragraph2, paragraph2Selector)
+          textOnPageCheck(get.paragraph2, paragraph3Selector)
           textOnPageCheck(hintText, hintTextSelector)
           inputFieldCheck(inputName, inputSelector)
           inputFieldValueCheck(payrollId, inputAmountField)
@@ -342,7 +349,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(bullet1, bulletSelector(1))
           textOnPageCheck(bullet2, bulletSelector(2))
           textOnPageCheck(bullet3, bulletSelector(3))
-          textOnPageCheck(get.paragraph2, paragraph2Selector)
+          textOnPageCheck(get.paragraph2, paragraph3Selector)
           textOnPageCheck(hintText, hintTextSelector)
           inputFieldCheck(inputName, inputSelector)
           inputFieldValueCheck(payrollId, inputAmountField)
@@ -381,7 +388,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(bullet1, bulletSelector(1))
           textOnPageCheck(bullet2, bulletSelector(2))
           textOnPageCheck(bullet3, bulletSelector(3))
-          textOnPageCheck(get.paragraph2, paragraph2Selector)
+          textOnPageCheck(get.paragraph2, paragraph3Selector)
           textOnPageCheck(hintText, hintTextSelector)
           inputFieldCheck(inputName, inputSelector)
           inputFieldValueCheck(payrollId, inputAmountField)
