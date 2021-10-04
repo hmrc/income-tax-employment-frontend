@@ -63,7 +63,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
     inYearAction,
     view,
     mockAppConfig,
-    mockIncomeTaxUserDataService,
+    mockEmploymentSessionService,
     mockErrorHandler,
     testClock)
 

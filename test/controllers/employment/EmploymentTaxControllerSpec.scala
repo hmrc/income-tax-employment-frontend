@@ -55,7 +55,7 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp with MockEmploymentSes
     authorisedAction,
     mockAppConfig,
     view,
-    mockIncomeTaxUserDataService,
+    mockEmploymentSessionService,
     inYearAction,
     mockErrorHandler,
     testClock
@@ -88,7 +88,7 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp with MockEmploymentSes
 
           val redirect = CheckEmploymentDetailsController.show(taxYear, employmentId).url
 
-          (mockIncomeTaxUserDataService.getSessionDataAndReturnResult(_: Int, _: String)(_: String)(
+          (mockEmploymentSessionService.getSessionDataAndReturnResult(_: Int, _: String)(_: String)(
             _:EmploymentUserData => Future[Result])(_: User[_])).expects(taxYear, employmentId, redirect, *, *).returns(Future(Redirect(redirect)))
 
           controller.submit(taxYear, employmentId = employmentId)(fakeRequest.withFormUrlEncodedBody("amount" -> "32").withSession(

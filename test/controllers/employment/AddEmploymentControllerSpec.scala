@@ -37,7 +37,7 @@ class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSes
     inYearAction,
     view,
     mockAppConfig,
-    mockIncomeTaxUserDataService,
+    mockEmploymentSessionService,
     mockErrorHandler,
     ec
   )
