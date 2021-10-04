@@ -20,7 +20,7 @@ import models.employment.{BenefitsViewModel, CarVanFuelModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Results.Ok
-import services.RedirectService.EmploymentBenefitsType
+import services.RedirectService.{EmploymentBenefitsType, EmploymentDetailsType}
 import utils.UnitTest
 
 import scala.concurrent.Future
@@ -65,8 +65,6 @@ class RedirectServiceSpec extends UnitTest {
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
           Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = None))), EmploymentBenefitsType)(
           cya => {
-
-            println(cya.employmentBenefits)
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
@@ -83,8 +81,6 @@ class RedirectServiceSpec extends UnitTest {
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
           Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = None))), EmploymentBenefitsType)(
           cya => {
-
-            println(cya.employmentBenefits)
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
@@ -95,14 +91,56 @@ class RedirectServiceSpec extends UnitTest {
         redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
       }
     }
+    "redirect when benefits are setup but car van fuel is empty" when {
+      "its a new submission" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = None))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/car-van-fuel?employmentId=001"
+      }
+    }
+    "redirect when CYA is empty" when {
+      "its a benefits submission" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001", None, EmploymentBenefitsType)(
+          cya => {
+            RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "its a employment details submission" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001", None, EmploymentDetailsType)(
+          cya => {
+            RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-details?employmentId=001"
+      }
+    }
     "continue with the request when benefits are setup and car van fuel is setup" when {
       "its a new submission" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear,"001",
           Some(employmentUserData),EmploymentBenefitsType)(
           cya => {
-
-            println(cya.employmentBenefits)
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ){
@@ -117,8 +155,6 @@ class RedirectServiceSpec extends UnitTest {
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear,"001",
           Some(employmentUserData.copy(isPriorSubmission = true)),EmploymentBenefitsType)(
           cya => {
-
-            println(cya.employmentBenefits)
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ){
