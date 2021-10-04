@@ -38,7 +38,7 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockEmploymen
     mockAppConfig,
     view,
     viewEOY,
-    mockIncomeTaxUserDataService,
+    mockEmploymentSessionService,
     mockAuditService,
     inYearAction,
     mockErrorHandler,

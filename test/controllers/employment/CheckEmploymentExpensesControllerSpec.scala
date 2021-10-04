@@ -36,7 +36,7 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
   lazy val controller = new CheckEmploymentExpensesController(
     authorisedAction,
     view,
-    mockIncomeTaxUserDataService,
+    mockEmploymentSessionService,
     mockAuditService,
     inYearAction,
     mockErrorHandler,
