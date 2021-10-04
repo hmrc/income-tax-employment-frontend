@@ -28,7 +28,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.employment.CompanyVanFuelBenefitsView
+import views.html.benefits.CompanyVanFuelBenefitsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
