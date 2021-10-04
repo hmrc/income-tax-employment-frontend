@@ -37,8 +37,8 @@ object RedirectService {
     val benefitsReceived = cya.employmentBenefits.map(_.isBenefitsReceived)
 
     Seq(
-      ConditionalRedirect(benefitsReceived.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-      ConditionalRedirect(benefitsReceived.isEmpty, ReceiveAnyBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true)),
+      ConditionalRedirect(benefitsReceived.isEmpty, ReceiveAnyBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
+      ConditionalRedirect(benefitsReceived.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true)),
       ConditionalRedirect(benefitsReceived.contains(false), CheckYourBenefitsController.show(taxYear, employmentId))
     )
   }
@@ -52,7 +52,7 @@ object RedirectService {
         ConditionalRedirect(carVanFuelQuestion.isEmpty, CarVanFuelBenefitsController.show(taxYear, employmentId)),
         //TODO go to accommodation section
         ConditionalRedirect(carVanFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(carVanFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true)),
+        ConditionalRedirect(carVanFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
       )
   }
 
