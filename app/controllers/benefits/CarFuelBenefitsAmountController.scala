@@ -49,6 +49,7 @@ class CarFuelBenefitsAmountController @Inject()(implicit val cc: MessagesControl
 
     commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(
       ConditionalRedirect(cyaCarFuelQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+//      TODO: The below redirect will change to go to the company van question when its all hooked up
       ConditionalRedirect(cyaCarFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
       ConditionalRedirect(cyaCarFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
     )
