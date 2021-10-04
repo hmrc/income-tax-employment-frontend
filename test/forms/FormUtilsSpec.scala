@@ -17,7 +17,7 @@
 package forms
 
 import config.MockEmploymentSessionService
-import forms.AmountForm.{amount, amountForm}
+import forms.AmountForm.amountForm
 import play.api.data.Form
 import services.EmploymentSessionService
 import utils.UnitTest
