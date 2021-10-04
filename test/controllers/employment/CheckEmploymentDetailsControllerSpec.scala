@@ -39,7 +39,7 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockEmpl
     view,
     inYearAction,
     mockAppConfig,
-    mockIncomeTaxUserDataService,
+    mockEmploymentSessionService,
     mockAuditService,
     ec,
     mockErrorHandler,
