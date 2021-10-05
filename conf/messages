@@ -575,8 +575,6 @@ benefits.companyVanBenefits.error.agent = Select yes if your client got a compan
 
 benefits.mileageBenefitAmount.title.individual = How much mileage benefit did you get in total for using your own car?
 benefits.mileageBenefitAmount.title.agent = How much mileage benefit did your client get in total for using their own car?
-benefits.mileageBenefitAmount.heading.individual = How much mileage benefit did you get in total for using your own car?
-benefits.mileageBenefitAmount.heading.agent = How much mileage benefit did your client get in total for using their own car?
 benefits.mileageBenefitAmount.paragraph.individual = You can find this information on your P11D form in section E, box 12.
 benefits.mileageBenefitAmount.paragraph.agent = You can find this information on your client’s P11D form in section E, box 12.
 benefits.mileageBenefitAmount.error.empty.individual = Enter the amount of mileage benefit you got for using your own car
