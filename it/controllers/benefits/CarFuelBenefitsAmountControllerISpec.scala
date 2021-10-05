@@ -132,12 +132,16 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
   val benefitsWithNoBenefitsReceived: Option[BenefitsViewModel] = Some(BenefitsViewModel(isUsingCustomerData = true))
 
-  val benefitsWithNoCarVanFuelQuestion: Option[BenefitsViewModel] = Some(BenefitsViewModel(isBenefitsReceived = true,
+  val benefitsWithFalseCarVanFuelQuestion: Option[BenefitsViewModel] = Some(BenefitsViewModel(isBenefitsReceived = true,
     carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(false))),
     isUsingCustomerData = true))
 
-  val benefitsWithNoCarFuelQuestion: Option[BenefitsViewModel] = Some(BenefitsViewModel(isBenefitsReceived = true,
+  val benefitsWithFalseCarFuelQuestion: Option[BenefitsViewModel] = Some(BenefitsViewModel(isBenefitsReceived = true,
     carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(true), carFuelQuestion = Some(false))),
+    isUsingCustomerData = true))
+
+  val benefitsWithNoCarFuelQuestion: Option[BenefitsViewModel] = Some(BenefitsViewModel(isBenefitsReceived = true,
+    carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(true))),
     isUsingCustomerData = true))
 
   val benefitsWithNoCarFuel: Option[BenefitsViewModel] = Some(BenefitsViewModel(isBenefitsReceived = true,
@@ -283,11 +287,43 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
           }
         }
 
-        "redirect to check employment benefits page when benefits has carFuelQuestion set to false" when {
+        "redirect to the car fuel question page when benefits has carFuelQuestion set to true but car fuel question empty" when {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(cya(isPriorSubmission = false, benefitsWithNoCarFuelQuestion), User(mtditid, None, nino, sessionId, "agent"))
+            urlGet(urlEOY, follow = false, welsh=user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+
+          "has an SEE_OTHER status" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe
+              Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/car-fuel?employmentId=$employmentId")
+          }
+        }
+
+        "redirect to the company van question page when benefits has carFuelQuestion set to false and not prior submission" when {
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            insertCyaData(cya(isPriorSubmission = false, benefitsWithFalseCarFuelQuestion), User(mtditid, None, nino, sessionId, "agent"))
+            urlGet(urlEOY, follow = false, welsh=user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+
+          "has an SEE_OTHER status" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe
+              Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
+          }
+        }
+
+        "redirect to the check your benefits page when benefits has carFuelQuestion set to false and prior submission" when {
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            insertCyaData(cya(isPriorSubmission = true, benefitsWithFalseCarFuelQuestion), User(mtditid, None, nino, sessionId, "agent"))
             urlGet(urlEOY, follow = false, welsh=user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -303,7 +339,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(cya(isPriorSubmission = false, benefitsWithNoCarVanFuelQuestion), User(mtditid, None, nino, sessionId, "agent"))
+            insertCyaData(cya(isPriorSubmission = false, benefitsWithFalseCarVanFuelQuestion), User(mtditid, None, nino, sessionId, "agent"))
             urlGet(urlEOY, follow = false, welsh=user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -464,14 +500,14 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
           errorAboveElementCheck(get.maxAmountErrorText)
         }
 
-        "redirect to CYA page and update the car fuel amount when a valid form is submitted" when {
+        "redirect to CYA page and update the car fuel amount when a valid form is submitted and prior submission" when {
 
           val newAmount = 100
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(cya(isPriorSubmission = false, benefitsWithNoCarFuel), userRequest)
+            insertCyaData(cya(isPriorSubmission = true, benefitsWithNoCarFuel), userRequest)
             urlPost(urlEOY, follow=false,
               welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> newAmount.toString))
           }
@@ -489,11 +525,69 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
           }
         }
 
-        "redirect to check employment benefits page when benefits has carFuelQuestion set to false" when {
+        "redirect to company van question page and update the car fuel amount when a valid form is submitted and not prior submission" when {
+
+          val newAmount = 100
+
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            insertCyaData(cya(isPriorSubmission = false, benefitsWithNoCarFuel), userRequest)
+            urlPost(urlEOY, follow=false,
+              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> newAmount.toString))
+          }
+
+          "redirects to the check your benefits page" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe
+              Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
+          }
+
+          "updates the CYA model with the new value" in {
+            lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
+            val carFuelAmount: Option[BigDecimal] = cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuel))
+            carFuelAmount shouldBe Some(newAmount)
+          }
+        }
+
+        "redirect to company van question page when benefits has carFuelQuestion set to false and not prior submission" when {
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            insertCyaData(cya(isPriorSubmission = false, benefitsWithFalseCarFuelQuestion), User(mtditid, None, nino, sessionId, "agent"))
+            urlPost(urlEOY, follow=false,
+              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+          }
+
+
+          "has an SEE_OTHER status" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe
+              Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
+          }
+        }
+
+        "redirect to the car fuel question page when benefits has carFuelQuestion set to true but car fuel question empty" when {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(cya(isPriorSubmission = false, benefitsWithNoCarFuelQuestion), User(mtditid, None, nino, sessionId, "agent"))
+            urlPost(urlEOY, follow=false,
+              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))          }
+
+
+          "has an SEE_OTHER status" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe
+              Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/car-fuel?employmentId=$employmentId")
+          }
+        }
+
+        "redirect to check employment benefits page when benefits has carFuelQuestion set to false and prior submission" when {
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            insertCyaData(cya(isPriorSubmission = true, benefitsWithFalseCarFuelQuestion), User(mtditid, None, nino, sessionId, "agent"))
             urlPost(urlEOY, follow=false,
               welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
           }
@@ -510,7 +604,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(cya(isPriorSubmission = false, benefitsWithNoCarVanFuelQuestion), User(mtditid, None, nino, sessionId, "agent"))
+            insertCyaData(cya(isPriorSubmission = false, benefitsWithFalseCarVanFuelQuestion), User(mtditid, None, nino, sessionId, "agent"))
             urlPost(urlEOY, follow=false,
               welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))          }
 

@@ -26,7 +26,8 @@ import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.CarFuelBenefitsAmountView
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.employment.routes.{CheckYourBenefitsController, CompanyCarFuelBenefitsController}
+import controllers.benefits.routes.CompanyVanBenefitsController
 import models.mongo.EmploymentCYAModel
 import services.RedirectService.{ConditionalRedirect, EmploymentBenefitsType, commonCarVanFuelBenefitsRedirects, redirectBasedOnCurrentAnswers}
 
@@ -48,9 +49,8 @@ class CarFuelBenefitsAmountController @Inject()(implicit val cc: MessagesControl
     val cyaCarFuelQuestion: Option[Boolean] = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion))
 
     commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(
-      ConditionalRedirect(cyaCarFuelQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
-//      TODO: The below redirect will change to go to the company van question when its all hooked up
-      ConditionalRedirect(cyaCarFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
+      ConditionalRedirect(cyaCarFuelQuestion.isEmpty, CompanyCarFuelBenefitsController.show(taxYear, employmentId)),
+      ConditionalRedirect(cyaCarFuelQuestion.contains(false), CompanyVanBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
       ConditionalRedirect(cyaCarFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
     )
   }
@@ -105,8 +105,7 @@ class CarFuelBenefitsAmountController @Inject()(implicit val cc: MessagesControl
                   if (cya.isPriorSubmission) {
                     Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                   } else {
-//      TODO: The below redirect will change to go to the company van question when its all hooked up
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                    Redirect(CompanyVanBenefitsController.show(taxYear, employmentId))
                   }
                 }
             }
