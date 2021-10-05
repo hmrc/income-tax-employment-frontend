@@ -20,12 +20,13 @@ import controllers.benefits.routes._
 import controllers.employment.routes.{CheckYourBenefitsController, _}
 import models.employment.BenefitsViewModel
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import play.api.Logging
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Call, Result}
 
 import scala.concurrent.Future
 
-object RedirectService {
+object RedirectService extends Logging {
 
   trait EmploymentType
   case object EmploymentDetailsType extends EmploymentType
@@ -158,7 +159,7 @@ object RedirectService {
 
     val cyaMileageQuestion: Option[Boolean] = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion))
 
-    mileageBenefitsAmountRedirects(cya, taxYear, employmentId) ++
+    mileageBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         //TODO GO TO MILEAGE YES / NO QUESTION
         ConditionalRedirect(cyaMileageQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
@@ -200,7 +201,15 @@ object RedirectService {
         }
 
         redirect match {
-          case Some(redirect) => Left(redirect)
+          case Some(redirect) =>
+            //scalastyle:off
+            logger.info("####################################################################################################################################################################################################")
+            logger.info("#####                                                                                                                                                                                          #####")
+            logger.info(s"[RedirectService][calculateRedirect] Some data is missing / in the wrong state for the requested page. Routing to ${redirect.header.headers.getOrElse("Location", "")}")
+            logger.info("#####                                                                                                                                                                                          #####")
+            logger.info("####################################################################################################################################################################################################")
+            //scalastyle:on
+            Left(redirect)
           case None => Right(cya)
         }
 

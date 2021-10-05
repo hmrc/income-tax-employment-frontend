@@ -43,16 +43,7 @@ class MileageBenefitAmountController @Inject()(implicit val cc: MessagesControll
                                                clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-
-    val cyaMileageQuestion: Option[Boolean] = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion))
-
-    commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(
-      //TODO GO TO MILEAGE YES / NO QUESTION
-      ConditionalRedirect(cyaMileageQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
-      //TODO GO TO Accommodation or relocation QUESTION
-      ConditionalRedirect(cyaMileageQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-      ConditionalRedirect(cyaMileageQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
-    )
+    RedirectService.mileageBenefitsAmountRedirects(cya,taxYear,employmentId)
   }
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
