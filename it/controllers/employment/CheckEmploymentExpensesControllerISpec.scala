@@ -16,8 +16,8 @@
 
 package controllers.employment
 
-import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import models.{IncomeTaxUserData, User}
+import models.mongo.{EmploymentCYAModel, EmploymentUserData, ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
