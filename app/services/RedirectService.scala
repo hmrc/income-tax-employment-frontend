@@ -33,6 +33,10 @@ object RedirectService {
 
   case class ConditionalRedirect(condition: Boolean, redirect: Call, isPriorSubmission: Option[Boolean] = None)
 
+  def toConditionalRedirect(call: Option[Call]): Option[ConditionalRedirect] ={
+    call.map(ConditionalRedirect(true, _))
+  }
+
   //ALL PAGES
   def commonBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
 
@@ -43,27 +47,6 @@ object RedirectService {
       ConditionalRedirect(benefitsReceived.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true)),
       ConditionalRedirect(benefitsReceived.contains(false), CheckYourBenefitsController.show(taxYear, employmentId))
     )
-  }
-
-  def priorSubmissionBenefitsRouting(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Call ={
-    cya match {
-      case EmploymentCYAModel(_,None) => CheckYourBenefitsController.show(taxYear, employmentId)
-      case EmploymentCYAModel(_,Some(b: BenefitsViewModel)) if !b.isBenefitsReceived => CheckYourBenefitsController.show(taxYear, employmentId)
-      case EmploymentCYAModel(_,Some(b: BenefitsViewModel)) if b.isBenefitsReceived && b.carVanFuelModel.isEmpty => CarVanFuelBenefitsController.show(taxYear, employmentId)
-    }
-  }
-
-  def accommodationBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-
-    val carVanFuelQuestion = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion))
-
-    commonBenefitsRedirects(cya, taxYear, employmentId) ++
-      Seq(
-        ConditionalRedirect(carVanFuelQuestion.isEmpty, CarVanFuelBenefitsController.show(taxYear, employmentId)),
-        //TODO go to accommodation section
-        ConditionalRedirect(carVanFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(carVanFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
-      )
   }
 
   //ALL CAR VAN PAGES
@@ -80,7 +63,11 @@ object RedirectService {
       )
   }
 
-  def commonCarBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+  def carBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+    commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)
+  }
+
+  def carBenefitsAmountRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
 
     val carQuestion = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion))
 
@@ -92,24 +79,19 @@ object RedirectService {
       )
   }
 
+  def carFuelBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
 
+    val carSectionFinished = toConditionalRedirect(
+      cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carSectionFinished(taxYear, employmentId))))
 
-  def commonCarAmountBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-
-    val carAmountQuestion = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car))
-
-    commonCarBenefitsRedirects(cya, taxYear, employmentId) ++
-      Seq(
-        //TODO GO TO CAR AMOUNT
-        ConditionalRedirect(carAmountQuestion.isEmpty, CompanyCarBenefitsController.show(taxYear, employmentId))
-      )
+    carBenefitsAmountRedirects(cya, taxYear, employmentId) ++ Seq(carSectionFinished).flatten
   }
 
-  def commonCarFuelBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+  def carFuelBenefitsAmountRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
 
     val carFuelQuestion = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion))
 
-    commonCarAmountBenefitsRedirects(cya, taxYear, employmentId) ++
+    carFuelBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         //TODO GO TO CAR fuel yes no
         ConditionalRedirect(carFuelQuestion.isEmpty, CompanyCarFuelBenefitsController.show(taxYear, employmentId)),
@@ -118,22 +100,19 @@ object RedirectService {
       )
   }
 
-  def commonCarFuelAmountBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+  def vanBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
 
-    val carFuelAmountQuestion = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuel))
+    val fullCarSectionFinished = toConditionalRedirect(
+      cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.fullCarSectionFinished(taxYear, employmentId))))
 
-    commonCarAmountBenefitsRedirects(cya, taxYear, employmentId) ++
-      Seq(
-        //TODO GO TO CAR fuel amount page
-        ConditionalRedirect(carFuelAmountQuestion.isEmpty, CompanyCarFuelBenefitsController.show(taxYear, employmentId))
-      )
+    commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(fullCarSectionFinished).flatten
   }
 
-  def commonVanBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+  def vanBenefitsAmountRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
 
     val vanQuestion = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanQuestion))
 
-    commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId) ++
+    vanBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(vanQuestion.isEmpty, CompanyCarBenefitsController.show(taxYear, employmentId)),
         //TODO GO TO MILEAGE YES NO QUESTION
@@ -142,22 +121,19 @@ object RedirectService {
       )
   }
 
-  def commonVanAmountBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+  def vanFuelBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
 
-    val vanAmountQuestion = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.van))
+    val vanSectionFinished = toConditionalRedirect(
+      cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanSectionFinished(taxYear, employmentId))))
 
-    commonVanBenefitsRedirects(cya, taxYear, employmentId) ++
-      Seq(
-        //TODO GO TO VAN AMOUNT QUESTION
-        ConditionalRedirect(vanAmountQuestion.isEmpty, CompanyCarBenefitsController.show(taxYear, employmentId))
-      )
+    vanBenefitsAmountRedirects(cya, taxYear, employmentId) ++ Seq(vanSectionFinished).flatten
   }
 
-  def commonVanFuelBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+  def vanFuelBenefitsAmountRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
 
     val vanFuelQuestion = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuelQuestion))
 
-    commonVanAmountBenefitsRedirects(cya, taxYear, employmentId) ++
+    vanFuelBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         //TODO GO TO VAN fuel yes no
         ConditionalRedirect(vanFuelQuestion.isEmpty, CompanyCarFuelBenefitsController.show(taxYear, employmentId)),
@@ -167,37 +143,36 @@ object RedirectService {
       )
   }
 
-  def commonVanFuelAmountBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+  def mileageBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
 
-    val vanFuelAmountQuestion = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuel))
+    val fullCarSectionFinished = toConditionalRedirect(
+      cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.fullCarSectionFinished(taxYear, employmentId))))
 
-    commonCarAmountBenefitsRedirects(cya, taxYear, employmentId) ++
-      Seq(
-        //TODO GO TO VAN fuel amount page
-        ConditionalRedirect(vanFuelAmountQuestion.isEmpty, CompanyCarFuelBenefitsController.show(taxYear, employmentId))
-      )
+    val fullVanSectionFinished = toConditionalRedirect(
+      cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.fullVanSectionFinished(taxYear, employmentId))))
+
+    commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(fullCarSectionFinished,fullVanSectionFinished).flatten
   }
 
-  def mileageBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+  def mileageBenefitsAmountRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
 
     val cyaMileageQuestion: Option[Boolean] = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion))
 
-    commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(
-      //TODO GO TO MILEAGE YES / NO QUESTION
-      ConditionalRedirect(cyaMileageQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
-      //TODO GO TO Accommodation or relocation QUESTION
-      ConditionalRedirect(cyaMileageQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-      ConditionalRedirect(cyaMileageQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
-    )
+    mileageBenefitsAmountRedirects(cya, taxYear, employmentId) ++
+      Seq(
+        //TODO GO TO MILEAGE YES / NO QUESTION
+        ConditionalRedirect(cyaMileageQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        //TODO GO TO Accommodation or relocation QUESTION
+        ConditionalRedirect(cyaMileageQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
+        ConditionalRedirect(cyaMileageQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+      )
   }
 
-  def mileageAmountBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+  def accommodationBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
 
-    val mileageAmountQuestion: Option[BigDecimal] = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage))
+    val fullCarVanFuelFinished = toConditionalRedirect(cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.isFinished(taxYear, employmentId))))
 
-    mileageBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(
-      ConditionalRedirect(mileageAmountQuestion.isEmpty, MileageBenefitAmountController.show(taxYear, employmentId))
-    )
+    commonBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(fullCarVanFuelFinished).flatten
   }
 
   def redirectBasedOnCurrentAnswers(taxYear: Int, employmentId: String, data: Option[EmploymentUserData], employmentType: EmploymentType)
