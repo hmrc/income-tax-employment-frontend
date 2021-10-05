@@ -56,26 +56,26 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
   object CommonExpectedEN extends CommonExpectedResults {
     def expectedCaption(taxYear:Int = taxYear) = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val fieldNames = Seq("Amount for business travel and subsistence expenses",
+    val fieldNames = Seq("Other business travel expenses",
       "Job expenses",
-      "Uniform, work cloths and tools (Flat rate expenses)",
+      "Uniforms, work clothes, or tools",
       "Professional fees and subscriptions",
-      "Hotel and meal expenses",
-      "Other expenses and capital allowances",
+      "Overnight stays",
+      "Other equipment",
       "Vehicle expense",
-      "Mileage allowance relief")
+      "Using own vehicle for business travel")
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(taxYear:Int = taxYear) = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val fieldNames = Seq("Amount for business travel and subsistence expenses",
+    val fieldNames = Seq("Other business travel expenses",
       "Job expenses",
-      "Uniform, work cloths and tools (Flat rate expenses)",
+      "Uniforms, work clothes, or tools",
       "Professional fees and subscriptions",
-      "Hotel and meal expenses",
-      "Other expenses and capital allowances",
+      "Overnight stays",
+      "Other equipment",
       "Vehicle expense",
-      "Mileage allowance relief")
+      "Using own vehicle for business travel")
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
