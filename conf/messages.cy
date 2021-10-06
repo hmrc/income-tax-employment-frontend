@@ -29,6 +29,7 @@ common.error.errorKey = Error:
 common.error.invalid_number = Enter an amount using numbers 0 to 9
 common.error.amountMaxLimit = Enter an amount less than £100,000,000,000
 common.error.invalid_currency_format = Enter the amount in the correct format
+common.ifItWasNot = If it was not {0}, tell us the correct amount.
 
 common.error.self-assessment.paragraph.1.1 = If the web address is correct or you selected a link or button, you can use
 common.error.self-assessment.paragraph.1.2 = Self Assessment: general enquiries (opens in new tab)
@@ -487,7 +488,6 @@ otherPaymentsAmount.error.noEntry.individual =  Enter the amount of payments not
 otherPaymentsAmount.error.noEntry.agent =  Enter the amount of payments not included on your client’s P60
 otherPaymentsAmount.incorrectFormat = Enter the amount of payments in the correct format
 otherPaymentsAmount.maximum = The amount of payments must be less than £100,000,000,000
-otherPaymentsAmount.wasNot = If it was not {0}, tell us the correct amount.
 
 employerPayAmount.title.agent = How much did your client’s employer pay them?
 employerPayAmount.title.individual = How much did your employer pay you?
@@ -581,3 +581,15 @@ benefits.receiveOwnCarMileageBenefit.check.individual = Check with your employer
 benefits.receiveOwnCarMileageBenefit.check.agent = Check with your client’s employer if you are unsure.
 benefits.receiveOwnCarMileageBenefit.error.individual = Select yes if you got a mileage benefit for using your own car for work
 benefits.receiveOwnCarMileageBenefit.error.agent = Select yes if your client got a mileage benefit for using your own car for work
+
+benefits.carFuelAmount.title.individual = How much was your total company car fuel benefit?
+benefits.carFuelAmount.title.agent = How much was your client’s total company car fuel benefit?
+benefits.carFuelAmount.paragraph.individual = You can find this information on your P11D form in section F, box 10.
+benefits.carFuelAmount.paragraph.agent = You can find this information on your client’s P11D form in section F, box 10.
+benefits.carFuelAmount.error.noEntry.individual = Enter your company car fuel benefit amount
+benefits.carFuelAmount.error.noEntry.agent = Enter your client’s company car fuel benefit amount
+benefits.carFuelAmount.error.incorrectFormat.individual = Enter your company car fuel benefit amount in the correct format
+benefits.carFuelAmount.error.incorrectFormat.agent = Enter your client’s company car fuel benefit amount in the correct format
+benefits.carFuelAmount.error.tooMuch.individual = Your company car fuel benefit must be less than £100,000,000,000
+benefits.carFuelAmount.error.tooMuch.agent = Your client’s company car fuel benefit must be less than £100,000,000,000
+

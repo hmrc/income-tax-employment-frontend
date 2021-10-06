@@ -37,8 +37,8 @@
 
 @hiddenText(item:String) = @{Some(messages(s"$item.hiddenText.${if(user.isAgent) "agent" else "individual"}"))}
 
-@showRows(item: String, value: BigDecimal) = @{
-    summaryListRow(HtmlContent(messages(item)),HtmlContent(bigDecimalCurrency(value.toString)),actions = Seq((controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId), messages("common.change"), hiddenText(item))), keyClasses="govuk-!-width-two-thirds")
+@showRows(item: String, value: BigDecimal, route: Call = controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId)) = @{
+    summaryListRow(HtmlContent(messages(item)),HtmlContent(bigDecimalCurrency(value.toString)),actions = Seq((route, messages("common.change"), hiddenText(item))), keyClasses="govuk-!-width-two-thirds")
 }
 
 @showQuestionRow(item: String, value: Boolean, route: Call = controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId)) = @{
@@ -73,7 +73,7 @@
                         carFuelQuestion => showQuestionRow("checkYourBenefits.fuelForCompanyCar", carFuelQuestion, controllers.employment.routes.CompanyCarFuelBenefitsController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.carFuel).map{
-                        carFuel => showRows("checkYourBenefits.fuelForCompanyCarAmount", carFuel)
+                        carFuel => showRows("checkYourBenefits.fuelForCompanyCarAmount", carFuel, controllers.benefits.routes.CarFuelBenefitsAmountController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.vanQuestion).map{
                         vanQuestion => showQuestionRow("checkYourBenefits.companyVan", vanQuestion, controllers.benefits.routes.CompanyVanBenefitsController.show(taxYear, employmentId))

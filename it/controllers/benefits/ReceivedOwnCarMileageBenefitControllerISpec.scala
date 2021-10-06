@@ -47,7 +47,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
     val noSelector = "#value-no"
-    val p1Selector = "#main-content > div > div > form > div > fieldset > legend > p.govuk-body"
+    val p1Selector = "#main-content > div > div > form > div > fieldset > legend > p:nth-child(2)"
     val p2Selector = "#main-content > div > div > form > div > fieldset > legend > p:nth-child(3)"
   }
 
