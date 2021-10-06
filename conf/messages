@@ -38,6 +38,7 @@ common.error.self-assessment.paragraph.1.3a = to speak to someone about your inc
 common.return.overview.buttonText = Return to overview
 
 common.currency.hint = For example, £600 or £193.54
+common.wasNot = If it was not {0}, tell us the correct amount.
 
 common.employmentDetails = Employment details
 common.employmentDetailsAndBenefits = Employment details and benefits
@@ -487,7 +488,6 @@ otherPaymentsAmount.error.noEntry.individual =  Enter the amount of payments not
 otherPaymentsAmount.error.noEntry.agent =  Enter the amount of payments not included on your client’s P60
 otherPaymentsAmount.incorrectFormat = Enter the amount of payments in the correct format
 otherPaymentsAmount.maximum = The amount of payments must be less than £100,000,000,000
-otherPaymentsAmount.wasNot = If it was not {0}, tell us the correct amount.
 
 employerPayAmount.title.agent = How much did your client’s employer pay them?
 employerPayAmount.title.individual = How much did your employer pay you?

@@ -59,7 +59,7 @@
 @contentHtml = {
     @if(amount.isDefined){
     <p>
-      @messages("otherPaymentsAmount.wasNot", bigDecimalCurrency(amount.get.toString))
+      @messages("common.wasNot", bigDecimalCurrency(amount.get.toString))
     </p>
     }
 }
