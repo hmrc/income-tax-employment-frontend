@@ -89,6 +89,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
     val expectedTitle: String
     val expectedHeading: String
     val expectedParagraph: String
+    val expectedParagraphWithPrefill: String
     val expectedErrorTitle: String
     val expectedNoEntryErrorMessage: String
     val expectedWrongFormatErrorMessage: String
@@ -113,6 +114,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount of mileage benefit you got for using your own car"
     val expectedParagraph: String = "You can find this information on your P11D form in section E, box 12."
+    val expectedParagraphWithPrefill: String = "If it was not £400.0, tell us the correct amount. You can find this information on your P11D form in section E, box 12."
     val expectedWrongFormatErrorMessage: String = "Enter the amount of mileage benefit you got in the correct format"
     val expectedMaxErrorMessage: String = "Your mileage benefit must be less than £100,000,000,000"
   }
@@ -123,6 +125,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount of mileage benefit you got for using your own car"
     val expectedParagraph: String = "You can find this information on your P11D form in section E, box 12."
+    val expectedParagraphWithPrefill: String = "If it was not £400.0, tell us the correct amount. You can find this information on your P11D form in section E, box 12."
     val expectedWrongFormatErrorMessage: String = "Enter the amount of mileage benefit you got in the correct format"
     val expectedMaxErrorMessage: String = "Your mileage benefit must be less than £100,000,000,000"
   }
@@ -133,6 +136,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount of mileage benefit your client got for using their own car"
     val expectedParagraph: String = "You can find this information on your client’s P11D form in section E, box 12."
+    val expectedParagraphWithPrefill: String = "If it was not £400.0, tell us the correct amount. You can find this information on your client’s P11D form in section E, box 12."
     val expectedWrongFormatErrorMessage: String = "Enter the amount of mileage benefit your client got in the correct format"
     val expectedMaxErrorMessage: String = "Your client’s mileage benefit must be less than £100,000,000,000"
   }
@@ -143,6 +147,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount of mileage benefit your client got for using their own car"
     val expectedParagraph: String = "You can find this information on your client’s P11D form in section E, box 12."
+    val expectedParagraphWithPrefill: String = "If it was not £400.0, tell us the correct amount. You can find this information on your client’s P11D form in section E, box 12."
     val expectedWrongFormatErrorMessage: String = "Enter the amount of mileage benefit your client got in the correct format"
     val expectedMaxErrorMessage: String = "Your client’s mileage benefit must be less than £100,000,000,000"
   }
@@ -208,7 +213,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphWithPrefill, contentSelector)
           textOnPageCheck(hintText, hintTestSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck("400", amountField)
@@ -452,6 +457,52 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, amountField)
+
+          welshToggleCheck(user.isWelsh)
+        }
+        "return an error when it is the wrong format" which {
+
+          lazy val form: Map[String, String] = Map(AmountForm.amount -> "fgfggffg")
+
+          lazy val result: WSResponse = {
+            dropEmploymentDB()
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel)))), userRequest)
+            authoriseAgentOrIndividual(user.isAgent)
+            urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          s"has a BAD_REQUEST ($BAD_REQUEST) status" in {
+            result.status shouldBe BAD_REQUEST
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          h1Check(user.specificExpectedResults.get.expectedHeading)
+          errorSummaryCheck(user.specificExpectedResults.get.expectedWrongFormatErrorMessage, amountField)
+
+          welshToggleCheck(user.isWelsh)
+        }
+        "return an error when the value is too large" which {
+
+          lazy val form: Map[String, String] = Map(AmountForm.amount -> "2353453425345234")
+
+          lazy val result: WSResponse = {
+            dropEmploymentDB()
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel)))), userRequest)
+            authoriseAgentOrIndividual(user.isAgent)
+            urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          s"has a BAD_REQUEST ($BAD_REQUEST) status" in {
+            result.status shouldBe BAD_REQUEST
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          h1Check(user.specificExpectedResults.get.expectedHeading)
+          errorSummaryCheck(user.specificExpectedResults.get.expectedMaxErrorMessage, amountField)
 
           welshToggleCheck(user.isWelsh)
         }

@@ -487,7 +487,7 @@ otherPaymentsAmount.error.noEntry.individual =  Enter the amount of payments not
 otherPaymentsAmount.error.noEntry.agent =  Enter the amount of payments not included on your client’s P60
 otherPaymentsAmount.incorrectFormat = Enter the amount of payments in the correct format
 otherPaymentsAmount.maximum = The amount of payments must be less than £100,000,000,000
-otherPaymentsAmount.wasNot = If it was not {0}, tell us the correct amount.
+common.wasNot = If it was not {0}, tell us the correct amount.
 
 employerPayAmount.title.agent = How much did your client’s employer pay them?
 employerPayAmount.title.individual = How much did your employer pay you?

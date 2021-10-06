@@ -38,6 +38,8 @@
 }
 
 @contentHtml = {
+
+    @if(preAmount.isDefined){<p class="govuk-body">@messages("common.wasNot", "£" + preAmount.get)</p>}
     <p class="govuk-body">@paragraphText</p>
 }
 
