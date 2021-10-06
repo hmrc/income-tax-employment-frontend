@@ -562,8 +562,8 @@ CompanyCarBenefits.error.agent = Select yes if your client got a company car ben
 CompanyCarBenefits.header.individual = Did you get a company car benefit?
 CompanyCarBenefits.header.agent = Did your client get a company car benefit?
 
-benefits.companyCarBenefitsAmount.title.individual = How much was your company car benefit?
-benefits.companyCarBenefitsAmount.title.agent = How much was your client’s company car benefit?
+benefits.companyCarBenefitsAmount.title.individual = How much was your total company car benefit?
+benefits.companyCarBenefitsAmount.title.agent = How much was your client’s total company car benefit?
 benefits.companyCarBenefitsAmount.paragraph.individual = You can find this information on your P11D form in section F, box 9.
 benefits.companyCarBenefitsAmount.paragraph.agent = You can find this information on your client’s P11D form in section F, box 9.
 benefits.companyCarBenefitsAmount.error.no-entry.individual = Enter your company car benefit amount
