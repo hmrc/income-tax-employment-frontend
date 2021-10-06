@@ -202,13 +202,8 @@ object RedirectService extends Logging {
 
         redirect match {
           case Some(redirect) =>
-            //scalastyle:off
-            logger.info("####################################################################################################################################################################################################")
-            logger.info("#####                                                                                                                                                                                          #####")
-            logger.info(s"[RedirectService][calculateRedirect] Some data is missing / in the wrong state for the requested page. Routing to ${redirect.header.headers.getOrElse("Location", "")}")
-            logger.info("#####                                                                                                                                                                                          #####")
-            logger.info("####################################################################################################################################################################################################")
-            //scalastyle:on
+            logger.info(s"[RedirectService][calculateRedirect]" +
+              s" Some data is missing / in the wrong state for the requested page. Routing to ${redirect.header.headers.getOrElse("Location", "")}")
             Left(redirect)
           case None => Right(cya)
         }
