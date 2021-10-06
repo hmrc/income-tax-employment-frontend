@@ -260,7 +260,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "redirect to the overview page" when {
+        "redirect" when {
 
           "there is no cya data in session for that user" which {
 
@@ -278,6 +278,22 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
               result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
               lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
               cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel) shouldBe None
+            }
+          }
+          "the mileage question is no" which {
+
+            lazy val form: Map[String, String] = Map(AmountForm.amount -> "200.00")
+
+            lazy val result: WSResponse = {
+              dropEmploymentDB()
+              insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(mileageQuestion = Some(false)))))), userRequest)
+              authoriseAgentOrIndividual(user.isAgent)
+              urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            }
+
+            s"has a SEE_OTHER($SEE_OTHER) status" in {
+              result.status shouldBe SEE_OTHER
+              result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
             }
           }
 
@@ -319,13 +335,13 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         }
 
-        "update mileage amount to 200 when the user sbumits and it isn't a prior submission" which {
+        "update mileage amount to 200 when the user submits and it isn't a prior submission" which {
 
           lazy val form: Map[String, String] = Map(AmountForm.amount -> "200.00")
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(emptyMileageModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel)))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -346,7 +362,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true)), userRequest)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel)))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -359,7 +375,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-//          errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, yesRadioButtonSelector)
+          errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, amountField)
 
           welshToggleCheck(user.isWelsh)
         }
