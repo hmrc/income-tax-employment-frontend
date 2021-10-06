@@ -25,12 +25,14 @@ import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.CompanyVanBenefitsView
-
 import javax.inject.Inject
+import models.employment.CarVanFuelModel
+import services.RedirectService.{ConditionalRedirect, EmploymentBenefitsType, redirectBasedOnCurrentAnswers}
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class CompanyVanBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -47,56 +49,54 @@ class CompanyVanBenefitsController @Inject()(implicit val cc: MessagesController
     missingInputError = s"benefits.companyVanBenefits.error.${if (user.isAgent) "agent" else "individual"}"
   )
 
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+    RedirectService.vanBenefitsRedirects(cya,taxYear,employmentId)
+  }
+
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionDataResult(taxYear, employmentId) {
-        case Some(data) =>
-          data.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanQuestion)) match {
+
+      employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
+        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+
+          cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanQuestion)) match {
             case Some(questionResult) => Future.successful(Ok(companyVanBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
             case None => Future.successful(Ok(companyVanBenefitsView(yesNoForm, taxYear, employmentId)))
           }
-        case None => Future(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
+        }
       }
     }
   }
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionDataResult(taxYear, employmentId) {
-        case Some(data) =>
+
+      employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
+        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
+
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(companyVanBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => {
               val cya = data.employment
-              val updatedCyaModel: Option[EmploymentCYAModel] = {
-                cya.employmentBenefits.flatMap(_.carVanFuelModel) match {
-                  case Some(model) =>
-                    if (yesNo) {
-                      Some(cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
-                        carVanFuelModel = Some(model.copy(vanQuestion = Some(true)))
-                      ))))
-                    } else {
-                      Some(cya.copy(employmentBenefits = cya.employmentBenefits.map(_.copy(
-                        carVanFuelModel = Some(model.copy(vanQuestion = Some(false), van = None))
-                      ))))
-                    }
-                  case None =>
+              val benefits = cya.employmentBenefits
+              val carVanFuel = benefits.flatMap(_.carVanFuelModel)
 
-                    None
+              val updatedCyaModel: EmploymentCYAModel = {
+                if (yesNo) {
+                  cya.copy(employmentBenefits = benefits.map(_.copy(carVanFuelModel = carVanFuel.map(_.copy(vanQuestion = Some(true))))))
+                } else {
+                  cya.copy(employmentBenefits = benefits.map(_.copy(
+                    carVanFuelModel = carVanFuel.map(_.copy(vanQuestion = Some(false), van = None, vanFuelQuestion = None, vanFuel = None)))))
                 }
               }
 
-              if (updatedCyaModel.isDefined) {
-                employmentSessionService.createOrUpdateSessionData(
-                  employmentId, updatedCyaModel.get, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
-                  Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                }
-              } else {
-                Future(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
+              employmentSessionService.createOrUpdateSessionData(
+                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
+                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
               }
             }
           )
-        case None => Future(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
+        }
       }
     }
   }

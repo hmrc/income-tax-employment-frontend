@@ -18,6 +18,7 @@ package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.routes.CarVanFuelBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
@@ -74,7 +75,7 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
               }
               val newCya = cya.employment.copy(employmentBenefits = Some(newBenefits))
               employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear,cya.isPriorSubmission)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO Redirect To Next Page
+                Redirect(CarVanFuelBenefitsController.show(taxYear, employmentId))
               }
             }
             else {
