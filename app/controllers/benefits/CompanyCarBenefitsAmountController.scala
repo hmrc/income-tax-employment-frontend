@@ -17,18 +17,17 @@
 package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.{CheckYourBenefitsController, CompanyCarBenefitsController}
+import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
-import services.RedirectService.{ConditionalRedirect, EmploymentBenefitsType, commonCarVanFuelBenefitsRedirects, redirectBasedOnCurrentAnswers}
+import services.RedirectService.{ConditionalRedirect, EmploymentBenefitsType, redirectBasedOnCurrentAnswers}
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import controllers.benefits.routes.CompanyVanBenefitsController
 import views.html.benefits.CompanyCarBenefitsAmountView
 
 import javax.inject.Inject
@@ -53,15 +52,7 @@ class CompanyCarBenefitsAmountController @Inject()(implicit val cc: MessagesCont
   }
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-
-    val cyaCarQuestion: Option[Boolean] = cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion))
-
-    commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(
-      ConditionalRedirect(cyaCarQuestion.isEmpty, CompanyCarBenefitsController.show(taxYear, employmentId)),
-//      TODO: This will route to the car fuel question when its all hooked up
-      ConditionalRedirect(cyaCarQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-      ConditionalRedirect(cyaCarQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
-    )
+    RedirectService.carBenefitsAmountRedirects(cya,taxYear,employmentId)
   }
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>

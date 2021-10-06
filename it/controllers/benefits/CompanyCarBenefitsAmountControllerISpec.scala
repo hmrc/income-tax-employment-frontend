@@ -291,8 +291,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           }
         }
 
-//        TODO: This will go to the car fuel question when its all hooked up
-        "redirect to the check your benefits question page when benefits has carQuestion set to false and not prior submission" when {
+        "redirect to the company van question page when benefits has carQuestion set to false and not prior submission" when {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
@@ -304,7 +303,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+              Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
           }
         }
 
