@@ -33,7 +33,7 @@
 @headingForUse = @{titleForUse}
 @paragraphText = {
     <p class="govuk-body">@messages(s"benefits.receiveOwnCarMileageBenefit.needToKnow.${if(user.isAgent) "agent" else "individual"}")</p>
-    <p>@messages(s"benefits.receiveOwnCarMileageBenefit.check.${if(user.isAgent) "agent" else "individual"}")</p>
+    <p class="govuk-body">@messages(s"benefits.receiveOwnCarMileageBenefit.check.${if(user.isAgent) "agent" else "individual"}")</p>
 }
 
 @hasFormErrors = @{form.hasErrors}
