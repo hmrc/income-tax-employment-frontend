@@ -16,9 +16,9 @@
 
 package controllers.benefits
 
+import controllers.benefits.routes.CompanyVanBenefitsController
 import controllers.employment.routes.{CheckYourBenefitsController, CompanyCarBenefitsController, CompanyCarFuelBenefitsController}
-import controllers.benefits.routes.{CarVanFuelBenefitsController, CompanyVanBenefitsController}
-import forms.{AmountForm, YesNoForm}
+import forms.AmountForm
 import models.employment.{BenefitsViewModel, CarVanFuelModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import models.{IncomeTaxUserData, User}
@@ -75,7 +75,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
     val formSelector = "#main-content > div > div > form"
     val continueButtonSelector = "#continue"
     val contentSelector = "#main-content > div > div > form > div > label > p"
-    val hintTestSelector = "#amount-hint"
+    val hintTextSelector = "#amount-hint"
     val poundPrefixSelector = ".govuk-input__prefix"
   }
 
@@ -182,7 +182,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, contentSelector)
-          textOnPageCheck(hintText, hintTestSelector)
+          textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck("", amountField)
           formPostLinkCheck(continueLink, formSelector)
@@ -214,7 +214,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphWithPrefill, contentSelector)
-          textOnPageCheck(hintText, hintTestSelector)
+          textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck("400", amountField)
           formPostLinkCheck(continueLink, formSelector)
@@ -336,8 +336,6 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
   ".submit" should {
 
-    import Selectors._
-
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
@@ -410,7 +408,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
             lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-            cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion)) shouldBe Some(true)
+            cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(true)
             cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)) shouldBe Some(200.00)
           }
 
@@ -431,7 +429,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
             lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-            cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion)) shouldBe Some(true)
+            cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(true)
             cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)) shouldBe Some(200.00)
           }
 
@@ -457,7 +455,8 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, amountField)
-
+          inputFieldValueCheck("", amountField)
+          errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage)
           welshToggleCheck(user.isWelsh)
         }
         "return an error when it is the wrong format" which {
@@ -480,6 +479,8 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           errorSummaryCheck(user.specificExpectedResults.get.expectedWrongFormatErrorMessage, amountField)
+          inputFieldValueCheck("fgfggffg", amountField)
+          errorAboveElementCheck(user.specificExpectedResults.get.expectedWrongFormatErrorMessage)
 
           welshToggleCheck(user.isWelsh)
         }
@@ -503,6 +504,8 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           errorSummaryCheck(user.specificExpectedResults.get.expectedMaxErrorMessage, amountField)
+          inputFieldValueCheck("2353453425345234", amountField)
+          errorAboveElementCheck(user.specificExpectedResults.get.expectedMaxErrorMessage)
 
           welshToggleCheck(user.isWelsh)
         }
