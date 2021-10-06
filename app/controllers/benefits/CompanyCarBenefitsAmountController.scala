@@ -70,7 +70,7 @@ class CompanyCarBenefitsAmountController @Inject()(implicit val cc: MessagesCont
               employment.employmentBenefits.flatMap(_.benefits.flatMap(_.car))
           )
 
-          Future.successful(Ok(companyCarBenefitsAmountView(form, taxYear, employmentId)))
+          Future.successful(Ok(companyCarBenefitsAmountView(form, taxYear, employmentId, cyaAmount)))
         }
       }
     }
@@ -87,7 +87,8 @@ class CompanyCarBenefitsAmountController @Inject()(implicit val cc: MessagesCont
 
           amountForm(user.isAgent).bindFromRequest().fold(
             { formWithErrors =>
-              Future.successful(BadRequest(companyCarBenefitsAmountView(formWithErrors, taxYear, employmentId)))
+              val cyaCarAmount = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car))
+              Future.successful(BadRequest(companyCarBenefitsAmountView(formWithErrors, taxYear, employmentId, cyaCarAmount)))
             }, {
               amount =>
 

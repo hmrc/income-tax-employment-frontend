@@ -75,7 +75,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
-    val paragraphTextSelector = "#main-content > div > div > form > div > label > p"
+    def paragraphTextSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
     val hintTextSelector = "#amount-hint"
     val amountFieldSelector = "#amount"
     val formSelector = "#main-content > div > div > form"
@@ -84,10 +84,10 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
   trait CommonExpectedResults {
     def expectedCaption(taxYear: Int): String
-
     val hintText: String
     val amount: String
     val continueButtonText: String
+    val optionalText: String
   }
 
   trait SpecificExpectedResults {
@@ -102,23 +102,23 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
   object CommonExpectedEN extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-
     val hintText = "For example, £600 or £193.54"
     val amount = "amount"
     val continueButtonText = "Continue"
+    val optionalText = s"If it was not £$carAmount, tell us the correct amount."
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-
     val hintText = "For example, £600 or £193.54"
     val amount = "amount"
     val continueButtonText = "Continue"
+    val optionalText = s"If it was not £$carAmount, tell us the correct amount."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "How much was your company car benefit?"
-    val expectedHeading = "How much was your company car benefit?"
+    val expectedTitle = "How much was your total company car benefit?"
+    val expectedHeading = "How much was your total company car benefit?"
     val expectedParagraphText = "You can find this information on your P11D form in section F, box 9."
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter your company car benefit amount"
@@ -127,8 +127,8 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "How much was your company car benefit?"
-    val expectedHeading = "How much was your company car benefit?"
+    val expectedTitle = "How much was your total company car benefit?"
+    val expectedHeading = "How much was your total company car benefit?"
     val expectedParagraphText = "You can find this information on your P11D form in section F, box 9."
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter your company car benefit amount"
@@ -137,8 +137,8 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "How much was your client’s company car benefit?"
-    val expectedHeading = "How much was your client’s company car benefit?"
+    val expectedTitle = "How much was your client’s total company car benefit?"
+    val expectedHeading = "How much was your client’s total company car benefit?"
     val expectedParagraphText = "You can find this information on your client’s P11D form in section F, box 9."
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter your client’s company car benefit amount"
@@ -147,8 +147,8 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "How much was your client’s company car benefit?"
-    val expectedHeading = "How much was your client’s company car benefit?"
+    val expectedTitle = "How much was your client’s total company car benefit?"
+    val expectedHeading = "How much was your client’s total company car benefit?"
     val expectedParagraphText = "You can find this information on your client’s P11D form in section F, box 9."
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter your client’s company car benefit amount"
@@ -185,7 +185,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(2))
           textOnPageCheck(user.commonExpectedResults.hintText, hintTextSelector)
           inputFieldCheck(user.commonExpectedResults.amount, amountFieldSelector)
           inputFieldValueCheck("", amountFieldSelector)
@@ -211,7 +211,8 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
+          textOnPageCheck(user.commonExpectedResults.optionalText, paragraphTextSelector(2))
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(3))
           textOnPageCheck(user.commonExpectedResults.hintText, hintTextSelector)
           inputFieldCheck(user.commonExpectedResults.amount, amountFieldSelector)
           inputFieldValueCheck(carAmount.toString(), amountFieldSelector)
@@ -236,7 +237,8 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
+          textOnPageCheck(user.commonExpectedResults.optionalText, paragraphTextSelector(2))
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(3))
           textOnPageCheck(user.commonExpectedResults.hintText, hintTextSelector)
           inputFieldCheck(user.commonExpectedResults.amount, amountFieldSelector)
           inputFieldValueCheck(carAmount.toString(), amountFieldSelector)
