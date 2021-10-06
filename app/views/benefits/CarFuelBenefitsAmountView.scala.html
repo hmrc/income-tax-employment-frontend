@@ -38,11 +38,11 @@
 }
 
 @optionalText = @{
-    if(previousAmount != None){messages("common.ifItWasNot", bigDecimalCurrency(previousAmount.get.toString))}
+    if(previousAmount.isDefined){messages("common.ifItWasNot", bigDecimalCurrency(previousAmount.get.toString))}
 }
 
 @contentHtml = {
-    @if(previousAmount != None){<p class="govuk-body">@optionalText</p>}
+    @if(previousAmount.isDefined){<p class="govuk-body">@optionalText</p>}
     <p class="govuk-body">@paragraphText</p>
 }
 
