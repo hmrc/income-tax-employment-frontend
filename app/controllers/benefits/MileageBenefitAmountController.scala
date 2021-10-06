@@ -107,6 +107,7 @@ class MileageBenefitAmountController @Inject()(implicit val cc: MessagesControll
                   if (cya.isPriorSubmission) {
                     Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                   } else {
+                    //TODO Update to accommodation controller
                     Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                   }
                 }
