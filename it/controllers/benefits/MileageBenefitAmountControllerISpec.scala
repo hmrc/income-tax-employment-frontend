@@ -16,7 +16,8 @@
 
 package controllers.benefits
 
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.employment.routes.{CheckYourBenefitsController, CompanyCarBenefitsController, CompanyCarFuelBenefitsController}
+import controllers.benefits.routes.{CarVanFuelBenefitsController, CompanyVanBenefitsController}
 import forms.{AmountForm, YesNoForm}
 import models.employment.{BenefitsViewModel, CarVanFuelModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -216,8 +217,83 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         }
 
-        "redirect to the check your benefits page" when {
+        "redirect" when {
 
+          "mileage question is no" which {
+            lazy val result: WSResponse = {
+              dropEmploymentDB()
+              noUserDataStub(nino, taxYearEOY)
+              insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(mileageQuestion = Some(false)))))), userRequest)
+              authoriseAgentOrIndividual(user.isAgent)
+              urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+            }
+
+            s"has an SEE_OTHER($SEE_OTHER) status" in {
+              result.status shouldBe SEE_OTHER
+              result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+            }
+
+          }
+          "mileage question is empty" which {
+            lazy val result: WSResponse = {
+              dropEmploymentDB()
+              noUserDataStub(nino, taxYearEOY)
+              insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(mileageQuestion = None))))), userRequest)
+              authoriseAgentOrIndividual(user.isAgent)
+              urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+            }
+
+            s"has an SEE_OTHER($SEE_OTHER) status" in {
+              result.status shouldBe SEE_OTHER
+              result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+            }
+
+          }
+          "car section isn't finished" which {
+            lazy val result: WSResponse = {
+              dropEmploymentDB()
+              noUserDataStub(nino, taxYearEOY)
+              insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(carQuestion = None))))), userRequest)
+              authoriseAgentOrIndividual(user.isAgent)
+              urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+            }
+
+            s"has an SEE_OTHER($SEE_OTHER) status" in {
+              result.status shouldBe SEE_OTHER
+              result.header("location") shouldBe Some(CompanyCarBenefitsController.show(taxYearEOY, employmentId).url)
+            }
+
+          }
+          "van section isn't finished" which {
+            lazy val result: WSResponse = {
+              dropEmploymentDB()
+              noUserDataStub(nino, taxYearEOY)
+              insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(vanQuestion = None))))), userRequest)
+              authoriseAgentOrIndividual(user.isAgent)
+              urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+            }
+
+            s"has an SEE_OTHER($SEE_OTHER) status" in {
+              result.status shouldBe SEE_OTHER
+              result.header("location") shouldBe Some(CompanyVanBenefitsController.show(taxYearEOY, employmentId).url)
+            }
+
+          }
+          "car fuel section isn't finished" which {
+            lazy val result: WSResponse = {
+              dropEmploymentDB()
+              noUserDataStub(nino, taxYearEOY)
+              insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(carFuel = None))))), userRequest)
+              authoriseAgentOrIndividual(user.isAgent)
+              urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+            }
+
+            s"has an SEE_OTHER($SEE_OTHER) status" in {
+              result.status shouldBe SEE_OTHER
+              result.header("location") shouldBe Some(CompanyCarFuelBenefitsController.show(taxYearEOY, employmentId).url)
+            }
+
+          }
           "there is no data in session for that user" which {
             lazy val result: WSResponse = {
               dropEmploymentDB()
