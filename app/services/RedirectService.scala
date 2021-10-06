@@ -18,7 +18,6 @@ package services
 
 import controllers.benefits.routes._
 import controllers.employment.routes.{CheckYourBenefitsController, _}
-import models.employment.BenefitsViewModel
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.Logging
 import play.api.mvc.Results.Redirect
