@@ -61,7 +61,7 @@ class MileageBenefitAmountController @Inject()(implicit val cc: MessagesControll
               employment.employmentBenefits.flatMap(_.benefits.flatMap(_.mileage))
           )
 
-          Future.successful(Ok(mileageBenefitAmountView(taxYear, form, cyaAmount, cya.employment.employmentDetails.employerName, employmentId)))
+          Future.successful(Ok(mileageBenefitAmountView(taxYear, form, cyaAmount, employmentId)))
         }
       }
     }
@@ -87,8 +87,7 @@ class MileageBenefitAmountController @Inject()(implicit val cc: MessagesControll
             { formWithErrors =>
 
               Future.successful(BadRequest(mileageBenefitAmountView(taxYear, formWithErrors,
-                cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)),
-                cya.employment.employmentDetails.employerName, employmentId)))
+                cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)), employmentId)))
 
             },{
               amount =>
