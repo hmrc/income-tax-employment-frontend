@@ -18,15 +18,13 @@ package controllers.benefits;
 
 import common.SessionValues
 import config.{MockAuditService, MockEmploymentSessionService}
-import forms.{AmountForm, YesNoForm}
-import models.employment.{AllEmploymentData, EmploymentSource}
+import forms.AmountForm
 import play.api.data.Form
 import play.api.http.Status._
-import play.api.mvc.{Request, Result, Results}
-import play.api.mvc.Results.{InternalServerError, Ok, Redirect}
+import play.api.mvc.Results.{Ok, Redirect}
+import play.api.mvc.{Result, Results}
 import utils.UnitTestWithApp
 import views.html.benefits.MileageBenefitAmountView
-import views.html.employment.AddEmploymentView
 
 import scala.concurrent.Future
 
