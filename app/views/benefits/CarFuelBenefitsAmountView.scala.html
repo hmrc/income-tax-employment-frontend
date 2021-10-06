@@ -23,32 +23,35 @@
 
 @this(layout: Layout, formWithCsrf: FormWithCSRF, inputText: InputText, heading: Heading, button: Button, errorSummary: ErrorSummary)
 
-@(taxYear: Int, form: Form[BigDecimal], preAmount: Option[BigDecimal], empId:String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, form: Form[BigDecimal], empId: String, previousAmount: Option[BigDecimal])(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @titleText = @{
-    messages(s"benefits.mileageBenefitAmount.title.${if(user.isAgent) "agent" else "individual"}")
+        messages(s"benefits.carFuelAmount.title.${if(user.isAgent) "agent" else "individual"}")
 }
 
 @headingForUse = @{
-    messages(s"benefits.mileageBenefitAmount.title.${if(user.isAgent) "agent" else "individual"}")
+        messages(s"benefits.carFuelAmount.title.${if(user.isAgent) "agent" else "individual"}")
 }
 
 @paragraphText = @{
-    messages(s"benefits.mileageBenefitAmount.paragraph.${if (user.isAgent) "agent" else "individual"}")
+        messages(s"benefits.carFuelAmount.paragraph.${if (user.isAgent) "agent" else "individual"}")
+}
+
+@optionalText = @{
+    if(previousAmount.isDefined){messages("common.ifItWasNot", bigDecimalCurrency(previousAmount.get.toString))}
 }
 
 @contentHtml = {
-
-    @if(preAmount.isDefined){<p class="govuk-body">@messages("common.ifItWasNot", "£" + preAmount.get)</p>}
+    @if(previousAmount.isDefined){<p class="govuk-body">@optionalText</p>}
     <p class="govuk-body">@paragraphText</p>
 }
 
 @layout(pageTitle = titleText, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
 
-    @errorSummary(form.errors)
+@errorSummary(form.errors)
 
-    @formWithCsrf(controllers.benefits.routes.MileageBenefitAmountController.submit(taxYear, empId)) {
-        @inputText(
+@formWithCsrf(controllers.benefits.routes.CarFuelBenefitsAmountController.submit(taxYear, empId)) {
+    @inputText(
             form,
             id = "amount",
             name = "amount",
@@ -59,10 +62,9 @@
             hint = Some(Html(messages("common.currency.hint"))),
             isPageHeading = false,
             currency = true
-        )
-
-        @button()
-    }
+    )
+@button()
+}
 }
 
 @{

@@ -648,6 +648,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
   object Hrefs{
     val receiveAnyBenefitsHref = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/company-benefits?employmentId=001"
+    val carFuelAmountBenefitsHref = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/car-fuel-amount?employmentId=001"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -783,7 +784,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.companyCar, commonResults.yes, 5, 2, s"${user.commonExpectedResults.changeText} ${specificResults.companyCarHiddenText}", companyCarHref)
           changeAmountRowCheck(commonResults.companyCarAmount, "£1.23", 5, 3, s"${user.commonExpectedResults.changeText} ${specificResults.companyCarAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.fuelForCompanyCar, commonResults.yes, 5, 4, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyCarHiddenText}", companyCarFuelBenefitsHref)
-          changeAmountRowCheck(commonResults.fuelForCompanyCarAmount, "£2", 5, 5, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyCarAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.fuelForCompanyCarAmount, "£2", 5, 5, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyCarAmountHiddenText}", carFuelAmountBenefitsHref)
           changeAmountRowCheck(commonResults.companyVan, commonResults.yes, 5, 6, s"${user.commonExpectedResults.changeText} ${specificResults.companyVanHiddenText}", companyVanBenefitsHref)
           changeAmountRowCheck(commonResults.companyVanAmount, "£3", 5, 7, s"${user.commonExpectedResults.changeText} ${specificResults.companyVanAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.fuelForCompanyVan, commonResults.yes, 5, 8, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyVanHiddenText}", dummyHref)
