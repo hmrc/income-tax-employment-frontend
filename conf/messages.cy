@@ -590,7 +590,7 @@ benefits.receiveOwnCarMileageBenefit.needToKnow.agent = We only need to know abo
 benefits.receiveOwnCarMileageBenefit.check.individual = Check with your employer if you are unsure.
 benefits.receiveOwnCarMileageBenefit.check.agent = Check with your client’s employer if you are unsure.
 benefits.receiveOwnCarMileageBenefit.error.individual = Select yes if you got a mileage benefit for using your own car for work
-benefits.receiveOwnCarMileageBenefit.error.agent = Select yes if your client got a mileage benefit for using your own car for work
+benefits.receiveOwnCarMileageBenefit.error.agent = Select yes if your client got a mileage benefit for using their own car for work
 
 benefits.mileageBenefitAmount.title.individual = How much mileage benefit did you get in total for using your own car?
 benefits.mileageBenefitAmount.title.agent = How much mileage benefit did your client get in total for using their own car?
