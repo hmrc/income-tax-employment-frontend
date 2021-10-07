@@ -16,7 +16,7 @@
 
 package controllers.benefits
 
-import controllers.benefits.routes.CompanyVanBenefitsController
+import controllers.benefits.routes.{CompanyVanBenefitsController,ReceiveOwnCarMileageBenefitController}
 import controllers.employment.routes.{CheckYourBenefitsController, CompanyCarBenefitsController, CompanyCarFuelBenefitsController}
 import forms.AmountForm
 import models.employment.{BenefitsViewModel, CarVanFuelModel}
@@ -250,7 +250,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
             s"has an SEE_OTHER($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+              result.header("location") shouldBe Some(ReceiveOwnCarMileageBenefitController.show(taxYearEOY, employmentId).url)
             }
 
           }
