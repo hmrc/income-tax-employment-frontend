@@ -56,7 +56,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
   object CommonExpectedEN extends CommonExpectedResults {
     def expectedCaption(taxYear:Int = taxYear) = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val fieldNames = Seq("Amount for business travel and subsistence expenses",
+    val fieldNames = Seq("Other business travel expenses",
       "Job expenses",
       "Uniforms, work clothes, or tools",
       "Professional fees and subscriptions",
@@ -68,7 +68,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(taxYear:Int = taxYear) = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val fieldNames = Seq("Amount for business travel and subsistence expenses",
+    val fieldNames = Seq("Other business travel expenses",
       "Job expenses",
       "Uniforms, work clothes, or tools",
       "Professional fees and subscriptions",
