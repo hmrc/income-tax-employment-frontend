@@ -534,8 +534,7 @@ employment.payrollId.paragraph1.agent = Your client’s payroll ID must be 38 ch
 employment.payrollId.bullet3 = the special characters: .,-()/=!"%&*;<>''+:\?
 employment.payrollId.paragraph2.individual = You can find this on your payslip or on your P60. It’s also known as a ‘payroll number’.
 employment.payrollId.paragraph2.agent = You can find this on your client’s payslip or on their P60. It’s also known as a ‘payroll number’.
-employment.payrollId.previous.paragraph = If the payroll ID is not {0}, tell us the correct ID.
-employment.payrollId.forExample = For example, 123456
+employment.payrollId.forExample = For example 123456
 employment.payrollId.error.noEntry.individual = Enter your payroll ID
 employment.payrollId.error.noEntry.agent = Enter your client’s payroll ID
 employment.payrollId.error.tooMany.individual = Your payroll ID must be 38 characters or fewer
@@ -561,6 +560,17 @@ CompanyCarBenefits.error.individual = Select yes if you got a company car benefi
 CompanyCarBenefits.error.agent = Select yes if your client got a company car benefit
 CompanyCarBenefits.header.individual = Did you get a company car benefit?
 CompanyCarBenefits.header.agent = Did your client get a company car benefit?
+
+benefits.companyCarBenefitsAmount.title.individual = How much was your company car benefit?
+benefits.companyCarBenefitsAmount.title.agent = How much was your client’s company car benefit?
+benefits.companyCarBenefitsAmount.paragraph.individual = You can find this information on your P11D form in section F, box 9.
+benefits.companyCarBenefitsAmount.paragraph.agent = You can find this information on your client’s P11D form in section F, box 9.
+benefits.companyCarBenefitsAmount.error.no-entry.individual = Enter your company car benefit amount
+benefits.companyCarBenefitsAmount.error.no-entry.agent = Enter your client’s company car benefit amount
+benefits.companyCarBenefitsAmount.error.incorrect-format.individual = Enter your company car benefit amount in the correct format
+benefits.companyCarBenefitsAmount.error.incorrect-format.agent = Enter your client’s company car benefit amount in the correct format
+benefits.companyCarBenefitsAmount.error.max-length.individual = Your company car benefit must be less than £100,000,000,000
+benefits.companyCarBenefitsAmount.error.max-length.agent = Your client’s company car benefit must be less than £100,000,000,000
 
 benefits.companyCarFuelBenefits.title.individual = Did you get fuel benefit for a company car?
 benefits.companyCarFuelBenefits.title.agent = Did your client get fuel benefit for a company car?
