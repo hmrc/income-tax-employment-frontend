@@ -100,7 +100,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
     val expectedP1 = "We only need to know about payments made above our ‘approved amount‘. If your client has payments above the ‘approved amount‘, they should be recorded in section E of their P11D form."
     val expectedP2 = "Check with your client’s employer if you are unsure."
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if your client got a mileage benefit for using your own car for work"
+    val expectedError = "Select yes if your client got a mileage benefit for using their own car for work"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -118,7 +118,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
     val expectedP1 = "We only need to know about payments made above our ‘approved amount‘. If your client has payments above the ‘approved amount‘, they should be recorded in section E of their P11D form."
     val expectedP2 = "Check with your client’s employer if you are unsure."
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if your client got a mileage benefit for using your own car for work"
+    val expectedError = "Select yes if your client got a mileage benefit for using their own car for work"
   }
 
   val someAmount: Option[BigDecimal] = Some(123.45)
