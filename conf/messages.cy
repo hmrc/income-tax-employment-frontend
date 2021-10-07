@@ -481,7 +481,6 @@ checkYourBenefits.incomeTaxSubheading.hiddenText.agent = Change if your client g
 checkYourBenefits.reimbursedSubheading.hiddenText.agent = Change if your client got vouchers, non-cash benefits or reimbursed costs as an employment benefit from this company
 checkYourBenefits.assetsSubheading.hiddenText.agent = Change if your client got asset or asset transfers as an employment benefit from this company
 
-
 otherPaymentsAmount.heading.individual = What is the total amount of payments not included on your P60?
 otherPaymentsAmount.heading.agent = What is the total amount of payments not included on your client’s P60?
 otherPaymentsAmount.error.noEntry.individual =  Enter the amount of payments not included on your P60
@@ -614,3 +613,13 @@ benefits.carFuelAmount.error.incorrectFormat.agent = Enter your client’s compa
 benefits.carFuelAmount.error.tooMuch.individual = Your company car fuel benefit must be less than £100,000,000,000
 benefits.carFuelAmount.error.tooMuch.agent = Your client’s company car fuel benefit must be less than £100,000,000,000
 
+benefits.companyVanAmountBenefits.title.individual = How much was your company van benefit?
+benefits.companyVanAmountBenefits.title.agent = How much was your client’s company van benefit?
+benefits.companyVanAmountBenefits.informationText.individual = You can find this information on your P11D form in section G, box 9.
+benefits.companyVanAmountBenefits.informationText.agent = You can find this information on your client’s P11D form in section G, box 9.
+benefits.companyVanAmountBenefits.error.noEntry.individual = Enter your company van benefit amount
+benefits.companyVanAmountBenefits.error.noEntry.agent = Enter your client’s company van benefit amount
+benefits.companyVanAmountBenefits.error.overMaximum.individual = Your company van benefit must be less than £100,000,000,000
+benefits.companyVanAmountBenefits.error.overMaximum.agent = Your client’s company van benefit must be less than £100,000,000,000
+benefits.companyVanAmountBenefits.error.wrongFormat.individual = Enter your company van benefit amount in the correct format
+benefits.companyVanAmountBenefits.error.wrongFormat.agent = Enter your client’s company van benefit amount in the correct format

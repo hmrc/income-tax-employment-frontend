@@ -40,25 +40,6 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
-  def fullCarVanFuelModel: CarVanFuelModel =
-    CarVanFuelModel(
-      carVanFuelQuestion = Some(true),
-      carQuestion = Some(true),
-      car = Some(100),
-      carFuelQuestion = Some(true),
-      carFuel = Some(200),
-      vanQuestion = Some(true),
-      van = Some(300),
-      vanFuelQuestion = Some(true),
-      vanFuel = Some(400),
-      mileageQuestion = Some(true),
-      mileage = Some(400)
-    )
-
-  def emptyCarVanFuelModel: CarVanFuelModel =
-    CarVanFuelModel(
-      carVanFuelQuestion = Some(false)
-    )
 
   def benefits(carModel: CarVanFuelModel): BenefitsViewModel = BenefitsViewModel(Some(carModel), isUsingCustomerData = true, isBenefitsReceived = true)
 
