@@ -16,7 +16,7 @@
 
 package controllers.benefits
 
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.employment.routes.{CheckYourBenefitsController, CompanyCarFuelBenefitsController}
 import models.{IncomeTaxUserData, User}
 import models.employment.{BenefitsViewModel, CarVanFuelModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -372,7 +372,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(cya(isPriorSubmission = false, benefitsWithCarAmount), User(mtditid, None, nino, sessionId, "agent"))
+            insertCyaData(cya(isPriorSubmission = true, benefitsWithCarAmount), User(mtditid, None, nino, sessionId, "agent"))
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -409,7 +409,6 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           }
         }
 
-//        TODO: This will go to the car fuel question when its all hooked up
         "update car model with submitted amount when it isn't a prior submission and go to the check your benefits section" which {
 
           lazy val form: Map[String, String] = Map("amount" -> carAmount.toString())
@@ -423,7 +422,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
           "redirect to check your benefits page" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+            result.header("location") shouldBe Some(CompanyCarFuelBenefitsController.show(taxYearEOY, employmentId).url)
             lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
             cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion)) shouldBe Some(true)
             cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe Some(true)
