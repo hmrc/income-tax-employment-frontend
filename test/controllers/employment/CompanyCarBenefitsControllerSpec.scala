@@ -86,13 +86,16 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
       }
     }
 
-    "render page" when {
-      "with empty form when no benefits" in {
+    "redirect" when {
+      "user has no benefits data" in {
         val result = controller.handleShow(taxYear, employmentId, Some(employmentUserDataWithoutBenefits))
 
-        status(result) shouldBe OK
-        contentAsString(result) shouldNot include("checked")
+        status(result) shouldBe SEE_OTHER
+        redirectUrl(result) shouldBe s"/income-through-software/return/employment-income/2021/benefits/company-benefits?employmentId=223%2FAB12399"
       }
+    }
+
+    "render page" when {
 
       "with non empty form when there are benefits" in {
         val result = controller.handleShow(taxYear, employmentId, Some(employmentUserData))
