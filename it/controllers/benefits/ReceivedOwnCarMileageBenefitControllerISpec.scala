@@ -492,7 +492,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
         insertCyaData(cya(isPriorSubmission = false, benefitsWithEmptyCarFuelQuestion), User(mtditid, None, nino, sessionId, "agent"))
-        urlGet(urlEOY, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        url
       }
 
       "has an SEE_OTHER status" in {
