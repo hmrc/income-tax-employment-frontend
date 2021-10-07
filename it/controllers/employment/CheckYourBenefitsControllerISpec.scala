@@ -648,8 +648,14 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
   object Hrefs{
     val receiveAnyBenefitsHref = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/company-benefits?employmentId=001"
+    val carVanFuelBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/car-van-fuel?employmentId=001"
+    val companyCarHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/company-car?employmentId=001"
+    val companyCarAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/company-car-amount?employmentId=001"
+    val companyVanBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/company-van?employmentId=001"
+    val companyCarFuelBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/car-fuel?employmentId=001"
     val carFuelAmountBenefitsHref = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/car-fuel-amount?employmentId=001"
-  }
+    val mileageAmountBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/mileage-amount?employmentId=001"
+    }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
@@ -658,13 +664,6 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
 
-  val carVanFuelBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/car-van-fuel?employmentId=001"
-  val companyCarHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/company-car?employmentId=001"
-
-  val companyVanBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/company-van?employmentId=001"
-  val mileageAmountBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/mileage-amount?employmentId=001"
-
-  val companyCarFuelBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/car-fuel?employmentId=001"
 
   val receivedOwnCarMileageBenefitHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/mileage?employmentId=001"
 
@@ -786,7 +785,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           changeAmountRowCheck(commonResults.carSubheading, commonResults.yes, 5, 1, s"${user.commonExpectedResults.changeText} ${specificResults.carSubheadingHiddenText}", carVanFuelBenefitsHref)
           changeAmountRowCheck(commonResults.companyCar, commonResults.yes, 5, 2, s"${user.commonExpectedResults.changeText} ${specificResults.companyCarHiddenText}", companyCarHref)
-          changeAmountRowCheck(commonResults.companyCarAmount, "£1.23", 5, 3, s"${user.commonExpectedResults.changeText} ${specificResults.companyCarAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.companyCarAmount, "£1.23", 5, 3, s"${user.commonExpectedResults.changeText} ${specificResults.companyCarAmountHiddenText}", companyCarAmountHref)
           changeAmountRowCheck(commonResults.fuelForCompanyCar, commonResults.yes, 5, 4, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyCarHiddenText}", companyCarFuelBenefitsHref)
           changeAmountRowCheck(commonResults.fuelForCompanyCarAmount, "£2", 5, 5, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyCarAmountHiddenText}", carFuelAmountBenefitsHref)
           changeAmountRowCheck(commonResults.companyVan, commonResults.yes, 5, 6, s"${user.commonExpectedResults.changeText} ${specificResults.companyVanHiddenText}", companyVanBenefitsHref)
