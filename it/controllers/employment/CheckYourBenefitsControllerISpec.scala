@@ -662,6 +662,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   val companyCarHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/company-car?employmentId=001"
 
   val companyVanBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/company-van?employmentId=001"
+  val mileageAmountBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/mileage-amount?employmentId=001"
 
   val companyCarFuelBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/car-fuel?employmentId=001"
 
@@ -793,7 +794,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.fuelForCompanyVan, commonResults.yes, 5, 8, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyVanHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.fuelForCompanyVanAmount, "£4", 5, 9, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyVanAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.mileageBenefit, commonResults.yes, 5, 10, s"${user.commonExpectedResults.changeText} ${specificResults.mileageBenefitHiddenText}", receivedOwnCarMileageBenefitHref)
-          changeAmountRowCheck(commonResults.mileageBenefitAmount, "£5", 5, 11, s"${user.commonExpectedResults.changeText} ${specificResults.mileageBenefitAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.mileageBenefitAmount, "£5", 5, 11, s"${user.commonExpectedResults.changeText} ${specificResults.mileageBenefitAmountHiddenText}", mileageAmountBenefitsHref)
 
           textOnPageCheck(commonResults.accommodationHeader, fieldHeaderSelector(6))
           changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.yes, 7, 1, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationSubheadingHiddenText}", dummyHref)
@@ -915,7 +916,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.fuelForCompanyVan, commonResults.yes, 5, 6, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyVanHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.fuelForCompanyVanAmount, "£4", 5, 7, s"${user.commonExpectedResults.changeText} ${specificResults.fuelForCompanyVanAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.mileageBenefit, commonResults.yes, 5, 8, s"${user.commonExpectedResults.changeText} ${specificResults.mileageBenefitHiddenText}", receivedOwnCarMileageBenefitHref)
-          changeAmountRowCheck(commonResults.mileageBenefitAmount, "£5", 5, 9, s"${user.commonExpectedResults.changeText} ${specificResults.mileageBenefitAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.mileageBenefitAmount, "£5", 5, 9, s"${user.commonExpectedResults.changeText} ${specificResults.mileageBenefitAmountHiddenText}", mileageAmountBenefitsHref)
 
           textOnPageCheck(user.commonExpectedResults.accommodationHeader, fieldHeaderSelector(6))
           changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.no, 7, 1, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationSubheadingHiddenText}", dummyHref)

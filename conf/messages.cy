@@ -538,7 +538,6 @@ employment.payrollId.previous.paragraph = If the payroll ID is not {0}, tell us 
 employment.payrollId.forExample = For example, 123456
 employment.payrollId.error.noEntry.individual = Enter your payroll ID
 employment.payrollId.error.noEntry.agent = Enter your client’s payroll ID
-employment.payrollId.previous.paragraph = If the payroll ID is not {0}, tell us the correct ID.
 employment.payrollId.error.tooMany.individual = Your payroll ID must be 38 characters or fewer
 employment.payrollId.error.tooMany.agent = Your client’s payroll ID must be 38 characters or fewer
 employment.payrollId.error.incorrect.individual = Enter your payroll ID in the correct format
@@ -581,6 +580,17 @@ benefits.receiveOwnCarMileageBenefit.check.individual = Check with your employer
 benefits.receiveOwnCarMileageBenefit.check.agent = Check with your client’s employer if you are unsure.
 benefits.receiveOwnCarMileageBenefit.error.individual = Select yes if you got a mileage benefit for using your own car for work
 benefits.receiveOwnCarMileageBenefit.error.agent = Select yes if your client got a mileage benefit for using your own car for work
+
+benefits.mileageBenefitAmount.title.individual = How much mileage benefit did you get in total for using your own car?
+benefits.mileageBenefitAmount.title.agent = How much mileage benefit did your client get in total for using their own car?
+benefits.mileageBenefitAmount.paragraph.individual = You can find this information on your P11D form in section E, box 12.
+benefits.mileageBenefitAmount.paragraph.agent = You can find this information on your client’s P11D form in section E, box 12.
+benefits.mileageBenefitAmount.error.empty.individual = Enter the amount of mileage benefit you got for using your own car
+benefits.mileageBenefitAmount.error.empty.agent = Enter the amount of mileage benefit your client got for using their own car
+benefits.mileageBenefitAmount.error.wrongFormat.individual = Enter the amount of mileage benefit you got in the correct format
+benefits.mileageBenefitAmount.error.wrongFormat.agent = Enter the amount of mileage benefit your client got in the correct format
+benefits.mileageBenefitAmount.error.amountMaxLimit.individual = Your mileage benefit must be less than £100,000,000,000
+benefits.mileageBenefitAmount.error.amountMaxLimit.agent = Your client’s mileage benefit must be less than £100,000,000,000
 
 benefits.carFuelAmount.title.individual = How much was your total company car fuel benefit?
 benefits.carFuelAmount.title.agent = How much was your client’s total company car fuel benefit?

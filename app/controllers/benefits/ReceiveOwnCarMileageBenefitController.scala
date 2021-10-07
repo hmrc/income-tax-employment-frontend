@@ -53,10 +53,10 @@ class ReceiveOwnCarMileageBenefitController @Inject()(implicit val cc: MessagesC
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
 
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, _) =>
+      employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
-          EmploymentBenefitsType)(commonCarVanFuelBenefitsRedirects(_, taxYear, employmentId)) { cya =>
+          EmploymentBenefitsType)(mileageBenefitsRedirects(_, taxYear, employmentId)) { cya =>
 
           val mileageBenefitQuestion: Option[Boolean] =
             cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion))
@@ -79,7 +79,7 @@ class ReceiveOwnCarMileageBenefitController @Inject()(implicit val cc: MessagesC
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya),
-          EmploymentBenefitsType)(commonCarVanFuelBenefitsRedirects(_, taxYear, employmentId)) { cya =>
+          EmploymentBenefitsType)(mileageBenefitsRedirects(_, taxYear, employmentId)) { cya =>
 
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(receiveOwnCarMileageBenefitView(formWithErrors, taxYear, employmentId))),
