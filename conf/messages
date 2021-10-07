@@ -259,12 +259,12 @@ employment.expenses.inset.text.individual = You cannot update your employment ex
 employment.expenses.inset.text.agent = You cannot update your client’s employment expenses until 6 April {0}.
 
 employment.expenses.expense.type.business-travel = Amount for business travel and subsistence expenses
-employment.expenses.expense.type.flat-rate-job = Uniform, work cloths and tools (Flat rate expenses)
+employment.expenses.expense.type.flat-rate-job = Uniforms, work clothes, or tools
 employment.expenses.expense.type.professional-subscriptions = Professional fees and subscriptions
-employment.expenses.expense.type.other-and-capital-allowances = Other expenses and capital allowances
+employment.expenses.expense.type.other-and-capital-allowances = Other expenses
 employment.expenses.expense.type.job = Job expenses
 employment.expenses.expense.type.hotel-and-meal = Hotel and meal expenses
-employment.expenses.expense.type.vehicle = Vehicle expense
+employment.expenses.expense.type.vehicle = Vehicle expenses
 employment.expenses.expense.type.mileage-allowance = Mileage allowance relief
 employment.expenses.sub-heading.individual.nonMultiple = Your employment expenses are based on the information we already hold about you.
 employment.expenses.sub-heading.agent.nonMultiple = Your client’s employment expenses are based on information we already hold about them.
