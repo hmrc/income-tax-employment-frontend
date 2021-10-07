@@ -16,8 +16,8 @@
 
 package controllers.employment
 
+import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import models.{IncomeTaxUserData, User}
-import models.mongo.{EmploymentCYAModel, EmploymentUserData, ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
@@ -56,26 +56,26 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
   object CommonExpectedEN extends CommonExpectedResults {
     def expectedCaption(taxYear:Int = taxYear) = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val fieldNames = Seq("Other business travel expenses",
+    val fieldNames = Seq("Amount for business travel and subsistence expenses",
       "Job expenses",
       "Uniforms, work clothes, or tools",
       "Professional fees and subscriptions",
-      "Overnight stays",
-      "Other equipment",
-      "Vehicle expense",
-      "Using own vehicle for business travel")
+      "Hotel and meal expenses",
+      "Other expenses",
+      "Vehicle expenses",
+      "Mileage allowance relief")
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(taxYear:Int = taxYear) = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val fieldNames = Seq("Other business travel expenses",
+    val fieldNames = Seq("Amount for business travel and subsistence expenses",
       "Job expenses",
       "Uniforms, work clothes, or tools",
       "Professional fees and subscriptions",
-      "Overnight stays",
-      "Other equipment",
-      "Vehicle expense",
-      "Using own vehicle for business travel")
+      "Hotel and meal expenses",
+      "Other expenses",
+      "Vehicle expenses",
+      "Mileage allowance relief")
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
