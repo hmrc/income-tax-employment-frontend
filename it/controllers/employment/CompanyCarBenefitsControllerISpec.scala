@@ -18,7 +18,7 @@ package controllers.employment
 
 import forms.YesNoForm
 import models.User
-import models.employment.BenefitsViewModel
+import models.employment.{BenefitsViewModel, CarVanFuelModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -39,6 +39,23 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
   def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
+
+  def fullCarVanFuelModel: CarVanFuelModel =
+    CarVanFuelModel(
+      carVanFuelQuestion = Some(true),
+      carQuestion = Some(true),
+      car = Some(100),
+      carFuelQuestion = Some(true),
+      carFuel = Some(200),
+      vanQuestion = Some(true),
+      van = Some(300),
+      vanFuelQuestion = Some(true),
+      vanFuel = Some(400),
+      mileageQuestion = Some(true),
+      mileage = Some(400)
+    )
+
+  def benefits(carModel: CarVanFuelModel): BenefitsViewModel = BenefitsViewModel(Some(carModel), isUsingCustomerData = true, isBenefitsReceived = true)
 
   object Selectors {
     val yesSelector = "#value"
@@ -110,10 +127,9 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
         "return a radio button page when not in year" which {
 
-
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true)), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(carQuestion = None))))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear)
             urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
@@ -143,7 +159,7 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true)), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(carQuestion = None))))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear)
             urlPost(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = form)
