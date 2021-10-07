@@ -17,7 +17,8 @@
 package controllers.benefits
 
 import common.SessionValues
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.routes.{CarVanFuelBenefitsController}
+import controllers.employment.routes.{CheckYourBenefitsController, CompanyCarFuelBenefitsController}
 import forms.YesNoForm
 import models.User
 import models.employment.BenefitsViewModel
@@ -253,7 +254,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           formPostLinkCheck(postUrl, formSelector)
         }
 
-        "redirect to the Check your benefits page when radio button yes is selected and value was previously no" when {
+        "redirect to the car van fuel benefits page when radio button yes is selected and value was previously no" when {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -265,14 +266,14 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             result.status shouldBe SEE_OTHER
           }
 
-          "redirect to Check Your Benefits page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some(CheckYourBenefitsController.show(validTaxYear2021, employmentID).url)
+          "redirect to Car van fuel Benefits page" in {
+            result.header(HeaderNames.LOCATION) shouldBe Some(CarVanFuelBenefitsController.show(validTaxYear2021, employmentID).url)
             lazy val cyamodel = findCyaData(validTaxYear2021, employmentID, userRequest).get
             cyamodel.employment.employmentBenefits.map(_.isBenefitsReceived) shouldBe Some(true)
           }
         }
 
-        "redirect to the Check your benefits page when radio button yes is selected and no prior benefits" when {
+        "redirect to the  Car van fuel Benefits page when radio button yes is selected and no prior benefits" when {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -284,8 +285,8 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             result.status shouldBe SEE_OTHER
           }
 
-          "redirect to Check Your Benefits page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some(CheckYourBenefitsController.show(validTaxYear2021, employmentID).url)
+          "redirect to Car van fuel Benefits page" in {
+            result.header(HeaderNames.LOCATION) shouldBe Some(CarVanFuelBenefitsController.show(validTaxYear2021, employmentID).url)
             lazy val cyamodel = findCyaData(validTaxYear2021, employmentID, userRequest).get
             cyamodel.employment.employmentBenefits.map(_.isBenefitsReceived) shouldBe Some(true)
           }
