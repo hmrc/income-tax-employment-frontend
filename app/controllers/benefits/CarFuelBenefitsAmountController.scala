@@ -87,7 +87,8 @@ class CarFuelBenefitsAmountController @Inject()(implicit val cc: MessagesControl
 
           buildForm(user.isAgent).bindFromRequest().fold(
             { formWithErrors =>
-              Future.successful(BadRequest(carFuelBenefitsAmountView(taxYear, formWithErrors, employmentId, None)))
+              val cyaCarAmount = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuel))
+              Future.successful(BadRequest(carFuelBenefitsAmountView(taxYear, formWithErrors, employmentId, cyaCarAmount)))
             }, {
               amount =>
 
