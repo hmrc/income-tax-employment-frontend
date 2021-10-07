@@ -562,6 +562,17 @@ CompanyCarBenefits.error.agent = Select yes if your client got a company car ben
 CompanyCarBenefits.header.individual = Did you get a company car benefit?
 CompanyCarBenefits.header.agent = Did your client get a company car benefit?
 
+benefits.companyCarBenefitsAmount.title.individual = How much was your total company car benefit?
+benefits.companyCarBenefitsAmount.title.agent = How much was your client’s total company car benefit?
+benefits.companyCarBenefitsAmount.paragraph.individual = You can find this information on your P11D form in section F, box 9.
+benefits.companyCarBenefitsAmount.paragraph.agent = You can find this information on your client’s P11D form in section F, box 9.
+benefits.companyCarBenefitsAmount.error.no-entry.individual = Enter your company car benefit amount
+benefits.companyCarBenefitsAmount.error.no-entry.agent = Enter your client’s company car benefit amount
+benefits.companyCarBenefitsAmount.error.incorrect-format.individual = Enter your company car benefit amount in the correct format
+benefits.companyCarBenefitsAmount.error.incorrect-format.agent = Enter your client’s company car benefit amount in the correct format
+benefits.companyCarBenefitsAmount.error.max-length.individual = Your company car benefit must be less than £100,000,000,000
+benefits.companyCarBenefitsAmount.error.max-length.agent = Your client’s company car benefit must be less than £100,000,000,000
+
 benefits.companyCarFuelBenefits.title.individual = Did you get fuel benefit for a company car?
 benefits.companyCarFuelBenefits.title.agent = Did your client get fuel benefit for a company car?
 benefits.companyCarFuelBenefits.error.individual = Select yes if you got fuel benefit for a company car
@@ -571,6 +582,15 @@ benefits.companyVanBenefits.title.individual = Did you get a company van benefit
 benefits.companyVanBenefits.title.agent = Did your client get a company van benefit?
 benefits.companyVanBenefits.error.individual = Select yes if you got a company van benefit
 benefits.companyVanBenefits.error.agent = Select yes if your client got a company van benefit
+
+benefits.receiveOwnCarMileageBenefit.title.individual = Did you get a mileage benefit for using your own car for work?
+benefits.receiveOwnCarMileageBenefit.title.agent = Did your client get a mileage benefit for using their own car for work?
+benefits.receiveOwnCarMileageBenefit.needToKnow.individual = We only need to know about payments made above our ‘approved amount‘. If you have payments above the ‘approved amount‘, they should be recorded in section E of your P11D form.
+benefits.receiveOwnCarMileageBenefit.needToKnow.agent = We only need to know about payments made above our ‘approved amount‘. If your client has payments above the ‘approved amount‘, they should be recorded in section E of their P11D form.
+benefits.receiveOwnCarMileageBenefit.check.individual = Check with your employer if you are unsure.
+benefits.receiveOwnCarMileageBenefit.check.agent = Check with your client’s employer if you are unsure.
+benefits.receiveOwnCarMileageBenefit.error.individual = Select yes if you got a mileage benefit for using your own car for work
+benefits.receiveOwnCarMileageBenefit.error.agent = Select yes if your client got a mileage benefit for using your own car for work
 
 benefits.mileageBenefitAmount.title.individual = How much mileage benefit did you get in total for using your own car?
 benefits.mileageBenefitAmount.title.agent = How much mileage benefit did your client get in total for using their own car?
@@ -593,3 +613,4 @@ benefits.carFuelAmount.error.incorrectFormat.individual = Enter your company car
 benefits.carFuelAmount.error.incorrectFormat.agent = Enter your client’s company car fuel benefit amount in the correct format
 benefits.carFuelAmount.error.tooMuch.individual = Your company car fuel benefit must be less than £100,000,000,000
 benefits.carFuelAmount.error.tooMuch.agent = Your client’s company car fuel benefit must be less than £100,000,000,000
+

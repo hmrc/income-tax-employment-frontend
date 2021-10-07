@@ -57,6 +57,12 @@ POST       /:taxYear/benefits/company-van                   controllers.benefits
 GET        /:taxYear/benefits/car-fuel                      controllers.employment.CompanyCarFuelBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/car-fuel                      controllers.employment.CompanyCarFuelBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/company-car-amount            controllers.benefits.CompanyCarBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/company-car-amount            controllers.benefits.CompanyCarBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/benefits/mileage                      controllers.benefits.ReceiveOwnCarMileageBenefitController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/mileage                      controllers.benefits.ReceiveOwnCarMileageBenefitController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/benefits/car-fuel-amount               controllers.benefits.CarFuelBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/car-fuel-amount               controllers.benefits.CarFuelBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
@@ -87,4 +93,3 @@ GET        /error/you-need-agent-services-account           controllers.errors.Y
 
 GET        /keep-alive                                      controllers.SessionExpiredController.keepAlive
 GET        /timeout                                         controllers.SessionExpiredController.timeout
-

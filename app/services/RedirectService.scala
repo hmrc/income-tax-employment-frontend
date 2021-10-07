@@ -114,8 +114,7 @@ object RedirectService extends Logging {
     vanBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(vanQuestion.isEmpty, CompanyCarBenefitsController.show(taxYear, employmentId)),
-        //TODO GO TO MILEAGE YES NO QUESTION
-        ConditionalRedirect(vanQuestion.contains(false), CompanyVanBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
+        ConditionalRedirect(vanQuestion.contains(false), ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
         ConditionalRedirect(vanQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
       )
   }
@@ -136,8 +135,7 @@ object RedirectService extends Logging {
       Seq(
         //TODO GO TO VAN fuel yes no
         ConditionalRedirect(vanFuelQuestion.isEmpty, CompanyCarFuelBenefitsController.show(taxYear, employmentId)),
-        //TODO GO TO MILEAGE YES / NO QUESTION
-        ConditionalRedirect(vanFuelQuestion.contains(false), CompanyVanBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
+        ConditionalRedirect(vanFuelQuestion.contains(false), ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
         ConditionalRedirect(vanFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
       )
   }
@@ -159,8 +157,7 @@ object RedirectService extends Logging {
 
     mileageBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO GO TO MILEAGE YES / NO QUESTION
-        ConditionalRedirect(cyaMileageQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(cyaMileageQuestion.isEmpty, ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId)),
         //TODO GO TO Accommodation or relocation QUESTION
         ConditionalRedirect(cyaMileageQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
         ConditionalRedirect(cyaMileageQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))

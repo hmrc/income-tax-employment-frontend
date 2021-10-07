@@ -67,7 +67,7 @@
                         carQuestion => showQuestionRow("checkYourBenefits.companyCar", carQuestion, controllers.employment.routes.CompanyCarBenefitsController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.car).map{
-                        car => showRows("checkYourBenefits.companyCarAmount", car)
+                        car => showRows("checkYourBenefits.companyCarAmount", car, controllers.benefits.routes.CompanyCarBenefitsAmountController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.carFuelQuestion).map{
                         carFuelQuestion => showQuestionRow("checkYourBenefits.fuelForCompanyCar", carFuelQuestion, controllers.employment.routes.CompanyCarFuelBenefitsController.show(taxYear, employmentId))
@@ -88,7 +88,7 @@
                         vanFuel => showRows("checkYourBenefits.fuelForCompanyVanAmount", vanFuel)
                     },
                     benefits.carVanFuelModel.flatMap(_.mileageQuestion).map{
-                        mileageQuestion => showQuestionRow("checkYourBenefits.mileageBenefit", mileageQuestion)
+                        mileageQuestion => showQuestionRow("checkYourBenefits.mileageBenefit", mileageQuestion, controllers.benefits.routes.ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.mileage).map{
                         mileage => showRows("checkYourBenefits.mileageBenefitAmount", mileage, controllers.benefits.routes.MileageBenefitAmountController.show(taxYear, employmentId))
