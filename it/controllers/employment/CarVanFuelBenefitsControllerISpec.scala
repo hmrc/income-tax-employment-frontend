@@ -395,7 +395,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true)), userRequest)
+              insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true, Some(benefits(fullCarVanFuelModel)))), userRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(carVanFuelBenefitsPage(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
