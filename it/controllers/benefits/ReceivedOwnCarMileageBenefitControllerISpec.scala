@@ -133,8 +133,6 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
   def benefitsWithMileageYes(mileageAmount: Option[BigDecimal] = mileageAmount): Option[BenefitsViewModel] =
     Some(BenefitsViewModel(isBenefitsReceived = true,
       carVanFuelModel = Some(allSectionsFinishedCarVanFuelModel.copy(mileageQuestion = Some(true), mileage = mileageAmount)), isUsingCustomerData = true))
-
-
   // models for Incomplete sections redirect tests
   val benefitsWithNoBenefitsReceived: Option[BenefitsViewModel] = Some(BenefitsViewModel(isUsingCustomerData = true))
 
