@@ -51,12 +51,62 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       vanQuestion = Some(true),
       van = Some(300),
       vanFuelQuestion = Some(true),
-      vanFuel = Some(400),
-      mileageQuestion = Some(true),
-      mileage = Some(400)
+      vanFuel = Some(400)
     )
 
+  // models for Incomplete sections redirect tests
+  val benefitsWithNoBenefitsReceived: Option[BenefitsViewModel] = Some(BenefitsViewModel(isUsingCustomerData = true))
+
+  def benefitsWithNoCarVanFuelQuestion(carVanFuelQuestion: Option[Boolean] = Some(false)): Option[BenefitsViewModel] =
+    Some(BenefitsViewModel(isBenefitsReceived = true,
+      carVanFuelModel = Some(fullCarVanFuelModel.copy(carVanFuelQuestion = carVanFuelQuestion)),
+      isUsingCustomerData = true))
+
+  val benefitsWithEmptyCarQuestion: Option[BenefitsViewModel] =
+    Some(BenefitsViewModel(isBenefitsReceived = true,
+      carVanFuelModel = Some(fullCarVanFuelModel.copy(carQuestion = None)),
+      isUsingCustomerData = true))
+
+  val benefitsWithEmptyVanQuestion: Option[BenefitsViewModel] =
+    Some(BenefitsViewModel(isBenefitsReceived = true,
+      carVanFuelModel = Some(fullCarVanFuelModel.copy(vanQuestion = None)),
+      isUsingCustomerData = true))
+
+  val benefitsWithEmptyCarFuelQuestion: Option[BenefitsViewModel] =
+    Some(BenefitsViewModel(isBenefitsReceived = true,
+      carVanFuelModel = Some(fullCarVanFuelModel.copy(carFuelQuestion = None)),
+      isUsingCustomerData = true))
+
+  val benefitsCarQuestionYesNoAmount: Option[BenefitsViewModel] =
+    Some(BenefitsViewModel(isBenefitsReceived = true,
+      carVanFuelModel = Some(fullCarVanFuelModel.copy(car = None)), isUsingCustomerData = true))
+
+  val benefitsCarFuelQuestionYesNoAmount: Option[BenefitsViewModel] =
+    Some(BenefitsViewModel(isBenefitsReceived = true,
+      carVanFuelModel = Some(fullCarVanFuelModel.copy(carFuel = None)), isUsingCustomerData = true))
+
+  val benefitsVanFuelQuestionNoAmount: Option[BenefitsViewModel] =
+    Some(BenefitsViewModel(isBenefitsReceived = true,
+      carVanFuelModel = Some(fullCarVanFuelModel.copy(vanFuelQuestion = Some(false), vanFuel = None)), isUsingCustomerData = true))
+
+  val benefitsWithEmptyVanFuel: Option[BenefitsViewModel] = Some(BenefitsViewModel(isBenefitsReceived = true,
+    carVanFuelModel = Some(fullCarVanFuelModel.copy(vanFuelQuestion = None, vanFuel = None)), isUsingCustomerData = true))
+
+  val amount: Option[BigDecimal] = Some(100)
+
+  def benefitsWithVanFuelYes(vanFuelAmount: Option[BigDecimal] = amount): Option[BenefitsViewModel] =
+    Some(BenefitsViewModel(isBenefitsReceived = true,
+      carVanFuelModel = Some(fullCarVanFuelModel.copy(vanFuelQuestion = Some(true), vanFuel = vanFuelAmount)), isUsingCustomerData = true))
+
   def benefits(carModel: CarVanFuelModel): BenefitsViewModel = BenefitsViewModel(Some(carModel), isUsingCustomerData = true)
+
+  def cya(isPriorSubmission: Boolean = true, benefits: Option[BenefitsViewModel]):
+  EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission,
+    EmploymentCYAModel(
+      EmploymentDetails("maggie", currentDataIsHmrcHeld = false),
+      benefits
+    )
+  )
 
   private def vanFuelBenefitsPage(taxYear: Int) = s"$appUrl/$taxYear/benefits/van-fuel?employmentId=$employmentId"
 
@@ -191,6 +241,42 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
+        "Render the 'Did you receive van fuel benefits' page with the correct content with yes value pre-filled and van fuel amount not answered" which {
+          lazy val result: WSResponse = {
+            dropEmploymentDB()
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+            insertCyaData(cya(isPriorSubmission = false, benefitsWithVanFuelYes(vanFuelAmount = None)), userRequest)
+            authoriseAgentOrIndividual(user.isAgent)
+            urlGet(vanFuelBenefitsPage(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          import Selectors._
+          import user.commonExpectedResults._
+
+          "has an OK status" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+          radioButtonCheck(yesText, 1, Some(true))
+          radioButtonCheck(noText, 2, Some(false))
+          buttonCheck(expectedButtonText, continueButtonSelector)
+          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          welshToggleCheck(user.isWelsh)
+        }
+
+        /*
+        Tests for redirects
+                Redirect to benefits CYA when:
+                - if van question is false
+                - if van section is not finished
+                - if car section isn't finished
+
+         */
 
         "Redirect user to the check your benefits page" which {
           lazy val result: WSResponse = {
