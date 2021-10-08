@@ -16,8 +16,8 @@
 
 package controllers.employment
 
+import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import models.{IncomeTaxUserData, User}
-import models.mongo.{EmploymentCYAModel, EmploymentUserData, ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
@@ -58,11 +58,11 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     def expectedCaption(taxYear:Int = taxYear) = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val fieldNames = Seq("Amount for business travel and subsistence expenses",
       "Job expenses",
-      "Uniform, work cloths and tools (Flat rate expenses)",
+      "Uniforms, work clothes, or tools",
       "Professional fees and subscriptions",
       "Hotel and meal expenses",
-      "Other expenses and capital allowances",
-      "Vehicle expense",
+      "Other expenses",
+      "Vehicle expenses",
       "Mileage allowance relief")
   }
 
@@ -70,11 +70,11 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     def expectedCaption(taxYear:Int = taxYear) = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val fieldNames = Seq("Amount for business travel and subsistence expenses",
       "Job expenses",
-      "Uniform, work cloths and tools (Flat rate expenses)",
+      "Uniforms, work clothes, or tools",
       "Professional fees and subscriptions",
       "Hotel and meal expenses",
-      "Other expenses and capital allowances",
-      "Vehicle expense",
+      "Other expenses",
+      "Vehicle expenses",
       "Mileage allowance relief")
   }
 
