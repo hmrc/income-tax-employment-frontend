@@ -33,7 +33,6 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   val employmentId = "001"
-  val mileageAmount: Option[BigDecimal] = Some(BigDecimal(4.9))
   val taxYearEOY: Int = taxYear - 1
   val urlEOY = s"$appUrl/$taxYearEOY/benefits/van-fuel?employmentId=$employmentId"
   val urlInYear = s"$appUrl/$taxYear/benefits/van-fuel?employmentId=$employmentId"
@@ -50,9 +49,6 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
     val yesSelector = "#value"
     val noSelector = "#value-no"
   }
-
-  val poundPrefixText = "£"
-  val amountInputName = "amount"
 
   trait SpecificExpectedResults {
     val expectedTitle: String
@@ -269,8 +265,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(cya(isPriorSubmission = false, benefitsWithVanFuelNo), User(mtditid, None, nino, sessionId, "agent"))
-            val inYearUrl = s"$appUrl/$taxYear/how-much-pay?employmentId=$employmentId"
-            urlGet(inYearUrl, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(urlInYear, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "has an SEE_OTHER status" in {
@@ -408,6 +403,20 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
               Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          }
+        }
+        "redirect to overview page if the user tries to hit this page with current taxYear" when {
+          lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            dropEmploymentDB()
+            insertCyaData(cya(isPriorSubmission = false, benefitsWithVanFuelNo), User(mtditid, None, nino, sessionId, "agent"))
+            urlPost(urlInYear, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = form)
+          }
+
+          "has an SEE_OTHER status" in {
+            result.status shouldBe SEE_OTHER
+            result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
           }
         }
 
