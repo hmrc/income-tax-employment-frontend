@@ -340,4 +340,24 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
       None
     )
   )
+
+  def fullCarVanFuelModel: CarVanFuelModel =
+    CarVanFuelModel(
+      carVanFuelQuestion = Some(true),
+      carQuestion = Some(true),
+      car = Some(100),
+      carFuelQuestion = Some(true),
+      carFuel = Some(200),
+      vanQuestion = Some(true),
+      van = Some(300),
+      vanFuelQuestion = Some(true),
+      vanFuel = Some(400),
+      mileageQuestion = Some(true),
+      mileage = Some(400)
+    )
+
+  def emptyCarVanFuelModel: CarVanFuelModel =
+    CarVanFuelModel(
+      carVanFuelQuestion = Some(false)
+    )
 }
