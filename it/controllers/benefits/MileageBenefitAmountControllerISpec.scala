@@ -49,7 +49,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
   def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
-  def fullCarVanFuelModel: CarVanFuelModel =
+  override def fullCarVanFuelModel: CarVanFuelModel =
     CarVanFuelModel(
       carVanFuelQuestion = Some(true),
       carQuestion = Some(true),
@@ -64,7 +64,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
       mileage = Some(400.00)
     )
 
-  def emptyCarVanFuelModel: CarVanFuelModel = CarVanFuelModel(None)
+  override def emptyCarVanFuelModel: CarVanFuelModel = CarVanFuelModel(None)
 
   def emptyMileageModel: CarVanFuelModel = fullCarVanFuelModel.copy(mileageQuestion = None, mileage = None)
 
