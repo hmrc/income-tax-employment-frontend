@@ -90,8 +90,8 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle: String = "How much was your company van benefit?"
-    val expectedHeading: String = "How much was your company van benefit?"
+    val expectedTitle: String = "How much was your total company van benefit?"
+    val expectedHeading: String = "How much was your total company van benefit?"
     val expectedContent: String = "You can find this information on your P11D form in section G, box 9."
     val expectedErrorTitle: String = s"Error: $expectedTitle"
     val wrongFormatErrorText: String = "Enter your company van benefit amount in the correct format"
@@ -100,8 +100,8 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much was your company van benefit?"
-    val expectedHeading: String = "How much was your company van benefit?"
+    val expectedTitle: String = "How much was your total company van benefit?"
+    val expectedHeading: String = "How much was your total company van benefit?"
     val expectedContent: String = "You can find this information on your P11D form in section G, box 9."
     val expectedErrorTitle: String = s"Error: $expectedTitle"
     val wrongFormatErrorText: String = "Enter your company van benefit amount in the correct format"
@@ -110,8 +110,8 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle: String = "How much was your client’s company van benefit?"
-    val expectedHeading: String = "How much was your client’s company van benefit?"
+    val expectedTitle: String = "How much was your client’s total company van benefit?"
+    val expectedHeading: String = "How much was your client’s total company van benefit?"
     val expectedContent: String = "You can find this information on your client’s P11D form in section G, box 9."
     val expectedErrorTitle: String = s"Error: $expectedTitle"
     val wrongFormatErrorText: String = "Enter your client’s company van benefit amount in the correct format"
@@ -120,8 +120,8 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much was your client’s company van benefit?"
-    val expectedHeading: String = "How much was your client’s company van benefit?"
+    val expectedTitle: String = "How much was your client’s total company van benefit?"
+    val expectedHeading: String = "How much was your client’s total company van benefit?"
     val expectedContent: String = "You can find this information on your client’s P11D form in section G, box 9."
     val expectedErrorTitle: String = s"Error: $expectedTitle"
     val wrongFormatErrorText: String = "Enter your client’s company van benefit amount in the correct format"
@@ -249,7 +249,7 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
           }
         }
 
-        "redirect to the company van question page when benefits has vanQuestion set to false and not prior submission" when {
+        "redirect to the mileage page (temp) when benefits has vanQuestion set to false and not prior submission" when {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
@@ -261,7 +261,7 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
+              Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/mileage?employmentId=$employmentId")
           }
         }
         "redirect to check employment benefits page when benefits has carVanFuelQuestion set to false" when {
