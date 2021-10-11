@@ -582,6 +582,7 @@ benefits.companyVanBenefits.title.agent = Did your client get a company van bene
 benefits.companyVanBenefits.error.individual = Select yes if you got a company van benefit
 benefits.companyVanBenefits.error.agent = Select yes if your client got a company van benefit
 
+
 benefits.receiveOwnCarMileageBenefit.title.individual = Did you get a mileage benefit for using your own car for work?
 benefits.receiveOwnCarMileageBenefit.title.agent = Did your client get a mileage benefit for using their own car for work?
 benefits.receiveOwnCarMileageBenefit.needToKnow.individual = We only need to know about payments made above our ‘approved amount‘. If you have payments above the ‘approved amount‘, they should be recorded in section E of your P11D form.
@@ -613,6 +614,11 @@ benefits.carFuelAmount.error.incorrectFormat.agent = Enter your client’s compa
 benefits.carFuelAmount.error.tooMuch.individual = Your company car fuel benefit must be less than £100,000,000,000
 benefits.carFuelAmount.error.tooMuch.agent = Your client’s company car fuel benefit must be less than £100,000,000,000
 
+benefits.companyVanFuelBenefits.title.individual = Did you get fuel benefit for a company van?
+benefits.companyVanFuelBenefits.title.agent = Did your client get fuel benefit for a company van?
+benefits.companyVanFuelBenefits.error.individual = Select yes if you got fuel benefit for a company van
+benefits.companyVanFuelBenefits.error.agent = Select yes if your client got fuel benefit for a company van
+
 benefits.companyVanAmountBenefits.title.individual = How much was your total company van benefit?
 benefits.companyVanAmountBenefits.title.agent = How much was your client’s total company van benefit?
 benefits.companyVanAmountBenefits.informationText.individual = You can find this information on your P11D form in section G, box 9.
@@ -623,3 +629,4 @@ benefits.companyVanAmountBenefits.error.overMaximum.individual = Your company va
 benefits.companyVanAmountBenefits.error.overMaximum.agent = Your client’s company van benefit must be less than £100,000,000,000
 benefits.companyVanAmountBenefits.error.wrongFormat.individual = Enter your company van benefit amount in the correct format
 benefits.companyVanAmountBenefits.error.wrongFormat.agent = Enter your client’s company van benefit amount in the correct format
+

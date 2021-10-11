@@ -18,7 +18,7 @@ package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
-import controllers.benefits.routes.ReceiveOwnCarMileageBenefitController
+import controllers.benefits.routes.CompanyVanFuelBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import models.mongo.EmploymentCYAModel
@@ -87,8 +87,7 @@ class CompanyVanBenefitsAmountController @Inject()(implicit val cc: MessagesCont
                   if (cya.isPriorSubmission) {
                     Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                   } else {
-                    //TODO: change to companyVanFuelBenefits Controller, doesn't exist yet.
-                    Redirect(ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId))
+                    Redirect(CompanyVanFuelBenefitsController.show(taxYear, employmentId))
                   }
                 }
             }
