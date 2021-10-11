@@ -133,8 +133,8 @@ object RedirectService extends Logging {
 
     vanFuelBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO GO TO VAN fuel yes no
-        ConditionalRedirect(vanFuelQuestion.isEmpty, CompanyCarFuelBenefitsController.show(taxYear, employmentId)),
+
+        ConditionalRedirect(vanFuelQuestion.isEmpty, CompanyVanFuelBenefitsController.show(taxYear, employmentId)),
         ConditionalRedirect(vanFuelQuestion.contains(false), ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
         ConditionalRedirect(vanFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
       )
