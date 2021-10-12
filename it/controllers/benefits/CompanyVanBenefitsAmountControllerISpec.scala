@@ -233,7 +233,7 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
           }
         }
 
-        "redirect to the car question page when benefits has carVanFuelQuestion set to true but van question empty" when {
+        "redirect to the van question page when benefits has carVanFuelQuestion set to true but van question empty" when {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
@@ -245,7 +245,7 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/company-car?employmentId=$employmentId")
+              Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
           }
         }
 
