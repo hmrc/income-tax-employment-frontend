@@ -16,7 +16,7 @@
 
 package controllers.benefits
 
-import controllers.employment.routes.CompanyCarBenefitsController
+import controllers.benefits.routes.CompanyCarBenefitsController
 import forms.YesNoForm
 import models.User
 import models.employment.{BenefitsViewModel, CarVanFuelModel}
@@ -528,8 +528,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          //TODO: GO TO COMPANY CAR AMOUNT PAGE WHEN IMPLEMENTED IN REDIRECT SERVICE
-          Some("/income-through-software/return/employment-income/2021/benefits/company-car?employmentId=001")
+          Some("/income-through-software/return/employment-income/2021/benefits/company-car-amount?employmentId=001")
 
       }
     }
@@ -546,8 +545,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          //TODO: GO TO CAR FUEL AMOUNT PAGE WHEN IMPLEMENTED IN REDIRECT SERVICE
-          Some("/income-through-software/return/employment-income/2021/benefits/car-fuel?employmentId=001")
+          Some("/income-through-software/return/employment-income/2021/benefits/car-fuel-amount?employmentId=001")
 
       }
     }

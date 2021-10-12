@@ -60,7 +60,7 @@ case class CarVanFuelModel(
 
   def carSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
     carQuestion match {
-      case Some(true) => if(car.isDefined) None else Some(CompanyCarBenefitsController.show(taxYear, employmentId)) // TODO Car amount
+      case Some(true) => if(car.isDefined) None else Some(CompanyCarBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(CompanyCarBenefitsController.show(taxYear, employmentId))
     }
@@ -68,7 +68,7 @@ case class CarVanFuelModel(
 
   def carFuelSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     carFuelQuestion match {
-      case Some(true) => if(carFuel.isDefined) None else Some(CompanyCarFuelBenefitsController.show(taxYear, employmentId)) // TODO Car fuel amount
+      case Some(true) => if(carFuel.isDefined) None else Some(CarFuelBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(CompanyCarFuelBenefitsController.show(taxYear, employmentId))
     }
@@ -102,7 +102,7 @@ case class CarVanFuelModel(
     mileageQuestion match {
       case Some(true) => if(mileage.isDefined) None else Some(MileageBenefitAmountController.show(taxYear,employmentId))
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) // TODO Mileage yes no
+      case None => Some(ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId))
     }
   }
 }

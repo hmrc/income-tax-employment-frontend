@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package controllers.employment
+package controllers.benefits
 
 import config.MockEmploymentSessionService
 import controllers.employment.routes.CheckYourBenefitsController
-import forms.YesNoForm
 import models.employment.EmploymentSource
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
@@ -26,7 +25,7 @@ import play.api.mvc.Result
 import play.api.mvc.Results.{BadRequest, InternalServerError, Ok, Redirect}
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout}
 import utils.UnitTestWithApp
-import views.html.employment.CompanyCarBenefitsView
+import views.html.benefits.CompanyCarBenefitsView
 
 import scala.concurrent.Future
 
