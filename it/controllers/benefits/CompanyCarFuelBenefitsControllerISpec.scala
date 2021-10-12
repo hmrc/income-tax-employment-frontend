@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package controllers.employment
+package controllers.benefits
 
+import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.User
 import models.employment.{BenefitsViewModel, CarVanFuelModel}
@@ -26,7 +27,6 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import controllers.employment.routes.CheckYourBenefitsController
 
 class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 

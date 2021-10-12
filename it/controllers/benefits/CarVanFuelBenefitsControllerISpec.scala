@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.employment
+package controllers.benefits
 
 import forms.YesNoForm
 import models.User

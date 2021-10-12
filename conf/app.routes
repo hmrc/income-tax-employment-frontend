@@ -27,8 +27,8 @@ POST       /:taxYear/employment-start-date                  controllers.employme
 GET        /:taxYear/employment-end-date                    controllers.employment.EmployerLeaveDateController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/employment-end-date                    controllers.employment.EmployerLeaveDateController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/still-working-for-employer              controllers.employment.StillWorkingForEmployerController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/still-working-for-employer              controllers.employment.StillWorkingForEmployerController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/still-working-for-employer             controllers.employment.StillWorkingForEmployerController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/still-working-for-employer             controllers.employment.StillWorkingForEmployerController.submit(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/employer-paye-reference                controllers.employment.PayeRefController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/employer-paye-reference                controllers.employment.PayeRefController.submit(taxYear: Int, employmentId: String)
@@ -57,14 +57,14 @@ POST       /:taxYear/benefits/company-van                   controllers.benefits
 GET        /:taxYear/benefits/company-van-amount            controllers.benefits.CompanyVanBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/company-van-amount            controllers.benefits.CompanyVanBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/car-fuel                      controllers.employment.CompanyCarFuelBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/car-fuel                      controllers.employment.CompanyCarFuelBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/car-fuel                      controllers.benefits.CompanyCarFuelBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/car-fuel                      controllers.benefits.CompanyCarFuelBenefitsController.submit(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/benefits/company-car-amount            controllers.benefits.CompanyCarBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/company-car-amount            controllers.benefits.CompanyCarBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/mileage                      controllers.benefits.ReceiveOwnCarMileageBenefitController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/mileage                      controllers.benefits.ReceiveOwnCarMileageBenefitController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/mileage                       controllers.benefits.ReceiveOwnCarMileageBenefitController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/mileage                       controllers.benefits.ReceiveOwnCarMileageBenefitController.submit(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/benefits/car-fuel-amount               controllers.benefits.CarFuelBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/car-fuel-amount               controllers.benefits.CarFuelBenefitsAmountController.submit(taxYear: Int, employmentId: String)
@@ -89,9 +89,9 @@ GET        /:taxYear/uk-tax                                 controllers.employme
 
 POST       /:taxYear/uk-tax                                 controllers.employment.EmploymentTaxController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/company-car                   controllers.employment.CompanyCarBenefitsController.show(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/company-car                   controllers.benefits.CompanyCarBenefitsController.show(taxYear: Int, employmentId: String)
 
-POST       /:taxYear/benefits/company-car                   controllers.employment.CompanyCarBenefitsController.submit(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/company-car                   controllers.benefits.CompanyCarBenefitsController.submit(taxYear: Int, employmentId: String)
 
 GET        /language/:lang                                  controllers.LanguageSwitchController.switchToLanguage(lang: String)
 
