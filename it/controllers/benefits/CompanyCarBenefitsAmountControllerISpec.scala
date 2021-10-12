@@ -16,7 +16,8 @@
 
 package controllers.benefits
 
-import controllers.employment.routes.{CheckYourBenefitsController, CompanyCarFuelBenefitsController}
+import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.routes.CompanyCarFuelBenefitsController
 import models.{IncomeTaxUserData, User}
 import models.employment.{BenefitsViewModel, CarVanFuelModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}

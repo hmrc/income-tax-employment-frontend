@@ -16,8 +16,8 @@
 
 package controllers.benefits
 
-import controllers.benefits.routes.{CompanyVanBenefitsController,ReceiveOwnCarMileageBenefitController}
-import controllers.employment.routes.{CheckYourBenefitsController, CompanyCarBenefitsController, CompanyCarFuelBenefitsController}
+import controllers.benefits.routes.{CompanyVanBenefitsController,ReceiveOwnCarMileageBenefitController, CompanyCarBenefitsController, CompanyCarFuelBenefitsController}
+import controllers.employment.routes.CheckYourBenefitsController
 import forms.AmountForm
 import models.employment.{BenefitsViewModel, CarVanFuelModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -288,7 +288,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
             lazy val result: WSResponse = {
               dropEmploymentDB()
               noUserDataStub(nino, taxYearEOY)
-              insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(carFuel = None))))), userRequest)
+              insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(carFuelQuestion = None))))), userRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
             }

@@ -64,13 +64,13 @@
             if(benefits.vehicleDetailsPopulated){
                 Seq(
                     benefits.carVanFuelModel.flatMap(_.carQuestion).map{
-                        carQuestion => showQuestionRow("checkYourBenefits.companyCar", carQuestion, controllers.employment.routes.CompanyCarBenefitsController.show(taxYear, employmentId))
+                        carQuestion => showQuestionRow("checkYourBenefits.companyCar", carQuestion, controllers.benefits.routes.CompanyCarBenefitsController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.car).map{
                         car => showRows("checkYourBenefits.companyCarAmount", car, controllers.benefits.routes.CompanyCarBenefitsAmountController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.carFuelQuestion).map{
-                        carFuelQuestion => showQuestionRow("checkYourBenefits.fuelForCompanyCar", carFuelQuestion, controllers.employment.routes.CompanyCarFuelBenefitsController.show(taxYear, employmentId))
+                        carFuelQuestion => showQuestionRow("checkYourBenefits.fuelForCompanyCar", carFuelQuestion, controllers.benefits.routes.CompanyCarFuelBenefitsController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.carFuel).map{
                         carFuel => showRows("checkYourBenefits.fuelForCompanyCarAmount", carFuel, controllers.benefits.routes.CarFuelBenefitsAmountController.show(taxYear, employmentId))
