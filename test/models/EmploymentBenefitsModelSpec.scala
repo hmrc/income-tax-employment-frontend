@@ -17,7 +17,7 @@
 package models
 
 import com.codahale.metrics.SharedMetricRegistries
-import models.employment.{Benefits, BenefitsViewModel, CarVanFuelModel}
+import models.employment.{AccommodationRelocationModel, Benefits, BenefitsViewModel, CarVanFuelModel}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.libs.json.{JsValue, Json}
 import utils.UnitTest
@@ -34,12 +34,15 @@ class EmploymentBenefitsModelSpec extends UnitTest {
       )
 
   val benefitsViewModel: BenefitsViewModel = BenefitsViewModel(
+    Some(AccommodationRelocationModel(
+      Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))
+    ),
     Some(CarVanFuelModel(
       Some(true), Some(true), Some(100), Some(true), Some(100), Some(true), Some(100), Some(true), Some(100), Some(true), Some(100)
     )
     ), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
     Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
-    Some(amount), Some(amount), Some(amount), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
+    Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
     Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
     Some(true), Some(true), Some(true), None, isUsingCustomerData = true, true)
 

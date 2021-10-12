@@ -15,6 +15,9 @@ POST       /:taxYear/check-employment-expenses              controllers.employme
 GET        /:taxYear/benefits/mileage-amount                controllers.benefits.MileageBenefitAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/mileage-amount                controllers.benefits.MileageBenefitAmountController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/accommodation-relocation     controllers.benefits.AccommodationRelocationBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/accommodation-relocation     controllers.benefits.AccommodationRelocationBenefitsController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/check-employment-benefits              controllers.employment.CheckYourBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/check-employment-benefits              controllers.employment.CheckYourBenefitsController.submit(taxYear: Int, employmentId: String)
 
@@ -71,6 +74,9 @@ POST       /:taxYear/benefits/car-fuel-amount               controllers.benefits
 
 GET        /:taxYear/benefits/van-fuel                      controllers.benefits.CompanyVanFuelBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/van-fuel                      controllers.benefits.CompanyVanFuelBenefitsController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/benefits/accommodation-relocation     controllers.benefits.AccommodationRelocationBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/accommodation-relocation     controllers.benefits.AccommodationRelocationBenefitsController.submit(taxYear: Int, employmentId: String)
 
 GET        /sign-out                                        controllers.SignOutController.signOut(isAgent: Boolean)
 

@@ -59,7 +59,7 @@ class RedirectServiceSpec extends UnitTest {
             mileageQuestion = Some(true),
             mileage = Some(100)
           )),
-          accommodation = Some(100), submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true,
+          assets = Some(100), submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true,
           isBenefitsReceived = true
         )
       ))
