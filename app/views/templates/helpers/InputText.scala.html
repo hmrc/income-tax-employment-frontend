@@ -57,7 +57,7 @@
     hint = hint.map(hintHtml => Hint(
         content = HtmlContent(hintHtml)
     )),
-    value = if(currency) form(name).value.map(bigDecimalCurrency(_, "")) else form(name).value,
+    value = if(currency && form.errors(id).isEmpty) form(name).value.map(bigDecimalCurrency(_, "")) else form(name).value,
     autocomplete = autocomplete.map(value => value),
     inputType = inputType,
     errorMessage = form(name).error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*)))),
