@@ -335,6 +335,150 @@ class RedirectServiceSpec extends UnitTest {
         status(response) shouldBe SEE_OTHER
         redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
       }
+      "its a new submission and hitting the common benefits method when benefits received is false " in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            isBenefitsReceived = false
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.commonBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "its a new submission and hitting the common car van fuel benefits method when carVanFuel is false " in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carVanFuelQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "its a prior submission and hitting the common car van fuel benefits method when carVanFuel is false " in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carVanFuelQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "its a prior submission and hitting the car benefits amount method when carQuestion is false " in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.carBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "its a prior submission and hitting the car fuel benefits amount method when carFuelQuestion is false " in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carFuelQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.carFuelBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "its a prior submission and hitting the van benefits amount method when vanQuestion is false " in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(vanQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.vanBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "its a prior submission and hitting the van fuel benefits amount method when vanFuelQuestion is false " in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(vanFuelQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.vanFuelBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "its a new submission and hitting the mileage benefits amount method when mileageQuestion is false " in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(mileageQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.mileageBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "its a prior submission and hitting the mileage benefits amount method when mileageQuestion is false " in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(mileageQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.mileageBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
     }
     "redirect when CYA is empty" when {
       "its a benefits submission" in {
