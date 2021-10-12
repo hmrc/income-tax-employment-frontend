@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.employment
+package controllers.benefits
 
 import forms.YesNoForm
 import models.User
@@ -105,7 +105,6 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   ".show" when {
-    import Selectors._
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
@@ -133,7 +132,6 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   ".submit" when {
-    import Selectors._
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {

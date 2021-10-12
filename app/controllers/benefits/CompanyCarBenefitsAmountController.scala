@@ -17,7 +17,8 @@
 package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.{CheckYourBenefitsController, CompanyCarFuelBenefitsController}
+import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.routes.CompanyCarFuelBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import models.mongo.EmploymentCYAModel

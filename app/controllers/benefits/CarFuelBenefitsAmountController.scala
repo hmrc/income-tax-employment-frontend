@@ -26,8 +26,8 @@ import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.CarFuelBenefitsAmountView
-import controllers.employment.routes.{CheckYourBenefitsController, CompanyCarFuelBenefitsController}
-import controllers.benefits.routes.CompanyVanBenefitsController
+import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.routes.{CompanyVanBenefitsController, CompanyCarFuelBenefitsController}
 import models.mongo.EmploymentCYAModel
 import services.RedirectService.{ConditionalRedirect, EmploymentBenefitsType, commonCarVanFuelBenefitsRedirects, redirectBasedOnCurrentAnswers}
 

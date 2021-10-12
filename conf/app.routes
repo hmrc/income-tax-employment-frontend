@@ -89,9 +89,9 @@ GET        /:taxYear/uk-tax                                 controllers.employme
 
 POST       /:taxYear/uk-tax                                 controllers.employment.EmploymentTaxController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/company-car                   controllers.employment.CompanyCarBenefitsController.show(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/company-car                   controllers.benefits.CompanyCarBenefitsController.show(taxYear: Int, employmentId: String)
 
-POST       /:taxYear/benefits/company-car                   controllers.employment.CompanyCarBenefitsController.submit(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/company-car                   controllers.benefits.CompanyCarBenefitsController.submit(taxYear: Int, employmentId: String)
 
 GET        /language/:lang                                  controllers.LanguageSwitchController.switchToLanguage(lang: String)
 
