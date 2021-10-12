@@ -252,7 +252,6 @@ class RedirectServiceSpec extends UnitTest {
         redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/company-van?employmentId=001"
       }
     }
-//    TODO: This will be updated when the page is there, currently goes to check your benefits
     "redirect to van fuel yes no page" when {
       "its a new submission and attempted to view the van fuel amount page but the van fuel question is empty" in {
 
@@ -268,7 +267,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/van-fuel?employmentId=001"
       }
     }
     "redirect to mileage benefit yes no page" when {
