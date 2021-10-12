@@ -20,7 +20,6 @@ import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue
 import controllers.benefits.routes._
-import controllers.employment.routes._
 
 case class CarVanFuelModel(
                             carVanFuelQuestion: Option[Boolean] = None,
