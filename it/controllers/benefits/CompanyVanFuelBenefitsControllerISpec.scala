@@ -16,7 +16,7 @@
 
 package controllers.benefits
 
-import controllers.employment.routes.CompanyCarBenefitsController
+import controllers.benefits.routes.CompanyCarBenefitsController
 import forms.YesNoForm
 import models.User
 import models.employment.{BenefitsViewModel, CarVanFuelModel}
