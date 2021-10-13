@@ -619,6 +619,17 @@ benefits.companyVanFuelBenefits.title.agent = Did your client get fuel benefit f
 benefits.companyVanFuelBenefits.error.individual = Select yes if you got fuel benefit for a company van
 benefits.companyVanFuelBenefits.error.agent = Select yes if your client got fuel benefit for a company van
 
+benefits.companyVanFuelAmountBenefits.title.individual = How much was your total company van fuel benefit?
+benefits.companyVanFuelAmountBenefits.title.agent = How much was your client’s total company van fuel benefit?
+benefits.companyVanFuelAmountBenefits.informationText.individual = You can find this information on your P11D form in section G, box 10.
+benefits.companyVanFuelAmountBenefits.informationText.agent = You can find this information on your client’s P11D form in section G, box 10.
+benefits.companyVanFuelAmountBenefits.error.noEntry.individual = Enter your company van fuel benefit amount
+benefits.companyVanFuelAmountBenefits.error.noEntry.agent = Enter your client’s company van fuel benefit amount
+benefits.companyVanFuelAmountBenefits.error.overMaximum.individual = Your company van fuel benefit must be less than £100,000,000,000
+benefits.companyVanFuelAmountBenefits.error.overMaximum.agent = Your client’s company van fuel benefit must be less than £100,000,000,000
+benefits.companyVanFuelAmountBenefits.error.wrongFormat.individual = Enter your company van fuel benefit amount in the correct format
+benefits.companyVanFuelAmountBenefits.error.wrongFormat.agent = Enter your client’s company van fuel benefit amount in the correct format
+
 benefits.companyVanAmountBenefits.title.individual = How much was your total company van benefit?
 benefits.companyVanAmountBenefits.title.agent = How much was your client’s total company van benefit?
 benefits.companyVanAmountBenefits.informationText.individual = You can find this information on your P11D form in section G, box 9.
