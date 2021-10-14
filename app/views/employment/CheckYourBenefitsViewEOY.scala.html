@@ -85,7 +85,7 @@
                         vanFuelQuestion => showQuestionRow("checkYourBenefits.fuelForCompanyVan", vanFuelQuestion, controllers.benefits.routes.CompanyVanFuelBenefitsController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.vanFuel).map{
-                        vanFuel => showRows("checkYourBenefits.fuelForCompanyVanAmount", vanFuel)
+                        vanFuel => showRows("checkYourBenefits.fuelForCompanyVanAmount", vanFuel, controllers.benefits.routes.CompanyVanFuelBenefitsAmountController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.mileageQuestion).map{
                         mileageQuestion => showQuestionRow("checkYourBenefits.mileageBenefit", mileageQuestion, controllers.benefits.routes.ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId))
