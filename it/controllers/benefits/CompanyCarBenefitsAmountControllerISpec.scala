@@ -326,7 +326,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           }
         }
 
-        "redirect to check employment benefits page when benefits has carVanFuelQuestion set to false" when {
+        "redirect to check accommodation relocation page when benefits has carVanFuelQuestion set to false" when {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
@@ -338,7 +338,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+              Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/accommodation-relocation?employmentId=$employmentId")
           }
         }
 

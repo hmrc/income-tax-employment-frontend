@@ -225,7 +225,7 @@ class AccommodationRelocationControllerISpec extends IntegrationTest with ViewHe
           }
 
         }
-        "it is not EOY" which {
+        "Redirect to overview page if it is not EOY" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
