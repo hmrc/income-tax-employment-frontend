@@ -294,7 +294,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/mileage?employmentId=$employmentId")
+              Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/mileage?employmentId=$employmentId")
           }
         }
 
@@ -565,7 +565,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
             "has an SEE_OTHER status" in {
               result.status shouldBe SEE_OTHER
               result.header("location") shouldBe
-                Some(s"/income-through-software/return/employment-income/$taxYearEOY/mileage?employmentId=$employmentId")
+                Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/mileage?employmentId=$employmentId")
             }
           }
 
