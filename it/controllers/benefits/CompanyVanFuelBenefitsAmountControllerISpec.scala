@@ -167,6 +167,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldCheck(amountInputName, inputSelector)
+          inputFieldValueCheck("", inputSelector)
 
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
@@ -285,7 +286,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(vanQuestion = Some(false)))))), userRequest)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(vanQuestion = Some(false)))))), userRequest)
             urlGet(url(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -293,7 +294,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+              Some(s"/income-through-software/return/employment-income/$taxYearEOY/mileage?employmentId=$employmentId")
           }
         }
 
@@ -556,7 +557,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(vanQuestion = Some(false)))))), userRequest)
+              insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(vanQuestion = Some(false)))))), userRequest)
               urlPost(url(taxYearEOY), follow=false,
                 welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))            }
 
@@ -564,7 +565,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
             "has an SEE_OTHER status" in {
               result.status shouldBe SEE_OTHER
               result.header("location") shouldBe
-                Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+                Some(s"/income-through-software/return/employment-income/$taxYearEOY/mileage?employmentId=$employmentId")
             }
           }
 
