@@ -270,6 +270,24 @@ class RedirectServiceSpec extends UnitTest {
         redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/van-fuel?employmentId=001"
       }
     }
+    "redirect using accommodation methods" when {
+      "it's a new submission and attempted to view the accommodation page but the car question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.accommodationRelocationBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/company-car?employmentId=001"
+      }
+    }
     "redirect to mileage benefit yes no page" when {
       "it's a new submission and attempted to view the van fuel benefit amount page but the van fuel question is false" in {
 
