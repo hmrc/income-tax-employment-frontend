@@ -17,7 +17,7 @@
 package controllers.employment
 
 import models.User
-import models.employment.BenefitsViewModel
+import models.employment.{AccommodationRelocationModel, BenefitsViewModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -659,6 +659,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val companyVanFuelBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/van-fuel?employmentId=001"
     val companyVanBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/company-van-amount?employmentId=001"
     val companyVanFuelBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/van-fuel-amount?employmentId=001"
+    val accommodationRelocationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/accommodation-relocation?employmentId=001"
+
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -795,7 +797,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.mileageBenefitAmount, "£5", 5, 11, s"${user.commonExpectedResults.changeText} ${specificResults.mileageBenefitAmountHiddenText}", mileageAmountBenefitsHref)
 
           textOnPageCheck(commonResults.accommodationHeader, fieldHeaderSelector(6))
-          changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.yes, 7, 1, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.yes, 7, 1, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationSubheadingHiddenText}", accommodationRelocationBenefitsHref)
           changeAmountRowCheck(commonResults.accommodation, commonResults.yes, 7, 2, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.accommodationAmount, "£6", 7, 3, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.qualifyingRelocationCosts, commonResults.yes, 7, 4, s"${user.commonExpectedResults.changeText} ${specificResults.qualifyingRelocationCostsHiddenText}", dummyHref)
@@ -917,7 +919,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.mileageBenefitAmount, "£5", 5, 9, s"${user.commonExpectedResults.changeText} ${specificResults.mileageBenefitAmountHiddenText}", mileageAmountBenefitsHref)
 
           textOnPageCheck(user.commonExpectedResults.accommodationHeader, fieldHeaderSelector(6))
-          changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.no, 7, 1, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.no, 7, 1, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationSubheadingHiddenText}", accommodationRelocationBenefitsHref)
           
           textOnPageCheck(user.commonExpectedResults.travelHeader, fieldHeaderSelector(8))
           changeAmountRowCheck(commonResults.travelSubheading, commonResults.no, 9, 1, s"${user.commonExpectedResults.changeText} ${specificResults.travelSubheadingHiddenText}", dummyHref)
@@ -1000,7 +1002,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             EmploymentCYAModel(
               EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc),
               Some(BenefitsViewModel(
-                accommodation = Some(3.00), isUsingCustomerData = true
+                accommodationRelocationModel = Some(AccommodationRelocationModel(
+                  accommodationRelocationQuestion = Some(true), accommodationQuestion = Some(true), accommodation = Some(3.00), qualifyingRelocationExpensesQuestion = Some(false), nonQualifyingRelocationExpensesQuestion = Some(false))) , isUsingCustomerData = true
               ))
             )
 
@@ -1028,7 +1031,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.carSubheading, commonResults.no, 4, 1, s"${user.commonExpectedResults.changeText} ${specificResults.carSubheadingHiddenText}", carVanFuelBenefitsHref)
 
           textOnPageCheck(user.commonExpectedResults.accommodationHeader, fieldHeaderSelector(5))
-          changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.yes, 6, 1, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.yes, 6, 1, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationSubheadingHiddenText}", accommodationRelocationBenefitsHref)
           changeAmountRowCheck(commonResults.accommodation, commonResults.yes, 6, 2, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.accommodationAmount, "£3", 6, 3, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.qualifyingRelocationCosts, commonResults.no, 6, 4, s"${user.commonExpectedResults.changeText} ${specificResults.qualifyingRelocationCostsHiddenText}", dummyHref)

@@ -101,26 +101,26 @@
 
     <h2 class="govuk-label--m">@messages("checkYourBenefits.accommodationHeader")</h2>
     @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.accommodationSubheading", benefits.accommodationDetailsPopulated))
+        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.accommodationSubheading", benefits.accommodationRelocationModel.flatMap(_.accommodationRelocationQuestion).getOrElse(false), controllers.benefits.routes.AccommodationRelocationBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
         if(benefits.accommodationDetailsPopulated){
             Seq(
-                benefits.accommodationQuestion.map{
+                benefits.accommodationRelocationModel.flatMap(_.accommodationQuestion).map{
                     accommodationQuestion => showQuestionRow("checkYourBenefits.accommodation", accommodationQuestion)
                 },
-                benefits.accommodation.map{
+                benefits.accommodationRelocationModel.flatMap(_.accommodation).map{
                     accommodation => showRows("checkYourBenefits.accommodationAmount", accommodation)
                 },
-                benefits.qualifyingRelocationExpensesQuestion.map{
+                benefits.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpensesQuestion).map{
                     qualifyingRelocationExpensesQuestion => showQuestionRow("checkYourBenefits.qualifyingRelocationCosts", qualifyingRelocationExpensesQuestion)
                 },
-                benefits.qualifyingRelocationExpenses.map{
+                benefits.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses).map{
                     qualifyingRelocationExpenses => showRows("checkYourBenefits.qualifyingRelocationCostsAmount", qualifyingRelocationExpenses)
                 },
-                benefits.nonQualifyingRelocationExpensesQuestion.map{
+                benefits.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpensesQuestion).map{
                     nonQualifyingRelocationExpensesQuestion => showQuestionRow("checkYourBenefits.nonQualifyingRelocationCosts", nonQualifyingRelocationExpensesQuestion)
                 },
-                benefits.nonQualifyingRelocationExpenses.map{
+                benefits.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses).map{
                     nonQualifyingRelocationExpenses => showRows("checkYourBenefits.nonQualifyingRelocationCostsAmount", nonQualifyingRelocationExpenses)
                 }
             ).flatten
