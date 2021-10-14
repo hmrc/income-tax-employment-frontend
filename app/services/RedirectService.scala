@@ -185,10 +185,6 @@ object RedirectService extends Logging {
       )
   }
 
-  def accommodationBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-    commonAccommodationBenefitsRedirects(cya, taxYear, employmentId)
-  }
-
   def accommodationBenefitsAmountRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
 
     val accommodationQuestion = cya.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodationQuestion))
@@ -208,7 +204,7 @@ object RedirectService extends Logging {
     val accommodationSectionFinished = toConditionalRedirect(
       cya.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodationSectionFinished(taxYear, employmentId))))
 
-    accommodationBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(accommodationSectionFinished).flatten
+    commonAccommodationBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(accommodationSectionFinished).flatten
   }
 
   def qualifyingRelocationBenefitsAmountRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
@@ -233,7 +229,7 @@ object RedirectService extends Logging {
     val qualifyingRelocationSectionFinished = toConditionalRedirect(
       cya.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationSectionFinished(taxYear, employmentId))))
 
-    accommodationBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(accommodationSectionFinished,qualifyingRelocationSectionFinished).flatten
+    commonAccommodationBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(accommodationSectionFinished,qualifyingRelocationSectionFinished).flatten
   }
 
   def nonQualifyingRelocationBenefitsAmountRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
