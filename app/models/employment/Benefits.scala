@@ -93,6 +93,22 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
     }
   }
 
+  def accommodationRelocationSection(cyaBenefits: Option[BenefitsViewModel] = None): Option[AccommodationRelocationModel] = {
+    if(cyaBenefits.isDefined && cyaBenefits.map(_.accommodationRelocationModel).isDefined){
+      cyaBenefits.flatMap(_.accommodationRelocationModel)
+    } else {
+      Some(AccommodationRelocationModel(
+        Some(accommodationDetailsPopulated),
+        accommodationQuestion = Some(accommodation.isDefined),
+        accommodation = accommodation,
+        qualifyingRelocationExpensesQuestion = Some(qualifyingRelocationExpenses.isDefined),
+        qualifyingRelocationExpenses = qualifyingRelocationExpenses,
+        nonQualifyingRelocationExpensesQuestion = Some(nonQualifyingRelocationExpenses.isDefined),
+        nonQualifyingRelocationExpenses = nonQualifyingRelocationExpenses
+      ))
+    }
+  }
+
   def benefitsPopulated(cyaBenefits: Option[BenefitsViewModel] = None): Boolean = {
     val hasBenefits: Boolean = cyaBenefits.exists(_.isBenefitsReceived)
       hasBenefits || vehicleDetailsPopulated || accommodationDetailsPopulated || travelDetailsPopulated || utilitiesDetailsPopulated ||
@@ -104,11 +120,11 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
                           cyaBenefits: Option[BenefitsViewModel] = None): BenefitsViewModel = {
     BenefitsViewModel(
       carVanFuelModel = carVanFuelSection(cyaBenefits),
-      accommodation, assets, assetTransfer, beneficialLoan, educationalServices, entertaining, expenses, medicalInsurance,
-      telephone, service, taxableExpenses,  nonQualifyingRelocationExpenses, nurseryPlaces, otherItems,
-      paymentsOnEmployeesBehalf, personalIncidentalExpenses, qualifyingRelocationExpenses, employerProvidedProfessionalSubscriptions,
+      accommodationRelocationModel = accommodationRelocationSection(cyaBenefits),
+      assets, assetTransfer, beneficialLoan,
+      educationalServices, entertaining, expenses, medicalInsurance, telephone, service, taxableExpenses, nurseryPlaces,
+      otherItems, paymentsOnEmployeesBehalf, personalIncidentalExpenses, employerProvidedProfessionalSubscriptions,
       employerProvidedServices, incomeTaxPaidByDirector, travelAndSubsistence, vouchersAndCreditCards, nonCash,
-      accommodationQuestion = Some(accommodation.isDefined),
       assetsQuestion = Some(assets.isDefined),
       assetTransferQuestion = Some(assetTransfer.isDefined),
       beneficialLoanQuestion = Some(beneficialLoan.isDefined),
@@ -119,12 +135,10 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
       telephoneQuestion = Some(telephone.isDefined),
       serviceQuestion = Some(service.isDefined),
       taxableExpensesQuestion = Some(taxableExpenses.isDefined),
-      nonQualifyingRelocationExpensesQuestion = Some(nonQualifyingRelocationExpenses.isDefined),
       nurseryPlacesQuestion = Some(nurseryPlaces.isDefined),
       otherItemsQuestion = Some(otherItems.isDefined),
       paymentsOnEmployeesBehalfQuestion = Some(paymentsOnEmployeesBehalf.isDefined),
       personalIncidentalExpensesQuestion = Some(personalIncidentalExpenses.isDefined),
-      qualifyingRelocationExpensesQuestion = Some(qualifyingRelocationExpenses.isDefined),
       employerProvidedProfessionalSubscriptionsQuestion = Some(employerProvidedProfessionalSubscriptions.isDefined),
       employerProvidedServicesQuestion = Some(employerProvidedServices.isDefined),
       incomeTaxPaidByDirectorQuestion = Some(incomeTaxPaidByDirector.isDefined),

@@ -129,7 +129,7 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
     val maxAmountErrorText: String = "Your client’s company van benefit must be less than £100,000,000,000"
   }
 
-  def benefits(carModel: CarVanFuelModel): BenefitsViewModel = BenefitsViewModel(Some(carModel), isUsingCustomerData = true, isBenefitsReceived = true)
+  def benefits(carModel: CarVanFuelModel): BenefitsViewModel = BenefitsViewModel(carVanFuelModel=Some(carModel), isUsingCustomerData = true, isBenefitsReceived = true)
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),

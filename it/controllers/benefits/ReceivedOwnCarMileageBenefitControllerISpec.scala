@@ -436,7 +436,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
         welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = form)
     }
 
-    s"redirect to check employment benefits page when benefits has carVanFuelQuestion set to false " +
+    s"redirect to accommodation relocation page when benefits has carVanFuelQuestion set to false " +
       s"for a $getOrPost and language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
@@ -448,7 +448,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some("/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001")
+          Some("/income-through-software/return/employment-income/2021/benefits/accommodation-relocation?employmentId=001")
       }
     }
 

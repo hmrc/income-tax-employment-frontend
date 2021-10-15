@@ -49,7 +49,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
   def emptyCompanyVanModel: CarVanFuelModel = fullCarVanFuelModel.copy(vanQuestion = None, van = None)
 
-  def benefits(carModel: CarVanFuelModel): BenefitsViewModel = BenefitsViewModel(Some(carModel), isBenefitsReceived = true, isUsingCustomerData = true)
+  def benefits(carModel: CarVanFuelModel): BenefitsViewModel = BenefitsViewModel(carVanFuelModel=Some(carModel), isBenefitsReceived = true, isUsingCustomerData = true)
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
