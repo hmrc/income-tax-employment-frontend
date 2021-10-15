@@ -46,6 +46,8 @@ case class AccommodationRelocationModel(
     }
   }
 
+
+  //scalastyle:off
   def accommodationSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
     accommodationQuestion match {
       case Some(true) => if(accommodation.isDefined) None else Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) //TODO accommodation amount page
@@ -64,11 +66,12 @@ case class AccommodationRelocationModel(
 
   def nonQualifyingRelocationSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     nonQualifyingRelocationExpensesQuestion match {
-      case Some(true) => if(nonQualifyingRelocationExpenses.isDefined) None else Some(MileageBenefitAmountController.show(taxYear,employmentId)) // TODO non qual relocation amount page
+      case Some(true) => if(nonQualifyingRelocationExpenses.isDefined) None else Some(AccommodationRelocationBenefitsController.show(taxYear,employmentId)) // TODO non qual relocation amount page
       case Some(false) => None
-      case None => Some(ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId)) //TODO non qual relocation yes no page
+      case None => Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) //TODO non qual relocation yes no page
     }
   }
+  //scalastyle:on
 }
 
 object AccommodationRelocationModel{
