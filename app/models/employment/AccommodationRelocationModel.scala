@@ -18,8 +18,8 @@ package models.employment
 
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
-import utils.EncryptedValue
 import controllers.benefits.routes._
+import utils.EncryptedValue
 
 case class AccommodationRelocationModel(
                                        accommodationRelocationQuestion: Option[Boolean] = None,

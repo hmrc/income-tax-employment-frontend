@@ -58,8 +58,7 @@ object RedirectService extends Logging {
     commonBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(carVanFuelQuestion.isEmpty, CarVanFuelBenefitsController.show(taxYear, employmentId)),
-        //TODO go to accommodation section
-        ConditionalRedirect(carVanFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
+        ConditionalRedirect(carVanFuelQuestion.contains(false), AccommodationRelocationBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
         ConditionalRedirect(carVanFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
       )
   }
@@ -158,8 +157,7 @@ object RedirectService extends Logging {
     mileageBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(cyaMileageQuestion.isEmpty, ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId)),
-        //TODO GO TO Accommodation or relocation QUESTION
-        ConditionalRedirect(cyaMileageQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
+        ConditionalRedirect(cyaMileageQuestion.contains(false), AccommodationRelocationBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
         ConditionalRedirect(cyaMileageQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
       )
   }
