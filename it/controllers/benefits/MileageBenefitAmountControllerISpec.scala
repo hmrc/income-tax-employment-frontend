@@ -224,7 +224,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         "redirect" when {
 
-          "mileage question is no" which {
+          "redirect to accommodation relocation page when the mileage question is no" which {
             lazy val result: WSResponse = {
               dropEmploymentDB()
               noUserDataStub(nino, taxYearEOY)
@@ -235,7 +235,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
             s"has an SEE_OTHER($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+              result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/accommodation-relocation?employmentId=001")
             }
 
           }
@@ -359,7 +359,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
               cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel) shouldBe None
             }
           }
-          "the mileage question is no" which {
+          "redirect to accommodation relocation page when the mileage question is no" which {
 
             lazy val form: Map[String, String] = Map(AmountForm.amount -> "200.00")
 
@@ -372,7 +372,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
             s"has a SEE_OTHER($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+              result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/accommodation-relocation?employmentId=001")
             }
           }
 
