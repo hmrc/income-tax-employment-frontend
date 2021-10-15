@@ -326,7 +326,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           }
         }
 
-        "redirect to check accommodation relocation page when benefits has carVanFuelQuestion set to false" when {
+        "redirect to accommodation relocation page when benefits has carVanFuelQuestion set to false" when {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
