@@ -641,8 +641,13 @@ benefits.companyVanAmountBenefits.error.overMaximum.agent = Your client’s comp
 benefits.companyVanAmountBenefits.error.wrongFormat.individual = Enter your company van benefit amount in the correct format
 benefits.companyVanAmountBenefits.error.wrongFormat.agent = Enter your client’s company van benefit amount in the correct format
 
-
 benefits.accommodationRelocation.title.individual = Did you get accommodation or relocation benefits from this company?
 benefits.accommodationRelocation.title.agent = Did your client get accommodation or relocation benefits from this company?
 benefits.accommodationRelocation.error.individual = Select yes if you got accommodation or relocation benefits
 benefits.accommodationRelocation.error.agent = Select yes if your client got accommodation or relocation benefits
+
+benefits.travelOrEntertainment.title.individual = Did you get any travel or entertainment benefits from this company?
+benefits.travelOrEntertainment.title.agent = Did your client get any travel or entertainment benefits from this company?
+benefits.travelOrEntertainment.thisIncludes = This includes benefits such as travel, incidental overnight expenses and entertaining.
+benefits.travelOrEntertainment.error.individual = Select yes if you got travel or entertainment benefits
+benefits.travelOrEntertainment.error.agent = Select yes if your client got travel or entertainment benefits
