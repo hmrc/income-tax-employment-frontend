@@ -131,26 +131,26 @@
 
     <h2 class="govuk-label--m">@messages("checkYourBenefits.travelHeader")</h2>
     @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.travelSubheading", benefits.travelDetailsPopulated))
+        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.travelSubheading", benefits.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion).getOrElse(false), controllers.benefits.routes.TravelOrEntertainmentBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
         if(benefits.travelDetailsPopulated){
             Seq(
-                benefits.travelAndSubsistenceQuestion.map{
+                benefits.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion).map{
                     travelAndSubsistenceQuestion => showQuestionRow("checkYourBenefits.travelAndSubsistence", travelAndSubsistenceQuestion)
                 },
-                benefits.travelAndSubsistence.map{
+                benefits.travelEntertainmentModel.flatMap(_.travelAndSubsistence).map{
                     travelAndSubsistence => showRows("checkYourBenefits.travelAndSubsistenceAmount", travelAndSubsistence)
                 },
-                benefits.personalIncidentalExpensesQuestion.map{
+                benefits.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion).map{
                     personalIncidentalExpensesQuestion => showQuestionRow("checkYourBenefits.personalCosts", personalIncidentalExpensesQuestion)
                 },
-                benefits.personalIncidentalExpenses.map{
+                benefits.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses).map{
                     personalIncidentalExpenses => showRows("checkYourBenefits.personalCostsAmount", personalIncidentalExpenses)
                 },
-                benefits.entertainingQuestion.map{
+                benefits.travelEntertainmentModel.flatMap(_.entertainingQuestion).map{
                     entertainingQuestion => showQuestionRow("checkYourBenefits.entertainment", entertainingQuestion)
                 },
-                benefits.entertaining.map{
+                benefits.travelEntertainmentModel.flatMap(_.entertaining).map{
                     entertaining => showRows("checkYourBenefits.entertainmentAmount", entertaining)
                 }
             ).flatten
