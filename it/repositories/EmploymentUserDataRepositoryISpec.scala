@@ -19,7 +19,7 @@ package repositories
 import com.mongodb.MongoTimeoutException
 import common.UUID
 import models.User
-import models.employment.{AccommodationRelocationModel, BenefitsViewModel, CarVanFuelModel}
+import models.employment.{AccommodationRelocationModel, BenefitsViewModel, CarVanFuelModel, TravelEntertainmentModel}
 import models.mongo._
 import org.joda.time.{DateTime, DateTimeZone}
 import org.mongodb.scala.model.Indexes.ascending
@@ -89,11 +89,14 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     Some(AccommodationRelocationModel(
       Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))
     ),
-    Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
+    Some(TravelEntertainmentModel(
+      Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))
+    ),
+    Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
     Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
     Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
     Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
-    Some(true), Some(true), Some(true), Some("2020-10-10"), isUsingCustomerData = true, true)
+    Some("2020-10-10"), isUsingCustomerData = true, true)
 
   val employmentUserDataFull: EmploymentUserData = EmploymentUserData(
     sessionIdOne,
