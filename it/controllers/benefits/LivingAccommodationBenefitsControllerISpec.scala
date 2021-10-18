@@ -366,6 +366,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption(taxYearEOY), captionSelector)
           errorSummaryCheck(user.specificExpectedResults.get.expectedErrorMessage, yesSelector)
+          errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorMessage, Some("value"))
           formPostLinkCheck(continueButtonLink, formSelector)
 
         }
@@ -381,7 +382,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
         insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(fullAccommodationRelocationModel)))), userRequest)
+          Some(benefits(fullAccommodationRelocationModel.copy(accommodationQuestion = Some(false)))))), userRequest)
         urlPost(livingAccommodationPageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -433,60 +434,59 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
       }
+    }
 
-      "redirect to the accommodation or relocation page when accommodationRelocationQuestion is None" which {
+    "redirect to the accommodation or relocation page when accommodationRelocationQuestion is None" which {
 
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-          insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-            Some(benefits(emptyAccommodationRelocationModel.copy(accommodationRelocationQuestion = None))))), userRequest)
-          authoriseAgentOrIndividual(isAgent = false)
-          urlPost(livingAccommodationPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        s"has a SEE_OTHER($SEE_OTHER) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(AccommodationRelocationBenefitsController.show(taxYearEOY, employmentId).url)
-        }
-
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
+          Some(benefits(emptyAccommodationRelocationModel.copy(accommodationRelocationQuestion = None))))), userRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(livingAccommodationPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "redirect to the check your benefits page when accommodationRelocationQuestion is Some(false) and it's a prior submission" which {
-
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-          insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-            Some(benefits(emptyAccommodationRelocationModel)))), userRequest)
-          authoriseAgentOrIndividual(isAgent = false)
-          urlPost(livingAccommodationPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        s"has a SEE_OTHER($SEE_OTHER) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
-        }
-
+      s"has a SEE_OTHER($SEE_OTHER) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(AccommodationRelocationBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
-      "redirect to the travel or entertainment page when accommodationRelocationQuestion is Some(false) and it's not a prior submission" which {
+    }
 
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-          insertCyaData(employmentUserData(isPrior = false, cyaModel("employerName", hmrc = true,
-            Some(benefits(emptyAccommodationRelocationModel)))), userRequest)
-          authoriseAgentOrIndividual(isAgent = false)
-          urlPost(livingAccommodationPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
+    "redirect to the check your benefits page when accommodationRelocationQuestion is Some(false) and it's a prior submission" which {
 
-        s"has a SEE_OTHER($SEE_OTHER) status" in {
-          result.status shouldBe SEE_OTHER
-          //TODO - change to the first page of travel section
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
-        }
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
+          Some(benefits(emptyAccommodationRelocationModel)))), userRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(livingAccommodationPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
+      s"has a SEE_OTHER($SEE_OTHER) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+      }
+
+    }
+
+    "redirect to the travel or entertainment page when accommodationRelocationQuestion is Some(false) and it's not a prior submission" which {
+
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+        insertCyaData(employmentUserData(isPrior = false, cyaModel("employerName", hmrc = true,
+          Some(benefits(emptyAccommodationRelocationModel)))), userRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(livingAccommodationPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      s"has a SEE_OTHER($SEE_OTHER) status" in {
+        result.status shouldBe SEE_OTHER
+        //TODO - change to the first page of travel section
+        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
     }
