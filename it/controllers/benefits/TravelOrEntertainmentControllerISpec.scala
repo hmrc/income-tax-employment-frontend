@@ -123,15 +123,6 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
 
-  object CyaModel {
-    val cya: EmploymentUserData = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, employmentId, isPriorSubmission = true,
-      EmploymentCYAModel(
-        EmploymentDetails("EmployerName", startDate = Some("2020-01-01"), currentDataIsHmrcHeld = false),
-        None
-      )
-    )
-  }
-
   ".show" should {
 
     userScenarios.foreach { user =>
@@ -288,8 +279,6 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
       }
 
       "redirect to the check employment benefits page when theres no CYA data" which {
-
-        lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
