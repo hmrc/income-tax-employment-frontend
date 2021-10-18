@@ -655,3 +655,9 @@ benefits.livingAccommodationBenefits.details.2.agent = Your client’s employmen
 benefits.livingAccommodationBenefits.details.3 = If you think all or part of this amount should be exempt from tax, refer to HS202 Living accommodation and follow the working sheet.
 benefits.livingAccommodationBenefits.error.no-entry.individual = Select yes if you got living accommodation benefits
 benefits.livingAccommodationBenefits.error.no-entry.agent = Select yes if your client got living accommodation benefits
+
+benefits.travelOrEntertainment.title.individual = Did you get any travel or entertainment benefits from this company?
+benefits.travelOrEntertainment.title.agent = Did your client get any travel or entertainment benefits from this company?
+benefits.travelOrEntertainment.thisIncludes = This includes benefits such as travel, incidental overnight expenses and entertaining.
+benefits.travelOrEntertainment.error.individual = Select yes if you got travel or entertainment benefits
+benefits.travelOrEntertainment.error.agent = Select yes if your client got travel or entertainment benefits

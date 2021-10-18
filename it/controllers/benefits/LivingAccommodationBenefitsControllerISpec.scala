@@ -17,7 +17,7 @@
 package controllers.benefits
 
 import controllers.employment.routes.CheckYourBenefitsController
-import controllers.benefits.routes.AccommodationRelocationBenefitsController
+import controllers.benefits.routes.{AccommodationRelocationBenefitsController, TravelOrEntertainmentBenefitsController}
 import forms.YesNoForm
 import models.User
 import models.employment.{AccommodationRelocationModel, BenefitsViewModel}
@@ -327,8 +327,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        //TODO - change to the first page of travel section
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
     }
@@ -485,8 +484,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        //TODO - change to the first page of travel section
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
     }
