@@ -661,3 +661,12 @@ benefits.travelOrEntertainment.title.agent = Did your client get any travel or e
 benefits.travelOrEntertainment.thisIncludes = This includes benefits such as travel, incidental overnight expenses and entertaining.
 benefits.travelOrEntertainment.error.individual = Select yes if you got travel or entertainment benefits
 benefits.travelOrEntertainment.error.agent = Select yes if your client got travel or entertainment benefits
+
+benefits.qualifyingRelocationBenefitsAmount.title.individual = How much did you get in total for qualifying relocation benefits?
+benefits.qualifyingRelocationBenefitsAmount.title.agent = How much was your client’s total qualifying relocation benefit?
+benefits.qualifyingRelocationBenefitsAmount.error.noEntry.individual = Enter your qualifying relocation benefit amount
+benefits.qualifyingRelocationBenefitsAmount.error.noEntry.agent = Enter your client’s qualifying relocation benefit amount
+benefits.qualifyingRelocationBenefitsAmount.error.overMaximum.individual = Your qualifying relocation benefit must be less than £100,000,000,000
+benefits.qualifyingRelocationBenefitsAmount.error.overMaximum.agent = Your client’s qualifying relocation benefit must be less than £100,000,000,000
+benefits.qualifyingRelocationBenefitsAmount.error.wrongFormat.individual = Enter your qualifying relocation benefit amount in the correct format
+benefits.qualifyingRelocationBenefitsAmount.error.wrongFormat.agent = Enter your client’s qualifying relocation benefit amount in the correct format

@@ -256,7 +256,8 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     createUpdateEmploymentDataConnector.createUpdateEmploymentData(user.nino, taxYear, employmentRequest)(hc.withExtraHeaders("mtditid" -> user.mtditid))
   }
 
-  def getAndHandle(taxYear: Int, employmentId: String, redirectWhenNoPrior: Boolean = false)(block: (Option[EmploymentUserData], Option[AllEmploymentData]) => Future[Result])
+  def getAndHandle(taxYear: Int, employmentId: String, redirectWhenNoPrior: Boolean = false)
+                  (block: (Option[EmploymentUserData], Option[AllEmploymentData]) => Future[Result])
                   (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
     val result = for {
       optionalCya <- getSessionData(taxYear, employmentId)
