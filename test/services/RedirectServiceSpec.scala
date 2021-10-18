@@ -30,6 +30,8 @@ class RedirectServiceSpec extends UnitTest {
   val cyaModel: EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails("employerName", currentDataIsHmrcHeld = true))
   val taxYear = 2021
 
+  val result = Future.successful(Ok("Wow"))
+
   val employmentCYA: EmploymentCYAModel = {
     EmploymentCYAModel(
       employmentDetails = EmploymentDetails(
@@ -99,7 +101,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -117,7 +119,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.carBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -131,7 +133,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -149,7 +151,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.carFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -165,7 +167,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.carBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -183,7 +185,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.carFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -201,7 +203,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.carFuelBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -219,7 +221,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.carFuelBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -235,7 +237,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.carFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -251,7 +253,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.vanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -267,7 +269,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.vanBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -285,7 +287,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.vanFuelBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -303,7 +305,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.accommodationRelocationBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -319,7 +321,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonAccommodationBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -335,7 +337,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.qualifyingRelocationBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -351,7 +353,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.qualifyingRelocationBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -367,7 +369,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.nonQualifyingRelocationBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -383,7 +385,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.nonQualifyingRelocationBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -399,7 +401,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.nonQualifyingRelocationBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -415,7 +417,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.nonQualifyingRelocationBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -431,7 +433,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.travelEntertainmentBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -447,7 +449,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.travelEntertainmentBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -463,7 +465,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.nonQualifyingRelocationBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -479,7 +481,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.qualifyingRelocationBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -495,7 +497,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.qualifyingRelocationBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -511,7 +513,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.accommodationBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -527,7 +529,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.accommodationBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -543,7 +545,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.accommodationBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -559,7 +561,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonAccommodationBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -575,7 +577,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonAccommodationBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -593,7 +595,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.travelEntertainmentBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -609,7 +611,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonTravelEntertainmentBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -625,7 +627,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonTravelEntertainmentBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -641,7 +643,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonTravelEntertainmentBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -657,7 +659,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.travelSubsistenceBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -673,7 +675,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.travelSubsistenceBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -689,7 +691,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.travelSubsistenceBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -705,7 +707,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.incidentalCostsBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -721,7 +723,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.incidentalCostsBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -737,7 +739,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.incidentalCostsBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -753,7 +755,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.incidentalCostsBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -769,7 +771,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.incidentalCostsBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -785,7 +787,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.entertainmentBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -801,7 +803,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.entertainmentBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -817,7 +819,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.entertainmentBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -833,7 +835,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.entertainmentBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -849,7 +851,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.entertainmentBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -865,7 +867,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.utilitiesBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -881,7 +883,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.utilitiesBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -897,7 +899,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.utilitiesBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -915,7 +917,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.vanFuelBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -931,7 +933,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.vanBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -947,7 +949,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.mileageBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -963,7 +965,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -979,7 +981,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -995,7 +997,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -1011,7 +1013,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -1027,7 +1029,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.carBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -1043,7 +1045,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.carFuelBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -1059,7 +1061,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.vanBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -1075,7 +1077,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.vanFuelBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -1091,7 +1093,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.mileageBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -1107,7 +1109,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.mileageBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -1122,7 +1124,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -1135,7 +1137,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -1151,7 +1153,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ){
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe OK
@@ -1165,7 +1167,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ){
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe OK
