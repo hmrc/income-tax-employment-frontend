@@ -81,6 +81,9 @@ POST       /:taxYear/benefits/van-fuel-amount               controllers.benefits
 GET        /:taxYear/benefits/living-accommodation          controllers.benefits.LivingAccommodationBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/living-accommodation          controllers.benefits.LivingAccommodationBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/travel-entertainment          controllers.benefits.TravelOrEntertainmentBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/travel-entertainment          controllers.benefits.TravelOrEntertainmentBenefitsController.submit(taxYear: Int, employmentId: String)
+
 GET        /sign-out                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
 GET        /error/you-need-to-sign-up                       controllers.errors.IndividualAuthErrorController.show
