@@ -129,17 +129,44 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
     )
   }
 
+  private def encryptTravelEntertainmentModel(travelEntertainmentModel: TravelEntertainmentModel)(implicit textAndKey: TextAndKey):
+  EncryptedTravelEntertainmentModel = {
+    EncryptedTravelEntertainmentModel(
+      travelEntertainmentQuestion = travelEntertainmentModel.travelEntertainmentQuestion.map(secureGCMCipher.encrypt),
+      travelAndSubsistenceQuestion = travelEntertainmentModel.travelAndSubsistenceQuestion.map(secureGCMCipher.encrypt),
+      travelAndSubsistence = travelEntertainmentModel.travelAndSubsistence.map(secureGCMCipher.encrypt),
+      personalIncidentalExpensesQuestion = travelEntertainmentModel.personalIncidentalExpensesQuestion.map(secureGCMCipher.encrypt),
+      personalIncidentalExpenses = travelEntertainmentModel.personalIncidentalExpenses.map(secureGCMCipher.encrypt),
+      entertainingQuestion = travelEntertainmentModel.entertainingQuestion.map(secureGCMCipher.encrypt),
+      entertaining = travelEntertainmentModel.entertaining.map(secureGCMCipher.encrypt)
+    )
+  }
+
+  private def decryptTravelEntertainmentModel(travelEntertainmentModel: EncryptedTravelEntertainmentModel)(implicit textAndKey: TextAndKey):
+  TravelEntertainmentModel = {
+    TravelEntertainmentModel(
+      travelEntertainmentQuestion = travelEntertainmentModel.travelEntertainmentQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      travelAndSubsistenceQuestion = travelEntertainmentModel.travelAndSubsistenceQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      travelAndSubsistence = travelEntertainmentModel.travelAndSubsistence.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
+      personalIncidentalExpensesQuestion =
+        travelEntertainmentModel.personalIncidentalExpensesQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      personalIncidentalExpenses = travelEntertainmentModel.personalIncidentalExpenses.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
+      entertainingQuestion = travelEntertainmentModel.entertainingQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      entertaining = travelEntertainmentModel.entertaining.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce))
+    )
+  }
+
   //scalastyle:off
   private def encryptEmploymentBenefits(e: BenefitsViewModel)(implicit textAndKey: TextAndKey): EncryptedBenefitsViewModel = {
 
     EncryptedBenefitsViewModel(
       carVanFuelModel = e.carVanFuelModel.map(encryptCarVanFuelModel),
       accommodationRelocationModel = e.accommodationRelocationModel.map(encryptAccommodationRelocationModel),
+      travelEntertainmentModel = e.travelEntertainmentModel.map(encryptTravelEntertainmentModel),
       assets = e.assets.map(secureGCMCipher.encrypt),
       assetTransfer = e.assetTransfer.map(secureGCMCipher.encrypt),
       beneficialLoan = e.beneficialLoan.map(secureGCMCipher.encrypt),
       educationalServices = e.educationalServices.map(secureGCMCipher.encrypt),
-      entertaining = e.entertaining.map(secureGCMCipher.encrypt),
       expenses = e.expenses.map(secureGCMCipher.encrypt),
       medicalInsurance = e.medicalInsurance.map(secureGCMCipher.encrypt),
       telephone = e.telephone.map(secureGCMCipher.encrypt),
@@ -148,18 +175,15 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
       nurseryPlaces = e.nurseryPlaces.map(secureGCMCipher.encrypt),
       otherItems = e.otherItems.map(secureGCMCipher.encrypt),
       paymentsOnEmployeesBehalf = e.paymentsOnEmployeesBehalf.map(secureGCMCipher.encrypt),
-      personalIncidentalExpenses = e.personalIncidentalExpenses.map(secureGCMCipher.encrypt),
       employerProvidedProfessionalSubscriptions = e.employerProvidedProfessionalSubscriptions.map(secureGCMCipher.encrypt),
       employerProvidedServices = e.employerProvidedServices.map(secureGCMCipher.encrypt),
       incomeTaxPaidByDirector = e.incomeTaxPaidByDirector.map(secureGCMCipher.encrypt),
-      travelAndSubsistence = e.travelAndSubsistence.map(secureGCMCipher.encrypt),
       vouchersAndCreditCards = e.vouchersAndCreditCards.map(secureGCMCipher.encrypt),
       nonCash = e.nonCash.map(secureGCMCipher.encrypt),
       assetsQuestion = e.assetsQuestion.map(secureGCMCipher.encrypt),
       assetTransferQuestion = e.assetTransferQuestion.map(secureGCMCipher.encrypt),
       beneficialLoanQuestion = e.beneficialLoanQuestion.map(secureGCMCipher.encrypt),
       educationalServicesQuestion = e.educationalServicesQuestion.map(secureGCMCipher.encrypt),
-      entertainingQuestion = e.entertainingQuestion.map(secureGCMCipher.encrypt),
       expensesQuestion = e.expensesQuestion.map(secureGCMCipher.encrypt),
       medicalInsuranceQuestion = e.medicalInsuranceQuestion.map(secureGCMCipher.encrypt),
       telephoneQuestion = e.telephoneQuestion.map(secureGCMCipher.encrypt),
@@ -168,11 +192,9 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
       nurseryPlacesQuestion = e.nurseryPlacesQuestion.map(secureGCMCipher.encrypt),
       otherItemsQuestion = e.otherItemsQuestion.map(secureGCMCipher.encrypt),
       paymentsOnEmployeesBehalfQuestion = e.paymentsOnEmployeesBehalfQuestion.map(secureGCMCipher.encrypt),
-      personalIncidentalExpensesQuestion = e.personalIncidentalExpensesQuestion.map(secureGCMCipher.encrypt),
       employerProvidedProfessionalSubscriptionsQuestion = e.employerProvidedProfessionalSubscriptionsQuestion.map(secureGCMCipher.encrypt),
       employerProvidedServicesQuestion = e.employerProvidedServicesQuestion.map(secureGCMCipher.encrypt),
       incomeTaxPaidByDirectorQuestion = e.incomeTaxPaidByDirectorQuestion.map(secureGCMCipher.encrypt),
-      travelAndSubsistenceQuestion = e.travelAndSubsistenceQuestion.map(secureGCMCipher.encrypt),
       vouchersAndCreditCardsQuestion = e.vouchersAndCreditCardsQuestion.map(secureGCMCipher.encrypt),
       nonCashQuestion = e.nonCashQuestion.map(secureGCMCipher.encrypt),
       submittedOn = e.submittedOn.map(secureGCMCipher.encrypt),
@@ -185,11 +207,11 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
     BenefitsViewModel(
       carVanFuelModel = e.carVanFuelModel.map(decryptCarVanFuelModel),
       accommodationRelocationModel = e.accommodationRelocationModel.map(decryptAccommodationRelocationModel),
+      travelEntertainmentModel = e.travelEntertainmentModel.map(decryptTravelEntertainmentModel),
       assets = e.assets.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       assetTransfer = e.assetTransfer.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       beneficialLoan = e.beneficialLoan.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       educationalServices = e.educationalServices.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
-      entertaining = e.entertaining.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       expenses = e.expenses.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       medicalInsurance = e.medicalInsurance.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       telephone = e.telephone.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
@@ -198,18 +220,15 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
       nurseryPlaces = e.nurseryPlaces.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       otherItems = e.otherItems.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       paymentsOnEmployeesBehalf = e.paymentsOnEmployeesBehalf.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
-      personalIncidentalExpenses = e.personalIncidentalExpenses.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       employerProvidedProfessionalSubscriptions = e.employerProvidedProfessionalSubscriptions.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       employerProvidedServices = e.employerProvidedServices.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       incomeTaxPaidByDirector = e.incomeTaxPaidByDirector.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
-      travelAndSubsistence = e.travelAndSubsistence.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       vouchersAndCreditCards = e.vouchersAndCreditCards.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       nonCash = e.nonCash.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       assetsQuestion = e.assetsQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       assetTransferQuestion = e.assetTransferQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       beneficialLoanQuestion = e.beneficialLoanQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       educationalServicesQuestion = e.educationalServicesQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
-      entertainingQuestion = e.entertainingQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       expensesQuestion = e.expensesQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       medicalInsuranceQuestion = e.medicalInsuranceQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       telephoneQuestion = e.telephoneQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
@@ -218,11 +237,9 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
       nurseryPlacesQuestion = e.nurseryPlacesQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       otherItemsQuestion = e.otherItemsQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       paymentsOnEmployeesBehalfQuestion = e.paymentsOnEmployeesBehalfQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
-      personalIncidentalExpensesQuestion = e.personalIncidentalExpensesQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       employerProvidedProfessionalSubscriptionsQuestion = e.employerProvidedProfessionalSubscriptionsQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       employerProvidedServicesQuestion = e.employerProvidedServicesQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       incomeTaxPaidByDirectorQuestion = e.incomeTaxPaidByDirectorQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
-      travelAndSubsistenceQuestion = e.travelAndSubsistenceQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       vouchersAndCreditCardsQuestion = e.vouchersAndCreditCardsQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       nonCashQuestion = e.nonCashQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       submittedOn = e.submittedOn.map(x => secureGCMCipher.decrypt[String](x.value, x.nonce)),

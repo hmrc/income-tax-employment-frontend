@@ -109,6 +109,22 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
     }
   }
 
+  def travelEntertainmentSection(cyaBenefits: Option[BenefitsViewModel] = None): Option[TravelEntertainmentModel] = {
+    if (cyaBenefits.isDefined && cyaBenefits.map(_.travelEntertainmentModel).isDefined){
+      cyaBenefits.flatMap(_.travelEntertainmentModel)
+    } else {
+      Some(TravelEntertainmentModel(
+        Some(travelDetailsPopulated),
+        travelAndSubsistenceQuestion = Some(travelAndSubsistence.isDefined),
+        travelAndSubsistence = travelAndSubsistence,
+        personalIncidentalExpensesQuestion = Some(personalIncidentalExpenses.isDefined),
+        personalIncidentalExpenses = personalIncidentalExpenses,
+        entertainingQuestion = Some(entertaining.isDefined),
+        entertaining = entertaining
+      ))
+    }
+  }
+
   def benefitsPopulated(cyaBenefits: Option[BenefitsViewModel] = None): Boolean = {
     val hasBenefits: Boolean = cyaBenefits.exists(_.isBenefitsReceived)
       hasBenefits || vehicleDetailsPopulated || accommodationDetailsPopulated || travelDetailsPopulated || utilitiesDetailsPopulated ||
@@ -121,15 +137,15 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
     BenefitsViewModel(
       carVanFuelModel = carVanFuelSection(cyaBenefits),
       accommodationRelocationModel = accommodationRelocationSection(cyaBenefits),
+      travelEntertainmentModel = travelEntertainmentSection(cyaBenefits),
       assets, assetTransfer, beneficialLoan,
-      educationalServices, entertaining, expenses, medicalInsurance, telephone, service, taxableExpenses, nurseryPlaces,
-      otherItems, paymentsOnEmployeesBehalf, personalIncidentalExpenses, employerProvidedProfessionalSubscriptions,
-      employerProvidedServices, incomeTaxPaidByDirector, travelAndSubsistence, vouchersAndCreditCards, nonCash,
+      educationalServices, expenses, medicalInsurance, telephone, service, taxableExpenses, nurseryPlaces,
+      otherItems, paymentsOnEmployeesBehalf, employerProvidedProfessionalSubscriptions,
+      employerProvidedServices, incomeTaxPaidByDirector, vouchersAndCreditCards, nonCash,
       assetsQuestion = Some(assets.isDefined),
       assetTransferQuestion = Some(assetTransfer.isDefined),
       beneficialLoanQuestion = Some(beneficialLoan.isDefined),
       educationalServicesQuestion = Some(educationalServices.isDefined),
-      entertainingQuestion = Some(entertaining.isDefined),
       expensesQuestion = Some(expenses.isDefined),
       medicalInsuranceQuestion = Some(medicalInsurance.isDefined),
       telephoneQuestion = Some(telephone.isDefined),
@@ -138,11 +154,9 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
       nurseryPlacesQuestion = Some(nurseryPlaces.isDefined),
       otherItemsQuestion = Some(otherItems.isDefined),
       paymentsOnEmployeesBehalfQuestion = Some(paymentsOnEmployeesBehalf.isDefined),
-      personalIncidentalExpensesQuestion = Some(personalIncidentalExpenses.isDefined),
       employerProvidedProfessionalSubscriptionsQuestion = Some(employerProvidedProfessionalSubscriptions.isDefined),
       employerProvidedServicesQuestion = Some(employerProvidedServices.isDefined),
       incomeTaxPaidByDirectorQuestion = Some(incomeTaxPaidByDirector.isDefined),
-      travelAndSubsistenceQuestion = Some(travelAndSubsistence.isDefined),
       vouchersAndCreditCardsQuestion = Some(vouchersAndCreditCards.isDefined),
       nonCashQuestion = Some(nonCash.isDefined),
       submittedOn = submittedOn,
