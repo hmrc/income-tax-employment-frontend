@@ -17,6 +17,7 @@
 package models.employment
 
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.routes.TravelOrEntertainmentBenefitsController
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue
@@ -41,7 +42,7 @@ case class TravelEntertainmentModel(
           case _ => None
         }
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO update to my new page
+      case None => Some(TravelOrEntertainmentBenefitsController.show(taxYear, employmentId))
     }
   }
 
