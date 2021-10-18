@@ -17,6 +17,8 @@
 package models.employment
 
 import play.api.libs.json.{Json, OFormat}
+import play.api.mvc.Call
+import controllers.benefits.routes._
 import utils.EncryptedValue
 
 case class AccommodationRelocationModel(
@@ -27,7 +29,50 @@ case class AccommodationRelocationModel(
                                        qualifyingRelocationExpenses: Option[BigDecimal] = None,
                                        nonQualifyingRelocationExpensesQuestion: Option[Boolean] = None,
                                        nonQualifyingRelocationExpenses: Option[BigDecimal] = None
-                                       )
+                                       ){
+
+  def isFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
+
+    accommodationRelocationQuestion match {
+      case Some(true) =>
+        (accommodationSectionFinished,qualifyingRelocationSectionFinished,nonQualifyingRelocationSectionFinished) match {
+          case (call@Some(_), _, _) => call
+          case (_, call@Some(_), _) => call
+          case (_, _, call@Some(_)) => call
+          case _ => None
+        }
+      case Some(false) => None
+      case None => Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId))
+    }
+  }
+
+
+  //scalastyle:off
+  def accommodationSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
+    accommodationQuestion match {
+      case Some(true) => if(accommodation.isDefined) None else Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) //TODO accommodation amount page
+      case Some(false) => None
+      case None => Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) //TODO accommodation yes no page
+    }
+  }
+
+  def qualifyingRelocationSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
+    qualifyingRelocationExpensesQuestion match {
+      case Some(true) => if(qualifyingRelocationExpenses.isDefined) None else Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) // TODO qual relocation amount page
+      case Some(false) => None
+      case None => Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) //TODO qual relocation yes no page
+    }
+  }
+
+  def nonQualifyingRelocationSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
+    nonQualifyingRelocationExpensesQuestion match {
+      case Some(true) => if(nonQualifyingRelocationExpenses.isDefined) None else Some(AccommodationRelocationBenefitsController.show(taxYear,employmentId)) // TODO non qual relocation amount page
+      case Some(false) => None
+      case None => Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) //TODO non qual relocation yes no page
+    }
+  }
+  //scalastyle:on
+}
 
 object AccommodationRelocationModel{
   implicit val formats: OFormat[AccommodationRelocationModel] = Json.format[AccommodationRelocationModel]

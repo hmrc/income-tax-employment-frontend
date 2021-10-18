@@ -16,7 +16,7 @@
 
 package services
 
-import models.employment.{BenefitsViewModel, CarVanFuelModel}
+import models.employment.{AccommodationRelocationModel, BenefitsViewModel, CarVanFuelModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Results.Ok
@@ -59,6 +59,17 @@ class RedirectServiceSpec extends UnitTest {
             mileageQuestion = Some(true),
             mileage = Some(100)
           )),
+          accommodationRelocationModel = Some(
+            AccommodationRelocationModel(
+              accommodationRelocationQuestion = Some(true),
+              accommodationQuestion = Some(true),
+              accommodation = Some(100),
+              qualifyingRelocationExpensesQuestion = Some(true),
+              qualifyingRelocationExpenses = Some(100),
+              nonQualifyingRelocationExpensesQuestion = Some(true),
+              nonQualifyingRelocationExpenses = Some(100)
+            )
+          ),
           assets = Some(100), submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true,
           isBenefitsReceived = true
         )
@@ -268,6 +279,296 @@ class RedirectServiceSpec extends UnitTest {
 
         status(response) shouldBe SEE_OTHER
         redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/van-fuel?employmentId=001"
+      }
+    }
+    "redirect using accommodation methods" when {
+      "it's a new submission and attempted to view the accommodation page but the car question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.accommodationRelocationBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/company-car?employmentId=001"
+      }
+      "it's a new submission and attempted to view the accommodation yes no page but the accommodation relocation question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationRelocationQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.commonAccommodationBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/accommodation-relocation?employmentId=001"
+      }
+      "it's a new submission and attempted to view the qualifying relocation page but the accommodation amount is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodation = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.qualifyingRelocationBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/accommodation-relocation?employmentId=001"
+      }
+      "it's a new submission and attempted to view the qualifying relocation amount page but the qualifyingRelocationExpensesQuestion is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(qualifyingRelocationExpensesQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.qualifyingRelocationBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the non qualifying relocation yes no page but the qualifyingRelocationExpensesQuestion is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(qualifyingRelocationExpensesQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.nonQualifyingRelocationBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/accommodation-relocation?employmentId=001"
+      }
+      "it's a new submission and attempted to view the non qualifying relocation amount page but the nonQualifyingRelocationExpensesQuestion is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(nonQualifyingRelocationExpensesQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.nonQualifyingRelocationBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the non qualifying relocation amount page but the nonQualifyingRelocationExpensesQuestion is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(nonQualifyingRelocationExpensesQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.nonQualifyingRelocationBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a prior submission and attempted to view the non qualifying relocation amount page but the nonQualifyingRelocationExpensesQuestion is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(nonQualifyingRelocationExpensesQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.nonQualifyingRelocationBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a prior submission and attempted to view the travel and entertainment page but the car section is not finished" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.travelEntertainmentBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/company-car?employmentId=001"
+      }
+      "it's a prior submission and attempted to view the travel and entertainment page but the accommodation section is not finished" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.travelEntertainmentBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/accommodation-relocation?employmentId=001"
+      }
+      "it's a new submission and attempted to view the non qualifying relocation yes no page but the accommodation yes no question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.nonQualifyingRelocationBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/accommodation-relocation?employmentId=001"
+      }
+      "it's a new submission and attempted to view the qualifying relocation amount page but the qualifyingRelocationExpensesQuestion is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(qualifyingRelocationExpensesQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.qualifyingRelocationBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a prior submission and attempted to view the qualifying relocation amount page but the qualifyingRelocationExpensesQuestion is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(qualifyingRelocationExpensesQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.qualifyingRelocationBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the accommodation amount page but the accommodation question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.accommodationBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the accommodation amount page but the accommodation question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.accommodationBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a prior submission and attempted to view the accommodation amount page but the accommodation question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.accommodationBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the accommodation yes no page but the accommodation relocation question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationRelocationQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.commonAccommodationBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a prior submission and attempted to view the accommodation yes no page but the accommodation relocation question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationRelocationQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.commonAccommodationBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => Future.successful(Ok("Wow"))
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
       }
     }
     "redirect to mileage benefit yes no page" when {
