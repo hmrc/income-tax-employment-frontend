@@ -17,6 +17,7 @@
 package models
 
 import com.codahale.metrics.SharedMetricRegistries
+import models.benefits.UtilitiesAndServicesModel
 import models.employment.{AccommodationRelocationModel, Benefits, BenefitsViewModel, CarVanFuelModel, TravelEntertainmentModel}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.libs.json.{JsValue, Json}
@@ -43,10 +44,13 @@ class EmploymentBenefitsModelSpec extends UnitTest {
     Some(TravelEntertainmentModel(
       Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))
     ),
+    Some(UtilitiesAndServicesModel(
+      Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount)
+    )),
     Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
-    Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
+    Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
     Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
-    Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
+    Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
     None, isUsingCustomerData = true, true)
 
   val jsonModel: JsValue = Json.obj(
