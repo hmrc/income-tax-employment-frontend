@@ -361,6 +361,23 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
       carVanFuelQuestion = Some(false)
     )
 
+  def fullAccommodationRelocationModel: AccommodationRelocationModel =
+    AccommodationRelocationModel(
+      accommodationRelocationQuestion = Some(true),
+      accommodationQuestion = Some(true),
+      accommodation = Some(100.00),
+      qualifyingRelocationExpensesQuestion = Some(true),
+      qualifyingRelocationExpenses = Some(200.00),
+      nonQualifyingRelocationExpensesQuestion = Some(true),
+      nonQualifyingRelocationExpenses = Some(300.00)
+    )
+
+  def emptyAccommodationRelocationModel: AccommodationRelocationModel =
+    AccommodationRelocationModel(
+      accommodationRelocationQuestion = Some(false)
+    )
+
+
   def fullTravelOrEntertainmentModel: TravelEntertainmentModel =
     TravelEntertainmentModel(
       travelEntertainmentQuestion = Some(true),
