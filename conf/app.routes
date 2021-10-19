@@ -84,6 +84,9 @@ POST       /:taxYear/benefits/living-accommodation          controllers.benefits
 GET        /:taxYear/benefits/travel-entertainment          controllers.benefits.TravelOrEntertainmentBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/travel-entertainment          controllers.benefits.TravelOrEntertainmentBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/qualifying-relocation-amount  controllers.benefits.QualifyingRelocationBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/qualifying-relocation-amount  controllers.benefits.QualifyingRelocationBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
 GET        /sign-out                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
 GET        /error/you-need-to-sign-up                       controllers.errors.IndividualAuthErrorController.show
