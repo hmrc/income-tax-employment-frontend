@@ -106,7 +106,7 @@
         if(benefits.accommodationDetailsPopulated){
             Seq(
                 benefits.accommodationRelocationModel.flatMap(_.accommodationQuestion).map{
-                    accommodationQuestion => showQuestionRow("checkYourBenefits.accommodation", accommodationQuestion)
+                    accommodationQuestion => showQuestionRow("checkYourBenefits.accommodation", accommodationQuestion, controllers.benefits.routes.LivingAccommodationBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.accommodationRelocationModel.flatMap(_.accommodation).map{
                     accommodation => showRows("checkYourBenefits.accommodationAmount", accommodation)
