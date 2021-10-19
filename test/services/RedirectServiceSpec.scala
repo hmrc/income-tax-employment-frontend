@@ -16,7 +16,7 @@
 
 package services
 
-import models.employment.{AccommodationRelocationModel, BenefitsViewModel, CarVanFuelModel}
+import models.employment.{AccommodationRelocationModel, BenefitsViewModel, CarVanFuelModel, TravelEntertainmentModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Results.Ok
@@ -29,6 +29,8 @@ class RedirectServiceSpec extends UnitTest {
 
   val cyaModel: EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails("employerName", currentDataIsHmrcHeld = true))
   val taxYear = 2021
+
+  val result = Future.successful(Ok("Wow"))
 
   val employmentCYA: EmploymentCYAModel = {
     EmploymentCYAModel(
@@ -70,6 +72,17 @@ class RedirectServiceSpec extends UnitTest {
               nonQualifyingRelocationExpenses = Some(100)
             )
           ),
+          travelEntertainmentModel = Some(
+            TravelEntertainmentModel(
+              travelEntertainmentQuestion = Some(true),
+              travelAndSubsistenceQuestion = Some(true),
+              travelAndSubsistence = Some(555),
+              personalIncidentalExpensesQuestion = Some(true),
+              personalIncidentalExpenses = Some(555),
+              entertainingQuestion = Some(true),
+              entertaining = Some(555)
+            )
+          ),
           assets = Some(100), submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true,
           isBenefitsReceived = true
         )
@@ -88,7 +101,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -106,7 +119,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.carBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -120,7 +133,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -138,7 +151,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.carFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -154,7 +167,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.carBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -172,7 +185,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.carFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -190,7 +203,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.carFuelBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -208,7 +221,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.carFuelBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -224,7 +237,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.carFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -240,7 +253,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.vanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -256,7 +269,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.vanBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -274,7 +287,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.vanFuelBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -292,7 +305,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.accommodationRelocationBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -308,7 +321,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonAccommodationBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -324,7 +337,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.qualifyingRelocationBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -340,7 +353,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.qualifyingRelocationBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -356,7 +369,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.nonQualifyingRelocationBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -372,7 +385,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.nonQualifyingRelocationBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -388,7 +401,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.nonQualifyingRelocationBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -404,7 +417,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.nonQualifyingRelocationBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -420,7 +433,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.travelEntertainmentBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -436,7 +449,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.travelEntertainmentBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -452,7 +465,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.nonQualifyingRelocationBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -468,7 +481,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.qualifyingRelocationBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -484,7 +497,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.qualifyingRelocationBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -500,7 +513,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.accommodationBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -516,7 +529,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.accommodationBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -532,7 +545,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.accommodationBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -548,7 +561,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonAccommodationBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -564,11 +577,333 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonAccommodationBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
         redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+    }
+    "redirect using travel entertainment methods" when {
+      "it's a new submission and attempted to view the travel entertainment page but the accommodation question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.travelEntertainmentBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/accommodation-relocation?employmentId=001"
+      }
+      "it's a new submission and attempted to view the travel yes no page but the travel entertainment question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelEntertainmentQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.commonTravelEntertainmentBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/travel-entertainment?employmentId=001"
+      }
+      "it's a new submission and attempted to view the travel yes no page but the travel entertainment question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelEntertainmentQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.commonTravelEntertainmentBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a prior submission and attempted to view the travel yes no page but the travel entertainment question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelEntertainmentQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.commonTravelEntertainmentBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the travel amount page but the travel yes no question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.travelSubsistenceBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the travel amount page but the travel yes no question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.travelSubsistenceBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a prior submission and attempted to view the travel amount page but the travel yes no question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.travelSubsistenceBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the incidental costs yes no page but the travel yes no question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.incidentalCostsBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the incidental costs yes no page but the travel amount question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistence = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.incidentalCostsBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the incidental costs amount page but the incidental costs question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(personalIncidentalExpensesQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.incidentalCostsBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the incidental costs amount page but the incidental costs question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(personalIncidentalExpensesQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.incidentalCostsBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a prior submission and attempted to view the incidental costs amount page but the incidental costs question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(personalIncidentalExpensesQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.incidentalCostsBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the entertainment yes no page but the incidental costs question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(personalIncidentalExpensesQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.entertainmentBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the entertainment yes no page but the travel yes no question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.entertainmentBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the entertainment amount page but the entertainment yes no question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(entertainingQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.entertainmentBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the entertainment amount page but the entertainment yes no question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(entertainingQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.entertainmentBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a prior submission and attempted to view the entertainment amount page but the entertainment yes no question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(entertainingQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.entertainmentBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the utilities page but the entertainment question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(entertainingQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.utilitiesBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the utilities page but the car question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.utilitiesBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/company-car?employmentId=001"
+      }
+      "it's a new submission and attempted to view the utilities page but the accommodation question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.utilitiesBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/accommodation-relocation?employmentId=001"
       }
     }
     "redirect to mileage benefit yes no page" when {
@@ -582,7 +917,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.vanFuelBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -598,7 +933,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.vanBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -614,7 +949,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.mileageBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -630,7 +965,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -646,7 +981,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -662,7 +997,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -678,7 +1013,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -694,7 +1029,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.carBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -710,7 +1045,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.carFuelBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -726,7 +1061,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.vanBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -742,7 +1077,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.vanFuelBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -758,7 +1093,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.mileageBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -774,7 +1109,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.mileageBenefitsAmountRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -789,7 +1124,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -802,7 +1137,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ) {
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe SEE_OTHER
@@ -818,7 +1153,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ){
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe OK
@@ -832,7 +1167,7 @@ class RedirectServiceSpec extends UnitTest {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
         ){
-          _ => Future.successful(Ok("Wow"))
+          _ => result
         }
 
         status(response) shouldBe OK
