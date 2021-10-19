@@ -52,7 +52,7 @@ case class AccommodationRelocationModel(
     accommodationQuestion match {
       case Some(true) => if(accommodation.isDefined) None else Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) //TODO accommodation amount page
       case Some(false) => None
-      case None => Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) //TODO accommodation yes no page
+      case None => Some(LivingAccommodationBenefitsController.show(taxYear, employmentId))
     }
   }
 

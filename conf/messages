@@ -582,7 +582,6 @@ benefits.companyVanBenefits.title.agent = Did your client get a company van bene
 benefits.companyVanBenefits.error.individual = Select yes if you got a company van benefit
 benefits.companyVanBenefits.error.agent = Select yes if your client got a company van benefit
 
-
 benefits.receiveOwnCarMileageBenefit.title.individual = Did you get a mileage benefit for using your own car for work?
 benefits.receiveOwnCarMileageBenefit.title.agent = Did your client get a mileage benefit for using their own car for work?
 benefits.receiveOwnCarMileageBenefit.needToKnow.individual = We only need to know about payments made above our ‘approved amount‘. If you have payments above the ‘approved amount‘, they should be recorded in section E of your P11D form.
@@ -645,6 +644,17 @@ benefits.accommodationRelocation.title.individual = Did you get accommodation or
 benefits.accommodationRelocation.title.agent = Did your client get accommodation or relocation benefits from this company?
 benefits.accommodationRelocation.error.individual = Select yes if you got accommodation or relocation benefits
 benefits.accommodationRelocation.error.agent = Select yes if your client got accommodation or relocation benefits
+
+benefits.livingAccommodationBenefits.title.individual = Did you get any living accommodation benefits?
+benefits.livingAccommodationBenefits.title.agent = Did your client get any living accommodation benefits?
+benefits.livingAccommodationBenefits.paragraph = Living accommodation is any accommodation that you can live in, whether you live there all the time or only occasionally. It includes houses, flats, houseboats, holiday homes and apartments.
+benefits.livingAccommodationBenefits.details.title = More information about living accommodation
+benefits.livingAccommodationBenefits.details.1 = Living accommodation doesn’t include hotel rooms or board and lodgings, where you’re dependent on someone else for cooking, cleaning or laundry.
+benefits.livingAccommodationBenefits.details.2.individual = Your employment income should include the value of any living accommodation you or your relations get because of your employment.
+benefits.livingAccommodationBenefits.details.2.agent = Your client’s employment income should include the value of any living accommodation they or their relations get because of their employment.
+benefits.livingAccommodationBenefits.details.3 = If you think all or part of this amount should be exempt from tax, refer to HS202 Living accommodation and follow the working sheet.
+benefits.livingAccommodationBenefits.error.no-entry.individual = Select yes if you got living accommodation benefits
+benefits.livingAccommodationBenefits.error.no-entry.agent = Select yes if your client got living accommodation benefits
 
 benefits.travelOrEntertainment.title.individual = Did you get any travel or entertainment benefits from this company?
 benefits.travelOrEntertainment.title.agent = Did your client get any travel or entertainment benefits from this company?
