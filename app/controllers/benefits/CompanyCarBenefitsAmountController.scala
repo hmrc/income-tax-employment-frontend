@@ -103,7 +103,6 @@ class CompanyCarBenefitsAmountController @Inject()(implicit val cc: MessagesCont
 
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
                   isPriorSubmission = cya.isPriorSubmission)(errorHandler.internalServerError()) {
-
                   if (cya.isPriorSubmission) {
                     Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                   } else {
