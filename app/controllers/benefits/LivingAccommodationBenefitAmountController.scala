@@ -71,8 +71,8 @@ class LivingAccommodationBenefitAmountController @Inject()(implicit val cc: Mess
 
           buildForm(user.isAgent).bindFromRequest().fold(
             { formWithErrors =>
-              val cyaCarAmount = cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodation))
-              Future.successful(BadRequest(livingAccommodationBenefitAmountView(taxYear, formWithErrors, cyaCarAmount, employmentId)))
+              val cyaLivingAccommodationAmount = cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodation))
+              Future.successful(BadRequest(livingAccommodationBenefitAmountView(taxYear, formWithErrors, cyaLivingAccommodationAmount, employmentId)))
             }, {
               amount =>
 

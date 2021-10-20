@@ -42,7 +42,7 @@ case class AccommodationRelocationModel(
   //scalastyle:off
   def accommodationSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     accommodationQuestion match {
-      case Some(true) => if (accommodation.isDefined) None else Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) //TODO accommodation amount page
+      case Some(true) => if (accommodation.isDefined) None else Some(LivingAccommodationBenefitAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(LivingAccommodationBenefitsController.show(taxYear, employmentId))
     }

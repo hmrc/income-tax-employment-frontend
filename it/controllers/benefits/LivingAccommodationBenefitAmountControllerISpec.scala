@@ -95,9 +95,9 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     val expectedTitle: String = "How much was your total living accommodation benefit?"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
     val expectedContent: String = "You can find this information on your P11D form in section D, box 14."
-    val emptyErrorText: String = "Enter your total living accommodation benefit amount"
-    val wrongFormatErrorText: String = "Enter your total living accommodation benefit amount in the correct format"
-    val maxAmountErrorText: String = "Your total living accommodation benefit amount must be less than £100,000,000,000"
+    val emptyErrorText: String = "Enter your living accommodation benefit amount"
+    val wrongFormatErrorText: String = "Enter your living accommodation benefit amount in the correct format"
+    val maxAmountErrorText: String = "Your living accommodation benefit amount must be less than £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -105,9 +105,9 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     val expectedTitle: String = "How much was your client’s total living accommodation benefit?"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
     val expectedContent: String = "You can find this information on your client’s P11D form in section D, box 14."
-    val emptyErrorText: String = "Enter your client’s total living accommodation benefit amount"
-    val wrongFormatErrorText: String = "Enter your client’s total living accommodation benefit amount in the correct format"
-    val maxAmountErrorText: String = "Your client’s total living accommodation benefit amount must be less than £100,000,000,000"
+    val emptyErrorText: String = "Enter your client’s living accommodation benefit amount"
+    val wrongFormatErrorText: String = "Enter your client’s living accommodation benefit amount in the correct format"
+    val maxAmountErrorText: String = "Your client’s living accommodation benefit amount must be less than £100,000,000,000"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -115,9 +115,9 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     val expectedTitle: String = "How much was your total living accommodation benefit?"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
     val expectedContent: String = "You can find this information on your P11D form in section D, box 14."
-    val emptyErrorText: String = "Enter your total living accommodation benefit amount"
-    val wrongFormatErrorText: String = "Enter your total living accommodation benefit amount in the correct format"
-    val maxAmountErrorText: String = "Your total living accommodation benefit amount must be less than £100,000,000,000"
+    val emptyErrorText: String = "Enter your living accommodation benefit amount"
+    val wrongFormatErrorText: String = "Enter your living accommodation benefit amount in the correct format"
+    val maxAmountErrorText: String = "Your living accommodation benefit amount must be less than £100,000,000,000"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -125,9 +125,9 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     val expectedTitle: String = "How much was your client’s total living accommodation benefit?"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
     val expectedContent: String = "You can find this information on your client’s P11D form in section D, box 14."
-    val emptyErrorText: String = "Enter your client’s total living accommodation benefit amount"
-    val wrongFormatErrorText: String = "Enter your client’s total living accommodation benefit amount in the correct format"
-    val maxAmountErrorText: String = "Your client’s total living accommodation benefit amount must be less than £100,000,000,000"
+    val emptyErrorText: String = "Enter your client’s living accommodation benefit amount"
+    val wrongFormatErrorText: String = "Enter your client’s living accommodation benefit amount in the correct format"
+    val maxAmountErrorText: String = "Your client’s living accommodation benefit amount must be less than £100,000,000,000"
   }
 
   val livingAccommodationBenefitAmount: Option[BigDecimal] = Some(123.45)
@@ -140,14 +140,6 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
 
   def benefits(accommodationModel: AccommodationRelocationModel): BenefitsViewModel =
     BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true, accommodationRelocationModel = Some(accommodationModel))
-
-  def cya(isPriorSubmission: Boolean = true, benefits: Option[BenefitsViewModel]):
-  EmploymentUserData = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, employmentId, isPriorSubmission,
-    EmploymentCYAModel(
-      EmploymentDetails("maggie", currentDataIsHmrcHeld = false),
-      benefits
-    )
-  )
 
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -202,7 +194,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
             insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
               Some(benefits(fullAccommodationRelocationModel.copy(accommodation = livingAccommodationBenefitAmount))))), userRequest)
             urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
@@ -235,7 +227,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true,
               Some(benefits(fullAccommodationRelocationModel.copy(accommodation = livingAccommodationBenefitAmount))))), userRequest)
             urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
@@ -313,7 +305,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
       }
     }
 
-    "redirect to the check your benefits page when accommodationQuestion is None and it's a prior submission" which {
+    "redirect to the living accommodation page when accommodationQuestion is None and it's a prior submission" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
@@ -560,7 +552,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
       }
     }
 
-    "redirect to the check your benefits page when accommodationQuestion is None and it's a prior submission" which {
+    "redirect to the living accommodation benefits page when accommodationQuestion is None and it's a prior submission" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
