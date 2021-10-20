@@ -139,7 +139,7 @@
                     travelAndSubsistenceQuestion => showQuestionRow("checkYourBenefits.travelAndSubsistence", travelAndSubsistenceQuestion)
                 },
                 benefits.travelEntertainmentModel.flatMap(_.travelAndSubsistence).map{
-                    travelAndSubsistence => showRows("checkYourBenefits.travelAndSubsistenceAmount", travelAndSubsistence)
+                    travelAndSubsistence => showRows("checkYourBenefits.travelAndSubsistenceAmount", travelAndSubsistence, controllers.benefits.routes.TravelOrSubsistenceBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion).map{
                     personalIncidentalExpensesQuestion => showQuestionRow("checkYourBenefits.personalCosts", personalIncidentalExpensesQuestion)

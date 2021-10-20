@@ -27,7 +27,7 @@ import play.api.http.Status._
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
-class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper{
+class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper {
 
   val defaultTaxYear = 2022
   def url(taxYear: Int = defaultTaxYear): String = s"$appUrl/$taxYear/check-employment-benefits?employmentId=001"
@@ -42,10 +42,11 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   trait SpecificExpectedResults {
+    def expectedP2(year: Int = defaultTaxYear): String
+
     val expectedH1: String
     val expectedTitle: String
     val expectedP1: String
-    def expectedP2(year: Int = defaultTaxYear): String
     val companyCarHiddenText: String
     val fuelForCompanyCarHiddenText: String
     val companyVanHiddenText: String
@@ -115,6 +116,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
   trait CommonExpectedResults {
     def expectedCaption(year: Int = defaultTaxYear): String
+
     val changeText: String
     val vehicleHeader: String
     val companyCar: String
@@ -195,8 +197,9 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
+    def expectedCaption(year: Int = defaultTaxYear): String = s"Employment for 6 April ${year - 1} to 5 April $year"
+
     val changeText: String = "Change"
-    def expectedCaption(year: Int = defaultTaxYear): String = s"Employment for 6 April ${year-1} to 5 April $year"
     val vehicleHeader = "Vehicles, fuel and mileage"
     val companyCar = "Company car"
     val fuelForCompanyCar = "Fuel for company car"
@@ -276,8 +279,9 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
+    def expectedCaption(year: Int = defaultTaxYear): String = s"Employment for 6 April ${year - 1} to 5 April $year"
+
     val changeText: String = "Change"
-    def expectedCaption(year: Int = defaultTaxYear): String = s"Employment for 6 April ${year-1} to 5 April $year"
     val vehicleHeader = "Vehicles, fuel and mileage"
     val companyCar = "Company car"
     val fuelForCompanyCar = "Fuel for company car"
@@ -357,10 +361,11 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
+    def expectedP2(year: Int = defaultTaxYear): String = s"You cannot update your employment benefits until 6 April $year."
+
     val expectedH1: String = "Check your employment benefits"
     val expectedTitle: String = "Check your employment benefits"
     val expectedP1: String = "Your employment benefits are based on the information we already hold about you."
-    def expectedP2(year: Int = defaultTaxYear): String = s"You cannot update your employment benefits until 6 April $year."
     val companyCarHiddenText: String = "Change if you got a company car as an employment benefit from this company"
     val fuelForCompanyCarHiddenText: String = "Change if you got a company car fuel as an employment benefit from this company"
     val companyVanHiddenText: String = "Change if you got a company van as an employment benefit from this company"
@@ -429,10 +434,11 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
+    def expectedP2(year: Int = defaultTaxYear): String = s"You cannot update your client’s employment benefits until 6 April $year."
+
     val expectedH1: String = "Check your client’s employment benefits"
     val expectedTitle: String = "Check your client’s employment benefits"
     val expectedP1: String = "Your client’s employment benefits are based on the information we already hold about them."
-    def expectedP2(year: Int = defaultTaxYear): String = s"You cannot update your client’s employment benefits until 6 April $year."
     val companyCarHiddenText: String = "Change if your client got a company car as an employment benefit from this company"
     val fuelForCompanyCarHiddenText: String = "Change if your client got a company car fuel as an employment benefit from this company"
     val companyVanHiddenText: String = "Change if your client got a company van as an employment benefit from this company"
@@ -502,10 +508,11 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
+    def expectedP2(year: Int = defaultTaxYear): String = s"You cannot update your employment benefits until 6 April $year."
+
     val expectedH1: String = "Check your employment benefits"
     val expectedTitle: String = "Check your employment benefits"
     val expectedP1: String = "Your employment benefits are based on the information we already hold about you."
-    def expectedP2(year: Int = defaultTaxYear): String = s"You cannot update your employment benefits until 6 April $year."
     val companyCarHiddenText: String = "Change if you got a company car as an employment benefit from this company"
     val fuelForCompanyCarHiddenText: String = "Change if you got a company car fuel as an employment benefit from this company"
     val companyVanHiddenText: String = "Change if you got a company van as an employment benefit from this company"
@@ -574,10 +581,11 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
+    def expectedP2(year: Int = defaultTaxYear): String = s"You cannot update your client’s employment benefits until 6 April $year."
+
     val expectedH1: String = "Check your client’s employment benefits"
     val expectedTitle: String = "Check your client’s employment benefits"
     val expectedP1: String = "Your client’s employment benefits are based on the information we already hold about them."
-    def expectedP2(year: Int = defaultTaxYear): String = s"You cannot update your client’s employment benefits until 6 April $year."
     val companyCarHiddenText: String = "Change if your client got a company car as an employment benefit from this company"
     val fuelForCompanyCarHiddenText: String = "Change if your client got a company car fuel as an employment benefit from this company"
     val companyVanHiddenText: String = "Change if your client got a company van as an employment benefit from this company"
@@ -661,21 +669,22 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val companyVanFuelBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/van-fuel-amount?employmentId=001"
     val accommodationRelocationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/accommodation-relocation?employmentId=001"
     val livingAccommodationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/living-accommodation?employmentId=001"
-    val nonQualifyingRelocationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/non-qualifying-relocation?employmentId=001"
     val qualifyingRelocationBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/qualifying-relocation-amount?employmentId=001"
+    val nonQualifyingRelocationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/non-qualifying-relocation?employmentId=001"
     val travelEntertainmentBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/travel-entertainment?employmentId=001"
+    val travelOrSubsistenceBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/travel-subsistence-amount?employmentId=001"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true,  CommonExpectedEN, Some(ExpectedAgentEN)),
+      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
       UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
 
   ".show" when {
-    import Selectors._
     import Hrefs._
+    import Selectors._
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
@@ -768,19 +777,19 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear-1)
-            urlGet(url(defaultTaxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear - 1)
+            urlGet(url(defaultTaxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
           val specificResults = user.specificExpectedResults.get
           val commonResults = user.commonExpectedResults
-          val dummyHref = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/check-employment-benefits?employmentId=001"
+          val dummyHref = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/check-employment-benefits?employmentId=001"
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(specificResults.expectedTitle)
           h1Check(specificResults.expectedH1)
-          captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
+          captionCheck(commonResults.expectedCaption(defaultTaxYear - 1))
           textOnPageCheck(specificResults.expectedP1, Selectors.p1)
 
           changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 3, 1, s"${user.commonExpectedResults.changeText} ${specificResults.benefitsReceivedHiddenText}", receiveAnyBenefitsHref)
@@ -811,7 +820,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(commonResults.travelHeader, fieldHeaderSelector(8))
           changeAmountRowCheck(commonResults.travelSubheading, commonResults.yes, 9, 1, s"${user.commonExpectedResults.changeText} ${specificResults.travelSubheadingHiddenText}", travelEntertainmentBenefitsAmountHref)
           changeAmountRowCheck(commonResults.travelAndSubsistence, commonResults.yes, 9, 2, s"${user.commonExpectedResults.changeText} ${specificResults.travelAndSubsistenceHiddenText}", dummyHref)
-          changeAmountRowCheck(commonResults.travelAndSubsistenceAmount, "£9", 9, 3, s"${user.commonExpectedResults.changeText} ${specificResults.travelAndSubsistenceAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.travelAndSubsistenceAmount, "£9", 9, 3, s"${user.commonExpectedResults.changeText} ${specificResults.travelAndSubsistenceAmountHiddenText}", travelOrSubsistenceBenefitsAmountHref)
           changeAmountRowCheck(commonResults.personalCosts, commonResults.yes, 9, 4, s"${user.commonExpectedResults.changeText} ${specificResults.personalCostsHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.personalCostsAmount, "£10", 9, 5, s"${user.commonExpectedResults.changeText} ${specificResults.personalCostsAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.entertainment, commonResults.yes, 9, 6, s"${user.commonExpectedResults.changeText} ${specificResults.entertainmentHiddenText}", dummyHref)
@@ -876,9 +885,9 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear-1)
-            urlGet(s"$appUrl/${taxYear-1}/check-employment-benefits?employmentId=0022", welsh = user.isWelsh, follow=false,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear - 1)
+            urlGet(s"$appUrl/${taxYear - 1}/check-employment-benefits?employmentId=0022", welsh = user.isWelsh, follow = false,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -892,19 +901,19 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(filteredBenefits)))), nino, defaultTaxYear-1)
-            urlGet(url(defaultTaxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear-1)))
+            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(filteredBenefits)))), nino, defaultTaxYear - 1)
+            urlGet(url(defaultTaxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear - 1)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           val specificResults = user.specificExpectedResults.get
           val commonResults = user.commonExpectedResults
-          val dummyHref = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/check-employment-benefits?employmentId=001"
+          val dummyHref = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/check-employment-benefits?employmentId=001"
 
           titleCheck(specificResults.expectedTitle)
           h1Check(specificResults.expectedH1)
-          captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
+          captionCheck(commonResults.expectedCaption(defaultTaxYear - 1))
           textOnPageCheck(specificResults.expectedP1, Selectors.p1)
 
           changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 3, 1, s"${user.commonExpectedResults.changeText} ${specificResults.benefitsReceivedHiddenText}", receiveAnyBenefitsHref)
@@ -923,22 +932,22 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           textOnPageCheck(user.commonExpectedResults.accommodationHeader, fieldHeaderSelector(6))
           changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.no, 7, 1, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationSubheadingHiddenText}", accommodationRelocationBenefitsHref)
-          
+
           textOnPageCheck(user.commonExpectedResults.travelHeader, fieldHeaderSelector(8))
           changeAmountRowCheck(commonResults.travelSubheading, commonResults.no, 9, 1, s"${user.commonExpectedResults.changeText} ${specificResults.travelSubheadingHiddenText}", travelEntertainmentBenefitsAmountHref)
 
           textOnPageCheck(user.commonExpectedResults.utilitiesHeader, fieldHeaderSelector(10))
           changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.no, 11, 1, s"${user.commonExpectedResults.changeText} ${specificResults.utilitiesSubheadingHiddenText}", dummyHref)
-          
+
           textOnPageCheck(user.commonExpectedResults.medicalHeader, fieldHeaderSelector(12))
           changeAmountRowCheck(commonResults.medicalSubheading, commonResults.no, 13, 1, s"${user.commonExpectedResults.changeText} ${specificResults.medicalSubheadingHiddenText}", dummyHref)
-          
+
           textOnPageCheck(user.commonExpectedResults.incomeTaxHeader, fieldHeaderSelector(14))
           changeAmountRowCheck(commonResults.incomeTaxSubheading, commonResults.no, 15, 1, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxSubheadingHiddenText}", dummyHref)
-          
+
           textOnPageCheck(user.commonExpectedResults.reimbursedHeader, fieldHeaderSelector(16))
           changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.no, 17, 1, s"${user.commonExpectedResults.changeText} ${specificResults.reimbursedSubheadingHiddenText}", dummyHref)
-          
+
           textOnPageCheck(user.commonExpectedResults.assetsHeader, fieldHeaderSelector(18))
           changeAmountRowCheck(commonResults.assetsSubheading, commonResults.no, 19, 1, s"${user.commonExpectedResults.changeText} ${specificResults.assetsSubheadingHiddenText}", dummyHref)
 
@@ -999,14 +1008,16 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           "to check help text isn't shown" which {
 
           val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear-1, "001", isPriorSubmission = isPrior, employmentCyaModel)
+            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear - 1, "001", isPriorSubmission = isPrior, employmentCyaModel)
+
           def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
             EmploymentCYAModel(
               EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc),
               Some(BenefitsViewModel(
                 accommodationRelocationModel = Some(AccommodationRelocationModel(
-                  accommodationRelocationQuestion = Some(true), accommodationQuestion = Some(true), accommodation = Some(3.00), qualifyingRelocationExpensesQuestion = Some(false), nonQualifyingRelocationExpensesQuestion = Some(false))) , isUsingCustomerData = true
+                  accommodationRelocationQuestion = Some(true), accommodationQuestion = Some(true), accommodation = Some(3.00), qualifyingRelocationExpensesQuestion = Some(false), nonQualifyingRelocationExpensesQuestion = Some(false))), isUsingCustomerData = true
               ))
             )
 
@@ -1014,18 +1025,18 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
-            urlGet(url(defaultTaxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear-1)))
+            urlGet(url(defaultTaxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear - 1)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           val specificResults = user.specificExpectedResults.get
           val commonResults = user.commonExpectedResults
-          val dummyHref = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/check-employment-benefits?employmentId=001"
+          val dummyHref = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/check-employment-benefits?employmentId=001"
 
           titleCheck(specificResults.expectedTitle)
           h1Check(specificResults.expectedH1)
-          captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
+          captionCheck(commonResults.expectedCaption(defaultTaxYear - 1))
 
           changeAmountRowCheck(commonResults.benefitsReceived, commonResults.yes, 2, 1, s"${user.commonExpectedResults.changeText} ${specificResults.benefitsReceivedHiddenText}", receiveAnyBenefitsHref)
 
@@ -1118,7 +1129,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         "return a page with only the benefits received subheading when its EOY and only the benefits question answered as no" which {
 
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear-1, "001", isPriorSubmission = isPrior, employmentCyaModel)
+            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear - 1, "001", isPriorSubmission = isPrior, employmentCyaModel)
 
           def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
             EmploymentCYAModel(
@@ -1135,15 +1146,15 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYear-1)
-            urlGet(url(defaultTaxYear-1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear - 1)
+            urlGet(url(defaultTaxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(commonResults.expectedCaption(defaultTaxYear  -1))
+          captionCheck(commonResults.expectedCaption(defaultTaxYear - 1))
           textOnPageCheck(user.specificExpectedResults.get.expectedP1, Selectors.p1)
 
           changeAmountRowCheck(commonResults.benefitsReceived, commonResults.no, 3, 1, s"${user.commonExpectedResults.changeText} ${user.specificExpectedResults.get.benefitsReceivedHiddenText}", receiveAnyBenefitsHref)
@@ -1167,7 +1178,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         "redirect to the Did your client receive any benefits page when its EOY and theres no benefits model in the session data" in {
 
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear-1, "001", isPriorSubmission = isPrior, employmentCyaModel)
+            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear - 1, "001", isPriorSubmission = isPrior, employmentCyaModel)
 
           def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
             EmploymentCYAModel(
@@ -1181,8 +1192,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYear-1)
-            urlGet(url(defaultTaxYear-1), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear - 1)
+            urlGet(url(defaultTaxYear - 1), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
           result.status shouldBe SEE_OTHER
@@ -1193,7 +1204,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         "redirect to the Did your client receive any benefits page when its EOY and theres no benefits model in the mongo data" in {
 
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear-1, "001", isPriorSubmission = isPrior, employmentCyaModel)
+            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear - 1, "001", isPriorSubmission = isPrior, employmentCyaModel)
 
           val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -1201,7 +1212,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(None)))), nino, defaultTaxYear)
-            urlGet(url(defaultTaxYear-1), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+            urlGet(url(defaultTaxYear - 1), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
           result.status shouldBe SEE_OTHER
@@ -1325,8 +1336,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
                 "123/12345"
               ),
               startDate = Some("2020-11-11"),
-              taxablePayToDate= Some(55.99),
-              totalTaxToDate= Some(3453453.00),
+              taxablePayToDate = Some(55.99),
+              totalTaxToDate = Some(3453453.00),
               currentDataIsHmrcHeld = false
             ))
           }
@@ -1335,9 +1346,9 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData.copy(employment = employmentData).copy(employmentId = "001"),userRequest)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYear-1)
-            urlPost(url(taxYear-1), body = "{}", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+            insertCyaData(employmentUserData.copy(employment = employmentData).copy(employmentId = "001"), userRequest)
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear - 1)
+            urlPost(url(taxYear - 1), body = "{}", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -1350,8 +1361,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYear-1)
-            urlPost(url(taxYear-1), body = "{}", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYear - 1)
+            urlPost(url(taxYear - 1), body = "{}", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)

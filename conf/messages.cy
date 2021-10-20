@@ -683,3 +683,14 @@ benefits.qualifyingRelocationBenefitsAmount.error.overMaximum.individual = Your 
 benefits.qualifyingRelocationBenefitsAmount.error.overMaximum.agent = Your client’s qualifying relocation benefit must be less than £100,000,000,000
 benefits.qualifyingRelocationBenefitsAmount.error.wrongFormat.individual = Enter your qualifying relocation benefit amount in the correct format
 benefits.qualifyingRelocationBenefitsAmount.error.wrongFormat.agent = Enter your client’s qualifying relocation benefit amount in the correct format
+
+benefits.travelOrSubsistenceBenefitsAmount.title.individual = How much did you get in total for travel and subsistence?
+benefits.travelOrSubsistenceBenefitsAmount.title.agent = How much did your client get in total for travel and subsistence?
+benefits.travelOrSubsistenceBenefitsAmount.informationText.individual = You can find this information in section N of your P11D form.
+benefits.travelOrSubsistenceBenefitsAmount.informationText.agent = You can find this information in section N of your client’s P11D form.
+benefits.travelOrSubsistenceBenefitsAmount.error.noEntry.individual = Enter the amount you got for travel and subsistence
+benefits.travelOrSubsistenceBenefitsAmount.error.noEntry.agent = Enter the amount your client got for travel and subsistence
+benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.individual = Your travel and subsistence benefit must be less than £100,000,000,000
+benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.agent = Your client’s travel and subsistence benefit must be less than £100,000,000,000
+benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.individual = Enter the amount you got for travel and subsistence in the correct format
+benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.agent = Enter the amount your client got for travel and subsistence in the correct format
