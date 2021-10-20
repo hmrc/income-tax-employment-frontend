@@ -661,8 +661,9 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val companyVanFuelBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/van-fuel-amount?employmentId=001"
     val accommodationRelocationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/accommodation-relocation?employmentId=001"
     val livingAccommodationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/living-accommodation?employmentId=001"
-    val travelEntertainmentBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/travel-entertainment?employmentId=001"
+    val nonQualifyingRelocationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/non-qualifying-relocation?employmentId=001"
     val qualifyingRelocationBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/qualifying-relocation-amount?employmentId=001"
+    val travelEntertainmentBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/travel-entertainment?employmentId=001"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -804,7 +805,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.accommodationAmount, "£6", 7, 3, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.qualifyingRelocationCosts, commonResults.yes, 7, 4, s"${user.commonExpectedResults.changeText} ${specificResults.qualifyingRelocationCostsHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.qualifyingRelocationCostsAmount, "£7", 7, 5, s"${user.commonExpectedResults.changeText} ${specificResults.qualifyingRelocationCostsAmountHiddenText}", qualifyingRelocationBenefitsAmountHref)
-          changeAmountRowCheck(commonResults.nonQualifyingRelocationCosts, commonResults.yes, 7, 6, s"${user.commonExpectedResults.changeText} ${specificResults.nonQualifyingRelocationCostsHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.nonQualifyingRelocationCosts, commonResults.yes, 7, 6, s"${user.commonExpectedResults.changeText} ${specificResults.nonQualifyingRelocationCostsHiddenText}", nonQualifyingRelocationBenefitsHref)
           changeAmountRowCheck(commonResults.nonQualifyingRelocationCostsAmount, "£8", 7, 7, s"${user.commonExpectedResults.changeText} ${specificResults.nonQualifyingRelocationCostsAmountHiddenText}", dummyHref)
 
           textOnPageCheck(commonResults.travelHeader, fieldHeaderSelector(8))
@@ -1037,7 +1038,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.accommodation, commonResults.yes, 6, 2, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationHiddenText}", livingAccommodationBenefitsHref)
           changeAmountRowCheck(commonResults.accommodationAmount, "£3", 6, 3, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.qualifyingRelocationCosts, commonResults.no, 6, 4, s"${user.commonExpectedResults.changeText} ${specificResults.qualifyingRelocationCostsHiddenText}", dummyHref)
-          changeAmountRowCheck(commonResults.nonQualifyingRelocationCosts, commonResults.no, 6, 5, s"${user.commonExpectedResults.changeText} ${specificResults.nonQualifyingRelocationCostsHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.nonQualifyingRelocationCosts, commonResults.no, 6, 5, s"${user.commonExpectedResults.changeText} ${specificResults.nonQualifyingRelocationCostsHiddenText}", nonQualifyingRelocationBenefitsHref)
 
           textOnPageCheck(user.commonExpectedResults.travelHeader, fieldHeaderSelector(7))
           changeAmountRowCheck(commonResults.travelSubheading, commonResults.no, 8, 1, s"${user.commonExpectedResults.changeText} ${specificResults.travelSubheadingHiddenText}", travelEntertainmentBenefitsAmountHref)

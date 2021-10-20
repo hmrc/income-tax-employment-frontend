@@ -118,7 +118,7 @@
                     qualifyingRelocationExpenses => showRows("checkYourBenefits.qualifyingRelocationCostsAmount", qualifyingRelocationExpenses, controllers.benefits.routes.QualifyingRelocationBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpensesQuestion).map{
-                    nonQualifyingRelocationExpensesQuestion => showQuestionRow("checkYourBenefits.nonQualifyingRelocationCosts", nonQualifyingRelocationExpensesQuestion)
+                    nonQualifyingRelocationExpensesQuestion => showQuestionRow("checkYourBenefits.nonQualifyingRelocationCosts", nonQualifyingRelocationExpensesQuestion, controllers.benefits.routes.NonQualifyingRelocationBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses).map{
                     nonQualifyingRelocationExpenses => showRows("checkYourBenefits.nonQualifyingRelocationCostsAmount", nonQualifyingRelocationExpenses)
