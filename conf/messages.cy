@@ -656,6 +656,19 @@ benefits.livingAccommodationBenefits.details.3 = If you think all or part of thi
 benefits.livingAccommodationBenefits.error.no-entry.individual = Select yes if you got living accommodation benefits
 benefits.livingAccommodationBenefits.error.no-entry.agent = Select yes if your client got living accommodation benefits
 
+benefits.nonQualifyingRelocationQuestion.title.individual = Did you get any non-qualifying relocation benefits?
+benefits.nonQualifyingRelocationQuestion.title.agent = Did your client get any non-qualifying relocation benefits?
+benefits.nonQualifyingRelocationQuestion.error.individual = Select yes if you got fuel benefit for a company van
+benefits.nonQualifyingRelocationQuestion.error.agent = Select yes if your client got fuel benefit for a company van
+benefits.nonQualifyingRelocationQuestion.thisIncludes.individual = These are relocation costs that your employer has paid for, or reimbursed you for. Examples include:
+benefits.nonQualifyingRelocationQuestion.thisIncludes.agent = These are relocation costs that their employer has paid for, or reimbursed them for. Examples include:
+benefits.nonQualifyingRelocationQuestion.thisIncludes.example1.individual = mortgage or housing payments if you’re moving to a more expensive area
+benefits.nonQualifyingRelocationQuestion.thisIncludes.example1.agent = mortgage or housing payments if they’re moving to a more expensive area
+benefits.nonQualifyingRelocationQuestion.thisIncludes.example2.individual = compensation if you lose money when selling your home
+benefits.nonQualifyingRelocationQuestion.thisIncludes.example2.agent = compensation if they lose money when selling their home
+benefits.nonQualifyingRelocationQuestion.error.individual = Select yes if you got non-qualifying relocation benefits
+benefits.nonQualifyingRelocationQuestion.error.agent = Select yes if your client got non-qualifying relocation benefits
+
 benefits.travelOrEntertainment.title.individual = Did you get any travel or entertainment benefits from this company?
 benefits.travelOrEntertainment.title.agent = Did your client get any travel or entertainment benefits from this company?
 benefits.travelOrEntertainment.thisIncludes = This includes benefits such as travel, incidental overnight expenses and entertaining.

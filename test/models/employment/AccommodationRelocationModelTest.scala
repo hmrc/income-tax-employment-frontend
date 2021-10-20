@@ -16,7 +16,7 @@
 
 package models.employment
 
-import controllers.benefits.routes.{AccommodationRelocationBenefitsController, LivingAccommodationBenefitsController, QualifyingRelocationBenefitsAmountController}
+import controllers.benefits.routes.{AccommodationRelocationBenefitsController, LivingAccommodationBenefitsController, NonQualifyingRelocationBenefitsController, QualifyingRelocationBenefitsAmountController}
 import utils.UnitTest
 
 class AccommodationRelocationModelTest extends UnitTest {
@@ -97,11 +97,11 @@ class AccommodationRelocationModelTest extends UnitTest {
       underTest.nonQualifyingRelocationSectionFinished(taxYear, employmentId) shouldBe None
     }
 
-    "return call to AccommodationRelocationBenefitsController when nonQualifyingRelocationExpensesQuestion is None" in {
+    "return call to NonQualifyingRelocationBenefitsController when nonQualifyingRelocationExpensesQuestion is None" in {
       val underTest = AccommodationRelocationModel(nonQualifyingRelocationExpensesQuestion = None)
 
       underTest.nonQualifyingRelocationSectionFinished(taxYear, employmentId) shouldBe
-        Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId))
+        Some(NonQualifyingRelocationBenefitsController.show(taxYear, employmentId))
     }
   }
 

@@ -377,7 +377,6 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
       accommodationRelocationQuestion = Some(false)
     )
 
-
   def fullTravelOrEntertainmentModel: TravelEntertainmentModel =
     TravelEntertainmentModel(
       travelEntertainmentQuestion = Some(true),
