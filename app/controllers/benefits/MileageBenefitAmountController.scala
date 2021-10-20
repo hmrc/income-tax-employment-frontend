@@ -18,8 +18,10 @@ package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.routes.AccommodationRelocationBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
+
 import javax.inject.Inject
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
@@ -106,8 +108,7 @@ class MileageBenefitAmountController @Inject()(implicit val cc: MessagesControll
                   if (cya.isPriorSubmission) {
                     Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                   } else {
-                    //TODO Update to accommodation controller
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                    Redirect(AccommodationRelocationBenefitsController.show(taxYear, employmentId))
                   }
                 }
             }

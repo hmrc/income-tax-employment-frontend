@@ -17,9 +17,11 @@
 package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
+import controllers.benefits.routes.{CompanyVanBenefitsAmountController, ReceiveOwnCarMileageBenefitController}
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
+
 import javax.inject.Inject
 import models.User
 import models.mongo.EmploymentCYAModel
@@ -91,7 +93,11 @@ class CompanyVanBenefitsController @Inject()(implicit val cc: MessagesController
 
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                (data.isPriorSubmission, yesNo) match {
+                  case (_, true) => Redirect(CompanyVanBenefitsAmountController.show(taxYear, employmentId))
+                  case (false, false) => Redirect(ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId))
+                  case (true, false) => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                }
               }
             }
           )
