@@ -52,7 +52,7 @@ case class AccommodationRelocationModel(
     nonQualifyingRelocationExpensesQuestion match {
       case Some(true) => if (nonQualifyingRelocationExpenses.isDefined) None else Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) // TODO non qual relocation amount page
       case Some(false) => None
-      case None => Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) //TODO non qual relocation yes no page
+      case None => Some(NonQualifyingRelocationBenefitsController.show(taxYear, employmentId))
     }
   }
   //scalastyle:on
