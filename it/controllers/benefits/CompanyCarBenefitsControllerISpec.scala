@@ -136,7 +136,7 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "return a radio button page when not in year and a bad for submission" which {
+        "return a radio button page when not in year and a bad form submission" which {
 
           lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
 
