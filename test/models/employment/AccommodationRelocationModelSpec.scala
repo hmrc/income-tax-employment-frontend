@@ -58,7 +58,7 @@ class AccommodationRelocationModelSpec extends UnitTest {
       underTest.accommodationSectionFinished(taxYear, employmentId) shouldBe None
     }
 
-    "return call to AccommodationRelocationBenefitsController when accommodationQuestion and accommodation not defined" in {
+    "return call to LivingAccommodationBenefitAmountController when accommodationQuestion and accommodation not defined" in {
       val underTest = AccommodationRelocationModel(accommodationQuestion = Some(true), accommodation = None)
 
       underTest.accommodationSectionFinished(taxYear, employmentId) shouldBe Some(LivingAccommodationBenefitAmountController.show(taxYear, employmentId))

@@ -16,11 +16,11 @@
 
 package controllers.benefits
 
-import controllers.benefits.routes.{AccommodationRelocationBenefitsController, LivingAccommodationBenefitAmountController, LivingAccommodationBenefitsController}
+import controllers.benefits.routes.{AccommodationRelocationBenefitsController, LivingAccommodationBenefitsController}
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.AmountForm
 import models.User
-import models.employment.{AccommodationRelocationModel, Benefits, BenefitsViewModel, CarVanFuelModel, EmploymentBenefits}
+import models.employment.{AccommodationRelocationModel, BenefitsViewModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
