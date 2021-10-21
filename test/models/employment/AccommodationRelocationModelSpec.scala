@@ -19,7 +19,7 @@ package models.employment
 import controllers.benefits.routes.{AccommodationRelocationBenefitsController, LivingAccommodationBenefitsController, NonQualifyingRelocationBenefitsController, QualifyingRelocationBenefitsAmountController}
 import utils.UnitTest
 
-class AccommodationRelocationModelTest extends UnitTest {
+class AccommodationRelocationModelSpec extends UnitTest {
 
   private val taxYear = 2021
   private val employmentId = "some-employment-id"

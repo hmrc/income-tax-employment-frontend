@@ -51,39 +51,39 @@ class RedirectServiceSpec extends UnitTest {
           carVanFuelModel = Some(CarVanFuelModel(
             carVanFuelQuestion = Some(true),
             carQuestion = Some(true),
-            car = Some(100),
+            car = Some(100.00),
             carFuelQuestion = Some(true),
-            carFuel = Some(100),
+            carFuel = Some(100.00),
             vanQuestion = Some(true),
-            van = Some(100),
+            van = Some(100.00),
             vanFuelQuestion = Some(true),
-            vanFuel = Some(100),
+            vanFuel = Some(100.00),
             mileageQuestion = Some(true),
-            mileage = Some(100)
+            mileage = Some(100.00)
           )),
           accommodationRelocationModel = Some(
             AccommodationRelocationModel(
               accommodationRelocationQuestion = Some(true),
               accommodationQuestion = Some(true),
-              accommodation = Some(100),
+              accommodation = Some(100.00),
               qualifyingRelocationExpensesQuestion = Some(true),
-              qualifyingRelocationExpenses = Some(100),
+              qualifyingRelocationExpenses = Some(100.00),
               nonQualifyingRelocationExpensesQuestion = Some(true),
-              nonQualifyingRelocationExpenses = Some(100)
+              nonQualifyingRelocationExpenses = Some(100.00)
             )
           ),
           travelEntertainmentModel = Some(
             TravelEntertainmentModel(
               travelEntertainmentQuestion = Some(true),
               travelAndSubsistenceQuestion = Some(true),
-              travelAndSubsistence = Some(555),
+              travelAndSubsistence = Some(555.00),
               personalIncidentalExpensesQuestion = Some(true),
-              personalIncidentalExpenses = Some(555),
+              personalIncidentalExpenses = Some(555.00),
               entertainingQuestion = Some(true),
-              entertaining = Some(555)
+              entertaining = Some(555.00)
             )
           ),
-          assets = Some(100), submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true,
+          assets = Some(100.00), submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true,
           isBenefitsReceived = true
         )
       ))
@@ -727,7 +727,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/travel-subsistence-amount?employmentId=001"
       }
       "it's a new submission and attempted to view the incidental costs amount page but the incidental costs question is empty" in {
 
