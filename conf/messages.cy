@@ -675,6 +675,17 @@ benefits.travelOrEntertainment.thisIncludes = This includes benefits such as tra
 benefits.travelOrEntertainment.error.individual = Select yes if you got travel or entertainment benefits
 benefits.travelOrEntertainment.error.agent = Select yes if your client got travel or entertainment benefits
 
+benefits.livingAccommodationAmount.title.individual = How much was your total living accommodation benefit?
+benefits.livingAccommodationAmount.title.agent = How much was your client’s total living accommodation benefit?
+benefits.livingAccommodationAmount.informationText.individual = You can find this information on your P11D form in section D, box 14.
+benefits.livingAccommodationAmount.informationText.agent = You can find this information on your client’s P11D form in section D, box 14.
+benefits.livingAccommodationAmount.error.noEntry.individual = Enter your living accommodation benefit amount
+benefits.livingAccommodationAmount.error.noEntry.agent = Enter your client’s living accommodation benefit amount
+benefits.livingAccommodationAmount.error.overMaximum.individual = Your living accommodation benefit amount must be less than £100,000,000,000
+benefits.livingAccommodationAmount.error.overMaximum.agent = Your client’s living accommodation benefit amount must be less than £100,000,000,000
+benefits.livingAccommodationAmount.error.wrongFormat.individual = Enter your living accommodation benefit amount in the correct format
+benefits.livingAccommodationAmount.error.wrongFormat.agent = Enter your client’s living accommodation benefit amount in the correct format
+
 benefits.qualifyingRelocationBenefitsAmount.title.individual = How much did you get in total for qualifying relocation benefits?
 benefits.qualifyingRelocationBenefitsAmount.title.agent = How much was your client’s total qualifying relocation benefit?
 benefits.qualifyingRelocationBenefitsAmount.error.noEntry.individual = Enter your qualifying relocation benefit amount
@@ -694,3 +705,4 @@ benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.individual = Your t
 benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.agent = Your client’s travel and subsistence benefit must be less than £100,000,000,000
 benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.individual = Enter the amount you got for travel and subsistence in the correct format
 benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.agent = Enter the amount your client got for travel and subsistence in the correct format
+

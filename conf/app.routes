@@ -107,12 +107,13 @@ GET        /:taxYear/employment-summary                     controllers.employme
 POST       /:taxYear/employment-summary                     controllers.employment.EmploymentSummaryController.submit(taxYear: Int)
 
 GET        /:taxYear/uk-tax                                 controllers.employment.EmploymentTaxController.show(taxYear: Int, employmentId: String)
-
 POST       /:taxYear/uk-tax                                 controllers.employment.EmploymentTaxController.submit(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/benefits/company-car                   controllers.benefits.CompanyCarBenefitsController.show(taxYear: Int, employmentId: String)
-
 POST       /:taxYear/benefits/company-car                   controllers.benefits.CompanyCarBenefitsController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/benefits/living-accommodation-amount   controllers.benefits.LivingAccommodationBenefitAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/living-accommodation-amount   controllers.benefits.LivingAccommodationBenefitAmountController.submit(taxYear: Int, employmentId: String)
 
 GET        /language/:lang                                  controllers.LanguageSwitchController.switchToLanguage(lang: String)
 
