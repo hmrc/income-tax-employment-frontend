@@ -406,7 +406,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "redirects to the check your benefits page" in {
+      "redirects to the van fuel amount benefits page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
           Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/van-fuel-amount?employmentId=$employmentId")
@@ -430,7 +430,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
         urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "redirects to the check your benefits page" in {
+      "redirects to the van fuel amount benefits page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
           Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/van-fuel-amount?employmentId=$employmentId")
