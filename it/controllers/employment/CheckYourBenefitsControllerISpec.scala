@@ -672,6 +672,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val livingAccommodationAmountBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/living-accommodation-amount?employmentId=001"
     val nonQualifyingRelocationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/non-qualifying-relocation?employmentId=001"
     val qualifyingRelocationBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/qualifying-relocation-amount?employmentId=001"
+    val travelOrSubsistenceBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/travel-subsistence?employmentId=001"
     val travelEntertainmentBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/travel-entertainment?employmentId=001"
     val travelOrSubsistenceBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/travel-subsistence-amount?employmentId=001"
   }
@@ -820,7 +821,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           textOnPageCheck(commonResults.travelHeader, fieldHeaderSelector(8))
           changeAmountRowCheck(commonResults.travelSubheading, commonResults.yes, 9, 1, s"${user.commonExpectedResults.changeText} ${specificResults.travelSubheadingHiddenText}", travelEntertainmentBenefitsAmountHref)
-          changeAmountRowCheck(commonResults.travelAndSubsistence, commonResults.yes, 9, 2, s"${user.commonExpectedResults.changeText} ${specificResults.travelAndSubsistenceHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.travelAndSubsistence, commonResults.yes, 9, 2, s"${user.commonExpectedResults.changeText} ${specificResults.travelAndSubsistenceHiddenText}", travelOrSubsistenceBenefitsHref)
           changeAmountRowCheck(commonResults.travelAndSubsistenceAmount, "£9", 9, 3, s"${user.commonExpectedResults.changeText} ${specificResults.travelAndSubsistenceAmountHiddenText}", travelOrSubsistenceBenefitsAmountHref)
           changeAmountRowCheck(commonResults.personalCosts, commonResults.yes, 9, 4, s"${user.commonExpectedResults.changeText} ${specificResults.personalCostsHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.personalCostsAmount, "£10", 9, 5, s"${user.commonExpectedResults.changeText} ${specificResults.personalCostsAmountHiddenText}", dummyHref)

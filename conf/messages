@@ -695,6 +695,13 @@ benefits.qualifyingRelocationBenefitsAmount.error.overMaximum.agent = Your clien
 benefits.qualifyingRelocationBenefitsAmount.error.wrongFormat.individual = Enter your qualifying relocation benefit amount in the correct format
 benefits.qualifyingRelocationBenefitsAmount.error.wrongFormat.agent = Enter your client’s qualifying relocation benefit amount in the correct format
 
+benefits.travelAndSubsistence.title.individual = Did you get any travel and subsistence benefits?
+benefits.travelAndSubsistence.title.agent = Did your client get any travel and subsistence benefits?
+benefits.travelAndSubsistence.thisIs.individual = This is the cost of any travel and subsistence that is paid for by your employer and is not exempt from tax. This includes hotels and meals.
+benefits.travelAndSubsistence.thisIs.agent = This is the cost of any travel and subsistence that is paid for by their employer and is not exempt from tax. This includes hotels and meals.
+benefits.travelAndSubsistence.error.individual = Select yes if you got travel and subsistence benefits
+benefits.travelAndSubsistence.error.agent = Select yes if your client got travel and subsistence benefits
+
 benefits.travelOrSubsistenceBenefitsAmount.title.individual = How much did you get in total for travel and subsistence?
 benefits.travelOrSubsistenceBenefitsAmount.title.agent = How much did your client get in total for travel and subsistence?
 benefits.travelOrSubsistenceBenefitsAmount.informationText.individual = You can find this information in section N of your P11D form.
@@ -705,4 +712,3 @@ benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.individual = Your t
 benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.agent = Your client’s travel and subsistence benefit must be less than £100,000,000,000
 benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.individual = Enter the amount you got for travel and subsistence in the correct format
 benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.agent = Enter the amount your client got for travel and subsistence in the correct format
-

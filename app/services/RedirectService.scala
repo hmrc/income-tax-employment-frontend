@@ -267,8 +267,7 @@ object RedirectService extends Logging {
 
     commonTravelEntertainmentBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to travel subsistence yes no page
-        ConditionalRedirect(travelSubsistenceQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(travelSubsistenceQuestion.isEmpty, TravelAndSubsistenceBenefitsController.show(taxYear, employmentId)),
         //TODO go to incidental costs yes no page
         ConditionalRedirect(travelSubsistenceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
         ConditionalRedirect(travelSubsistenceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
