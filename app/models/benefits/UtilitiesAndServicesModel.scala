@@ -20,6 +20,7 @@ import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue
 import controllers.benefits.routes._
+import controllers.employment.routes._
 
 case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolean] = None,
                                      telephoneQuestion: Option[Boolean] = None,
@@ -44,40 +45,40 @@ case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolea
           case _ => None
         }
       case Some(false) => None
-      case None => Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId))
+      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId))
     }
   }
 
   //scalastyle:off
   def telephoneSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
     telephoneQuestion match {
-      case Some(true) => if(telephone.isDefined) None else Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) //TODO telephone amount page
+      case Some(true) => if(telephone.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO telephone amount page
       case Some(false) => None
-      case None => Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) //TODO telephone yes no page
+      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO telephone yes no page
     }
   }
 
   def employerProvidedServicesSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
     employerProvidedServicesQuestion match {
-      case Some(true) => if(employerProvidedServices.isDefined) None else Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) // TODO employerProvidedServices amount page
+      case Some(true) => if(employerProvidedServices.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) // TODO employerProvidedServices amount page
       case Some(false) => None
-      case None => Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) //TODO employerProvidedServices yes no page
+      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO employerProvidedServices yes no page
     }
   }
 
   def employerProvidedProfessionalSubscriptionsSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     employerProvidedProfessionalSubscriptionsQuestion match {
-      case Some(true) => if(employerProvidedProfessionalSubscriptions.isDefined) None else Some(AccommodationRelocationBenefitsController.show(taxYear,employmentId)) // TODO employerProvidedProfessionalSubscriptions amount page
+      case Some(true) => if(employerProvidedProfessionalSubscriptions.isDefined) None else Some(CheckYourBenefitsController.show(taxYear,employmentId)) // TODO employerProvidedProfessionalSubscriptions amount page
       case Some(false) => None
-      case None => Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) //TODO employerProvidedProfessionalSubscriptions yes no page
+      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO employerProvidedProfessionalSubscriptions yes no page
     }
   }
 
   def serviceSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     serviceQuestion match {
-      case Some(true) => if(service.isDefined) None else Some(AccommodationRelocationBenefitsController.show(taxYear,employmentId)) // TODO service amount page
+      case Some(true) => if(service.isDefined) None else Some(CheckYourBenefitsController.show(taxYear,employmentId)) // TODO service amount page
       case Some(false) => None
-      case None => Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) //TODO service yes no page
+      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO service yes no page
     }
   }
   //scalastyle:on

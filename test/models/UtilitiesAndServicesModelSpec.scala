@@ -38,7 +38,7 @@ class UtilitiesAndServicesModelSpec extends UnitTest {
 
   "isFinished" should {
     "return utilities and services yes no page" in {
-      model.copy(utilitiesAndServicesQuestion = None).isFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/accommodation-relocation?employmentId=id")
+      model.copy(utilitiesAndServicesQuestion = None).isFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=id")
     }
     "return none when section is finished" in {
       model.copy(utilitiesAndServicesQuestion = Some(false)).isFinished(2022, "employmentId") shouldBe None
@@ -48,11 +48,11 @@ class UtilitiesAndServicesModelSpec extends UnitTest {
 
   "telephoneSectionFinished" should {
     "return telephone yes no page" in {
-      model.copy(telephoneQuestion = None).telephoneSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/accommodation-relocation?employmentId=id")
+      model.copy(telephoneQuestion = None).telephoneSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=id")
     }
 
     "return telephone amount page" in {
-      model.copy(telephone = None).telephoneSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/accommodation-relocation?employmentId=id")
+      model.copy(telephone = None).telephoneSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=id")
     }
 
     "return none when section is finished" in {
@@ -64,11 +64,11 @@ class UtilitiesAndServicesModelSpec extends UnitTest {
   "employerProvidedServicesSectionFinished" should {
 
     "return employerProvidedServices yes no page" in {
-      model.copy(employerProvidedServicesQuestion = None).employerProvidedServicesSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/accommodation-relocation?employmentId=id")
+      model.copy(employerProvidedServicesQuestion = None).employerProvidedServicesSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=id")
     }
 
     "return employerProvidedServices amount page" in {
-      model.copy(employerProvidedServices = None).employerProvidedServicesSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/accommodation-relocation?employmentId=id")
+      model.copy(employerProvidedServices = None).employerProvidedServicesSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=id")
     }
 
     "return none when section is finished" in {
@@ -80,11 +80,11 @@ class UtilitiesAndServicesModelSpec extends UnitTest {
   "employerProvidedProfessionalSubscriptionsSectionFinished" should {
 
     "return employerProvidedProfessionalSubscriptions yes no page" in {
-      model.copy(employerProvidedProfessionalSubscriptionsQuestion = None).employerProvidedProfessionalSubscriptionsSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/accommodation-relocation?employmentId=id")
+      model.copy(employerProvidedProfessionalSubscriptionsQuestion = None).employerProvidedProfessionalSubscriptionsSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=id")
     }
 
     "return employerProvidedProfessionalSubscriptions amount page" in {
-      model.copy(employerProvidedProfessionalSubscriptions = None).employerProvidedProfessionalSubscriptionsSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/accommodation-relocation?employmentId=id")
+      model.copy(employerProvidedProfessionalSubscriptions = None).employerProvidedProfessionalSubscriptionsSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=id")
     }
 
     "return none when section is finished" in {
@@ -95,11 +95,11 @@ class UtilitiesAndServicesModelSpec extends UnitTest {
 
   "serviceSectionFinished" should {
     "return service yes no page" in {
-      model.copy(serviceQuestion = None).serviceSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/accommodation-relocation?employmentId=id")
+      model.copy(serviceQuestion = None).serviceSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=id")
     }
 
     "return service amount page" in {
-      model.copy(service = None).serviceSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/accommodation-relocation?employmentId=id")
+      model.copy(service = None).serviceSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=id")
     }
 
     "return none when section is finished" in {

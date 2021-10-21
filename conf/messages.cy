@@ -656,8 +656,41 @@ benefits.livingAccommodationBenefits.details.3 = If you think all or part of thi
 benefits.livingAccommodationBenefits.error.no-entry.individual = Select yes if you got living accommodation benefits
 benefits.livingAccommodationBenefits.error.no-entry.agent = Select yes if your client got living accommodation benefits
 
+benefits.nonQualifyingRelocationQuestion.title.individual = Did you get any non-qualifying relocation benefits?
+benefits.nonQualifyingRelocationQuestion.title.agent = Did your client get any non-qualifying relocation benefits?
+benefits.nonQualifyingRelocationQuestion.error.individual = Select yes if you got fuel benefit for a company van
+benefits.nonQualifyingRelocationQuestion.error.agent = Select yes if your client got fuel benefit for a company van
+benefits.nonQualifyingRelocationQuestion.thisIncludes.individual = These are relocation costs that your employer has paid for, or reimbursed you for. Examples include:
+benefits.nonQualifyingRelocationQuestion.thisIncludes.agent = These are relocation costs that their employer has paid for, or reimbursed them for. Examples include:
+benefits.nonQualifyingRelocationQuestion.thisIncludes.example1.individual = mortgage or housing payments if you’re moving to a more expensive area
+benefits.nonQualifyingRelocationQuestion.thisIncludes.example1.agent = mortgage or housing payments if they’re moving to a more expensive area
+benefits.nonQualifyingRelocationQuestion.thisIncludes.example2.individual = compensation if you lose money when selling your home
+benefits.nonQualifyingRelocationQuestion.thisIncludes.example2.agent = compensation if they lose money when selling their home
+benefits.nonQualifyingRelocationQuestion.error.individual = Select yes if you got non-qualifying relocation benefits
+benefits.nonQualifyingRelocationQuestion.error.agent = Select yes if your client got non-qualifying relocation benefits
+
 benefits.travelOrEntertainment.title.individual = Did you get any travel or entertainment benefits from this company?
 benefits.travelOrEntertainment.title.agent = Did your client get any travel or entertainment benefits from this company?
 benefits.travelOrEntertainment.thisIncludes = This includes benefits such as travel, incidental overnight expenses and entertaining.
 benefits.travelOrEntertainment.error.individual = Select yes if you got travel or entertainment benefits
 benefits.travelOrEntertainment.error.agent = Select yes if your client got travel or entertainment benefits
+
+benefits.qualifyingRelocationBenefitsAmount.title.individual = How much did you get in total for qualifying relocation benefits?
+benefits.qualifyingRelocationBenefitsAmount.title.agent = How much was your client’s total qualifying relocation benefit?
+benefits.qualifyingRelocationBenefitsAmount.error.noEntry.individual = Enter your qualifying relocation benefit amount
+benefits.qualifyingRelocationBenefitsAmount.error.noEntry.agent = Enter your client’s qualifying relocation benefit amount
+benefits.qualifyingRelocationBenefitsAmount.error.overMaximum.individual = Your qualifying relocation benefit must be less than £100,000,000,000
+benefits.qualifyingRelocationBenefitsAmount.error.overMaximum.agent = Your client’s qualifying relocation benefit must be less than £100,000,000,000
+benefits.qualifyingRelocationBenefitsAmount.error.wrongFormat.individual = Enter your qualifying relocation benefit amount in the correct format
+benefits.qualifyingRelocationBenefitsAmount.error.wrongFormat.agent = Enter your client’s qualifying relocation benefit amount in the correct format
+
+benefits.travelOrSubsistenceBenefitsAmount.title.individual = How much did you get in total for travel and subsistence?
+benefits.travelOrSubsistenceBenefitsAmount.title.agent = How much did your client get in total for travel and subsistence?
+benefits.travelOrSubsistenceBenefitsAmount.informationText.individual = You can find this information in section N of your P11D form.
+benefits.travelOrSubsistenceBenefitsAmount.informationText.agent = You can find this information in section N of your client’s P11D form.
+benefits.travelOrSubsistenceBenefitsAmount.error.noEntry.individual = Enter the amount you got for travel and subsistence
+benefits.travelOrSubsistenceBenefitsAmount.error.noEntry.agent = Enter the amount your client got for travel and subsistence
+benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.individual = Your travel and subsistence benefit must be less than £100,000,000,000
+benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.agent = Your client’s travel and subsistence benefit must be less than £100,000,000,000
+benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.individual = Enter the amount you got for travel and subsistence in the correct format
+benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.agent = Enter the amount your client got for travel and subsistence in the correct format

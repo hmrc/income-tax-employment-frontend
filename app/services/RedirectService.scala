@@ -17,7 +17,7 @@
 package services
 
 import controllers.benefits.routes._
-import controllers.employment.routes.{CheckYourBenefitsController, _}
+import controllers.employment.routes._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.Logging
 import play.api.mvc.Results.Redirect
@@ -34,7 +34,7 @@ object RedirectService extends Logging {
 
   case class ConditionalRedirect(condition: Boolean, redirect: Call, isPriorSubmission: Option[Boolean] = None)
 
-  def toConditionalRedirect(call: Option[Call]): Option[ConditionalRedirect] ={
+  def toConditionalRedirect(call: Option[Call]): Option[ConditionalRedirect] = {
     call.map(ConditionalRedirect(true, _))
   }
 
@@ -147,7 +147,7 @@ object RedirectService extends Logging {
     val fullVanSectionFinished = toConditionalRedirect(
       cya.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.fullVanSectionFinished(taxYear, employmentId))))
 
-    commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(fullCarSectionFinished,fullVanSectionFinished).flatten
+    commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(fullCarSectionFinished, fullVanSectionFinished).flatten
   }
 
   def mileageBenefitsAmountRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
@@ -211,8 +211,7 @@ object RedirectService extends Logging {
       Seq(
         //TODO qual relocation yes no page
         ConditionalRedirect(relocationQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
-        //TODO non qual relocation yes no page
-        ConditionalRedirect(relocationQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
+        ConditionalRedirect(relocationQuestion.contains(false), NonQualifyingRelocationBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
         ConditionalRedirect(relocationQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
       )
   }
@@ -234,8 +233,7 @@ object RedirectService extends Logging {
 
     nonQualifyingRelocationBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO non qual relocation yes no page
-        ConditionalRedirect(relocationQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(relocationQuestion.isEmpty, NonQualifyingRelocationBenefitsController.show(taxYear, employmentId)),
         ConditionalRedirect(relocationQuestion.contains(false), TravelOrEntertainmentBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
         ConditionalRedirect(relocationQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
       )
@@ -449,9 +447,8 @@ object RedirectService extends Logging {
 
   def redirectBasedOnCurrentAnswers(taxYear: Int, employmentId: String, data: Option[EmploymentUserData], employmentType: EmploymentType)
                                    (cyaConditions: EmploymentCYAModel => Seq[ConditionalRedirect])
-                                   (block: EmploymentUserData => Future[Result]): Future[Result] ={
-
-    val redirect = calculateRedirect(taxYear,employmentId,data,employmentType,cyaConditions)
+                                   (block: EmploymentUserData => Future[Result]): Future[Result] = {
+    val redirect = calculateRedirect(taxYear, employmentId, data, employmentType, cyaConditions)
 
     redirect match {
       case Left(redirect) => Future.successful(redirect)
@@ -460,7 +457,7 @@ object RedirectService extends Logging {
   }
 
   private def calculateRedirect(taxYear: Int, employmentId: String, data: Option[EmploymentUserData], employmentType: EmploymentType,
-                                cyaConditions: EmploymentCYAModel => Seq[ConditionalRedirect]): Either[Result, EmploymentUserData] ={
+                                cyaConditions: EmploymentCYAModel => Seq[ConditionalRedirect]): Either[Result, EmploymentUserData] = {
     data match {
       case Some(cya) =>
 
@@ -483,7 +480,7 @@ object RedirectService extends Logging {
     }
   }
 
-  private def employmentTypeRedirect(employmentType: EmploymentType, taxYear: Int, employmentId: String): Either[Result, EmploymentUserData] ={
+  private def employmentTypeRedirect(employmentType: EmploymentType, taxYear: Int, employmentId: String): Either[Result, EmploymentUserData] = {
     employmentType match {
       case EmploymentBenefitsType => Left(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
       case EmploymentDetailsType => Left(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
@@ -491,15 +488,15 @@ object RedirectService extends Logging {
   }
 
   def employmentDetailsRedirect(cya: EmploymentCYAModel, taxYear: Int, employmentId: String,
-                                isPriorSubmission: Boolean, isStandaloneQuestion: Boolean = true): Result ={
-    Redirect(if(isPriorSubmission && isStandaloneQuestion){
+                                isPriorSubmission: Boolean, isStandaloneQuestion: Boolean = true): Result = {
+    Redirect(if (isPriorSubmission && isStandaloneQuestion) {
       CheckEmploymentDetailsController.show(taxYear, employmentId)
     } else {
-      questionRouting(cya,taxYear,employmentId)
+      questionRouting(cya, taxYear, employmentId)
     })
   }
 
-  def questionRouting(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Call ={
+  def questionRouting(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Call = {
     cya match {
       case EmploymentCYAModel(EmploymentDetails(_,employerRef@None,_,_,_,_,_,_,_,_,_,_),_) => PayeRefController.show(taxYear,employmentId)
       case EmploymentCYAModel(EmploymentDetails(_,_,startDate@None,_,_,_,_,_,_,_,_,_),_) => EmployerStartDateController.show(taxYear,employmentId)
