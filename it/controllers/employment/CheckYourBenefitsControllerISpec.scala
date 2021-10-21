@@ -670,10 +670,11 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val accommodationRelocationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/accommodation-relocation?employmentId=001"
     val livingAccommodationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/living-accommodation?employmentId=001"
     val livingAccommodationAmountBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/living-accommodation-amount?employmentId=001"
-    val nonQualifyingRelocationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/non-qualifying-relocation?employmentId=001"
     val qualifyingRelocationBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/qualifying-relocation-amount?employmentId=001"
-    val travelOrSubsistenceBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/travel-subsistence?employmentId=001"
+    val nonQualifyingRelocationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/non-qualifying-relocation?employmentId=001"
+    val nonQualifyingRelocationAmountBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/non-qualifying-relocation-amount?employmentId=001"
     val travelEntertainmentBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/travel-entertainment?employmentId=001"
+    val travelOrSubsistenceBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/travel-subsistence?employmentId=001"
     val travelOrSubsistenceBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/travel-subsistence-amount?employmentId=001"
   }
 
@@ -817,7 +818,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.qualifyingRelocationCosts, commonResults.yes, 7, 4, s"${user.commonExpectedResults.changeText} ${specificResults.qualifyingRelocationCostsHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.qualifyingRelocationCostsAmount, "£7", 7, 5, s"${user.commonExpectedResults.changeText} ${specificResults.qualifyingRelocationCostsAmountHiddenText}", qualifyingRelocationBenefitsAmountHref)
           changeAmountRowCheck(commonResults.nonQualifyingRelocationCosts, commonResults.yes, 7, 6, s"${user.commonExpectedResults.changeText} ${specificResults.nonQualifyingRelocationCostsHiddenText}", nonQualifyingRelocationBenefitsHref)
-          changeAmountRowCheck(commonResults.nonQualifyingRelocationCostsAmount, "£8", 7, 7, s"${user.commonExpectedResults.changeText} ${specificResults.nonQualifyingRelocationCostsAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.nonQualifyingRelocationCostsAmount, "£8", 7, 7, s"${user.commonExpectedResults.changeText} ${specificResults.nonQualifyingRelocationCostsAmountHiddenText}", nonQualifyingRelocationAmountBenefitsHref)
 
           textOnPageCheck(commonResults.travelHeader, fieldHeaderSelector(8))
           changeAmountRowCheck(commonResults.travelSubheading, commonResults.yes, 9, 1, s"${user.commonExpectedResults.changeText} ${specificResults.travelSubheadingHiddenText}", travelEntertainmentBenefitsAmountHref)

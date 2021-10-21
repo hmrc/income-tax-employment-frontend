@@ -702,6 +702,15 @@ benefits.travelAndSubsistence.thisIs.agent = This is the cost of any travel and 
 benefits.travelAndSubsistence.error.individual = Select yes if you got travel and subsistence benefits
 benefits.travelAndSubsistence.error.agent = Select yes if your client got travel and subsistence benefits
 
+benefits.nonQualifyingRelocationBenefitAmount.title.individual = How much did you get in total for non-qualifying relocation benefits?
+benefits.nonQualifyingRelocationBenefitAmount.title.agent = How much did your client get in total for non-qualifying relocation benefits?
+benefits.nonQualifyingRelocationBenefitAmount.error.noEntry.individual = Enter your non-qualifying relocation benefit amount
+benefits.nonQualifyingRelocationBenefitAmount.error.noEntry.agent = Enter your client’s non-qualifying relocation benefit amount
+benefits.nonQualifyingRelocationBenefitAmount.error.overMaximum.individual = Your non-qualifying relocation benefit must be less than £100,000,000,000
+benefits.nonQualifyingRelocationBenefitAmount.error.overMaximum.agent = Your client’s non-qualifying relocation benefit must be less than £100,000,000,000
+benefits.nonQualifyingRelocationBenefitAmount.error.invalidFormat.individual = Enter your non-qualifying relocation benefit amount in the correct format
+benefits.nonQualifyingRelocationBenefitAmount.error.invalidFormat.agent = Enter your client’s non-qualifying relocation benefit amount in the correct format
+
 benefits.travelOrSubsistenceBenefitsAmount.title.individual = How much did you get in total for travel and subsistence?
 benefits.travelOrSubsistenceBenefitsAmount.title.agent = How much did your client get in total for travel and subsistence?
 benefits.travelOrSubsistenceBenefitsAmount.informationText.individual = You can find this information in section N of your P11D form.
