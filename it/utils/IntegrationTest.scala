@@ -381,11 +381,11 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     TravelEntertainmentModel(
       travelEntertainmentQuestion = Some(true),
       travelAndSubsistenceQuestion = Some(true),
-      travelAndSubsistence = Some(100),
+      travelAndSubsistence = Some(100.00),
       personalIncidentalExpensesQuestion = Some(true),
-      personalIncidentalExpenses = Some(200),
+      personalIncidentalExpenses = Some(200.00),
       entertainingQuestion = Some(true),
-      entertaining = Some(300),
+      entertaining = Some(300.00),
     )
 
   def emptyTravelOrEntertainmentModel: TravelEntertainmentModel =
