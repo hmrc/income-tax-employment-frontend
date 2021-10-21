@@ -136,7 +136,7 @@
         if(benefits.travelDetailsPopulated){
             Seq(
                 benefits.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion).map{
-                    travelAndSubsistenceQuestion => showQuestionRow("checkYourBenefits.travelAndSubsistence", travelAndSubsistenceQuestion)
+                    travelAndSubsistenceQuestion => showQuestionRow("checkYourBenefits.travelAndSubsistence", travelAndSubsistenceQuestion, controllers.benefits.routes.TravelAndSubsistenceBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.travelEntertainmentModel.flatMap(_.travelAndSubsistence).map{
                     travelAndSubsistence => showRows("checkYourBenefits.travelAndSubsistenceAmount", travelAndSubsistence, controllers.benefits.routes.TravelOrSubsistenceBenefitsAmountController.show(taxYear, employmentId))
