@@ -252,7 +252,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
         }
 
         "render the 'Did you get a mileage benefit?' page with correct content and yes button selected when the user has previously chosen yes" +
-          " but has did not entere a mileage amount yet" which {
+          " but has did not enter a mileage amount yet" which {
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
@@ -307,26 +307,28 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
+      }
+    }
 
-        "redirect to overview page if the user tries to hit this page with current taxYear" when {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            insertCyaData(cya(isPriorSubmission = false, benefitsWithMileageNo), User(mtditid, None, nino, sessionId, "agent"))
-            val inYearUrl = s"$appUrl/$taxYear/how-much-pay?employmentId=$employmentId"
-            urlGet(inYearUrl, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
+    val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
 
-          "has an SEE_OTHER status" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
-          }
-        }
+    "redirect to overview page if the user tries to hit this page with current taxYear" when {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(user.isAgent)
+        dropEmploymentDB()
+        insertCyaData(cya(isPriorSubmission = false, benefitsWithMileageNo), User(mtditid, None, nino, sessionId, "agent"))
+        val inYearUrl = s"$appUrl/$taxYear/how-much-pay?employmentId=$employmentId"
+        urlGet(inYearUrl, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
-      // common redirect tests for show
-      redirectTests(user = user)
+      "has an SEE_OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+      }
     }
+
+    // common redirect tests for show
+    redirectTests(user = user)
   }
 
   ".submit" should {
@@ -334,64 +336,15 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "Update the mileageQuestion to no and wipe out the mileage amount when the no radio button has been chosen" which {
-
-          lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
-
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            insertCyaData(cya(isPriorSubmission = false, benefitsWithEmptyMileage), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
-            urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          "redirects to the check your details page" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
-            lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-            cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(false)
-            cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)) shouldBe None
-          }
-
-        }
-
-        "Update the mileageQuestion to yes when the user chooses yes" which {
-
-          lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
-
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            insertCyaData(cya(isPriorSubmission = false, benefitsWithEmptyMileage), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
-            urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            authoriseAgentOrIndividual(user.isAgent)
-            urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          "redirects to the check your benefits page" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
-            lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-            cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(true)
-          }
-
-        }
-
         "display an error when no radio button is selected" which {
 
-          val form: Map[String, String] = Map[String, String]()
+          lazy val form: Map[String, String] = Map[String, String]()
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(cya(isPriorSubmission = false, benefitsWithEmptyMileage), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(urlEOY, body = form, user.isWelsh, follow = false,
+            urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -410,11 +363,116 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
         }
 
-        // common redirect tests for submit
-        redirectTests(isSubmitTest = true, user = user)
       }
     }
 
+    val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
+
+    "Update the mileageQuestion to no and wipe out the mileage amount when the user chooses no, redirects to check your benefits if prior submission" which {
+
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
+
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(cya(isPriorSubmission = true, benefitsWithEmptyMileage), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
+        authoriseAgentOrIndividual(user.isAgent)
+        urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh,
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "redirects to the check employment benefits page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe
+          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+      }
+
+      "update the mileageQuestion to false and mileage to none" in {
+        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(false)
+        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)) shouldBe None
+      }
+
+    }
+
+    "Update the mileageQuestion to no and wipe out the mileage amount when the user chooses no, redirects to" +
+      "accommodation relocation if not prior submission" which {
+
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
+
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(cya(isPriorSubmission = false, benefitsWithEmptyMileage), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
+        authoriseAgentOrIndividual(user.isAgent)
+        urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh,
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "redirects to the check employment benefits page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe
+          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/accommodation-relocation?employmentId=$employmentId")
+      }
+
+      "update the mileageQuestion to false and mileage to none" in {
+        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(false)
+        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)) shouldBe None
+      }
+
+    }
+
+    "Update the mileageQuestion to yes when the user chooses yes, redirects to mileage amount page when prior submission" which {
+
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
+
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(cya(isPriorSubmission = true, benefitsWithEmptyMileage), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
+        authoriseAgentOrIndividual(user.isAgent)
+        urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh,
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "redirects to the mileage amount page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe
+          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/mileage-amount?employmentId=$employmentId")
+      }
+
+      "update the mileageQuestion to true" in {
+        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(true)
+      }
+
+    }
+
+    "Update the mileageQuestion to yes when the user chooses yes, redirects to mileage amount page when not prior submission" which {
+
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
+
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(cya(isPriorSubmission = true, benefitsWithEmptyMileage), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
+        authoriseAgentOrIndividual(user.isAgent)
+        urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh,
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "redirects to the mileage amount page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe
+          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/mileage-amount?employmentId=$employmentId")
+      }
+
+      "update the mileageQuestion to true" in {
+        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(true)
+      }
+
+    }
+
+    // common redirect tests for submit
+    redirectTests(isSubmitTest = true, user = user)
 
   }
 
