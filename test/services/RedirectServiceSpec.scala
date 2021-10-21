@@ -16,6 +16,7 @@
 
 package services
 
+import models.benefits.UtilitiesAndServicesModel
 import models.employment.{AccommodationRelocationModel, BenefitsViewModel, CarVanFuelModel, TravelEntertainmentModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
@@ -83,7 +84,20 @@ class RedirectServiceSpec extends UnitTest {
               entertaining = Some(555.00)
             )
           ),
-          assets = Some(100.00), submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true,
+          utilitiesAndServicesModel = Some(
+            UtilitiesAndServicesModel(
+              utilitiesAndServicesQuestion = Some(true),
+              telephoneQuestion = Some(true),
+              telephone = Some(555),
+              employerProvidedServicesQuestion = Some(true),
+              employerProvidedServices = Some(555),
+              employerProvidedProfessionalSubscriptionsQuestion = Some(true),
+              employerProvidedProfessionalSubscriptions = Some(555),
+              serviceQuestion = Some(true),
+              service = Some(555)
+            )
+          ),
+          assets = Some(100), submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true,
           isBenefitsReceived = true
         )
       ))
@@ -954,6 +968,335 @@ class RedirectServiceSpec extends UnitTest {
 
         status(response) shouldBe SEE_OTHER
         redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/mileage?employmentId=001"
+      }
+    }
+    "redirect using utilities and services methods" when {
+      "it's a new submission and attempted to view the telephone yes no page but the utilities and services question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(utilitiesAndServicesQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.commonUtilitiesAndServicesBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the telephone yes no page but the utilities and services question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(utilitiesAndServicesQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.commonUtilitiesAndServicesBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a prior submission and attempted to view the telephone yes no page but the utilities and services question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(utilitiesAndServicesQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.commonUtilitiesAndServicesBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a prior submission and attempted to view the telephone amount page but the telephone question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(telephoneQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.telephoneBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the telephone amount page but the telephone question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(telephoneQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.telephoneBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the telephone amount page but the telephone question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(telephoneQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.telephoneBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the employer provided services yes no page but the telephone amount is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(telephone = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.employerProvidedServicesBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the employer provided services amount page but the employer provided services question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(employerProvidedServicesQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.employerProvidedServicesAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the employer provided services amount page but the employer provided services question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(employerProvidedServicesQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.employerProvidedServicesAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a prior submission and attempted to view the employer provided services amount page but the employer provided services question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(employerProvidedServicesQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.employerProvidedServicesAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the employer provided subscriptions page but the employer provided services question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(
+            employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
+              _.utilitiesAndServicesModel).map(_.copy(employerProvidedServicesQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.employerProvidedSubscriptionsBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the employer provided subscriptions amount page" +
+        " but the employer provided subscriptions question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(
+            employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
+              _.utilitiesAndServicesModel).map(_.copy(employerProvidedProfessionalSubscriptionsQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.employerProvidedSubscriptionsBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the employer provided subscriptions amount page" +
+        " but the employer provided subscriptions question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(
+            employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
+              _.utilitiesAndServicesModel).map(_.copy(employerProvidedProfessionalSubscriptionsQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.employerProvidedSubscriptionsBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a prior submission and attempted to view the employer provided subscriptions amount page" +
+        " but the employer provided subscriptions question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true,employment = employmentCYA.copy(
+            employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
+              _.utilitiesAndServicesModel).map(_.copy(employerProvidedProfessionalSubscriptionsQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.employerProvidedSubscriptionsBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the services page but the employer provided subscriptions amount is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(
+            employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
+              _.utilitiesAndServicesModel).map(_.copy(employerProvidedProfessionalSubscriptions = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.servicesBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the services amount page but the services question is empty" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(
+            employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
+              _.utilitiesAndServicesModel).map(_.copy(serviceQuestion = None))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.servicesBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a new submission and attempted to view the services amount page but the services question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = false,employment = employmentCYA.copy(
+            employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
+              _.utilitiesAndServicesModel).map(_.copy(serviceQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.servicesBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+      "it's a prior submission and attempted to view the services amount page but the services question is false" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true,employment = employmentCYA.copy(
+            employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
+              _.utilitiesAndServicesModel).map(_.copy(serviceQuestion = Some(false)))
+          ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.servicesBenefitsAmountRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+      }
+    }
+    "redirect using medical benefits methods" when {
+      "it's a new submission and attempted to view the medical benefits page but the utilities section is not finished" in {
+
+        val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
+          Some(employmentUserData.copy(isPriorSubmission = true,employment = employmentCYA.copy(
+            employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+              utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
+                _.utilitiesAndServicesModel).map(_.copy(serviceQuestion = None))
+            ))))), EmploymentBenefitsType)(
+          cya => {
+            RedirectService.medicalBenefitsRedirects(cya, taxYear, "001")
+          }
+        ) {
+          _ => result
+        }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
       }
     }
     "redirect to benefits CYA page" when {

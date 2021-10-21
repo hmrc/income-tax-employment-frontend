@@ -19,6 +19,7 @@ package repositories
 import com.mongodb.MongoTimeoutException
 import common.UUID
 import models.User
+import models.benefits.UtilitiesAndServicesModel
 import models.employment.{AccommodationRelocationModel, BenefitsViewModel, CarVanFuelModel, TravelEntertainmentModel}
 import models.mongo._
 import org.joda.time.{DateTime, DateTimeZone}
@@ -92,10 +93,13 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     Some(TravelEntertainmentModel(
       Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))
     ),
-    Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
-    Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
-    Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
-    Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
+    Some(UtilitiesAndServicesModel(
+      Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount)
+    )),
+    Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
+    Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
+    Some(true), Some(true), Some(true), Some(true), Some(true),
+    Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
     Some("2020-10-10"), isUsingCustomerData = true, true)
 
   val employmentUserDataFull: EmploymentUserData = EmploymentUserData(
