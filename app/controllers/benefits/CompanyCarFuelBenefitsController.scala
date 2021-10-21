@@ -98,7 +98,8 @@ class CompanyCarFuelBenefitsController @Inject()(implicit val cc: MessagesContro
                   case (_, true) => Redirect(CarFuelBenefitsAmountController.show(taxYear, employmentId))
                   case (false, false) => Redirect(CompanyVanBenefitsController.show(taxYear, employmentId))
                   case (true, false) => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                }              }
+                }
+              }
             }
           )
         }
