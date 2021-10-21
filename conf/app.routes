@@ -93,6 +93,9 @@ POST       /:taxYear/benefits/travel-entertainment          controllers.benefits
 GET        /:taxYear/benefits/travel-subsistence-amount     controllers.benefits.TravelOrSubsistenceBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/travel-subsistence-amount     controllers.benefits.TravelOrSubsistenceBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/travel-subsistence            controllers.benefits.TravelAndSubsistenceBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/travel-subsistence            controllers.benefits.TravelAndSubsistenceBenefitsController.submit(taxYear: Int, employmentId: String)
+
 GET        /sign-out                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
 GET        /error/you-need-to-sign-up                       controllers.errors.IndividualAuthErrorController.show
@@ -107,12 +110,13 @@ GET        /:taxYear/employment-summary                     controllers.employme
 POST       /:taxYear/employment-summary                     controllers.employment.EmploymentSummaryController.submit(taxYear: Int)
 
 GET        /:taxYear/uk-tax                                 controllers.employment.EmploymentTaxController.show(taxYear: Int, employmentId: String)
-
 POST       /:taxYear/uk-tax                                 controllers.employment.EmploymentTaxController.submit(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/benefits/company-car                   controllers.benefits.CompanyCarBenefitsController.show(taxYear: Int, employmentId: String)
-
 POST       /:taxYear/benefits/company-car                   controllers.benefits.CompanyCarBenefitsController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/benefits/living-accommodation-amount   controllers.benefits.LivingAccommodationBenefitAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/living-accommodation-amount   controllers.benefits.LivingAccommodationBenefitAmountController.submit(taxYear: Int, employmentId: String)
 
 GET        /language/:lang                                  controllers.LanguageSwitchController.switchToLanguage(lang: String)
 

@@ -355,7 +355,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/accommodation-relocation?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/living-accommodation-amount?employmentId=001"
       }
       "it's a new submission and attempted to view the qualifying relocation amount page but the qualifyingRelocationExpensesQuestion is empty" in {
 
@@ -677,7 +677,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/travel-subsistence?employmentId=001"
       }
       "it's a new submission and attempted to view the travel amount page but the travel yes no question is false" in {
 
@@ -725,7 +725,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/travel-subsistence?employmentId=001"
       }
       "it's a new submission and attempted to view the incidental costs yes no page but the travel amount question is empty" in {
 
@@ -821,7 +821,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/travel-subsistence?employmentId=001"
       }
       "it's a new submission and attempted to view the entertainment amount page but the entertainment yes no question is empty" in {
 

@@ -16,7 +16,7 @@
 
 package models.employment
 
-import controllers.benefits.routes.{TravelOrEntertainmentBenefitsController, TravelOrSubsistenceBenefitsAmountController}
+import controllers.benefits.routes.{TravelOrEntertainmentBenefitsController, TravelOrSubsistenceBenefitsAmountController, TravelAndSubsistenceBenefitsController}
 import controllers.employment.routes.CheckYourBenefitsController
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
@@ -36,7 +36,7 @@ case class TravelEntertainmentModel(
     travelAndSubsistenceQuestion match {
       case Some(true) => if (travelAndSubsistence.isDefined) None else Some(TravelOrSubsistenceBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO update to first travel page
+      case None => Some(TravelAndSubsistenceBenefitsController.show(taxYear, employmentId))
     }
   }
 
