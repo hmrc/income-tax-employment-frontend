@@ -165,28 +165,28 @@
         val rows: Seq[SummaryListRow] =
         if(benefits.utilitiesDetailsPopulated){
             Seq(
-                benefits.telephoneQuestion.map{
+                benefits.utilitiesAndServicesModel.flatMap(_.telephoneQuestion).map{
                     telephoneQuestion => showQuestionRow("checkYourBenefits.telephone", telephoneQuestion)
                 },
-                benefits.telephone.map{
+                benefits.utilitiesAndServicesModel.flatMap(_.telephone).map{
                     telephone => showRows("checkYourBenefits.telephoneAmount", telephone)
                 },
-                benefits.employerProvidedServicesQuestion.map{
+                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion).map{
                     employerProvidedServicesQuestion => showQuestionRow("checkYourBenefits.servicesProvided", employerProvidedServicesQuestion)
                 },
-                benefits.employerProvidedServices.map{
+                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedServices).map{
                     employerProvidedServices => showRows("checkYourBenefits.servicesProvidedAmount", employerProvidedServices)
                 },
-                benefits.employerProvidedProfessionalSubscriptionsQuestion.map{
+                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptionsQuestion).map{
                     employerProvidedProfessionalSubscriptionsQuestion => showQuestionRow("checkYourBenefits.profSubscriptions", employerProvidedProfessionalSubscriptionsQuestion)
                 },
-                benefits.employerProvidedProfessionalSubscriptions.map{
+                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions).map{
                     employerProvidedProfessionalSubscriptions => showRows("checkYourBenefits.profSubscriptionsAmount", employerProvidedProfessionalSubscriptions)
                 },
-                benefits.serviceQuestion.map{
+                benefits.utilitiesAndServicesModel.flatMap(_.serviceQuestion).map{
                     serviceQuestion => showQuestionRow("checkYourBenefits.otherServices", serviceQuestion)
                 },
-                benefits.service.map{
+                benefits.utilitiesAndServicesModel.flatMap(_.service).map{
                     service => showRows("checkYourBenefits.otherServicesAmount", service)
                 }
             ).flatten
