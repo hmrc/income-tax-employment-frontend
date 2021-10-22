@@ -87,6 +87,9 @@ POST       /:taxYear/benefits/qualifying-relocation-amount  controllers.benefits
 GET        /:taxYear/benefits/non-qualifying-relocation     controllers.benefits.NonQualifyingRelocationBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/non-qualifying-relocation     controllers.benefits.NonQualifyingRelocationBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/non-qualifying-relocation-amount               controllers.benefits.NonQualifyingRelocationBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/non-qualifying-relocation-amount               controllers.benefits.NonQualifyingRelocationBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/benefits/travel-entertainment          controllers.benefits.TravelOrEntertainmentBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/travel-entertainment          controllers.benefits.TravelOrEntertainmentBenefitsController.submit(taxYear: Int, employmentId: String)
 
