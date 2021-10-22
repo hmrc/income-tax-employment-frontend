@@ -16,6 +16,7 @@
 
 package models.employment
 
+import models.benefits.UtilitiesAndServicesModel
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.{OFormat, __}
 
@@ -130,6 +131,24 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
     }
   }
 
+  def utilitiesAndServicesSection(cyaBenefits: Option[BenefitsViewModel] = None): Option[UtilitiesAndServicesModel] = {
+    if (cyaBenefits.isDefined && cyaBenefits.map(_.utilitiesAndServicesModel).isDefined){
+      cyaBenefits.flatMap(_.utilitiesAndServicesModel)
+    } else {
+      Some(UtilitiesAndServicesModel(
+        Some(utilitiesDetailsPopulated),
+        telephoneQuestion = Some(telephone.isDefined),
+        telephone = telephone,
+        employerProvidedServicesQuestion = Some(employerProvidedServices.isDefined),
+        employerProvidedServices = employerProvidedServices,
+        employerProvidedProfessionalSubscriptionsQuestion = Some(employerProvidedProfessionalSubscriptions.isDefined),
+        employerProvidedProfessionalSubscriptions = employerProvidedProfessionalSubscriptions,
+        serviceQuestion = Some(service.isDefined),
+        service = service
+      ))
+    }
+  }
+
   def benefitsPopulated(cyaBenefits: Option[BenefitsViewModel] = None): Boolean = {
     val hasBenefits: Boolean = cyaBenefits.exists(_.isBenefitsReceived)
       hasBenefits || vehicleDetailsPopulated || accommodationDetailsPopulated || travelDetailsPopulated || utilitiesDetailsPopulated ||
@@ -143,24 +162,20 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
       carVanFuelModel = carVanFuelSection(cyaBenefits),
       accommodationRelocationModel = accommodationRelocationSection(cyaBenefits),
       travelEntertainmentModel = travelEntertainmentSection(cyaBenefits),
+      utilitiesAndServicesModel = utilitiesAndServicesSection(cyaBenefits),
       assets, assetTransfer, beneficialLoan,
-      educationalServices, expenses, medicalInsurance, telephone, service, taxableExpenses, nurseryPlaces,
-      otherItems, paymentsOnEmployeesBehalf, employerProvidedProfessionalSubscriptions,
-      employerProvidedServices, incomeTaxPaidByDirector, vouchersAndCreditCards, nonCash,
+      educationalServices, expenses, medicalInsurance, taxableExpenses, nurseryPlaces,
+      otherItems, paymentsOnEmployeesBehalf, incomeTaxPaidByDirector, vouchersAndCreditCards, nonCash,
       assetsQuestion = Some(assets.isDefined),
       assetTransferQuestion = Some(assetTransfer.isDefined),
       beneficialLoanQuestion = Some(beneficialLoan.isDefined),
       educationalServicesQuestion = Some(educationalServices.isDefined),
       expensesQuestion = Some(expenses.isDefined),
       medicalInsuranceQuestion = Some(medicalInsurance.isDefined),
-      telephoneQuestion = Some(telephone.isDefined),
-      serviceQuestion = Some(service.isDefined),
       taxableExpensesQuestion = Some(taxableExpenses.isDefined),
       nurseryPlacesQuestion = Some(nurseryPlaces.isDefined),
       otherItemsQuestion = Some(otherItems.isDefined),
       paymentsOnEmployeesBehalfQuestion = Some(paymentsOnEmployeesBehalf.isDefined),
-      employerProvidedProfessionalSubscriptionsQuestion = Some(employerProvidedProfessionalSubscriptions.isDefined),
-      employerProvidedServicesQuestion = Some(employerProvidedServices.isDefined),
       incomeTaxPaidByDirectorQuestion = Some(incomeTaxPaidByDirector.isDefined),
       vouchersAndCreditCardsQuestion = Some(vouchersAndCreditCards.isDefined),
       nonCashQuestion = Some(nonCash.isDefined),

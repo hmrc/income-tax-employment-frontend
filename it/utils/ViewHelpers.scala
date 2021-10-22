@@ -104,6 +104,12 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
     }
   }
 
+  def elementNotOnPageCheck(selector: String)(implicit document: () => Document): Unit = {
+    s"not have the page element for selector '$selector'" in {
+      document().select(selector).isEmpty shouldBe true
+    }
+  }
+
   def changeAmountRowCheck(item: String, value: String, itemSelector: String, valueSelector: String, changeSelector: String,
                            changeHiddenText: String, href: String)
                           (implicit document: () => Document): Unit = {
