@@ -263,7 +263,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       }
     }
 
-    "Update the CarFuelQuestion to no and wipe the car data when the user chooses no, redirect to CYA if prior submission" which {
+    "Update the CarFuelQuestion to no and wipe the car data when the user chooses no, redirect to company van page if prior submission" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -278,7 +278,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
       }
 
       "updates the carFuelQuestion to false and carFuel to None" in {

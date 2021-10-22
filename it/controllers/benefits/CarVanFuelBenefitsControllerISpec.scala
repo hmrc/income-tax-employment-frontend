@@ -276,7 +276,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
     val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
 
-    "Update the CarVanFuelQuestion to no and wipe the car data when the user chooses no, then redirect to CYA when its a prior submission" which {
+    "Update the CarVanFuelQuestion to no and wipe the car data when the user chooses no, then redirect to accommodation page when its a prior submission" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -291,7 +291,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/accommodation-relocation?employmentId=$employmentId")
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion)) shouldBe Some(false)
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe None

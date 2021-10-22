@@ -440,7 +440,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
 
     val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
 
-    "redirect to check employments benefits page when a valid form is submitted and a prior submission" when {
+    "redirect to mileage benefits page when a valid form is submitted and a prior submission" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
@@ -451,7 +451,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001")
+        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/mileage?employmentId=001")
       }
 
       "updates the CYA model with the new value" in {

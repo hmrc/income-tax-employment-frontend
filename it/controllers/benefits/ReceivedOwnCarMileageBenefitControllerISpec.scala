@@ -368,7 +368,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
     val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
 
-    "Update the mileageQuestion to no and wipe out the mileage amount when the user chooses no, redirects to check your benefits if prior submission" which {
+    "Update the mileageQuestion to no and wipe out the mileage amount when the user chooses no, redirects to accommodation page if prior submission" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -383,7 +383,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       "redirects to the check employment benefits page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/accommodation-relocation?employmentId=$employmentId")
       }
 
       "update the mileageQuestion to false and mileage to none" in {
@@ -608,7 +608,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       }
     }
 
-    s"redirect to car amount page when benefits has VanQuestion set to true but no amount for a $getOrPost" +
+    s"redirect to van fuel amount page when benefits has VanQuestion set to true but no amount for a $getOrPost" +
       s" and language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
@@ -620,13 +620,12 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          //TODO: GO TO COMPANY VAN FUEL AMOUNT PAGE WHEN IMPLEMENTED IN REDIRECT SERVICE
-          Some("/income-through-software/return/employment-income/2021/benefits/company-van?employmentId=001")
+          Some("/income-through-software/return/employment-income/2021/benefits/van-fuel-amount?employmentId=001")
 
       }
     }
 
-    s"redirect to car amount page when benefits has VanFuelQuestion set to true but no amount for a $getOrPost" +
+    s"redirect to van fuel amount page when benefits has VanFuelQuestion set to true but no amount for a $getOrPost" +
       s" and language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
@@ -638,8 +637,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          //TODO: GO TO COMPANY VAN FUEL AMOUNT PAGE WHEN IMPLEMENTED IN REDIRECT SERVICE
-          Some("/income-through-software/return/employment-income/2021/benefits/company-van?employmentId=001")
+          Some("/income-through-software/return/employment-income/2021/benefits/van-fuel-amount?employmentId=001")
 
       }
     }
