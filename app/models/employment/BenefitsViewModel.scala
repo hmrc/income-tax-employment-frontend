@@ -57,7 +57,7 @@ case class BenefitsViewModel(
                               isBenefitsReceived: Boolean = false
                        ){
 
-  def toBenefits: Benefits ={
+  def toBenefits: Benefits = {
     Benefits(
       accommodationRelocationModel.flatMap(_.accommodation), assets, assetTransfer, beneficialLoan, carVanFuelModel.flatMap(_.car),
       carVanFuelModel.flatMap(_.carFuel), educationalServices, travelEntertainmentModel.flatMap(_.entertaining), expenses, medicalInsurance,
@@ -66,7 +66,7 @@ case class BenefitsViewModel(
       carVanFuelModel.flatMap(_.mileage), accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses), nurseryPlaces, otherItems,
       paymentsOnEmployeesBehalf, travelEntertainmentModel.flatMap(_.personalIncidentalExpenses),
       accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses),
-        utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions),
+      utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions),
       utilitiesAndServicesModel.flatMap(_.employerProvidedServices), incomeTaxPaidByDirector,
       travelEntertainmentModel.flatMap(_.travelAndSubsistence), vouchersAndCreditCards, nonCash
     )
