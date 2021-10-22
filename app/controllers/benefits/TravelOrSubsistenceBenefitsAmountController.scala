@@ -74,7 +74,7 @@ class TravelOrSubsistenceBenefitsAmountController @Inject()(implicit val cc: Mes
                 val updatedCyaModel = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(travelEntertainmentModel =
                   travelEntertainment.map(_.copy(travelAndSubsistence = Some(newAmount))))))
                 employmentSessionService
-                  .createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission)(errorHandler.internalServerError()) {
+                  .createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission,cya.hasPriorBenefits)(errorHandler.internalServerError()) {
                     if (cya.isPriorSubmission) {
                       Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                     } else {
