@@ -101,5 +101,4 @@ class LivingAccommodationBenefitsController @Inject()(implicit val cc: MessagesC
       }
     }
   }
-
 }

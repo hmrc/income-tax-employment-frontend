@@ -108,12 +108,6 @@ class MileageBenefitAmountController @Inject()(implicit val cc: MessagesControll
                   val nextPage = AccommodationRelocationBenefitsController.show(taxYear, employmentId)
 
                   RedirectService.benefitsSubmitRedirect(cya.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
-
-//                  if (cya.isPriorSubmission) {
-//                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-//                  } else {
-//                    Redirect(AccommodationRelocationBenefitsController.show(taxYear, employmentId))
-//                  }
                 }
             }
           )

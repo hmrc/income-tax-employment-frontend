@@ -88,13 +88,6 @@ class CompanyVanBenefitsAmountController @Inject()(implicit val cc: MessagesCont
                   val nextPage = CompanyVanFuelBenefitsController.show(taxYear, employmentId)
 
                   RedirectService.benefitsSubmitRedirect(cya.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
-
-
-//                  if (cya.isPriorSubmission) {
-//                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-//                  } else {
-//                    Redirect(CompanyVanFuelBenefitsController.show(taxYear, employmentId))
-//                  }
                 }
             }
           )

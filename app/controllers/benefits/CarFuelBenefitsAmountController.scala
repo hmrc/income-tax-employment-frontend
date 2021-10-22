@@ -104,15 +104,7 @@ class CarFuelBenefitsAmountController @Inject()(implicit val cc: MessagesControl
                   isPriorSubmission = cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
 
                   val nextPage = CompanyVanBenefitsController.show(taxYear, employmentId)
-
                   RedirectService.benefitsSubmitRedirect(cya.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
-
-
-//                  if (cya.isPriorSubmission) {
-//                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-//                  } else {
-//                    Redirect(CompanyVanBenefitsController.show(taxYear, employmentId))
-//                  }
                 }
             }
           )
