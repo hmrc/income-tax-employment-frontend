@@ -359,7 +359,7 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
 
     val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
 
-    "redirect to check employments benefits page when a valid form is submitted, and prior submission" when {
+    "redirect to van fuel page when a valid form is submitted, and prior submission" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
@@ -370,7 +370,7 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
 
       "has a redirect to the check employment benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001")
+        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/van-fuel?employmentId=001")
       }
 
       "updates the company van amount to be 100" in {

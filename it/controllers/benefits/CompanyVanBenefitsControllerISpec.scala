@@ -363,7 +363,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
     }
 
-    "update vanQuestion to no and van to none when the user chooses no, redirect to check your benefits if prior submission" which {
+    "update vanQuestion to no and van to none when the user chooses no, redirect to mileage page if prior submission" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -374,9 +374,9 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
         urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "redirect to the mileage amount question page" in {
+      "redirect to the mileage question page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(ReceiveOwnCarMileageBenefitController.show(taxYearEOY, employmentId).url)
       }
 
       "update the vanQuestion to false and van value to None" in {

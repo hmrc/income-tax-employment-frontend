@@ -477,7 +477,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
     }
 
-    "update mileage amount to 200 when the user submits and it is a prior submission, redirects to the check your benefits page" which {
+    "update mileage amount to 200 when the user submits and it is a prior submission, redirects to accommodation page" which {
 
       lazy val form: Map[String, String] = Map(AmountForm.amount -> "200.00")
 
@@ -488,9 +488,9 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
         urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "redirect to the check your benefits page" in {
+      "redirect to the accommodation page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(AccommodationRelocationBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
       "updates the mileage benefit to be 200" in {

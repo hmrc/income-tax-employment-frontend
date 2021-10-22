@@ -508,7 +508,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
     val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
 
-    "redirect to CYA page and update the car fuel amount when a valid form is submitted and prior submission" when {
+    "redirect to company van page and update the car fuel amount when a valid form is submitted and prior submission" when {
 
       val newAmount = 100
 
@@ -523,7 +523,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
       "redirects to the check your benefits page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
       }
 
       "updates the CYA model with the new value" in {

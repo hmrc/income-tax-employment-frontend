@@ -344,7 +344,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
     val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
 
-    "Update the vanFueQuestion to no and vanfuel to none when no radio button has been chosen, redirect to check your benefits if prior submission" which {
+    "Update the vanFueQuestion to no and vanfuel to none when no radio button has been chosen, redirect to mileage page if prior submission" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -355,10 +355,10 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
         urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "redirects to the check your details page" in {
+      "redirects to the mileage page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/mileage?employmentId=$employmentId")
       }
 
       "update the vanFuelQuestion to false and vanFuel to none" in {

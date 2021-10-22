@@ -17,6 +17,7 @@
 package controllers.benefits
 
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.routes._
 import forms.YesNoForm
 import models.User
 import models.employment.{AccommodationRelocationModel, BenefitsViewModel}
@@ -266,9 +267,9 @@ class AccommodationRelocationControllerISpec extends IntegrationTest with ViewHe
               urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
-            "redirects to Check Employment Benefits page" in {
+            "redirects to living accommodation Benefits page" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+              result.header("location") shouldBe Some(LivingAccommodationBenefitsController.show(taxYearEOY, employmentId).url)
               lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
               cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.accommodationRelocationQuestion) shouldBe Some(true)
             }
@@ -284,9 +285,9 @@ class AccommodationRelocationControllerISpec extends IntegrationTest with ViewHe
               urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
-            "redirects to Check Employment Benefits page" in {
+            "redirects to travel entertainment page" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+              result.header("location") shouldBe Some(TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId).url)
               lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
               cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.accommodationRelocationQuestion) shouldBe Some(false)
               cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.accommodationQuestion) shouldBe None
@@ -309,9 +310,9 @@ class AccommodationRelocationControllerISpec extends IntegrationTest with ViewHe
               urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
-            "has an SEE_OTHER(303) status and redirects to Check Employment Benefits page" in {
+            "has an SEE_OTHER(303) status and redirects to living accommodation page" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+              result.header("location") shouldBe Some(LivingAccommodationBenefitsController.show(taxYearEOY, employmentId).url)
             }
 
             "updates only accommodationRelocationQuestion to yes" in {
