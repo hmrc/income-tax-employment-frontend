@@ -73,8 +73,8 @@ class QualifyingRelocationBenefitsAmountController @Inject()(implicit val cc: Me
                 val accommodationRelocation: Option[AccommodationRelocationModel] = cyaModel.employmentBenefits.flatMap(_.accommodationRelocationModel)
                 val updatedCyaModel = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(accommodationRelocationModel =
                   accommodationRelocation.map(_.copy(qualifyingRelocationExpenses = Some(newAmount))))))
-                employmentSessionService
-                  .createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
+                employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
+                  cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
                     if (cya.isPriorSubmission) {
                       Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                     } else {
