@@ -314,7 +314,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
     def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-      EmploymentUserData(sessionId, mtditid, nino, taxYear -1, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
+      EmploymentUserData(sessionId, mtditid, nino, taxYear -1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
     def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc))
 

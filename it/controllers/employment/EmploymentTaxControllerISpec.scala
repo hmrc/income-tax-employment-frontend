@@ -105,7 +105,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
 
 
     def cya(taxToDate:Option[BigDecimal] =Some(6782.92), isPriorSubmission:Boolean=true): EmploymentUserData =
-      EmploymentUserData (sessionId, mtditid,nino, taxYear, "001", isPriorSubmission,
+      EmploymentUserData (sessionId, mtditid,nino, taxYear, "001", isPriorSubmission, hasPriorBenefits = isPriorSubmission,
       EmploymentCYAModel(
         EmploymentDetails("maggie", totalTaxToDate = taxToDate, currentDataIsHmrcHeld = false),
         None

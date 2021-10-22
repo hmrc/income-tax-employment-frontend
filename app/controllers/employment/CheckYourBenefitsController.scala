@@ -72,7 +72,7 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
       employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear) match {
         case Some((source, isUsingCustomerData)) =>
           employmentSessionService.createOrUpdateSessionData(employmentId, EmploymentCYAModel.apply(source, isUsingCustomerData),
-            taxYear, isPriorSubmission = true
+            taxYear, isPriorSubmission = true, source.hasPriorBenefits()
           )(errorHandler.internalServerError()) {
             val benefits: Option[Benefits] = source.employmentBenefits.flatMap(_.benefits)
             benefits match {

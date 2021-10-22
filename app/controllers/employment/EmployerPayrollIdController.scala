@@ -72,7 +72,8 @@ class EmployerPayrollIdController @Inject()(authorisedAction: AuthorisedAction,
           { submittedPayrollId =>
             val cya = data.employment
             val updatedCya = cya.copy(cya.employmentDetails.copy(payrollId = Some(submittedPayrollId)))
-            employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
+            employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission,
+              data.hasPriorBenefits)(errorHandler.internalServerError()) {
               employmentDetailsRedirect(updatedCya,taxYear,employmentId,data.isPriorSubmission)
             }
           }

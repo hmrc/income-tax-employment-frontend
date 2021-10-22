@@ -26,12 +26,12 @@ import models.employment.BenefitsViewModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.ReceiveAnyBenefitsView
-
 import javax.inject.Inject
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -74,15 +74,26 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
                 case None => BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true)
               }
               val newCya = cya.employment.copy(employmentBenefits = Some(newBenefits))
-              employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear,cya.isPriorSubmission)(errorHandler.internalServerError()) {
-                Redirect(CarVanFuelBenefitsController.show(taxYear, employmentId))
+              employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear,
+                cya.isPriorSubmission,cya.hasPriorBenefits)(errorHandler.internalServerError()) {
+
+                //if prior & finished -> CYA
+                //if prior & not finished -> next page
+                //if new & finished & seen final CYA -> CYA
+                //if new & not finished -> next page
+                //if new & not seen final cya -> next page
+
+                RedirectService.benefitsSubmitRedirect(
+                  cya.hasPriorBenefits,newCya,CarVanFuelBenefitsController.show(taxYear, employmentId)
+                )(taxYear,employmentId)
+
               }
-            }
-            else {
+            } else {
               val customerData = cya.employment.employmentBenefits.map(_.isUsingCustomerData).getOrElse(true)
               val newBenefits = BenefitsViewModel.clear(customerData)
               val newCya = cya.employment.copy(employmentBenefits = Some(newBenefits))
-              employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear,cya.isPriorSubmission)(errorHandler.internalServerError()) {
+              employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear,cya.isPriorSubmission,
+                cya.hasPriorBenefits)(errorHandler.internalServerError()) {
                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
               }
             }

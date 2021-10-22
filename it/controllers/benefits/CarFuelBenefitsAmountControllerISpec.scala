@@ -153,7 +153,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
       carFuel = carFuelAmount)), isUsingCustomerData = true))
 
   def cya(isPriorSubmission: Boolean = true, benefits: Option[BenefitsViewModel]):
-  EmploymentUserData = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, employmentId, isPriorSubmission,
+  EmploymentUserData = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, employmentId, isPriorSubmission,isPriorSubmission,
     EmploymentCYAModel(
       EmploymentDetails("maggie", currentDataIsHmrcHeld = false),
       benefits

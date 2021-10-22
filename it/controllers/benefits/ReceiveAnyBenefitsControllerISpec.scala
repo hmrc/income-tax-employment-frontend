@@ -105,7 +105,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, validTaxYear2021, employmentID, isPriorSubmission = isPrior, employmentCyaModel)
+    EmploymentUserData(sessionId, mtditid, nino, validTaxYear2021, employmentID, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
   def benefits(hmrc: Boolean, isBenefitsReceived: Boolean): Option[BenefitsViewModel] =
     Some(BenefitsViewModel(isUsingCustomerData = hmrc, isBenefitsReceived = isBenefitsReceived))

@@ -85,7 +85,7 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
               val cya = data.employment
               val updatedCyaModel = cya.copy(employmentDetails = cya.employmentDetails.copy(taxablePayToDate = Some(amount)))
               employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
-                isPriorSubmission = data.isPriorSubmission)(errorHandler.internalServerError()) {
+                isPriorSubmission = data.isPriorSubmission,data.hasPriorBenefits)(errorHandler.internalServerError()) {
                 employmentDetailsRedirect(updatedCyaModel,taxYear,employmentId,data.isPriorSubmission)
               }
           }

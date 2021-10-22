@@ -16,8 +16,11 @@
 
 package services
 
+import common.SessionValues
 import controllers.benefits.routes._
 import controllers.employment.routes._
+import models.User
+import models.employment.CarVanFuelModel
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.Logging
 import play.api.mvc.Results.Redirect
@@ -372,6 +375,37 @@ object RedirectService extends Logging {
     employmentType match {
       case EmploymentBenefitsType => Left(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
       case EmploymentDetailsType => Left(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
+    }
+  }
+
+  def benefitsSubmitRedirect(hasPriorBenefits: Boolean, cya: EmploymentCYAModel, nextPage: Call)
+                            (_taxYear: Int, _employmentId: String)(implicit user: User[_]): Result ={
+
+    implicit val taxYear: Int = _taxYear
+    implicit val employmentId: String = _employmentId
+
+    val completedBenefitsJourney = user.session.get(SessionValues.COMPLETED_BENEFITS_JOURNEY).isDefined
+
+    val carVanFuelSection: CarVanFuelModel = cya.employmentBenefits.flatMap(_.carVanFuelModel).getOrElse(CarVanFuelModel())
+
+    val carVanFuelSectionFinished = carVanFuelSection.isFinished
+
+    (hasPriorBenefits, carVanFuelSectionFinished, completedBenefitsJourney) match {
+
+      case (_, None, _) =>
+        logger.info("############ CAR VAN FUEL IS FINISHED SHOWING CYA PAGE ####################")
+        println("############ CAR VAN FUEL IS FINISHED SHOWING CYA PAGE ####################")
+        println("############ CAR VAN FUEL IS FINISHED SHOWING CYA PAGE ####################")
+        println("############ CAR VAN FUEL IS FINISHED SHOWING CYA PAGE ####################")
+        println("############ CAR VAN FUEL IS FINISHED SHOWING CYA PAGE ####################")
+        Redirect(CheckYourBenefitsController.show(taxYear,employmentId))
+      case (_, Some(call), _) =>
+        logger.info("############ CAR VAN FUEL IS NOT FINISHED SHOWING NEXT PAGE ####################")
+        println("############ CAR VAN FUEL IS NOT FINISHED SHOWING NEXT PAGE ####################")
+        println("############ CAR VAN FUEL IS NOT FINISHED SHOWING NEXT PAGE ####################")
+        println("############ CAR VAN FUEL IS NOT FINISHED SHOWING NEXT PAGE ####################")
+        println("############ CAR VAN FUEL IS NOT FINISHED SHOWING NEXT PAGE ####################")
+        Redirect(nextPage)
     }
   }
 

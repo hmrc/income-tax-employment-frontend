@@ -27,13 +27,13 @@ import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.ReceiveOwnCarMileageBenefitView
 import services.RedirectService._
-
 import javax.inject.Inject
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReceiveOwnCarMileageBenefitController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -74,7 +74,6 @@ class ReceiveOwnCarMileageBenefitController @Inject()(implicit val cc: MessagesC
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-
       val redirectUrl: String = CheckYourBenefitsController.show(taxYear, employmentId).url
 
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
@@ -85,7 +84,6 @@ class ReceiveOwnCarMileageBenefitController @Inject()(implicit val cc: MessagesC
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(receiveOwnCarMileageBenefitView(formWithErrors, taxYear, employmentId))),
             yesNo => {
-
               val cyaModel: EmploymentCYAModel = cya.employment
               val benefits: Option[BenefitsViewModel] = cyaModel.employmentBenefits
               val carVanFuelModel: Option[CarVanFuelModel] = cyaModel.employmentBenefits.flatMap(_.carVanFuelModel)
@@ -105,22 +103,22 @@ class ReceiveOwnCarMileageBenefitController @Inject()(implicit val cc: MessagesC
                 )))
 
               employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission)(errorHandler.internalServerError()) {
-                (cya.isPriorSubmission, yesNo) match {
-                  case (_, true) => Redirect(MileageBenefitAmountController.show(taxYear, employmentId))
-                  case (false, false) => Redirect(AccommodationRelocationBenefitsController.show(taxYear, employmentId))
-                  case (true, false) => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission,cya.hasPriorBenefits)(errorHandler.internalServerError()) {
+                val nextPage = {
+                  if(yesNo) MileageBenefitAmountController.show(taxYear, employmentId) else
+                    AccommodationRelocationBenefitsController.show(taxYear, employmentId)
                 }
+                RedirectService.benefitsSubmitRedirect(cya.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
+//                (cya.isPriorSubmission, yesNo) match {
+//                  case (_, true) => Redirect(MileageBenefitAmountController.show(taxYear, employmentId))
+//                  case (false, false) => Redirect(AccommodationRelocationBenefitsController.show(taxYear, employmentId))
+//                  case (true, false) => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+//                }
               }
-
             }
           )
-
         }
       }
     }
-
-
   }
-
 }

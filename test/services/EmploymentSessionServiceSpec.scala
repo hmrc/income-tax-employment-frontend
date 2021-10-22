@@ -132,7 +132,8 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
   }
 
   val employmentDataFull: EmploymentUserData = {
-    EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", true, employmentCYA, testClock.now())
+    EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", true,
+      hasPriorBenefits =  true, employmentCYA, testClock.now())
   }
   val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
     None,
@@ -397,13 +398,15 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       EmploymentDetails("Employer Name", currentDataIsHmrcHeld = true),
       None
     )
-    val employmentData: EmploymentUserData = EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", true, cya, testClock.now())
+    val employmentData: EmploymentUserData = EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", true,
+      hasPriorBenefits =  true, cya, testClock.now())
 
     "return SEE_OTHER(303) status when createOrUpdate succeeds" in {
       mockCreateOrUpdate(employmentData, Right())
 
       val response = service.createOrUpdateSessionData(
-        "employmentId", cya, taxYear, true
+        "employmentId", cya, taxYear, true,
+          hasPriorBenefits =  true,
       )(Redirect("400"))(Redirect("303"))
 
       status(response) shouldBe SEE_OTHER
@@ -419,7 +422,8 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       mockCreateOrUpdate(employmentData, Left(DataNotUpdated))
 
       val response = service.createOrUpdateSessionData(
-        "employmentId", cya, taxYear, true
+        "employmentId", cya, taxYear, true,
+        hasPriorBenefits =  true
       )(Redirect("400"))(Redirect("303"))
 
       status(response) shouldBe SEE_OTHER
@@ -432,7 +436,8 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       EmploymentDetails("Employer Name", currentDataIsHmrcHeld = true),
       None
     )
-    val employmentData: EmploymentUserData = EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", true, cya, testClock.now())
+    val employmentData: EmploymentUserData = EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", true,
+      hasPriorBenefits =  true, cya, testClock.now())
 
     "redirect when data is retrieved" in {
       mockFind(taxYear, "employmentId", Right(Some(employmentData)))

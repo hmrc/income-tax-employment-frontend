@@ -36,6 +36,7 @@ class EncryptionServiceTest extends IntegrationTest {
         taxYear = data.taxYear,
         employmentId = data.employmentId,
         isPriorSubmission = data.isPriorSubmission,
+        hasPriorBenefits = data.isPriorSubmission,
         employment = result.employment,
         lastUpdated = result.lastUpdated
       )

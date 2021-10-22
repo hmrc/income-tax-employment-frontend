@@ -103,13 +103,17 @@ class MileageBenefitAmountController @Inject()(implicit val cc: MessagesControll
                 )
 
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
-                  isPriorSubmission = cya.isPriorSubmission)(errorHandler.internalServerError()) {
+                  isPriorSubmission = cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
 
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    Redirect(AccommodationRelocationBenefitsController.show(taxYear, employmentId))
-                  }
+                  val nextPage = AccommodationRelocationBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(cya.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
+
+//                  if (cya.isPriorSubmission) {
+//                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+//                  } else {
+//                    Redirect(AccommodationRelocationBenefitsController.show(taxYear, employmentId))
+//                  }
                 }
             }
           )

@@ -92,7 +92,8 @@ class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
               cessationDate = resetLeaveDateIfNowInvalid)
             )
 
-            employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
+            employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission,
+              data.hasPriorBenefits)(errorHandler.internalServerError()) {
               employmentDetailsRedirect(updatedCya,taxYear,employmentId,data.isPriorSubmission,isStandaloneQuestion = false)
             }
           }

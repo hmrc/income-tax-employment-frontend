@@ -91,7 +91,7 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
           completeForm => {
             val employmentCYAModel = cya.employment.copy(employmentDetails = cya.employment.employmentDetails.copy(totalTaxToDate = Some(completeForm)))
             employmentSessionService.createOrUpdateSessionData(
-              employmentId, employmentCYAModel, taxYear, cya.isPriorSubmission)(errorHandler.internalServerError()) {
+              employmentId, employmentCYAModel, taxYear, cya.isPriorSubmission,cya.hasPriorBenefits)(errorHandler.internalServerError()) {
               employmentDetailsRedirect(employmentCYAModel,taxYear,employmentId,cya.isPriorSubmission)
             }
           }

@@ -48,7 +48,6 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
                     vouchersAndCreditCards: Option[BigDecimal] = None,
                     nonCash: Option[BigDecimal] = None){
 
-
   val vehicleDetailsPopulated: Boolean =
     car.isDefined || carFuel.isDefined || van.isDefined || vanFuel.isDefined || mileage.isDefined
 
@@ -72,6 +71,12 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
 
   val assetsDetailsPopulated: Boolean =
     assets.isDefined || assetTransfer.isDefined
+
+  val hasSomethingPopulated: Boolean = {
+    vehicleDetailsPopulated || accommodationDetailsPopulated || travelDetailsPopulated ||
+      utilitiesDetailsPopulated || medicalDetailsPopulated || incomeTaxDetailsPopulated ||
+      reimbursedDetailsPopulated || assetsDetailsPopulated
+  }
 
   def carVanFuelSection(cyaBenefits: Option[BenefitsViewModel] = None): Option[CarVanFuelModel] = {
     if (cyaBenefits.isDefined && cyaBenefits.map(_.carVanFuelModel).isDefined){

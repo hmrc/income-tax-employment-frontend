@@ -96,7 +96,7 @@ class TravelOrEntertainmentBenefitsController @Inject()(implicit val cc: Message
               }
 
               employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
+                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission,data.hasPriorBenefits)(errorHandler.internalServerError()) {
                 Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
               }
             }
