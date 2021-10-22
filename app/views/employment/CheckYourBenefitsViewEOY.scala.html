@@ -107,7 +107,7 @@
                     accommodationQuestion => showQuestionRow("checkYourBenefits.accommodation", accommodationQuestion, controllers.benefits.routes.LivingAccommodationBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.accommodationRelocationModel.flatMap(_.accommodation).map{
-                    accommodation => showRows("checkYourBenefits.accommodationAmount", accommodation)
+                    accommodation => showRows("checkYourBenefits.accommodationAmount", accommodation, controllers.benefits.routes.LivingAccommodationBenefitAmountController.show(taxYear, employmentId))
                 },
                 benefits.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpensesQuestion).map{
                     qualifyingRelocationExpensesQuestion => showQuestionRow("checkYourBenefits.qualifyingRelocationCosts", qualifyingRelocationExpensesQuestion)
@@ -116,10 +116,11 @@
                     qualifyingRelocationExpenses => showRows("checkYourBenefits.qualifyingRelocationCostsAmount", qualifyingRelocationExpenses, controllers.benefits.routes.QualifyingRelocationBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpensesQuestion).map{
-                    nonQualifyingRelocationExpensesQuestion => showQuestionRow("checkYourBenefits.nonQualifyingRelocationCosts", nonQualifyingRelocationExpensesQuestion)
+                    nonQualifyingRelocationExpensesQuestion => showQuestionRow("checkYourBenefits.nonQualifyingRelocationCosts", nonQualifyingRelocationExpensesQuestion, controllers.benefits.routes.NonQualifyingRelocationBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses).map{
-                    nonQualifyingRelocationExpenses => showRows("checkYourBenefits.nonQualifyingRelocationCostsAmount", nonQualifyingRelocationExpenses)
+                    nonQualifyingRelocationExpenses => showRows("checkYourBenefits.nonQualifyingRelocationCostsAmount",
+                        nonQualifyingRelocationExpenses, controllers.benefits.routes.NonQualifyingRelocationBenefitsAmountController.show(taxYear, employmentId))
                 }
             ).flatten
         } else { Seq() }
@@ -134,10 +135,10 @@
         if(benefits.travelDetailsPopulated){
             Seq(
                 benefits.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion).map{
-                    travelAndSubsistenceQuestion => showQuestionRow("checkYourBenefits.travelAndSubsistence", travelAndSubsistenceQuestion)
+                    travelAndSubsistenceQuestion => showQuestionRow("checkYourBenefits.travelAndSubsistence", travelAndSubsistenceQuestion, controllers.benefits.routes.TravelAndSubsistenceBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.travelEntertainmentModel.flatMap(_.travelAndSubsistence).map{
-                    travelAndSubsistence => showRows("checkYourBenefits.travelAndSubsistenceAmount", travelAndSubsistence)
+                    travelAndSubsistence => showRows("checkYourBenefits.travelAndSubsistenceAmount", travelAndSubsistence, controllers.benefits.routes.TravelOrSubsistenceBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion).map{
                     personalIncidentalExpensesQuestion => showQuestionRow("checkYourBenefits.personalCosts", personalIncidentalExpensesQuestion)
@@ -163,28 +164,28 @@
         val rows: Seq[SummaryListRow] =
         if(benefits.utilitiesDetailsPopulated){
             Seq(
-                benefits.telephoneQuestion.map{
+                benefits.utilitiesAndServicesModel.flatMap(_.telephoneQuestion).map{
                     telephoneQuestion => showQuestionRow("checkYourBenefits.telephone", telephoneQuestion)
                 },
-                benefits.telephone.map{
+                benefits.utilitiesAndServicesModel.flatMap(_.telephone).map{
                     telephone => showRows("checkYourBenefits.telephoneAmount", telephone)
                 },
-                benefits.employerProvidedServicesQuestion.map{
+                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion).map{
                     employerProvidedServicesQuestion => showQuestionRow("checkYourBenefits.servicesProvided", employerProvidedServicesQuestion)
                 },
-                benefits.employerProvidedServices.map{
+                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedServices).map{
                     employerProvidedServices => showRows("checkYourBenefits.servicesProvidedAmount", employerProvidedServices)
                 },
-                benefits.employerProvidedProfessionalSubscriptionsQuestion.map{
+                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptionsQuestion).map{
                     employerProvidedProfessionalSubscriptionsQuestion => showQuestionRow("checkYourBenefits.profSubscriptions", employerProvidedProfessionalSubscriptionsQuestion)
                 },
-                benefits.employerProvidedProfessionalSubscriptions.map{
+                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions).map{
                     employerProvidedProfessionalSubscriptions => showRows("checkYourBenefits.profSubscriptionsAmount", employerProvidedProfessionalSubscriptions)
                 },
-                benefits.serviceQuestion.map{
+                benefits.utilitiesAndServicesModel.flatMap(_.serviceQuestion).map{
                     serviceQuestion => showQuestionRow("checkYourBenefits.otherServices", serviceQuestion)
                 },
-                benefits.service.map{
+                benefits.utilitiesAndServicesModel.flatMap(_.service).map{
                     service => showRows("checkYourBenefits.otherServicesAmount", service)
                 }
             ).flatten

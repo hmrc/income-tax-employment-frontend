@@ -16,10 +16,10 @@
 
 package models.employment
 
-import controllers.benefits.routes.{AccommodationRelocationBenefitsController, LivingAccommodationBenefitsController, QualifyingRelocationBenefitsAmountController}
+import controllers.benefits.routes.{AccommodationRelocationBenefitsController, LivingAccommodationBenefitAmountController, LivingAccommodationBenefitsController, NonQualifyingRelocationBenefitsController, QualifyingRelocationBenefitsAmountController}
 import utils.UnitTest
 
-class AccommodationRelocationModelTest extends UnitTest {
+class AccommodationRelocationModelSpec extends UnitTest {
 
   private val taxYear = 2021
   private val employmentId = "some-employment-id"
@@ -58,10 +58,10 @@ class AccommodationRelocationModelTest extends UnitTest {
       underTest.accommodationSectionFinished(taxYear, employmentId) shouldBe None
     }
 
-    "return call to AccommodationRelocationBenefitsController when accommodationQuestion and accommodation not defined" in {
+    "return call to LivingAccommodationBenefitAmountController when accommodationQuestion and accommodation not defined" in {
       val underTest = AccommodationRelocationModel(accommodationQuestion = Some(true), accommodation = None)
 
-      underTest.accommodationSectionFinished(taxYear, employmentId) shouldBe Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId))
+      underTest.accommodationSectionFinished(taxYear, employmentId) shouldBe Some(LivingAccommodationBenefitAmountController.show(taxYear, employmentId))
     }
 
     "return None when accommodationQuestion is false" in {
@@ -97,11 +97,11 @@ class AccommodationRelocationModelTest extends UnitTest {
       underTest.nonQualifyingRelocationSectionFinished(taxYear, employmentId) shouldBe None
     }
 
-    "return call to AccommodationRelocationBenefitsController when nonQualifyingRelocationExpensesQuestion is None" in {
+    "return call to NonQualifyingRelocationBenefitsController when nonQualifyingRelocationExpensesQuestion is None" in {
       val underTest = AccommodationRelocationModel(nonQualifyingRelocationExpensesQuestion = None)
 
       underTest.nonQualifyingRelocationSectionFinished(taxYear, employmentId) shouldBe
-        Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId))
+        Some(NonQualifyingRelocationBenefitsController.show(taxYear, employmentId))
     }
   }
 
