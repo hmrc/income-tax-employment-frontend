@@ -22,16 +22,16 @@ import forms.{AmountForm, FormUtils}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.CarFuelBenefitsAmountView
 import controllers.employment.routes.CheckYourBenefitsController
-import controllers.benefits.routes.{CompanyVanBenefitsController, CompanyCarFuelBenefitsController}
+import controllers.benefits.routes.{CompanyCarFuelBenefitsController, CompanyVanBenefitsController}
 import models.mongo.EmploymentCYAModel
 import services.RedirectService.{ConditionalRedirect, EmploymentBenefitsType, commonCarVanFuelBenefitsRedirects, redirectBasedOnCurrentAnswers}
-
 import javax.inject.Inject
+
 import scala.concurrent.Future
 
 class CarFuelBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -101,12 +101,18 @@ class CarFuelBenefitsAmountController @Inject()(implicit val cc: MessagesControl
                 )
 
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
-                  isPriorSubmission = cya.isPriorSubmission)(errorHandler.internalServerError()) {
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    Redirect(CompanyVanBenefitsController.show(taxYear, employmentId))
-                  }
+                  isPriorSubmission = cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
+
+                  val nextPage = CompanyVanBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(cya.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
+
+
+//                  if (cya.isPriorSubmission) {
+//                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+//                  } else {
+//                    Redirect(CompanyVanBenefitsController.show(taxYear, employmentId))
+//                  }
                 }
             }
           )

@@ -83,12 +83,18 @@ class CompanyVanBenefitsAmountController @Inject()(implicit val cc: MessagesCont
                   employmentBenefits = benefits.map(_.copy(carVanFuelModel = carVanFuel.map(_.copy(van = Some(newAmount)))))
                 )
                 employmentSessionService.createOrUpdateSessionData(
-                  employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission)(errorHandler.internalServerError()) {
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    Redirect(CompanyVanFuelBenefitsController.show(taxYear, employmentId))
-                  }
+                  employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
+
+                  val nextPage = CompanyVanFuelBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(cya.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
+
+
+//                  if (cya.isPriorSubmission) {
+//                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+//                  } else {
+//                    Redirect(CompanyVanFuelBenefitsController.show(taxYear, employmentId))
+//                  }
                 }
             }
           )

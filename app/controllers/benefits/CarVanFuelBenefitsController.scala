@@ -18,7 +18,7 @@ package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
-import controllers.benefits.routes.{CompanyCarBenefitsController, AccommodationRelocationBenefitsController}
+import controllers.benefits.routes.{AccommodationRelocationBenefitsController, CompanyCarBenefitsController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
@@ -95,13 +95,19 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
               }
 
               employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
+                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
 
-                (data.isPriorSubmission, yesNo) match {
-                  case (_, true) => Redirect(CompanyCarBenefitsController.show(taxYear, employmentId))
-                  case (false, false) => Redirect(AccommodationRelocationBenefitsController.show(taxYear, employmentId))
-                  case (true, false) => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                val nextPage = {
+                  if(yesNo) CompanyCarBenefitsController.show(taxYear, employmentId) else AccommodationRelocationBenefitsController.show(taxYear, employmentId)
                 }
+
+                RedirectService.benefitsSubmitRedirect(data.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
+
+//                (data.isPriorSubmission, yesNo) match {
+//                  case (_, true) => Redirect(CompanyCarBenefitsController.show(taxYear, employmentId))
+//                  case (false, false) => Redirect(AccommodationRelocationBenefitsController.show(taxYear, employmentId))
+//                  case (true, false) => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+//                }
               }
             }
           )

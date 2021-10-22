@@ -335,6 +335,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     2021,
     "employmentId",
     isPriorSubmission = true,
+    hasPriorBenefits =  true,
     EmploymentCYAModel(
       EmploymentDetails("Employer Name", currentDataIsHmrcHeld = true),
       None

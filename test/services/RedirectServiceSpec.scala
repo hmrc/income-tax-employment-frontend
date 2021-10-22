@@ -89,7 +89,8 @@ class RedirectServiceSpec extends UnitTest {
       ))
   }
 
-  val employmentUserData: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, "001", isPriorSubmission = false, employmentCYA)
+  val employmentUserData: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, "001", isPriorSubmission = false,
+    hasPriorBenefits =  true, employmentCYA)
 
   "redirectBasedOnCurrentAnswers" should {
     "redirect to benefits yes no page" when {

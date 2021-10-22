@@ -93,12 +93,21 @@ class CompanyCarFuelBenefitsController @Inject()(implicit val cc: MessagesContro
               }
 
               employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
-                (data.isPriorSubmission, yesNo) match {
-                  case (_, true) => Redirect(CarFuelBenefitsAmountController.show(taxYear, employmentId))
-                  case (false, false) => Redirect(CompanyVanBenefitsController.show(taxYear, employmentId))
-                  case (true, false) => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
+
+
+                val nextPage = {
+                  if(yesNo) CarFuelBenefitsAmountController.show(taxYear, employmentId) else CompanyVanBenefitsController.show(taxYear, employmentId)
                 }
+
+                RedirectService.benefitsSubmitRedirect(data.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
+
+
+//                (data.isPriorSubmission, yesNo) match {
+//                  case (_, true) => Redirect(CarFuelBenefitsAmountController.show(taxYear, employmentId))
+//                  case (false, false) => Redirect(CompanyVanBenefitsController.show(taxYear, employmentId))
+//                  case (true, false) => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+//                }
               }
             }
           )

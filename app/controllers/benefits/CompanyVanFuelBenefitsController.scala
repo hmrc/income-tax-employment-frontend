@@ -27,13 +27,13 @@ import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
+import services.{EmploymentSessionService, RedirectService}
 import services.RedirectService.{EmploymentBenefitsType, redirectBasedOnCurrentAnswers, vanFuelBenefitsRedirects}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.CompanyVanFuelBenefitsView
-
 import javax.inject.Inject
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class CompanyVanFuelBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -101,12 +101,18 @@ class CompanyVanFuelBenefitsController @Inject()(implicit val cc: MessagesContro
                 )))
 
               employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission)(errorHandler.internalServerError()) {
-                (cya.isPriorSubmission, yesNo) match {
-                  case (_, true) => Redirect(CompanyVanFuelBenefitsAmountController.show(taxYear, employmentId))
-                  case (false, false) => Redirect(ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId))
-                  case (true, false) => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
+                val nextPage = {
+                  if(yesNo){
+                    CompanyVanFuelBenefitsAmountController.show(taxYear, employmentId)
+                  } else {
+                    ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId)
+                  }
                 }
+                RedirectService.benefitsSubmitRedirect(cya.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
+//                (cya.isPriorSubmission, yesNo) match {case (_, true) => Redirect(CompanyVanFuelBenefitsAmountController.show(taxYear, employmentId))
+//                  case (false, false) => Redirect(ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId))
+//                  case (true, false) => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))}
               }
             }
           )

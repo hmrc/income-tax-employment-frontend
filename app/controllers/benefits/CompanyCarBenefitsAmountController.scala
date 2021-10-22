@@ -18,7 +18,7 @@ package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
-import controllers.benefits.routes.CompanyCarFuelBenefitsController
+import controllers.benefits.routes.{AccommodationRelocationBenefitsController, CompanyCarBenefitsController, CompanyCarFuelBenefitsController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import models.mongo.EmploymentCYAModel
@@ -30,8 +30,8 @@ import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.CompanyCarBenefitsAmountView
-
 import javax.inject.Inject
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class CompanyCarBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -102,12 +102,18 @@ class CompanyCarBenefitsAmountController @Inject()(implicit val cc: MessagesCont
                 )
 
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
-                  isPriorSubmission = cya.isPriorSubmission)(errorHandler.internalServerError()) {
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    Redirect(CompanyCarFuelBenefitsController.show(taxYear, employmentId))
-                  }
+                  isPriorSubmission = cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
+
+                  val nextPage = CompanyCarFuelBenefitsController.show(taxYear,employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(cya.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
+
+
+//                  if (cya.isPriorSubmission) {
+//                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+//                  } else {
+//                    Redirect(CompanyCarFuelBenefitsController.show(taxYear, employmentId))
+//                  }
                 }
             }
           )

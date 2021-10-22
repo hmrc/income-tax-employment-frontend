@@ -69,7 +69,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
       employmentSessionService.employmentSourceToUse(allEmploymentData,employmentId,isInYear) match {
         case Some((source, isUsingCustomerData)) =>
           employmentSessionService.createOrUpdateSessionData(employmentId, EmploymentCYAModel.apply(source, isUsingCustomerData),
-            taxYear, isPriorSubmission = true
+            taxYear, isPriorSubmission = true, source.hasPriorBenefits()
           )(errorHandler.internalServerError()){
             performAuditAndRenderView(source.toEmploymentDetailsViewModel(isUsingCustomerData),taxYear, isInYear)
           }

@@ -29,6 +29,7 @@ case class EmploymentUserData(sessionId: String,
                               taxYear: Int,
                               employmentId: String,
                               isPriorSubmission: Boolean,
+                              hasPriorBenefits: Boolean,
                               employment: EmploymentCYAModel,
                               lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC))
 
@@ -55,6 +56,7 @@ case class EncryptedEmploymentUserData(sessionId: String,
                                        taxYear: Int,
                                        employmentId: String,
                                        isPriorSubmission: Boolean,
+                                       hasPriorBenefits: Boolean,
                                        employment: EncryptedEmploymentCYAModel,
                                        lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC))
 

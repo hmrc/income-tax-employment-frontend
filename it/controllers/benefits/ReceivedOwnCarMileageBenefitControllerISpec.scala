@@ -173,7 +173,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
 
   def cya(isPriorSubmission: Boolean = true, benefits: Option[BenefitsViewModel]):
-  EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission,
+  EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission, hasPriorBenefits = isPriorSubmission,
     EmploymentCYAModel(
       EmploymentDetails("maggie", currentDataIsHmrcHeld = false),
       benefits

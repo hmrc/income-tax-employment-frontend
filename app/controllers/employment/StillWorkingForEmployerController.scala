@@ -83,7 +83,7 @@ class StillWorkingForEmployerController @Inject()(authorisedAction: AuthorisedAc
             }
             val updatedCya = cya.copy(cya.employmentDetails.copy(cessationDateQuestion = Some(yesNo), cessationDate = cessationDateUpdated))
             employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear,
-              data.isPriorSubmission)(errorHandler.internalServerError()) {
+              data.isPriorSubmission,data.hasPriorBenefits)(errorHandler.internalServerError()) {
               employmentDetailsRedirect(updatedCya, taxYear, employmentId, data.isPriorSubmission, isStandaloneQuestion = false)
             }
           }

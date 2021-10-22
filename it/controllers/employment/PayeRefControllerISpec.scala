@@ -116,7 +116,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
 
     def cya(paye:Option[String]=Some(payeRef), isPriorSubmission:Boolean=true): EmploymentUserData =
-      EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, "001", isPriorSubmission,
+      EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, "001", isPriorSubmission, hasPriorBenefits = isPriorSubmission,
       EmploymentCYAModel(
         EmploymentDetails("maggie", employerRef = paye, currentDataIsHmrcHeld = false),
         None

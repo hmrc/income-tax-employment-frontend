@@ -107,7 +107,7 @@ class EmployerLeaveDateController @Inject()(authorisedAction: AuthorisedAction,
               { submittedDate =>
                 val cya = data.employment
                 val updatedCya = cya.copy(cya.employmentDetails.copy(cessationDate = Some(submittedDate.toLocalDate.toString)))
-                employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission)(
+                employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission,data.hasPriorBenefits)(
                   errorHandler.internalServerError()) {
                   employmentDetailsRedirect(updatedCya, taxYear, employmentId, data.isPriorSubmission)
                 }
