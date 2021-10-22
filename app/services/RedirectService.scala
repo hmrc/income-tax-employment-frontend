@@ -16,11 +16,10 @@
 
 package services
 
-import common.SessionValues
 import controllers.benefits.routes._
 import controllers.employment.routes._
 import models.User
-import models.employment.CarVanFuelModel
+import models.employment.{AccommodationRelocationModel, CarVanFuelModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.Logging
 import play.api.mvc.Results.Redirect
@@ -384,27 +383,23 @@ object RedirectService extends Logging {
     implicit val taxYear: Int = _taxYear
     implicit val employmentId: String = _employmentId
 
-    val completedBenefitsJourney = user.session.get(SessionValues.COMPLETED_BENEFITS_JOURNEY).isDefined
-
     val carVanFuelSection: CarVanFuelModel = cya.employmentBenefits.flatMap(_.carVanFuelModel).getOrElse(CarVanFuelModel())
+    val accommodationRelocationSection: AccommodationRelocationModel = cya.employmentBenefits.flatMap(_.accommodationRelocationModel).getOrElse(AccommodationRelocationModel())
 
     val carVanFuelSectionFinished = carVanFuelSection.isFinished
+    val accommodationRelocationSectionFinished = accommodationRelocationSection.isFinished
 
-    (hasPriorBenefits, carVanFuelSectionFinished, completedBenefitsJourney) match {
+    val unfinishedRedirects: Seq[Call] = Seq(carVanFuelSectionFinished,accommodationRelocationSectionFinished).flatten
 
-      case (_, None, _) =>
-        logger.info("############ CAR VAN FUEL IS FINISHED SHOWING CYA PAGE ####################")
-        println("############ CAR VAN FUEL IS FINISHED SHOWING CYA PAGE ####################")
-        println("############ CAR VAN FUEL IS FINISHED SHOWING CYA PAGE ####################")
-        println("############ CAR VAN FUEL IS FINISHED SHOWING CYA PAGE ####################")
-        println("############ CAR VAN FUEL IS FINISHED SHOWING CYA PAGE ####################")
+    (hasPriorBenefits, unfinishedRedirects) match {
+
+      case (_, calls) if calls.isEmpty =>
+        logger.info("[RedirectService][benefitsSubmitRedirect] User has completed all sections - Routing to benefits CYA page")
         Redirect(CheckYourBenefitsController.show(taxYear,employmentId))
-      case (_, Some(call), _) =>
-        logger.info("############ CAR VAN FUEL IS NOT FINISHED SHOWING NEXT PAGE ####################")
-        println("############ CAR VAN FUEL IS NOT FINISHED SHOWING NEXT PAGE ####################")
-        println("############ CAR VAN FUEL IS NOT FINISHED SHOWING NEXT PAGE ####################")
-        println("############ CAR VAN FUEL IS NOT FINISHED SHOWING NEXT PAGE ####################")
-        println("############ CAR VAN FUEL IS NOT FINISHED SHOWING NEXT PAGE ####################")
+
+      case (_, calls) =>
+
+        logger.info(s"[RedirectService][benefitsSubmitRedirect] User has not yet completed all sections - Routing to next page: ${nextPage.url}")
         Redirect(nextPage)
     }
   }

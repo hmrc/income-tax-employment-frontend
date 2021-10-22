@@ -18,6 +18,7 @@ package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
@@ -98,7 +99,16 @@ class AccommodationRelocationBenefitsController @Inject()(implicit val cc: Messa
 
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+
+                val nextPage = {
+                  if(yesNo){
+                    LivingAccommodationBenefitsController.show(taxYear, employmentId)
+                  } else {
+                    TravelOrEntertainmentBenefitsController.show(taxYear, employmentId)
+                  }
+                }
+
+                RedirectService.benefitsSubmitRedirect(data.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
               }
             }
           )

@@ -70,7 +70,6 @@ class CompanyVanFuelBenefitsController @Inject()(implicit val cc: MessagesContro
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-
       val redirectUrl: String = CheckYourBenefitsController.show(taxYear, employmentId).url
 
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
@@ -81,7 +80,6 @@ class CompanyVanFuelBenefitsController @Inject()(implicit val cc: MessagesContro
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(companyVanFuelBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => {
-
               val cyaModel: EmploymentCYAModel = cya.employment
               val benefits: Option[BenefitsViewModel] = cyaModel.employmentBenefits
               val carVanFuelModel: Option[CarVanFuelModel] = cyaModel.employmentBenefits.flatMap(_.carVanFuelModel)
@@ -110,13 +108,9 @@ class CompanyVanFuelBenefitsController @Inject()(implicit val cc: MessagesContro
                   }
                 }
                 RedirectService.benefitsSubmitRedirect(cya.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
-//                (cya.isPriorSubmission, yesNo) match {case (_, true) => Redirect(CompanyVanFuelBenefitsAmountController.show(taxYear, employmentId))
-//                  case (false, false) => Redirect(ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId))
-//                  case (true, false) => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))}
               }
             }
           )
-
         }
       }
     }

@@ -101,13 +101,6 @@ class CompanyCarFuelBenefitsController @Inject()(implicit val cc: MessagesContro
                 }
 
                 RedirectService.benefitsSubmitRedirect(data.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
-
-
-//                (data.isPriorSubmission, yesNo) match {
-//                  case (_, true) => Redirect(CarFuelBenefitsAmountController.show(taxYear, employmentId))
-//                  case (false, false) => Redirect(CompanyVanBenefitsController.show(taxYear, employmentId))
-//                  case (true, false) => Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-//                }
               }
             }
           )
