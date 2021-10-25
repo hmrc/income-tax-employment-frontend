@@ -20,6 +20,7 @@ import models.benefits.UtilitiesAndServicesModel
 import models.employment.{AccommodationRelocationModel, BenefitsViewModel, CarVanFuelModel, TravelEntertainmentModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.mvc.Call
 import play.api.mvc.Results.Ok
 import services.RedirectService.{EmploymentBenefitsType, EmploymentDetailsType}
 import utils.UnitTest
@@ -105,6 +106,23 @@ class RedirectServiceSpec extends UnitTest {
 
   val employmentUserData: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, "001", isPriorSubmission = false,
     hasPriorBenefits =  true, employmentCYA)
+
+  "benefitsSubmitRedirect" should {
+    "redirect to the CYA page if the journey is finished" in {
+      val result = Future.successful(RedirectService.benefitsSubmitRedirect(true,employmentCYA,Call("GET","/next"))(taxYear,"001"))
+
+      status(result) shouldBe SEE_OTHER
+      redirectUrl(result) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+    }
+    "redirect to the next page if the journey is not finished" in {
+      val result = Future.successful(RedirectService.benefitsSubmitRedirect(true,employmentCYA.copy(
+        employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = None))
+      ),Call("GET","/next"))(taxYear,"001"))
+
+      status(result) shouldBe SEE_OTHER
+      redirectUrl(result) shouldBe "/next"
+    }
+  }
 
   "redirectBasedOnCurrentAnswers" should {
     "redirect to benefits yes no page" when {
