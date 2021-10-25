@@ -79,6 +79,9 @@ class CarVanFuelModelSpec extends UnitTest {
     "return van yes no page" in {
       model.copy(vanQuestion = None).vanSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/company-van?employmentId=id")
     }
+    "return van amount page" in {
+      model.copy(van = None).vanSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/company-van-amount?employmentId=id")
+    }
 
     "return none when section is finished" in {
       model.copy(vanQuestion = Some(false), vanFuelQuestion = None).vanSectionFinished(2022, "employmentId") shouldBe None
