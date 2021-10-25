@@ -29,19 +29,19 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear-1
-  val employmentId: String = "001"
+  private val taxYearEOY: Int = taxYear - 1
+  private val employmentId: String = "001"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
 
-  def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
+  private def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
-
-  def benefits(carModel: CarVanFuelModel): BenefitsViewModel = BenefitsViewModel(carVanFuelModel = Some(carModel), isUsingCustomerData = true, isBenefitsReceived = true)
+  private def benefits(carModel: CarVanFuelModel): BenefitsViewModel = BenefitsViewModel(carVanFuelModel =
+    Some(carModel), isUsingCustomerData = true, isBenefitsReceived = true)
 
   private def carVanFuelBenefitsPage(taxYear: Int) = s"$appUrl/$taxYear/benefits/car-van-fuel?employmentId=$employmentId"
 
@@ -49,7 +49,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
-    val thisIncludesSelector: String = "#main-content > div > div > form > div > fieldset > legend > div"
+    val thisIncludesSelector: String = "#main-content > div > div > form > div > fieldset > legend > p.govuk-body"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
@@ -120,15 +120,6 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
       UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
-
-  object CyaModel {
-    val cya: EmploymentUserData = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, employmentId, isPriorSubmission = true,
-      EmploymentCYAModel(
-        EmploymentDetails("EmployerName", startDate = Some("2020-01-01"), currentDataIsHmrcHeld = false),
-        None
-      )
-    )
   }
 
   ".show" should {
