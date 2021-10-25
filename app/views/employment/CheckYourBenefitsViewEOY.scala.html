@@ -146,7 +146,7 @@
                     personalIncidentalExpensesQuestion => showQuestionRow("checkYourBenefits.personalCosts", personalIncidentalExpensesQuestion)
                 },
                 benefits.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses).map{
-                    personalIncidentalExpenses => showRows("checkYourBenefits.personalCostsAmount", personalIncidentalExpenses)
+                    personalIncidentalExpenses => showRows("checkYourBenefits.personalCostsAmount", personalIncidentalExpenses, controllers.benefits.routes.IncidentalCostsBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.travelEntertainmentModel.flatMap(_.entertainingQuestion).map{
                     entertainingQuestion => showQuestionRow("checkYourBenefits.entertainment", entertainingQuestion)

@@ -99,6 +99,9 @@ POST       /:taxYear/benefits/travel-subsistence-amount     controllers.benefits
 GET        /:taxYear/benefits/travel-subsistence            controllers.benefits.TravelAndSubsistenceBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/travel-subsistence            controllers.benefits.TravelAndSubsistenceBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/incidental-overnight-expenses-amount  controllers.benefits.IncidentalCostsBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/incidental-overnight-expenses-amount  controllers.benefits.IncidentalCostsBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
 GET        /sign-out                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
 GET        /error/you-need-to-sign-up                       controllers.errors.IndividualAuthErrorController.show
