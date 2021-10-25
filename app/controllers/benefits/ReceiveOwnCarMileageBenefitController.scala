@@ -111,7 +111,7 @@ class ReceiveOwnCarMileageBenefitController @Inject()(implicit val cc: MessagesC
                     AccommodationRelocationBenefitsController.show(taxYear, employmentId)
                   }
                 }
-                RedirectService.benefitsSubmitRedirect(cya.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel,nextPage)(taxYear,employmentId)
               }
             }
           )

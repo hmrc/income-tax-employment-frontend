@@ -77,9 +77,7 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
               employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear,
                 cya.isPriorSubmission,cya.hasPriorBenefits)(errorHandler.internalServerError()) {
 
-                RedirectService.benefitsSubmitRedirect(
-                  cya.hasPriorBenefits,newCya,CarVanFuelBenefitsController.show(taxYear, employmentId)
-                )(taxYear,employmentId)
+                RedirectService.benefitsSubmitRedirect(newCya,CarVanFuelBenefitsController.show(taxYear, employmentId))(taxYear,employmentId)
 
               }
             } else {

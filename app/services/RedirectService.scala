@@ -488,8 +488,7 @@ object RedirectService extends Logging {
     }
   }
 
-  def benefitsSubmitRedirect(hasPriorBenefits: Boolean, cya: EmploymentCYAModel, nextPage: Call)
-                            (_taxYear: Int, _employmentId: String)(implicit user: User[_]): Result ={
+  def benefitsSubmitRedirect(cya: EmploymentCYAModel, nextPage: Call)(_taxYear: Int, _employmentId: String)(implicit user: User[_]): Result ={
 
     implicit val taxYear: Int = _taxYear
     implicit val employmentId: String = _employmentId
@@ -502,13 +501,13 @@ object RedirectService extends Logging {
 
     val unfinishedRedirects: Seq[Call] = Seq(carVanFuelSectionFinished,accommodationRelocationSectionFinished).flatten
 
-    (hasPriorBenefits, unfinishedRedirects) match {
+    unfinishedRedirects match {
 
-      case (_, calls) if calls.isEmpty =>
+      case calls if calls.isEmpty =>
         logger.info("[RedirectService][benefitsSubmitRedirect] User has completed all sections - Routing to benefits CYA page")
         Redirect(CheckYourBenefitsController.show(taxYear,employmentId))
 
-      case (_, calls) =>
+      case calls =>
 
         logger.info(s"[RedirectService][benefitsSubmitRedirect] User has not yet completed all sections - Routing to next page: ${nextPage.url}")
         Redirect(nextPage)

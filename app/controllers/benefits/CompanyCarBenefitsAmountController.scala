@@ -106,7 +106,7 @@ class CompanyCarBenefitsAmountController @Inject()(implicit val cc: MessagesCont
 
                   val nextPage = CompanyCarFuelBenefitsController.show(taxYear,employmentId)
 
-                  RedirectService.benefitsSubmitRedirect(cya.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel,nextPage)(taxYear,employmentId)
                 }
             }
           )

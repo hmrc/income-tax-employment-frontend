@@ -100,7 +100,7 @@ class CompanyCarFuelBenefitsController @Inject()(implicit val cc: MessagesContro
                   if(yesNo) CarFuelBenefitsAmountController.show(taxYear, employmentId) else CompanyVanBenefitsController.show(taxYear, employmentId)
                 }
 
-                RedirectService.benefitsSubmitRedirect(data.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel,nextPage)(taxYear,employmentId)
               }
             }
           )

@@ -109,13 +109,13 @@ class RedirectServiceSpec extends UnitTest {
 
   "benefitsSubmitRedirect" should {
     "redirect to the CYA page if the journey is finished" in {
-      val result = Future.successful(RedirectService.benefitsSubmitRedirect(true,employmentCYA,Call("GET","/next"))(taxYear,"001"))
+      val result = Future.successful(RedirectService.benefitsSubmitRedirect(employmentCYA,Call("GET","/next"))(taxYear,"001"))
 
       status(result) shouldBe SEE_OTHER
       redirectUrl(result) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
     }
     "redirect to the next page if the journey is not finished" in {
-      val result = Future.successful(RedirectService.benefitsSubmitRedirect(true,employmentCYA.copy(
+      val result = Future.successful(RedirectService.benefitsSubmitRedirect(employmentCYA.copy(
         employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = None))
       ),Call("GET","/next"))(taxYear,"001"))
 
