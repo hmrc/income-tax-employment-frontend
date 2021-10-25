@@ -108,7 +108,7 @@ class AccommodationRelocationBenefitsController @Inject()(implicit val cc: Messa
                   }
                 }
 
-                RedirectService.benefitsSubmitRedirect(data.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel,nextPage)(taxYear,employmentId)
               }
             }
           )

@@ -103,7 +103,7 @@ class CompanyVanBenefitsController @Inject()(implicit val cc: MessagesController
                   }
                 }
 
-                RedirectService.benefitsSubmitRedirect(data.hasPriorBenefits,updatedCyaModel,nextPage)(taxYear,employmentId)
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel,nextPage)(taxYear,employmentId)
               }
             }
           )
