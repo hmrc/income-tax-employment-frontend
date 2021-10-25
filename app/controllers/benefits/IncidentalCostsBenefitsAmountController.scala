@@ -67,7 +67,7 @@ class IncidentalCostsBenefitsAmountController @Inject()(implicit val cc: Message
             employment =>
               employment.employmentBenefits.flatMap(_.benefits.flatMap(_.personalIncidentalExpenses))
           )
-          Future(Ok(incidentalCostsBenefitsAmountView(taxYear, form, cyaAmount, employmentId)))
+          Future.successful(Ok(incidentalCostsBenefitsAmountView(taxYear, form, cyaAmount, employmentId)))
         }
       }
     }
