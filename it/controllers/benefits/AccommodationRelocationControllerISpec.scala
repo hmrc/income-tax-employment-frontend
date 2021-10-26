@@ -300,7 +300,7 @@ class AccommodationRelocationControllerISpec extends IntegrationTest with ViewHe
 
           }
 
-          "Create new AccommodationRelocationModel and redirect to Check Employment Benefits page when user selects 'yes' and no prior data" which {
+          "Create new AccommodationRelocationModel and redirect to Check Employment Benefits page when user selects 'yes' and no prior benefits" which {
             lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
             lazy val result: WSResponse = {

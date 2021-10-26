@@ -104,8 +104,7 @@ class RedirectServiceSpec extends UnitTest {
       ))
   }
 
-  val employmentUserData: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, "001", isPriorSubmission = false,
-    hasPriorBenefits =  true, employmentCYA)
+  val employmentUserData: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, "001", isPriorSubmission = false, hasPriorBenefits = false, employmentCYA)
 
   "benefitsSubmitRedirect" should {
     "redirect to the CYA page if the journey is finished" in {
@@ -523,7 +522,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and attempted to view the qualifying relocation amount page but the qualifyingRelocationExpensesQuestion is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(qualifyingRelocationExpensesQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -603,7 +602,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and attempted to view the accommodation yes no page but the accommodation relocation question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationRelocationQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1322,7 +1321,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = None))), EmploymentBenefitsType)(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = None))), EmploymentBenefitsType)(
           cya => {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
@@ -1368,7 +1367,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and hitting the common car van fuel benefits method when carVanFuel is false " in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carVanFuelQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1384,7 +1383,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and hitting the car benefits amount method when carQuestion is false " in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1400,7 +1399,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and hitting the car fuel benefits amount method when carFuelQuestion is false " in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carFuelQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1416,7 +1415,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and hitting the van benefits amount method when vanQuestion is false " in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(vanQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1432,7 +1431,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and hitting the van fuel benefits amount method when vanFuelQuestion is false " in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(vanFuelQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1464,7 +1463,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and hitting the mileage benefits amount method when mileageQuestion is false " in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(mileageQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {

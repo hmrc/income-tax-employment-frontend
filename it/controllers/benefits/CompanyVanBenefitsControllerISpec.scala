@@ -288,7 +288,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
       }
 
-    "update vanQuestion to yes when the user chooses yes, redirect to the company van benefits amount page if prior submission" which {
+    "update vanQuestion to yes when the user chooses yes, redirect to the company van benefits amount page when prior benefits exist" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
@@ -313,7 +313,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
     }
 
-    "update vanQuestion to yes when the user chooses yes, redirect to the company van benefits amount page if not prior submission" which {
+    "update vanQuestion to yes when the user chooses yes, redirect to the company van benefits amount page when no prior benefits" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
@@ -338,7 +338,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
     }
 
-    "update vanQuestion to no and van to none when the user chooses no, redirect to mileage question if not prior submission" which {
+    "update vanQuestion to no and van to none when the user chooses no, redirect to mileage question when no prior benefits" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -363,7 +363,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
     }
 
-    "update vanQuestion to no and van to none when the user chooses no, redirect to mileage page if prior submission" which {
+    "update vanQuestion to no and van to none when the user chooses no, redirect to mileage page when prior benefits exist" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 

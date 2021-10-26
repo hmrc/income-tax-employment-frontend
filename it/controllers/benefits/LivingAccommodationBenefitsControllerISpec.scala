@@ -227,7 +227,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
         }
 
-        "render the 'Did you get any accommodation benefits?' page with the 'no' radio button pre-filled and it's not a prior submission" which {
+        "render the 'Did you get any accommodation benefits?' page with the 'no' radio button pre-filled and no prior benefits exist" which {
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
@@ -296,7 +296,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
     }
 
-    "redirect to the check your benefits page when accommodationRelocationQuestion is Some(false) and it's a prior submission" which {
+    "redirect to the check your benefits page when accommodationRelocationQuestion is Some(false) and no prior benefits exist" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
@@ -314,7 +314,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
     }
 
-    "redirect to the travel or entertainment page when accommodationRelocationQuestion is Some(false) and it's not a prior submission" which {
+    "redirect to the travel or entertainment page when accommodationRelocationQuestion is Some(false) and no prior benefits exist" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
@@ -372,7 +372,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
       }
     }
 
-    "update accommodationQuestion to Some(true) when user chooses yes and it's a prior submission" which {
+    "update accommodationQuestion to Some(true) when user chooses yes and prior benefits exist" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
@@ -396,7 +396,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
     }
 
-    "update accommodationQuestion to Some(false) when user chooses no and it's not a prior submission" which {
+    "update accommodationQuestion to Some(false) when user chooses no and no prior benefits exist" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -453,7 +453,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
     }
 
-    "redirect to the check your benefits page when accommodationRelocationQuestion is Some(false) and it's a prior submission" which {
+    "redirect to the check your benefits page when accommodationRelocationQuestion is Some(false) and prior benefits exist" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
@@ -471,7 +471,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
     }
 
-    "redirect to the travel or entertainment page when accommodationRelocationQuestion is Some(false) and it's not a prior submission" which {
+    "redirect to the travel or entertainment page when accommodationRelocationQuestion is Some(false) and no prior benefits exist" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()

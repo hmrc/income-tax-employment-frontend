@@ -46,7 +46,7 @@ case class EmploymentSource(employmentId: String,
                             employmentBenefits: Option[EmploymentBenefits]) extends Logging {
 
   def hasPriorBenefits(): Boolean ={
-    employmentBenefits.exists(_.benefits.exists(_.hasSomethingPopulated))
+    employmentBenefits.exists(_.benefits.exists(_.hasBenefitsPopulated))
   }
 
   def dataHasNotChanged(createUpdateEmployment: CreateUpdateEmployment): Boolean = {

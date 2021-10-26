@@ -367,7 +367,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
     val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
 
-    "Update the mileageQuestion to no and wipe out the mileage amount when the user chooses no, redirects to accommodation page if prior submission" which {
+    "Update the mileageQuestion to no and wipe out the mileage amount when the user chooses no, redirects to accommodation page when prior benefits exist" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -394,7 +394,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
     }
 
     "Update the mileageQuestion to no and wipe out the mileage amount when the user chooses no, redirects to" +
-      "accommodation relocation if not prior submission" which {
+      "accommodation relocation when no prior benefits" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -420,7 +420,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
     }
 
-    "Update the mileageQuestion to yes when the user chooses yes, redirects to mileage amount page when prior submission" which {
+    "Update the mileageQuestion to yes when the user chooses yes, redirects to mileage amount page when prior benefits exist" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
@@ -445,7 +445,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
     }
 
-    "Update the mileageQuestion to yes when the user chooses yes, redirects to mileage amount page when not prior submission" which {
+    "Update the mileageQuestion to yes when the user chooses yes, redirects to mileage amount page when no prior benefits" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
