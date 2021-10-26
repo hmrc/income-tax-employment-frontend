@@ -189,8 +189,7 @@ object RedirectService extends Logging {
     commonAccommodationBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(accommodationQuestion.isEmpty, LivingAccommodationBenefitsController.show(taxYear, employmentId)),
-        //TODO go to qual relocation yes no page
-        ConditionalRedirect(accommodationQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
+        ConditionalRedirect(accommodationQuestion.contains(false), QualifyingRelocationBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
         ConditionalRedirect(accommodationQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
       )
   }
@@ -209,8 +208,7 @@ object RedirectService extends Logging {
 
     qualifyingRelocationBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO qual relocation yes no page
-        ConditionalRedirect(relocationQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(relocationQuestion.isEmpty, QualifyingRelocationBenefitsController.show(taxYear, employmentId)),
         ConditionalRedirect(relocationQuestion.contains(false), NonQualifyingRelocationBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
         ConditionalRedirect(relocationQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
       )

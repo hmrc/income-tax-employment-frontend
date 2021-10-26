@@ -99,6 +99,9 @@ POST       /:taxYear/benefits/travel-subsistence-amount     controllers.benefits
 GET        /:taxYear/benefits/travel-subsistence            controllers.benefits.TravelAndSubsistenceBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/travel-subsistence            controllers.benefits.TravelAndSubsistenceBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/qualifying-relocation         controllers.benefits.QualifyingRelocationBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/qualifying-relocation         controllers.benefits.QualifyingRelocationBenefitsController.submit(taxYear: Int, employmentId: String)
+
 GET        /sign-out                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
 GET        /error/you-need-to-sign-up                       controllers.errors.IndividualAuthErrorController.show
@@ -127,3 +130,4 @@ GET        /error/you-need-agent-services-account           controllers.errors.Y
 
 GET        /keep-alive                                      controllers.SessionExpiredController.keepAlive
 GET        /timeout                                         controllers.SessionExpiredController.timeout
+
