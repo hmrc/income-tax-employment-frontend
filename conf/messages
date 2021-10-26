@@ -702,6 +702,14 @@ benefits.travelAndSubsistence.thisIs.agent = This is the cost of any travel and 
 benefits.travelAndSubsistence.error.individual = Select yes if you got travel and subsistence benefits
 benefits.travelAndSubsistence.error.agent = Select yes if your client got travel and subsistence benefits
 
+benefits.qualifyingRelocationBenefits.title.individual = Did you get any qualifying relocation benefits?
+benefits.qualifyingRelocationBenefits.title.agent = Did your client get any qualifying relocation benefits?
+benefits.qualifyingRelocationBenefits.error.individual = Select yes if you got qualifying relocation benefits
+benefits.qualifyingRelocationBenefits.error.agent = Select yes if your client got qualifying relocation benefits
+benefits.qualifyingRelocationBenefits.thisIncludes.individual = These are costs that your employer has paid to help you with relocation, including bridging loans and legal fees.
+benefits.qualifyingRelocationBenefits.thisIncludes.agent = These are costs that their employer has paid to help them with relocation, including bridging loans and legal fees.
+benefits.qualifyingRelocationBenefits.thisIncludes.example1 = This does not include the cost of using the NHS after coming into the UK.
+
 benefits.nonQualifyingRelocationBenefitAmount.title.individual = How much did you get in total for non-qualifying relocation benefits?
 benefits.nonQualifyingRelocationBenefitAmount.title.agent = How much did your client get in total for non-qualifying relocation benefits?
 benefits.nonQualifyingRelocationBenefitAmount.error.noEntry.individual = Enter your non-qualifying relocation benefit amount
