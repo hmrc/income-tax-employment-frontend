@@ -16,8 +16,8 @@
 
 package controllers.benefits
 
-import controllers.employment.routes.CheckYourBenefitsController
 import controllers.benefits.routes._
+import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.User
 import models.employment.{AccommodationRelocationModel, BenefitsViewModel}

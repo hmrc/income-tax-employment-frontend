@@ -20,9 +20,9 @@ import common.{SessionValues, UUID}
 import controllers.employment.EmploymentSummaryControllerISpec.FullModel._
 import controllers.employment.routes._
 import forms.YesNoForm
-import models.{IncomeTaxUserData, User}
 import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.{IncomeTaxUserData, User}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -307,7 +307,6 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   ".submit" when {
-    import Selectors._
 
     val employmentId = UUID.randomUUID
 

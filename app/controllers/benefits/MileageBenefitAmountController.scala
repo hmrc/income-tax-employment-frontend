@@ -17,11 +17,10 @@
 package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
 import controllers.benefits.routes.AccommodationRelocationBenefitsController
+import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
-
 import javax.inject.Inject
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form

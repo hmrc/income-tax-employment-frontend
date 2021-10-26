@@ -16,8 +16,7 @@
 
 package controllers.employment
 
-import audit.{AmendEmploymentDetailsUpdateAudit, AuditModel, AuditService,
-  CreateNewEmploymentDetailsAudit, PriorEmploymentAuditInfo, ViewEmploymentDetailsAudit}
+import audit._
 import common.SessionValues
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckEmploymentDetailsController

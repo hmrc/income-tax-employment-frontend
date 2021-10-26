@@ -18,7 +18,7 @@ package controllers.benefits
 
 import forms.YesNoForm
 import models.User
-import models.employment.{AccommodationRelocationModel, BenefitsViewModel, CarVanFuelModel}
+import models.employment.{AccommodationRelocationModel, BenefitsViewModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

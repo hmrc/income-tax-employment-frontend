@@ -18,10 +18,8 @@ package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.routes.{CarFuelBenefitsAmountController, CompanyVanBenefitsController}
-import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-
 import javax.inject.Inject
 import models.User
 import models.mongo.EmploymentCYAModel
