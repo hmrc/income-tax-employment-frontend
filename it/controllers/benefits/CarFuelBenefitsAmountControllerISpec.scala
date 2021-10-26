@@ -393,8 +393,8 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
     userScenarios.foreach { user =>
       import Selectors._
-      import user.specificExpectedResults._
       import user.commonExpectedResults._
+      import user.specificExpectedResults._
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 

@@ -19,6 +19,7 @@ package controllers.employment
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
+import javax.inject.Inject
 import models.{IncomeTaxUserData, User}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -28,7 +29,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.employment.RemoveEmploymentView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerComponents,

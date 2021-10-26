@@ -21,6 +21,7 @@ import controllers.benefits.routes.ReceiveOwnCarMileageBenefitController
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
+import javax.inject.Inject
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -31,7 +32,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.CompanyVanFuelBenefitsAmountView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CompanyVanFuelBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,

@@ -16,6 +16,8 @@
 
 package controllers.employment
 
+import java.time.LocalDate
+
 import forms.employment.EmploymentDateForm
 import models.User
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -25,8 +27,6 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-
-import java.time.LocalDate
 
 //scalastyle:off
 class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {

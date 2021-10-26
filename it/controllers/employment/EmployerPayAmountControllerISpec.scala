@@ -18,13 +18,11 @@ package controllers.employment
 
 import models.User
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
-import org.eclipse.jetty.http.HttpParser.RequestHandler
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 

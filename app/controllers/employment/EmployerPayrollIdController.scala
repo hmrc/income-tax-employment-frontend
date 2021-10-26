@@ -20,6 +20,7 @@ import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckEmploymentDetailsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.employment.EmployerPayrollIdForm
+import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
@@ -28,7 +29,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.EmployerPayrollIdView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmployerPayrollIdController @Inject()(authorisedAction: AuthorisedAction,

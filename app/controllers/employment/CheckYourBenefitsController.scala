@@ -18,8 +18,9 @@ package controllers.employment
 
 import audit.{AuditService, ViewEmploymentBenefitsAudit}
 import config.{AppConfig, ErrorHandler}
+import controllers.benefits.routes.ReceiveAnyBenefitsController
+import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
-
 import javax.inject.Inject
 import models.User
 import models.employment.{AllEmploymentData, Benefits, BenefitsViewModel}
@@ -30,10 +31,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.employment.CheckYourBenefitsView
-import views.html.employment.CheckYourBenefitsViewEOY
-import controllers.employment.routes.CheckYourBenefitsController
-import controllers.benefits.routes.ReceiveAnyBenefitsController
+import views.html.employment.{CheckYourBenefitsView, CheckYourBenefitsViewEOY}
 
 import scala.concurrent.{ExecutionContext, Future}
 

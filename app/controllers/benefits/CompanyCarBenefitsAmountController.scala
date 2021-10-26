@@ -17,10 +17,11 @@
 package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
+import controllers.benefits.routes.CompanyCarFuelBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
-import controllers.benefits.routes.{AccommodationRelocationBenefitsController, CompanyCarBenefitsController, CompanyCarFuelBenefitsController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
+import javax.inject.Inject
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -30,7 +31,6 @@ import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.CompanyCarBenefitsAmountView
-import javax.inject.Inject
 
 import scala.concurrent.{ExecutionContext, Future}
 

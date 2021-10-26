@@ -16,11 +16,11 @@
 
 package controllers.benefits
 
+import controllers.benefits.routes.CompanyCarFuelBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
-import controllers.benefits.routes.{CarVanFuelBenefitsController, CompanyCarFuelBenefitsController}
-import models.{IncomeTaxUserData, User}
 import models.employment.{BenefitsViewModel, CarVanFuelModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.{IncomeTaxUserData, User}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
