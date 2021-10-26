@@ -254,7 +254,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
       }
     }
 
-    "redirect to the mileage page when benefits has vanFuelQuestion set to false and not prior submission" when {
+    "redirect to the mileage page when benefits has vanFuelQuestion set to false when no prior benefits" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
@@ -270,7 +270,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
       }
     }
 
-    "redirect to the check employment benefits page when benefits has vanFuelQuestion set to false and prior submission" when {
+    "redirect to the check employment benefits page when benefits has vanFuelQuestion set to false and prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
@@ -286,7 +286,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
       }
     }
 
-    "redirect to the mileage page when benefits has vanQuestion set to false and not prior submission" when {
+    "redirect to the mileage page when benefits has vanQuestion set to false when no prior benefits" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
@@ -302,7 +302,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
       }
     }
 
-    "redirect to the check employment benefits page when benefits has vanQuestion set to false and prior submission" when {
+    "redirect to the check employment benefits page when benefits has vanQuestion set to false and prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
@@ -440,7 +440,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
 
     val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
 
-    "redirect to mileage benefits page when a valid form is submitted and a prior submission" when {
+    "redirect to mileage benefits page when a valid form is submitted and a prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
@@ -461,7 +461,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
       }
     }
 
-    "redirect to mileage benefit question page when a valid form is submitted and not a prior submission" when {
+    "redirect to mileage benefit question page when a valid form is submitted and no prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
@@ -526,7 +526,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
       }
     }
 
-    "redirect to the mileage page when benefits has vanFuelQuestion set to false and not prior submission" when {
+    "redirect to the mileage page when benefits has vanFuelQuestion set to false when no prior benefits" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
@@ -542,7 +542,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
       }
     }
 
-    "redirect to the check employment benefits page when benefits has vanFuelQuestion set to false and prior submission" when {
+    "redirect to the check employment benefits page when benefits has vanFuelQuestion set to false and prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
@@ -558,7 +558,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
       }
     }
 
-    "redirect to the mileage page when benefits has vanQuestion set to false and not prior submission" when {
+    "redirect to the mileage page when benefits has vanQuestion set to false when no prior benefits" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
@@ -574,7 +574,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
       }
     }
 
-    "redirect to the check employment benefits page when benefits has vanQuestion set to false and prior submission" when {
+    "redirect to the check employment benefits page when benefits has vanQuestion set to false and prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()

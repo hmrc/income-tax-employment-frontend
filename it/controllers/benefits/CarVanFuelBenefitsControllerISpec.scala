@@ -276,7 +276,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
     val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
 
-    "Update the CarVanFuelQuestion to no and wipe the car data when the user chooses no, then redirect to accommodation page when its a prior submission" which {
+    "Update the CarVanFuelQuestion to no and wipe the car data when the user chooses no, then redirect to accommodation page when prior benefits exist" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -344,7 +344,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
     }
 
-    "Update the CarVanFuelQuestion to yes when the user chooses yes, then redirect to the company car question page when its a prior submission" which {
+    "Update the CarVanFuelQuestion to yes when the user chooses yes, then redirect to the company car question page when prior benefits exist" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 

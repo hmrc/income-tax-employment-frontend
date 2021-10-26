@@ -192,7 +192,7 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
 
       val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
 
-      "redirect the user to the check employment benefits page when theres no benefits and prior submission" which {
+      "redirect the user to the check employment benefits page when theres no benefits in CYA but has prior benefits" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
@@ -210,7 +210,7 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
         }
       }
 
-      "redirect the user to the benefits received page when theres no benefits and not prior submission" which {
+      "redirect the user to the benefits received page when theres no benefits when no prior benefits" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)

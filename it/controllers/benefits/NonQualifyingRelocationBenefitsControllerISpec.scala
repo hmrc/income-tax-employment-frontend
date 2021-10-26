@@ -219,7 +219,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
         }
       }
 
-      "user has no accommodation relocation benefits and it's a prior submission" which {
+      "user has no accommodation relocation benefits and prior benefits exist" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
@@ -293,7 +293,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
         }
     }
 
-    "redirect to check employment benefits page when user selects Yes and it's a prior submission" which {
+    "redirect to check employment benefits page when user selects Yes and prior benefits exist" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
       lazy val result: WSResponse = {
@@ -345,7 +345,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
       }
     }
 
-    "redirect to check employment benefits page if valid form is submitted and not a prior submission" which {
+    "redirect to check employment benefits page if valid form is submitted and no prior benefits exist" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
       lazy val result: WSResponse = {

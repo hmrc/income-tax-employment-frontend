@@ -261,7 +261,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
     val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
 
-    "redirect to the car van fuel benefits page when value updated from no to yes, and prior submission " when {
+    "redirect to the car van fuel benefits page when value updated from no to yes, and prior benefits exist " when {
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(user.isAgent)
@@ -280,7 +280,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       }
     }
 
-    "redirect to the car van fuel benefits page when value updated from no to yes, and not prior submission " when {
+    "redirect to the car van fuel benefits page when value updated from no to yes" when {
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(user.isAgent)
@@ -318,7 +318,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       }
     }
 
-    "redirect to the Check your benefits page when radio button no is selected, and prior submission is false" when {
+    "redirect to the Check your benefits page when radio button no is selected, and no prior benefits exist" when {
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(user.isAgent)
@@ -337,7 +337,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       }
     }
 
-    "redirect to the Check your benefits page when radio button no is selected, and prior submission is true" when {
+    "redirect to the Check your benefits page when radio button no is selected, and prior benefits exist" when {
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(user.isAgent)

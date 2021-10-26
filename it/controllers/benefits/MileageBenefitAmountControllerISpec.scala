@@ -477,7 +477,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
     }
 
-    "update mileage amount to 200 when the user submits and it is a prior submission, redirects to accommodation page" which {
+    "update mileage amount to 200 when the user submits and prior benefits exist, redirects to accommodation page" which {
 
       lazy val form: Map[String, String] = Map(AmountForm.amount -> "200.00")
 
@@ -501,7 +501,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
     }
 
-    "update mileage amount to 200 when the user submits and it isn't a prior submission, redirects to the accommodation relocation page" which {
+    "update mileage amount to 200 when the user submits and no prior benefits exist, redirects to the accommodation relocation page" which {
 
       lazy val form: Map[String, String] = Map(AmountForm.amount -> "200.00")
 

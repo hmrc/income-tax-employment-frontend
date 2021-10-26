@@ -73,7 +73,7 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
   val assetsDetailsPopulated: Boolean =
     assets.isDefined || assetTransfer.isDefined
 
-  val hasSomethingPopulated: Boolean = {
+  val hasBenefitsPopulated: Boolean = {
     vehicleDetailsPopulated || accommodationDetailsPopulated || travelDetailsPopulated ||
       utilitiesDetailsPopulated || medicalDetailsPopulated || incomeTaxDetailsPopulated ||
       reimbursedDetailsPopulated || assetsDetailsPopulated

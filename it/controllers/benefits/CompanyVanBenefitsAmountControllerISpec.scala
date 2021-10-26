@@ -254,7 +254,7 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
       }
     }
 
-    "redirect to the mileage page when benefits has vanQuestion set to false and not prior submission" when {
+    "redirect to the mileage page when benefits has vanQuestion set to false when no prior benefits" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
@@ -359,7 +359,7 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
 
     val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
 
-    "redirect to van fuel page when a valid form is submitted, and prior submission" when {
+    "redirect to van fuel page when a valid form is submitted, and prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
@@ -381,7 +381,7 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
       }
     }
 
-    "redirect to company van fuel page when a valid form is submitted, and not prior submission" when {
+    "redirect to company van fuel page when a valid form is submitted, when no prior benefits" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()

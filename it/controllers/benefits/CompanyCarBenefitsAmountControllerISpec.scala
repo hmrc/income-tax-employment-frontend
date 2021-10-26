@@ -223,7 +223,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
         }
 
-        "render the company car benefits amount page with the amount field pre-filled with prior submitted data" which {
+        "render the company car benefits amount page with the amount field pre-filled with prior CYA data" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(cya(isPriorSubmission = false, benefitsWithCarAmount), User(mtditid, None, nino, sessionId, "agent"))
@@ -298,7 +298,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
       }
     }
 
-    "redirect to the company van question page when benefits has carQuestion set to false and not prior submission" when {
+    "redirect to the company van question page when benefits has carQuestion set to false and no prior benefits" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
@@ -314,7 +314,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
       }
     }
 
-    "redirect to the check your benefits page when benefits has carQuestion set to false and prior submission" when {
+    "redirect to the check your benefits page when benefits has carQuestion set to false and prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
@@ -481,7 +481,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
     }
 
-    "update car model with submitted amount when it is a prior submission and go to the car fuel page" which {
+    "update car model with submitted amount when prior benefits exist and go to the car fuel page" which {
 
       lazy val form: Map[String, String] = Map("amount" -> carAmount.toString())
 
@@ -502,7 +502,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
       }
     }
 
-    "update car model with submitted amount when it isn't a prior submission and go to the check your benefits section" which {
+    "update car model with submitted amount when no prior benefits exist and go to the check your benefits section" which {
 
       lazy val form: Map[String, String] = Map("amount" -> carAmount.toString())
 

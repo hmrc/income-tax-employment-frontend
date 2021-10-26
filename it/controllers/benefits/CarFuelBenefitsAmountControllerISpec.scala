@@ -241,7 +241,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
           welshToggleCheck(user.isWelsh)
         }
 
-        "should render How much was your company car fuel benefit? page with prefilling when there is cya data and no prior data" which {
+        "should render How much was your company car fuel benefit? page with prefilling when there is cya data and no prior benefits" which {
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
@@ -308,7 +308,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
       }
     }
 
-    "redirect to the company van question page when benefits has carFuelQuestion set to false and not prior submission" when {
+    "redirect to the company van question page when benefits has carFuelQuestion set to false and no prior benefits" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
@@ -324,7 +324,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
       }
     }
 
-    "redirect to the check your benefits page when benefits has carFuelQuestion set to false and prior submission" when {
+    "redirect to the check your benefits page when benefits has carFuelQuestion set to false and prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
@@ -508,7 +508,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
     val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
 
-    "redirect to company van page and update the car fuel amount when a valid form is submitted and prior submission" when {
+    "redirect to company van page and update the car fuel amount when a valid form is submitted and prior benefits exist" when {
 
       val newAmount = 100
 
@@ -533,7 +533,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
       }
     }
 
-    "redirect to company van question page and update the car fuel amount when a valid form is submitted and not prior submission" when {
+    "redirect to company van question page and update the car fuel amount when a valid form is submitted" when {
 
       val newAmount = 100
 
@@ -558,7 +558,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
       }
     }
 
-    "redirect to company van question page when benefits has carFuelQuestion set to false and not prior submission" when {
+    "redirect to company van question page when benefits has carFuelQuestion set to false" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
@@ -591,7 +591,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
       }
     }
 
-    "redirect to check employment benefits page when benefits has carFuelQuestion set to false and prior submission" when {
+    "redirect to check employment benefits page when benefits has carFuelQuestion set to false and prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()

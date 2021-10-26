@@ -342,7 +342,7 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
       }
     }
 
-    "redirect to check employments benefits page when a valid form is submitted and a prior submission" when {
+    "redirect to check employments benefits page when a valid form is submitted and prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(false)
         dropEmploymentDB()
@@ -362,7 +362,7 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
       }
     }
 
-    "redirect to check employments benefits page when a valid form is submitted and without prior submission" when {
+    "redirect to check employments benefits page when a valid form is submitted and no prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(false)
         dropEmploymentDB()

@@ -344,7 +344,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
     val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
 
-    "Update the vanFueQuestion to no and vanfuel to none when no radio button has been chosen, redirect to mileage page if prior submission" which {
+    "Update the vanFueQuestion to no and vanfuel to none when no radio button has been chosen, redirect to mileage page when prior benefits exist" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -369,7 +369,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
     }
 
-    "Update the vanFueQuestion to no and vanfuel to none when no radio button has been chosen, redirect to mileage benefit if not prior submission" which {
+    "Update the vanFueQuestion to no and vanfuel to none when no radio button has been chosen, redirect to mileage benefit when no prior benefits" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -394,7 +394,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
     }
 
-    "Update the vanFuelQuestion to yes when the user chooses yes, redirect to the van fuel benefits amount page if not prior submission" which {
+    "Update the vanFuelQuestion to yes when the user chooses yes, redirect to the van fuel benefits amount page when no prior benefits" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
@@ -419,7 +419,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
     }
 
-    "Update the vanFuelQuestion to yes when the user chooses yes, redirect to the van fuel benefits amount page if prior submission" which {
+    "Update the vanFuelQuestion to yes when the user chooses yes, redirect to the van fuel benefits amount page when prior benefits exist" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
