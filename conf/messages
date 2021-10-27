@@ -729,3 +729,9 @@ benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.individual = Your t
 benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.agent = Your client’s travel and subsistence benefit must be less than £100,000,000,000
 benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.individual = Enter the amount you got for travel and subsistence in the correct format
 benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.agent = Enter the amount your client got for travel and subsistence in the correct format
+
+benefits.utilitiesOrGeneralServices.title.individual = Did you get any utility or general service benefits from this company?
+benefits.utilitiesOrGeneralServices.title.agent = Did your client get any utility or general service benefits from this company?
+benefits.utilitiesOrGeneralServices.thisIncludes = This includes benefits such as telephone, employer provided services and professional fees or subscriptions.
+benefits.utilitiesOrGeneralServices.error.individual = Select yes if you got utility or general service benefits
+benefits.utilitiesOrGeneralServices.error.agent = Select yes if your client got utility or general service benefits

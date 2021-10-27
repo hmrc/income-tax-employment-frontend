@@ -162,7 +162,7 @@
 
     <h2 class="govuk-label--m">@messages("checkYourBenefits.utilitiesHeader")</h2>
     @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.utilitiesSubheading", benefits.utilitiesDetailsPopulated))
+        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.utilitiesSubheading", benefits.utilitiesAndServicesModel.flatMap(_.utilitiesAndServicesQuestion).getOrElse(false), controllers.benefits.routes.UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
         if(benefits.utilitiesDetailsPopulated){
             Seq(

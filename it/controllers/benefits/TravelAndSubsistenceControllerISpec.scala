@@ -29,8 +29,8 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class TravelAndSubsistenceControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear-1
-  val employmentId: String = "001"
+  private val taxYearEOY: Int = taxYear - 1
+  private val employmentId: String = "001"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -39,7 +39,6 @@ class TravelAndSubsistenceControllerISpec extends IntegrationTest with ViewHelpe
 
   def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
-
 
   def benefits(travelEntertainmentModel: TravelEntertainmentModel): BenefitsViewModel =
     BenefitsViewModel(travelEntertainmentModel = Some(travelEntertainmentModel), isUsingCustomerData = true, isBenefitsReceived = true)
@@ -50,7 +49,7 @@ class TravelAndSubsistenceControllerISpec extends IntegrationTest with ViewHelpe
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
-    val thisIsSelector: String = "#main-content > div > div > form > div > fieldset > legend > div"
+    val thisIsSelector: String = "#main-content > div > div > form > div > fieldset > legend > p.govuk-body"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
@@ -323,9 +322,7 @@ class TravelAndSubsistenceControllerISpec extends IntegrationTest with ViewHelpe
 
   }
 
-
   ".submit" should {
-
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
