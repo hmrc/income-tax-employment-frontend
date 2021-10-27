@@ -730,6 +730,15 @@ benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.agent = Your client
 benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.individual = Enter the amount you got for travel and subsistence in the correct format
 benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.agent = Enter the amount your client got for travel and subsistence in the correct format
 
+benefits.incidentalCostsBenefitsAmount.title.individual = How much did you get in total for incidental overnight costs?
+benefits.incidentalCostsBenefitsAmount.title.agent = How much did your client get in total for incidental overnight costs?
+benefits.incidentalCostsBenefitsAmount.error.noEntry.individual = Enter the amount you got for incidental overnight costs
+benefits.incidentalCostsBenefitsAmount.error.noEntry.agent = Enter the amount your client got for incidental overnight costs
+benefits.incidentalCostsBenefitsAmount.error.incorrectFormat.individual = Enter the amount you got for incidental overnight costs in the correct format
+benefits.incidentalCostsBenefitsAmount.error.incorrectFormat.agent = Enter the amount your client got for incidental overnight costs in the correct format
+benefits.incidentalCostsBenefitsAmount.error.overMaximum.individual = Your incidental overnight costs must be less than £100,000,000,000
+benefits.incidentalCostsBenefitsAmount.error.overMaximum.agent = Your client’s incidental overnight costs must be less than £100,000,000,000
+
 benefits.utilitiesOrGeneralServices.title.individual = Did you get any utility or general service benefits from this company?
 benefits.utilitiesOrGeneralServices.title.agent = Did your client get any utility or general service benefits from this company?
 benefits.utilitiesOrGeneralServices.thisIncludes = This includes benefits such as telephone, employer provided services and professional fees or subscriptions.

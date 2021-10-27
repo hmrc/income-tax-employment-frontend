@@ -16,7 +16,7 @@
 
 package models.employment
 
-import controllers.benefits.routes.{TravelAndSubsistenceBenefitsController, TravelOrEntertainmentBenefitsController, TravelOrSubsistenceBenefitsAmountController}
+import controllers.benefits.routes.{IncidentalCostsBenefitsAmountController, TravelAndSubsistenceBenefitsController, TravelOrEntertainmentBenefitsController, TravelOrSubsistenceBenefitsAmountController}
 import controllers.employment.routes.CheckYourBenefitsController
 import utils.UnitTest
 
@@ -58,10 +58,10 @@ class TravelEntertainmentModelSpec extends UnitTest {
       underTest.personalIncidentalSectionFinished(taxYear, employmentId) shouldBe None
     }
 
-    "return call to CheckYourBenefitsController when personalIncidentalExpensesQuestion is true" in {
+    "return call to IncidentalCostsBenefitsAmountController when personalIncidentalExpensesQuestion is true" in {
       val underTest = TravelEntertainmentModel(personalIncidentalExpensesQuestion = Some(true))
 
-      underTest.personalIncidentalSectionFinished(taxYear, employmentId) shouldBe Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      underTest.personalIncidentalSectionFinished(taxYear, employmentId) shouldBe Some(IncidentalCostsBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return None when personalIncidentalExpensesQuestion is false" in {
