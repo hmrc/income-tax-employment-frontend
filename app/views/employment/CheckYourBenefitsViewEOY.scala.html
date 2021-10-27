@@ -110,7 +110,7 @@
                     accommodation => showRows("checkYourBenefits.accommodationAmount", accommodation, controllers.benefits.routes.LivingAccommodationBenefitAmountController.show(taxYear, employmentId))
                 },
                 benefits.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpensesQuestion).map{
-                    qualifyingRelocationExpensesQuestion => showQuestionRow("checkYourBenefits.qualifyingRelocationCosts", qualifyingRelocationExpensesQuestion)
+                    qualifyingRelocationExpensesQuestion => showQuestionRow("checkYourBenefits.qualifyingRelocationCosts", qualifyingRelocationExpensesQuestion, controllers.benefits.routes.QualifyingRelocationBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses).map{
                     qualifyingRelocationExpenses => showRows("checkYourBenefits.qualifyingRelocationCostsAmount", qualifyingRelocationExpenses, controllers.benefits.routes.QualifyingRelocationBenefitsAmountController.show(taxYear, employmentId))
@@ -144,7 +144,7 @@
                     personalIncidentalExpensesQuestion => showQuestionRow("checkYourBenefits.personalCosts", personalIncidentalExpensesQuestion)
                 },
                 benefits.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses).map{
-                    personalIncidentalExpenses => showRows("checkYourBenefits.personalCostsAmount", personalIncidentalExpenses)
+                    personalIncidentalExpenses => showRows("checkYourBenefits.personalCostsAmount", personalIncidentalExpenses, controllers.benefits.routes.IncidentalCostsBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.travelEntertainmentModel.flatMap(_.entertainingQuestion).map{
                     entertainingQuestion => showQuestionRow("checkYourBenefits.entertainment", entertainingQuestion)
@@ -160,7 +160,7 @@
 
     <h2 class="govuk-label--m">@messages("checkYourBenefits.utilitiesHeader")</h2>
     @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.utilitiesSubheading", benefits.utilitiesDetailsPopulated))
+        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.utilitiesSubheading", benefits.utilitiesAndServicesModel.flatMap(_.utilitiesAndServicesQuestion).getOrElse(false), controllers.benefits.routes.UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
         if(benefits.utilitiesDetailsPopulated){
             Seq(

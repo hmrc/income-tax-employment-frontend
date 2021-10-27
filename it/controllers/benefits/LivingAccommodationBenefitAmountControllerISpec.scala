@@ -16,7 +16,7 @@
 
 package controllers.benefits
 
-import controllers.benefits.routes.{AccommodationRelocationBenefitsController, LivingAccommodationBenefitsController}
+import controllers.benefits.routes.{AccommodationRelocationBenefitsController, LivingAccommodationBenefitsController, QualifyingRelocationBenefitsController}
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.AmountForm
 import models.User
@@ -339,7 +339,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
       }
     }
 
-    "redirect to the check your benefits page when accommodationQuestion is Some(false) and no prior benefits exist" which {
+    "redirect to the qualifying relocation page when accommodationQuestion is Some(false) and no prior benefits exist" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
@@ -352,10 +352,9 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(QualifyingRelocationBenefitsController.show(taxYearEOY, employmentId).url)
       }
     }
-
   }
 
   ".submit" when {
@@ -586,7 +585,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
       }
     }
 
-    "redirect to the check your benefits page when accommodationQuestion is Some(false) and no prior benefits exist" which {
+    "redirect to the qualifying relocation page when accommodationQuestion is Some(false) and no prior benefits exist" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
@@ -599,7 +598,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(QualifyingRelocationBenefitsController.show(taxYearEOY, employmentId).url)
       }
     }
   }

@@ -23,6 +23,7 @@ import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import helpers.{PlaySessionCookieBaker, WireMockHelper, WiremockStubHelpers}
 import models.IncomeTaxUserData
+import models.benefits.UtilitiesAndServicesModel
 import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.scalatest.BeforeAndAfterAll
@@ -393,4 +394,20 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     TravelEntertainmentModel(
       travelEntertainmentQuestion = Some(false)
     )
+
+  def fullUtilitiesAndServicesModel: UtilitiesAndServicesModel =
+    UtilitiesAndServicesModel(
+      utilitiesAndServicesQuestion = Some(true),
+      telephoneQuestion = Some(true),
+      telephone = Some(100.00),
+      employerProvidedServicesQuestion = Some(true),
+      employerProvidedServices = Some(200.00),
+      employerProvidedProfessionalSubscriptionsQuestion = Some(true),
+      employerProvidedProfessionalSubscriptions = Some(300.00),
+      serviceQuestion = Some(true),
+      service = Some(400.00)
+    )
+
+  def emptyUtilitiesAndServicesModel: UtilitiesAndServicesModel =
+    UtilitiesAndServicesModel(utilitiesAndServicesQuestion = Some(false))
 }

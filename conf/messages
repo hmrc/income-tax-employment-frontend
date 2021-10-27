@@ -702,6 +702,14 @@ benefits.travelAndSubsistence.thisIs.agent = This is the cost of any travel and 
 benefits.travelAndSubsistence.error.individual = Select yes if you got travel and subsistence benefits
 benefits.travelAndSubsistence.error.agent = Select yes if your client got travel and subsistence benefits
 
+benefits.qualifyingRelocationBenefits.title.individual = Did you get any qualifying relocation benefits?
+benefits.qualifyingRelocationBenefits.title.agent = Did your client get any qualifying relocation benefits?
+benefits.qualifyingRelocationBenefits.error.individual = Select yes if you got qualifying relocation benefits
+benefits.qualifyingRelocationBenefits.error.agent = Select yes if your client got qualifying relocation benefits
+benefits.qualifyingRelocationBenefits.thisIncludes.individual = These are costs that your employer has paid to help you with relocation, including bridging loans and legal fees.
+benefits.qualifyingRelocationBenefits.thisIncludes.agent = These are costs that their employer has paid to help them with relocation, including bridging loans and legal fees.
+benefits.qualifyingRelocationBenefits.thisIncludes.example1 = This does not include the cost of using the NHS after coming into the UK.
+
 benefits.nonQualifyingRelocationBenefitAmount.title.individual = How much did you get in total for non-qualifying relocation benefits?
 benefits.nonQualifyingRelocationBenefitAmount.title.agent = How much did your client get in total for non-qualifying relocation benefits?
 benefits.nonQualifyingRelocationBenefitAmount.error.noEntry.individual = Enter your non-qualifying relocation benefit amount
@@ -721,3 +729,18 @@ benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.individual = Your t
 benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.agent = Your client’s travel and subsistence benefit must be less than £100,000,000,000
 benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.individual = Enter the amount you got for travel and subsistence in the correct format
 benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.agent = Enter the amount your client got for travel and subsistence in the correct format
+
+benefits.incidentalCostsBenefitsAmount.title.individual = How much did you get in total for incidental overnight costs?
+benefits.incidentalCostsBenefitsAmount.title.agent = How much did your client get in total for incidental overnight costs?
+benefits.incidentalCostsBenefitsAmount.error.noEntry.individual = Enter the amount you got for incidental overnight costs
+benefits.incidentalCostsBenefitsAmount.error.noEntry.agent = Enter the amount your client got for incidental overnight costs
+benefits.incidentalCostsBenefitsAmount.error.incorrectFormat.individual = Enter the amount you got for incidental overnight costs in the correct format
+benefits.incidentalCostsBenefitsAmount.error.incorrectFormat.agent = Enter the amount your client got for incidental overnight costs in the correct format
+benefits.incidentalCostsBenefitsAmount.error.overMaximum.individual = Your incidental overnight costs must be less than £100,000,000,000
+benefits.incidentalCostsBenefitsAmount.error.overMaximum.agent = Your client’s incidental overnight costs must be less than £100,000,000,000
+
+benefits.utilitiesOrGeneralServices.title.individual = Did you get any utility or general service benefits from this company?
+benefits.utilitiesOrGeneralServices.title.agent = Did your client get any utility or general service benefits from this company?
+benefits.utilitiesOrGeneralServices.thisIncludes = This includes benefits such as telephone, employer provided services and professional fees or subscriptions.
+benefits.utilitiesOrGeneralServices.error.individual = Select yes if you got utility or general service benefits
+benefits.utilitiesOrGeneralServices.error.agent = Select yes if your client got utility or general service benefits

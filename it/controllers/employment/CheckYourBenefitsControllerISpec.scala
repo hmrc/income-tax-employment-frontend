@@ -670,12 +670,15 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val accommodationRelocationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/accommodation-relocation?employmentId=001"
     val livingAccommodationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/living-accommodation?employmentId=001"
     val livingAccommodationAmountBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/living-accommodation-amount?employmentId=001"
+    val qualifyingRelocationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/qualifying-relocation?employmentId=001"
     val qualifyingRelocationBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/qualifying-relocation-amount?employmentId=001"
     val nonQualifyingRelocationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/non-qualifying-relocation?employmentId=001"
     val nonQualifyingRelocationAmountBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/non-qualifying-relocation-amount?employmentId=001"
     val travelEntertainmentBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/travel-entertainment?employmentId=001"
     val travelOrSubsistenceBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/travel-subsistence?employmentId=001"
     val travelOrSubsistenceBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/travel-subsistence-amount?employmentId=001"
+    val incidentalCostsBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/incidental-overnight-expenses-amount?employmentId=001"
+    val utilitiesOrGeneralServicesBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/utility-general-service?employmentId=001"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -815,7 +818,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.yes, 7, 1, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationSubheadingHiddenText}", accommodationRelocationBenefitsHref)
           changeAmountRowCheck(commonResults.accommodation, commonResults.yes, 7, 2, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationHiddenText}", livingAccommodationBenefitsHref)
           changeAmountRowCheck(commonResults.accommodationAmount, "£6", 7, 3, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationAmountHiddenText}", livingAccommodationAmountBenefitsHref)
-          changeAmountRowCheck(commonResults.qualifyingRelocationCosts, commonResults.yes, 7, 4, s"${user.commonExpectedResults.changeText} ${specificResults.qualifyingRelocationCostsHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.qualifyingRelocationCosts, commonResults.yes, 7, 4, s"${user.commonExpectedResults.changeText} ${specificResults.qualifyingRelocationCostsHiddenText}", qualifyingRelocationBenefitsHref)
           changeAmountRowCheck(commonResults.qualifyingRelocationCostsAmount, "£7", 7, 5, s"${user.commonExpectedResults.changeText} ${specificResults.qualifyingRelocationCostsAmountHiddenText}", qualifyingRelocationBenefitsAmountHref)
           changeAmountRowCheck(commonResults.nonQualifyingRelocationCosts, commonResults.yes, 7, 6, s"${user.commonExpectedResults.changeText} ${specificResults.nonQualifyingRelocationCostsHiddenText}", nonQualifyingRelocationBenefitsHref)
           changeAmountRowCheck(commonResults.nonQualifyingRelocationCostsAmount, "£8", 7, 7, s"${user.commonExpectedResults.changeText} ${specificResults.nonQualifyingRelocationCostsAmountHiddenText}", nonQualifyingRelocationAmountBenefitsHref)
@@ -825,12 +828,12 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.travelAndSubsistence, commonResults.yes, 9, 2, s"${user.commonExpectedResults.changeText} ${specificResults.travelAndSubsistenceHiddenText}", travelOrSubsistenceBenefitsHref)
           changeAmountRowCheck(commonResults.travelAndSubsistenceAmount, "£9", 9, 3, s"${user.commonExpectedResults.changeText} ${specificResults.travelAndSubsistenceAmountHiddenText}", travelOrSubsistenceBenefitsAmountHref)
           changeAmountRowCheck(commonResults.personalCosts, commonResults.yes, 9, 4, s"${user.commonExpectedResults.changeText} ${specificResults.personalCostsHiddenText}", dummyHref)
-          changeAmountRowCheck(commonResults.personalCostsAmount, "£10", 9, 5, s"${user.commonExpectedResults.changeText} ${specificResults.personalCostsAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.personalCostsAmount, "£10", 9, 5, s"${user.commonExpectedResults.changeText} ${specificResults.personalCostsAmountHiddenText}", incidentalCostsBenefitsAmountHref)
           changeAmountRowCheck(commonResults.entertainment, commonResults.yes, 9, 6, s"${user.commonExpectedResults.changeText} ${specificResults.entertainmentHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.entertainmentAmount, "£11", 9, 7, s"${user.commonExpectedResults.changeText} ${specificResults.entertainmentAmountHiddenText}", dummyHref)
 
           textOnPageCheck(commonResults.utilitiesHeader, fieldHeaderSelector(10))
-          changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.yes, 11, 1, s"${user.commonExpectedResults.changeText} ${specificResults.utilitiesSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.yes, 11, 1, s"${user.commonExpectedResults.changeText} ${specificResults.utilitiesSubheadingHiddenText}", utilitiesOrGeneralServicesBenefitsHref)
           changeAmountRowCheck(commonResults.telephone, commonResults.yes, 11, 2, s"${user.commonExpectedResults.changeText} ${specificResults.telephoneHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.telephoneAmount, "£12", 11, 3, s"${user.commonExpectedResults.changeText} ${specificResults.telephoneAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.servicesProvided, commonResults.yes, 11, 4, s"${user.commonExpectedResults.changeText} ${specificResults.servicesProvidedHiddenText}", dummyHref)
@@ -940,7 +943,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.travelSubheading, commonResults.no, 9, 1, s"${user.commonExpectedResults.changeText} ${specificResults.travelSubheadingHiddenText}", travelEntertainmentBenefitsAmountHref)
 
           textOnPageCheck(user.commonExpectedResults.utilitiesHeader, fieldHeaderSelector(10))
-          changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.no, 11, 1, s"${user.commonExpectedResults.changeText} ${specificResults.utilitiesSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.no, 11, 1, s"${user.commonExpectedResults.changeText} ${specificResults.utilitiesSubheadingHiddenText}", utilitiesOrGeneralServicesBenefitsHref)
 
           textOnPageCheck(user.commonExpectedResults.medicalHeader, fieldHeaderSelector(12))
           changeAmountRowCheck(commonResults.medicalSubheading, commonResults.no, 13, 1, s"${user.commonExpectedResults.changeText} ${specificResults.medicalSubheadingHiddenText}", dummyHref)
@@ -1051,14 +1054,14 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.accommodationSubheading, commonResults.yes, 6, 1, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationSubheadingHiddenText}", accommodationRelocationBenefitsHref)
           changeAmountRowCheck(commonResults.accommodation, commonResults.yes, 6, 2, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationHiddenText}", livingAccommodationBenefitsHref)
           changeAmountRowCheck(commonResults.accommodationAmount, "£3", 6, 3, s"${user.commonExpectedResults.changeText} ${specificResults.accommodationAmountHiddenText}", livingAccommodationAmountBenefitsHref)
-          changeAmountRowCheck(commonResults.qualifyingRelocationCosts, commonResults.no, 6, 4, s"${user.commonExpectedResults.changeText} ${specificResults.qualifyingRelocationCostsHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.qualifyingRelocationCosts, commonResults.no, 6, 4, s"${user.commonExpectedResults.changeText} ${specificResults.qualifyingRelocationCostsHiddenText}", qualifyingRelocationBenefitsHref)
           changeAmountRowCheck(commonResults.nonQualifyingRelocationCosts, commonResults.no, 6, 5, s"${user.commonExpectedResults.changeText} ${specificResults.nonQualifyingRelocationCostsHiddenText}", nonQualifyingRelocationBenefitsHref)
 
           textOnPageCheck(user.commonExpectedResults.travelHeader, fieldHeaderSelector(7))
           changeAmountRowCheck(commonResults.travelSubheading, commonResults.no, 8, 1, s"${user.commonExpectedResults.changeText} ${specificResults.travelSubheadingHiddenText}", travelEntertainmentBenefitsAmountHref)
 
           textOnPageCheck(user.commonExpectedResults.utilitiesHeader, fieldHeaderSelector(9))
-          changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.no, 10, 1, s"${user.commonExpectedResults.changeText} ${specificResults.utilitiesSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.no, 10, 1, s"${user.commonExpectedResults.changeText} ${specificResults.utilitiesSubheadingHiddenText}", utilitiesOrGeneralServicesBenefitsHref)
 
           textOnPageCheck(user.commonExpectedResults.medicalHeader, fieldHeaderSelector(11))
           changeAmountRowCheck(commonResults.medicalSubheading, commonResults.no, 12, 1, s"${user.commonExpectedResults.changeText} ${specificResults.medicalSubheadingHiddenText}", dummyHref)
