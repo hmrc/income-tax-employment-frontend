@@ -35,7 +35,7 @@
 @hasFormErrors = @{form.hasErrors}
 
 @contentHtml = {
-    <div>@{messages("benefits.travelOrEntertainment.thisIncludes")}</div>
+    <p class="govuk-body">@{messages("benefits.travelOrEntertainment.thisIncludes")}</p>
 }
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
