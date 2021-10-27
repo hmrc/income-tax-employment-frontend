@@ -20,6 +20,7 @@ import models.benefits.UtilitiesAndServicesModel
 import models.employment.{AccommodationRelocationModel, BenefitsViewModel, CarVanFuelModel, TravelEntertainmentModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.mvc.Call
 import play.api.mvc.Results.Ok
 import services.RedirectService.{EmploymentBenefitsType, EmploymentDetailsType}
 import utils.UnitTest
@@ -103,7 +104,24 @@ class RedirectServiceSpec extends UnitTest {
       ))
   }
 
-  val employmentUserData: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, "001", isPriorSubmission = false, employmentCYA)
+  val employmentUserData: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, "001", isPriorSubmission = false, hasPriorBenefits = false, employmentCYA)
+
+  "benefitsSubmitRedirect" should {
+    "redirect to the CYA page if the journey is finished" in {
+      val result = Future.successful(RedirectService.benefitsSubmitRedirect(employmentCYA,Call("GET","/next"))(taxYear,"001"))
+
+      status(result) shouldBe SEE_OTHER
+      redirectUrl(result) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+    }
+    "redirect to the next page if the journey is not finished" in {
+      val result = Future.successful(RedirectService.benefitsSubmitRedirect(employmentCYA.copy(
+        employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = None))
+      ),Call("GET","/next"))(taxYear,"001"))
+
+      status(result) shouldBe SEE_OTHER
+      redirectUrl(result) shouldBe "/next"
+    }
+  }
 
   "redirectBasedOnCurrentAnswers" should {
     "redirect to benefits yes no page" when {
@@ -504,7 +522,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and attempted to view the qualifying relocation amount page but the qualifyingRelocationExpensesQuestion is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(qualifyingRelocationExpensesQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -552,7 +570,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and attempted to view the accommodation amount page but the accommodation question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -584,7 +602,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and attempted to view the accommodation yes no page but the accommodation relocation question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationRelocationQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -650,8 +668,8 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and attempted to view the travel yes no page but the travel entertainment question is empty" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelEntertainmentQuestion = Some(false)))
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelEntertainmentQuestion = None))
           ))))), EmploymentBenefitsType)(
           cya => {
             RedirectService.commonTravelEntertainmentBenefitsRedirects(cya, taxYear, "001")
@@ -661,12 +679,12 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/travel-entertainment?employmentId=001"
       }
       "it's a new submission and attempted to view the travel amount page but the travel yes no question is empty" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = None))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -682,7 +700,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the travel amount page but the travel yes no question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -698,7 +716,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and attempted to view the travel amount page but the travel yes no question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -714,7 +732,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the incidental costs yes no page but the travel yes no question is empty" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = None))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -730,7 +748,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the incidental costs yes no page but the travel amount question is empty" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistence = None))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -746,7 +764,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the incidental costs amount page but the incidental costs question is empty" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(personalIncidentalExpensesQuestion = None))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -762,7 +780,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the incidental costs amount page but the incidental costs question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(personalIncidentalExpensesQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -778,7 +796,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and attempted to view the incidental costs amount page but the incidental costs question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(personalIncidentalExpensesQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -794,7 +812,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the entertainment yes no page but the incidental costs question is empty" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(personalIncidentalExpensesQuestion = None))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -810,7 +828,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the entertainment yes no page but the travel yes no question is empty" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = None))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -826,7 +844,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the entertainment amount page but the entertainment yes no question is empty" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(entertainingQuestion = None))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -842,7 +860,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the entertainment amount page but the entertainment yes no question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(entertainingQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -858,7 +876,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and attempted to view the entertainment amount page but the entertainment yes no question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(entertainingQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -874,7 +892,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the utilities page but the entertainment question is empty" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(entertainingQuestion = None))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -890,7 +908,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the utilities page but the car question is empty" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carQuestion = None))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -906,7 +924,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the utilities page but the accommodation question is empty" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = None))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1006,7 +1024,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and attempted to view the telephone yes no page but the utilities and services question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(utilitiesAndServicesQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1022,7 +1040,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and attempted to view the telephone amount page but the telephone question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(telephoneQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1038,7 +1056,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the telephone amount page but the telephone question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(telephoneQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1054,7 +1072,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the telephone amount page but the telephone question is empty" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(telephoneQuestion = None))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1070,7 +1088,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the employer provided services yes no page but the telephone amount is empty" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(telephone = None))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1086,7 +1104,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the employer provided services amount page but the employer provided services question is empty" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(employerProvidedServicesQuestion = None))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1102,7 +1120,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the employer provided services amount page but the employer provided services question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(employerProvidedServicesQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1118,7 +1136,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and attempted to view the employer provided services amount page but the employer provided services question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(employerProvidedServicesQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1134,7 +1152,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the employer provided subscriptions page but the employer provided services question is empty" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(
             employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
               utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
                 _.utilitiesAndServicesModel).map(_.copy(employerProvidedServicesQuestion = None))
@@ -1153,7 +1171,7 @@ class RedirectServiceSpec extends UnitTest {
         " but the employer provided subscriptions question is empty" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(
             employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
               utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
                 _.utilitiesAndServicesModel).map(_.copy(employerProvidedProfessionalSubscriptionsQuestion = None))
@@ -1172,7 +1190,7 @@ class RedirectServiceSpec extends UnitTest {
         " but the employer provided subscriptions question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(
             employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
               utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
                 _.utilitiesAndServicesModel).map(_.copy(employerProvidedProfessionalSubscriptionsQuestion = Some(false)))
@@ -1191,7 +1209,7 @@ class RedirectServiceSpec extends UnitTest {
         " but the employer provided subscriptions question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(
             employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
               utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
                 _.utilitiesAndServicesModel).map(_.copy(employerProvidedProfessionalSubscriptionsQuestion = Some(false)))
@@ -1209,7 +1227,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the services page but the employer provided subscriptions amount is empty" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(
             employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
               utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
                 _.utilitiesAndServicesModel).map(_.copy(employerProvidedProfessionalSubscriptions = None))
@@ -1227,7 +1245,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the services amount page but the services question is empty" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(
             employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
               utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
                 _.utilitiesAndServicesModel).map(_.copy(serviceQuestion = None))
@@ -1245,7 +1263,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the services amount page but the services question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = false, employment = employmentCYA.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(
             employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
               utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
                 _.utilitiesAndServicesModel).map(_.copy(serviceQuestion = Some(false)))
@@ -1263,7 +1281,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and attempted to view the services amount page but the services question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(
             employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
               utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
                 _.utilitiesAndServicesModel).map(_.copy(serviceQuestion = Some(false)))
@@ -1283,7 +1301,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a new submission and attempted to view the medical benefits page but the utilities section is not finished" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(
             employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
               utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
                 _.utilitiesAndServicesModel).map(_.copy(serviceQuestion = None))
@@ -1303,7 +1321,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = None))), EmploymentBenefitsType)(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = None))), EmploymentBenefitsType)(
           cya => {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }
@@ -1349,7 +1367,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and hitting the common car van fuel benefits method when carVanFuel is false " in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carVanFuelQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1365,7 +1383,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and hitting the car benefits amount method when carQuestion is false " in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1381,7 +1399,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and hitting the car fuel benefits amount method when carFuelQuestion is false " in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carFuelQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1397,7 +1415,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and hitting the van benefits amount method when vanQuestion is false " in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(vanQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1413,7 +1431,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and hitting the van fuel benefits amount method when vanFuelQuestion is false " in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(vanFuelQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1445,7 +1463,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and hitting the mileage benefits amount method when mileageQuestion is false " in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(mileageQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1505,7 +1523,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(isPriorSubmission = true)), EmploymentBenefitsType)(
+          Some(employmentUserData.copy(hasPriorBenefits = true)), EmploymentBenefitsType)(
           cya => {
             RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, "001")
           }

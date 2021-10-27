@@ -17,10 +17,11 @@
 package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
 import controllers.benefits.routes.CompanyCarFuelBenefitsController
+import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
+import javax.inject.Inject
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -31,7 +32,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.CompanyCarBenefitsAmountView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CompanyCarBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -102,13 +102,11 @@ class CompanyCarBenefitsAmountController @Inject()(implicit val cc: MessagesCont
                 )
 
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
-                  isPriorSubmission = cya.isPriorSubmission)(errorHandler.internalServerError()) {
+                  isPriorSubmission = cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
 
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    Redirect(CompanyCarFuelBenefitsController.show(taxYear, employmentId))
-                  }
+                  val nextPage = CompanyCarFuelBenefitsController.show(taxYear,employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel,nextPage)(taxYear,employmentId)
                 }
             }
           )

@@ -17,21 +17,21 @@
 package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
+import controllers.benefits.routes.{CompanyCarFuelBenefitsController, CompanyVanBenefitsController}
+import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
+import javax.inject.Inject
+import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
+import services.RedirectService.{ConditionalRedirect, EmploymentBenefitsType, commonCarVanFuelBenefitsRedirects, redirectBasedOnCurrentAnswers}
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.CarFuelBenefitsAmountView
-import controllers.employment.routes.CheckYourBenefitsController
-import controllers.benefits.routes.{CompanyVanBenefitsController, CompanyCarFuelBenefitsController}
-import models.mongo.EmploymentCYAModel
-import services.RedirectService.{ConditionalRedirect, EmploymentBenefitsType, commonCarVanFuelBenefitsRedirects, redirectBasedOnCurrentAnswers}
 
-import javax.inject.Inject
 import scala.concurrent.Future
 
 class CarFuelBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -50,8 +50,8 @@ class CarFuelBenefitsAmountController @Inject()(implicit val cc: MessagesControl
 
     commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(
       ConditionalRedirect(cyaCarFuelQuestion.isEmpty, CompanyCarFuelBenefitsController.show(taxYear, employmentId)),
-      ConditionalRedirect(cyaCarFuelQuestion.contains(false), CompanyVanBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-      ConditionalRedirect(cyaCarFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+      ConditionalRedirect(cyaCarFuelQuestion.contains(false), CompanyVanBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+      ConditionalRedirect(cyaCarFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
     )
   }
 
@@ -101,13 +101,10 @@ class CarFuelBenefitsAmountController @Inject()(implicit val cc: MessagesControl
                 )
 
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
-                  isPriorSubmission = cya.isPriorSubmission)(errorHandler.internalServerError()) {
+                  isPriorSubmission = cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
 
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    Redirect(CompanyVanBenefitsController.show(taxYear, employmentId))
-                  }
+                  val nextPage = CompanyVanBenefitsController.show(taxYear, employmentId)
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel,nextPage)(taxYear,employmentId)
                 }
             }
           )

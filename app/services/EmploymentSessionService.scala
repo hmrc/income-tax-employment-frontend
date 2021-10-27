@@ -101,7 +101,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   //scalastyle:off
-  def createOrUpdateSessionData[A](employmentId: String, cyaModel: EmploymentCYAModel, taxYear: Int, isPriorSubmission: Boolean)
+  def createOrUpdateSessionData[A](employmentId: String, cyaModel: EmploymentCYAModel, taxYear: Int, isPriorSubmission: Boolean, hasPriorBenefits: Boolean)
                                   (onFail: A)(onSuccess: A)(implicit user: User[_], clock: Clock): Future[A] = {
 
     val userData = EmploymentUserData(
@@ -111,6 +111,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       taxYear,
       employmentId,
       isPriorSubmission,
+      hasPriorBenefits = hasPriorBenefits,
       cyaModel,
       clock.now(DateTimeZone.UTC)
     )

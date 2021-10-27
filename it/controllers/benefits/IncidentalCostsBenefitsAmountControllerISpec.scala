@@ -43,8 +43,9 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
-  private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
+  private def employmentUserData(hasPriorBenefits: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = hasPriorBenefits,
+      hasPriorBenefits = hasPriorBenefits, employmentCyaModel)
 
   def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
@@ -158,7 +159,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
+            insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
               Some(benefits(fullTravelOrEntertainmentModel.copy(personalIncidentalExpenses = None))))), userRequest)
             urlGet(incidentalOvernightCostsAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -183,13 +184,13 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
         }
 
-        "render the 'incidental overnight expenses amount' page with the amount field pre-filled when there's cya data and it's a prior submission" which {
+        "render the 'incidental overnight expenses amount' page with the amount field pre-filled when there's cya data and prior benefits exist" which {
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
+            insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
               Some(benefits(fullTravelOrEntertainmentModel)))), userRequest)
             urlGet(incidentalOvernightCostsAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -214,13 +215,13 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
         }
 
-        "render the 'incidental overnight expenses amount' page with the amount field pre-filled when there's cya data and it's not a prior submission" which {
+        "render the 'incidental overnight expenses amount' page with the amount field pre-filled when there's cya data and no prior benefits exist" which {
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true,
+            insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel("name", hmrc = true,
               Some(benefits(fullTravelOrEntertainmentModel)))), userRequest)
             urlGet(incidentalOvernightCostsAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -253,7 +254,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
           Some(benefits(fullTravelOrEntertainmentModel)))), userRequest)
         urlGet(incidentalOvernightCostsAmountPageUrl(taxYear), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
       }
@@ -269,7 +270,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel("name", hmrc = true,
           Some(benefits(fullTravelOrEntertainmentModel.copy(personalIncidentalExpensesQuestion = None))))), userRequest)
         urlGet(incidentalOvernightCostsAmountPageUrl(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
       }
@@ -281,12 +282,12 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
       }
     }
 
-    "redirect to the entertaining question when the personalIncidentalExpensesQuestion is Some(false) and it's not a prior submission" which {
+    "redirect to the entertaining question when the personalIncidentalExpensesQuestion is Some(false) and no prior benefits exist" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel("name", hmrc = true,
           Some(benefits(fullTravelOrEntertainmentModel.copy(personalIncidentalExpensesQuestion = Some(false)))))), userRequest)
         urlGet(incidentalOvernightCostsAmountPageUrl(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
       }
@@ -298,12 +299,12 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
       }
     }
 
-    "redirect to the check your benefits page when personalIncidentalExpensesQuestion is Some(false) and it's a prior submission" which {
+    "redirect to the check your benefits page when personalIncidentalExpensesQuestion is Some(false) and prior benefits exist" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
           Some(benefits(fullTravelOrEntertainmentModel.copy(personalIncidentalExpensesQuestion = Some(false)))))), userRequest)
         urlGet(incidentalOvernightCostsAmountPageUrl(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
       }
@@ -332,7 +333,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-              insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(
+              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true, Some(benefits(
                 fullTravelOrEntertainmentModel)))), userRequest)
               urlPost(incidentalOvernightCostsAmountPageUrl(taxYearEOY), body = "", welsh = user.isWelsh,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -368,7 +369,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-              insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(
+              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true, Some(benefits(
                 fullTravelOrEntertainmentModel)))), userRequest)
               urlPost(incidentalOvernightCostsAmountPageUrl(taxYearEOY), body = form, welsh = user.isWelsh,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -404,7 +405,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-              insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(
+              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true, Some(benefits(
                 fullTravelOrEntertainmentModel)))), userRequest)
               urlPost(incidentalOvernightCostsAmountPageUrl(taxYearEOY), body = form, welsh = user.isWelsh,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -434,7 +435,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
       }
     }
 
-    "update cya when a valid form is submitted and it's a prior submission" which {
+    "update cya when a valid form is submitted and prior benefits exist" which {
 
       val newAmount: BigDecimal = 280.35
       val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
@@ -443,7 +444,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullTravelOrEntertainmentModel)))), userRequest)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true, Some(benefits(fullTravelOrEntertainmentModel)))), userRequest)
         urlPost(incidentalOvernightCostsAmountPageUrl(taxYearEOY), follow = false, body = form,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -459,7 +460,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
     }
 
-    "update cya when a valid form is submitted and it's not a prior submission" which {
+    "update cya when a valid form is submitted and no prior benefits exist" which {
 
       val newAmount: BigDecimal = 534.21
       val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
@@ -468,7 +469,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel("name", hmrc = true,
           Some(benefits(fullTravelOrEntertainmentModel.copy(personalIncidentalExpenses = None))))), userRequest)
         urlPost(incidentalOvernightCostsAmountPageUrl(taxYearEOY), follow = false, body = form,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -490,7 +491,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
           Some(benefits(fullTravelOrEntertainmentModel)))), userRequest)
         urlGet(incidentalOvernightCostsAmountPageUrl(taxYear), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
       }
@@ -506,7 +507,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear)
-        insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel("name", hmrc = true,
           Some(benefits(fullTravelOrEntertainmentModel.copy(personalIncidentalExpensesQuestion = None))))), userRequest)
         urlPost(incidentalOvernightCostsAmountPageUrl(taxYearEOY), body = "", follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -519,12 +520,12 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
       }
     }
 
-    "redirect to the entertaining question when the personalIncidentalExpensesQuestion is Some(false) and it's not a prior submission" which {
+    "redirect to the entertaining question when the personalIncidentalExpensesQuestion is Some(false) and no prior benefits exist" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel("name", hmrc = true,
           Some(benefits(fullTravelOrEntertainmentModel.copy(personalIncidentalExpensesQuestion = Some(false)))))), userRequest)
         urlPost(incidentalOvernightCostsAmountPageUrl(taxYearEOY), body = "", follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -537,12 +538,12 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
       }
     }
 
-    "redirect to the check your benefits page when personalIncidentalExpensesQuestion is Some(false) and it's a prior submission" which {
+    "redirect to the check your benefits page when personalIncidentalExpensesQuestion is Some(false) and prior benefits exist" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
           Some(benefits(fullTravelOrEntertainmentModel.copy(personalIncidentalExpensesQuestion = Some(false)))))), userRequest)
         urlPost(incidentalOvernightCostsAmountPageUrl(taxYearEOY), body = "", follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))

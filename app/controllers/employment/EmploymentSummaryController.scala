@@ -17,22 +17,21 @@
 package controllers.employment
 
 import common.{SessionValues, UUID}
-import config.{AppConfig, ErrorHandler}
+import config.AppConfig
+import controllers.employment.routes.{AddEmploymentController, EmployerNameController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
-import controllers.employment.routes.AddEmploymentController
 import forms.YesNoForm
+import javax.inject.Inject
+import models.User
+import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.employment.{MultipleEmploymentsSummaryView, SingleEmploymentSummaryView, SingleEmploymentSummaryViewEOY}
-import javax.inject.Inject
-import models.User
-import play.api.data.Form
 
 import scala.concurrent.{ExecutionContext, Future}
-import controllers.employment.routes.EmployerNameController
 
 class EmploymentSummaryController @Inject()(implicit val mcc: MessagesControllerComponents,
                                             authAction: AuthorisedAction,

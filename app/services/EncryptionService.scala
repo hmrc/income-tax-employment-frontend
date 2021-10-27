@@ -35,6 +35,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
       taxYear = userData.taxYear,
       employmentId = userData.employmentId,
       isPriorSubmission = userData.isPriorSubmission,
+      hasPriorBenefits = userData.hasPriorBenefits,
       employment = encryptEmployment(userData.employment),
       lastUpdated = userData.lastUpdated
     )
@@ -180,8 +181,10 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
       telephone = utilitiesAndServicesModel.telephone.map(x => secureGCMCipher.decrypt[BigDecimal](x.value,x.nonce)),
       employerProvidedServicesQuestion = utilitiesAndServicesModel.employerProvidedServicesQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value,x.nonce)),
       employerProvidedServices = utilitiesAndServicesModel.employerProvidedServices.map(x => secureGCMCipher.decrypt[BigDecimal](x.value,x.nonce)),
-      employerProvidedProfessionalSubscriptionsQuestion = utilitiesAndServicesModel.employerProvidedProfessionalSubscriptionsQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value,x.nonce)),
-      employerProvidedProfessionalSubscriptions = utilitiesAndServicesModel.employerProvidedProfessionalSubscriptions.map(x => secureGCMCipher.decrypt[BigDecimal](x.value,x.nonce)),
+      employerProvidedProfessionalSubscriptionsQuestion = utilitiesAndServicesModel.employerProvidedProfessionalSubscriptionsQuestion.map(
+        x => secureGCMCipher.decrypt[Boolean](x.value,x.nonce)),
+      employerProvidedProfessionalSubscriptions = utilitiesAndServicesModel.employerProvidedProfessionalSubscriptions.map(
+        x => secureGCMCipher.decrypt[BigDecimal](x.value,x.nonce)),
       serviceQuestion = utilitiesAndServicesModel.serviceQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value,x.nonce)),
       service = utilitiesAndServicesModel.service.map(x => secureGCMCipher.decrypt[BigDecimal](x.value,x.nonce))
     )
@@ -361,6 +364,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
       taxYear = userData.taxYear,
       employmentId = userData.employmentId,
       isPriorSubmission = userData.isPriorSubmission,
+      hasPriorBenefits = userData.hasPriorBenefits,
       employment = decryptEmployment(userData.employment),
       lastUpdated = userData.lastUpdated
     )

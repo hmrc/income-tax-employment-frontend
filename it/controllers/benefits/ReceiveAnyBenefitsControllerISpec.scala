@@ -17,7 +17,7 @@
 package controllers.benefits
 
 import common.SessionValues
-import controllers.benefits.routes.{CarVanFuelBenefitsController, CompanyCarFuelBenefitsController}
+import controllers.benefits.routes.CarVanFuelBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.User
@@ -105,7 +105,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, validTaxYear2021, employmentID, isPriorSubmission = isPrior, employmentCyaModel)
+    EmploymentUserData(sessionId, mtditid, nino, validTaxYear2021, employmentID, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
   def benefits(hmrc: Boolean, isBenefitsReceived: Boolean): Option[BenefitsViewModel] =
     Some(BenefitsViewModel(isUsingCustomerData = hmrc, isBenefitsReceived = isBenefitsReceived))
@@ -176,42 +176,44 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           formPostLinkCheck(postUrl, formSelector)
           formRadioValueCheckPreFilled(isChecked = true, yesRadioButton)
         }
+      }
+    }
 
-        "redirect to Check your benefits page when there is no cya" when {
+    val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
 
-          val taxYear = validTaxYear2021
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(url(taxYear), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
+    "redirect to Check your benefits page when there is no cya" when {
 
-          "status SEE_OTHER" in {
-            result.status shouldBe SEE_OTHER
-          }
+      val taxYear = validTaxYear2021
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(user.isAgent)
+        urlGet(url(taxYear), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
 
-          "redirect to Check Employment Details page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some(s"http://localhost:11111/income-through-software/return/$validTaxYear2021/view")
-          }
-        }
+      "status SEE_OTHER" in {
+        result.status shouldBe SEE_OTHER
+      }
 
-        "redirect to Overview page when trying to hit the page in year" when {
+      "redirect to Check Employment Details page" in {
+        result.header(HeaderNames.LOCATION) shouldBe Some(s"http://localhost:11111/income-through-software/return/$validTaxYear2021/view")
+      }
+    }
 
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            insertCyaData(employmentUserData(false, cyaModel(false, benefits(false, true))), userRequest)
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(url(taxYear), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
+    "redirect to Overview page when trying to hit the page in year" when {
 
-          "status SEE_OTHER" in {
-            result.status shouldBe SEE_OTHER
-          }
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(employmentUserData(false, cyaModel(false, benefits(false, true))), userRequest)
+        authoriseAgentOrIndividual(user.isAgent)
+        urlGet(url(taxYear), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
 
-          "redirect to Overview page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-          }
-        }
+      "status SEE_OTHER" in {
+        result.status shouldBe SEE_OTHER
+      }
+
+      "redirect to Overview page" in {
+        result.header(HeaderNames.LOCATION) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
   }
@@ -231,7 +233,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "return the Did you ]receive any employments Page with errors when no radio button is selected" when {
+        "return the Did you receive any employments Page with errors when no radio button is selected" when {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
@@ -254,81 +256,120 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           formPostLinkCheck(postUrl, formSelector)
         }
 
-        "redirect to the car van fuel benefits page when radio button yes is selected and value was previously no" when {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(false, cyaModel(false, benefits(false, false))), userRequest)
-            urlPost(url(validTaxYear2021), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
-          }
+      }
+    }
 
-          "status SEE_OTHER" in {
-            result.status shouldBe SEE_OTHER
-          }
+    val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
 
-          "redirect to Car van fuel Benefits page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some(CarVanFuelBenefitsController.show(validTaxYear2021, employmentID).url)
-            lazy val cyamodel = findCyaData(validTaxYear2021, employmentID, userRequest).get
-            cyamodel.employment.employmentBenefits.map(_.isBenefitsReceived) shouldBe Some(true)
-          }
-        }
+    "redirect to the car van fuel benefits page when value updated from no to yes, and prior benefits exist " when {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(user.isAgent)
+        insertCyaData(employmentUserData(true, cyaModel(false, benefits(false, false))), userRequest)
+        urlPost(url(validTaxYear2021), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
+      }
 
-        "redirect to the  Car van fuel Benefits page when radio button yes is selected and no prior benefits" when {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(false, cyaModel(false, None)), userRequest)
-            urlPost(url(validTaxYear2021), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
-          }
+      "redirect to Car van fuel Benefits page" in {
+        result.status shouldBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) shouldBe Some(CarVanFuelBenefitsController.show(validTaxYear2021, employmentID).url)
+      }
 
-          "status SEE_OTHER" in {
-            result.status shouldBe SEE_OTHER
-          }
+      "update the isBenefitsReceived value to true" in {
+        lazy val cyamodel = findCyaData(validTaxYear2021, employmentID, userRequest).get
+        cyamodel.employment.employmentBenefits.map(_.isBenefitsReceived) shouldBe Some(true)
+      }
+    }
 
-          "redirect to Car van fuel Benefits page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some(CarVanFuelBenefitsController.show(validTaxYear2021, employmentID).url)
-            lazy val cyamodel = findCyaData(validTaxYear2021, employmentID, userRequest).get
-            cyamodel.employment.employmentBenefits.map(_.isBenefitsReceived) shouldBe Some(true)
-          }
-        }
+    "redirect to the car van fuel benefits page when value updated from no to yes" when {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(user.isAgent)
+        insertCyaData(employmentUserData(true, cyaModel(false, benefits(false, false))), userRequest)
+        urlPost(url(validTaxYear2021), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
+      }
 
-        "redirect to the Check your benefits page when radio button no is selected" when {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(false, cyaModel(false, None)), userRequest)
-            urlPost(url(validTaxYear2021), follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
-          }
+      "redirect to Car van fuel Benefits page" in {
+        result.status shouldBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) shouldBe Some(CarVanFuelBenefitsController.show(validTaxYear2021, employmentID).url)
+      }
 
-          "status SEE_OTHER" in {
-            result.status shouldBe SEE_OTHER
-          }
+      "update the isBenefitsReceived value to true" in {
+        lazy val cyamodel = findCyaData(validTaxYear2021, employmentID, userRequest).get
+        cyamodel.employment.employmentBenefits.map(_.isBenefitsReceived) shouldBe Some(true)
+      }
+    }
 
-          "redirect to Check Benefits Details page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some(CheckYourBenefitsController.show(validTaxYear2021, employmentID).url)
-            lazy val cyamodel = findCyaData(validTaxYear2021, employmentID, userRequest).get
-            cyamodel.employment.employmentBenefits.map(_.isBenefitsReceived) shouldBe Some(false)
-            cyamodel.employment.employmentBenefits shouldBe Some(BenefitsViewModel(isUsingCustomerData = true))
-          }
-        }
+    "redirect to the Car van fuel Benefits page when radio button yes is selected and no prior benefits" when {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(user.isAgent)
+        insertCyaData(employmentUserData(false, cyaModel(false, None)), userRequest)
+        urlPost(url(validTaxYear2021), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
+      }
 
-        "redirect to the Check your benefits page when there is no cya" when {
+      "redirect to Car van fuel Benefits page" in {
+        result.status shouldBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) shouldBe Some(CarVanFuelBenefitsController.show(validTaxYear2021, employmentID).url)
+      }
 
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            urlPost(url(validTaxYear2021), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
-          }
+      "update the isBenefitsReceived value to true" in {
+        lazy val cyamodel = findCyaData(validTaxYear2021, employmentID, userRequest).get
+        cyamodel.employment.employmentBenefits.map(_.isBenefitsReceived) shouldBe Some(true)
+      }
+    }
 
-          "status SEE_OTHER" in {
-            result.status shouldBe SEE_OTHER
-          }
+    "redirect to the Check your benefits page when radio button no is selected, and no prior benefits exist" when {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(user.isAgent)
+        insertCyaData(employmentUserData(false, cyaModel(false, None)), userRequest)
+        urlPost(url(validTaxYear2021), follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
+      }
 
-          "redirect to Check Employment Benefits page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some(s"http://localhost:11111/income-through-software/return/$validTaxYear2021/view")
-          }
-        }
+      "redirect to check your Benefits page" in {
+        result.status shouldBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) shouldBe Some(CheckYourBenefitsController.show(validTaxYear2021, employmentID).url)
+      }
 
+      "update the isBenefitsReceived value to false" in {
+        lazy val cyamodel = findCyaData(validTaxYear2021, employmentID, userRequest).get
+        cyamodel.employment.employmentBenefits.map(_.isBenefitsReceived) shouldBe Some(false)
+      }
+    }
+
+    "redirect to the Check your benefits page when radio button no is selected, and prior benefits exist" when {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(user.isAgent)
+        insertCyaData(employmentUserData(true, cyaModel(false, None)), userRequest)
+        urlPost(url(validTaxYear2021), follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
+      }
+
+      "redirect to check your Benefits page" in {
+        result.status shouldBe SEE_OTHER
+        result.header(HeaderNames.LOCATION) shouldBe Some(CheckYourBenefitsController.show(validTaxYear2021, employmentID).url)
+      }
+
+      "update the isBenefitsReceived value to false" in {
+        lazy val cyamodel = findCyaData(validTaxYear2021, employmentID, userRequest).get
+        cyamodel.employment.employmentBenefits.map(_.isBenefitsReceived) shouldBe Some(false)
+      }
+    }
+
+    "redirect to the Check your benefits page when there is no cya" when {
+
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(user.isAgent)
+        urlPost(url(validTaxYear2021), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
+      }
+
+      "status SEE_OTHER" in {
+        result.status shouldBe SEE_OTHER
+      }
+
+      "redirect to Check Employment Benefits page" in {
+        result.header(HeaderNames.LOCATION) shouldBe Some(s"http://localhost:11111/income-through-software/return/$validTaxYear2021/view")
       }
     }
   }

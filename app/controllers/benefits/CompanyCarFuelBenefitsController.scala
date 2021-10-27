@@ -17,7 +17,7 @@
 package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.routes.{CarFuelBenefitsAmountController, CompanyVanBenefitsController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import javax.inject.Inject
@@ -91,8 +91,14 @@ class CompanyCarFuelBenefitsController @Inject()(implicit val cc: MessagesContro
               }
 
               employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
+
+
+                val nextPage = {
+                  if(yesNo) CarFuelBenefitsAmountController.show(taxYear, employmentId) else CompanyVanBenefitsController.show(taxYear, employmentId)
+                }
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel,nextPage)(taxYear,employmentId)
               }
             }
           )

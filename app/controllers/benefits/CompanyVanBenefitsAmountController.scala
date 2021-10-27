@@ -17,21 +17,21 @@
 package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
 import controllers.benefits.routes.CompanyVanFuelBenefitsController
+import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
+import javax.inject.Inject
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{EmploymentSessionService, RedirectService}
 import services.RedirectService.{ConditionalRedirect, EmploymentBenefitsType, redirectBasedOnCurrentAnswers}
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.benefits.CompanyVanBenefitsAmountView
 import utils.{Clock, SessionHelper}
+import views.html.benefits.CompanyVanBenefitsAmountView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CompanyVanBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -83,12 +83,11 @@ class CompanyVanBenefitsAmountController @Inject()(implicit val cc: MessagesCont
                   employmentBenefits = benefits.map(_.copy(carVanFuelModel = carVanFuel.map(_.copy(van = Some(newAmount)))))
                 )
                 employmentSessionService.createOrUpdateSessionData(
-                  employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission)(errorHandler.internalServerError()) {
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    Redirect(CompanyVanFuelBenefitsController.show(taxYear, employmentId))
-                  }
+                  employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
+
+                  val nextPage = CompanyVanFuelBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel,nextPage)(taxYear,employmentId)
                 }
             }
           )

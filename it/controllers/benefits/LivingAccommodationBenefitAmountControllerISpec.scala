@@ -133,7 +133,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
   val livingAccommodationBenefitAmount: Option[BigDecimal] = Some(123.45)
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
   def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
@@ -221,7 +221,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           welshToggleCheck(user.isWelsh)
         }
 
-        "should render How much was your How much was your total living accommodation benefit? page with prefilling when there is cya data and no prior data" which {
+        "should render How much was your How much was your total living accommodation benefit? page with prefilling when there is cya data and no prior benefits" which {
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
@@ -288,7 +288,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
       }
     }
 
-    "redirect to the check your benefits page when accommodationRelocationQuestion is Some(false) and it's a prior submission" which {
+    "redirect to the check your benefits page when accommodationRelocationQuestion is Some(false) and prior benefits exist" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
@@ -305,7 +305,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
       }
     }
 
-    "redirect to the living accommodation page when accommodationQuestion is None and it's a prior submission" which {
+    "redirect to the living accommodation page when accommodationQuestion is None and prior benefits exist" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
@@ -322,7 +322,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
       }
     }
 
-    "redirect to the check your benefits page when accommodationQuestion is Some(false) and it's a prior submission" which {
+    "redirect to the check your benefits page when accommodationQuestion is Some(false) and prior benefits exist" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
@@ -339,7 +339,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
       }
     }
 
-    "redirect to the qualifying relocation page when accommodationQuestion is Some(false) and it's not a prior submission" which {
+    "redirect to the qualifying relocation page when accommodationQuestion is Some(false) and no prior benefits exist" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
@@ -355,15 +355,14 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
         result.header("location") shouldBe Some(QualifyingRelocationBenefitsController.show(taxYearEOY, employmentId).url)
       }
     }
-
   }
 
   ".submit" when {
 
     userScenarios.foreach { user =>
       import Selectors._
-      import user.specificExpectedResults._
       import user.commonExpectedResults._
+      import user.specificExpectedResults._
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
@@ -475,7 +474,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           errorAboveElementCheck(get.maxAmountErrorText)
         }
 
-        "redirect to CYA page and update the living accommodation amount when a valid form is submitted and prior submission" when {
+        "redirect to CYA page and update the living accommodation amount when a valid form is submitted and prior benefits exist" when {
 
           val newAmount = 100
 
@@ -535,7 +534,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
       }
     }
 
-    "redirect to the check your benefits page when accommodationRelocationQuestion is Some(false) and it's a prior submission" which {
+    "redirect to the check your benefits page when accommodationRelocationQuestion is Some(false) and prior benefits exist" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
@@ -552,7 +551,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
       }
     }
 
-    "redirect to the living accommodation benefits page when accommodationQuestion is None and it's a prior submission" which {
+    "redirect to the living accommodation benefits page when accommodationQuestion is None and prior benefits exist" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
@@ -569,7 +568,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
       }
     }
 
-    "redirect to the check your benefits page when accommodationQuestion is Some(false) and it's a prior submission" which {
+    "redirect to the check your benefits page when accommodationQuestion is Some(false) and prior benefits exist" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
@@ -586,7 +585,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
       }
     }
 
-    "redirect to the qualifying relocation page when accommodationQuestion is Some(false) and it's not a prior submission" which {
+    "redirect to the qualifying relocation page when accommodationQuestion is Some(false) and no prior benefits exist" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()

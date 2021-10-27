@@ -35,7 +35,7 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYear, "001", isPriorSubmission = isPrior, employmentCyaModel)
+    EmploymentUserData(sessionId, mtditid, nino, taxYear, "001", isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
   def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
@@ -136,7 +136,7 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "return a radio button page when not in year and a bad for submission" which {
+        "return a radio button page when not in year and a bad form submission" which {
 
           lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
 

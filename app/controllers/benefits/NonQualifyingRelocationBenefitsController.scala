@@ -18,9 +18,9 @@ package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
-import controllers.benefits.routes.TravelOrEntertainmentBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
+import javax.inject.Inject
 import models.User
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
@@ -32,7 +32,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.NonQualifyingRelocationBenefitsView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class NonQualifyingRelocationBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -97,7 +96,7 @@ class NonQualifyingRelocationBenefitsController @Inject()(implicit val cc: Messa
               }
 
               employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
+                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
                   Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
               }
             }
