@@ -35,7 +35,7 @@ case class AccommodationRelocationModel(
     qualifyingRelocationExpensesQuestion match {
       case Some(true) => if (qualifyingRelocationExpenses.isDefined) None else Some(QualifyingRelocationBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
-      case None => Some(AccommodationRelocationBenefitsController.show(taxYear, employmentId)) //TODO qual relocation yes no page
+      case None => Some(QualifyingRelocationBenefitsController.show(taxYear, employmentId))
     }
   }
 

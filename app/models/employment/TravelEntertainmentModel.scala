@@ -16,8 +16,8 @@
 
 package models.employment
 
-import controllers.benefits.routes.{TravelOrEntertainmentBenefitsController,
-  TravelOrSubsistenceBenefitsAmountController, TravelAndSubsistenceBenefitsController}
+import controllers.benefits.routes.{IncidentalCostsBenefitsAmountController, TravelAndSubsistenceBenefitsController,
+  TravelOrEntertainmentBenefitsController, TravelOrSubsistenceBenefitsAmountController}
 import controllers.employment.routes.CheckYourBenefitsController
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
@@ -44,7 +44,7 @@ case class TravelEntertainmentModel(
   //scalastyle:off
   def personalIncidentalSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     personalIncidentalExpensesQuestion match {
-      case Some(true) => if (personalIncidentalExpenses.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO update to personal incidental amount page
+      case Some(true) => if (personalIncidentalExpenses.isDefined) None else Some(IncidentalCostsBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO update to first personal incidental page
     }
