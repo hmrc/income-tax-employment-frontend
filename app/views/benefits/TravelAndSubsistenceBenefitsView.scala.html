@@ -35,7 +35,7 @@
 @hasFormErrors = @{form.hasErrors}
 
 @contentHtml = {
-    <div>@{messages(s"benefits.travelAndSubsistence.thisIs.${if(user.isAgent) "agent" else "individual"}")}</div>
+    <p class="govuk-body">@{messages(s"benefits.travelAndSubsistence.thisIs.${if(user.isAgent) "agent" else "individual"}")}</p>
 }
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {

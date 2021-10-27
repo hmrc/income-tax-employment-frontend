@@ -29,20 +29,23 @@
 
 @(form: Form[Boolean], taxYear: Int, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
-@titleForUse = @{messages(s"benefits.carVanFuel.title.${if(user.isAgent) "agent" else "individual"}")}
+@titleForUse = @{messages(s"benefits.qualifyingRelocationBenefits.title.${if(user.isAgent) "agent" else "individual"}")}
 @headingForUse = @{titleForUse}
 
 @hasFormErrors = @{form.hasErrors}
 
 @contentHtml = {
-    <p class="govuk-body">@{messages("benefits.carVanFuel.thisIncludes")}</p>
+<p class="govuk-body">@{messages(s"benefits.qualifyingRelocationBenefits.thisIncludes.${if(user.isAgent) "agent" else "individual"}")}</p>
+
+  <p class="govuk-body">@{messages(s"benefits.qualifyingRelocationBenefits.thisIncludes.example1")}</p>
+
 }
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
 
 @errorSummary(form.errors.distinct)
 
-    @formWithCsrf(action = controllers.benefits.routes.CarVanFuelBenefitsController.submit(taxYear, employmentId)) {
+    @formWithCsrf(action = controllers.benefits.routes.QualifyingRelocationBenefitsController.submit(taxYear, employmentId)) {
         @inputRadio(
             form = form,
             heading = headingForUse,
