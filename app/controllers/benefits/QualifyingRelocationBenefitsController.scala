@@ -96,7 +96,7 @@ class QualifyingRelocationBenefitsController @Inject()(implicit val cc: Messages
                 )))
 
               employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission)(errorHandler.internalServerError()) {
+                employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
                 Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
               }
 

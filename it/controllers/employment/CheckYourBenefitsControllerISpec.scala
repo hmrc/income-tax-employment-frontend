@@ -1016,7 +1016,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear - 1, "001", isPriorSubmission = isPrior, employmentCyaModel)
+            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear-1, "001", isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
           def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
             EmploymentCYAModel(
@@ -1135,7 +1135,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         "return a page with only the benefits received subheading when its EOY and only the benefits question answered as no" which {
 
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear - 1, "001", isPriorSubmission = isPrior, employmentCyaModel)
+            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear-1, "001", isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
           def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
             EmploymentCYAModel(
@@ -1184,7 +1184,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         "redirect to the Did your client receive any benefits page when its EOY and theres no benefits model in the session data" in {
 
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear - 1, "001", isPriorSubmission = isPrior, employmentCyaModel)
+            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear-1, "001", isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
           def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
             EmploymentCYAModel(
@@ -1210,7 +1210,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         "redirect to the Did your client receive any benefits page when its EOY and theres no benefits model in the mongo data" in {
 
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear - 1, "001", isPriorSubmission = isPrior, employmentCyaModel)
+            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear-1, "001", isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
           val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 

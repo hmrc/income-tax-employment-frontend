@@ -18,6 +18,8 @@ package services
 
 import controllers.benefits.routes._
 import controllers.employment.routes._
+import models.User
+import models.employment.{AccommodationRelocationModel, CarVanFuelModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.Logging
 import play.api.mvc.Results.Redirect
@@ -32,7 +34,7 @@ object RedirectService extends Logging {
   case object EmploymentDetailsType extends EmploymentType
   case object EmploymentBenefitsType extends EmploymentType
 
-  case class ConditionalRedirect(condition: Boolean, redirect: Call, isPriorSubmission: Option[Boolean] = None)
+  case class ConditionalRedirect(condition: Boolean, redirect: Call, hasPriorBenefits: Option[Boolean] = None)
 
   def toConditionalRedirect(call: Option[Call]): Option[ConditionalRedirect] = {
     call.map(ConditionalRedirect(true, _))
@@ -44,8 +46,8 @@ object RedirectService extends Logging {
     val benefitsReceived = cya.employmentBenefits.map(_.isBenefitsReceived)
 
     Seq(
-      ConditionalRedirect(benefitsReceived.isEmpty, ReceiveAnyBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-      ConditionalRedirect(benefitsReceived.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true)),
+      ConditionalRedirect(benefitsReceived.isEmpty, ReceiveAnyBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+      ConditionalRedirect(benefitsReceived.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true)),
       ConditionalRedirect(benefitsReceived.contains(false), CheckYourBenefitsController.show(taxYear, employmentId))
     )
   }
@@ -58,8 +60,8 @@ object RedirectService extends Logging {
     commonBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(carVanFuelQuestion.isEmpty, CarVanFuelBenefitsController.show(taxYear, employmentId)),
-        ConditionalRedirect(carVanFuelQuestion.contains(false), AccommodationRelocationBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(carVanFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(carVanFuelQuestion.contains(false), AccommodationRelocationBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(carVanFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -74,8 +76,8 @@ object RedirectService extends Logging {
     commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(carQuestion.isEmpty, CompanyCarBenefitsController.show(taxYear, employmentId)),
-        ConditionalRedirect(carQuestion.contains(false), CompanyVanBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(carQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(carQuestion.contains(false), CompanyVanBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(carQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -94,8 +96,8 @@ object RedirectService extends Logging {
     carFuelBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(carFuelQuestion.isEmpty, CompanyCarFuelBenefitsController.show(taxYear, employmentId)),
-        ConditionalRedirect(carFuelQuestion.contains(false), CompanyVanBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(carFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(carFuelQuestion.contains(false), CompanyVanBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(carFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -114,8 +116,8 @@ object RedirectService extends Logging {
     vanBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(vanQuestion.isEmpty, CompanyVanBenefitsController.show(taxYear, employmentId)),
-        ConditionalRedirect(vanQuestion.contains(false), ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(vanQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(vanQuestion.contains(false), ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(vanQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -134,8 +136,8 @@ object RedirectService extends Logging {
     vanFuelBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(vanFuelQuestion.isEmpty, CompanyVanFuelBenefitsController.show(taxYear, employmentId)),
-        ConditionalRedirect(vanFuelQuestion.contains(false), ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(vanFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(vanFuelQuestion.contains(false), ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(vanFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -157,8 +159,8 @@ object RedirectService extends Logging {
     mileageBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(cyaMileageQuestion.isEmpty, ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId)),
-        ConditionalRedirect(cyaMileageQuestion.contains(false), AccommodationRelocationBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(cyaMileageQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(cyaMileageQuestion.contains(false), AccommodationRelocationBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(cyaMileageQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -177,8 +179,8 @@ object RedirectService extends Logging {
     accommodationRelocationBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(accommodationRelocationQuestion.isEmpty, AccommodationRelocationBenefitsController.show(taxYear, employmentId)),
-        ConditionalRedirect(accommodationRelocationQuestion.contains(false), TravelOrEntertainmentBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(accommodationRelocationQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(accommodationRelocationQuestion.contains(false), TravelOrEntertainmentBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(accommodationRelocationQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -189,8 +191,8 @@ object RedirectService extends Logging {
     commonAccommodationBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(accommodationQuestion.isEmpty, LivingAccommodationBenefitsController.show(taxYear, employmentId)),
-        ConditionalRedirect(accommodationQuestion.contains(false), QualifyingRelocationBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(accommodationQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(accommodationQuestion.contains(false), QualifyingRelocationBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(accommodationQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -209,8 +211,8 @@ object RedirectService extends Logging {
     qualifyingRelocationBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(relocationQuestion.isEmpty, QualifyingRelocationBenefitsController.show(taxYear, employmentId)),
-        ConditionalRedirect(relocationQuestion.contains(false), NonQualifyingRelocationBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(relocationQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(relocationQuestion.contains(false), NonQualifyingRelocationBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(relocationQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -232,8 +234,8 @@ object RedirectService extends Logging {
     nonQualifyingRelocationBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(relocationQuestion.isEmpty, NonQualifyingRelocationBenefitsController.show(taxYear, employmentId)),
-        ConditionalRedirect(relocationQuestion.contains(false), TravelOrEntertainmentBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(relocationQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(relocationQuestion.contains(false), TravelOrEntertainmentBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(relocationQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -252,8 +254,8 @@ object RedirectService extends Logging {
     travelEntertainmentBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(travelEntertainmentQuestion.isEmpty, TravelOrEntertainmentBenefitsController.show(taxYear, employmentId)),
-        ConditionalRedirect(travelEntertainmentQuestion.contains(false), UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(travelEntertainmentQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(travelEntertainmentQuestion.contains(false), UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(travelEntertainmentQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -265,8 +267,8 @@ object RedirectService extends Logging {
       Seq(
         ConditionalRedirect(travelSubsistenceQuestion.isEmpty, TravelAndSubsistenceBenefitsController.show(taxYear, employmentId)),
         //TODO go to incidental costs yes no page
-        ConditionalRedirect(travelSubsistenceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(travelSubsistenceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(travelSubsistenceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(travelSubsistenceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -287,8 +289,8 @@ object RedirectService extends Logging {
         //TODO go to incidental costs yes no page
         ConditionalRedirect(incidentalCostsQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
         //TODO go to entertainment yes no page
-        ConditionalRedirect(incidentalCostsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(incidentalCostsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(incidentalCostsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(incidentalCostsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -311,8 +313,8 @@ object RedirectService extends Logging {
       Seq(
         //TODO go to entertaining yes no page
         ConditionalRedirect(entertainingQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
-        ConditionalRedirect(entertainingQuestion.contains(false), UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(entertainingQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(entertainingQuestion.contains(false), UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(entertainingQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -335,8 +337,8 @@ object RedirectService extends Logging {
         //TODO go to utilities and services yes no page
         ConditionalRedirect(utilitiesAndServicesQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
         //TODO go to medical benefits section
-        ConditionalRedirect(utilitiesAndServicesQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(utilitiesAndServicesQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(utilitiesAndServicesQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(utilitiesAndServicesQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -349,8 +351,8 @@ object RedirectService extends Logging {
         //TODO go to telephone yes no page
         ConditionalRedirect(telephoneQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
         //TODO go to services provided by employer yes no page
-        ConditionalRedirect(telephoneQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(telephoneQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(telephoneQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(telephoneQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -371,8 +373,8 @@ object RedirectService extends Logging {
         //TODO go to employerProvidedServices yes no page
         ConditionalRedirect(employerProvidedServicesQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
         //TODO go to employer provided subscriptions yes no page
-        ConditionalRedirect(employerProvidedServicesQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(employerProvidedServicesQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(employerProvidedServicesQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(employerProvidedServicesQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -396,8 +398,8 @@ object RedirectService extends Logging {
         //TODO go to employerProvidedProfessionalSubscriptions yes no page
         ConditionalRedirect(employerProvidedProfessionalSubscriptionsQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
         //TODO go to services yes no page
-        ConditionalRedirect(employerProvidedProfessionalSubscriptionsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(employerProvidedProfessionalSubscriptionsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(employerProvidedProfessionalSubscriptionsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(employerProvidedProfessionalSubscriptionsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -424,8 +426,8 @@ object RedirectService extends Logging {
         //TODO go to service yes no page
         ConditionalRedirect(serviceQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
         //TODO go to medical benefits yes no page
-        ConditionalRedirect(serviceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(false)),
-        ConditionalRedirect(serviceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), isPriorSubmission = Some(true))
+        ConditionalRedirect(serviceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(serviceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
@@ -458,7 +460,7 @@ object RedirectService extends Logging {
         val possibleRedirects = cyaConditions(cya.employment)
 
         val redirect = possibleRedirects.collectFirst {
-          case ConditionalRedirect(condition, result, Some(isPriorSubmission)) if condition && isPriorSubmission == cya.isPriorSubmission => Redirect(result)
+          case ConditionalRedirect(condition, result, Some(hasPriorBenefits)) if condition && hasPriorBenefits == cya.hasPriorBenefits => Redirect(result)
           case ConditionalRedirect(condition, result, None) if condition => Redirect(result)
         }
 
@@ -478,6 +480,32 @@ object RedirectService extends Logging {
     employmentType match {
       case EmploymentBenefitsType => Left(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
       case EmploymentDetailsType => Left(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
+    }
+  }
+
+  def benefitsSubmitRedirect(cya: EmploymentCYAModel, nextPage: Call)(_taxYear: Int, _employmentId: String)(implicit user: User[_]): Result ={
+
+    implicit val taxYear: Int = _taxYear
+    implicit val employmentId: String = _employmentId
+
+    val carVanFuelSection: CarVanFuelModel = cya.employmentBenefits.flatMap(_.carVanFuelModel).getOrElse(CarVanFuelModel())
+    val accommodationRelocationSection: AccommodationRelocationModel = cya.employmentBenefits.flatMap(_.accommodationRelocationModel).getOrElse(AccommodationRelocationModel())
+
+    val carVanFuelSectionFinished = carVanFuelSection.isFinished
+    val accommodationRelocationSectionFinished = accommodationRelocationSection.isFinished
+
+    val unfinishedRedirects: Seq[Call] = Seq(carVanFuelSectionFinished,accommodationRelocationSectionFinished).flatten
+
+    unfinishedRedirects match {
+
+      case calls if calls.isEmpty =>
+        logger.info("[RedirectService][benefitsSubmitRedirect] User has completed all sections - Routing to benefits CYA page")
+        Redirect(CheckYourBenefitsController.show(taxYear,employmentId))
+
+      case calls =>
+
+        logger.info(s"[RedirectService][benefitsSubmitRedirect] User has not yet completed all sections - Routing to next page: ${nextPage.url}")
+        Redirect(nextPage)
     }
   }
 

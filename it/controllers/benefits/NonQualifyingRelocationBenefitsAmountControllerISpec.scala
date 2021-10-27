@@ -39,7 +39,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec  extends IntegrationT
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
   def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
@@ -208,7 +208,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec  extends IntegrationT
 
         }
 
-        "render the non-qualifying relocation benefits amount page with the amount field pre-filled with prior submitted data" which {
+        "render the non-qualifying relocation benefits amount page with the amount field pre-filled with prior benfits data" which {
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
@@ -276,7 +276,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec  extends IntegrationT
         }
       }
 
-      "redirect to the check employment benefits page when benefits has nonQualifyingRelocationExpensesQuestion set to false and prior submission" when {
+      "redirect to the check employment benefits page when benefits has nonQualifyingRelocationExpensesQuestion set to false and prior benefits exist" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
@@ -309,7 +309,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec  extends IntegrationT
         }
       }
 
-      "redirect the user to the check employment benefits page when theres no benefits and prior submission" when {
+      "redirect the user to the check employment benefits page when theres no benefits and no prior benefits" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
@@ -442,7 +442,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec  extends IntegrationT
       val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
 
 
-      "redirect to check employments benefits page when a valid form is submitted and a prior submission" when {
+      "redirect to check employments benefits page when a valid form is submitted and prior benefits exist" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
@@ -464,7 +464,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec  extends IntegrationT
         }
       }
 
-      "redirect to the travel or entertainment next question page when a vakid form is submitted and not prior submission" when {
+      "redirect to the travel or entertainment next question page when a vakid form is submitted when no prior benefits" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
@@ -521,7 +521,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec  extends IntegrationT
         }
       }
 
-      "redirect to the check employment benefits page when benefits has nonQualifyingRelocationExpensesQuestion set to false and prior submission" when {
+      "redirect to the check employment benefits page when benefits has nonQualifyingRelocationExpensesQuestion set to false and prior benefits exist" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
@@ -556,7 +556,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec  extends IntegrationT
         }
       }
 
-      "redirect the user to the check employment benefits page when theres no benefits and prior submission" when {
+      "redirect the user to the check employment benefits page when theres no benefits and no prior benefits" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()

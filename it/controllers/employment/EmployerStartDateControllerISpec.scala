@@ -16,6 +16,8 @@
 
 package controllers.employment
 
+import java.time.LocalDate
+
 import forms.employment.EmploymentDateForm
 import models.User
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -25,8 +27,6 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-
-import java.time.LocalDate
 
 class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -42,7 +42,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
 
   def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(
@@ -184,7 +184,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CyaModel {
-    val cya: EmploymentUserData = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, employmentId, isPriorSubmission = true,
+    val cya: EmploymentUserData = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, employmentId, isPriorSubmission = true, hasPriorBenefits = true,
       EmploymentCYAModel(
         EmploymentDetails(employerName, startDate = Some("2020-01-01"), currentDataIsHmrcHeld = false),
         None

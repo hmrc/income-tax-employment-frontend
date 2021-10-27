@@ -100,7 +100,7 @@ class IncidentalCostsBenefitsAmountController @Inject()(implicit val cc: Message
                 )
 
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
-                  isPriorSubmission = cya.isPriorSubmission)(errorHandler.internalServerError()) {
+                  isPriorSubmission = cya.isPriorSubmission, hasPriorBenefits = cya.hasPriorBenefits)(errorHandler.internalServerError()) {
 
                   if (cya.isPriorSubmission) {
                     Redirect(CheckYourBenefitsController.show(taxYear, employmentId))

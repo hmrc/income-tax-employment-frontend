@@ -21,6 +21,7 @@ import controllers.benefits.routes.ReceiveOwnCarMileageBenefitController
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
+import javax.inject.Inject
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -31,7 +32,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.CompanyVanFuelBenefitsAmountView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CompanyVanFuelBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -83,12 +83,12 @@ class CompanyVanFuelBenefitsAmountController @Inject()(implicit val cc: Messages
                   employmentBenefits = benefits.map(_.copy(carVanFuelModel = carVanFuel.map(_.copy(vanFuel = Some(newAmount)))))
                 )
                 employmentSessionService.createOrUpdateSessionData(
-                  employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission)(errorHandler.internalServerError()) {
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    Redirect(ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId))
-                  }
+                  employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
+
+
+                  val nextPage = ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel,nextPage)(taxYear,employmentId)
                 }
             }
           )

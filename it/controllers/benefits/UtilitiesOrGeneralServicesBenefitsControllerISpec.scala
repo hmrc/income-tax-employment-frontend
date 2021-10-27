@@ -35,8 +35,9 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
-  private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
+  private def employmentUserData(hasPriorBenefits: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = hasPriorBenefits,
+      hasPriorBenefits = hasPriorBenefits,employmentCyaModel)
 
   def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
@@ -129,7 +130,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
         "render the 'Did you get utility or general service employment benefits' page with the correct content without pre-filled form" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("employer", hmrc = true,
+            insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("employer", hmrc = true,
               benefits = Some(BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true)))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -158,7 +159,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
         "render the 'Did you get utility or general service employment benefits' page with the correct content with yes value pre-filled" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true, Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
+            insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("employerName", hmrc = true, Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -202,7 +203,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
       "redirect to the check employment benefits page when theres no CYA data" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true)), userRequest)
+          insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("employerName", hmrc = true)), userRequest)
           authoriseAgentOrIndividual(false)
           urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -219,11 +220,11 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
         }
       }
 
-      "redirect the user to the check employment benefits page when theres no benefits and prior submission" which {
+      "redirect the user to the check employment benefits page when theres no benefits and prior benefits exist" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(false)
-          insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true)), userRequest)
+          insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("employerName", hmrc = true)), userRequest)
           urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -245,7 +246,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
+            insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("employerName", hmrc = true,
               Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
@@ -282,7 +283,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("employerName", hmrc = true,
           Some(benefits(emptyUtilitiesAndServicesModel)))), userRequest)
         authoriseAgentOrIndividual(false)
         urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -303,7 +304,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(false)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("employerName", hmrc = true,
           benefits = Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
         urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -334,7 +335,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true)), userRequest)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("employerName", hmrc = true)), userRequest)
         authoriseAgentOrIndividual(false)
         urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }

@@ -17,22 +17,23 @@
 package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
+import controllers.benefits.routes.{CompanyVanFuelBenefitsAmountController, ReceiveOwnCarMileageBenefitController}
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
+import javax.inject.Inject
 import models.User
 import models.employment.{BenefitsViewModel, CarVanFuelModel}
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
 import services.RedirectService.{EmploymentBenefitsType, redirectBasedOnCurrentAnswers, vanFuelBenefitsRedirects}
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.CompanyVanFuelBenefitsView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CompanyVanFuelBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -69,7 +70,6 @@ class CompanyVanFuelBenefitsController @Inject()(implicit val cc: MessagesContro
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-
       val redirectUrl: String = CheckYourBenefitsController.show(taxYear, employmentId).url
 
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
@@ -80,7 +80,6 @@ class CompanyVanFuelBenefitsController @Inject()(implicit val cc: MessagesContro
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(companyVanFuelBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => {
-
               val cyaModel: EmploymentCYAModel = cya.employment
               val benefits: Option[BenefitsViewModel] = cyaModel.employmentBenefits
               val carVanFuelModel: Option[CarVanFuelModel] = cyaModel.employmentBenefits.flatMap(_.carVanFuelModel)
@@ -100,13 +99,18 @@ class CompanyVanFuelBenefitsController @Inject()(implicit val cc: MessagesContro
                 )))
 
               employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
+                val nextPage = {
+                  if(yesNo){
+                    CompanyVanFuelBenefitsAmountController.show(taxYear, employmentId)
+                  } else {
+                    ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId)
+                  }
+                }
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel,nextPage)(taxYear,employmentId)
               }
-
             }
           )
-
         }
       }
     }

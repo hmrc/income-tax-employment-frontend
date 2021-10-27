@@ -20,7 +20,6 @@ import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.AmountForm
 import javax.inject.Inject
-import forms.employment.PayeForm
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -85,7 +84,7 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
               val cya = data.employment
               val updatedCyaModel = cya.copy(employmentDetails = cya.employmentDetails.copy(taxablePayToDate = Some(amount)))
               employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
-                isPriorSubmission = data.isPriorSubmission)(errorHandler.internalServerError()) {
+                isPriorSubmission = data.isPriorSubmission,data.hasPriorBenefits)(errorHandler.internalServerError()) {
                 employmentDetailsRedirect(updatedCyaModel,taxYear,employmentId,data.isPriorSubmission)
               }
           }

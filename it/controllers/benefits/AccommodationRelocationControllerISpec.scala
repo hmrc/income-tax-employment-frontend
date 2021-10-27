@@ -16,6 +16,7 @@
 
 package controllers.benefits
 
+import controllers.benefits.routes._
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.User
@@ -41,7 +42,7 @@ class AccommodationRelocationControllerISpec extends IntegrationTest with ViewHe
   val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/accommodation-relocation?employmentId=$employmentId"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
   def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
@@ -266,9 +267,9 @@ class AccommodationRelocationControllerISpec extends IntegrationTest with ViewHe
               urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
-            "redirects to Check Employment Benefits page" in {
+            "redirects to living accommodation Benefits page" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+              result.header("location") shouldBe Some(LivingAccommodationBenefitsController.show(taxYearEOY, employmentId).url)
               lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
               cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.accommodationRelocationQuestion) shouldBe Some(true)
             }
@@ -284,9 +285,9 @@ class AccommodationRelocationControllerISpec extends IntegrationTest with ViewHe
               urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
-            "redirects to Check Employment Benefits page" in {
+            "redirects to travel entertainment page" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+              result.header("location") shouldBe Some(TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId).url)
               lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
               cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.accommodationRelocationQuestion) shouldBe Some(false)
               cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.accommodationQuestion) shouldBe None
@@ -299,7 +300,7 @@ class AccommodationRelocationControllerISpec extends IntegrationTest with ViewHe
 
           }
 
-          "Create new AccommodationRelocationModel and redirect to Check Employment Benefits page when user selects 'yes' and no prior data" which {
+          "Create new AccommodationRelocationModel and redirect to Check Employment Benefits page when user selects 'yes' and no prior benefits" which {
             lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
             lazy val result: WSResponse = {
@@ -309,9 +310,9 @@ class AccommodationRelocationControllerISpec extends IntegrationTest with ViewHe
               urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
-            "has an SEE_OTHER(303) status and redirects to Check Employment Benefits page" in {
+            "has an SEE_OTHER(303) status and redirects to living accommodation page" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+              result.header("location") shouldBe Some(LivingAccommodationBenefitsController.show(taxYearEOY, employmentId).url)
             }
 
             "updates only accommodationRelocationQuestion to yes" in {

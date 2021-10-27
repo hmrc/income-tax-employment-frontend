@@ -16,9 +16,10 @@
 
 package controllers.employment
 
+import controllers.employment.routes.EmploymentSummaryController
 import models.User
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
-import models.employment.{AllEmploymentData, Deductions, EmploymentData, EmploymentSource, Pay, StudentLoans}
+import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -28,7 +29,6 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Call
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import controllers.employment.routes.EmploymentSummaryController
 
 class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -379,6 +379,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               2021,
               "001",
               isPriorSubmission = true,
+              hasPriorBenefits = true,
               EmploymentCYAModel(
                 fullEmploymentsModel().hmrcEmploymentData.head.toEmploymentDetails(false).copy(cessationDateQuestion = Some(false)),
                 None
@@ -431,7 +432,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               2021,
               "001",
               isPriorSubmission = false,
-
+              hasPriorBenefits =  true,
               EmploymentCYAModel(
                 fullEmploymentsModel().hmrcEmploymentData.head.toEmploymentDetails(false).copy(employerRef = None),
                 None

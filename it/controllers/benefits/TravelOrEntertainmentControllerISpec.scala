@@ -35,7 +35,7 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
   private def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
@@ -191,7 +191,7 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
 
       val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
 
-      "redirect the user to the check employment benefits page when theres no benefits and prior submission" which {
+      "redirect the user to the check employment benefits page when theres no benefits in CYA but has prior benefits" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
@@ -209,7 +209,7 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
         }
       }
 
-      "redirect the user to the benefits received page when theres no benefits and not prior submission" which {
+      "redirect the user to the benefits received page when theres no benefits when no prior benefits" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
