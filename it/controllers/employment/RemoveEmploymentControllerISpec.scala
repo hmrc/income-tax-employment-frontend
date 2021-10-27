@@ -18,8 +18,8 @@ package controllers.employment
 
 import controllers.employment.routes.EmploymentSummaryController
 import forms.YesNoForm
-import models.employment.{AllEmploymentData, EmploymentSource}
 import models.IncomeTaxUserData
+import models.employment.{AllEmploymentData, EmploymentSource}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames

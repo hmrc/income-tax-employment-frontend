@@ -18,7 +18,7 @@ package controllers.benefits
 
 import forms.YesNoForm
 import models.User
-import models.employment.{AccommodationRelocationModel, BenefitsViewModel, CarVanFuelModel}
+import models.employment.{AccommodationRelocationModel, BenefitsViewModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -39,7 +39,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
   def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
@@ -219,7 +219,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
         }
       }
 
-      "user has no accommodation relocation benefits and it's a prior submission" which {
+      "user has no accommodation relocation benefits and prior benefits exist" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
@@ -293,7 +293,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
         }
     }
 
-    "redirect to check employment benefits page when user selects Yes and it's a prior submission" which {
+    "redirect to check employment benefits page when user selects Yes and prior benefits exist" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
       lazy val result: WSResponse = {
@@ -345,7 +345,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
       }
     }
 
-    "redirect to check employment benefits page if valid form is submitted and not a prior submission" which {
+    "redirect to check employment benefits page if valid form is submitted and no prior benefits exist" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
       lazy val result: WSResponse = {

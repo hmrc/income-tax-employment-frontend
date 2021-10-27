@@ -42,7 +42,8 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp with MockEmploymentSes
       currentDataIsHmrcHeld = true
     )
     val employmentCyaModel = EmploymentCYAModel(employmentSource1)
-    val employmentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, employmentId, false, employmentCyaModel)
+    val employmentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, employmentId, false,
+      hasPriorBenefits =  true, employmentCyaModel)
   }
 
   val taxYear = 2021

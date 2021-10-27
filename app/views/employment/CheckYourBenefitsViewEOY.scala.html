@@ -61,7 +61,6 @@
         @{
             val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.carSubheading", benefits.carVanFuelModel.flatMap(_.carVanFuelQuestion).getOrElse(false), controllers.benefits.routes.CarVanFuelBenefitsController.show(taxYear, employmentId)))
             val rows: Seq[SummaryListRow] =
-            if(benefits.vehicleDetailsPopulated){
                 Seq(
                     benefits.carVanFuelModel.flatMap(_.carQuestion).map{
                         carQuestion => showQuestionRow("checkYourBenefits.companyCar", carQuestion, controllers.benefits.routes.CompanyCarBenefitsController.show(taxYear, employmentId))
@@ -94,7 +93,6 @@
                         mileage => showRows("checkYourBenefits.mileageBenefitAmount", mileage, controllers.benefits.routes.MileageBenefitAmountController.show(taxYear, employmentId))
                     }
                 ).flatten
-            } else { Seq() }
 
             govukSummaryList(SummaryList(header ++ rows))
     }
@@ -152,7 +150,8 @@
                     entertainingQuestion => showQuestionRow("checkYourBenefits.entertainment", entertainingQuestion)
                 },
                 benefits.travelEntertainmentModel.flatMap(_.entertaining).map{
-                    entertaining => showRows("checkYourBenefits.entertainmentAmount", entertaining)
+                    entertaining => showRows("checkYourBenefits.entertainmentAmount",
+                        entertaining, controllers.benefits.routes.EntertainmentBenefitsAmountController.show(taxYear, employmentId))
                 }
             ).flatten
         } else { Seq() }

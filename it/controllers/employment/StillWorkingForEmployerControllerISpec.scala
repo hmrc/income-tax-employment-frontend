@@ -37,7 +37,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
   def cyaModel(employerName: String, hmrc: Boolean, startDate: Option[String] = Some(employmentStartDate), cessationDate: Option[String] = None,
                cessationDateQuestion: Option[Boolean] = None): EmploymentCYAModel =

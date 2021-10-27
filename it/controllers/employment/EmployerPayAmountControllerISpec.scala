@@ -18,13 +18,11 @@ package controllers.employment
 
 import models.User
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
-import org.eclipse.jetty.http.HttpParser.RequestHandler
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -127,7 +125,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
 
     def cya(payToDate:Option[BigDecimal]=Some(34234.15), isPriorSubmission:Boolean=true):
-    EmploymentUserData = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, "001", isPriorSubmission,
+    EmploymentUserData = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, "001", isPriorSubmission, hasPriorBenefits = isPriorSubmission,
       EmploymentCYAModel(
         EmploymentDetails("maggie", taxablePayToDate =payToDate, currentDataIsHmrcHeld = false),
         None

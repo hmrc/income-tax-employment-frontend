@@ -56,8 +56,9 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
   def benefits(accommodationModel: AccommodationRelocationModel): BenefitsViewModel =
     BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true, accommodationRelocationModel = Some(accommodationModel))
 
-  private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, employmentCyaModel)
+  private def employmentUserData(hasPriorBenefits: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = hasPriorBenefits,
+      hasPriorBenefits = hasPriorBenefits,employmentCyaModel)
 
   trait SpecificExpectedResults {
     val expectedTitle: String
@@ -150,7 +151,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
+            insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
               Some(benefits(fullAccommodationRelocationModel.copy(qualifyingRelocationExpensesQuestion = None))))), userRequest)
             urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -181,7 +182,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
+            insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
               Some(benefits(fullAccommodationRelocationModel.copy(qualifyingRelocationExpensesQuestion = Some(true)))))), userRequest)
             urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -212,7 +213,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-              insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
+              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
                 Some(benefits(fullAccommodationRelocationModel.copy(qualifyingRelocationExpensesQuestion = Some(true)))))), userRequest)
               urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -242,7 +243,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-              insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
+              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
                 Some(benefits(fullAccommodationRelocationModel.copy(qualifyingRelocationExpensesQuestion = Some(false)))))), userRequest)
               urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -272,7 +273,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true)), userRequest)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true)), userRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlInYear, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
       }
@@ -282,12 +283,12 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
         result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
       }
     }
-    "redirect to the travel or entertainment page when accommodationRelocationQuestion is Some(false) and it's not a prior submission" which {
+    "redirect to the travel or entertainment page when accommodationRelocationQuestion is Some(false) and no prior benefits exist" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = false, cyaModel("employerName", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel("employerName", hmrc = true,
           Some(benefits(emptyAccommodationRelocationModel)))), userRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlEOY, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -298,12 +299,12 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
         result.header("location") shouldBe Some(TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId).url)
       }
     }
-    "redirect to the check your benefits page when accommodationRelocationQuestion is Some(false) and it's a prior submission" which {
+    "redirect to the check your benefits page when accommodationRelocationQuestion is Some(false) and prior benefits exist" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("employerName", hmrc = true,
           Some(benefits(emptyAccommodationRelocationModel)))), userRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlEOY, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -319,7 +320,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
       lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("employerName", hmrc = true,
           Some(benefits(emptyAccommodationRelocationModel.copy(accommodationRelocationQuestion = None))))), userRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlEOY, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -347,7 +348,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(
+            insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true, Some(benefits(
               fullAccommodationRelocationModel)))), userRequest)
             urlPost(urlEOY, body = "", welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -371,7 +372,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
       }
     }
 
-    "update accommodationQuestion to Some(true) when user chooses yes and it's a prior submission" which {
+    "update accommodationQuestion to Some(true) when user chooses yes and prior benefits exist" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
@@ -379,7 +380,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("employerName", hmrc = true,
           Some(benefits(fullAccommodationRelocationModel.copy(qualifyingRelocationExpensesQuestion = Some(false)))))), userRequest)
         urlPost(urlEOY, body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -395,7 +396,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
 
     }
 
-    "update accommodationQuestion to Some(false) when user chooses no and it's not a prior submission" which {
+    "update accommodationQuestion to Some(false) when user chooses no and no prior benefits exist" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -403,7 +404,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = false, cyaModel("employerName", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel("employerName", hmrc = true,
           Some(benefits(fullAccommodationRelocationModel.copy(qualifyingRelocationExpensesQuestion = None))))), userRequest)
         urlPost(urlEOY, body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -422,7 +423,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true)), userRequest)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true)), userRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(urlInYear, body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
@@ -438,7 +439,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
       lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("employerName", hmrc = true,
           Some(benefits(emptyAccommodationRelocationModel.copy(accommodationRelocationQuestion = None))))), userRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(urlEOY, body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -451,12 +452,12 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
 
     }
 
-    "redirect to the check your benefits page when accommodationRelocationQuestion is Some(false) and it's a prior submission" which {
+    "redirect to the check your benefits page when accommodationRelocationQuestion is Some(false) and prior benefits exist" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("employerName", hmrc = true,
           Some(benefits(emptyAccommodationRelocationModel)))), userRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(urlEOY, body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -469,12 +470,12 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
 
     }
 
-    "redirect to the travel or entertainment page when accommodationRelocationQuestion is Some(false) and it's not a prior submission" which {
+    "redirect to the travel or entertainment page when accommodationRelocationQuestion is Some(false) and no prior benefits exist" which {
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = false, cyaModel("employerName", hmrc = true,
+        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel("employerName", hmrc = true,
           Some(benefits(emptyAccommodationRelocationModel)))), userRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(urlEOY, body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))

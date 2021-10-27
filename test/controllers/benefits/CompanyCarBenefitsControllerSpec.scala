@@ -42,7 +42,8 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
     nino,
     taxYear,
     employmentId,
-    false,
+    true,
+    hasPriorBenefits =  true,
     EmploymentCYAModel(employmentsCYAFill, isUsingCustomerData = false)
   )
 
@@ -53,6 +54,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
     taxYear,
     employmentId,
     false,
+    hasPriorBenefits =  false,
     EmploymentCYAModel(employmentsCYAFill.copy(employmentBenefits = None), isUsingCustomerData = false)
   )
 

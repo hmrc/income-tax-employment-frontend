@@ -108,6 +108,9 @@ POST       /:taxYear/benefits/utility-general-service       controllers.benefits
 GET        /:taxYear/benefits/incidental-overnight-expenses-amount  controllers.benefits.IncidentalCostsBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/incidental-overnight-expenses-amount  controllers.benefits.IncidentalCostsBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/entertainment-expenses-amount controllers.benefits.EntertainmentBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/entertainment-expenses-amount controllers.benefits.EntertainmentBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
 GET        /sign-out                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
 GET        /error/you-need-to-sign-up                       controllers.errors.IndividualAuthErrorController.show

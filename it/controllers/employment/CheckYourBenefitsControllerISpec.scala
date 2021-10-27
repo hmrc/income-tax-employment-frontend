@@ -679,6 +679,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val travelOrSubsistenceBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/travel-subsistence-amount?employmentId=001"
     val incidentalCostsBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/incidental-overnight-expenses-amount?employmentId=001"
     val utilitiesOrGeneralServicesBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/utility-general-service?employmentId=001"
+    val entertainmentAmountBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/entertainment-expenses-amount?employmentId=001"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -830,7 +831,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.personalCosts, commonResults.yes, 9, 4, s"${user.commonExpectedResults.changeText} ${specificResults.personalCostsHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.personalCostsAmount, "£10", 9, 5, s"${user.commonExpectedResults.changeText} ${specificResults.personalCostsAmountHiddenText}", incidentalCostsBenefitsAmountHref)
           changeAmountRowCheck(commonResults.entertainment, commonResults.yes, 9, 6, s"${user.commonExpectedResults.changeText} ${specificResults.entertainmentHiddenText}", dummyHref)
-          changeAmountRowCheck(commonResults.entertainmentAmount, "£11", 9, 7, s"${user.commonExpectedResults.changeText} ${specificResults.entertainmentAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.entertainmentAmount, "£11", 9, 7, s"${user.commonExpectedResults.changeText} ${specificResults.entertainmentAmountHiddenText}", entertainmentAmountBenefitsHref)
 
           textOnPageCheck(commonResults.utilitiesHeader, fieldHeaderSelector(10))
           changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.yes, 11, 1, s"${user.commonExpectedResults.changeText} ${specificResults.utilitiesSubheadingHiddenText}", utilitiesOrGeneralServicesBenefitsHref)
@@ -1016,7 +1017,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear - 1, "001", isPriorSubmission = isPrior, employmentCyaModel)
+            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear-1, "001", isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
           def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
             EmploymentCYAModel(
@@ -1135,7 +1136,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         "return a page with only the benefits received subheading when its EOY and only the benefits question answered as no" which {
 
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear - 1, "001", isPriorSubmission = isPrior, employmentCyaModel)
+            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear-1, "001", isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
           def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
             EmploymentCYAModel(
@@ -1184,7 +1185,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         "redirect to the Did your client receive any benefits page when its EOY and theres no benefits model in the session data" in {
 
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear - 1, "001", isPriorSubmission = isPrior, employmentCyaModel)
+            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear-1, "001", isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
           def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
             EmploymentCYAModel(
@@ -1210,7 +1211,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         "redirect to the Did your client receive any benefits page when its EOY and theres no benefits model in the mongo data" in {
 
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear - 1, "001", isPriorSubmission = isPrior, employmentCyaModel)
+            EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear-1, "001", isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
           val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 

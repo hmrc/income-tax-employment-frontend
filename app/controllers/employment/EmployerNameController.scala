@@ -72,13 +72,13 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
               val cya = data.employment
               val updatedCya = cya.copy(cya.employmentDetails.copy(employerName = submittedName))
               employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCya, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
+                employmentId, updatedCya, taxYear, data.isPriorSubmission,data.hasPriorBenefits)(errorHandler.internalServerError()) {
                 employmentDetailsRedirect(data.employment,taxYear,employmentId,data.isPriorSubmission)
               }
             case None =>
               val isPrior = false
               val newCya = EmploymentCYAModel(EmploymentDetails(employerName = submittedName, currentDataIsHmrcHeld = false))
-              employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear, isPrior)(errorHandler.internalServerError()) {
+              employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear, isPrior, isPrior)(errorHandler.internalServerError()) {
                 employmentDetailsRedirect(newCya,taxYear,employmentId,isPrior)
               }
           }

@@ -17,21 +17,21 @@
 package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
+import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
+import javax.inject.Inject
 import models.User
+import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.RedirectService.{ConditionalRedirect, EmploymentBenefitsType, redirectBasedOnCurrentAnswers}
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.LivingAccommodationBenefitsView
-import controllers.employment.routes.CheckYourBenefitsController
-import models.mongo.EmploymentCYAModel
-import services.RedirectService.{ConditionalRedirect, EmploymentBenefitsType, redirectBasedOnCurrentAnswers}
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class LivingAccommodationBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -92,7 +92,7 @@ class LivingAccommodationBenefitsController @Inject()(implicit val cc: MessagesC
               }
 
               employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission)(errorHandler.internalServerError()) {
+                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
                 Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
               }
             }
@@ -101,5 +101,4 @@ class LivingAccommodationBenefitsController @Inject()(implicit val cc: MessagesC
       }
     }
   }
-
 }

@@ -16,7 +16,8 @@
 
 package models.employment
 
-import controllers.benefits.routes.{IncidentalCostsBenefitsAmountController, TravelAndSubsistenceBenefitsController, TravelOrEntertainmentBenefitsController, TravelOrSubsistenceBenefitsAmountController}
+import controllers.benefits.routes.{IncidentalCostsBenefitsAmountController, TravelAndSubsistenceBenefitsController,
+  TravelOrEntertainmentBenefitsController, TravelOrSubsistenceBenefitsAmountController}
 import controllers.employment.routes.CheckYourBenefitsController
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
