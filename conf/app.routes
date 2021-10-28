@@ -105,8 +105,8 @@ POST       /:taxYear/benefits/qualifying-relocation         controllers.benefits
 GET        /:taxYear/benefits/utility-general-service       controllers.benefits.UtilitiesOrGeneralServicesBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/utility-general-service       controllers.benefits.UtilitiesOrGeneralServicesBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/incidental-overnight-expenses-amount  controllers.benefits.IncidentalCostsBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/incidental-overnight-expenses-amount  controllers.benefits.IncidentalCostsBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/incidental-overnight-costs-amount  controllers.benefits.IncidentalCostsBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/incidental-overnight-costs-amount  controllers.benefits.IncidentalCostsBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/benefits/entertainment-expenses-amount controllers.benefits.EntertainmentBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/entertainment-expenses-amount controllers.benefits.EntertainmentBenefitsAmountController.submit(taxYear: Int, employmentId: String)

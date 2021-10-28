@@ -677,7 +677,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val travelEntertainmentBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/travel-entertainment?employmentId=001"
     val travelOrSubsistenceBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/travel-subsistence?employmentId=001"
     val travelOrSubsistenceBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/travel-subsistence-amount?employmentId=001"
-    val incidentalCostsBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/incidental-overnight-expenses-amount?employmentId=001"
+    val incidentalCostsBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/incidental-overnight-costs-amount?employmentId=001"
     val utilitiesOrGeneralServicesBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/utility-general-service?employmentId=001"
     val entertainmentAmountBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/entertainment-expenses-amount?employmentId=001"
   }

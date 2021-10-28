@@ -36,10 +36,10 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   val amountInputName = "amount"
 
   def incidentalOvernightCostsAmountPageUrl(taxYear: Int): String =
-    s"$appUrl/$taxYear/benefits/incidental-overnight-expenses-amount?employmentId=$employmentId"
+    s"$appUrl/$taxYear/benefits/incidental-overnight-costs-amount?employmentId=$employmentId"
 
   val continueLink: String =
-    s"/income-through-software/return/employment-income/$taxYearEOY/benefits/incidental-overnight-expenses-amount?employmentId=$employmentId"
+    s"/income-through-software/return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs-amount?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -294,7 +294,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
       s"has a SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        //TODO - change to entertaining question page
+        //TODO - change to entertaining question page when available
         result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
       }
     }
