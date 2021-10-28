@@ -150,7 +150,8 @@
                     entertainingQuestion => showQuestionRow("checkYourBenefits.entertainment", entertainingQuestion)
                 },
                 benefits.travelEntertainmentModel.flatMap(_.entertaining).map{
-                    entertaining => showRows("checkYourBenefits.entertainmentAmount", entertaining)
+                    entertaining => showRows("checkYourBenefits.entertainmentAmount",
+                        entertaining, controllers.benefits.routes.EntertainmentBenefitsAmountController.show(taxYear, employmentId))
                 }
             ).flatten
         } else { Seq() }

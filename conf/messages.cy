@@ -744,3 +744,14 @@ benefits.utilitiesOrGeneralServices.title.agent = Did your client get any utilit
 benefits.utilitiesOrGeneralServices.thisIncludes = This includes benefits such as telephone, employer provided services and professional fees or subscriptions.
 benefits.utilitiesOrGeneralServices.error.individual = Select yes if you got utility or general service benefits
 benefits.utilitiesOrGeneralServices.error.agent = Select yes if your client got utility or general service benefits
+
+benefits.entertainmentBenefitAmount.title.individual = How much did you get in total for entertainment?
+benefits.entertainmentBenefitAmount.title.agent = How much did your client get in total for entertainment?
+benefits.entertainmentBenefitAmount.informationText.individual = You can find this figure under section N of your P11D form, in the ’entertainment’ box 16.
+benefits.entertainmentBenefitAmount.informationText.agent = You can find this figure under section N of your client’s P11D form, in the ’entertainment’ box 16.
+benefits.entertainmentBenefitAmount.error.noEntry.individual = Enter the amount you got for entertainment
+benefits.entertainmentBenefitAmount.error.noEntry.agent = Enter the amount your client got for entertainment
+benefits.entertainmentBenefitAmount.error.overMaximum.individual = Your entertainment benefit must be less than £100,000,000,000
+benefits.entertainmentBenefitAmount.error.overMaximum.agent = Your client’s entertainment benefit must be less than £100,000,000,000
+benefits.entertainmentBenefitAmount.error.invalidFormat.individual = Enter the amount you got for entertainment in the correct format
+benefits.entertainmentBenefitAmount.error.invalidFormat.agent = Enter the amount your client got for entertainment in the correct format
