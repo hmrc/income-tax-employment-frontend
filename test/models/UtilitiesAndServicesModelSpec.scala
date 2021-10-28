@@ -34,7 +34,7 @@ class UtilitiesAndServicesModelSpec extends UnitTest {
     service = Some(55.55)
   )
 
-  def result(url: String): Option[Call] = Some(Call("GET",url))
+  def result(url: String): Option[Call] = Some(Call("GET", url))
 
   "isFinished" should {
     "return utilities and services yes no page" in {
@@ -68,7 +68,7 @@ class UtilitiesAndServicesModelSpec extends UnitTest {
     }
 
     "return employerProvidedServices amount page" in {
-      model.copy(employerProvidedServices = None).employerProvidedServicesSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=id")
+      model.copy(employerProvidedServices = None).employerProvidedServicesSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/employer-provided-services-amount?employmentId=id")
     }
 
     "return none when section is finished" in {
