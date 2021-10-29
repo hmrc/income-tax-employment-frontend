@@ -686,6 +686,14 @@ benefits.livingAccommodationAmount.error.overMaximum.agent = Your client’s liv
 benefits.livingAccommodationAmount.error.wrongFormat.individual = Enter your living accommodation benefit amount in the correct format
 benefits.livingAccommodationAmount.error.wrongFormat.agent = Enter your client’s living accommodation benefit amount in the correct format
 
+benefits.qualifyingRelocationBenefits.title.individual = Did you get any qualifying relocation benefits?
+benefits.qualifyingRelocationBenefits.title.agent = Did your client get any qualifying relocation benefits?
+benefits.qualifyingRelocationBenefits.error.individual = Select yes if you got qualifying relocation benefits
+benefits.qualifyingRelocationBenefits.error.agent = Select yes if your client got qualifying relocation benefits
+benefits.qualifyingRelocationBenefits.thisIncludes.individual = These are costs that your employer has paid to help you with relocation, including bridging loans and legal fees.
+benefits.qualifyingRelocationBenefits.thisIncludes.agent = These are costs that their employer has paid to help them with relocation, including bridging loans and legal fees.
+benefits.qualifyingRelocationBenefits.thisIncludes.example1 = This does not include the cost of using the NHS after coming into the UK.
+
 benefits.qualifyingRelocationBenefitsAmount.title.individual = How much did you get in total for qualifying relocation benefits?
 benefits.qualifyingRelocationBenefitsAmount.title.agent = How much was your client’s total qualifying relocation benefit?
 benefits.qualifyingRelocationBenefitsAmount.error.noEntry.individual = Enter your qualifying relocation benefit amount
@@ -701,14 +709,6 @@ benefits.travelAndSubsistence.thisIs.individual = This is the cost of any travel
 benefits.travelAndSubsistence.thisIs.agent = This is the cost of any travel and subsistence that is paid for by their employer and is not exempt from tax. This includes hotels and meals.
 benefits.travelAndSubsistence.error.individual = Select yes if you got travel and subsistence benefits
 benefits.travelAndSubsistence.error.agent = Select yes if your client got travel and subsistence benefits
-
-benefits.qualifyingRelocationBenefits.title.individual = Did you get any qualifying relocation benefits?
-benefits.qualifyingRelocationBenefits.title.agent = Did your client get any qualifying relocation benefits?
-benefits.qualifyingRelocationBenefits.error.individual = Select yes if you got qualifying relocation benefits
-benefits.qualifyingRelocationBenefits.error.agent = Select yes if your client got qualifying relocation benefits
-benefits.qualifyingRelocationBenefits.thisIncludes.individual = These are costs that your employer has paid to help you with relocation, including bridging loans and legal fees.
-benefits.qualifyingRelocationBenefits.thisIncludes.agent = These are costs that their employer has paid to help them with relocation, including bridging loans and legal fees.
-benefits.qualifyingRelocationBenefits.thisIncludes.example1 = This does not include the cost of using the NHS after coming into the UK.
 
 benefits.nonQualifyingRelocationBenefitAmount.title.individual = How much did you get in total for non-qualifying relocation benefits?
 benefits.nonQualifyingRelocationBenefitAmount.title.agent = How much did your client get in total for non-qualifying relocation benefits?
@@ -744,6 +744,15 @@ benefits.utilitiesOrGeneralServices.title.agent = Did your client get any utilit
 benefits.utilitiesOrGeneralServices.thisIncludes = This includes benefits such as telephone, employer provided services and professional fees or subscriptions.
 benefits.utilitiesOrGeneralServices.error.individual = Select yes if you got utility or general service benefits
 benefits.utilitiesOrGeneralServices.error.agent = Select yes if your client got utility or general service benefits
+
+benefits.employerProvidedServicesBenefitsAmount.title.individual = How much did you get in total for services provided by your employer?
+benefits.employerProvidedServicesBenefitsAmount.title.agent = How much did your client get in total for services provided by their employer?
+benefits.employerProvidedServicesBenefitsAmount.error.noEntry.individual = Enter the amount you got for services provided by your employer
+benefits.employerProvidedServicesBenefitsAmount.error.noEntry.agent = Enter the amount your client got for services provided by their employer
+benefits.employerProvidedServicesBenefitsAmount.error.overMaximum.individual = The amount you got for services provided by your employer must be less than £100,000,000,000
+benefits.employerProvidedServicesBenefitsAmount.error.overMaximum.agent = The amount your client got for services provided by their employer must be less than £100,000,000,000
+benefits.employerProvidedServicesBenefitsAmount.error.wrongFormat.individual = Enter the amount you got for services provided by your employer in the correct format
+benefits.employerProvidedServicesBenefitsAmount.error.wrongFormat.agent = Enter the amount your client got for services provided by their employer in the correct format
 
 benefits.entertainmentBenefitAmount.title.individual = How much did you get in total for entertainment?
 benefits.entertainmentBenefitAmount.title.agent = How much did your client get in total for entertainment?

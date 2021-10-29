@@ -16,11 +16,11 @@
 
 package models.benefits
 
+import controllers.benefits.routes._
+import controllers.employment.routes._
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue
-import controllers.benefits.routes._
-import controllers.employment.routes._
 
 case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolean] = None,
                                      telephoneQuestion: Option[Boolean] = None,
@@ -30,13 +30,13 @@ case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolea
                                      employerProvidedProfessionalSubscriptionsQuestion: Option[Boolean] = None,
                                      employerProvidedProfessionalSubscriptions: Option[BigDecimal] = None,
                                      serviceQuestion: Option[Boolean] = None,
-                                     service: Option[BigDecimal] = None){
+                                     service: Option[BigDecimal] = None) {
 
-  def isFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
+  def isFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
 
     utilitiesAndServicesQuestion match {
       case Some(true) =>
-        (telephoneSectionFinished,employerProvidedServicesSectionFinished,
+        (telephoneSectionFinished, employerProvidedServicesSectionFinished,
           employerProvidedProfessionalSubscriptionsSectionFinished, serviceSectionFinished) match {
           case (call@Some(_), _, _, _) => call
           case (_, call@Some(_), _, _) => call
@@ -50,17 +50,17 @@ case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolea
   }
 
   //scalastyle:off
-  def telephoneSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
+  def telephoneSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     telephoneQuestion match {
-      case Some(true) => if(telephone.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO telephone amount page
+      case Some(true) => if (telephone.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO telephone amount page
       case Some(false) => None
       case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO telephone yes no page
     }
   }
 
-  def employerProvidedServicesSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
+  def employerProvidedServicesSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     employerProvidedServicesQuestion match {
-      case Some(true) => if(employerProvidedServices.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) // TODO employerProvidedServices amount page
+      case Some(true) => if (employerProvidedServices.isDefined) None else Some(EmployerProvidedServicesBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO employerProvidedServices yes no page
     }
@@ -68,7 +68,7 @@ case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolea
 
   def employerProvidedProfessionalSubscriptionsSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     employerProvidedProfessionalSubscriptionsQuestion match {
-      case Some(true) => if(employerProvidedProfessionalSubscriptions.isDefined) None else Some(CheckYourBenefitsController.show(taxYear,employmentId)) // TODO employerProvidedProfessionalSubscriptions amount page
+      case Some(true) => if (employerProvidedProfessionalSubscriptions.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) // TODO employerProvidedProfessionalSubscriptions amount page
       case Some(false) => None
       case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO employerProvidedProfessionalSubscriptions yes no page
     }
@@ -76,7 +76,7 @@ case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolea
 
   def serviceSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     serviceQuestion match {
-      case Some(true) => if(service.isDefined) None else Some(CheckYourBenefitsController.show(taxYear,employmentId)) // TODO service amount page
+      case Some(true) => if (service.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) // TODO service amount page
       case Some(false) => None
       case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO service yes no page
     }
@@ -85,7 +85,7 @@ case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolea
 
 }
 
-object UtilitiesAndServicesModel{
+object UtilitiesAndServicesModel {
   implicit val formats: OFormat[UtilitiesAndServicesModel] = Json.format[UtilitiesAndServicesModel]
 
   def clear: UtilitiesAndServicesModel = UtilitiesAndServicesModel(utilitiesAndServicesQuestion = Some(false))
@@ -102,6 +102,6 @@ case class EncryptedUtilitiesAndServicesModel(utilitiesAndServicesQuestion: Opti
                                               serviceQuestion: Option[EncryptedValue] = None,
                                               service: Option[EncryptedValue] = None)
 
-object EncryptedUtilitiesAndServicesModel{
+object EncryptedUtilitiesAndServicesModel {
   implicit val formats: OFormat[EncryptedUtilitiesAndServicesModel] = Json.format[EncryptedUtilitiesAndServicesModel]
 }
