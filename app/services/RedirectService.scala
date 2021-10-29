@@ -365,7 +365,6 @@ object RedirectService extends Logging {
   }
 
   def employerProvidedServicesAmountRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-
     val employerProvidedServicesQuestion = cya.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion))
 
     employerProvidedServicesBenefitsRedirects(cya, taxYear, employmentId) ++
