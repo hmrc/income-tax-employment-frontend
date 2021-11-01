@@ -293,9 +293,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            //TODO: assert goes to the entertaining question page as commented below whhen merged and available
-            //Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/entertainment-expenses?employmentId=$employmentId")
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/entertainment-expenses?employmentId=$employmentId")
         }
       }
 
@@ -542,9 +540,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            //TODO: assert goes to the entertainment expenses question page as commented below when merged and available
-            //Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/entertainment-expenses?employmentId=$employmentId")
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/entertainment-expenses?employmentId=$employmentId")
         }
       }
 
