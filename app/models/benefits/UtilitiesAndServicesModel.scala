@@ -45,7 +45,7 @@ case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolea
           case _ => None
         }
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      case None => Some(UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId))
     }
   }
 
@@ -62,7 +62,7 @@ case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolea
     employerProvidedServicesQuestion match {
       case Some(true) => if (employerProvidedServices.isDefined) None else Some(EmployerProvidedServicesBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO employerProvidedServices yes no page
+      case None => Some(EmployerProvidedServicesBenefitsController.show(taxYear, employmentId))
     }
   }
 

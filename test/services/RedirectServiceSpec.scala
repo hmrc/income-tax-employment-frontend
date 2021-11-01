@@ -1003,7 +1003,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/utility-general-service?employmentId=001"
       }
       "it's a new submission and attempted to view the telephone yes no page but the utilities and services question is false" in {
 
@@ -1067,7 +1067,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/employer-provided-services?employmentId=001"
       }
       "it's a new submission and attempted to view the telephone amount page but the telephone question is empty" in {
 
@@ -1115,7 +1115,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/employer-provided-services?employmentId=001"
       }
       "it's a new submission and attempted to view the employer provided services amount page but the employer provided services question is false" in {
 
@@ -1165,7 +1165,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/employer-provided-services?employmentId=001"
       }
       "it's a new submission and attempted to view the employer provided subscriptions amount page" +
         " but the employer provided subscriptions question is empty" in {

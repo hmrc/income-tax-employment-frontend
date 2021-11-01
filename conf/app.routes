@@ -114,11 +114,11 @@ POST       /:taxYear/benefits/incidental-overnight-costs-amount  controllers.ben
 GET        /:taxYear/benefits/entertainment-expenses-amount controllers.benefits.EntertainmentBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/entertainment-expenses-amount controllers.benefits.EntertainmentBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/utility-general-service       controllers.benefits.UtilitiesOrGeneralServicesBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/utility-general-service       controllers.benefits.UtilitiesOrGeneralServicesBenefitsController.submit(taxYear: Int, employmentId: String)
-
 GET        /:taxYear/benefits/employer-provided-services-amount    controllers.benefits.EmployerProvidedServicesBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/employer-provided-services-amount    controllers.benefits.EmployerProvidedServicesBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/benefits/employer-provided-services    controllers.benefits.EmployerProvidedServicesBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/employer-provided-services    controllers.benefits.EmployerProvidedServicesBenefitsController.submit(taxYear: Int, employmentId: String)
 
 GET        /sign-out                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
