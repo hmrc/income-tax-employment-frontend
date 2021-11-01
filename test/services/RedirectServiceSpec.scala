@@ -108,7 +108,7 @@ class RedirectServiceSpec extends UnitTest {
 
   "benefitsSubmitRedirect" should {
     "redirect to the CYA page if the journey is finished" in {
-      val result = Future.successful(RedirectService.benefitsSubmitRedirect(employmentCYA,Call("GET","/next"))(taxYear,"001"))
+      val result = Future.successful(RedirectService.benefitsSubmitRedirect(employmentCYA, Call("GET", "/next"))(taxYear, "001"))
 
       status(result) shouldBe SEE_OTHER
       redirectUrl(result) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
@@ -116,7 +116,7 @@ class RedirectServiceSpec extends UnitTest {
     "redirect to the next page if the journey is not finished" in {
       val result = Future.successful(RedirectService.benefitsSubmitRedirect(employmentCYA.copy(
         employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = None))
-      ),Call("GET","/next"))(taxYear,"001"))
+      ), Call("GET", "/next"))(taxYear, "001"))
 
       status(result) shouldBe SEE_OTHER
       redirectUrl(result) shouldBe "/next"
@@ -522,7 +522,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and attempted to view the qualifying relocation amount page but the qualifyingRelocationExpensesQuestion is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(hasPriorBenefits = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(qualifyingRelocationExpensesQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -602,7 +602,7 @@ class RedirectServiceSpec extends UnitTest {
       "it's a prior submission and attempted to view the accommodation yes no page but the accommodation relocation question is false" in {
 
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
-          Some(employmentUserData.copy(hasPriorBenefits = true,employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
+          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationRelocationQuestion = Some(false)))
           ))))), EmploymentBenefitsType)(
           cya => {
@@ -1188,7 +1188,6 @@ class RedirectServiceSpec extends UnitTest {
       }
       "it's a new submission and attempted to view the employer provided subscriptions amount page" +
         " but the employer provided subscriptions question is false" in {
-
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
           Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(
             employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
@@ -1203,7 +1202,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/other-services?employmentId=001"
       }
       "it's a prior submission and attempted to view the employer provided subscriptions amount page" +
         " but the employer provided subscriptions question is false" in {
@@ -1258,7 +1257,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/other-services?employmentId=001"
       }
       "it's a new submission and attempted to view the services amount page but the services question is false" in {
 
@@ -1299,7 +1298,6 @@ class RedirectServiceSpec extends UnitTest {
     }
     "redirect using medical benefits methods" when {
       "it's a new submission and attempted to view the medical benefits page but the utilities section is not finished" in {
-
         val response = RedirectService.redirectBasedOnCurrentAnswers(taxYear, "001",
           Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(
             employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
@@ -1314,7 +1312,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/other-services?employmentId=001"
       }
     }
     "redirect to benefits CYA page" when {
