@@ -16,10 +16,12 @@
 
 package controllers.benefits
 
+import controllers.benefits.routes.UtilitiesOrGeneralServicesBenefitsController
+import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.User
-import models.employment.BenefitsViewModel
 import models.benefits.UtilitiesAndServicesModel
+import models.employment.BenefitsViewModel
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -27,8 +29,6 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import controllers.benefits.routes.UtilitiesOrGeneralServicesBenefitsController
-import controllers.employment.routes.CheckYourBenefitsController
 
 class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -65,7 +65,6 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
   trait CommonExpectedResults {
     val expectedCaption: String
-    val expectedHintText: String
     val yesText: String
     val noText: String
     val buttonText: String
@@ -84,7 +83,6 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
     val yesText = "Yes"
     val noText = "No"
     val buttonText = "Continue"
-    val expectedHintText = "For example, subscriptions or laundry services."
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -100,7 +98,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
     val expectedHeading = "Did you get a benefit for services provided by your employer?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorMessage = "Select yes if you got a benefit for services provided by your employer"
-    val expectedParagraphText: String = "These are services you used that are not related to your job. Your employer pays for them."
+    val expectedParagraphText = "These are services you used that are not related to your job. Your employer pays for them. For example, subscriptions or laundry services."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -108,7 +106,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
     val expectedHeading = "Did you get a benefit for services provided by your employer?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorMessage = "Select yes if you got a benefit for services provided by your employer"
-    val expectedParagraphText: String = "These are services you used that are not related to your job. Your employer pays for them."
+    val expectedParagraphText = "These are services you used that are not related to your job. Your employer pays for them. For example, subscriptions or laundry services."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -116,7 +114,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
     val expectedHeading = "Did your client get a benefit for services provided by their employer?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorMessage = "Select yes if your client got a benefit for services provided by their employer"
-    val expectedParagraphText: String = "These are services they used that are not related to their job. Their employer pays for them."
+    val expectedParagraphText = "These are services they used that are not related to their job. Their employer pays for them. For example, subscriptions or laundry services."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -124,7 +122,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
     val expectedHeading = "Did your client get a benefit for services provided by their employer?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorMessage = "Select yes if your client got a benefit for services provided by their employer"
-    val expectedParagraphText: String = "These are services they used that are not related to their job. Their employer pays for them."
+    val expectedParagraphText = "These are services they used that are not related to their job. Their employer pays for them. For example, subscriptions or laundry services."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -164,7 +162,6 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
-          hintTextCheck(expectedHintText)
           radioButtonCheck(yesText, 1, Some(false))
           radioButtonCheck(noText, 2, Some(false))
           buttonCheck(buttonText, continueButtonSelector)
@@ -194,7 +191,6 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
-          hintTextCheck(expectedHintText)
           radioButtonCheck(yesText, 1, Some(true))
           radioButtonCheck(noText, 2, Some(false))
           buttonCheck(buttonText, continueButtonSelector)
@@ -224,7 +220,6 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
-          hintTextCheck(expectedHintText)
           radioButtonCheck(yesText, 1, Some(false))
           radioButtonCheck(noText, 2, Some(true))
           buttonCheck(buttonText, continueButtonSelector)
@@ -340,7 +335,6 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
-          hintTextCheck(expectedHintText)
           radioButtonCheck(yesText, 1, Some(false))
           radioButtonCheck(noText, 2, Some(false))
           buttonCheck(buttonText, continueButtonSelector)
@@ -398,7 +392,8 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
           Some(benefits(emptyUtilitiesAndServicesModel)))), userRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(employerProvidedServicesPageUrl(taxYearEOY), body = Map(YesNoForm.yesNo -> YesNoForm.no), follow = false,
-          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))      }
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
@@ -416,7 +411,8 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
           Some(benefits(emptyUtilitiesAndServicesModel)))), userRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(employerProvidedServicesPageUrl(taxYearEOY), body = Map(YesNoForm.yesNo -> YesNoForm.no), follow = false,
-          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))      }
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
@@ -441,7 +437,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-//        TODO: This will go to the amount page when its implemented
+        //        TODO: This will go to the amount page when its implemented
         result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
@@ -497,7 +493,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-//        TODO: This will go to the amount page when its implemented
+        //        TODO: This will go to the amount page when its implemented
         result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
       }
 

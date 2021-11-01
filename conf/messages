@@ -774,8 +774,7 @@ benefits.entertainmentBenefitAmount.error.invalidFormat.agent = Enter the amount
 
 benefits.employerProvidedServices.title.individual = Did you get a benefit for services provided by your employer?
 benefits.employerProvidedServices.title.agent = Did your client get a benefit for services provided by their employer?
-benefits.employerProvidedServices.paragraph.individual = These are services you used that are not related to your job. Your employer pays for them.
-benefits.employerProvidedServices.paragraph.agent = These are services they used that are not related to their job. Their employer pays for them.
-benefits.employerProvidedServices.forExample = For example, subscriptions or laundry services.
+benefits.employerProvidedServices.paragraph.individual = These are services you used that are not related to your job. Your employer pays for them. For example, subscriptions or laundry services.
+benefits.employerProvidedServices.paragraph.agent = These are services they used that are not related to their job. Their employer pays for them. For example, subscriptions or laundry services.
 benefits.employerProvidedServices.error.no-entry.individual = Select yes if you got a benefit for services provided by your employer
 benefits.employerProvidedServices.error.no-entry.agent = Select yes if your client got a benefit for services provided by their employer
