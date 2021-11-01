@@ -739,6 +739,13 @@ benefits.incidentalCostsBenefitsAmount.error.incorrectFormat.agent = Enter the a
 benefits.incidentalCostsBenefitsAmount.error.overMaximum.individual = Your incidental overnight costs must be less than £100,000,000,000
 benefits.incidentalCostsBenefitsAmount.error.overMaximum.agent = Your client’s incidental overnight costs must be less than £100,000,000,000
 
+benefits.entertainingBenefits.title.individual = Did you get any entertainment benefits?
+benefits.entertainingBenefits.title.agent = Did your client get any entertainment benefits?
+benefits.entertainingBenefits.paragraph.individual = These are entertainment costs that your employer has paid for, or reimbursed you for. For example, eating, drinking and other hospitality.
+benefits.entertainingBenefits.paragraph.agent = These are entertainment costs that their employer has paid for, or reimbursed them for. For example, eating, drinking and other hospitality.
+benefits.entertainingBenefits.error.individual = Select yes if you got any entertainment benefits
+benefits.entertainingBenefits.error.agent = Select yes if your client got any entertainment benefits
+
 benefits.utilitiesOrGeneralServices.title.individual = Did you get any utility or general service benefits from this company?
 benefits.utilitiesOrGeneralServices.title.agent = Did your client get any utility or general service benefits from this company?
 benefits.utilitiesOrGeneralServices.thisIncludes = This includes benefits such as telephone, employer provided services and professional fees or subscriptions.
