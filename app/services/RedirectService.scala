@@ -288,8 +288,7 @@ object RedirectService extends Logging {
       Seq(
         //TODO go to incidental costs yes no page
         ConditionalRedirect(incidentalCostsQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
-        //TODO go to entertainment yes no page
-        ConditionalRedirect(incidentalCostsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(incidentalCostsQuestion.contains(false), EntertainingBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(incidentalCostsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
@@ -311,8 +310,7 @@ object RedirectService extends Logging {
 
     entertainmentBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to entertaining yes no page
-        ConditionalRedirect(entertainingQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(entertainingQuestion.isEmpty, EntertainingBenefitsController.show(taxYear, employmentId)),
         ConditionalRedirect(entertainingQuestion.contains(false), UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(entertainingQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )

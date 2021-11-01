@@ -26,6 +26,7 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.routes.EntertainingBenefitsController
 import forms.AmountForm
 
 class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -294,8 +295,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
       s"has a SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        //TODO - change to entertaining question page when available
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(EntertainingBenefitsController.show(taxYearEOY, employmentId).url)
       }
     }
 
@@ -533,8 +533,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
       s"has a SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        //TODO - change to entertaining question page
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(EntertainingBenefitsController.show(taxYearEOY, employmentId).url)
       }
     }
 
