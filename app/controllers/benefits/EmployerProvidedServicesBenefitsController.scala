@@ -49,7 +49,7 @@ class EmployerProvidedServicesBenefitsController @Inject()(implicit val cc: Mess
   )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-    RedirectService.commonUtilitiesAndServicesBenefitsRedirects(cya,taxYear,employmentId)
+    RedirectService.employerProvidedServicesBenefitsRedirects(cya,taxYear,employmentId)
   }
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
