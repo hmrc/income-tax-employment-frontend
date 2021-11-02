@@ -51,7 +51,7 @@ class UtilitiesAndServicesModelSpec extends UnitTest {
   "telephoneSectionFinished" should {
     "return telephone yes no page" in {
       model.copy(telephoneQuestion = None).telephoneSectionFinished(taxYear, "id") shouldBe
-        result(s"/income-through-software/return/employment-income/$taxYear/check-employment-benefits?employmentId=id")
+        result("/income-through-software/return/employment-income/2022/benefits/telephone?employmentId=id")
     }
 
     "return telephone amount page" in {

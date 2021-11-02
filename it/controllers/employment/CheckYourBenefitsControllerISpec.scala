@@ -681,6 +681,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val utilitiesOrGeneralServicesBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/utility-general-service?employmentId=001"
     val entertainingBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/entertainment-expenses?employmentId=001"
     val entertainmentAmountBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/entertainment-expenses-amount?employmentId=001"
+    val telephoneBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/telephone?employmentId=001"
     val employerProvidedServicesBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/employer-provided-services?employmentId=001"
     val employerProvidedServicesBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/employer-provided-services-amount?employmentId=001"
     val professionalSubscriptionsBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/professional-fees-or-subscriptions?employmentId=001"
@@ -840,7 +841,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           textOnPageCheck(commonResults.utilitiesHeader, fieldHeaderSelector(10))
           changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.yes, 11, 1, s"${user.commonExpectedResults.changeText} ${specificResults.utilitiesSubheadingHiddenText}", utilitiesOrGeneralServicesBenefitsHref)
-          changeAmountRowCheck(commonResults.telephone, commonResults.yes, 11, 2, s"${user.commonExpectedResults.changeText} ${specificResults.telephoneHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.telephone, commonResults.yes, 11, 2, s"${user.commonExpectedResults.changeText} ${specificResults.telephoneHiddenText}", telephoneBenefitsHref)
           changeAmountRowCheck(commonResults.telephoneAmount, "£12", 11, 3, s"${user.commonExpectedResults.changeText} ${specificResults.telephoneAmountHiddenText}", dummyHref)
 
           changeAmountRowCheck(commonResults.servicesProvided, commonResults.yes, 11, 4, s"${user.commonExpectedResults.changeText} ${specificResults.servicesProvidedHiddenText}", employerProvidedServicesBenefitsHref)
