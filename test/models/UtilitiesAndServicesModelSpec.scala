@@ -22,7 +22,8 @@ import utils.UnitTest
 
 class UtilitiesAndServicesModelSpec extends UnitTest {
 
-  val model = UtilitiesAndServicesModel(
+  private val taxYear = 2022
+  private val model = UtilitiesAndServicesModel(
     utilitiesAndServicesQuestion = Some(true),
     telephoneQuestion = Some(true),
     telephone = Some(55.55),
@@ -34,77 +35,86 @@ class UtilitiesAndServicesModelSpec extends UnitTest {
     service = Some(55.55)
   )
 
-  def result(url: String): Option[Call] = Some(Call("GET", url))
+  private def result(url: String): Option[Call] = Some(Call("GET", url))
 
   "isFinished" should {
     "return utilities and services yes no page" in {
-      model.copy(utilitiesAndServicesQuestion = None).isFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/utility-general-service?employmentId=id")
+      model.copy(utilitiesAndServicesQuestion = None).isFinished(taxYear, "id") shouldBe
+        result(s"/income-through-software/return/employment-income/$taxYear/benefits/utility-general-service?employmentId=id")
     }
     "return none when section is finished" in {
-      model.copy(utilitiesAndServicesQuestion = Some(false)).isFinished(2022, "employmentId") shouldBe None
-      model.isFinished(2022, "employmentId") shouldBe None
+      model.copy(utilitiesAndServicesQuestion = Some(false)).isFinished(taxYear, "employmentId") shouldBe None
+      model.isFinished(taxYear, "employmentId") shouldBe None
     }
   }
 
   "telephoneSectionFinished" should {
     "return telephone yes no page" in {
-      model.copy(telephoneQuestion = None).telephoneSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=id")
+      model.copy(telephoneQuestion = None).telephoneSectionFinished(taxYear, "id") shouldBe
+        result(s"/income-through-software/return/employment-income/$taxYear/check-employment-benefits?employmentId=id")
     }
 
     "return telephone amount page" in {
-      model.copy(telephone = None).telephoneSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=id")
+      model.copy(telephone = None).telephoneSectionFinished(taxYear, "id") shouldBe
+        result(s"/income-through-software/return/employment-income/$taxYear/check-employment-benefits?employmentId=id")
     }
 
     "return none when section is finished" in {
-      model.copy(telephoneQuestion = Some(false)).telephoneSectionFinished(2022, "employmentId") shouldBe None
-      model.telephoneSectionFinished(2022, "employmentId") shouldBe None
+      model.copy(telephoneQuestion = Some(false)).telephoneSectionFinished(taxYear, "employmentId") shouldBe None
+      model.telephoneSectionFinished(taxYear, "employmentId") shouldBe None
     }
   }
 
   "employerProvidedServicesSectionFinished" should {
 
     "return employerProvidedServices yes no page" in {
-      model.copy(employerProvidedServicesQuestion = None).employerProvidedServicesSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/employer-provided-services?employmentId=id")
+      model.copy(employerProvidedServicesQuestion = None).employerProvidedServicesSectionFinished(taxYear, "id") shouldBe
+        result(s"/income-through-software/return/employment-income/$taxYear/benefits/employer-provided-services?employmentId=id")
     }
 
     "return employerProvidedServices amount page" in {
-      model.copy(employerProvidedServices = None).employerProvidedServicesSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/employer-provided-services-amount?employmentId=id")
+      model.copy(employerProvidedServices = None).employerProvidedServicesSectionFinished(taxYear, "id") shouldBe
+        result(s"/income-through-software/return/employment-income/$taxYear/benefits/employer-provided-services-amount?employmentId=id")
     }
 
     "return none when section is finished" in {
-      model.copy(employerProvidedServicesQuestion = Some(false)).employerProvidedServicesSectionFinished(2022, "employmentId") shouldBe None
-      model.employerProvidedServicesSectionFinished(2022, "employmentId") shouldBe None
+      model.copy(employerProvidedServicesQuestion = Some(false)).employerProvidedServicesSectionFinished(taxYear, "employmentId") shouldBe None
+      model.employerProvidedServicesSectionFinished(taxYear, "employmentId") shouldBe None
     }
   }
 
   "employerProvidedProfessionalSubscriptionsSectionFinished" should {
 
     "return employerProvidedProfessionalSubscriptions yes no page" in {
-      model.copy(employerProvidedProfessionalSubscriptionsQuestion = None).employerProvidedProfessionalSubscriptionsSectionFinished(2021, "id") shouldBe result("/income-through-software/return/employment-income/2021/benefits/professional-fees-or-subscriptions?employmentId=id")
+      model.copy(employerProvidedProfessionalSubscriptionsQuestion = None).employerProvidedProfessionalSubscriptionsSectionFinished(taxYear, "id") shouldBe
+        result(s"/income-through-software/return/employment-income/$taxYear/benefits/professional-fees-or-subscriptions?employmentId=id")
     }
 
     "return employerProvidedProfessionalSubscriptions amount page" in {
-      model.copy(employerProvidedProfessionalSubscriptions = None).employerProvidedProfessionalSubscriptionsSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=id")
+      model.copy(employerProvidedProfessionalSubscriptions = None).employerProvidedProfessionalSubscriptionsSectionFinished(taxYear, "id") shouldBe
+        result(s"/income-through-software/return/employment-income/$taxYear/check-employment-benefits?employmentId=id")
     }
 
     "return none when section is finished" in {
-      model.copy(employerProvidedProfessionalSubscriptionsQuestion = Some(false)).employerProvidedProfessionalSubscriptionsSectionFinished(2022, "employmentId") shouldBe None
-      model.employerProvidedProfessionalSubscriptionsSectionFinished(2022, "employmentId") shouldBe None
+      model.copy(employerProvidedProfessionalSubscriptionsQuestion = Some(false)).employerProvidedProfessionalSubscriptionsSectionFinished(taxYear, "employmentId") shouldBe None
+      model.employerProvidedProfessionalSubscriptionsSectionFinished(taxYear, "employmentId") shouldBe None
     }
   }
 
   "serviceSectionFinished" should {
     "return service yes no page" in {
-      model.copy(serviceQuestion = None).serviceSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=id")
+      model.copy(serviceQuestion = None).serviceSectionFinished(taxYear, "id") shouldBe
+        result(s"/income-through-software/return/employment-income/$taxYear/benefits/other-services?employmentId=id")
     }
 
     "return service amount page" in {
-      model.copy(service = None).serviceSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=id")
+      model.copy(service = None).serviceSectionFinished(taxYear, "id") shouldBe
+        result(s"/income-through-software/return/employment-income/$taxYear/check-employment-benefits?employmentId=id")
     }
 
     "return none when section is finished" in {
-      model.copy(serviceQuestion = Some(false)).serviceSectionFinished(2022, "employmentId") shouldBe None
-      model.serviceSectionFinished(2022, "employmentId") shouldBe None
+      model.copy(serviceQuestion = Some(false)).serviceSectionFinished(taxYear, "employmentId") shouldBe None
+      model.serviceSectionFinished(taxYear, "employmentId") shouldBe None
     }
   }
 

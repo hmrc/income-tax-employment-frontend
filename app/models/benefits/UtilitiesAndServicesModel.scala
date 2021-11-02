@@ -33,7 +33,6 @@ case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolea
                                      service: Option[BigDecimal] = None) {
 
   def isFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
-
     utilitiesAndServicesQuestion match {
       case Some(true) =>
         (telephoneSectionFinished, employerProvidedServicesSectionFinished,
@@ -78,7 +77,7 @@ case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolea
     serviceQuestion match {
       case Some(true) => if (service.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) // TODO service amount page
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO service yes no page
+      case None => Some(OtherServicesBenefitsController.show(taxYear, employmentId))
     }
   }
   //scalastyle:on
