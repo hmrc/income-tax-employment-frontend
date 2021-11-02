@@ -345,8 +345,7 @@ object RedirectService extends Logging {
 
     commonUtilitiesAndServicesBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to telephone yes no page
-        ConditionalRedirect(telephoneQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(telephoneQuestion.isEmpty, TelephoneBenefitsController.show(taxYear, employmentId)),
         ConditionalRedirect(telephoneQuestion.contains(false), EmployerProvidedServicesBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(telephoneQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
