@@ -366,8 +366,7 @@ object RedirectService extends Logging {
     employerProvidedServicesBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(employerProvidedServicesQuestion.isEmpty, EmployerProvidedServicesBenefitsController.show(taxYear, employmentId)),
-        //TODO go to employer provided subscriptions yes no page
-        ConditionalRedirect(employerProvidedServicesQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(employerProvidedServicesQuestion.contains(false), ProfessionalSubscriptionsBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(employerProvidedServicesQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
@@ -389,8 +388,7 @@ object RedirectService extends Logging {
 
     employerProvidedSubscriptionsBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to employerProvidedProfessionalSubscriptions yes no page
-        ConditionalRedirect(employerProvidedProfessionalSubscriptionsQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(employerProvidedProfessionalSubscriptionsQuestion.isEmpty, ProfessionalSubscriptionsBenefitsController.show(taxYear, employmentId)),
         //TODO go to services yes no page
         ConditionalRedirect(employerProvidedProfessionalSubscriptionsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(employerProvidedProfessionalSubscriptionsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))

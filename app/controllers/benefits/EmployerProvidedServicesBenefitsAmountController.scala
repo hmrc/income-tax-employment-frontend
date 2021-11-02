@@ -18,6 +18,7 @@ package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.routes.ProfessionalSubscriptionsBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import models.mongo.EmploymentCYAModel
@@ -77,8 +78,7 @@ class EmployerProvidedServicesBenefitsAmountController @Inject()(implicit val cc
                   if (cya.isPriorSubmission) {
                     Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                   } else {
-                    // TODO: Point to the professional fees and subscriptions benefits page
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                    Redirect(ProfessionalSubscriptionsBenefitsController.show(taxYear, employmentId))
                   }
                 }
             }
