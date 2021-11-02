@@ -785,3 +785,10 @@ benefits.employerProvidedServices.paragraph.individual = These are services you 
 benefits.employerProvidedServices.paragraph.agent = These are services they used that are not related to their job. Their employer pays for them. For example, subscriptions or laundry services.
 benefits.employerProvidedServices.error.no-entry.individual = Select yes if you got a benefit for services provided by your employer
 benefits.employerProvidedServices.error.no-entry.agent = Select yes if your client got a benefit for services provided by their employer
+
+benefits.otherServicesBenefits.title.individual = Did you get any benefits for other services?
+benefits.otherServicesBenefits.title.agent = Did your client get any benefits for other services?
+benefits.otherServicesBenefits.theseAre.individual = These are any other services you have used that are required for your job. Your employer pays for them.
+benefits.otherServicesBenefits.theseAre.agent = These are any other services they have used that are required for their job. Their employer pays for them.
+benefits.otherServicesBenefits.error.individual = Select yes if you got benefits for other services
+benefits.otherServicesBenefits.error.agent = Select yes if your client got benefits for other services

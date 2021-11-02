@@ -389,14 +389,12 @@ object RedirectService extends Logging {
     employerProvidedSubscriptionsBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(employerProvidedProfessionalSubscriptionsQuestion.isEmpty, ProfessionalSubscriptionsBenefitsController.show(taxYear, employmentId)),
-        //TODO go to services yes no page
-        ConditionalRedirect(employerProvidedProfessionalSubscriptionsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(employerProvidedProfessionalSubscriptionsQuestion.contains(false), OtherServicesBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(employerProvidedProfessionalSubscriptionsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
 
   def servicesBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-
     val telephoneSectionFinished = toConditionalRedirect(
       cya.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.telephoneSectionFinished(taxYear, employmentId))))
 
@@ -410,13 +408,11 @@ object RedirectService extends Logging {
   }
 
   def servicesBenefitsAmountRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-
     val serviceQuestion = cya.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.serviceQuestion))
 
     servicesBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to service yes no page
-        ConditionalRedirect(serviceQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(serviceQuestion.isEmpty, OtherServicesBenefitsController.show(taxYear, employmentId)),
         //TODO go to medical benefits yes no page
         ConditionalRedirect(serviceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(serviceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
@@ -475,7 +471,7 @@ object RedirectService extends Logging {
     }
   }
 
-  def benefitsSubmitRedirect(cya: EmploymentCYAModel, nextPage: Call)(_taxYear: Int, _employmentId: String)(implicit user: User[_]): Result ={
+  def benefitsSubmitRedirect(cya: EmploymentCYAModel, nextPage: Call)(_taxYear: Int, _employmentId: String)(implicit user: User[_]): Result = {
 
     implicit val taxYear: Int = _taxYear
     implicit val employmentId: String = _employmentId
@@ -486,13 +482,13 @@ object RedirectService extends Logging {
     val carVanFuelSectionFinished = carVanFuelSection.isFinished
     val accommodationRelocationSectionFinished = accommodationRelocationSection.isFinished
 
-    val unfinishedRedirects: Seq[Call] = Seq(carVanFuelSectionFinished,accommodationRelocationSectionFinished).flatten
+    val unfinishedRedirects: Seq[Call] = Seq(carVanFuelSectionFinished, accommodationRelocationSectionFinished).flatten
 
     unfinishedRedirects match {
 
       case calls if calls.isEmpty =>
         logger.info("[RedirectService][benefitsSubmitRedirect] User has completed all sections - Routing to benefits CYA page")
-        Redirect(CheckYourBenefitsController.show(taxYear,employmentId))
+        Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
 
       case calls =>
 
