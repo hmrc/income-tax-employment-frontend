@@ -772,6 +772,13 @@ benefits.entertainmentBenefitAmount.error.overMaximum.agent = Your client’s en
 benefits.entertainmentBenefitAmount.error.invalidFormat.individual = Enter the amount you got for entertainment in the correct format
 benefits.entertainmentBenefitAmount.error.invalidFormat.agent = Enter the amount your client got for entertainment in the correct format
 
+benefits.telephoneBenefits.title.individual = Did you get a benefit for using a telephone?
+benefits.telephoneBenefits.title.agent = Did your client get a benefit for using a telephone?
+benefits.telephoneBenefits.costDetail.individual = These are telephone costs paid by your employer that are not exempt from tax.
+benefits.telephoneBenefits.costDetail.agent = These are telephone costs paid by their employer that are not exempt from tax.
+benefits.telephoneBenefits.error.noEntry.individual = Select yes if you got a benefit for using a telephone
+benefits.telephoneBenefits.error.noEntry.agent = Select yes if your client got a benefit for using a telephone
+
 benefits.professionalSubscriptions.title.individual = Did your employer cover costs for any professional fees or subscriptions?
 benefits.professionalSubscriptions.title.agent = Did your client’s employer cover costs for any professional fees or subscriptions?
 benefits.professionalSubscriptions.paragraphText.individual = Your employer may have covered fees you must pay to be able to do your job. This includes annual subscriptions to approved professional bodies that are relevant to your work.

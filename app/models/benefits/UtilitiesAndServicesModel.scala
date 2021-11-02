@@ -53,7 +53,7 @@ case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolea
     telephoneQuestion match {
       case Some(true) => if (telephone.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO telephone amount page
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO telephone yes no page
+      case None => Some(TelephoneBenefitsController.show(taxYear, employmentId))
     }
   }
 

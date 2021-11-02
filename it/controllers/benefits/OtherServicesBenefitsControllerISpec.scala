@@ -238,7 +238,7 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/telephone?employmentId=$employmentId")
         }
       }
     }
