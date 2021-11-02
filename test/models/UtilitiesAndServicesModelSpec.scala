@@ -80,7 +80,7 @@ class UtilitiesAndServicesModelSpec extends UnitTest {
   "employerProvidedProfessionalSubscriptionsSectionFinished" should {
 
     "return employerProvidedProfessionalSubscriptions yes no page" in {
-      model.copy(employerProvidedProfessionalSubscriptionsQuestion = None).employerProvidedProfessionalSubscriptionsSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/check-employment-benefits?employmentId=id")
+      model.copy(employerProvidedProfessionalSubscriptionsQuestion = None).employerProvidedProfessionalSubscriptionsSectionFinished(2021, "id") shouldBe result("/income-through-software/return/employment-income/2021/benefits/professional-fees-or-subscriptions?employmentId=id")
     }
 
     "return employerProvidedProfessionalSubscriptions amount page" in {

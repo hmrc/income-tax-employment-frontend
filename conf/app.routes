@@ -117,6 +117,9 @@ POST       /:taxYear/benefits/entertainment-expenses-amount controllers.benefits
 GET        /:taxYear/benefits/employer-provided-services-amount    controllers.benefits.EmployerProvidedServicesBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/employer-provided-services-amount    controllers.benefits.EmployerProvidedServicesBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/professional-fees-or-subscriptions       controllers.benefits.ProfessionalSubscriptionsBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/professional-fees-or-subscriptions       controllers.benefits.ProfessionalSubscriptionsBenefitsController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/benefits/employer-provided-services    controllers.benefits.EmployerProvidedServicesBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/employer-provided-services    controllers.benefits.EmployerProvidedServicesBenefitsController.submit(taxYear: Int, employmentId: String)
 

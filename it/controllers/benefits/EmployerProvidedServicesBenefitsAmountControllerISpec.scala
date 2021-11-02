@@ -357,7 +357,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
       }
     }
 
-    "redirect to check employments benefits page when a valid form is submitted and no prior benefits exist" when {
+    "redirect to professional fees and subscriptions benefits page when a valid form is submitted and no prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(false)
@@ -367,7 +367,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001")
+        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/professional-fees-or-subscriptions?employmentId=001")
       }
 
       "updates the CYA model with the new value" in {

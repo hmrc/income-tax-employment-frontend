@@ -70,7 +70,7 @@ case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolea
     employerProvidedProfessionalSubscriptionsQuestion match {
       case Some(true) => if (employerProvidedProfessionalSubscriptions.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) // TODO employerProvidedProfessionalSubscriptions amount page
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO employerProvidedProfessionalSubscriptions yes no page
+      case None => Some(ProfessionalSubscriptionsBenefitsController.show(taxYear, employmentId))
     }
   }
 
