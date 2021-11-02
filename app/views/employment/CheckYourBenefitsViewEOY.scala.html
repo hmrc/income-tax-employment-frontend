@@ -166,7 +166,7 @@
         if(benefits.utilitiesDetailsPopulated){
             Seq(
                 benefits.utilitiesAndServicesModel.flatMap(_.telephoneQuestion).map{
-                    telephoneQuestion => showQuestionRow("checkYourBenefits.telephone", telephoneQuestion)
+                    telephoneQuestion => showQuestionRow("checkYourBenefits.telephone", telephoneQuestion, controllers.benefits.routes.TelephoneBenefitsController.show(taxYear: Int, employmentId: String))
                 },
                 benefits.utilitiesAndServicesModel.flatMap(_.telephone).map{
                     telephone => showRows("checkYourBenefits.telephoneAmount", telephone)
