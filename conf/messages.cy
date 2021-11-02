@@ -30,6 +30,8 @@ common.error.invalid_number = Enter an amount using numbers 0 to 9
 common.error.amountMaxLimit = Enter an amount less than £100,000,000,000
 common.error.invalid_currency_format = Enter the amount in the correct format
 common.ifItWasNot = If it was not {0}, tell us the correct amount.
+common.checkWithEmployer.individual = Check with your employer if you are unsure.
+common.checkWithEmployer.agent = Check with your client’s employer if you are unsure.
 
 common.error.self-assessment.paragraph.1.1 = If the web address is correct or you selected a link or button, you can use
 common.error.self-assessment.paragraph.1.2 = Self Assessment: general enquiries (opens in new tab)
@@ -586,8 +588,6 @@ benefits.receiveOwnCarMileageBenefit.title.individual = Did you get a mileage be
 benefits.receiveOwnCarMileageBenefit.title.agent = Did your client get a mileage benefit for using their own car for work?
 benefits.receiveOwnCarMileageBenefit.needToKnow.individual = We only need to know about payments made above our ‘approved amount‘. If you have payments above the ‘approved amount‘, they should be recorded in section E of your P11D form.
 benefits.receiveOwnCarMileageBenefit.needToKnow.agent = We only need to know about payments made above our ‘approved amount‘. If your client has payments above the ‘approved amount‘, they should be recorded in section E of their P11D form.
-benefits.receiveOwnCarMileageBenefit.check.individual = Check with your employer if you are unsure.
-benefits.receiveOwnCarMileageBenefit.check.agent = Check with your client’s employer if you are unsure.
 benefits.receiveOwnCarMileageBenefit.error.individual = Select yes if you got a mileage benefit for using your own car for work
 benefits.receiveOwnCarMileageBenefit.error.agent = Select yes if your client got a mileage benefit for using their own car for work
 
@@ -772,6 +772,12 @@ benefits.entertainmentBenefitAmount.error.overMaximum.agent = Your client’s en
 benefits.entertainmentBenefitAmount.error.invalidFormat.individual = Enter the amount you got for entertainment in the correct format
 benefits.entertainmentBenefitAmount.error.invalidFormat.agent = Enter the amount your client got for entertainment in the correct format
 
+benefits.professionalSubscriptions.title.individual = Did your employer cover costs for any professional fees or subscriptions?
+benefits.professionalSubscriptions.title.agent = Did your client’s employer cover costs for any professional fees or subscriptions?
+benefits.professionalSubscriptions.paragraphText.individual = Your employer may have covered fees you must pay to be able to do your job. This includes annual subscriptions to approved professional bodies that are relevant to your work.
+benefits.professionalSubscriptions.paragraphText.agent = Your client’s employer may have covered fees they must pay to be able to do their job. This includes annual subscriptions to approved professional bodies that are relevant to their work.
+benefits.professionalSubscriptions.error.individual = Select yes if your employer covered costs for any professional fees or subscriptions
+benefits.professionalSubscriptions.error.agent = Select yes if your client’s employer covered costs for any professional fees or subscriptions
 
 benefits.employerProvidedServices.title.individual = Did you get a benefit for services provided by your employer?
 benefits.employerProvidedServices.title.agent = Did your client get a benefit for services provided by their employer?
