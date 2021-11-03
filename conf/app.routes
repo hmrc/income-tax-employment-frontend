@@ -129,6 +129,9 @@ POST       /:taxYear/benefits/employer-provided-services    controllers.benefits
 GET        /:taxYear/benefits/other-services                controllers.benefits.OtherServicesBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/other-services                controllers.benefits.OtherServicesBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/incidental-overnight-costs            controllers.benefits.IncidentalOvernightCostEmploymentBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/incidental-overnight-costs            controllers.benefits.IncidentalOvernightCostEmploymentBenefitsController.submit(taxYear: Int, employmentId: String)
+
 GET        /sign-out                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
 GET        /error/you-need-to-sign-up                       controllers.errors.IndividualAuthErrorController.show

@@ -711,7 +711,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/incidental-overnight-costs?employmentId=001"
       }
       "it's a prior submission and attempted to view the travel amount page but the travel yes no question is false" in {
 
@@ -775,7 +775,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/incidental-overnight-costs?employmentId=001"
       }
       "it's a new submission and attempted to view the incidental costs amount page but the incidental costs question is false" in {
 

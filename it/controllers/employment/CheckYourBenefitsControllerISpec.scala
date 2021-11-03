@@ -686,7 +686,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val employerProvidedServicesBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/employer-provided-services-amount?employmentId=001"
     val professionalSubscriptionsBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/professional-fees-or-subscriptions?employmentId=001"
     val otherServicesBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/other-services?employmentId=001"
-  }
+    val incidentalOvernightCostEmploymentBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/incidental-overnight-costs?employmentId=001"
+    }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
@@ -834,7 +835,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.travelSubheading, commonResults.yes, 9, 1, s"${user.commonExpectedResults.changeText} ${specificResults.travelSubheadingHiddenText}", travelEntertainmentBenefitsAmountHref)
           changeAmountRowCheck(commonResults.travelAndSubsistence, commonResults.yes, 9, 2, s"${user.commonExpectedResults.changeText} ${specificResults.travelAndSubsistenceHiddenText}", travelOrSubsistenceBenefitsHref)
           changeAmountRowCheck(commonResults.travelAndSubsistenceAmount, "£9", 9, 3, s"${user.commonExpectedResults.changeText} ${specificResults.travelAndSubsistenceAmountHiddenText}", travelOrSubsistenceBenefitsAmountHref)
-          changeAmountRowCheck(commonResults.personalCosts, commonResults.yes, 9, 4, s"${user.commonExpectedResults.changeText} ${specificResults.personalCostsHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.personalCosts, commonResults.yes, 9, 4, s"${user.commonExpectedResults.changeText} ${specificResults.personalCostsHiddenText}", incidentalOvernightCostEmploymentBenefitsHref)
           changeAmountRowCheck(commonResults.personalCostsAmount, "£10", 9, 5, s"${user.commonExpectedResults.changeText} ${specificResults.personalCostsAmountHiddenText}", incidentalCostsBenefitsAmountHref)
           changeAmountRowCheck(commonResults.entertainment, commonResults.yes, 9, 6, s"${user.commonExpectedResults.changeText} ${specificResults.entertainmentHiddenText}", entertainingBenefitsHref)
           changeAmountRowCheck(commonResults.entertainmentAmount, "£11", 9, 7, s"${user.commonExpectedResults.changeText} ${specificResults.entertainmentAmountHiddenText}", entertainmentAmountBenefitsHref)

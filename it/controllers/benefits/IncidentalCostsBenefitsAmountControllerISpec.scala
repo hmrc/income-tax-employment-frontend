@@ -278,8 +278,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
       s"has a SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        //TODO go to incidental costs yes no page
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs?employmentId=$employmentId")
       }
     }
 
@@ -515,8 +514,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
       s"has a SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        //TODO go to incidental costs yes no page
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs?employmentId=$employmentId")
       }
     }
 
