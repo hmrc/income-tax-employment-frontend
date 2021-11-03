@@ -786,6 +786,15 @@ benefits.professionalSubscriptions.paragraphText.agent = Your client’s employe
 benefits.professionalSubscriptions.error.individual = Select yes if your employer covered costs for any professional fees or subscriptions
 benefits.professionalSubscriptions.error.agent = Select yes if your client’s employer covered costs for any professional fees or subscriptions
 
+benefits.professionalSubscriptionsAmount.title.individual = How much did your employer pay to cover professional fees or subscriptions?
+benefits.professionalSubscriptionsAmount.title.agent = How much did your client’s employer pay to cover professional fees or subscriptions?
+benefits.professionalSubscriptionsAmount.error.noEntry.individual = Enter the amount your employer paid to cover professional fees or subscriptions
+benefits.professionalSubscriptionsAmount.error.noEntry.agent = Enter the amount your client’s employer paid to cover professional fees or subscriptions
+benefits.professionalSubscriptionsAmount.error.overMaximum.individual = The amount your employer paid to cover professional fees or subscriptions must be less than £100,000,000,000
+benefits.professionalSubscriptionsAmount.error.overMaximum.agent = The amount your client’s employer paid to cover professional fees or subscriptions must be less than £100,000,000,000
+benefits.professionalSubscriptionsAmount.error.wrongFormat.individual = Enter the amount your employer paid to cover professional fees or subscriptions in the correct format
+benefits.professionalSubscriptionsAmount.error.wrongFormat.agent = Enter the amount your client’s employer paid to cover professional fees or subscriptions in the correct format
+
 benefits.employerProvidedServices.title.individual = Did you get a benefit for services provided by your employer?
 benefits.employerProvidedServices.title.agent = Did your client get a benefit for services provided by their employer?
 benefits.employerProvidedServices.paragraph.individual = These are services you used that are not related to your job. Your employer pays for them. For example, subscriptions or laundry services.

@@ -123,6 +123,9 @@ POST       /:taxYear/benefits/employer-provided-services-amount    controllers.b
 GET        /:taxYear/benefits/professional-fees-or-subscriptions       controllers.benefits.ProfessionalSubscriptionsBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/professional-fees-or-subscriptions       controllers.benefits.ProfessionalSubscriptionsBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/professional-fees-or-subscriptions-amount controllers.benefits.ProfessionalSubscriptionsBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/professional-fees-or-subscriptions-amount controllers.benefits.ProfessionalSubscriptionsBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/benefits/employer-provided-services    controllers.benefits.EmployerProvidedServicesBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/employer-provided-services    controllers.benefits.EmployerProvidedServicesBenefitsController.submit(taxYear: Int, employmentId: String)
 

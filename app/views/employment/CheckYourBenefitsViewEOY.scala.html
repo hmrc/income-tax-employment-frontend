@@ -181,7 +181,7 @@
                     employerProvidedProfessionalSubscriptionsQuestion => showQuestionRow("checkYourBenefits.profSubscriptions", employerProvidedProfessionalSubscriptionsQuestion, controllers.benefits.routes.ProfessionalSubscriptionsBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions).map{
-                    employerProvidedProfessionalSubscriptions => showRows("checkYourBenefits.profSubscriptionsAmount", employerProvidedProfessionalSubscriptions)
+                    employerProvidedProfessionalSubscriptions => showRows("checkYourBenefits.profSubscriptionsAmount", employerProvidedProfessionalSubscriptions, controllers.benefits.routes.ProfessionalSubscriptionsBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.utilitiesAndServicesModel.flatMap(_.serviceQuestion).map{
                     serviceQuestion => showQuestionRow("checkYourBenefits.otherServices", serviceQuestion, controllers.benefits.routes.OtherServicesBenefitsController.show(taxYear, employmentId))
