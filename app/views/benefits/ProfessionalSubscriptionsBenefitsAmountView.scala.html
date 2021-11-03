@@ -39,7 +39,7 @@
 
     @errorSummary(form.errors)
 
-    @formWithCsrf(controllers.benefits.routes.ProfessionalSubscriptionsBenefitsAmountController.submit(taxYear, empId)) {
+    @formWithCsrf(controllers.benefits.utilitiesAndServices.routes.ProfessionalSubscriptionsBenefitsAmountController.submit(taxYear, empId)) {
         @inputText(
             form,
             id = "amount",

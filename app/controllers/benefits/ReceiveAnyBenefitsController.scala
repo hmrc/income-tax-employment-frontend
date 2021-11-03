@@ -17,7 +17,7 @@
 package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
-import controllers.benefits.routes.CarVanFuelBenefitsController
+import controllers.benefits.carVanFuel.routes.CarVanFuelBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
