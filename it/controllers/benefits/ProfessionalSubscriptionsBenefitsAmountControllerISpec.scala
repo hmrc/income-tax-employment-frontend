@@ -18,7 +18,8 @@ package controllers.benefits
 
 import controllers.employment.routes.CheckYourBenefitsController
 import models.User
-import models.employment.{AccommodationRelocationModel, BenefitsViewModel}
+import models.benefits.UtilitiesAndServicesModel
+import models.employment.BenefitsViewModel
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -27,14 +28,14 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
-class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
+class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val taxYearEOY: Int = taxYear - 1
   private val employmentId = "001"
 
-  private def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/qualifying-relocation-amount?employmentId=$employmentId"
+  private def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/professional-fees-or-subscriptions-amount?employmentId=$employmentId"
 
-  private val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/qualifying-relocation-amount?employmentId=$employmentId"
+  private val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/professional-fees-or-subscriptions-amount?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -78,54 +79,51 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
     override val amountHint: String = "For example, £600 or £193.54"
     val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue = "Continue"
-    val previousExpectedContent: String = "If it was not £200, tell us the correct amount."
+    val previousExpectedContent: String = "If it was not £300, tell us the correct amount."
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     override val amountHint: String = "For example, £600 or £193.54"
     val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue = "Continue"
-    val previousExpectedContent: String = "If it was not £200, tell us the correct amount."
+    val previousExpectedContent: String = "If it was not £300, tell us the correct amount."
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did you get in total for qualifying relocation benefits?"
-    val expectedHeading: String = "How much did you get in total for qualifying relocation benefits?"
+    val expectedTitle: String = "How much did your employer pay to cover professional fees or subscriptions?"
+    val expectedHeading: String = "How much did your employer pay to cover professional fees or subscriptions?"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter your qualifying relocation benefit amount in the correct format"
-    val emptyErrorText: String = "Enter your qualifying relocation benefit amount"
-    val maxAmountErrorText: String = "Your qualifying relocation benefit must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Enter the amount your employer paid to cover professional fees or subscriptions in the correct format"
+    val emptyErrorText: String = "Enter the amount your employer paid to cover professional fees or subscriptions"
+    val maxAmountErrorText: String = "The amount your employer paid to cover professional fees or subscriptions must be less than £100,000,000,000"
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much did you get in total for qualifying relocation benefits?"
-    val expectedHeading: String = "How much did you get in total for qualifying relocation benefits?"
+    val expectedTitle: String = "How much did your employer pay to cover professional fees or subscriptions?"
+    val expectedHeading: String = "How much did your employer pay to cover professional fees or subscriptions?"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter your qualifying relocation benefit amount in the correct format"
-    val emptyErrorText: String = "Enter your qualifying relocation benefit amount"
-    val maxAmountErrorText: String = "Your qualifying relocation benefit must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Enter the amount your employer paid to cover professional fees or subscriptions in the correct format"
+    val emptyErrorText: String = "Enter the amount your employer paid to cover professional fees or subscriptions"
+    val maxAmountErrorText: String = "The amount your employer paid to cover professional fees or subscriptions must be less than £100,000,000,000"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle: String = "How much was your client’s total qualifying relocation benefit?"
-    val expectedHeading: String = "How much was your client’s total qualifying relocation benefit?"
+    val expectedTitle: String = "How much did your client’s employer pay to cover professional fees or subscriptions?"
+    val expectedHeading: String = "How much did your client’s employer pay to cover professional fees or subscriptions?"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter your client’s qualifying relocation benefit amount in the correct format"
-    val emptyErrorText: String = "Enter your client’s qualifying relocation benefit amount"
-    val maxAmountErrorText: String = "Your client’s qualifying relocation benefit must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Enter the amount your client’s employer paid to cover professional fees or subscriptions in the correct format"
+    val emptyErrorText: String = "Enter the amount your client’s employer paid to cover professional fees or subscriptions"
+    val maxAmountErrorText: String = "The amount your client’s employer paid to cover professional fees or subscriptions must be less than £100,000,000,000"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle: String = "How much was your client’s total qualifying relocation benefit?"
-    val expectedHeading: String = "How much was your client’s total qualifying relocation benefit?"
+    val expectedTitle: String = "How much did your client’s employer pay to cover professional fees or subscriptions?"
+    val expectedHeading: String = "How much did your client’s employer pay to cover professional fees or subscriptions?"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val wrongFormatErrorText: String = "Enter your client’s qualifying relocation benefit amount in the correct format"
-    val emptyErrorText: String = "Enter your client’s qualifying relocation benefit amount"
-    val maxAmountErrorText: String = "Your client’s qualifying relocation benefit must be less than £100,000,000,000"
+    val wrongFormatErrorText: String = "Enter the amount your client’s employer paid to cover professional fees or subscriptions in the correct format"
+    val emptyErrorText: String = "Enter the amount your client’s employer paid to cover professional fees or subscriptions"
+    val maxAmountErrorText: String = "The amount your client’s employer paid to cover professional fees or subscriptions must be less than £100,000,000,000"
   }
-
-  private def benefits(accommodationRelocationModel: AccommodationRelocationModel) =
-    BenefitsViewModel(accommodationRelocationModel = Some(accommodationRelocationModel), isUsingCustomerData = true, isBenefitsReceived = true)
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(
@@ -136,18 +134,20 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
     )
   }
 
+  private def benefits(utilitiesAndServicesModel: UtilitiesAndServicesModel) =
+    BenefitsViewModel(utilitiesAndServicesModel = Some(utilitiesAndServicesModel), isUsingCustomerData = true, isBenefitsReceived = true)
+
   ".show" should {
     userScenarios.foreach { user =>
       import Selectors._
       import user.commonExpectedResults._
-
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "render the qualifying relocation benefits amount page without pre-filled form" which {
+        "render the professional subscriptions benefits amount page with no pre-filled form" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-            val accommodationRelocationModel = fullAccommodationRelocationModel.copy(qualifyingRelocationExpenses = None)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(accommodationRelocationModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
+              Some(benefits(fullUtilitiesAndServicesModel.copy(employerProvidedProfessionalSubscriptions = None))))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(url(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -157,6 +157,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
           "has an OK status" in {
             result.status shouldBe OK
           }
+
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
@@ -165,25 +166,21 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldCheck(amountInputName, inputSelector)
           inputFieldValueCheck("", inputSelector)
-
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
-        "render the qualifying relocation benefits amount page with pre-filled form" which {
+        "render the professional subscriptions benefits amount page with pre-filled form" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullAccommodationRelocationModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(url(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-          import Selectors._
-          import user.commonExpectedResults._
 
           "has an OK status" in {
             result.status shouldBe OK
@@ -196,7 +193,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("200", inputSelector)
+          inputFieldValueCheck("300", inputSelector)
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -204,34 +201,33 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
       }
     }
 
-    "redirect user to the check your benefits page when there is no cya data" which {
+    "redirect user to check employment benefits page when there is no cya data" which {
       lazy val result: WSResponse = {
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         urlGet(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
-
-      "has an SEE_OTHER(303) status" in {
+      "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
       }
     }
 
-    "redirect to overview page if the user tries to hit this page with current taxYear" when {
+    "redirect to tax overview page if it is not EOY" which {
       implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-        val accommodationRelocationModel = fullAccommodationRelocationModel.copy(qualifyingRelocationExpenses = None)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(accommodationRelocationModel)))), userRequest)
+        insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
         urlGet(url(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
-      "has an SEE_OTHER status" in {
+      "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
       }
+
     }
   }
 
@@ -241,13 +237,13 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
       import user.specificExpectedResults._
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "should render qualifying relocation benefits amount page with empty error text when there no input" which {
+        "render the professional subscriptions benefits amount page with empty input error when no input is submitted" which {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullAccommodationRelocationModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
             urlPost(url(taxYearEOY), follow = false, welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> ""))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -263,7 +259,6 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
           textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck("", inputSelector)
-
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -271,12 +266,11 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
           errorSummaryCheck(get.emptyErrorText, expectedErrorHref)
           errorAboveElementCheck(get.emptyErrorText)
         }
-
-        "should render qualifying relocation benefits amount page with wrong format text when input is in incorrect format" which {
+        "render the professional subscriptions benefits amount page with wrong format error when input is in incorrect format" which {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullAccommodationRelocationModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
             urlPost(url(taxYearEOY), follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "abc"))
           }
@@ -294,7 +288,6 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
           textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck("abc", inputSelector)
-
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -302,12 +295,11 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
           errorSummaryCheck(get.wrongFormatErrorText, expectedErrorHref)
           errorAboveElementCheck(get.wrongFormatErrorText)
         }
-
-        "should render qualifying relocation benefits amount page with max error when input > 100,000,000,000" which {
+        "render the professional subscriptions benefits amount page with max error when input > 100,000,000,000" which {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullAccommodationRelocationModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
             urlPost(url(taxYearEOY), follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "9999999999999999999999999999"))
           }
@@ -325,7 +317,6 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
           textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck("9999999999999999999999999999", inputSelector)
-
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -336,63 +327,62 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
       }
     }
 
-    "redirect to non qualifying relocation page when a valid form is submitted and prior benefits exist" when {
+    "redirect to check employment benefits page" when {
+      "valid form is submitted and it's a prior submission" which {
+        implicit lazy val result: WSResponse = {
+          authoriseAgentOrIndividual(isAgent = false)
+          dropEmploymentDB()
+          insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
+          urlPost(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
+        }
+
+        "has a SEE_OTHER(303) status" in {
+          result.status shouldBe SEE_OTHER
+          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        }
+        "updates employerProvidedProfessionalSubscriptions to the new value" in {
+          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions)) shouldBe Some(100.0)
+        }
+      }
+
+      "there is no cya data" which {
+        lazy val result: WSResponse = {
+          dropEmploymentDB()
+          authoriseAgentOrIndividual(isAgent = false)
+          userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
+          urlPost(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+        }
+        "has a SEE_OTHER(303) status" in {
+          result.status shouldBe SEE_OTHER
+          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        }
+      }
+    }
+
+    "redirect to check employment benefits page when valid form is submitted and not a prior submission" which {
       implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(false)
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullAccommodationRelocationModel)))), userRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        insertCyaData(employmentUserData(isPrior = false, cyaModel("employerName", hmrc = true, Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
         urlPost(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
-      }
 
-      "has an SEE_OTHER status" in {
+      }
+      "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/non-qualifying-relocation?employmentId=001")
+        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001")
       }
 
-      "updates the CYA model with the new value" in {
+      "updates employerProvidedProfessionalSubscriptions to the new value" in {
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        val qualifyingRelocationAmount = cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses))
-        qualifyingRelocationAmount shouldBe Some(100.0)
+        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions)) shouldBe Some(100.0)
       }
+
     }
 
-    "redirect to non qualifying relocation benefits page when a valid form is submitted and no prior benefits exist" when {
+    "redirect to tax overview page when it's not EOY" which {
       implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(false)
-        dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullAccommodationRelocationModel)))), userRequest)
-        urlPost(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
-      }
-
-      "has an SEE_OTHER status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/non-qualifying-relocation?employmentId=001")
-      }
-
-      "updates the CYA model with the new value" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        val qualifyingRelocationAmount = cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses))
-        qualifyingRelocationAmount shouldBe Some(100.0)
-      }
-    }
-
-    "redirect to the check your benefits page when there is no cya data" when {
-      implicit lazy val result: WSResponse = {
-        dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-        authoriseAgentOrIndividual(false)
-        urlPost(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
-      }
-
-      "has an SEE_OTHER(303) status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
-      }
-    }
-
-    "redirect the user to the overview page when it is not end of year" which {
-      implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         urlPost(url(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
       }
@@ -404,3 +394,5 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
     }
   }
 }
+
+

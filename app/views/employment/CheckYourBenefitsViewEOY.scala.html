@@ -101,7 +101,6 @@
     @{
         val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.accommodationSubheading", benefits.accommodationRelocationModel.flatMap(_.accommodationRelocationQuestion).getOrElse(false), controllers.benefits.routes.AccommodationRelocationBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
-        if(benefits.accommodationDetailsPopulated){
             Seq(
                 benefits.accommodationRelocationModel.flatMap(_.accommodationQuestion).map{
                     accommodationQuestion => showQuestionRow("checkYourBenefits.accommodation", accommodationQuestion, controllers.benefits.routes.LivingAccommodationBenefitsController.show(taxYear, employmentId))
@@ -123,7 +122,6 @@
                         nonQualifyingRelocationExpenses, controllers.benefits.routes.NonQualifyingRelocationBenefitsAmountController.show(taxYear, employmentId))
                 }
             ).flatten
-        } else { Seq() }
 
         govukSummaryList(SummaryList(header ++ rows))
     }
@@ -132,7 +130,6 @@
     @{
         val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.travelSubheading", benefits.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion).getOrElse(false), controllers.benefits.routes.TravelOrEntertainmentBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
-        if(benefits.travelDetailsPopulated){
             Seq(
                 benefits.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion).map{
                     travelAndSubsistenceQuestion => showQuestionRow("checkYourBenefits.travelAndSubsistence", travelAndSubsistenceQuestion, controllers.benefits.routes.TravelAndSubsistenceBenefitsController.show(taxYear, employmentId))
@@ -141,7 +138,7 @@
                     travelAndSubsistence => showRows("checkYourBenefits.travelAndSubsistenceAmount", travelAndSubsistence, controllers.benefits.routes.TravelOrSubsistenceBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion).map{
-                    personalIncidentalExpensesQuestion => showQuestionRow("checkYourBenefits.personalCosts", personalIncidentalExpensesQuestion)
+                    personalIncidentalExpensesQuestion => showQuestionRow("checkYourBenefits.personalCosts", personalIncidentalExpensesQuestion,controllers.benefits.routes.IncidentalOvernightCostEmploymentBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses).map{
                     personalIncidentalExpenses => showRows("checkYourBenefits.personalCostsAmount", personalIncidentalExpenses, controllers.benefits.routes.IncidentalCostsBenefitsAmountController.show(taxYear, employmentId))
@@ -154,7 +151,6 @@
                         entertaining, controllers.benefits.routes.EntertainmentBenefitsAmountController.show(taxYear, employmentId))
                 }
             ).flatten
-        } else { Seq() }
 
         govukSummaryList(SummaryList(header ++ rows))
     }
@@ -163,10 +159,9 @@
     @{
         val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.utilitiesSubheading", benefits.utilitiesAndServicesModel.flatMap(_.utilitiesAndServicesQuestion).getOrElse(false), controllers.benefits.routes.UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
-        if(benefits.utilitiesDetailsPopulated){
             Seq(
                 benefits.utilitiesAndServicesModel.flatMap(_.telephoneQuestion).map{
-                    telephoneQuestion => showQuestionRow("checkYourBenefits.telephone", telephoneQuestion)
+                    telephoneQuestion => showQuestionRow("checkYourBenefits.telephone", telephoneQuestion, controllers.benefits.routes.TelephoneBenefitsController.show(taxYear: Int, employmentId: String))
                 },
                 benefits.utilitiesAndServicesModel.flatMap(_.telephone).map{
                     telephone => showRows("checkYourBenefits.telephoneAmount", telephone)
@@ -181,7 +176,7 @@
                     employerProvidedProfessionalSubscriptionsQuestion => showQuestionRow("checkYourBenefits.profSubscriptions", employerProvidedProfessionalSubscriptionsQuestion, controllers.benefits.routes.ProfessionalSubscriptionsBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions).map{
-                    employerProvidedProfessionalSubscriptions => showRows("checkYourBenefits.profSubscriptionsAmount", employerProvidedProfessionalSubscriptions)
+                    employerProvidedProfessionalSubscriptions => showRows("checkYourBenefits.profSubscriptionsAmount", employerProvidedProfessionalSubscriptions, controllers.benefits.routes.ProfessionalSubscriptionsBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.utilitiesAndServicesModel.flatMap(_.serviceQuestion).map{
                     serviceQuestion => showQuestionRow("checkYourBenefits.otherServices", serviceQuestion, controllers.benefits.routes.OtherServicesBenefitsController.show(taxYear, employmentId))
@@ -190,7 +185,6 @@
                     service => showRows("checkYourBenefits.otherServicesAmount", service)
                 }
             ).flatten
-        } else { Seq() }
 
         govukSummaryList(SummaryList(header ++ rows))
     }

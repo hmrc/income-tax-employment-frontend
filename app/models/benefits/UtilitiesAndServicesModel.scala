@@ -53,7 +53,7 @@ case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolea
     telephoneQuestion match {
       case Some(true) => if (telephone.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO telephone amount page
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO telephone yes no page
+      case None => Some(TelephoneBenefitsController.show(taxYear, employmentId))
     }
   }
 
@@ -67,7 +67,7 @@ case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolea
 
   def employerProvidedProfessionalSubscriptionsSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     employerProvidedProfessionalSubscriptionsQuestion match {
-      case Some(true) => if (employerProvidedProfessionalSubscriptions.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) // TODO employerProvidedProfessionalSubscriptions amount page
+      case Some(true) => if (employerProvidedProfessionalSubscriptions.isDefined) None else Some(ProfessionalSubscriptionsBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(ProfessionalSubscriptionsBenefitsController.show(taxYear, employmentId))
     }

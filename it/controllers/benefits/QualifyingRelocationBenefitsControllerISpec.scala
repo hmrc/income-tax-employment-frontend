@@ -16,7 +16,7 @@
 
 package controllers.benefits
 
-import controllers.benefits.routes.{AccommodationRelocationBenefitsController, TravelOrEntertainmentBenefitsController}
+import controllers.benefits.routes.{AccommodationRelocationBenefitsController, NonQualifyingRelocationBenefitsController, QualifyingRelocationBenefitsAmountController, TravelOrEntertainmentBenefitsController}
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.User
@@ -387,7 +387,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(QualifyingRelocationBenefitsAmountController.show(taxYearEOY, employmentId).url)
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
         cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodationRelocationQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpensesQuestion)) shouldBe Some(true)
@@ -411,7 +411,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(NonQualifyingRelocationBenefitsController.show(taxYearEOY, employmentId).url)
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
         cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodationRelocationQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpensesQuestion)) shouldBe Some(false)

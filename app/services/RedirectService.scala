@@ -19,7 +19,7 @@ package services
 import controllers.benefits.routes._
 import controllers.employment.routes._
 import models.User
-import models.employment.{AccommodationRelocationModel, CarVanFuelModel}
+import models.employment.{AccommodationRelocationModel, CarVanFuelModel, TravelEntertainmentModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.Logging
 import play.api.mvc.Results.Redirect
@@ -266,8 +266,7 @@ object RedirectService extends Logging {
     commonTravelEntertainmentBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(travelSubsistenceQuestion.isEmpty, TravelAndSubsistenceBenefitsController.show(taxYear, employmentId)),
-        //TODO go to incidental costs yes no page
-        ConditionalRedirect(travelSubsistenceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(travelSubsistenceQuestion.contains(false), IncidentalOvernightCostEmploymentBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(travelSubsistenceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
@@ -286,8 +285,7 @@ object RedirectService extends Logging {
 
     incidentalCostsBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to incidental costs yes no page
-        ConditionalRedirect(incidentalCostsQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(incidentalCostsQuestion.isEmpty, IncidentalOvernightCostEmploymentBenefitsController.show(taxYear, employmentId)),
         ConditionalRedirect(incidentalCostsQuestion.contains(false), EntertainingBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(incidentalCostsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
@@ -345,8 +343,7 @@ object RedirectService extends Logging {
 
     commonUtilitiesAndServicesBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to telephone yes no page
-        ConditionalRedirect(telephoneQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(telephoneQuestion.isEmpty, TelephoneBenefitsController.show(taxYear, employmentId)),
         ConditionalRedirect(telephoneQuestion.contains(false), EmployerProvidedServicesBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(telephoneQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
@@ -478,11 +475,13 @@ object RedirectService extends Logging {
 
     val carVanFuelSection: CarVanFuelModel = cya.employmentBenefits.flatMap(_.carVanFuelModel).getOrElse(CarVanFuelModel())
     val accommodationRelocationSection: AccommodationRelocationModel = cya.employmentBenefits.flatMap(_.accommodationRelocationModel).getOrElse(AccommodationRelocationModel())
+    val travelOrEntertainmentSection: TravelEntertainmentModel = cya.employmentBenefits.flatMap(_.travelEntertainmentModel).getOrElse(TravelEntertainmentModel())
 
     val carVanFuelSectionFinished = carVanFuelSection.isFinished
     val accommodationRelocationSectionFinished = accommodationRelocationSection.isFinished
+    val travelOrEntertainmentSectionFinished = travelOrEntertainmentSection.isFinished
 
-    val unfinishedRedirects: Seq[Call] = Seq(carVanFuelSectionFinished, accommodationRelocationSectionFinished).flatten
+    val unfinishedRedirects: Seq[Call] = Seq(carVanFuelSectionFinished, accommodationRelocationSectionFinished, travelOrEntertainmentSectionFinished).flatten
 
     unfinishedRedirects match {
 

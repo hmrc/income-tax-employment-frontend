@@ -17,6 +17,7 @@
 package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
+import controllers.benefits.routes._
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
@@ -73,15 +74,14 @@ class QualifyingRelocationBenefitsAmountController @Inject()(implicit val cc: Me
                 val accommodationRelocation: Option[AccommodationRelocationModel] = cyaModel.employmentBenefits.flatMap(_.accommodationRelocationModel)
                 val updatedCyaModel = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(accommodationRelocationModel =
                   accommodationRelocation.map(_.copy(qualifyingRelocationExpenses = Some(newAmount))))))
+
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
                   cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                    if (cya.isPriorSubmission) {
-                      Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                    } else {
-                      // TODO: Point to the non-qualifying benefits page
-                      Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                    }
-                  }
+
+                  val nextPage = NonQualifyingRelocationBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
+                }
             }
           )
         }

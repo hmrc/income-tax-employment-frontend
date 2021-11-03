@@ -772,12 +772,28 @@ benefits.entertainmentBenefitAmount.error.overMaximum.agent = Your client’s en
 benefits.entertainmentBenefitAmount.error.invalidFormat.individual = Enter the amount you got for entertainment in the correct format
 benefits.entertainmentBenefitAmount.error.invalidFormat.agent = Enter the amount your client got for entertainment in the correct format
 
+benefits.telephoneBenefits.title.individual = Did you get a benefit for using a telephone?
+benefits.telephoneBenefits.title.agent = Did your client get a benefit for using a telephone?
+benefits.telephoneBenefits.costDetail.individual = These are telephone costs paid by your employer that are not exempt from tax.
+benefits.telephoneBenefits.costDetail.agent = These are telephone costs paid by their employer that are not exempt from tax.
+benefits.telephoneBenefits.error.noEntry.individual = Select yes if you got a benefit for using a telephone
+benefits.telephoneBenefits.error.noEntry.agent = Select yes if your client got a benefit for using a telephone
+
 benefits.professionalSubscriptions.title.individual = Did your employer cover costs for any professional fees or subscriptions?
 benefits.professionalSubscriptions.title.agent = Did your client’s employer cover costs for any professional fees or subscriptions?
 benefits.professionalSubscriptions.paragraphText.individual = Your employer may have covered fees you must pay to be able to do your job. This includes annual subscriptions to approved professional bodies that are relevant to your work.
 benefits.professionalSubscriptions.paragraphText.agent = Your client’s employer may have covered fees they must pay to be able to do their job. This includes annual subscriptions to approved professional bodies that are relevant to their work.
 benefits.professionalSubscriptions.error.individual = Select yes if your employer covered costs for any professional fees or subscriptions
 benefits.professionalSubscriptions.error.agent = Select yes if your client’s employer covered costs for any professional fees or subscriptions
+
+benefits.professionalSubscriptionsAmount.title.individual = How much did your employer pay to cover professional fees or subscriptions?
+benefits.professionalSubscriptionsAmount.title.agent = How much did your client’s employer pay to cover professional fees or subscriptions?
+benefits.professionalSubscriptionsAmount.error.noEntry.individual = Enter the amount your employer paid to cover professional fees or subscriptions
+benefits.professionalSubscriptionsAmount.error.noEntry.agent = Enter the amount your client’s employer paid to cover professional fees or subscriptions
+benefits.professionalSubscriptionsAmount.error.overMaximum.individual = The amount your employer paid to cover professional fees or subscriptions must be less than £100,000,000,000
+benefits.professionalSubscriptionsAmount.error.overMaximum.agent = The amount your client’s employer paid to cover professional fees or subscriptions must be less than £100,000,000,000
+benefits.professionalSubscriptionsAmount.error.wrongFormat.individual = Enter the amount your employer paid to cover professional fees or subscriptions in the correct format
+benefits.professionalSubscriptionsAmount.error.wrongFormat.agent = Enter the amount your client’s employer paid to cover professional fees or subscriptions in the correct format
 
 benefits.employerProvidedServices.title.individual = Did you get a benefit for services provided by your employer?
 benefits.employerProvidedServices.title.agent = Did your client get a benefit for services provided by their employer?
@@ -792,3 +808,11 @@ benefits.otherServicesBenefits.theseAre.individual = These are any other service
 benefits.otherServicesBenefits.theseAre.agent = These are any other services they have used that are required for their job. Their employer pays for them.
 benefits.otherServicesBenefits.error.individual = Select yes if you got benefits for other services
 benefits.otherServicesBenefits.error.agent = Select yes if your client got benefits for other services
+
+benefits.incidentalOvernightCostEmploymentBenefits.title.individual = Did you get any incidental overnight costs?
+benefits.incidentalOvernightCostEmploymentBenefits.title.agent = Did your client get any incidental overnight costs?
+benefits.incidentalOvernightCostEmploymentBenefits.costInformation.individual = These are personal costs you incurred while travelling overnight on business.
+benefits.incidentalOvernightCostEmploymentBenefits.costInformation.agent = These are personal costs they incurred while travelling overnight on business.
+benefits.incidentalOvernightCostEmploymentBenefits.allowanceInformation = The allowance for travelling within the UK is £5 per night and outside of the UK is £10 per night. We only need to know about costs above the allowance.
+benefits.incidentalOvernightCostEmploymentBenefits.error.individual = Select yes if you got incidental overnight costs
+benefits.incidentalOvernightCostEmploymentBenefits.error.agent = Select yes if your client got incidental overnight costs

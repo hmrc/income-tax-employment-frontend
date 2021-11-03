@@ -681,11 +681,14 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val utilitiesOrGeneralServicesBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/utility-general-service?employmentId=001"
     val entertainingBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/entertainment-expenses?employmentId=001"
     val entertainmentAmountBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/entertainment-expenses-amount?employmentId=001"
+    val telephoneBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/telephone?employmentId=001"
     val employerProvidedServicesBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/employer-provided-services?employmentId=001"
     val employerProvidedServicesBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/employer-provided-services-amount?employmentId=001"
     val professionalSubscriptionsBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/professional-fees-or-subscriptions?employmentId=001"
+    val professionalSubscriptionsBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/professional-fees-or-subscriptions-amount?employmentId=001"
     val otherServicesBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/other-services?employmentId=001"
-  }
+    val incidentalOvernightCostEmploymentBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/incidental-overnight-costs?employmentId=001"
+    }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
@@ -833,21 +836,19 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.travelSubheading, commonResults.yes, 9, 1, s"${user.commonExpectedResults.changeText} ${specificResults.travelSubheadingHiddenText}", travelEntertainmentBenefitsAmountHref)
           changeAmountRowCheck(commonResults.travelAndSubsistence, commonResults.yes, 9, 2, s"${user.commonExpectedResults.changeText} ${specificResults.travelAndSubsistenceHiddenText}", travelOrSubsistenceBenefitsHref)
           changeAmountRowCheck(commonResults.travelAndSubsistenceAmount, "£9", 9, 3, s"${user.commonExpectedResults.changeText} ${specificResults.travelAndSubsistenceAmountHiddenText}", travelOrSubsistenceBenefitsAmountHref)
-          changeAmountRowCheck(commonResults.personalCosts, commonResults.yes, 9, 4, s"${user.commonExpectedResults.changeText} ${specificResults.personalCostsHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.personalCosts, commonResults.yes, 9, 4, s"${user.commonExpectedResults.changeText} ${specificResults.personalCostsHiddenText}", incidentalOvernightCostEmploymentBenefitsHref)
           changeAmountRowCheck(commonResults.personalCostsAmount, "£10", 9, 5, s"${user.commonExpectedResults.changeText} ${specificResults.personalCostsAmountHiddenText}", incidentalCostsBenefitsAmountHref)
           changeAmountRowCheck(commonResults.entertainment, commonResults.yes, 9, 6, s"${user.commonExpectedResults.changeText} ${specificResults.entertainmentHiddenText}", entertainingBenefitsHref)
           changeAmountRowCheck(commonResults.entertainmentAmount, "£11", 9, 7, s"${user.commonExpectedResults.changeText} ${specificResults.entertainmentAmountHiddenText}", entertainmentAmountBenefitsHref)
 
           textOnPageCheck(commonResults.utilitiesHeader, fieldHeaderSelector(10))
           changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.yes, 11, 1, s"${user.commonExpectedResults.changeText} ${specificResults.utilitiesSubheadingHiddenText}", utilitiesOrGeneralServicesBenefitsHref)
-          changeAmountRowCheck(commonResults.telephone, commonResults.yes, 11, 2, s"${user.commonExpectedResults.changeText} ${specificResults.telephoneHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.telephone, commonResults.yes, 11, 2, s"${user.commonExpectedResults.changeText} ${specificResults.telephoneHiddenText}", telephoneBenefitsHref)
           changeAmountRowCheck(commonResults.telephoneAmount, "£12", 11, 3, s"${user.commonExpectedResults.changeText} ${specificResults.telephoneAmountHiddenText}", dummyHref)
-
           changeAmountRowCheck(commonResults.servicesProvided, commonResults.yes, 11, 4, s"${user.commonExpectedResults.changeText} ${specificResults.servicesProvidedHiddenText}", employerProvidedServicesBenefitsHref)
           changeAmountRowCheck(commonResults.servicesProvidedAmount, "£13", 11, 5, s"${user.commonExpectedResults.changeText} ${specificResults.servicesProvidedAmountHiddenText}", employerProvidedServicesBenefitsAmountHref)
           changeAmountRowCheck(commonResults.profSubscriptions, commonResults.yes, 11, 6, s"${user.commonExpectedResults.changeText} ${specificResults.profSubscriptionsHiddenText}", professionalSubscriptionsBenefitsHref)
-
-          changeAmountRowCheck(commonResults.profSubscriptionsAmount, "£14", 11, 7, s"${user.commonExpectedResults.changeText} ${specificResults.profSubscriptionsAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.profSubscriptionsAmount, "£14", 11, 7, s"${user.commonExpectedResults.changeText} ${specificResults.profSubscriptionsAmountHiddenText}", professionalSubscriptionsBenefitsAmountHref)
           changeAmountRowCheck(commonResults.otherServices, commonResults.yes, 11, 8, s"${user.commonExpectedResults.changeText} ${specificResults.otherServicesHiddenText}", otherServicesBenefitsHref)
           changeAmountRowCheck(commonResults.otherServicesAmount, "£15", 11, 9, s"${user.commonExpectedResults.changeText} ${specificResults.otherServicesAmountHiddenText}", dummyHref)
 
@@ -970,15 +971,6 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           welshToggleCheck(user.isWelsh)
 
           s"should not display the following values" in {
-            document().body().toString.contains(commonResults.qualifyingRelocationCosts) shouldBe false
-            document().body().toString.contains(commonResults.nonQualifyingRelocationCosts) shouldBe false
-            document().body().toString.contains(commonResults.travelAndSubsistence) shouldBe false
-            document().body().toString.contains(commonResults.personalCosts) shouldBe false
-            document().body().toString.contains(commonResults.entertainment) shouldBe false
-            document().body().toString.contains(commonResults.telephone) shouldBe false
-            document().body().toString.contains(commonResults.servicesProvided) shouldBe false
-            document().body().toString.contains(commonResults.profSubscriptions) shouldBe false
-            document().body().toString.contains(commonResults.otherServices) shouldBe false
             document().body().toString.contains(commonResults.nursery) shouldBe false
             document().body().toString.contains(commonResults.beneficialLoans) shouldBe false
             document().body().toString.contains(commonResults.educational) shouldBe false

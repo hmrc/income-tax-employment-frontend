@@ -18,7 +18,8 @@ package controllers.benefits
 
 import forms.YesNoForm
 import models.User
-import models.employment.{BenefitsViewModel, TravelEntertainmentModel}
+import models.benefits.UtilitiesAndServicesModel
+import models.employment.BenefitsViewModel
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -27,29 +28,30 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
-class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
+class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val taxYearEOY: Int = taxYear - 1
-  private val employmentId: String = "001"
+  val taxYearEOY: Int = taxYear - 1
+  val employmentId: String = "001"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId,
+      isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
-  private def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
+  def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
-  private def benefits(travelEntertainmentModel: TravelEntertainmentModel): BenefitsViewModel =
-    BenefitsViewModel(travelEntertainmentModel = Some(travelEntertainmentModel), isUsingCustomerData = true, isBenefitsReceived = true)
+  def benefits(utilitiesModel: UtilitiesAndServicesModel): BenefitsViewModel =
+    BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true, utilitiesAndServicesModel = Some(utilitiesModel))
 
-  private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/travel-entertainment?employmentId=$employmentId"
+  private def telephoneQuestionPageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/telephone?employmentId=$employmentId"
 
-  private val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/travel-entertainment?employmentId=$employmentId"
+  val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/telephone?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
-    val thisIncludesSelector: String = "#main-content > div > div > form > div > fieldset > legend > p.govuk-body"
+    val paragraphSelector: String = "#main-content > div > div > form > div > fieldset > legend > p"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
@@ -58,9 +60,10 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
 
   trait SpecificExpectedResults {
     val expectedTitle: String
-    val expectedH1: String
+    val expectedHeading: String
     val expectedErrorTitle: String
-    val expectedError: String
+    val expectedErrorText: String
+    val expectedParagraphText: String
   }
 
   trait CommonExpectedResults {
@@ -68,35 +71,38 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
     val expectedButtonText: String
     val yesText: String
     val noText: String
-    val thisIncludes: String
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any travel or entertainment benefits from this company?"
-    val expectedH1 = "Did you get any travel or entertainment benefits from this company?"
+    val expectedTitle = "Did you get a benefit for using a telephone?"
+    val expectedHeading = "Did you get a benefit for using a telephone?"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if you got travel or entertainment benefits"
+    val expectedErrorText = "Select yes if you got a benefit for using a telephone"
+    val expectedParagraphText: String = "These are telephone costs paid by your employer that are not exempt from tax."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedTitle = "Did you get any travel or entertainment benefits from this company?"
-    val expectedH1 = "Did you get any travel or entertainment benefits from this company?"
+    val expectedTitle = "Did you get a benefit for using a telephone?"
+    val expectedHeading = "Did you get a benefit for using a telephone?"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if you got travel or entertainment benefits"
+    val expectedErrorText = "Select yes if you got a benefit for using a telephone"
+    val expectedParagraphText: String = "These are telephone costs paid by your employer that are not exempt from tax."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any travel or entertainment benefits from this company?"
-    val expectedH1 = "Did your client get any travel or entertainment benefits from this company?"
+    val expectedTitle = "Did your client get a benefit for using a telephone?"
+    val expectedHeading = "Did your client get a benefit for using a telephone?"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if your client got travel or entertainment benefits"
+    val expectedErrorText = "Select yes if your client got a benefit for using a telephone"
+    val expectedParagraphText: String = "These are telephone costs paid by their employer that are not exempt from tax."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client get any travel or entertainment benefits from this company?"
-    val expectedH1 = "Did your client get any travel or entertainment benefits from this company?"
+    val expectedTitle = "Did your client get a benefit for using a telephone?"
+    val expectedHeading = "Did your client get a benefit for using a telephone?"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedError = "Select yes if your client got travel or entertainment benefits"
+    val expectedErrorText = "Select yes if your client got a benefit for using a telephone"
+    val expectedParagraphText: String = "These are telephone costs paid by their employer that are not exempt from tax."
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -104,7 +110,6 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
     val expectedButtonText = "Continue"
     val yesText = "Yes"
     val noText = "No"
-    val thisIncludes = "This includes benefits such as travel, incidental overnight expenses and entertaining."
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -112,7 +117,6 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
     val expectedButtonText = "Continue"
     val yesText = "Yes"
     val noText = "No"
-    val thisIncludes = "This includes benefits such as travel, incidental overnight expenses and entertaining."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -127,13 +131,14 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "render the 'Did you get travel or entertainment benefits' page with the correct content with no pre-filling" which {
+        "render 'Did you get a benefit for using a telephone?' page with the correct content with no pre-filling" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
+            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
             insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-              benefits = Some(BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true)))), userRequest)
+              benefits = Some(benefits(fullUtilitiesAndServicesModel.copy(telephoneQuestion = None))))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(telephoneQuestionPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -146,9 +151,9 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
           }
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
-          h1Check(user.specificExpectedResults.get.expectedH1)
+          h1Check(user.specificExpectedResults.get.expectedHeading)
           textOnPageCheck(expectedCaption, captionSelector)
-          textOnPageCheck(thisIncludes, thisIncludesSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
           radioButtonCheck(yesText, 1, Some(false))
           radioButtonCheck(noText, 2, Some(false))
           buttonCheck(expectedButtonText, continueButtonSelector)
@@ -156,13 +161,13 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
           welshToggleCheck(user.isWelsh)
         }
 
-        "render the 'Did you get travel or entertainment benefits' page with the correct content with cya data and the yes value pre-filled" which {
+        "render 'Did you get a benefit for using a telephone?' page with the correct content with cya data and the yes value pre-filled" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-              Some(benefits(fullTravelOrEntertainmentModel)))), userRequest)
+              Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(telephoneQuestionPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -175,9 +180,9 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
           }
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
-          h1Check(user.specificExpectedResults.get.expectedH1)
+          h1Check(user.specificExpectedResults.get.expectedHeading)
           textOnPageCheck(expectedCaption, captionSelector)
-          textOnPageCheck(thisIncludes, thisIncludesSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
           radioButtonCheck(yesText, 1, Some(true))
           radioButtonCheck(noText, 2, Some(false))
           buttonCheck(expectedButtonText, continueButtonSelector)
@@ -191,13 +196,13 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
 
       val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
 
-      "redirect the user to the check employment benefits page when theres no benefits in CYA but has prior benefits" which {
+      "redirect the user to the check employment benefits page when theres no benefits and prior submission" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true)), userRequest)
           authoriseAgentOrIndividual(user.isAgent)
-          urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false,
+          urlGet(telephoneQuestionPageUrl(taxYearEOY), user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -209,13 +214,13 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
         }
       }
 
-      "redirect the user to the benefits received page when theres no benefits when no prior benefits" which {
+      "redirect the user to the benefits received page when theres no benefits and not prior submission" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
           insertCyaData(employmentUserData(isPrior = false, cyaModel("employerName", hmrc = true)), userRequest)
           authoriseAgentOrIndividual(user.isAgent)
-          urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false,
+          urlGet(telephoneQuestionPageUrl(taxYearEOY), user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -231,7 +236,7 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
-          urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false,
+          urlGet(telephoneQuestionPageUrl(taxYearEOY), user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -243,13 +248,13 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
         }
       }
 
-      "redirect the user to the check employment benefits page when the benefits received value is false" which {
+      "redirect the user to the check employment benefits page when the utilities and services question is false" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-            benefits = Some(BenefitsViewModel(isUsingCustomerData = true)))), userRequest)
-          urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false,
+            benefits = Some(benefits(fullUtilitiesAndServicesModel.copy(utilitiesAndServicesQuestion = Some(false)))))), userRequest)
+          urlGet(telephoneQuestionPageUrl(taxYearEOY), user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -257,6 +262,24 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
             Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+
+        }
+      }
+
+      "redirect the user to the utilities and services question page when the utilities and services question is empty" which {
+        lazy val result: WSResponse = {
+          dropEmploymentDB()
+          authoriseAgentOrIndividual(user.isAgent)
+          insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
+            benefits = Some(benefits(fullUtilitiesAndServicesModel.copy(utilitiesAndServicesQuestion = None))))), userRequest)
+          urlGet(telephoneQuestionPageUrl(taxYearEOY), user.isWelsh, follow = false,
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
+
+        "has an SEE_OTHER(303) status" in {
+          result.status shouldBe SEE_OTHER
+          result.header("location") shouldBe
+            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/utility-general-service?employmentId=$employmentId")
 
         }
       }
@@ -267,7 +290,7 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
           authoriseAgentOrIndividual(user.isAgent)
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
             benefits = Some(BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true)))), userRequest)
-          urlGet(pageUrl(taxYear), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(telephoneQuestionPageUrl(taxYear), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -283,7 +306,7 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true)), userRequest)
           authoriseAgentOrIndividual(user.isAgent)
-          urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(telephoneQuestionPageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
@@ -302,7 +325,9 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
 
   }
 
+
   ".submit" should {
+
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
@@ -314,9 +339,9 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
             lazy val result: WSResponse = {
               dropEmploymentDB()
               insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-                Some(benefits(fullTravelOrEntertainmentModel)))), userRequest)
+                Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
+              urlPost(telephoneQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -330,17 +355,17 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
             import user.commonExpectedResults._
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
-            h1Check(user.specificExpectedResults.get.expectedH1)
+            h1Check(user.specificExpectedResults.get.expectedHeading)
             textOnPageCheck(expectedCaption, captionSelector)
-            textOnPageCheck(thisIncludes, thisIncludesSelector)
+            textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
             radioButtonCheck(yesText, 1, Some(false))
             radioButtonCheck(noText, 2, Some(false))
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
-            errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
+            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorText, Selectors.yesSelector)
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorText, Some("value"))
           }
         }
       }
@@ -350,97 +375,62 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
 
       val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
 
-      "redirect to utilities and general services page and update the TravelEntertainmentQuestion to no and wipe the travel data when the user chooses no" which {
+      "redirect to check your benefits, update the telephoneQuestion to no and wipe the telephone amount" +
+        " data when the user chooses no" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true, Some(benefits(fullTravelOrEntertainmentModel)))), userRequest)
+          insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
+            Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
           authoriseAgentOrIndividual(user.isAgent)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
+          urlPost(telephoneQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/utility-general-service?employmentId=$employmentId")
+            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
           lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion)) shouldBe Some(false)
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistence)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertainingQuestion)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining)) shouldBe None
+          cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.utilitiesAndServicesQuestion)) shouldBe Some(true)
+          cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.telephoneQuestion)) shouldBe Some(false)
+          cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.telephone)) shouldBe None
         }
 
       }
 
-      "redirect to travel subsistence page and update the TravelEntertainmentQuestion to yes and when the user chooses yes" which {
-
-        lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
-
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true, Some(benefits(emptyTravelOrEntertainmentModel)))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        "redirects to the check your details page" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/travel-subsistence?employmentId=$employmentId")
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion)) shouldBe Some(true)
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistence)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertainingQuestion)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining)) shouldBe None
-        }
-
-      }
-
-      "redirect to travel or subsistence page and create a new TravelEntertainmentModel when theres are no previous TravelOrEntertainment benefits" which {
+      "redirect to check your benefits and update the telephoneQuestion to yes and when the user chooses yes" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-            benefits = Some(BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true)))), userRequest)
+            Some(benefits(fullUtilitiesAndServicesModel.copy(telephoneQuestion = Some(false)))))), userRequest)
           authoriseAgentOrIndividual(user.isAgent)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
+          urlPost(telephoneQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/travel-subsistence?employmentId=$employmentId")
+            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.utilitiesAndServicesQuestion)) shouldBe Some(true)
+          cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.telephoneQuestion)) shouldBe Some(true)
+          cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.telephone)) shouldBe Some(100)
         }
 
-        "update only the travelEntertainmentQuestion to true" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion)) shouldBe Some(true)
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistence)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertainingQuestion)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining)) shouldBe None
-        }
       }
 
       "redirect the user to the overview page when it is in year" which {
         lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
-          urlPost(pageUrl(taxYear), body = "", user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(telephoneQuestionPageUrl(taxYear), body = "", user.isWelsh, follow = false,
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -457,7 +447,7 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true)), userRequest)
           authoriseAgentOrIndividual(user.isAgent)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
+          urlPost(telephoneQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -472,7 +462,49 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
           cyamodel.employment.employmentBenefits shouldBe None
         }
       }
+
+      "redirect the user to the check employment benefits page when the utilities and services question is false" which {
+
+        lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
+
+        lazy val result: WSResponse = {
+          dropEmploymentDB()
+          authoriseAgentOrIndividual(user.isAgent)
+          insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
+            benefits = Some(benefits(fullUtilitiesAndServicesModel.copy(utilitiesAndServicesQuestion = Some(false)))))), userRequest)
+          urlPost(telephoneQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
+
+        "has an SEE_OTHER(303) status" in {
+          result.status shouldBe SEE_OTHER
+          result.header("location") shouldBe
+            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+
+        }
+      }
+
+      "redirect the user to the utilities and services question page when the utilities and services question is empty" which {
+
+        lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
+
+        lazy val result: WSResponse = {
+          dropEmploymentDB()
+          authoriseAgentOrIndividual(user.isAgent)
+          insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
+            benefits = Some(benefits(fullUtilitiesAndServicesModel.copy(utilitiesAndServicesQuestion = None))))), userRequest)
+          urlPost(telephoneQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
+
+        "has an SEE_OTHER(303) status" in {
+          result.status shouldBe SEE_OTHER
+          result.header("location") shouldBe
+            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/utility-general-service?employmentId=$employmentId")
+
+        }
+      }
     }
   }
-}
 
+}

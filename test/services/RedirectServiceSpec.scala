@@ -121,6 +121,14 @@ class RedirectServiceSpec extends UnitTest {
       status(result) shouldBe SEE_OTHER
       redirectUrl(result) shouldBe "/next"
     }
+    "redirect to the next page if the journey is not finished for travel section" in {
+      val result = Future.successful(RedirectService.benefitsSubmitRedirect(employmentCYA.copy(
+        employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = None))
+      ), Call("GET", "/next"))(taxYear, "001"))
+
+      status(result) shouldBe SEE_OTHER
+      redirectUrl(result) shouldBe "/next"
+    }
   }
 
   "redirectBasedOnCurrentAnswers" should {
@@ -711,7 +719,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/incidental-overnight-costs?employmentId=001"
       }
       "it's a prior submission and attempted to view the travel amount page but the travel yes no question is false" in {
 
@@ -775,7 +783,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/incidental-overnight-costs?employmentId=001"
       }
       "it's a new submission and attempted to view the incidental costs amount page but the incidental costs question is false" in {
 
@@ -1083,7 +1091,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/telephone?employmentId=001"
       }
       "it's a new submission and attempted to view the employer provided services yes no page but the telephone amount is empty" in {
 
@@ -1239,7 +1247,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/professional-fees-or-subscriptions-amount?employmentId=001"
       }
       "it's a new submission and attempted to view the services amount page but the services question is empty" in {
 
