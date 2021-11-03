@@ -799,3 +799,11 @@ benefits.otherServicesBenefits.theseAre.individual = These are any other service
 benefits.otherServicesBenefits.theseAre.agent = These are any other services they have used that are required for their job. Their employer pays for them.
 benefits.otherServicesBenefits.error.individual = Select yes if you got benefits for other services
 benefits.otherServicesBenefits.error.agent = Select yes if your client got benefits for other services
+
+benefits.incidentalOvernightCostEmploymentBenefits.title.individual = Did you get any incidental overnight costs?
+benefits.incidentalOvernightCostEmploymentBenefits.title.agent = Did your client get any incidental overnight costs?
+benefits.incidentalOvernightCostEmploymentBenefits.costInformation.individual = These are personal costs you incurred while travelling overnight on business.
+benefits.incidentalOvernightCostEmploymentBenefits.costInformation.agent = These are personal costs they incurred while travelling overnight on business.
+benefits.incidentalOvernightCostEmploymentBenefits.allowanceInformation = The allowance for travelling within the UK is £5 per night and outside of the UK is £10 per night. We only need to know about costs above the allowance.
+benefits.incidentalOvernightCostEmploymentBenefits.error.individual = Select yes if you got incidental overnight costs
+benefits.incidentalOvernightCostEmploymentBenefits.error.agent = Select yes if your client got incidental overnight costs
