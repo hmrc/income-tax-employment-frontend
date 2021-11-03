@@ -1239,7 +1239,7 @@ class RedirectServiceSpec extends UnitTest {
         }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001"
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/professional-fees-or-subscriptions-amount?employmentId=001"
       }
       "it's a new submission and attempted to view the services amount page but the services question is empty" in {
 
