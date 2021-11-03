@@ -17,8 +17,8 @@
 package controllers.benefits.carVanFuel
 
 import config.{AppConfig, ErrorHandler}
-import controllers.benefits.accommodationAndRelocation.routes.{AccommodationRelocationBenefitsController}
-import controllers.benefits.carVanFuel.routes.{CompanyCarBenefitsController}
+import controllers.benefits.accommodationAndRelocation.routes.AccommodationRelocationBenefitsController
+import controllers.benefits.carVanFuel.routes.CompanyCarBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import javax.inject.Inject

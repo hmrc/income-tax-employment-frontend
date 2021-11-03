@@ -17,8 +17,8 @@
 package controllers.benefits.carVanFuel
 
 import config.{AppConfig, ErrorHandler}
-import controllers.benefits.accommodationAndRelocation.routes.{AccommodationRelocationBenefitsController}
-import controllers.benefits.carVanFuel.routes.{MileageBenefitAmountController}
+import controllers.benefits.accommodationAndRelocation.routes.AccommodationRelocationBenefitsController
+import controllers.benefits.carVanFuel.routes.MileageBenefitAmountController
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
