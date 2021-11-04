@@ -121,6 +121,14 @@ class RedirectServiceSpec extends UnitTest {
       status(result) shouldBe SEE_OTHER
       redirectUrl(result) shouldBe "/next"
     }
+    "redirect to the next page if the journey is not finished for travel section" in {
+      val result = Future.successful(RedirectService.benefitsSubmitRedirect(employmentCYA.copy(
+        employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = None))
+      ), Call("GET", "/next"))(taxYear, "001"))
+
+      status(result) shouldBe SEE_OTHER
+      redirectUrl(result) shouldBe "/next"
+    }
   }
 
   "redirectBasedOnCurrentAnswers" should {
