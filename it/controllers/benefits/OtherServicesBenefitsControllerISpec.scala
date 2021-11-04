@@ -323,6 +323,25 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
       }
     }
 
+    "redirect to the other services amount next question page when a valid form is submitted and not prior submission" when {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
+
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(false)
+        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel("employerName", hmrc = true,
+          benefits = Some(benefits(fullUtilitiesAndServicesModel.copy(serviceQuestion = Some(true)))))), userRequest)
+
+        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an SEE_OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe
+          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/other-services-amount?employmentId=$employmentId")
+      }
+    }
+
     "redirect to overview page if the user tries to hit this page with current taxYear" which {
       lazy val result: WSResponse = {
         dropEmploymentDB()
