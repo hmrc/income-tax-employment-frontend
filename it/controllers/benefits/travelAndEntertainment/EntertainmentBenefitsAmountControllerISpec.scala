@@ -18,7 +18,7 @@ package controllers.benefits.travelAndEntertainment
 
 import controllers.employment.routes.CheckYourBenefitsController
 import models.User
-import models.employment.{BenefitsViewModel, TravelEntertainmentModel}
+import models.benefits.{BenefitsViewModel, TravelEntertainmentModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

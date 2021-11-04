@@ -23,7 +23,8 @@ import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import javax.inject.Inject
 import models.User
-import models.employment.{AllEmploymentData, Benefits, BenefitsViewModel}
+import models.benefits.{Benefits, BenefitsViewModel}
+import models.employment.AllEmploymentData
 import models.mongo.EmploymentCYAModel
 import play.api.Logging
 import play.api.i18n.I18nSupport

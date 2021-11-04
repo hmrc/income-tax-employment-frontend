@@ -24,7 +24,7 @@ import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import javax.inject.Inject
 import models.User
-import models.employment.{BenefitsViewModel, CarVanFuelModel}
+import models.benefits.{BenefitsViewModel, CarVanFuelModel}
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport

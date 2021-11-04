@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package models.employment
+package models.benefits
 
-import controllers.benefits.travelAndEntertainment.routes.{EntertainingBenefitsController, IncidentalCostsBenefitsAmountController, TravelAndSubsistenceBenefitsController, TravelOrEntertainmentBenefitsController, TravelOrSubsistenceBenefitsAmountController}
+import controllers.benefits.travelAndEntertainment.routes._
 import controllers.employment.routes.CheckYourBenefitsController
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call

@@ -17,11 +17,12 @@
 package controllers.benefits.accommodationAndRelocation
 
 import config.{AppConfig, ErrorHandler}
+import controllers.benefits.accommodationAndRelocation.routes._
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import javax.inject.Inject
-import models.employment.AccommodationRelocationModel
+import models.benefits.AccommodationRelocationModel
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -73,15 +74,14 @@ class QualifyingRelocationBenefitsAmountController @Inject()(implicit val cc: Me
                 val accommodationRelocation: Option[AccommodationRelocationModel] = cyaModel.employmentBenefits.flatMap(_.accommodationRelocationModel)
                 val updatedCyaModel = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(accommodationRelocationModel =
                   accommodationRelocation.map(_.copy(qualifyingRelocationExpenses = Some(newAmount))))))
+
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
                   cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                    if (cya.isPriorSubmission) {
-                      Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                    } else {
-                      // TODO: Point to the non-qualifying benefits page
-                      Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                    }
-                  }
+
+                  val nextPage = NonQualifyingRelocationBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
+                }
             }
           )
         }

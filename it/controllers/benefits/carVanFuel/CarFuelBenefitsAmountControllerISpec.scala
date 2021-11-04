@@ -18,7 +18,8 @@ package controllers.benefits.carVanFuel
 
 import forms.AmountForm
 import models.User
-import models.employment.{Benefits, BenefitsViewModel, CarVanFuelModel, EmploymentBenefits}
+import models.benefits.{Benefits, BenefitsViewModel, CarVanFuelModel}
+import models.employment.EmploymentBenefits
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

@@ -730,6 +730,15 @@ benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.agent = Your client
 benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.individual = Enter the amount you got for travel and subsistence in the correct format
 benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.agent = Enter the amount your client got for travel and subsistence in the correct format
 
+benefits.telephoneEmploymentBenefitsAmount.title.individual = How much did you get in total for telephone benefits?
+benefits.telephoneEmploymentBenefitsAmount.title.agent = How much did your client get in total for telephone benefits?
+benefits.telephoneEmploymentBenefitsAmount.error.noEntry.individual = Enter the amount you got for telephone benefits
+benefits.telephoneEmploymentBenefitsAmount.error.noEntry.agent = Enter the amount your client got for telephone benefits
+benefits.telephoneEmploymentBenefitsAmount.error.overMaximum.individual = Your telephone benefits must be less than £100,000,000,000
+benefits.telephoneEmploymentBenefitsAmount.error.overMaximum.agent = Your client’s telephone benefits must be less than £100,000,000,000
+benefits.telephoneEmploymentBenefitsAmount.error.wrongFormat.individual = Enter the amount you got for telephone benefits in the correct format
+benefits.telephoneEmploymentBenefitsAmount.error.wrongFormat.agent = Enter the amount your client got for telephone benefits in the correct format
+
 benefits.incidentalCostsBenefitsAmount.title.individual = How much did you get in total for incidental overnight costs?
 benefits.incidentalCostsBenefitsAmount.title.agent = How much did your client get in total for incidental overnight costs?
 benefits.incidentalCostsBenefitsAmount.error.noEntry.individual = Enter the amount you got for incidental overnight costs
@@ -801,6 +810,15 @@ benefits.employerProvidedServices.paragraph.individual = These are services you 
 benefits.employerProvidedServices.paragraph.agent = These are services they used that are not related to their job. Their employer pays for them. For example, subscriptions or laundry services.
 benefits.employerProvidedServices.error.no-entry.individual = Select yes if you got a benefit for services provided by your employer
 benefits.employerProvidedServices.error.no-entry.agent = Select yes if your client got a benefit for services provided by their employer
+
+benefits.otherServicesBenefitsAmount.title.individual = How much did you get in total for other services?
+benefits.otherServicesBenefitsAmount.title.agent = How much did your client get in total for other services?
+benefits.otherServicesBenefitsAmount.error.noEntry.individual = Enter the amount you got for other services
+benefits.otherServicesBenefitsAmount.error.noEntry.agent = Enter the amount your client got for other services
+benefits.otherServicesBenefitsAmount.error.overMaximum.individual = The amount you got for other services must be less than £100,000,000,000
+benefits.otherServicesBenefitsAmount.error.overMaximum.agent = The amount your client got for other services must be less than £100,000,000,000
+benefits.otherServicesBenefitsAmount.error.invalidFormat.individual = Enter the amount you got for other services in the correct format
+benefits.otherServicesBenefitsAmount.error.invalidFormat.agent = Enter the amount your client got for other services in the correct format
 
 benefits.otherServicesBenefits.title.individual = Did you get any benefits for other services?
 benefits.otherServicesBenefits.title.agent = Did your client get any benefits for other services?

@@ -16,8 +16,7 @@
 
 package services
 
-import models.benefits.UtilitiesAndServicesModel
-import models.employment.{AccommodationRelocationModel, BenefitsViewModel, CarVanFuelModel, TravelEntertainmentModel}
+import models.benefits.{AccommodationRelocationModel, BenefitsViewModel, CarVanFuelModel, TravelEntertainmentModel, UtilitiesAndServicesModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Call
@@ -116,6 +115,14 @@ class RedirectServiceSpec extends UnitTest {
     "redirect to the next page if the journey is not finished" in {
       val result = Future.successful(RedirectService.benefitsSubmitRedirect(employmentCYA.copy(
         employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = None))
+      ), Call("GET", "/next"))(taxYear, "001"))
+
+      status(result) shouldBe SEE_OTHER
+      redirectUrl(result) shouldBe "/next"
+    }
+    "redirect to the next page if the journey is not finished for travel section" in {
+      val result = Future.successful(RedirectService.benefitsSubmitRedirect(employmentCYA.copy(
+        employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = None))
       ), Call("GET", "/next"))(taxYear, "001"))
 
       status(result) shouldBe SEE_OTHER

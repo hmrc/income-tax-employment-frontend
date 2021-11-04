@@ -19,7 +19,7 @@ package controllers.benefits.carVanFuel
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.User
-import models.employment.{BenefitsViewModel, CarVanFuelModel}
+import models.benefits.{BenefitsViewModel, CarVanFuelModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

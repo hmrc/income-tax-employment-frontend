@@ -17,6 +17,7 @@
 package services
 
 import config._
+import models.benefits.{Benefits, BenefitsViewModel}
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.mongo.{DataNotFound, DataNotUpdated, EmploymentCYAModel, EmploymentDetails, EmploymentUserData}

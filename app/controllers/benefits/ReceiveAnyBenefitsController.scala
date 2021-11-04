@@ -23,7 +23,7 @@ import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import javax.inject.Inject
 import models.User
-import models.employment.BenefitsViewModel
+import models.benefits.BenefitsViewModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

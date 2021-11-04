@@ -18,7 +18,7 @@ package controllers.benefits.accommodationAndRelocation
 
 import controllers.employment.routes.CheckYourBenefitsController
 import models.User
-import models.employment.{AccommodationRelocationModel, BenefitsViewModel}
+import models.benefits.{AccommodationRelocationModel, BenefitsViewModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -336,7 +336,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
       }
     }
 
-    "redirect to check employments benefits page when a valid form is submitted and prior benefits exist" when {
+    "redirect to non qualifying relocation page when a valid form is submitted and prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(false)
         dropEmploymentDB()
@@ -346,7 +346,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001")
+        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/non-qualifying-relocation?employmentId=001")
       }
 
       "updates the CYA model with the new value" in {
@@ -356,7 +356,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
       }
     }
 
-    "redirect to check employments benefits page when a valid form is submitted and no prior benefits exist" when {
+    "redirect to non qualifying relocation benefits page when a valid form is submitted and no prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(false)
         dropEmploymentDB()
@@ -366,7 +366,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001")
+        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/non-qualifying-relocation?employmentId=001")
       }
 
       "updates the CYA model with the new value" in {

@@ -20,7 +20,7 @@ import controllers.benefits.accommodationAndRelocation.routes.{AccommodationRelo
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.AmountForm
 import models.User
-import models.employment.{AccommodationRelocationModel, BenefitsViewModel}
+import models.benefits.{AccommodationRelocationModel, BenefitsViewModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -474,7 +474,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           errorAboveElementCheck(get.maxAmountErrorText)
         }
 
-        "redirect to CYA page and update the living accommodation amount when a valid form is submitted and prior benefits exist" when {
+        "redirect to qualifying relocation page and update the living accommodation amount when a valid form is submitted and prior benefits exist" when {
 
           val newAmount = 100
 
@@ -490,7 +490,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           "redirects to the check your benefits page" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+              Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/qualifying-relocation?employmentId=$employmentId")
           }
 
           "updates the CYA model with the new value" in {

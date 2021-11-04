@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package models.employment
+package models.benefits
 
-import models.benefits.{EncryptedUtilitiesAndServicesModel, UtilitiesAndServicesModel}
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.{OFormat, __}
 import utils.EncryptedValue

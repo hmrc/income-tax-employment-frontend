@@ -18,6 +18,7 @@ package controllers.benefits.utilitiesAndServices
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.utilitiesAndServices.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import javax.inject.Inject
@@ -96,8 +97,7 @@ class OtherServicesBenefitsController @Inject()(implicit val cc: MessagesControl
                 if (data.isPriorSubmission) {
                   Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                 } else {
-                  // TODO: Point to the other services benefits amount page
-                  Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                  Redirect(OtherServicesBenefitsAmountController.show(taxYear, employmentId))
                 }
               }
             }

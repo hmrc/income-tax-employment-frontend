@@ -19,8 +19,7 @@ package controllers.benefits.utilitiesAndServices
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.User
-import models.benefits.UtilitiesAndServicesModel
-import models.employment.BenefitsViewModel
+import models.benefits.{BenefitsViewModel, UtilitiesAndServicesModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

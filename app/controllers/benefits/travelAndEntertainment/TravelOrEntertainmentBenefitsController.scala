@@ -17,12 +17,13 @@
 package controllers.benefits.travelAndEntertainment
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.travelAndEntertainment.routes._
+import controllers.benefits.utilitiesAndServices.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import javax.inject.Inject
 import models.User
-import models.employment.TravelEntertainmentModel
+import models.benefits.TravelEntertainmentModel
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -97,7 +98,16 @@ class TravelOrEntertainmentBenefitsController @Inject()(implicit val cc: Message
 
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission,data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+
+                val nextPage = {
+                  if (yesNo) {
+                    TravelAndSubsistenceBenefitsController.show(taxYear, employmentId)
+                  } else {
+                    UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId)
+                  }
+                }
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
             }
           )

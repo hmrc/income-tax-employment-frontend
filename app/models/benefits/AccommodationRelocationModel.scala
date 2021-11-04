@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.employment
+package models.benefits
 
 import controllers.benefits.accommodationAndRelocation.routes._
 import play.api.libs.json.{Json, OFormat}

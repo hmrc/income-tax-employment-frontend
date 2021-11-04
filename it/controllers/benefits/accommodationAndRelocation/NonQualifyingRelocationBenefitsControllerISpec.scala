@@ -18,7 +18,7 @@ package controllers.benefits.accommodationAndRelocation
 
 import forms.YesNoForm
 import models.User
-import models.employment.{AccommodationRelocationModel, BenefitsViewModel}
+import models.benefits.{AccommodationRelocationModel, BenefitsViewModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -293,7 +293,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
         }
     }
 
-    "redirect to check employment benefits page when user selects Yes and prior benefits exist" which {
+    "redirect to non qualifying relocation amount page when user selects Yes and prior benefits exist" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
       lazy val result: WSResponse = {
@@ -307,7 +307,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
       "has a SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/non-qualifying-relocation-amount?employmentId=$employmentId")
       }
 
       "updates non-QualifyingRelocation Expenses Question to Yes" in {
@@ -316,7 +316,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
       }
     }
 
-    "redirect to check employment benefits page and wipe the non-Qualifying Relocation Amount if user selects No" which {
+    "redirect to travel entertainment page and wipe the non-Qualifying Relocation Amount if user selects No" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
       lazy val result: WSResponse = {
@@ -330,7 +330,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
       "has a SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/travel-entertainment?employmentId=$employmentId")
       }
 
       "updates non-QualifyingRelocation Expenses Question to No and removes non-QualifyingRelocation Expenses amount" in {
@@ -345,7 +345,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
       }
     }
 
-    "redirect to check employment benefits page if valid form is submitted and no prior benefits exist" which {
+    "redirect to non qualifying relocation amount page if valid form is submitted and no prior benefits exist" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
       lazy val result: WSResponse = {
@@ -359,7 +359,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
       "has a SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/non-qualifying-relocation-amount?employmentId=$employmentId")
       }
 
       "updates non-QualifyingRelocation Expenses Question to Yes" in {

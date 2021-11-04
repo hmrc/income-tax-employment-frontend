@@ -17,12 +17,12 @@
 package controllers.benefits.accommodationAndRelocation
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.accommodationAndRelocation.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import javax.inject.Inject
 import models.User
-import models.employment.{AccommodationRelocationModel, BenefitsViewModel}
+import models.benefits.{AccommodationRelocationModel, BenefitsViewModel}
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -48,12 +48,12 @@ class QualifyingRelocationBenefitsController @Inject()(implicit val cc: Messages
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
 
-
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
           EmploymentBenefitsType)(qualifyingRelocationBenefitsRedirects(_, taxYear, employmentId)) { cya =>
 
-          val qualifyingRelocationBenefitsQuestion: Option[Boolean] = cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.qualifyingRelocationExpensesQuestion)
+          val qualifyingRelocationBenefitsQuestion: Option[Boolean] = cya.employment.employmentBenefits.flatMap(
+            _.accommodationRelocationModel).flatMap(_.qualifyingRelocationExpensesQuestion)
 
           qualifyingRelocationBenefitsQuestion match {
             case Some(questionResult) => Future.successful(Ok(qualifyingRelocationBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
@@ -97,12 +97,19 @@ class QualifyingRelocationBenefitsController @Inject()(implicit val cc: Messages
 
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-              }
 
+                val nextPage = {
+                  if (yesNo) {
+                    QualifyingRelocationBenefitsAmountController.show(taxYear, employmentId)
+                  } else {
+                    NonQualifyingRelocationBenefitsController.show(taxYear, employmentId)
+                  }
+                }
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
+              }
             }
           )
-
         }
       }
     }

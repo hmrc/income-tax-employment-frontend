@@ -18,6 +18,7 @@ package models.employment
 
 import controllers.benefits.travelAndEntertainment.routes.{EntertainingBenefitsController, IncidentalCostsBenefitsAmountController, TravelAndSubsistenceBenefitsController, TravelOrEntertainmentBenefitsController, TravelOrSubsistenceBenefitsAmountController}
 import controllers.employment.routes.CheckYourBenefitsController
+import models.benefits.TravelEntertainmentModel
 import utils.UnitTest
 
 class TravelEntertainmentModelSpec extends UnitTest {

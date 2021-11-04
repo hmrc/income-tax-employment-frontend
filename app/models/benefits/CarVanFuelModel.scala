@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package models.employment
+package models.benefits
 
+import controllers.benefits.carVanFuel.routes._
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue
-import controllers.benefits.carVanFuel.routes._
 
 case class CarVanFuelModel(
                             carVanFuelQuestion: Option[Boolean] = None,

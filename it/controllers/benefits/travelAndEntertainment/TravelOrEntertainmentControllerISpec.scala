@@ -18,7 +18,7 @@ package controllers.benefits.travelAndEntertainment
 
 import forms.YesNoForm
 import models.User
-import models.employment.{BenefitsViewModel, TravelEntertainmentModel}
+import models.benefits.{BenefitsViewModel, TravelEntertainmentModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -350,7 +350,7 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
 
       val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
 
-      "redirect to check your benefits and update the TravelEntertainmentQuestion to no and wipe the travel data when the user chooses no" which {
+      "redirect to utilities and general services page and update the TravelEntertainmentQuestion to no and wipe the travel data when the user chooses no" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -365,7 +365,7 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/utility-general-service?employmentId=$employmentId")
           lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
           cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion)) shouldBe Some(false)
           cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe None
@@ -378,7 +378,7 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
 
       }
 
-      "redirect to check your benefits and update the TravelEntertainmentQuestion to yes and when the user chooses yes" which {
+      "redirect to travel subsistence page and update the TravelEntertainmentQuestion to yes and when the user chooses yes" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
@@ -393,7 +393,7 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/travel-subsistence?employmentId=$employmentId")
           lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
           cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion)) shouldBe Some(true)
           cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe None
@@ -406,7 +406,7 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
 
       }
 
-      "redirect to check your benefits and create a new TravelEntertainmentModel when theres are no previous TravelOrEntertainment benefits" which {
+      "redirect to travel or subsistence page and create a new TravelEntertainmentModel when theres are no previous TravelOrEntertainment benefits" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
@@ -422,7 +422,7 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/travel-subsistence?employmentId=$employmentId")
         }
 
         "update only the travelEntertainmentQuestion to true" in {

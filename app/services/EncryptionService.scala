@@ -21,7 +21,7 @@ import models.employment._
 import models.mongo._
 import utils.SecureGCMCipher
 import javax.inject.Inject
-import models.benefits.{EncryptedUtilitiesAndServicesModel, UtilitiesAndServicesModel}
+import models.benefits.{AccommodationRelocationModel, BenefitsViewModel, CarVanFuelModel, EncryptedAccommodationRelocationModel, EncryptedBenefitsViewModel, EncryptedCarVanFuelModel, EncryptedTravelEntertainmentModel, EncryptedUtilitiesAndServicesModel, TravelEntertainmentModel, UtilitiesAndServicesModel}
 
 class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: AppConfig) {
 

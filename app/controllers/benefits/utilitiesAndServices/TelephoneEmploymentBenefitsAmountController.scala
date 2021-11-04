@@ -14,31 +14,32 @@
  * limitations under the License.
  */
 
-package controllers.benefits.travelAndEntertainment
+package controllers.benefits.utilitiesAndServices
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import javax.inject.Inject
-import models.benefits.TravelEntertainmentModel
+import models.benefits.UtilitiesAndServicesModel
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
+import controllers.benefits.utilitiesAndServices.routes._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.RedirectService.{EmploymentBenefitsType, redirectBasedOnCurrentAnswers}
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.benefits.TravelOrSubsistenceBenefitsAmountView
+import views.html.benefits.TelephoneEmploymentBenefitsAmountView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class TravelOrSubsistenceBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
+class TelephoneEmploymentBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
                                                             authAction: AuthorisedAction,
                                                             inYearAction: InYearAction,
                                                             appConfig: AppConfig,
-                                                            travelOrSubsistenceBenefitsAmountView: TravelOrSubsistenceBenefitsAmountView,
+                                                            telephoneEmploymentBenefitsAmountView: TelephoneEmploymentBenefitsAmountView,
                                                             val employmentSessionService: EmploymentSessionService,
                                                             errorHandler: ErrorHandler,
                                                             ec: ExecutionContext,
@@ -48,12 +49,12 @@ class TravelOrSubsistenceBenefitsAmountController @Inject()(implicit val cc: Mes
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-          val cyaAmount = cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistence))
+          val cyaAmount = cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.telephone))
           val form = fillFormFromPriorAndCYA(buildForm(user.isAgent), prior, cyaAmount, employmentId) { employment =>
-            employment.employmentBenefits.flatMap(_.benefits.flatMap(_.travelAndSubsistence))
+            employment.employmentBenefits.flatMap(_.benefits.flatMap(_.telephone))
           }
 
-          Future.successful(Ok(travelOrSubsistenceBenefitsAmountView(taxYear, form, cyaAmount, employmentId)))
+          Future.successful(Ok(telephoneEmploymentBenefitsAmountView(taxYear, form, cyaAmount, employmentId)))
         }
       }
     }
@@ -65,21 +66,20 @@ class TravelOrSubsistenceBenefitsAmountController @Inject()(implicit val cc: Mes
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           buildForm(user.isAgent).bindFromRequest().fold(
             { formWithErrors =>
-              val fillValue = cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel).flatMap(_.travelAndSubsistence)
-              Future.successful(BadRequest(travelOrSubsistenceBenefitsAmountView(taxYear, formWithErrors, fillValue, employmentId)))
+              val fillValue = cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel).flatMap(_.telephone)
+              Future.successful(BadRequest(telephoneEmploymentBenefitsAmountView(taxYear, formWithErrors, fillValue, employmentId)))
             }, {
               newAmount =>
                 val cyaModel = cya.employment
-                val travelEntertainment: Option[TravelEntertainmentModel] = cyaModel.employmentBenefits.flatMap(_.travelEntertainmentModel)
-                val updatedCyaModel = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(travelEntertainmentModel =
-                  travelEntertainment.map(_.copy(travelAndSubsistence = Some(newAmount))))))
+                val utilitiesAndServices: Option[UtilitiesAndServicesModel] = cyaModel.employmentBenefits.flatMap(_.utilitiesAndServicesModel)
+                val updatedCyaModel = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(utilitiesAndServicesModel =
+                  utilitiesAndServices.map(_.copy(telephone = Some(newAmount))))))
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
                     cya.isPriorSubmission,cya.hasPriorBenefits)(errorHandler.internalServerError()) {
                     if (cya.isPriorSubmission) {
                       Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                     } else {
-                      // TODO: Point to the Personal incidental costs page
-                      Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                      Redirect(EmployerProvidedServicesBenefitsAmountController.show(taxYear, employmentId))
                     }
                   }
             }
@@ -90,12 +90,12 @@ class TravelOrSubsistenceBenefitsAmountController @Inject()(implicit val cc: Mes
   }
 
   private def buildForm(isAgent: Boolean): Form[BigDecimal] = {
-    AmountForm.amountForm(s"benefits.travelOrSubsistenceBenefitsAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-      s"benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.${if (isAgent) "agent" else "individual"}",
-      s"benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}")
+    AmountForm.amountForm(s"benefits.telephoneEmploymentBenefitsAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
+      s"benefits.telephoneEmploymentBenefitsAmount.error.wrongFormat.${if (isAgent) "agent" else "individual"}",
+      s"benefits.telephoneEmploymentBenefitsAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}")
   }
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
-    RedirectService.travelSubsistenceBenefitsAmountRedirects(cya, taxYear, employmentId)
+    RedirectService.telephoneBenefitsAmountRedirects(cya, taxYear, employmentId)
   }
 }

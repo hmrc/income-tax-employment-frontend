@@ -17,8 +17,8 @@
 package models
 
 import com.codahale.metrics.SharedMetricRegistries
-import models.benefits.UtilitiesAndServicesModel
-import models.employment.{AccommodationRelocationModel, Benefits, BenefitsViewModel, CarVanFuelModel, TravelEntertainmentModel}
+import models.benefits.{AccommodationRelocationModel, Benefits, BenefitsViewModel, CarVanFuelModel, TravelEntertainmentModel, UtilitiesAndServicesModel}
+import models.benefits.Benefits
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.libs.json.{JsValue, Json}
 import utils.UnitTest

@@ -17,7 +17,7 @@
 package controllers.benefits.accommodationAndRelocation
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.accommodationAndRelocation.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import javax.inject.Inject
@@ -93,7 +93,16 @@ class LivingAccommodationBenefitsController @Inject()(implicit val cc: MessagesC
 
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+
+                val nextPage = {
+                  if(yesNo){
+                    LivingAccommodationBenefitAmountController.show(taxYear, employmentId)
+                  } else {
+                    QualifyingRelocationBenefitsController.show(taxYear, employmentId)
+                  }
+                }
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel,nextPage)(taxYear,employmentId)
               }
             }
           )

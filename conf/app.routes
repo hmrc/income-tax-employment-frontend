@@ -105,6 +105,9 @@ POST       /:taxYear/benefits/travel-subsistence                            cont
 GET        /:taxYear/benefits/qualifying-relocation                         controllers.benefits.accommodationAndRelocation.QualifyingRelocationBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/qualifying-relocation                         controllers.benefits.accommodationAndRelocation.QualifyingRelocationBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/telephone-amount                              controllers.benefits.utilitiesAndServices.TelephoneEmploymentBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/telephone-amount                              controllers.benefits.utilitiesAndServices.TelephoneEmploymentBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/benefits/utility-general-service                       controllers.benefits.utilitiesAndServices.UtilitiesOrGeneralServicesBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/utility-general-service                       controllers.benefits.utilitiesAndServices.UtilitiesOrGeneralServicesBenefitsController.submit(taxYear: Int, employmentId: String)
 
@@ -131,6 +134,9 @@ POST       /:taxYear/benefits/employer-provided-services                    cont
 
 GET        /:taxYear/benefits/other-services                                controllers.benefits.utilitiesAndServices.OtherServicesBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/other-services                                controllers.benefits.utilitiesAndServices.OtherServicesBenefitsController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/benefits/other-services-amount                         controllers.benefits.utilitiesAndServices.OtherServicesBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/other-services-amount                         controllers.benefits.utilitiesAndServices.OtherServicesBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/benefits/incidental-overnight-costs                    controllers.benefits.travelAndEntertainment.IncidentalOvernightCostEmploymentBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/incidental-overnight-costs                    controllers.benefits.travelAndEntertainment.IncidentalOvernightCostEmploymentBenefitsController.submit(taxYear: Int, employmentId: String)

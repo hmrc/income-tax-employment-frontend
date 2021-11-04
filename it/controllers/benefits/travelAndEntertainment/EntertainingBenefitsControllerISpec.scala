@@ -20,7 +20,7 @@ import controllers.benefits.travelAndEntertainment.routes.TravelOrEntertainmentB
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.User
-import models.employment.{BenefitsViewModel, TravelEntertainmentModel}
+import models.benefits.{BenefitsViewModel, TravelEntertainmentModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

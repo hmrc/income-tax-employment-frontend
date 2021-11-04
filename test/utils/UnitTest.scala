@@ -21,6 +21,7 @@ import com.codahale.metrics.SharedMetricRegistries
 import common.{EnrolmentIdentifiers, EnrolmentKeys, SessionValues}
 import config.{AppConfig, ErrorHandler, MockAppConfig}
 import controllers.predicates.{AuthorisedAction, InYearAction}
+import models.benefits.Benefits
 import models.employment._
 import models.{IncomeTaxUserData, User}
 import org.scalamock.scalatest.MockFactory
