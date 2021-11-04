@@ -182,7 +182,7 @@
                     serviceQuestion => showQuestionRow("checkYourBenefits.otherServices", serviceQuestion, controllers.benefits.routes.OtherServicesBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.utilitiesAndServicesModel.flatMap(_.service).map{
-                    service => showRows("checkYourBenefits.otherServicesAmount", service)
+                    service => showRows("checkYourBenefits.otherServicesAmount", service, controllers.benefits.routes.OtherServicesBenefitsAmountController.show(taxYear, employmentId))
                 }
             ).flatten
 

@@ -811,6 +811,15 @@ benefits.employerProvidedServices.paragraph.agent = These are services they used
 benefits.employerProvidedServices.error.no-entry.individual = Select yes if you got a benefit for services provided by your employer
 benefits.employerProvidedServices.error.no-entry.agent = Select yes if your client got a benefit for services provided by their employer
 
+benefits.otherServicesBenefitsAmount.title.individual = How much did you get in total for other services?
+benefits.otherServicesBenefitsAmount.title.agent = How much did your client get in total for other services?
+benefits.otherServicesBenefitsAmount.error.noEntry.individual = Enter the amount you got for other services
+benefits.otherServicesBenefitsAmount.error.noEntry.agent = Enter the amount your client got for other services
+benefits.otherServicesBenefitsAmount.error.overMaximum.individual = The amount you got for other services must be less than £100,000,000,000
+benefits.otherServicesBenefitsAmount.error.overMaximum.agent = The amount your client got for other services must be less than £100,000,000,000
+benefits.otherServicesBenefitsAmount.error.invalidFormat.individual = Enter the amount you got for other services in the correct format
+benefits.otherServicesBenefitsAmount.error.invalidFormat.agent = Enter the amount your client got for other services in the correct format
+
 benefits.otherServicesBenefits.title.individual = Did you get any benefits for other services?
 benefits.otherServicesBenefits.title.agent = Did your client get any benefits for other services?
 benefits.otherServicesBenefits.theseAre.individual = These are any other services you have used that are required for your job. Your employer pays for them.
@@ -825,3 +834,4 @@ benefits.incidentalOvernightCostEmploymentBenefits.costInformation.agent = These
 benefits.incidentalOvernightCostEmploymentBenefits.allowanceInformation = The allowance for travelling within the UK is £5 per night and outside of the UK is £10 per night. We only need to know about costs above the allowance.
 benefits.incidentalOvernightCostEmploymentBenefits.error.individual = Select yes if you got incidental overnight costs
 benefits.incidentalOvernightCostEmploymentBenefits.error.agent = Select yes if your client got incidental overnight costs
+
