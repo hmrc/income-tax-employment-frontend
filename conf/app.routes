@@ -87,8 +87,8 @@ POST       /:taxYear/benefits/qualifying-relocation-amount  controllers.benefits
 GET        /:taxYear/benefits/non-qualifying-relocation     controllers.benefits.NonQualifyingRelocationBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/non-qualifying-relocation     controllers.benefits.NonQualifyingRelocationBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/non-qualifying-relocation-amount               controllers.benefits.NonQualifyingRelocationBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/non-qualifying-relocation-amount               controllers.benefits.NonQualifyingRelocationBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/non-qualifying-relocation-amount         controllers.benefits.NonQualifyingRelocationBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/non-qualifying-relocation-amount         controllers.benefits.NonQualifyingRelocationBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/benefits/travel-entertainment          controllers.benefits.TravelOrEntertainmentBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/travel-entertainment          controllers.benefits.TravelOrEntertainmentBenefitsController.submit(taxYear: Int, employmentId: String)
@@ -101,6 +101,9 @@ POST       /:taxYear/benefits/travel-subsistence-amount     controllers.benefits
 
 GET        /:taxYear/benefits/travel-subsistence            controllers.benefits.TravelAndSubsistenceBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/travel-subsistence            controllers.benefits.TravelAndSubsistenceBenefitsController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/benefits/telephone-amount              controllers.benefits.TelephoneEmploymentBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/telephone-amount              controllers.benefits.TelephoneEmploymentBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/benefits/qualifying-relocation         controllers.benefits.QualifyingRelocationBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/qualifying-relocation         controllers.benefits.QualifyingRelocationBenefitsController.submit(taxYear: Int, employmentId: String)
