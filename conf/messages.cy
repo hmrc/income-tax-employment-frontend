@@ -730,6 +730,15 @@ benefits.travelOrSubsistenceBenefitsAmount.error.overMaximum.agent = Your client
 benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.individual = Enter the amount you got for travel and subsistence in the correct format
 benefits.travelOrSubsistenceBenefitsAmount.error.wrongFormat.agent = Enter the amount your client got for travel and subsistence in the correct format
 
+benefits.telephoneEmploymentBenefitsAmount.title.individual = How much did you get in total for telephone benefits?
+benefits.telephoneEmploymentBenefitsAmount.title.agent = How much did your client get in total for telephone benefits?
+benefits.telephoneEmploymentBenefitsAmount.error.noEntry.individual = Enter the amount you got for telephone benefits
+benefits.telephoneEmploymentBenefitsAmount.error.noEntry.agent = Enter the amount your client got for telephone benefits
+benefits.telephoneEmploymentBenefitsAmount.error.overMaximum.individual = Your telephone benefits must be less than £100,000,000,000
+benefits.telephoneEmploymentBenefitsAmount.error.overMaximum.agent = Your client’s telephone benefits must be less than £100,000,000,000
+benefits.telephoneEmploymentBenefitsAmount.error.wrongFormat.individual = Enter the amount you got for telephone benefits in the correct format
+benefits.telephoneEmploymentBenefitsAmount.error.wrongFormat.agent = Enter the amount your client got for telephone benefits in the correct format
+
 benefits.incidentalCostsBenefitsAmount.title.individual = How much did you get in total for incidental overnight costs?
 benefits.incidentalCostsBenefitsAmount.title.agent = How much did your client get in total for incidental overnight costs?
 benefits.incidentalCostsBenefitsAmount.error.noEntry.individual = Enter the amount you got for incidental overnight costs

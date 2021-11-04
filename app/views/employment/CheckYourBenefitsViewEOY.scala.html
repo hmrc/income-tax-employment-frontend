@@ -164,7 +164,7 @@
                     telephoneQuestion => showQuestionRow("checkYourBenefits.telephone", telephoneQuestion, controllers.benefits.routes.TelephoneBenefitsController.show(taxYear: Int, employmentId: String))
                 },
                 benefits.utilitiesAndServicesModel.flatMap(_.telephone).map{
-                    telephone => showRows("checkYourBenefits.telephoneAmount", telephone)
+                    telephone => showRows("checkYourBenefits.telephoneAmount", telephone, controllers.benefits.routes.TelephoneEmploymentBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion).map{
                     employerProvidedServicesQuestion => showQuestionRow("checkYourBenefits.servicesProvided", employerProvidedServicesQuestion, controllers.benefits.routes.EmployerProvidedServicesBenefitsController.show(taxYear: Int, employmentId: String))
