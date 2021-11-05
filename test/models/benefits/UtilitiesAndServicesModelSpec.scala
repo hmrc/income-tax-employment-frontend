@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package models
+package models.benefits
 
-import models.benefits.UtilitiesAndServicesModel
 import play.api.mvc.Call
 import utils.UnitTest
 
