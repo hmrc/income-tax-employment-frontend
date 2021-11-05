@@ -17,12 +17,11 @@
 package services
 
 import config.AppConfig
-import models.benefits.{EncryptedMedicalChildcareEducationModel, EncryptedUtilitiesAndServicesModel, MedicalChildcareEducationModel, UtilitiesAndServicesModel}
+import javax.inject.Inject
+import models.benefits._
 import models.employment._
 import models.mongo._
 import utils.SecureGCMCipher
-
-import javax.inject.Inject
 
 class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: AppConfig) {
 

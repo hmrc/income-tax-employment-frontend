@@ -17,11 +17,11 @@
 package controllers.benefits
 
 import common.SessionValues
-import controllers.benefits.routes.CarVanFuelBenefitsController
+import controllers.benefits.carVanFuel.routes.CarVanFuelBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.User
-import models.employment.BenefitsViewModel
+import models.benefits.BenefitsViewModel
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

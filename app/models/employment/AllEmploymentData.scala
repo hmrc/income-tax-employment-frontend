@@ -20,9 +20,9 @@ import models.mongo.EmploymentDetails
 import play.api.Logging
 import play.api.libs.json.{Json, OFormat}
 import utils.DateTimeUtil.getSubmittedOnDateTime
-
 import java.time.ZonedDateTime
 
+import models.benefits.BenefitsViewModel
 import models.employment.createUpdate.CreateUpdateEmployment
 
 case class AllEmploymentData(hmrcEmploymentData: Seq[EmploymentSource],

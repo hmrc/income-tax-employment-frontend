@@ -17,8 +17,7 @@
 package models
 
 import com.codahale.metrics.SharedMetricRegistries
-import models.benefits.{MedicalChildcareEducationModel, UtilitiesAndServicesModel}
-import models.employment._
+import models.benefits._
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.libs.json.{JsValue, Json}
 import utils.UnitTest

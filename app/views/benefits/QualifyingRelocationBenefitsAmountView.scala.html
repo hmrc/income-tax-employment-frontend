@@ -39,7 +39,7 @@
 
     @errorSummary(form.errors)
 
-    @formWithCsrf(controllers.benefits.routes.QualifyingRelocationBenefitsAmountController.submit(taxYear, empId)) {
+    @formWithCsrf(controllers.benefits.accommodationAndRelocation.routes.QualifyingRelocationBenefitsAmountController.submit(taxYear, empId)) {
         @inputText(
             form,
             id = "amount",

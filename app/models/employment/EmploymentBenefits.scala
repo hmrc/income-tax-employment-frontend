@@ -16,6 +16,7 @@
 
 package models.employment
 
+import models.benefits.Benefits
 import play.api.libs.json.{Json, OFormat}
 
 case class EmploymentBenefits(submittedOn: String,

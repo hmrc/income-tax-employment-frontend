@@ -17,9 +17,13 @@
 package services
 
 import controllers.benefits.routes._
+import controllers.benefits.accommodationAndRelocation.routes._
+import controllers.benefits.carVanFuel.routes._
+import controllers.benefits.travelAndEntertainment.routes._
+import controllers.benefits.utilitiesAndServices.routes._
 import controllers.employment.routes._
 import models.User
-import models.employment.{AccommodationRelocationModel, CarVanFuelModel, TravelEntertainmentModel}
+import models.benefits.{AccommodationRelocationModel, CarVanFuelModel, TravelEntertainmentModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.Logging
 import play.api.mvc.Results.Redirect

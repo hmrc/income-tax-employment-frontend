@@ -46,7 +46,7 @@ button: Button
 
     @errorSummary(form.errors.distinct)
 
-    @formWithCsrf(action = controllers.benefits.routes.NonQualifyingRelocationBenefitsController.submit(taxYear, employmentId)) {
+    @formWithCsrf(action = controllers.benefits.accommodationAndRelocation.routes.NonQualifyingRelocationBenefitsController.submit(taxYear, employmentId)) {
         @inputRadio(
             form = form,
             heading = headingForUse,
