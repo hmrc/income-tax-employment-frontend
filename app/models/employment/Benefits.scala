@@ -16,7 +16,7 @@
 
 package models.employment
 
-import models.benefits.UtilitiesAndServicesModel
+import models.benefits.{MedicalChildcareEducationModel, UtilitiesAndServicesModel}
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.{OFormat, __}
 
@@ -47,7 +47,7 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
                     incomeTaxPaidByDirector: Option[BigDecimal] = None,
                     travelAndSubsistence: Option[BigDecimal] = None,
                     vouchersAndCreditCards: Option[BigDecimal] = None,
-                    nonCash: Option[BigDecimal] = None){
+                    nonCash: Option[BigDecimal] = None) {
 
   val vehicleDetailsPopulated: Boolean =
     car.isDefined || carFuel.isDefined || van.isDefined || vanFuel.isDefined || mileage.isDefined
@@ -73,14 +73,13 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
   val assetsDetailsPopulated: Boolean =
     assets.isDefined || assetTransfer.isDefined
 
-  val hasBenefitsPopulated: Boolean = {
+  val hasBenefitsPopulated: Boolean =
     vehicleDetailsPopulated || accommodationDetailsPopulated || travelDetailsPopulated ||
       utilitiesDetailsPopulated || medicalDetailsPopulated || incomeTaxDetailsPopulated ||
       reimbursedDetailsPopulated || assetsDetailsPopulated
-  }
 
   def carVanFuelSection(cyaBenefits: Option[BenefitsViewModel] = None): Option[CarVanFuelModel] = {
-    if (cyaBenefits.isDefined && cyaBenefits.map(_.carVanFuelModel).isDefined){
+    if (cyaBenefits.isDefined && cyaBenefits.map(_.carVanFuelModel).isDefined) {
       cyaBenefits.flatMap(_.carVanFuelModel)
     } else {
       Some(CarVanFuelModel(
@@ -100,7 +99,7 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
   }
 
   def accommodationRelocationSection(cyaBenefits: Option[BenefitsViewModel] = None): Option[AccommodationRelocationModel] = {
-    if(cyaBenefits.isDefined && cyaBenefits.map(_.accommodationRelocationModel).isDefined){
+    if (cyaBenefits.isDefined && cyaBenefits.map(_.accommodationRelocationModel).isDefined) {
       cyaBenefits.flatMap(_.accommodationRelocationModel)
     } else {
       Some(AccommodationRelocationModel(
@@ -116,7 +115,7 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
   }
 
   def travelEntertainmentSection(cyaBenefits: Option[BenefitsViewModel] = None): Option[TravelEntertainmentModel] = {
-    if (cyaBenefits.isDefined && cyaBenefits.map(_.travelEntertainmentModel).isDefined){
+    if (cyaBenefits.isDefined && cyaBenefits.map(_.travelEntertainmentModel).isDefined) {
       cyaBenefits.flatMap(_.travelEntertainmentModel)
     } else {
       Some(TravelEntertainmentModel(
@@ -132,7 +131,7 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
   }
 
   def utilitiesAndServicesSection(cyaBenefits: Option[BenefitsViewModel] = None): Option[UtilitiesAndServicesModel] = {
-    if (cyaBenefits.isDefined && cyaBenefits.map(_.utilitiesAndServicesModel).isDefined){
+    if (cyaBenefits.isDefined && cyaBenefits.map(_.utilitiesAndServicesModel).isDefined) {
       cyaBenefits.flatMap(_.utilitiesAndServicesModel)
     } else {
       Some(UtilitiesAndServicesModel(
@@ -149,9 +148,27 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
     }
   }
 
+  def medicalChildcareEducationModel(cyaBenefits: Option[BenefitsViewModel] = None): Option[MedicalChildcareEducationModel] = {
+    if (cyaBenefits.isDefined && cyaBenefits.map(_.medicalChildcareEducationModel).isDefined) {
+      cyaBenefits.flatMap(_.medicalChildcareEducationModel)
+    } else {
+      Some(MedicalChildcareEducationModel(
+        medicalChildcareEducationQuestion = Some(medicalDetailsPopulated),
+        medicalInsuranceQuestion = Some(medicalInsurance.isDefined),
+        medicalInsurance = medicalInsurance,
+        nurseryPlacesQuestion = Some(nurseryPlaces.isDefined),
+        nurseryPlaces = nurseryPlaces,
+        educationalServicesQuestion = Some(educationalServices.isDefined),
+        educationalServices = educationalServices,
+        beneficialLoanQuestion = Some(beneficialLoan.isDefined),
+        beneficialLoan = beneficialLoan
+      ))
+    }
+  }
+
   def benefitsPopulated(cyaBenefits: Option[BenefitsViewModel] = None): Boolean = {
     val hasBenefits: Boolean = cyaBenefits.exists(_.isBenefitsReceived)
-      hasBenefits || vehicleDetailsPopulated || accommodationDetailsPopulated || travelDetailsPopulated || utilitiesDetailsPopulated ||
+    hasBenefits || vehicleDetailsPopulated || accommodationDetailsPopulated || travelDetailsPopulated || utilitiesDetailsPopulated ||
       medicalDetailsPopulated || incomeTaxDetailsPopulated || reimbursedDetailsPopulated || assetsDetailsPopulated
   }
 
@@ -163,17 +180,13 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
       accommodationRelocationModel = accommodationRelocationSection(cyaBenefits),
       travelEntertainmentModel = travelEntertainmentSection(cyaBenefits),
       utilitiesAndServicesModel = utilitiesAndServicesSection(cyaBenefits),
-      assets, assetTransfer, beneficialLoan,
-      educationalServices, expenses, medicalInsurance, taxableExpenses, nurseryPlaces,
+      medicalChildcareEducationModel = medicalChildcareEducationModel(cyaBenefits),
+      assets, assetTransfer, expenses, taxableExpenses,
       otherItems, paymentsOnEmployeesBehalf, incomeTaxPaidByDirector, vouchersAndCreditCards, nonCash,
       assetsQuestion = Some(assets.isDefined),
       assetTransferQuestion = Some(assetTransfer.isDefined),
-      beneficialLoanQuestion = Some(beneficialLoan.isDefined),
-      educationalServicesQuestion = Some(educationalServices.isDefined),
       expensesQuestion = Some(expenses.isDefined),
-      medicalInsuranceQuestion = Some(medicalInsurance.isDefined),
       taxableExpensesQuestion = Some(taxableExpenses.isDefined),
-      nurseryPlacesQuestion = Some(nurseryPlaces.isDefined),
       otherItemsQuestion = Some(otherItems.isDefined),
       paymentsOnEmployeesBehalfQuestion = Some(paymentsOnEmployeesBehalf.isDefined),
       incomeTaxPaidByDirectorQuestion = Some(incomeTaxPaidByDirector.isDefined),

@@ -195,28 +195,28 @@
         val rows: Seq[SummaryListRow] =
         if(benefits.medicalDetailsPopulated){
             Seq(
-                benefits.medicalInsuranceQuestion.map{
+                benefits.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion).map{
                     medicalInsuranceQuestion => showQuestionRow("checkYourBenefits.medicalIns", medicalInsuranceQuestion)
                 },
-                benefits.medicalInsurance.map{
+                benefits.medicalChildcareEducationModel.flatMap(_.medicalInsurance).map{
                     medicalInsurance => showRows("checkYourBenefits.medicalInsAmount", medicalInsurance)
                 },
-                benefits.nurseryPlacesQuestion.map{
+                benefits.medicalChildcareEducationModel.flatMap(_.nurseryPlacesQuestion).map{
                     nurseryPlacesQuestion => showQuestionRow("checkYourBenefits.nursery", nurseryPlacesQuestion)
                 },
-                benefits.nurseryPlaces.map{
+                benefits.medicalChildcareEducationModel.flatMap(_.nurseryPlaces).map{
                     nurseryPlaces => showRows("checkYourBenefits.nurseryAmount", nurseryPlaces)
                 },
-                benefits.educationalServicesQuestion.map{
+                benefits.medicalChildcareEducationModel.flatMap(_.educationalServicesQuestion).map{
                     educationalServicesQuestion => showQuestionRow("checkYourBenefits.educational", educationalServicesQuestion)
                 },
-                benefits.educationalServices.map{
+                benefits.medicalChildcareEducationModel.flatMap(_.educationalServices).map{
                     educationalServices => showRows("checkYourBenefits.educationalAmount", educationalServices)
                 },
-                benefits.beneficialLoanQuestion.map{
+                benefits.medicalChildcareEducationModel.flatMap(_.beneficialLoanQuestion).map{
                     beneficialLoanQuestion => showQuestionRow("checkYourBenefits.beneficialLoans", beneficialLoanQuestion)
                 },
-                benefits.beneficialLoan.map{
+                benefits.medicalChildcareEducationModel.flatMap(_.beneficialLoan).map{
                     beneficialLoan => showRows("checkYourBenefits.beneficialLoansAmount", beneficialLoan)
                 }
             ).flatten
