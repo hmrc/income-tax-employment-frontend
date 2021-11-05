@@ -19,7 +19,7 @@ package repositories
 import com.mongodb.MongoTimeoutException
 import common.UUID
 import models.User
-import models.benefits.UtilitiesAndServicesModel
+import models.benefits.{MedicalChildcareEducationModel, UtilitiesAndServicesModel}
 import models.employment.{AccommodationRelocationModel, BenefitsViewModel, CarVanFuelModel, TravelEntertainmentModel}
 import models.mongo._
 import org.joda.time.{DateTime, DateTimeZone}
@@ -71,46 +71,34 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     sessionIdOne,
     mtditid,
     nino,
-    2022,
+    taxYear,
     employmentIdOne,
     isPriorSubmission = true,
-    hasPriorBenefits =  true,
-    EmploymentCYAModel(
-      EmploymentDetails("Tesco", currentDataIsHmrcHeld = true),
-      None
-    ),
+    hasPriorBenefits = true,
+    EmploymentCYAModel(EmploymentDetails("Tesco", currentDataIsHmrcHeld = true), None),
     lastUpdated = now
   )
 
   val amount = 66
   val benefitsViewModel: BenefitsViewModel = BenefitsViewModel(
-    Some(CarVanFuelModel(
-      Some(true), Some(true), Some(100), Some(true), Some(100), Some(true), Some(100), Some(true), Some(100), Some(true), Some(100)
-    )
-    ),
-    Some(AccommodationRelocationModel(
-      Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))
-    ),
-    Some(TravelEntertainmentModel(
-      Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))
-    ),
-    Some(UtilitiesAndServicesModel(
-      Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount)
-    )),
-    Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
-    Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
-    Some(true), Some(true), Some(true), Some(true), Some(true),
-    Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
-    Some("2020-10-10"), isUsingCustomerData = true, true)
+    Some(CarVanFuelModel(Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount),
+      Some(true), Some(amount), Some(true), Some(amount))),
+    Some(AccommodationRelocationModel(Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))),
+    Some(TravelEntertainmentModel(Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))),
+    Some(UtilitiesAndServicesModel(Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))),
+    Some(MedicalChildcareEducationModel(Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))),
+    Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
+    Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
+    Some("2020-10-10"), isUsingCustomerData = true, isBenefitsReceived = true)
 
   val employmentUserDataFull: EmploymentUserData = EmploymentUserData(
     sessionIdOne,
     mtditid,
     nino,
-    2022,
+    taxYear,
     employmentIdOne,
     isPriorSubmission = true,
-    hasPriorBenefits =  true,
+    hasPriorBenefits = true,
     EmploymentCYAModel(
       EmploymentDetails(
         employerName = "Name",
@@ -122,8 +110,8 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
         dateIgnored = Some("2021-02-02"),
         employmentSubmittedOn = Some("2021-02-02"),
         employmentDetailsSubmittedOn = Some("2021-02-02"),
-        taxablePayToDate = Some(55),
-        totalTaxToDate = Some(55),
+        taxablePayToDate = Some(55.00),
+        totalTaxToDate = Some(55.00),
         currentDataIsHmrcHeld = false
       ),
       Some(
@@ -137,10 +125,10 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     sessionIdTwo,
     mtditid,
     nino,
-    2022,
+    taxYear,
     employmentIdTwo,
     isPriorSubmission = true,
-    hasPriorBenefits =  true,
+    hasPriorBenefits = true,
     EmploymentCYAModel(
       EmploymentDetails("Argos", currentDataIsHmrcHeld = true),
       None
@@ -153,8 +141,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
   private val userOne = User(employmentUserDataOne.mtdItId, None, employmentUserDataOne.nino, employmentUserDataOne.sessionId, Individual.toString)
   private val userTwo = User(employmentUserDataTwo.mtdItId, None, employmentUserDataTwo.nino, employmentUserDataTwo.sessionId, Individual.toString)
 
-  val repoWithInvalidEncryption = appWithInvalidEncryptionKey.injector.instanceOf[EmploymentUserDataRepositoryImpl]
-  val serviceWithInvalidEncryption: EncryptionService = appWithInvalidEncryptionKey.injector.instanceOf[EncryptionService]
+  private val repoWithInvalidEncryption = appWithInvalidEncryptionKey.injector.instanceOf[EmploymentUserDataRepositoryImpl]
 
   "update with invalid encryption" should {
     "fail to add data" in new EmptyDatabase {
@@ -170,7 +157,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
       countFromOtherDatabase mustBe 0
       await(repoWithInvalidEncryption.collection.insertOne(encryptionService.encryptUserData(employmentUserDataOne)).toFuture())
       countFromOtherDatabase mustBe 1
-      val res = await(repoWithInvalidEncryption.find(employmentUserDataOne.taxYear,employmentIdOne)(userOne))
+      private val res = await(repoWithInvalidEncryption.find(employmentUserDataOne.taxYear, employmentIdOne)(userOne))
       res mustBe Left(EncryptionDecryptionError(
         "Key being used is not valid. It could be due to invalid encoding, wrong length or uninitialized for decrypt Invalid AES key length: 2 bytes"))
     }
@@ -178,7 +165,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
 
   "handleEncryptionDecryptionException" should {
     "handle an exception" in {
-      val res = repoWithInvalidEncryption.handleEncryptionDecryptionException(new Exception("fail"),"")
+      val res = repoWithInvalidEncryption.handleEncryptionDecryptionException(new Exception("fail"), "")
       res mustBe Left(EncryptionDecryptionError("fail"))
     }
   }
@@ -199,17 +186,17 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
 
       def ensureIndexes: Future[Seq[String]] = {
         val indexes = Seq(IndexModel(ascending("taxYear"), IndexOptions().unique(true).name("fakeIndex")))
-        MongoUtils.ensureIndexes(employmentRepo.collection, indexes, true)
+        MongoUtils.ensureIndexes(employmentRepo.collection, indexes, replaceIndexes = true)
       }
 
       await(ensureIndexes)
       count mustBe 0
 
-      val res = await(employmentRepo.createOrUpdate(employmentUserDataOne)(userOne))
+      private val res = await(employmentRepo.createOrUpdate(employmentUserDataOne)(userOne))
       res mustBe Right()
       count mustBe 1
 
-      val res2 = await(employmentRepo.createOrUpdate(employmentUserDataOne.copy(sessionId = "1234567890"))(userOne))
+      private val res2 = await(employmentRepo.createOrUpdate(employmentUserDataOne.copy(sessionId = "1234567890"))(userOne))
       res2.left.get.message must include("Command failed with error 11000 (DuplicateKey)")
       count mustBe 1
     }
@@ -256,7 +243,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
       await(employmentRepo.createOrUpdate(employmentUserDataOne)(userOne)) mustBe Right()
       count mustBe 1
 
-      val newUserData = employmentUserDataOne.copy(sessionId = UUID.randomUUID)
+      private val newUserData = employmentUserDataOne.copy(sessionId = UUID.randomUUID)
 
       await(employmentRepo.createOrUpdate(newUserData)(userOne)) mustBe Right()
       count mustBe 2
@@ -265,13 +252,13 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
 
   "find" should {
     "get a document and update the TTL" in new EmptyDatabase {
-      val now = DateTime.now(DateTimeZone.UTC)
-      val data = employmentUserDataOne.copy(lastUpdated = now)
+      private val now = DateTime.now(DateTimeZone.UTC)
+      private val data = employmentUserDataOne.copy(lastUpdated = now)
 
       await(employmentRepo.createOrUpdate(data)(userOne)) mustBe Right()
       count mustBe 1
 
-      val findResult = await(employmentRepo.find(data.taxYear, data.employmentId)(userOne))
+      private val findResult = await(employmentRepo.find(data.taxYear, data.employmentId)(userOne))
 
       findResult.right.get.map(_.copy(lastUpdated = data.lastUpdated)) mustBe Some(data)
       findResult.right.get.map(_.lastUpdated.isAfter(data.lastUpdated)) mustBe Some(true)
@@ -301,7 +288,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
 
       private val encryptedEmploymentUserData: EncryptedEmploymentUserData = encryptionService.encryptUserData(employmentUserDataOne)
 
-      val caught = intercept[MongoWriteException](await(employmentRepo.collection.insertOne(encryptedEmploymentUserData).toFuture()))
+      private val caught = intercept[MongoWriteException](await(employmentRepo.collection.insertOne(encryptedEmploymentUserData).toFuture()))
 
       caught.getMessage must
         include("E11000 duplicate key error collection: income-tax-employment-frontend.employmentUserData index: UserDataLookupIndex dup key:")
