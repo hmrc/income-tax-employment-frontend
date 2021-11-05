@@ -34,6 +34,8 @@ import views.html.benefits.IncidentalCostsBenefitsAmountView
 
 import scala.concurrent.{ExecutionContext, Future}
 
+import controllers.benefits.travelAndEntertainment.routes._
+
 
 class IncidentalCostsBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
                                                         authAction: AuthorisedAction,
@@ -102,12 +104,9 @@ class IncidentalCostsBenefitsAmountController @Inject()(implicit val cc: Message
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
                   isPriorSubmission = cya.isPriorSubmission, hasPriorBenefits = cya.hasPriorBenefits)(errorHandler.internalServerError()) {
 
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    //TODO - redirect to entertaining question
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  }
+                  val nextPage = EntertainingBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
                 }
             }
           )

@@ -17,7 +17,8 @@
 package controllers.benefits.travelAndEntertainment
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.travelAndEntertainment.routes._
+import controllers.benefits.utilitiesAndServices.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import javax.inject.Inject
@@ -94,7 +95,18 @@ class TravelAndSubsistenceBenefitsController @Inject()(implicit val cc: Messages
 
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission,data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+
+
+                val nextPage = {
+                  if (yesNo) {
+                    TravelOrSubsistenceBenefitsAmountController.show(taxYear, employmentId)
+                  } else {
+                    IncidentalOvernightCostEmploymentBenefitsController.show(taxYear, employmentId)
+                  }
+                }
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
+
               }
             }
           )

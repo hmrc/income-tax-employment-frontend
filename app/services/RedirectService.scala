@@ -23,7 +23,7 @@ import controllers.benefits.travelAndEntertainment.routes._
 import controllers.benefits.utilitiesAndServices.routes._
 import controllers.employment.routes._
 import models.User
-import models.benefits.{AccommodationRelocationModel, CarVanFuelModel, TravelEntertainmentModel}
+import models.benefits.{AccommodationRelocationModel, CarVanFuelModel, TravelEntertainmentModel, UtilitiesAndServicesModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.Logging
 import play.api.mvc.Results.Redirect
@@ -575,12 +575,15 @@ object RedirectService extends Logging {
     val carVanFuelSection: CarVanFuelModel = cya.employmentBenefits.flatMap(_.carVanFuelModel).getOrElse(CarVanFuelModel())
     val accommodationRelocationSection: AccommodationRelocationModel = cya.employmentBenefits.flatMap(_.accommodationRelocationModel).getOrElse(AccommodationRelocationModel())
     val travelOrEntertainmentSection: TravelEntertainmentModel = cya.employmentBenefits.flatMap(_.travelEntertainmentModel).getOrElse(TravelEntertainmentModel())
+    val utilitiesAndServicesSection: UtilitiesAndServicesModel = cya.employmentBenefits.flatMap(_.utilitiesAndServicesModel).getOrElse(UtilitiesAndServicesModel())
 
     val carVanFuelSectionFinished = carVanFuelSection.isFinished
     val accommodationRelocationSectionFinished = accommodationRelocationSection.isFinished
     val travelOrEntertainmentSectionFinished = travelOrEntertainmentSection.isFinished
+    val utilitiesAndServicesSectionFinished = utilitiesAndServicesSection.isFinished
 
-    val unfinishedRedirects: Seq[Call] = Seq(carVanFuelSectionFinished, accommodationRelocationSectionFinished, travelOrEntertainmentSectionFinished).flatten
+    val unfinishedRedirects: Seq[Call] = Seq(carVanFuelSectionFinished, accommodationRelocationSectionFinished,
+      travelOrEntertainmentSectionFinished, utilitiesAndServicesSectionFinished).flatten
 
     unfinishedRedirects match {
       case calls if calls.isEmpty =>

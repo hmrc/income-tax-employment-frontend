@@ -16,7 +16,8 @@
 
 package controllers.benefits.travelAndEntertainment
 
-import controllers.benefits.travelAndEntertainment.routes.TravelOrEntertainmentBenefitsController
+import controllers.benefits.travelAndEntertainment.routes.{EntertainmentBenefitsAmountController, TravelOrEntertainmentBenefitsController}
+import controllers.benefits.utilitiesAndServices.routes.{UtilitiesOrGeneralServicesBenefitsController}
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.User
@@ -290,7 +291,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
       }
     }
 
-    "redirect to check employment benefits page when user selects Yes and it's a prior submission" which {
+    "redirect to entertaining amount page when user selects Yes and it's a prior submission" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
       lazy val result: WSResponse = {
@@ -303,7 +304,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(EntertainmentBenefitsAmountController.show(taxYearEOY, employmentId).url)
       }
 
       "updates entertainingQuestion to Yes" in {
@@ -312,7 +313,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
       }
     }
 
-    "redirect to check employment benefits page when user selects No and wipe entertaining amount" which {
+    "redirect to utilities or general services benefits page when user selects No and wipe entertaining amount" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
       lazy val result: WSResponse = {
@@ -325,7 +326,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(UtilitiesOrGeneralServicesBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
       "updates entertainingQuestion to No and removes entertaining expenses amount" in {
@@ -335,7 +336,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
       }
     }
 
-    "redirect to check employment benefits page if valid form is submitted and not a prior submission" which {
+    "redirect to entertainment amount page if valid form is submitted and not a prior submission" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
       lazy val result: WSResponse = {
@@ -348,7 +349,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(EntertainmentBenefitsAmountController.show(taxYearEOY, employmentId).url)
       }
 
       "updates entertainingQuestion to Yes" in {

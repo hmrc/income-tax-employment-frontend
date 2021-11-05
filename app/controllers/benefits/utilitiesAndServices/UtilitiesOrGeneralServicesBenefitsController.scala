@@ -34,6 +34,7 @@ import utils.{Clock, SessionHelper}
 import views.html.benefits.UtilitiesOrGeneralServicesBenefitsView
 
 import scala.concurrent.{ExecutionContext, Future}
+import controllers.benefits.utilitiesAndServices.routes._
 
 class UtilitiesOrGeneralServicesBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
                                                              authAction: AuthorisedAction,
@@ -84,7 +85,17 @@ class UtilitiesOrGeneralServicesBenefitsController @Inject()(implicit val cc: Me
 
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+
+                val nextPage = {
+                  if (yesNo) {
+                    TelephoneBenefitsController.show(taxYear, employmentId)
+                  } else {
+                    //TODO Medical first page
+                    CheckYourBenefitsController.show(taxYear, employmentId)
+                  }
+                }
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
             }
           )

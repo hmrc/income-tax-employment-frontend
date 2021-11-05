@@ -370,7 +370,7 @@ class TravelAndSubsistenceControllerISpec extends IntegrationTest with ViewHelpe
 
       val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
 
-      "redirect to check your benefits and update the TravelSubsistenceQuestion to no and wipe the travel data when the user chooses no" which {
+      "redirect to incidental overnight costs page and update the TravelSubsistenceQuestion to no and wipe the travel data when the user chooses no" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -385,7 +385,7 @@ class TravelAndSubsistenceControllerISpec extends IntegrationTest with ViewHelpe
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs?employmentId=$employmentId")
           lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
           cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion)) shouldBe Some(true)
           cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe Some(false)
@@ -398,7 +398,7 @@ class TravelAndSubsistenceControllerISpec extends IntegrationTest with ViewHelpe
 
       }
 
-      "redirect to check your benefits and update the TravelSubsistenceQuestion to yes and when the user chooses yes" which {
+      "redirect to travel subsistence amount page and update the TravelSubsistenceQuestion to yes and when the user chooses yes" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
@@ -414,7 +414,7 @@ class TravelAndSubsistenceControllerISpec extends IntegrationTest with ViewHelpe
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/travel-subsistence-amount?employmentId=$employmentId")
           lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
           cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion)) shouldBe Some(true)
           cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe Some(true)

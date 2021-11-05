@@ -25,13 +25,14 @@ import javax.inject.Inject
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
+import services.{EmploymentSessionService, RedirectService}
 import services.RedirectService.{EmploymentBenefitsType, entertainmentBenefitsAmountRedirects, redirectBasedOnCurrentAnswers}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.EntertainmentBenefitsAmountView
 
 import scala.concurrent.{ExecutionContext, Future}
+import controllers.benefits.utilitiesAndServices.routes._
 
 class EntertainmentBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
                                                       authAction: AuthorisedAction,
@@ -88,11 +89,10 @@ class EntertainmentBenefitsAmountController @Inject()(implicit val cc: MessagesC
 
                 employmentSessionService.createOrUpdateSessionData(
                   employmentId, updatedCyaModel, taxYear,  cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    Redirect(UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId))
-                  }
+
+                  val nextPage = UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
                 }
             }
           )

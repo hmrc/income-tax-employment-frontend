@@ -22,6 +22,7 @@ import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import javax.inject.Inject
 import models.User
+import controllers.benefits.travelAndEntertainment.routes._
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -97,7 +98,16 @@ class IncidentalOvernightCostEmploymentBenefitsController @Inject() (implicit va
 
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission,data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+
+                val nextPage = {
+                  if (yesNo) {
+                    IncidentalCostsBenefitsAmountController.show(taxYear, employmentId)
+                  } else {
+                    EntertainingBenefitsController.show(taxYear, employmentId)
+                  }
+                }
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
             }
           )

@@ -442,7 +442,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
       }
     }
 
-    "redirect to another page when a valid request is made and then" should {
+    "redirect to utility and general services page when a valid request is made and then" should {
       val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
 
 
@@ -458,7 +458,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001")
+          result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/utility-general-service?employmentId=001")
         }
 
         "updates the CYA model with the new value" in {

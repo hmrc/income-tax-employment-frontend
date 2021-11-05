@@ -78,7 +78,9 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
 
   def individualAuthentication[A](block: User[A] => Future[Result], affinityGroup: AffinityGroup)
                                  (implicit request: Request[A], hc: HeaderCarrier): Future[Result] = {
+
     authService.authorised.retrieve(allEnrolments and confidenceLevel) {
+
       case enrolments ~ userConfidence if userConfidence.level >= minimumConfidenceLevel =>
         val optionalMtdItId: Option[String] = enrolmentGetIdentifierValue(EnrolmentKeys.Individual, EnrolmentIdentifiers.individualId, enrolments)
         val optionalNino: Option[String] = enrolmentGetIdentifierValue(EnrolmentKeys.nino, EnrolmentIdentifiers.nino, enrolments)

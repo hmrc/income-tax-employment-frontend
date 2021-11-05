@@ -33,6 +33,7 @@ import utils.{Clock, SessionHelper}
 import views.html.benefits.TravelOrSubsistenceBenefitsAmountView
 
 import scala.concurrent.{ExecutionContext, Future}
+import controllers.benefits.travelAndEntertainment.routes._
 
 class TravelOrSubsistenceBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
                                                             authAction: AuthorisedAction,
@@ -75,13 +76,11 @@ class TravelOrSubsistenceBenefitsAmountController @Inject()(implicit val cc: Mes
                   travelEntertainment.map(_.copy(travelAndSubsistence = Some(newAmount))))))
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
                     cya.isPriorSubmission,cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                    if (cya.isPriorSubmission) {
-                      Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                    } else {
-                      // TODO: Point to the Personal incidental costs page
-                      Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                    }
-                  }
+
+                  val nextPage = IncidentalOvernightCostEmploymentBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
+                }
             }
           )
         }
