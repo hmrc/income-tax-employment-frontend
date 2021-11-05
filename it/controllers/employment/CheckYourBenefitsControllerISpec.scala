@@ -17,7 +17,7 @@
 package controllers.employment
 
 import models.User
-import models.employment.{AccommodationRelocationModel, BenefitsViewModel}
+import models.benefits.{AccommodationRelocationModel, BenefitsViewModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

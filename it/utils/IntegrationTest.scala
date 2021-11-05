@@ -23,7 +23,7 @@ import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import helpers.{PlaySessionCookieBaker, WireMockHelper, WiremockStubHelpers}
 import models.IncomeTaxUserData
-import models.benefits.UtilitiesAndServicesModel
+import models.benefits.{AccommodationRelocationModel, Benefits, CarVanFuelModel, TravelEntertainmentModel, UtilitiesAndServicesModel}
 import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.scalatest.BeforeAndAfterAll

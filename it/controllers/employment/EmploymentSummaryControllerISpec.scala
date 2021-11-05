@@ -20,6 +20,7 @@ import common.{SessionValues, UUID}
 import controllers.employment.EmploymentSummaryControllerISpec.FullModel._
 import controllers.employment.routes._
 import forms.YesNoForm
+import models.benefits.Benefits
 import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import models.{IncomeTaxUserData, User}

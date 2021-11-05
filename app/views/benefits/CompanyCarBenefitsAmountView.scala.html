@@ -48,7 +48,7 @@
 
     @errorSummary(form.errors)
 
-    @formWithCsrf(controllers.benefits.routes.CompanyCarBenefitsAmountController.submit(taxYear, employmentId)) {
+    @formWithCsrf(controllers.benefits.carVanFuel.routes.CompanyCarBenefitsAmountController.submit(taxYear, employmentId)) {
         @inputText(
             form,
             id = "amount",

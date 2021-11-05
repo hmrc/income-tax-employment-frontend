@@ -16,7 +16,7 @@
 
 package audit
 
-import models.employment.Benefits
+import models.benefits.Benefits
 import play.api.libs.json.Json
 import utils.UnitTestWithApp
 

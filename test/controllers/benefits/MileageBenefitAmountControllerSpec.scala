@@ -18,6 +18,7 @@ package controllers.benefits;
 
 import common.SessionValues
 import config.{MockAuditService, MockEmploymentSessionService}
+import controllers.benefits.carVanFuel.MileageBenefitAmountController
 import forms.AmountForm
 import play.api.data.Form
 import play.api.http.Status._

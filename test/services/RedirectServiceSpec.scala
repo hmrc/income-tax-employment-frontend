@@ -16,10 +16,9 @@
 
 package services
 
-import controllers.benefits.routes.OtherServicesBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
-import models.benefits.{MedicalChildcareEducationModel, UtilitiesAndServicesModel}
-import models.employment.{AccommodationRelocationModel, BenefitsViewModel, CarVanFuelModel, TravelEntertainmentModel}
+import controllers.benefits.utilitiesAndServices.routes._
+import models.benefits._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Call

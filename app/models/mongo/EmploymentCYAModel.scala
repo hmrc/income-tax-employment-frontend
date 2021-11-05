@@ -16,7 +16,8 @@
 
 package models.mongo
 
-import models.employment.{BenefitsViewModel, EmploymentDetailsViewModel, EmploymentSource, EncryptedBenefitsViewModel}
+import models.benefits.{BenefitsViewModel, EncryptedBenefitsViewModel}
+import models.employment.{EmploymentDetailsViewModel, EmploymentSource}
 import play.api.libs.json.{Json, OFormat}
 import utils.EncryptedValue
 

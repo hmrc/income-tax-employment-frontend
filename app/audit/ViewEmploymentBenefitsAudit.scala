@@ -16,7 +16,7 @@
 
 package audit
 
-import models.employment.Benefits
+import models.benefits.Benefits
 import play.api.libs.json.{Json, OWrites}
 
 case class ViewEmploymentBenefitsAudit(taxYear: Int, userType: String, nino: String,

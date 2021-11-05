@@ -16,8 +16,7 @@
 
 package models
 
-import models.benefits.UtilitiesAndServicesModel
-import models.employment.CarVanFuelModel
+import models.benefits.{CarVanFuelModel, UtilitiesAndServicesModel}
 import play.api.mvc.Call
 import utils.UnitTest
 
