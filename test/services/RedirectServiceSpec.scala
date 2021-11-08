@@ -16,8 +16,12 @@
 
 package services
 
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.accommodationAndRelocation.routes._
+import controllers.benefits.carVanFuel.routes._
+import controllers.benefits.routes.ReceiveAnyBenefitsController
+import controllers.benefits.travelAndEntertainment.routes._
 import controllers.benefits.utilitiesAndServices.routes._
+import controllers.employment.routes._
 import models.benefits._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
@@ -45,6 +49,14 @@ class RedirectServiceSpec extends UnitTest {
     educationalServices = Some(250.00),
     beneficialLoanQuestion = Some(true),
     beneficialLoan = Some(250.00)
+  )
+
+  private val fullIncomeTaxAndCostsModel = IncomeTaxAndCostsModel(
+    incomeTaxOrCostsQuestion = Some(true),
+    incomeTaxPaidByDirectorQuestion = Some(true),
+    incomeTaxPaidByDirector = Some(255.00),
+    paymentsOnEmployeesBehalfQuestion = Some(true),
+    paymentsOnEmployeesBehalf = Some(255.00)
   )
 
   private val employmentCYA: EmploymentCYAModel = {
@@ -112,6 +124,7 @@ class RedirectServiceSpec extends UnitTest {
             )
           ),
           medicalChildcareEducationModel = Some(fullMedicalModel),
+          incomeTaxAndCostsModel = Some(fullIncomeTaxAndCostsModel),
           assets = Some(100.00),
           submittedOn = Some("2020-02-04T05:01:01Z"),
           isUsingCustomerData = true,
@@ -129,8 +142,9 @@ class RedirectServiceSpec extends UnitTest {
       val result = Future.successful(RedirectService.benefitsSubmitRedirect(employmentCYA, Call("GET", "/next"))(taxYear, employmentId))
 
       status(result) shouldBe SEE_OTHER
-      redirectUrl(result) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+      redirectUrl(result) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
     }
+
     "redirect to the next page if the journey is not finished" in {
       val result = Future.successful(RedirectService.benefitsSubmitRedirect(employmentCYA.copy(
         employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = None))
@@ -139,6 +153,7 @@ class RedirectServiceSpec extends UnitTest {
       status(result) shouldBe SEE_OTHER
       redirectUrl(result) shouldBe "/next"
     }
+
     "redirect to the next page if the journey is not finished for travel section" in {
       val result = Future.successful(RedirectService.benefitsSubmitRedirect(employmentCYA.copy(
         employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = None))
@@ -152,1174 +167,738 @@ class RedirectServiceSpec extends UnitTest {
   "redirectBasedOnCurrentAnswers" should {
     "redirect to benefits yes no page" when {
       "it's a new submission" in {
-
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
           Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = None))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+          cya => commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/company-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe ReceiveAnyBenefitsController.show(taxYear, employmentId).url
       }
     }
+
     "redirect to car van fuel yes no page" when {
       "it's a new submission" in {
-
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
           Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carVanFuelQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.carBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carVanFuelQuestion = None))))))),
+          EmploymentBenefitsType)(cya => RedirectService.carBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/car-van-fuel?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CarVanFuelBenefitsController.show(taxYear, employmentId).url
       }
-      "when benefits are setup but car van fuel is empty" in {
 
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = None))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+      "when benefits are setup but car van fuel is empty" in {
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = None)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/car-van-fuel?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CarVanFuelBenefitsController.show(taxYear, employmentId).url
       }
     }
+
     "redirect to car yes no page" when {
       "it's a new submission and attempted to view the car fuel page without carQuestion being empty" in {
-
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
           Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.carFuelBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+          ))))), EmploymentBenefitsType)(cya => RedirectService.carFuelBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/company-car?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CompanyCarBenefitsController.show(taxYear, employmentId).url
       }
-      "it's a new submission and attempted to view the car amount page without carQuestion being empty" in {
 
+      "it's a new submission and attempted to view the car amount page without carQuestion being empty" in {
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
           Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.carBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+          ))))), EmploymentBenefitsType)(cya => RedirectService.carBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/company-car?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CompanyCarBenefitsController.show(taxYear, employmentId).url
       }
     }
+
     "redirect to car amount page" when {
       "it's a new submission and attempted to view the car fuel page with car amount being empty" in {
-
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
           Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(car = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.carFuelBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+          ))))), EmploymentBenefitsType)(cya => RedirectService.carFuelBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/company-car-amount?employmentId=" + employmentId
+        redirectUrl(response) shouldBe controllers.benefits.carVanFuel.routes.CompanyCarBenefitsAmountController.show(taxYear, employmentId).url
       }
     }
+
     "redirect to car fuel yes no page" when {
       "it's a new submission and attempted to view the car fuel amount page but the car fuel question is empty" in {
-
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
           Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carFuelQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.carFuelBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+          ))))), EmploymentBenefitsType)(cya => RedirectService.carFuelBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/car-fuel?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CompanyCarFuelBenefitsController.show(taxYear, employmentId).url
       }
     }
+
     "redirect to van page" when {
       "it's a new submission and attempted to view the car fuel amount page with car fuel being false" in {
-
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
           Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carFuelQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.carFuelBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+          ))))), EmploymentBenefitsType)(cya => RedirectService.carFuelBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/company-van?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CompanyVanBenefitsController.show(taxYear, employmentId).url
       }
-      "it's a new submission and attempted to view the car fuel page with car being false" in {
 
+      "it's a new submission and attempted to view the car fuel page with car being false" in {
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
           Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.carFuelBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+          ))))), EmploymentBenefitsType)(cya => RedirectService.carFuelBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/company-van?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CompanyVanBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the van fuel page with van being empty" in {
-
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
           Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(vanQuestion = None))
           ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.vanFuelBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+          cya => RedirectService.vanFuelBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/company-van?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CompanyVanBenefitsController.show(taxYear, employmentId).url
       }
-      "it's a new submission and attempted to view the van amount page with van being empty" in {
 
+      "it's a new submission and attempted to view the van amount page with van being empty" in {
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
           Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(vanQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.vanBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+          ))))), EmploymentBenefitsType)(cya => vanBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/company-van?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CompanyVanBenefitsController.show(taxYear, employmentId).url
       }
     }
+
     "redirect to van fuel yes no page" when {
       "it's a new submission and attempted to view the van fuel amount page but the van fuel question is empty" in {
-
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
           Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(vanFuelQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.vanFuelBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+          ))))), EmploymentBenefitsType)(cya => vanFuelBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/van-fuel?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CompanyVanFuelBenefitsController.show(taxYear, employmentId).url
       }
     }
+
     "redirect using accommodation methods" when {
       "it's a new submission and attempted to view the accommodation page but the car question is empty" in {
-
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
           Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.accommodationRelocationBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+          ))))), EmploymentBenefitsType)(cya => RedirectService.accommodationRelocationBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/company-car?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CompanyCarBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the accommodation yes no page but the accommodation relocation question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationRelocationQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.commonAccommodationBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationRelocationQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.commonAccommodationBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/accommodation-relocation?employmentId=" + employmentId
+        redirectUrl(response) shouldBe AccommodationRelocationBenefitsController.show(taxYear, employmentId).url
       }
-      "it's a new submission and attempted to view the qualifying relocation page but the accommodation amount is empty" in {
 
+      "it's a new submission and attempted to view the qualifying relocation page but the accommodation amount is empty" in {
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
           Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
             accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodation = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.qualifyingRelocationBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+          ))))), EmploymentBenefitsType)(cya => RedirectService.qualifyingRelocationBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/living-accommodation-amount?employmentId=" + employmentId
+        redirectUrl(response) shouldBe LivingAccommodationBenefitAmountController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the qualifying relocation amount page but the qualifyingRelocationExpensesQuestion is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(qualifyingRelocationExpensesQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.qualifyingRelocationBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(qualifyingRelocationExpensesQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.qualifyingRelocationBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/qualifying-relocation?employmentId=" + employmentId
+        redirectUrl(response) shouldBe QualifyingRelocationBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the non qualifying relocation yes no page but the qualifyingRelocationExpensesQuestion is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(qualifyingRelocationExpensesQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.nonQualifyingRelocationBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(qualifyingRelocationExpensesQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.nonQualifyingRelocationBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/qualifying-relocation?employmentId=" + employmentId
+        redirectUrl(response) shouldBe QualifyingRelocationBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the non qualifying relocation amount page but the nonQualifyingRelocationExpensesQuestion is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(nonQualifyingRelocationExpensesQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.nonQualifyingRelocationBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(nonQualifyingRelocationExpensesQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.nonQualifyingRelocationBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/non-qualifying-relocation?employmentId=" + employmentId
+        redirectUrl(response) shouldBe NonQualifyingRelocationBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the non qualifying relocation amount page but the nonQualifyingRelocationExpensesQuestion is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(nonQualifyingRelocationExpensesQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.nonQualifyingRelocationBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(nonQualifyingRelocationExpensesQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.nonQualifyingRelocationBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/travel-entertainment?employmentId=" + employmentId
+        redirectUrl(response) shouldBe TravelOrEntertainmentBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a prior submission and attempted to view the non qualifying relocation amount page but the nonQualifyingRelocationExpensesQuestion is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(nonQualifyingRelocationExpensesQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.nonQualifyingRelocationBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(nonQualifyingRelocationExpensesQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.nonQualifyingRelocationBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/travel-entertainment?employmentId=" + employmentId
+        redirectUrl(response) shouldBe TravelOrEntertainmentBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a prior submission and attempted to view the travel and entertainment page but the car section is not finished" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.travelEntertainmentBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.travelEntertainmentBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/company-car?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CompanyCarBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a prior submission and attempted to view the travel and entertainment page but the accommodation section is not finished" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.travelEntertainmentBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.travelEntertainmentBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/living-accommodation?employmentId=" + employmentId
+        redirectUrl(response) shouldBe LivingAccommodationBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the non qualifying relocation yes no page but the accommodation yes no question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.nonQualifyingRelocationBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.nonQualifyingRelocationBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/living-accommodation?employmentId=" + employmentId
+        redirectUrl(response) shouldBe LivingAccommodationBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the qualifying relocation amount page but the qualifyingRelocationExpensesQuestion is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(qualifyingRelocationExpensesQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.qualifyingRelocationBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(qualifyingRelocationExpensesQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.qualifyingRelocationBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/non-qualifying-relocation?employmentId=" + employmentId
+        redirectUrl(response) shouldBe NonQualifyingRelocationBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a prior submission and attempted to view the qualifying relocation amount page but the qualifyingRelocationExpensesQuestion is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(qualifyingRelocationExpensesQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.qualifyingRelocationBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(qualifyingRelocationExpensesQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.qualifyingRelocationBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the accommodation amount page but the accommodation question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.accommodationBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.accommodationBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/living-accommodation?employmentId=" + employmentId
+        redirectUrl(response) shouldBe LivingAccommodationBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the accommodation amount page but the accommodation question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.accommodationBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.accommodationBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/qualifying-relocation?employmentId=" + employmentId
+        redirectUrl(response) shouldBe QualifyingRelocationBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a prior submission and attempted to view the accommodation amount page but the accommodation question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.accommodationBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.accommodationBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the accommodation yes no page but the accommodation relocation question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationRelocationQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.commonAccommodationBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationRelocationQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.commonAccommodationBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/travel-entertainment?employmentId=" + employmentId
+        redirectUrl(response) shouldBe TravelOrEntertainmentBenefitsController.show(taxYear, employmentId).url
       }
-      "it's a prior submission and attempted to view the accommodation yes no page but the accommodation relocation question is false" in {
 
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationRelocationQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.commonAccommodationBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+      "it's a prior submission and attempted to view the accommodation yes no page but the accommodation relocation question is false" in {
+        val model = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationRelocationQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.commonAccommodationBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
     }
+
     "redirect using travel entertainment methods" when {
       "it's a new submission and attempted to view the travel entertainment page but the accommodation question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.travelEntertainmentBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.travelEntertainmentBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/living-accommodation?employmentId=" + employmentId
+        redirectUrl(response) shouldBe LivingAccommodationBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the travel yes no page but the travel entertainment question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelEntertainmentQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.commonTravelEntertainmentBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelEntertainmentQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.commonTravelEntertainmentBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/travel-entertainment?employmentId=" + employmentId
+        redirectUrl(response) shouldBe TravelOrEntertainmentBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the travel yes no page but the travel entertainment question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelEntertainmentQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.commonTravelEntertainmentBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelEntertainmentQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.commonTravelEntertainmentBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/utility-general-service?employmentId=" + employmentId
+        redirectUrl(response) shouldBe UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a prior submission and attempted to view the travel yes no page but the travel entertainment question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelEntertainmentQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.commonTravelEntertainmentBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelEntertainmentQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.commonTravelEntertainmentBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/travel-entertainment?employmentId=" + employmentId
+        redirectUrl(response) shouldBe TravelOrEntertainmentBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the travel amount page but the travel yes no question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.travelSubsistenceBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.travelSubsistenceBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/travel-subsistence?employmentId=" + employmentId
+        redirectUrl(response) shouldBe TravelAndSubsistenceBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the travel amount page but the travel yes no question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.travelSubsistenceBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.travelSubsistenceBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/incidental-overnight-costs?employmentId=" + employmentId
+        redirectUrl(response) shouldBe IncidentalOvernightCostEmploymentBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a prior submission and attempted to view the travel amount page but the travel yes no question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.travelSubsistenceBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.travelSubsistenceBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the incidental costs yes no page but the travel yes no question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.incidentalCostsBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.incidentalCostsBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/travel-subsistence?employmentId=" + employmentId
+        redirectUrl(response) shouldBe TravelAndSubsistenceBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the incidental costs yes no page but the travel amount question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistence = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.incidentalCostsBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistence = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.incidentalCostsBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/travel-subsistence-amount?employmentId=" + employmentId
+        redirectUrl(response) shouldBe TravelOrSubsistenceBenefitsAmountController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the incidental costs amount page but the incidental costs question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(personalIncidentalExpensesQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.incidentalCostsBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(personalIncidentalExpensesQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.incidentalCostsBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/incidental-overnight-costs?employmentId=" + employmentId
+        redirectUrl(response) shouldBe IncidentalOvernightCostEmploymentBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the incidental costs amount page but the incidental costs question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(personalIncidentalExpensesQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.incidentalCostsBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(personalIncidentalExpensesQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.incidentalCostsBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/entertainment-expenses?employmentId=" + employmentId
+        redirectUrl(response) shouldBe EntertainingBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a prior submission and attempted to view the incidental costs amount page but the incidental costs question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(personalIncidentalExpensesQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.incidentalCostsBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(personalIncidentalExpensesQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.incidentalCostsBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the entertainment yes no page but the incidental costs question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(personalIncidentalExpensesQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.entertainmentBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(personalIncidentalExpensesQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.entertainmentBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the entertainment yes no page but the travel yes no question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.entertainmentBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(travelAndSubsistenceQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.entertainmentBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/travel-subsistence?employmentId=" + employmentId
+        redirectUrl(response) shouldBe TravelAndSubsistenceBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the entertainment amount page but the entertainment yes no question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(entertainingQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.entertainmentBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(entertainingQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.entertainmentBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/entertainment-expenses?employmentId=" + employmentId
+        redirectUrl(response) shouldBe EntertainingBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the entertainment amount page but the entertainment yes no question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(entertainingQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.entertainmentBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(entertainingQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.entertainmentBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/utility-general-service?employmentId=" + employmentId
+        redirectUrl(response) shouldBe UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a prior submission and attempted to view the entertainment amount page but the entertainment yes no question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(entertainingQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.entertainmentBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(entertainingQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.entertainmentBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the utilities page but the entertainment question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            travelEntertainmentModel = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(entertainingQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.utilitiesBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.travelEntertainmentModel).map(_.copy(entertainingQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.utilitiesBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/entertainment-expenses?employmentId=" + employmentId
+        redirectUrl(response) shouldBe EntertainingBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the utilities page but the car question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.utilitiesBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.utilitiesBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/company-car?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CompanyCarBenefitsController.show(taxYear, employmentId).url
       }
-      "it's a new submission and attempted to view the utilities page but the accommodation question is empty" in {
 
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            accommodationRelocationModel = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.utilitiesBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+      "it's a new submission and attempted to view the utilities page but the accommodation question is empty" in {
+        val model = employmentCYA.employmentBenefits.flatMap(_.accommodationRelocationModel).map(_.copy(accommodationQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.utilitiesBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/living-accommodation?employmentId=" + employmentId
+        redirectUrl(response) shouldBe LivingAccommodationBenefitsController.show(taxYear, employmentId).url
       }
     }
+
     "redirect to mileage benefit yes no page" when {
       "it's a new submission and attempted to view the van fuel benefit amount page but the van fuel question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(vanFuelQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.vanFuelBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(vanFuelQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => vanFuelBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/mileage?employmentId=" + employmentId
+        redirectUrl(response) shouldBe ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the van benefit amount page but the van benefit question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(vanQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.vanBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(vanQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => vanBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/mileage?employmentId=" + employmentId
+        redirectUrl(response) shouldBe ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId).url
       }
-      "it's a new submission and attempted to view the mileage benefit amount page but the mileage benefit question is empty" in {
 
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(mileageQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.mileageBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+      "it's a new submission and attempted to view the mileage benefit amount page but the mileage benefit question is empty" in {
+        val model = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(mileageQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.mileageBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/mileage?employmentId=" + employmentId
+        redirectUrl(response) shouldBe ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId).url
       }
     }
+
     "redirect using utilities and services methods" when {
       "it's a new submission and attempted to view the telephone yes no page but the utilities and services question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(utilitiesAndServicesQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.commonUtilitiesAndServicesBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(utilitiesAndServicesQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.commonUtilitiesAndServicesBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/utility-general-service?employmentId=" + employmentId
+        redirectUrl(response) shouldBe UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the telephone yes no page but the utilities and services question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(utilitiesAndServicesQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.commonUtilitiesAndServicesBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(utilitiesAndServicesQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.commonUtilitiesAndServicesBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a prior submission and attempted to view the telephone yes no page but the utilities and services question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(utilitiesAndServicesQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.commonUtilitiesAndServicesBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(utilitiesAndServicesQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.commonUtilitiesAndServicesBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a prior submission and attempted to view the telephone amount page but the telephone question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(telephoneQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.telephoneBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(telephoneQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.telephoneBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the telephone amount page but the telephone question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(telephoneQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.telephoneBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(telephoneQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.telephoneBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/employer-provided-services?employmentId=" + employmentId
+        redirectUrl(response) shouldBe EmployerProvidedServicesBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the telephone amount page but the telephone question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(telephoneQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.telephoneBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(telephoneQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.telephoneBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/telephone?employmentId=" + employmentId
+        redirectUrl(response) shouldBe TelephoneBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the employer provided services yes no page but the telephone amount is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(telephone = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.employerProvidedServicesBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(telephone = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.employerProvidedServicesBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the employer provided services amount page but the employer provided services question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(employerProvidedServicesQuestion = None))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.employerProvidedServicesAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(employerProvidedServicesQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => employerProvidedServicesAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/employer-provided-services?employmentId=" + employmentId
+        redirectUrl(response) shouldBe EmployerProvidedServicesBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the employer provided services amount page but the employer provided services question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(employerProvidedServicesQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.employerProvidedServicesAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(employerProvidedServicesQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => employerProvidedServicesAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/professional-fees-or-subscriptions?employmentId=" + employmentId
+        redirectUrl(response) shouldBe ProfessionalSubscriptionsBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a prior submission and attempted to view the employer provided services amount page but the employer provided services question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(employerProvidedServicesQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.employerProvidedServicesAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(employerProvidedServicesQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => employerProvidedServicesAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the employer provided subscriptions page but the employer provided services question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(
-            employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-              utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
-                _.utilitiesAndServicesModel).map(_.copy(employerProvidedServicesQuestion = None))
-            ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.employerProvidedSubscriptionsBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(employerProvidedServicesQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.employerProvidedSubscriptionsBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/employer-provided-services?employmentId=" + employmentId
+        redirectUrl(response) shouldBe EmployerProvidedServicesBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the employer provided subscriptions amount page" +
         " but the employer provided subscriptions question is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(
-            employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-              utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
-                _.utilitiesAndServicesModel).map(_.copy(employerProvidedProfessionalSubscriptionsQuestion = None))
-            ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.employerProvidedSubscriptionsBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(employerProvidedProfessionalSubscriptionsQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => employerProvidedSubscriptionsBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/professional-fees-or-subscriptions?employmentId=" + employmentId
+        redirectUrl(response) shouldBe ProfessionalSubscriptionsBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the employer provided subscriptions amount page" +
         " but the employer provided subscriptions question is false" in {
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(
-            employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-              utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
-                _.utilitiesAndServicesModel).map(_.copy(employerProvidedProfessionalSubscriptionsQuestion = Some(false)))
-            ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.employerProvidedSubscriptionsBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel)
+          .map(_.copy(employerProvidedProfessionalSubscriptionsQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => employerProvidedSubscriptionsBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/other-services?employmentId=" + employmentId
+        redirectUrl(response) shouldBe OtherServicesBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a prior submission and attempted to view the employer provided subscriptions amount page" +
         " but the employer provided subscriptions question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(
-            employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-              utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
-                _.utilitiesAndServicesModel).map(_.copy(employerProvidedProfessionalSubscriptionsQuestion = Some(false)))
-            ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.employerProvidedSubscriptionsBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel)
+          .map(_.copy(employerProvidedProfessionalSubscriptionsQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => employerProvidedSubscriptionsBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the services page but the employer provided subscriptions amount is empty" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(
-            employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-              utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
-                _.utilitiesAndServicesModel).map(_.copy(employerProvidedProfessionalSubscriptions = None))
-            ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.servicesBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(employerProvidedProfessionalSubscriptions = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.servicesBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/professional-fees-or-subscriptions-amount?employmentId=" + employmentId
+        redirectUrl(response) shouldBe ProfessionalSubscriptionsBenefitsAmountController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the services amount page but the services question is empty" in {
-
+        val model = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(serviceQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = model)))
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(
-            employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-              utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
-                _.utilitiesAndServicesModel).map(_.copy(serviceQuestion = None))
-            ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.servicesBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.servicesBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/other-services?employmentId=" + employmentId
+        redirectUrl(response) shouldBe OtherServicesBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and attempted to view the services amount page but the services question is false" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = false, employment = employmentCYA.copy(
-            employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-              utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
-                _.utilitiesAndServicesModel).map(_.copy(serviceQuestion = Some(false)))
-            ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.servicesBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(serviceQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.servicesBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
-      "it's a prior submission and attempted to view the services amount page but the services question is false" in {
 
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(
-            employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-              utilitiesAndServicesModel = employmentCYA.employmentBenefits.flatMap(
-                _.utilitiesAndServicesModel).map(_.copy(serviceQuestion = Some(false)))
-            ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.servicesBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+      "it's a prior submission and attempted to view the services amount page but the services question is false" in {
+        val model = employmentCYA.employmentBenefits.flatMap(_.utilitiesAndServicesModel).map(_.copy(serviceQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.servicesBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
     }
 
@@ -1522,7 +1101,123 @@ class RedirectServiceSpec extends UnitTest {
         val medicalModel = Some(fullMedicalModel.copy(beneficialLoanQuestion = None))
         val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(medicalChildcareEducationModel = medicalModel)))
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
-          EmploymentBenefitsType)(cya => incomeTaxAndIncurredCostsRedirects(cya, taxYear, employmentId)) { _ => result }
+          EmploymentBenefitsType)(cya => incomeTaxAndCostsRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a new submission and attempted to view the 'Income Tax paid by employer' yes/no page but the Income Tax section question is empty" in {
+        val emptyModel = Some(IncomeTaxAndCostsModel())
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(incomeTaxAndCostsModel = emptyModel)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => commonIncomeTaxAndCostsModelRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a new submission and attempted to view the 'Income Tax paid by employer' yes/no page but the Income Tax section question is false" in {
+        val model = Some(fullIncomeTaxAndCostsModel.copy(incomeTaxOrCostsQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(incomeTaxAndCostsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)), EmploymentBenefitsType)(
+          cya => commonIncomeTaxAndCostsModelRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a prior submission and attempted to view the 'Income Tax paid by employer' yes/no page but the Income Tax section question is false" in {
+        val model = Some(fullIncomeTaxAndCostsModel.copy(incomeTaxOrCostsQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(incomeTaxAndCostsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => commonIncomeTaxAndCostsModelRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a prior submission and attempted to view the 'Income Tax paid by employer amount' page but the 'Income Tax paid by employer' question is false" in {
+        val model = Some(fullIncomeTaxAndCostsModel.copy(incomeTaxPaidByDirectorQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(incomeTaxAndCostsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => incomeTaxPaidByDirectorAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a new submission and attempted to view the 'Income Tax paid by employer amount' page but the 'Income Tax paid by employer' question is false" in {
+        val model = Some(fullIncomeTaxAndCostsModel.copy(incomeTaxPaidByDirectorQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(incomeTaxAndCostsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => incomeTaxPaidByDirectorAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a new submission and attempted to view the 'Income Tax paid by employer amount' page but the 'Income Tax paid by employer' question is empty" in {
+        val model = Some(fullIncomeTaxAndCostsModel.copy(incomeTaxPaidByDirectorQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(incomeTaxAndCostsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => incomeTaxPaidByDirectorAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a new submission and attempted to view the 'Incurred costs paid by employer' yes/no page but the Income Tax paid by employer amount is empty" in {
+        val model = Some(fullIncomeTaxAndCostsModel.copy(incomeTaxPaidByDirector = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(incomeTaxAndCostsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => incurredCostsPaidByEmployerRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a new submission and attempted to view the 'Incurred costs paid by employer amount' page " +
+        "but the Incurred costs paid by employer question is empty" in {
+        val model = Some(fullIncomeTaxAndCostsModel.copy(paymentsOnEmployeesBehalfQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(incomeTaxAndCostsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => incurredCostsPaidByEmployerAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a new submission and attempted to view the 'Incurred costs paid by employer amount' page " +
+        "but the Incurred costs paid by employer question is false" in {
+        val model = Some(fullIncomeTaxAndCostsModel.copy(paymentsOnEmployeesBehalfQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(incomeTaxAndCostsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => incurredCostsPaidByEmployerAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a prior submission and attempted to view the 'Incurred costs paid by employer amount' page " +
+        "but the Incurred costs paid by employer question is false" in {
+        val model = Some(fullIncomeTaxAndCostsModel.copy(paymentsOnEmployeesBehalfQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(incomeTaxAndCostsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => incurredCostsPaidByEmployerAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+    }
+
+    "redirect using Reimbursed costs, vouchers, and non-cash benefits methods" when {
+      "it's a new submission and attempted to view the ' Vouchers, non-cash benefits or reimbursed costs' " +
+        "but the income tax and incurred costs section is not finished" in {
+        val model = Some(fullIncomeTaxAndCostsModel.copy(paymentsOnEmployeesBehalfQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(incomeTaxAndCostsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => reimbursedCostsVouchersAndNonCashRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
         redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
@@ -1531,217 +1226,134 @@ class RedirectServiceSpec extends UnitTest {
 
     "redirect to benefits CYA page" when {
       "it's a prior submission" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = None))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val employment = employmentCYA.copy(employmentBenefits = None)
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and hitting the common benefits method when benefits received is false " in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            isBenefitsReceived = false
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.commonBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(isBenefitsReceived = false)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.commonBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and hitting the common car van fuel benefits method when carVanFuel is false " in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carVanFuelQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carVanFuelQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/accommodation-relocation?employmentId=" + employmentId
+        redirectUrl(response) shouldBe AccommodationRelocationBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a prior submission and hitting the common car van fuel benefits method when carVanFuel is false " in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carVanFuelQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carVanFuelQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a prior submission and hitting the car benefits amount method when carQuestion is false " in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.carBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.carBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a prior submission and hitting the car fuel benefits amount method when carFuelQuestion is false " in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carFuelQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.carFuelBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(carFuelQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.carFuelBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a prior submission and hitting the van benefits amount method when vanQuestion is false " in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(vanQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.vanBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(vanQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => vanBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a prior submission and hitting the van fuel benefits amount method when vanFuelQuestion is false " in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(vanFuelQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.vanFuelBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(vanFuelQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => vanFuelBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
+
       "it's a new submission and hitting the mileage benefits amount method when mileageQuestion is false " in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(mileageQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.mileageBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val model = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(mileageQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.mileageBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/accommodation-relocation?employmentId=" + employmentId
+        redirectUrl(response) shouldBe AccommodationRelocationBenefitsController.show(taxYear, employmentId).url
       }
-      "it's a prior submission and hitting the mileage benefits amount method when mileageQuestion is false " in {
 
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true, employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(
-            carVanFuelModel = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(mileageQuestion = Some(false)))
-          ))))), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.mileageBenefitsAmountRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+      "it's a prior submission and hitting the mileage benefits amount method when mileageQuestion is false " in {
+        val model = employmentCYA.employmentBenefits.flatMap(_.carVanFuelModel).map(_.copy(mileageQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => RedirectService.mileageBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
     }
+
     "redirect when CYA is empty" when {
       "it's a benefits submission" in {
-
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, None, EmploymentBenefitsType)(
-          cya => {
-            RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+          cya => commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
-      "it's a employment details submission" in {
 
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, None, EmploymentDetailsType)(
-          cya => {
-            RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+      "it's a employment details submission" in {
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, None, EmploymentDetailsType)(cya =>
+          commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/check-employment-details?employmentId=" + employmentId
+        redirectUrl(response) shouldBe CheckEmploymentDetailsController.show(taxYear, employmentId).url
       }
     }
+
     "continue with the request when benefits are setup and car van fuel is setup" when {
       "it's a new submission" in {
-
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData), EmploymentBenefitsType)(cya =>
+          commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe OK
         bodyOf(response) shouldBe "Wow"
       }
-      "it's a prior submission" in {
 
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId,
-          Some(employmentUserData.copy(hasPriorBenefits = true)), EmploymentBenefitsType)(
-          cya => {
-            RedirectService.commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)
-          }
-        ) {
-          _ => result
-        }
+      "it's a prior submission" in {
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true)),
+          EmploymentBenefitsType)(cya => commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe OK
         bodyOf(response) shouldBe "Wow"
@@ -1751,90 +1363,87 @@ class RedirectServiceSpec extends UnitTest {
 
   "employmentDetailsRedirect" should {
     "redirect to check employment details page" in {
-
-      val response = RedirectService.employmentDetailsRedirect(cyaModel, taxYear, "employmentId", isPriorSubmission = true)
+      val response = employmentDetailsRedirect(cyaModel, taxYear, employmentId, isPriorSubmission = true)
 
       response.header.status shouldBe SEE_OTHER
-      redirectUrl(Future(response)) shouldBe "/income-through-software/return/employment-income/2021/check-employment-details?employmentId=employmentId"
+      redirectUrl(Future(response)) shouldBe CheckEmploymentDetailsController.show(taxYear, employmentId).url
     }
+
     "redirect to employer reference page" in {
-
-      val response = RedirectService.employmentDetailsRedirect(cyaModel, taxYear, "employmentId", isPriorSubmission = false)
+      val response = employmentDetailsRedirect(cyaModel, taxYear, employmentId, isPriorSubmission = false)
 
       response.header.status shouldBe SEE_OTHER
-      redirectUrl(Future(response)) shouldBe "/income-through-software/return/employment-income/2021/employer-paye-reference?employmentId=employmentId"
+      redirectUrl(Future(response)) shouldBe PayeRefController.show(taxYear, employmentId).url
     }
+
     "redirect to start date page" in {
-
-      val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(employerRef = Some("123/12345"))), taxYear, "employmentId", isPriorSubmission = false)
+      val employment = cyaModel.copy(cyaModel.employmentDetails.copy(employerRef = Some("123/12345")))
+      val response = employmentDetailsRedirect(employment, taxYear, employmentId, isPriorSubmission = false)
 
       response.header.status shouldBe SEE_OTHER
-      redirectUrl(Future(response)) shouldBe "/income-through-software/return/employment-income/2021/employment-start-date?employmentId=employmentId"
+      redirectUrl(Future(response)) shouldBe EmployerStartDateController.show(taxYear, employmentId).url
     }
+
     "redirect to still working for employer page" in {
-
-      val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
-        employerRef = Some("123/12345"), payrollId = Some("id"), startDate = Some("2020-11-01"))), taxYear, "employmentId", isPriorSubmission = false)
+      val employment = cyaModel.copy(cyaModel.employmentDetails.copy(employerRef = Some("123/12345"), payrollId = Some("id"), startDate = Some("2020-11-01")))
+      val response = employmentDetailsRedirect(employment, taxYear, employmentId, isPriorSubmission = false)
 
       response.header.status shouldBe SEE_OTHER
-      redirectUrl(Future(response)) shouldBe "/income-through-software/return/employment-income/2021/still-working-for-employer?employmentId=employmentId"
+      redirectUrl(Future(response)) shouldBe StillWorkingForEmployerController.show(taxYear, employmentId).url
     }
+
     "redirect to pay page" in {
-
-      val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
-        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), cessationDate = Some("2020-10-01"), payrollId = Some("id")
-      )), taxYear, "employmentId", isPriorSubmission = false)
+      val employmentDetails = cyaModel.employmentDetails.copy(employerRef = Some("123/12345"),
+        startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), cessationDate = Some("2020-10-01"), payrollId = Some("id"))
+      val response = employmentDetailsRedirect(cyaModel.copy(employmentDetails), taxYear, employmentId, isPriorSubmission = false)
 
       response.header.status shouldBe SEE_OTHER
-      redirectUrl(Future(response)) shouldBe "/income-through-software/return/employment-income/2021/how-much-pay?employmentId=employmentId"
+      redirectUrl(Future(response)) shouldBe EmployerPayAmountController.show(taxYear, employmentId).url
     }
+
     "redirect to tax page" in {
-
-      val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
-        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), cessationDate = Some("2020-10-10"), payrollId = Some("id"), taxablePayToDate = Some(1)
-      )), taxYear, "employmentId", isPriorSubmission = false)
+      val employmentDetails = cyaModel.employmentDetails.copy(employerRef = Some("123/12345"), startDate = Some("2020-11-01"),
+        cessationDateQuestion = Some(true), cessationDate = Some("2020-10-10"), payrollId = Some("id"), taxablePayToDate = Some(1))
+      val response = employmentDetailsRedirect(cyaModel.copy(employmentDetails), taxYear, employmentId, isPriorSubmission = false)
 
       response.header.status shouldBe SEE_OTHER
-      redirectUrl(Future(response)) shouldBe "/income-through-software/return/employment-income/2021/uk-tax?employmentId=employmentId"
+      redirectUrl(Future(response)) shouldBe EmploymentTaxController.show(taxYear, employmentId).url
     }
+
     "redirect to payroll id page" in {
-
-      val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
-        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(true), cessationDate = Some("2020-10-10"), taxablePayToDate = Some(1), totalTaxToDate = Some(1)
-      )), taxYear, "employmentId", isPriorSubmission = false)
+      val employmentDetails = cyaModel.employmentDetails.copy(employerRef = Some("123/12345"), startDate = Some("2020-11-01"),
+        cessationDateQuestion = Some(true), cessationDate = Some("2020-10-10"), taxablePayToDate = Some(1), totalTaxToDate = Some(1))
+      val response = employmentDetailsRedirect(cyaModel.copy(employmentDetails), taxYear, employmentId, isPriorSubmission = false)
 
       response.header.status shouldBe SEE_OTHER
-      redirectUrl(Future(response)) shouldBe "/income-through-software/return/employment-income/2021/payroll-id?employmentId=employmentId"
+      redirectUrl(Future(response)) shouldBe EmployerPayrollIdController.show(taxYear, employmentId).url
     }
+
     "redirect to employment end date page when no cessation date" in {
-
-      val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
-        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), cessationDateQuestion = Some(false), taxablePayToDate = Some(1),
-        totalTaxToDate = Some(1), payrollId = Some("id")
-      )), taxYear, "employmentId", isPriorSubmission = false)
+      val employmentDetails = cyaModel.employmentDetails.copy(employerRef = Some("123/12345"), startDate = Some("2020-11-01"),
+        cessationDateQuestion = Some(false), taxablePayToDate = Some(1), totalTaxToDate = Some(1), payrollId = Some("id"))
+      val response = employmentDetailsRedirect(cyaModel.copy(employmentDetails), taxYear, employmentId, isPriorSubmission = false)
 
       response.header.status shouldBe SEE_OTHER
-      redirectUrl(Future(response)) shouldBe "/income-through-software/return/employment-income/2021/employment-end-date?employmentId=employmentId"
+      redirectUrl(Future(response)) shouldBe EmployerLeaveDateController.show(taxYear, employmentId).url
     }
+
     "redirect to check employment details page when no cessation date but the cessation question is no" in {
-
-      val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
-        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), taxablePayToDate = Some(1), totalTaxToDate = Some(1),
-        payrollId = Some("id"), cessationDateQuestion = Some(true)
-      )), taxYear, "employmentId", isPriorSubmission = false)
+      val employmentDetails = cyaModel.employmentDetails.copy(employerRef = Some("123/12345"), startDate = Some("2020-11-01"),
+        taxablePayToDate = Some(1), totalTaxToDate = Some(1), payrollId = Some("id"), cessationDateQuestion = Some(true))
+      val response = employmentDetailsRedirect(cyaModel.copy(employmentDetails), taxYear, employmentId, isPriorSubmission = false)
 
       response.header.status shouldBe SEE_OTHER
-      redirectUrl(Future(response)) shouldBe "/income-through-software/return/employment-income/2021/check-employment-details?employmentId=employmentId"
+      redirectUrl(Future(response)) shouldBe CheckEmploymentDetailsController.show(taxYear, employmentId).url
     }
-    "redirect to check employment details page when all filled in" in {
 
-      val response = RedirectService.employmentDetailsRedirect(cyaModel.copy(cyaModel.employmentDetails.copy(
-        employerRef = Some("123/12345"), startDate = Some("2020-11-01"), taxablePayToDate = Some(1), totalTaxToDate = Some(1),
-        payrollId = Some("id"), cessationDateQuestion = Some(true), cessationDate = Some("2020-11-01")
-      )), taxYear, "employmentId", isPriorSubmission = false)
+    "redirect to check employment details page when all filled in" in {
+      val employmentDetails = cyaModel.employmentDetails.copy(employerRef = Some("123/12345"), startDate = Some("2020-11-01"), taxablePayToDate = Some(1),
+        totalTaxToDate = Some(1), payrollId = Some("id"), cessationDateQuestion = Some(true), cessationDate = Some("2020-11-01"))
+      val response = employmentDetailsRedirect(cyaModel.copy(employmentDetails), taxYear, employmentId, isPriorSubmission = false)
 
       response.header.status shouldBe SEE_OTHER
-      redirectUrl(Future(response)) shouldBe "/income-through-software/return/employment-income/2021/check-employment-details?employmentId=employmentId"
+      redirectUrl(Future(response)) shouldBe CheckEmploymentDetailsController.show(taxYear, employmentId).url
     }
   }
 }

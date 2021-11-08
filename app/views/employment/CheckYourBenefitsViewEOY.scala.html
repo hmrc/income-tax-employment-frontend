@@ -231,16 +231,16 @@
         val rows: Seq[SummaryListRow] =
         if(benefits.incomeTaxDetailsPopulated){
             Seq(
-                benefits.incomeTaxPaidByDirectorQuestion.map{
-                incomeTaxPaidByDirectorQuestion => showQuestionRow("checkYourBenefits.incomeTaxPaid", incomeTaxPaidByDirectorQuestion)
+                benefits.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirectorQuestion).map{
+                    incomeTaxPaidByDirectorQuestion => showQuestionRow("checkYourBenefits.incomeTaxPaid", incomeTaxPaidByDirectorQuestion)
                 },
-                benefits.incomeTaxPaidByDirector.map{
+                benefits.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirector).map{
                     incomeTaxPaidByDirector => showRows("checkYourBenefits.incomeTaxPaidAmount", incomeTaxPaidByDirector)
                 },
-                benefits.paymentsOnEmployeesBehalfQuestion.map{
+                benefits.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalfQuestion).map{
                     paymentsOnEmployeesBehalfQuestion => showQuestionRow("checkYourBenefits.incurredCostsPaid", paymentsOnEmployeesBehalfQuestion)
                 },
-                benefits.paymentsOnEmployeesBehalf.map{
+                benefits.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalf).map{
                     paymentsOnEmployeesBehalf => showRows("checkYourBenefits.incurredCostsPaidAmount", paymentsOnEmployeesBehalf)
                 }
             ).flatten
