@@ -65,6 +65,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
   private val sessionIdTwo = UUID.randomUUID
 
   private val now = DateTime.now(DateTimeZone.UTC)
+  private val employerName = "some-employer-name"
 
   val employmentUserDataOne: EmploymentUserData = EmploymentUserData(
     sessionIdOne,
@@ -74,7 +75,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     employmentIdOne,
     isPriorSubmission = true,
     hasPriorBenefits = true,
-    EmploymentCYAModel(EmploymentDetails("Tesco", currentDataIsHmrcHeld = true), None),
+    EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = true), None),
     lastUpdated = now
   )
 
@@ -86,8 +87,9 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     Some(TravelEntertainmentModel(Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))),
     Some(UtilitiesAndServicesModel(Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))),
     Some(MedicalChildcareEducationModel(Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))),
-    Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
-    Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
+    Some(IncomeTaxAndCostsModel(Some(true), Some(true), Some(amount), Some(true), Some(amount))),
+    Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount), Some(amount),
+    Some(true), Some(true), Some(true), Some(true), Some(true), Some(true), Some(true),
     Some("2020-10-10"), isUsingCustomerData = true, isBenefitsReceived = true)
 
   val employmentUserDataFull: EmploymentUserData = EmploymentUserData(
