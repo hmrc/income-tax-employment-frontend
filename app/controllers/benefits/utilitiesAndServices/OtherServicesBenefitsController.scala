@@ -17,22 +17,23 @@
 package controllers.benefits.utilitiesAndServices
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
 import controllers.benefits.utilitiesAndServices.routes._
+import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
 import models.User
+import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.{ConditionalRedirect, EmploymentBenefitsType, redirectBasedOnCurrentAnswers}
+import services.RedirectService.redirectBasedOnCurrentAnswers
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.OtherServicesBenefitsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class OtherServicesBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -49,7 +50,7 @@ class OtherServicesBenefitsController @Inject()(implicit val cc: MessagesControl
     missingInputError = s"benefits.otherServicesBenefits.error.${if (user.isAgent) "agent" else "individual"}"
   )
 
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
     RedirectService.servicesBenefitsRedirects(cya, taxYear, employmentId)
   }
 
@@ -57,7 +58,7 @@ class OtherServicesBenefitsController @Inject()(implicit val cc: MessagesControl
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-            cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.serviceQuestion)) match {
+          cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.serviceQuestion)) match {
             case Some(questionResult) => Future.successful(Ok(otherServicesBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
             case None => Future.successful(Ok(otherServicesBenefitsView(yesNoForm, taxYear, employmentId)))
           }

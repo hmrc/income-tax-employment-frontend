@@ -22,16 +22,17 @@ import controllers.benefits.medicalChildcareEducation.routes.MedicalDentalChildc
 
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
-import javax.inject.Inject
+import models.employment.EmploymentBenefitsType
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
-import services.RedirectService.{EmploymentBenefitsType, redirectBasedOnCurrentAnswers, servicesBenefitsAmountRedirects}
+import services.RedirectService.{redirectBasedOnCurrentAnswers, servicesBenefitsAmountRedirects}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.OtherServicesBenefitsAmountView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class OtherServicesBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -42,14 +43,14 @@ class OtherServicesBenefitsAmountController @Inject()(implicit val cc: MessagesC
                                                       val employmentSessionService: EmploymentSessionService,
                                                       errorHandler: ErrorHandler,
                                                       ec: ExecutionContext,
-                                                      clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils{
+                                                      clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
-          EmploymentBenefitsType)(servicesBenefitsAmountRedirects(_,taxYear,employmentId)) { cya =>
+          EmploymentBenefitsType)(servicesBenefitsAmountRedirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount: Option[BigDecimal] =
             cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.service))
 
@@ -77,7 +78,7 @@ class OtherServicesBenefitsAmountController @Inject()(implicit val cc: MessagesC
               val fillValue = cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel).flatMap(_.service)
               Future.successful(BadRequest(otherServicesBenefitsAmountView(taxYear, formWithErrors, fillValue, employmentId)))
             }, {
-              newAmount:BigDecimal =>
+              newAmount: BigDecimal =>
                 val cyaModel = cya.employment
                 val benefits = cyaModel.employmentBenefits
                 val utilitiesServices = cyaModel.employmentBenefits.flatMap(_.utilitiesAndServicesModel)
@@ -88,7 +89,7 @@ class OtherServicesBenefitsAmountController @Inject()(implicit val cc: MessagesC
                 )
 
                 employmentSessionService.createOrUpdateSessionData(
-                  employmentId, updatedCyaModel, taxYear,  cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
+                  employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
                   if (cya.isPriorSubmission) {
                     Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                   } else {
@@ -104,8 +105,8 @@ class OtherServicesBenefitsAmountController @Inject()(implicit val cc: MessagesC
 
   private def buildForm(isAgent: Boolean): Form[BigDecimal] = {
     AmountForm.amountForm(s"benefits.otherServicesBenefitsAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-      s"benefits.otherServicesBenefitsAmount.error.invalidFormat.${if (isAgent)"agent" else "individual"}"
-      , s"benefits.otherServicesBenefitsAmount.error.overMaximum.${if (isAgent)"agent" else "individual"}")
+      s"benefits.otherServicesBenefitsAmount.error.invalidFormat.${if (isAgent) "agent" else "individual"}"
+      , s"benefits.otherServicesBenefitsAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}")
   }
 
 }

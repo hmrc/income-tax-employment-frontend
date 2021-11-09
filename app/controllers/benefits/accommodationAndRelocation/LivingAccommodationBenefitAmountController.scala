@@ -21,17 +21,18 @@ import controllers.benefits.accommodationAndRelocation.routes._
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
-import javax.inject.Inject
+import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.{ConditionalRedirect, EmploymentBenefitsType, redirectBasedOnCurrentAnswers}
+import services.RedirectService.redirectBasedOnCurrentAnswers
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.LivingAccommodationBenefitAmountView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class LivingAccommodationBenefitAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -42,7 +43,7 @@ class LivingAccommodationBenefitAmountController @Inject()(implicit val cc: Mess
                                                            val employmentSessionService: EmploymentSessionService,
                                                            errorHandler: ErrorHandler,
                                                            ec: ExecutionContext,
-                                                           clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils{
+                                                           clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -89,7 +90,7 @@ class LivingAccommodationBenefitAmountController @Inject()(implicit val cc: Mess
 
                   val nextPage = QualifyingRelocationBenefitsController.show(taxYear, employmentId)
 
-                  RedirectService.benefitsSubmitRedirect(updatedCyaModel,nextPage)(taxYear,employmentId)
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
                 }
             }
           )
@@ -100,11 +101,11 @@ class LivingAccommodationBenefitAmountController @Inject()(implicit val cc: Mess
 
   private def buildForm(isAgent: Boolean): Form[BigDecimal] = {
     AmountForm.amountForm(s"benefits.livingAccommodationAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-      s"benefits.livingAccommodationAmount.error.wrongFormat.${if (isAgent)"agent" else "individual"}"
-      , s"benefits.livingAccommodationAmount.error.overMaximum.${if (isAgent)"agent" else "individual"}")
+      s"benefits.livingAccommodationAmount.error.wrongFormat.${if (isAgent) "agent" else "individual"}"
+      , s"benefits.livingAccommodationAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}")
   }
 
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
     RedirectService.accommodationBenefitsAmountRedirects(cya, taxYear, employmentId)
   }
 }

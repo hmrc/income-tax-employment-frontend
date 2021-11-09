@@ -21,19 +21,20 @@ import controllers.benefits.carVanFuel.routes.{CompanyVanFuelBenefitsAmountContr
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
-import models.User
 import models.benefits.{BenefitsViewModel, CarVanFuelModel}
 import models.mongo.EmploymentCYAModel
+import models.User
+import models.employment.EmploymentBenefitsType
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.{EmploymentBenefitsType, redirectBasedOnCurrentAnswers, vanFuelBenefitsRedirects}
+import services.RedirectService.{redirectBasedOnCurrentAnswers, vanFuelBenefitsRedirects}
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.CompanyVanFuelBenefitsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CompanyVanFuelBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -101,13 +102,13 @@ class CompanyVanFuelBenefitsController @Inject()(implicit val cc: MessagesContro
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
                 val nextPage = {
-                  if(yesNo){
+                  if (yesNo) {
                     CompanyVanFuelBenefitsAmountController.show(taxYear, employmentId)
                   } else {
                     ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId)
                   }
                 }
-                RedirectService.benefitsSubmitRedirect(updatedCyaModel,nextPage)(taxYear,employmentId)
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
             }
           )

@@ -20,18 +20,19 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.carVanFuel.routes.{CarFuelBenefitsAmountController, CompanyVanBenefitsController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
 import models.User
+import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.{ConditionalRedirect, EmploymentBenefitsType, redirectBasedOnCurrentAnswers}
+import services.RedirectService.redirectBasedOnCurrentAnswers
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.CompanyCarFuelBenefitsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CompanyCarFuelBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -44,8 +45,8 @@ class CompanyCarFuelBenefitsController @Inject()(implicit val cc: MessagesContro
                                                  ec: ExecutionContext,
                                                  clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-    RedirectService.carFuelBenefitsRedirects(cya,taxYear,employmentId)
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
+    RedirectService.carFuelBenefitsRedirects(cya, taxYear, employmentId)
   }
 
   def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
@@ -95,10 +96,10 @@ class CompanyCarFuelBenefitsController @Inject()(implicit val cc: MessagesContro
 
 
                 val nextPage = {
-                  if(yesNo) CarFuelBenefitsAmountController.show(taxYear, employmentId) else CompanyVanBenefitsController.show(taxYear, employmentId)
+                  if (yesNo) CarFuelBenefitsAmountController.show(taxYear, employmentId) else CompanyVanBenefitsController.show(taxYear, employmentId)
                 }
 
-                RedirectService.benefitsSubmitRedirect(updatedCyaModel,nextPage)(taxYear,employmentId)
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
             }
           )

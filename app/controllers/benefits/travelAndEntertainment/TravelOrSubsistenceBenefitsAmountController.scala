@@ -20,18 +20,19 @@ import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
-import javax.inject.Inject
 import models.benefits.TravelEntertainmentModel
+import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.{EmploymentBenefitsType, redirectBasedOnCurrentAnswers}
+import services.RedirectService.redirectBasedOnCurrentAnswers
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.TravelOrSubsistenceBenefitsAmountView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TravelOrSubsistenceBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -74,14 +75,14 @@ class TravelOrSubsistenceBenefitsAmountController @Inject()(implicit val cc: Mes
                 val updatedCyaModel = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(travelEntertainmentModel =
                   travelEntertainment.map(_.copy(travelAndSubsistence = Some(newAmount))))))
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
-                    cya.isPriorSubmission,cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                    if (cya.isPriorSubmission) {
-                      Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                    } else {
-                      // TODO: Point to the Personal incidental costs page
-                      Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                    }
+                  cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
+                  if (cya.isPriorSubmission) {
+                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                  } else {
+                    // TODO: Point to the Personal incidental costs page
+                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                   }
+                }
             }
           )
         }

@@ -25,6 +25,7 @@ import controllers.benefits.carVanFuel.routes._
 import controllers.benefits.routes.ReceiveAnyBenefitsController
 
 import models.benefits._
+import models.employment.{EmploymentBenefitsType, EmploymentDetailsType}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Call

@@ -20,18 +20,19 @@ import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
-import javax.inject.Inject
-import models.User
 import models.mongo.EmploymentCYAModel
+import models.User
+import models.employment.EmploymentBenefitsType
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.{EmploymentBenefitsType, redirectBasedOnCurrentAnswers}
+import services.RedirectService.redirectBasedOnCurrentAnswers
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.IncidentalCostsBenefitsAmountView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 
@@ -43,7 +44,7 @@ class IncidentalCostsBenefitsAmountController @Inject()(implicit val cc: Message
                                                         val employmentSessionService: EmploymentSessionService,
                                                         errorHandler: ErrorHandler,
                                                         ec: ExecutionContext,
-                                                        clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils{
+                                                        clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def amountForm(implicit user: User[_]): Form[BigDecimal] = AmountForm.amountForm(
     emptyFieldKey = s"benefits.incidentalCostsBenefitsAmount.error.noEntry.${if (user.isAgent) "agent" else "individual"}",
@@ -59,8 +60,7 @@ class IncidentalCostsBenefitsAmountController @Inject()(implicit val cc: Message
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
 
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId))
-        { cya =>
+        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses))
 
           val form = fillFormFromPriorAndCYA(amountForm, prior, cyaAmount, employmentId)(
