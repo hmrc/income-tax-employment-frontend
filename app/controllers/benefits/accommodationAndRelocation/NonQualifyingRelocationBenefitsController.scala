@@ -21,18 +21,19 @@ import controllers.benefits.accommodationAndRelocation.routes._
 import controllers.benefits.travelAndEntertainment.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
 import models.User
+import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.{ConditionalRedirect, EmploymentBenefitsType, redirectBasedOnCurrentAnswers}
+import services.RedirectService.redirectBasedOnCurrentAnswers
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.NonQualifyingRelocationBenefitsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class NonQualifyingRelocationBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -51,7 +52,7 @@ class NonQualifyingRelocationBenefitsController @Inject()(implicit val cc: Messa
     missingInputError = s"benefits.nonQualifyingRelocationQuestion.error.${if (user.isAgent) "agent" else "individual"}"
   )
 
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
     RedirectService.nonQualifyingRelocationBenefitsRedirects(cya, taxYear, employmentId)
   }
 

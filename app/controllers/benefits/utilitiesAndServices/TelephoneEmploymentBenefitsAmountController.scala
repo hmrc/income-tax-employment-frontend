@@ -17,22 +17,23 @@
 package controllers.benefits.utilitiesAndServices
 
 import config.{AppConfig, ErrorHandler}
+import controllers.benefits.utilitiesAndServices.routes._
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
-import javax.inject.Inject
 import models.benefits.UtilitiesAndServicesModel
+import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import controllers.benefits.utilitiesAndServices.routes._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.{EmploymentBenefitsType, redirectBasedOnCurrentAnswers}
+import services.RedirectService.redirectBasedOnCurrentAnswers
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.TelephoneEmploymentBenefitsAmountView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TelephoneEmploymentBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -75,13 +76,13 @@ class TelephoneEmploymentBenefitsAmountController @Inject()(implicit val cc: Mes
                 val updatedCyaModel = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(utilitiesAndServicesModel =
                   utilitiesAndServices.map(_.copy(telephone = Some(newAmount))))))
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
-                    cya.isPriorSubmission,cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                    if (cya.isPriorSubmission) {
-                      Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                    } else {
-                      Redirect(EmployerProvidedServicesBenefitsAmountController.show(taxYear, employmentId))
-                    }
+                  cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
+                  if (cya.isPriorSubmission) {
+                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                  } else {
+                    Redirect(EmployerProvidedServicesBenefitsAmountController.show(taxYear, employmentId))
                   }
+                }
             }
           )
         }

@@ -21,10 +21,11 @@ import controllers.benefits.accommodationAndRelocation.routes._
 import controllers.benefits.travelAndEntertainment.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
-import models.User
 import models.benefits.AccommodationRelocationModel
 import models.mongo.EmploymentCYAModel
+import models.User
+import models.employment.EmploymentBenefitsType
+import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -34,6 +35,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.AccommodationRelocationBenefitsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AccommodationRelocationBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -101,14 +103,14 @@ class AccommodationRelocationBenefitsController @Inject()(implicit val cc: Messa
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
 
                 val nextPage = {
-                  if(yesNo){
+                  if (yesNo) {
                     LivingAccommodationBenefitsController.show(taxYear, employmentId)
                   } else {
                     TravelOrEntertainmentBenefitsController.show(taxYear, employmentId)
                   }
                 }
 
-                RedirectService.benefitsSubmitRedirect(updatedCyaModel,nextPage)(taxYear,employmentId)
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
             }
           )

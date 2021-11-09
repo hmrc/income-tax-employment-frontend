@@ -21,19 +21,20 @@ import controllers.benefits.accommodationAndRelocation.routes.AccommodationReloc
 import controllers.benefits.carVanFuel.routes.CompanyCarBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
 import models.User
 import models.benefits.CarVanFuelModel
+import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.{ConditionalRedirect, EmploymentBenefitsType, redirectBasedOnCurrentAnswers}
+import services.RedirectService.redirectBasedOnCurrentAnswers
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.CarVanFuelBenefitsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -50,16 +51,15 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
     missingInputError = s"benefits.carVanFuel.error.${if (user.isAgent) "agent" else "individual"}"
   )
 
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-    RedirectService.commonBenefitsRedirects(cya,taxYear,employmentId)
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
+    RedirectService.commonBenefitsRedirects(cya, taxYear, employmentId)
   }
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_,taxYear,employmentId))
-        { cya =>
+        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion)) match {
             case Some(questionResult) => Future.successful(Ok(carVanFuelBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
@@ -98,10 +98,10 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
 
                 val nextPage = {
-                  if(yesNo) CompanyCarBenefitsController.show(taxYear, employmentId) else AccommodationRelocationBenefitsController.show(taxYear, employmentId)
+                  if (yesNo) CompanyCarBenefitsController.show(taxYear, employmentId) else AccommodationRelocationBenefitsController.show(taxYear, employmentId)
                 }
 
-                RedirectService.benefitsSubmitRedirect(updatedCyaModel,nextPage)(taxYear,employmentId)
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
             }
           )

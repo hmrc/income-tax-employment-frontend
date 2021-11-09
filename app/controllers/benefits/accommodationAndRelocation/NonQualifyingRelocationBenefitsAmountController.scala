@@ -21,17 +21,19 @@ import controllers.benefits.travelAndEntertainment.routes.TravelOrEntertainmentB
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
-import javax.inject.Inject
+import models.employment.EmploymentBenefitsType
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.{EmploymentBenefitsType, nonQualifyingRelocationBenefitsAmountRedirects, redirectBasedOnCurrentAnswers}
+import services.RedirectService.{nonQualifyingRelocationBenefitsAmountRedirects, redirectBasedOnCurrentAnswers}
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.NonQualifyingRelocationBenefitsAmountView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+
 class NonQualifyingRelocationBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
                                                                 authAction: AuthorisedAction,
                                                                 inYearAction: InYearAction,
@@ -40,14 +42,14 @@ class NonQualifyingRelocationBenefitsAmountController @Inject()(implicit val cc:
                                                                 val employmentSessionService: EmploymentSessionService,
                                                                 errorHandler: ErrorHandler,
                                                                 ec: ExecutionContext,
-                                                                clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils{
+                                                                clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
-          EmploymentBenefitsType)(nonQualifyingRelocationBenefitsAmountRedirects(_,taxYear,employmentId)) { cya =>
+          EmploymentBenefitsType)(nonQualifyingRelocationBenefitsAmountRedirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount: Option[BigDecimal] =
             cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses))
 
@@ -75,7 +77,7 @@ class NonQualifyingRelocationBenefitsAmountController @Inject()(implicit val cc:
               val fillValue = cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.nonQualifyingRelocationExpenses)
               Future.successful(BadRequest(nonQualifyingRelocationBenefitsView(taxYear, formWithErrors, fillValue, employmentId)))
             }, {
-              newAmount:BigDecimal =>
+              newAmount: BigDecimal =>
                 val cyaModel = cya.employment
                 val benefits = cyaModel.employmentBenefits
                 val accommodationRelocation = cyaModel.employmentBenefits.flatMap(_.accommodationRelocationModel)
@@ -101,8 +103,8 @@ class NonQualifyingRelocationBenefitsAmountController @Inject()(implicit val cc:
 
   private def buildForm(isAgent: Boolean): Form[BigDecimal] = {
     AmountForm.amountForm(s"benefits.nonQualifyingRelocationBenefitAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-      s"benefits.nonQualifyingRelocationBenefitAmount.error.invalidFormat.${if (isAgent)"agent" else "individual"}"
-      , s"benefits.nonQualifyingRelocationBenefitAmount.error.overMaximum.${if (isAgent)"agent" else "individual"}")
+      s"benefits.nonQualifyingRelocationBenefitAmount.error.invalidFormat.${if (isAgent) "agent" else "individual"}"
+      , s"benefits.nonQualifyingRelocationBenefitAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}")
   }
 
 }

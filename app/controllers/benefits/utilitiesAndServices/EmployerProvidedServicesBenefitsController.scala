@@ -20,18 +20,19 @@ import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
 import models.User
+import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.{ConditionalRedirect, EmploymentBenefitsType, redirectBasedOnCurrentAnswers}
+import services.RedirectService.redirectBasedOnCurrentAnswers
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.EmployerProvidedServicesView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmployerProvidedServicesBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -48,8 +49,8 @@ class EmployerProvidedServicesBenefitsController @Inject()(implicit val cc: Mess
     missingInputError = s"benefits.employerProvidedServices.error.no-entry.${if (user.isAgent) "agent" else "individual"}"
   )
 
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-    RedirectService.employerProvidedServicesBenefitsRedirects(cya,taxYear,employmentId)
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
+    RedirectService.employerProvidedServicesBenefitsRedirects(cya, taxYear, employmentId)
   }
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>

@@ -21,17 +21,19 @@ import controllers.benefits.carVanFuel.routes.{CompanyCarFuelBenefitsController,
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
-import javax.inject.Inject
+import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
+import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.{ConditionalRedirect, EmploymentBenefitsType, commonCarVanFuelBenefitsRedirects, redirectBasedOnCurrentAnswers}
+import services.RedirectService.{commonCarVanFuelBenefitsRedirects, redirectBasedOnCurrentAnswers}
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.CarFuelBenefitsAmountView
 
+import javax.inject.Inject
 import scala.concurrent.Future
 
 class CarFuelBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -56,12 +58,11 @@ class CarFuelBenefitsAmountController @Inject()(implicit val cc: MessagesControl
   }
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
-    inYearAction.notInYear(taxYear){
+    inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
 
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_,taxYear,employmentId))
-        { cya =>
+        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           val cyaAmount: Option[BigDecimal] = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuel))
 
@@ -104,7 +105,7 @@ class CarFuelBenefitsAmountController @Inject()(implicit val cc: MessagesControl
                   isPriorSubmission = cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
 
                   val nextPage = CompanyVanBenefitsController.show(taxYear, employmentId)
-                  RedirectService.benefitsSubmitRedirect(updatedCyaModel,nextPage)(taxYear,employmentId)
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
                 }
             }
           )
@@ -113,10 +114,10 @@ class CarFuelBenefitsAmountController @Inject()(implicit val cc: MessagesControl
     }
   }
 
-    private def buildForm(isAgent: Boolean): Form[BigDecimal] = {
-      AmountForm.amountForm(
-        s"benefits.carFuelAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-        s"benefits.carFuelAmount.error.incorrectFormat.${if (isAgent) "agent" else "individual"}",
-        s"benefits.carFuelAmount.error.tooMuch.${if (isAgent) "agent" else "individual"}")
-    }
+  private def buildForm(isAgent: Boolean): Form[BigDecimal] = {
+    AmountForm.amountForm(
+      s"benefits.carFuelAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
+      s"benefits.carFuelAmount.error.incorrectFormat.${if (isAgent) "agent" else "individual"}",
+      s"benefits.carFuelAmount.error.tooMuch.${if (isAgent) "agent" else "individual"}")
   }
+}
