@@ -59,38 +59,38 @@
 
     <h2 class="govuk-label--m">@messages("checkYourBenefits.vehicleHeader")</h2>
         @{
-            val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.carSubheading", benefits.carVanFuelModel.flatMap(_.carVanFuelQuestion).getOrElse(false), controllers.benefits.carVanFuel.routes.CarVanFuelBenefitsController.show(taxYear, employmentId)))
+            val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.carSubheading", benefits.carVanFuelModel.flatMap(_.carVanFuelQuestion).getOrElse(false), controllers.benefits.fuel.routes.CarVanFuelBenefitsController.show(taxYear, employmentId)))
             val rows: Seq[SummaryListRow] =
                 Seq(
                     benefits.carVanFuelModel.flatMap(_.carQuestion).map{
-                        carQuestion => showQuestionRow("checkYourBenefits.companyCar", carQuestion, controllers.benefits.carVanFuel.routes.CompanyCarBenefitsController.show(taxYear, employmentId))
+                        carQuestion => showQuestionRow("checkYourBenefits.companyCar", carQuestion, controllers.benefits.fuel.routes.CompanyCarBenefitsController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.car).map{
-                        car => showRows("checkYourBenefits.companyCarAmount", car, controllers.benefits.carVanFuel.routes.CompanyCarBenefitsAmountController.show(taxYear, employmentId))
+                        car => showRows("checkYourBenefits.companyCarAmount", car, controllers.benefits.fuel.routes.CompanyCarBenefitsAmountController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.carFuelQuestion).map{
-                        carFuelQuestion => showQuestionRow("checkYourBenefits.fuelForCompanyCar", carFuelQuestion, controllers.benefits.carVanFuel.routes.CompanyCarFuelBenefitsController.show(taxYear, employmentId))
+                        carFuelQuestion => showQuestionRow("checkYourBenefits.fuelForCompanyCar", carFuelQuestion, controllers.benefits.fuel.routes.CompanyCarFuelBenefitsController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.carFuel).map{
-                        carFuel => showRows("checkYourBenefits.fuelForCompanyCarAmount", carFuel, controllers.benefits.carVanFuel.routes.CarFuelBenefitsAmountController.show(taxYear, employmentId))
+                        carFuel => showRows("checkYourBenefits.fuelForCompanyCarAmount", carFuel, controllers.benefits.fuel.routes.CarFuelBenefitsAmountController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.vanQuestion).map{
-                        vanQuestion => showQuestionRow("checkYourBenefits.companyVan", vanQuestion, controllers.benefits.carVanFuel.routes.CompanyVanBenefitsController.show(taxYear, employmentId))
+                        vanQuestion => showQuestionRow("checkYourBenefits.companyVan", vanQuestion, controllers.benefits.fuel.routes.CompanyVanBenefitsController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.van).map{
-                        van => showRows("checkYourBenefits.companyVanAmount", van, controllers.benefits.carVanFuel.routes.CompanyVanBenefitsAmountController.show(taxYear, employmentId))
+                        van => showRows("checkYourBenefits.companyVanAmount", van, controllers.benefits.fuel.routes.CompanyVanBenefitsAmountController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.vanFuelQuestion).map{
-                        vanFuelQuestion => showQuestionRow("checkYourBenefits.fuelForCompanyVan", vanFuelQuestion, controllers.benefits.carVanFuel.routes.CompanyVanFuelBenefitsController.show(taxYear, employmentId))
+                        vanFuelQuestion => showQuestionRow("checkYourBenefits.fuelForCompanyVan", vanFuelQuestion, controllers.benefits.fuel.routes.CompanyVanFuelBenefitsController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.vanFuel).map{
-                        vanFuel => showRows("checkYourBenefits.fuelForCompanyVanAmount", vanFuel, controllers.benefits.carVanFuel.routes.CompanyVanFuelBenefitsAmountController.show(taxYear, employmentId))
+                        vanFuel => showRows("checkYourBenefits.fuelForCompanyVanAmount", vanFuel, controllers.benefits.fuel.routes.CompanyVanFuelBenefitsAmountController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.mileageQuestion).map{
-                        mileageQuestion => showQuestionRow("checkYourBenefits.mileageBenefit", mileageQuestion, controllers.benefits.carVanFuel.routes.ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId))
+                        mileageQuestion => showQuestionRow("checkYourBenefits.mileageBenefit", mileageQuestion, controllers.benefits.fuel.routes.ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId))
                     },
                     benefits.carVanFuelModel.flatMap(_.mileage).map{
-                        mileage => showRows("checkYourBenefits.mileageBenefitAmount", mileage, controllers.benefits.carVanFuel.routes.MileageBenefitAmountController.show(taxYear, employmentId))
+                        mileage => showRows("checkYourBenefits.mileageBenefitAmount", mileage, controllers.benefits.fuel.routes.MileageBenefitAmountController.show(taxYear, employmentId))
                     }
                 ).flatten
 
@@ -99,27 +99,27 @@
 
     <h2 class="govuk-label--m">@messages("checkYourBenefits.accommodationHeader")</h2>
     @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.accommodationSubheading", benefits.accommodationRelocationModel.flatMap(_.accommodationRelocationQuestion).getOrElse(false), controllers.benefits.accommodationAndRelocation.routes.AccommodationRelocationBenefitsController.show(taxYear, employmentId)))
+        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.accommodationSubheading", benefits.accommodationRelocationModel.flatMap(_.accommodationRelocationQuestion).getOrElse(false), controllers.benefits.accommodation.routes.AccommodationRelocationBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
             Seq(
                 benefits.accommodationRelocationModel.flatMap(_.accommodationQuestion).map{
-                    accommodationQuestion => showQuestionRow("checkYourBenefits.accommodation", accommodationQuestion, controllers.benefits.accommodationAndRelocation.routes.LivingAccommodationBenefitsController.show(taxYear, employmentId))
+                    accommodationQuestion => showQuestionRow("checkYourBenefits.accommodation", accommodationQuestion, controllers.benefits.accommodation.routes.LivingAccommodationBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.accommodationRelocationModel.flatMap(_.accommodation).map{
-                    accommodation => showRows("checkYourBenefits.accommodationAmount", accommodation, controllers.benefits.accommodationAndRelocation.routes.LivingAccommodationBenefitAmountController.show(taxYear, employmentId))
+                    accommodation => showRows("checkYourBenefits.accommodationAmount", accommodation, controllers.benefits.accommodation.routes.LivingAccommodationBenefitAmountController.show(taxYear, employmentId))
                 },
                 benefits.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpensesQuestion).map{
-                    qualifyingRelocationExpensesQuestion => showQuestionRow("checkYourBenefits.qualifyingRelocationCosts", qualifyingRelocationExpensesQuestion, controllers.benefits.accommodationAndRelocation.routes.QualifyingRelocationBenefitsController.show(taxYear, employmentId))
+                    qualifyingRelocationExpensesQuestion => showQuestionRow("checkYourBenefits.qualifyingRelocationCosts", qualifyingRelocationExpensesQuestion, controllers.benefits.accommodation.routes.QualifyingRelocationBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses).map{
-                    qualifyingRelocationExpenses => showRows("checkYourBenefits.qualifyingRelocationCostsAmount", qualifyingRelocationExpenses, controllers.benefits.accommodationAndRelocation.routes.QualifyingRelocationBenefitsAmountController.show(taxYear, employmentId))
+                    qualifyingRelocationExpenses => showRows("checkYourBenefits.qualifyingRelocationCostsAmount", qualifyingRelocationExpenses, controllers.benefits.accommodation.routes.QualifyingRelocationBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpensesQuestion).map{
-                    nonQualifyingRelocationExpensesQuestion => showQuestionRow("checkYourBenefits.nonQualifyingRelocationCosts", nonQualifyingRelocationExpensesQuestion, controllers.benefits.accommodationAndRelocation.routes.NonQualifyingRelocationBenefitsController.show(taxYear, employmentId))
+                    nonQualifyingRelocationExpensesQuestion => showQuestionRow("checkYourBenefits.nonQualifyingRelocationCosts", nonQualifyingRelocationExpensesQuestion, controllers.benefits.accommodation.routes.NonQualifyingRelocationBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses).map{
                     nonQualifyingRelocationExpenses => showRows("checkYourBenefits.nonQualifyingRelocationCostsAmount",
-                        nonQualifyingRelocationExpenses, controllers.benefits.accommodationAndRelocation.routes.NonQualifyingRelocationBenefitsAmountController.show(taxYear, employmentId))
+                        nonQualifyingRelocationExpenses, controllers.benefits.accommodation.routes.NonQualifyingRelocationBenefitsAmountController.show(taxYear, employmentId))
                 }
             ).flatten
 
@@ -128,27 +128,27 @@
 
     <h2 class="govuk-label--m">@messages("checkYourBenefits.travelHeader")</h2>
     @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.travelSubheading", benefits.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion).getOrElse(false), controllers.benefits.travelAndEntertainment.routes.TravelOrEntertainmentBenefitsController.show(taxYear, employmentId)))
+        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.travelSubheading", benefits.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion).getOrElse(false), controllers.benefits.travel.routes.TravelOrEntertainmentBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
             Seq(
                 benefits.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion).map{
-                    travelAndSubsistenceQuestion => showQuestionRow("checkYourBenefits.travelAndSubsistence", travelAndSubsistenceQuestion, controllers.benefits.travelAndEntertainment.routes.TravelAndSubsistenceBenefitsController.show(taxYear, employmentId))
+                    travelAndSubsistenceQuestion => showQuestionRow("checkYourBenefits.travelAndSubsistence", travelAndSubsistenceQuestion, controllers.benefits.travel.routes.TravelAndSubsistenceBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.travelEntertainmentModel.flatMap(_.travelAndSubsistence).map{
-                    travelAndSubsistence => showRows("checkYourBenefits.travelAndSubsistenceAmount", travelAndSubsistence, controllers.benefits.travelAndEntertainment.routes.TravelOrSubsistenceBenefitsAmountController.show(taxYear, employmentId))
+                    travelAndSubsistence => showRows("checkYourBenefits.travelAndSubsistenceAmount", travelAndSubsistence, controllers.benefits.travel.routes.TravelOrSubsistenceBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion).map{
-                    personalIncidentalExpensesQuestion => showQuestionRow("checkYourBenefits.personalCosts", personalIncidentalExpensesQuestion,controllers.benefits.travelAndEntertainment.routes.IncidentalOvernightCostEmploymentBenefitsController.show(taxYear, employmentId))
+                    personalIncidentalExpensesQuestion => showQuestionRow("checkYourBenefits.personalCosts", personalIncidentalExpensesQuestion,controllers.benefits.travel.routes.IncidentalOvernightCostEmploymentBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses).map{
-                    personalIncidentalExpenses => showRows("checkYourBenefits.personalCostsAmount", personalIncidentalExpenses, controllers.benefits.travelAndEntertainment.routes.IncidentalCostsBenefitsAmountController.show(taxYear, employmentId))
+                    personalIncidentalExpenses => showRows("checkYourBenefits.personalCostsAmount", personalIncidentalExpenses, controllers.benefits.travel.routes.IncidentalCostsBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.travelEntertainmentModel.flatMap(_.entertainingQuestion).map{
-                    entertainingQuestion => showQuestionRow("checkYourBenefits.entertainment", entertainingQuestion, controllers.benefits.travelAndEntertainment.routes.EntertainingBenefitsController.show(taxYear, employmentId))
+                    entertainingQuestion => showQuestionRow("checkYourBenefits.entertainment", entertainingQuestion, controllers.benefits.travel.routes.EntertainingBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.travelEntertainmentModel.flatMap(_.entertaining).map{
                     entertaining => showRows("checkYourBenefits.entertainmentAmount",
-                        entertaining, controllers.benefits.travelAndEntertainment.routes.EntertainmentBenefitsAmountController.show(taxYear, employmentId))
+                        entertaining, controllers.benefits.travel.routes.EntertainmentBenefitsAmountController.show(taxYear, employmentId))
                 }
             ).flatten
 
@@ -157,32 +157,32 @@
 
     <h2 class="govuk-label--m">@messages("checkYourBenefits.utilitiesHeader")</h2>
     @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.utilitiesSubheading", benefits.utilitiesAndServicesModel.flatMap(_.utilitiesAndServicesQuestion).getOrElse(false), controllers.benefits.utilitiesAndServices.routes.UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId)))
+        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.utilitiesSubheading", benefits.utilitiesAndServicesModel.flatMap(_.utilitiesAndServicesQuestion).getOrElse(false), controllers.benefits.utilities.routes.UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
             Seq(
                 benefits.utilitiesAndServicesModel.flatMap(_.telephoneQuestion).map{
-                    telephoneQuestion => showQuestionRow("checkYourBenefits.telephone", telephoneQuestion, controllers.benefits.utilitiesAndServices.routes.TelephoneBenefitsController.show(taxYear: Int, employmentId: String))
+                    telephoneQuestion => showQuestionRow("checkYourBenefits.telephone", telephoneQuestion, controllers.benefits.utilities.routes.TelephoneBenefitsController.show(taxYear: Int, employmentId: String))
                 },
                 benefits.utilitiesAndServicesModel.flatMap(_.telephone).map{
-                    telephone => showRows("checkYourBenefits.telephoneAmount", telephone, controllers.benefits.utilitiesAndServices.routes.TelephoneEmploymentBenefitsAmountController.show(taxYear, employmentId))
+                    telephone => showRows("checkYourBenefits.telephoneAmount", telephone, controllers.benefits.utilities.routes.TelephoneEmploymentBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion).map{
-                    employerProvidedServicesQuestion => showQuestionRow("checkYourBenefits.servicesProvided", employerProvidedServicesQuestion, controllers.benefits.utilitiesAndServices.routes.EmployerProvidedServicesBenefitsController.show(taxYear: Int, employmentId: String))
+                    employerProvidedServicesQuestion => showQuestionRow("checkYourBenefits.servicesProvided", employerProvidedServicesQuestion, controllers.benefits.utilities.routes.EmployerProvidedServicesBenefitsController.show(taxYear: Int, employmentId: String))
                 },
                 benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedServices).map{
-                    employerProvidedServices => showRows("checkYourBenefits.servicesProvidedAmount", employerProvidedServices, controllers.benefits.utilitiesAndServices.routes.EmployerProvidedServicesBenefitsAmountController.show(taxYear, employmentId))
+                    employerProvidedServices => showRows("checkYourBenefits.servicesProvidedAmount", employerProvidedServices, controllers.benefits.utilities.routes.EmployerProvidedServicesBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptionsQuestion).map{
-                    employerProvidedProfessionalSubscriptionsQuestion => showQuestionRow("checkYourBenefits.profSubscriptions", employerProvidedProfessionalSubscriptionsQuestion, controllers.benefits.utilitiesAndServices.routes.ProfessionalSubscriptionsBenefitsController.show(taxYear, employmentId))
+                    employerProvidedProfessionalSubscriptionsQuestion => showQuestionRow("checkYourBenefits.profSubscriptions", employerProvidedProfessionalSubscriptionsQuestion, controllers.benefits.utilities.routes.ProfessionalSubscriptionsBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions).map{
-                    employerProvidedProfessionalSubscriptions => showRows("checkYourBenefits.profSubscriptionsAmount", employerProvidedProfessionalSubscriptions, controllers.benefits.utilitiesAndServices.routes.ProfessionalSubscriptionsBenefitsAmountController.show(taxYear, employmentId))
+                    employerProvidedProfessionalSubscriptions => showRows("checkYourBenefits.profSubscriptionsAmount", employerProvidedProfessionalSubscriptions, controllers.benefits.utilities.routes.ProfessionalSubscriptionsBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.utilitiesAndServicesModel.flatMap(_.serviceQuestion).map{
-                    serviceQuestion => showQuestionRow("checkYourBenefits.otherServices", serviceQuestion, controllers.benefits.utilitiesAndServices.routes.OtherServicesBenefitsController.show(taxYear, employmentId))
+                    serviceQuestion => showQuestionRow("checkYourBenefits.otherServices", serviceQuestion, controllers.benefits.utilities.routes.OtherServicesBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.utilitiesAndServicesModel.flatMap(_.service).map{
-                    service => showRows("checkYourBenefits.otherServicesAmount", service, controllers.benefits.utilitiesAndServices.routes.OtherServicesBenefitsAmountController.show(taxYear, employmentId))
+                    service => showRows("checkYourBenefits.otherServicesAmount", service, controllers.benefits.utilities.routes.OtherServicesBenefitsAmountController.show(taxYear, employmentId))
                 }
             ).flatten
 
@@ -191,7 +191,7 @@
 
     <h2 class="govuk-label--m">@messages("checkYourBenefits.medicalHeader")</h2>
     @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.medicalSubheading", benefits.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion).getOrElse(false), controllers.benefits.medicalChildcareEducation.routes.MedicalDentalChildcareBenefitsController.show(taxYear, employmentId)))
+        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.medicalSubheading", benefits.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion).getOrElse(false), controllers.benefits.medical.routes.MedicalDentalChildcareBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
         if(benefits.medicalDetailsPopulated){
             Seq(
@@ -202,10 +202,10 @@
                     medicalInsurance => showRows("checkYourBenefits.medicalInsAmount", medicalInsurance)
                 },
                 benefits.medicalChildcareEducationModel.flatMap(_.nurseryPlacesQuestion).map{
-                    nurseryPlacesQuestion => showQuestionRow("checkYourBenefits.nursery", nurseryPlacesQuestion, controllers.benefits.medicalChildcareEducation.routes.ChildcareBenefitsController.show(taxYear, employmentId))
+                    nurseryPlacesQuestion => showQuestionRow("checkYourBenefits.nursery", nurseryPlacesQuestion, controllers.benefits.medical.routes.ChildcareBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.medicalChildcareEducationModel.flatMap(_.nurseryPlaces).map{
-                    nurseryPlaces => showRows("checkYourBenefits.nurseryAmount", nurseryPlaces, controllers.benefits.medicalChildcareEducation.routes.ChildcareBenefitsAmountController.show(taxYear: Int, employmentId: String))
+                    nurseryPlaces => showRows("checkYourBenefits.nurseryAmount", nurseryPlaces, controllers.benefits.medical.routes.ChildcareBenefitsAmountController.show(taxYear: Int, employmentId: String))
                 },
                 benefits.medicalChildcareEducationModel.flatMap(_.educationalServicesQuestion).map{
                     educationalServicesQuestion => showQuestionRow("checkYourBenefits.educational", educationalServicesQuestion)

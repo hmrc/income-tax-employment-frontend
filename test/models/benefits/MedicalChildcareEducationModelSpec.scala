@@ -16,8 +16,8 @@
 
 package models.benefits
 
+import controllers.benefits.medical.routes._
 import controllers.employment.routes.CheckYourBenefitsController
-import controllers.benefits.medicalChildcareEducation.routes._
 import utils.UnitTest
 
 class MedicalChildcareEducationModelSpec extends UnitTest {

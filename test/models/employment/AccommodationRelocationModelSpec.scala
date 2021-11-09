@@ -16,7 +16,7 @@
 
 package models.employment
 
-import controllers.benefits.accommodationAndRelocation.routes._
+import controllers.benefits.accommodation.routes._
 import models.benefits.AccommodationRelocationModel
 import utils.UnitTest
 

@@ -42,7 +42,7 @@
 
     @errorSummary(form.errors.distinct)
 
-    @formWithCsrf(action = controllers.benefits.utilitiesAndServices.routes.TelephoneBenefitsController.submit(taxYear, employmentId)) {
+    @formWithCsrf(action = controllers.benefits.utilities.routes.TelephoneBenefitsController.submit(taxYear, employmentId)) {
         @inputRadio(
             form = form,
             heading = headingForUse,

@@ -17,7 +17,7 @@
 package controllers.benefits
 
 import config.MockEmploymentSessionService
-import controllers.benefits.carVanFuel.CompanyCarBenefitsController
+import controllers.benefits.fuel.CompanyCarBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
 import models.employment.EmploymentSource
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
