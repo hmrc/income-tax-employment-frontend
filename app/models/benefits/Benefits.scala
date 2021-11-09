@@ -15,6 +15,7 @@
  */
 
 package models.benefits
+
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.{OFormat, __}
 
@@ -164,12 +165,25 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
     }
   }
 
+  def incomeTaxAndCostsModel(cyaBenefits: Option[BenefitsViewModel] = None): Option[IncomeTaxAndCostsModel] = {
+    if (cyaBenefits.isDefined && cyaBenefits.map(_.incomeTaxAndCostsModel).isDefined) {
+      cyaBenefits.flatMap(_.incomeTaxAndCostsModel)
+    } else {
+      Some(IncomeTaxAndCostsModel(
+        incomeTaxOrCostsQuestion = Some(incomeTaxDetailsPopulated),
+        incomeTaxPaidByDirectorQuestion = Some(incomeTaxPaidByDirector.isDefined),
+        incomeTaxPaidByDirector = incomeTaxPaidByDirector,
+        paymentsOnEmployeesBehalfQuestion = Some(paymentsOnEmployeesBehalf.isDefined),
+        paymentsOnEmployeesBehalf = paymentsOnEmployeesBehalf
+      ))
+    }
+  }
+
   def benefitsPopulated(cyaBenefits: Option[BenefitsViewModel] = None): Boolean = {
     val hasBenefits: Boolean = cyaBenefits.exists(_.isBenefitsReceived)
     hasBenefits || vehicleDetailsPopulated || accommodationDetailsPopulated || travelDetailsPopulated || utilitiesDetailsPopulated ||
       medicalDetailsPopulated || incomeTaxDetailsPopulated || reimbursedDetailsPopulated || assetsDetailsPopulated
   }
-
 
   def toBenefitsViewModel(isUsingCustomerData: Boolean, submittedOn: Option[String] = None,
                           cyaBenefits: Option[BenefitsViewModel] = None): BenefitsViewModel = {
@@ -179,15 +193,14 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
       travelEntertainmentModel = travelEntertainmentSection(cyaBenefits),
       utilitiesAndServicesModel = utilitiesAndServicesSection(cyaBenefits),
       medicalChildcareEducationModel = medicalChildcareEducationModel(cyaBenefits),
+      incomeTaxAndCostsModel = incomeTaxAndCostsModel(cyaBenefits),
       assets, assetTransfer, expenses, taxableExpenses,
-      otherItems, paymentsOnEmployeesBehalf, incomeTaxPaidByDirector, vouchersAndCreditCards, nonCash,
+      otherItems, vouchersAndCreditCards, nonCash,
       assetsQuestion = Some(assets.isDefined),
       assetTransferQuestion = Some(assetTransfer.isDefined),
       expensesQuestion = Some(expenses.isDefined),
       taxableExpensesQuestion = Some(taxableExpenses.isDefined),
       otherItemsQuestion = Some(otherItems.isDefined),
-      paymentsOnEmployeesBehalfQuestion = Some(paymentsOnEmployeesBehalf.isDefined),
-      incomeTaxPaidByDirectorQuestion = Some(incomeTaxPaidByDirector.isDefined),
       vouchersAndCreditCardsQuestion = Some(vouchersAndCreditCards.isDefined),
       nonCashQuestion = Some(nonCash.isDefined),
       submittedOn = submittedOn,
