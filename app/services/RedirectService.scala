@@ -16,12 +16,12 @@
 
 package services
 
-import controllers.benefits.accommodationAndRelocation.routes._
-import controllers.benefits.carVanFuel.routes._
+import controllers.benefits.accommodation.routes._
+import controllers.benefits.fuel.routes._
+import controllers.benefits.medical.routes._
 import controllers.benefits.routes._
-import controllers.benefits.travelAndEntertainment.routes._
-import controllers.benefits.utilitiesAndServices.routes._
-import controllers.benefits.medicalChildcareEducation.routes._
+import controllers.benefits.travel.routes._
+import controllers.benefits.utilities.routes._
 import controllers.employment.routes._
 import models.User
 import models.benefits.{AccommodationRelocationModel, CarVanFuelModel, TravelEntertainmentModel}
