@@ -19,7 +19,6 @@ package repositories
 import com.mongodb.client.model.ReturnDocument
 import com.mongodb.client.model.Updates.set
 import config.AppConfig
-import javax.inject.{Inject, Singleton}
 import models.User
 import models.mongo._
 import org.joda.time.{DateTime, DateTimeZone}
@@ -34,17 +33,18 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
 import utils.PagerDutyHelper.PagerDutyKeys.{FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA, FAILED_TO_ClEAR_EMPLOYMENT_DATA, FAILED_TO_FIND_EMPLOYMENT_DATA}
 import utils.PagerDutyHelper.{PagerDutyKeys, pagerDutyLog}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
 @Singleton
 class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig: AppConfig,
                                                  encryptionService: EncryptionService)(implicit ec: ExecutionContext
-) extends PlayMongoRepository[EncryptedEmploymentUserData](
+                                                ) extends PlayMongoRepository[EncryptedEmploymentUserData](
   mongoComponent = mongo,
   collectionName = "employmentUserData",
-  domainFormat   = EncryptedEmploymentUserData.formats,
-  indexes        = EmploymentUserDataIndexes.indexes(appConfig)
+  domainFormat = EncryptedEmploymentUserData.formats,
+  indexes = EmploymentUserDataIndexes.indexes(appConfig)
 ) with Repository with EmploymentUserDataRepository with Logging {
 
   def find[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Either[DatabaseError, Option[EmploymentUserData]]] = {
@@ -107,7 +107,7 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfi
       .map(_.exists(_.wasAcknowledged()))
 
   def mongoRecover[T](operation: String, pagerDutyKey: PagerDutyKeys.Value)
-                        (implicit user: User[_]): PartialFunction[Throwable, Option[T]] = new PartialFunction[Throwable, Option[T]] {
+                     (implicit user: User[_]): PartialFunction[Throwable, Option[T]] = new PartialFunction[Throwable, Option[T]] {
 
     override def isDefinedAt(x: Throwable): Boolean = x.isInstanceOf[MongoException]
 
@@ -123,6 +123,8 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfi
 
 trait EmploymentUserDataRepository {
   def createOrUpdate[T](userData: EmploymentUserData)(implicit user: User[T]): Future[Either[DatabaseError, Unit]]
+
   def find[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Either[DatabaseError, Option[EmploymentUserData]]]
+
   def clear[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Boolean]
 }

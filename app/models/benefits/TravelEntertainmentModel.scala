@@ -16,7 +16,7 @@
 
 package models.benefits
 
-import controllers.benefits.travelAndEntertainment.routes._
+import controllers.benefits.travel.routes._
 import controllers.employment.routes.CheckYourBenefitsController
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call

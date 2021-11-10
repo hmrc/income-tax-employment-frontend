@@ -17,11 +17,10 @@
 package controllers.benefits
 
 import config.{AppConfig, ErrorHandler}
-import controllers.benefits.carVanFuel.routes.CarVanFuelBenefitsController
+import controllers.benefits.fuel.routes.CarVanFuelBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
 import models.User
 import models.benefits.BenefitsViewModel
 import play.api.data.Form
@@ -32,6 +31,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.ReceiveAnyBenefitsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -50,7 +50,7 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionDataResult(taxYear, employmentId){
+      employmentSessionService.getSessionDataResult(taxYear, employmentId) {
         case Some(cya) =>
           cya.employment.employmentBenefits match {
             case Some(model) => Future.successful(Ok(receiveAnyBenefitsView(yesNoForm.fill(model.isBenefitsReceived), taxYear, employmentId)))
@@ -63,7 +63,7 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionDataResult(taxYear, employmentId){
+      employmentSessionService.getSessionDataResult(taxYear, employmentId) {
         case Some(cya) =>
           yesNoForm.bindFromRequest().fold({
             formWithErrors => Future.successful(BadRequest(receiveAnyBenefitsView(formWithErrors, taxYear, employmentId)))
@@ -75,18 +75,18 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
               }
               val newCya = cya.employment.copy(employmentBenefits = Some(newBenefits))
               employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear,
-                cya.isPriorSubmission,cya.hasPriorBenefits)(errorHandler.internalServerError()) {
+                cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
 
-                RedirectService.benefitsSubmitRedirect(newCya,CarVanFuelBenefitsController.show(taxYear, employmentId))(taxYear,employmentId)
+                RedirectService.benefitsSubmitRedirect(newCya, CarVanFuelBenefitsController.show(taxYear, employmentId))(taxYear, employmentId)
 
               }
             } else {
               val customerData = cya.employment.employmentBenefits.map(_.isUsingCustomerData).getOrElse(true)
               val newBenefits = BenefitsViewModel.clear(customerData)
               val newCya = cya.employment.copy(employmentBenefits = Some(newBenefits))
-              employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear,cya.isPriorSubmission,
+              employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear, cya.isPriorSubmission,
                 cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-               Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
               }
             }
           })

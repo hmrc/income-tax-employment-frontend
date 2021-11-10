@@ -17,7 +17,7 @@
 package controllers.benefits
 
 import common.SessionValues
-import controllers.benefits.carVanFuel.routes.CarVanFuelBenefitsController
+import controllers.benefits.fuel.routes.CarVanFuelBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.User

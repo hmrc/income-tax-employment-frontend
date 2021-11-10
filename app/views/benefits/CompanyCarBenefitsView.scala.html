@@ -39,7 +39,7 @@ button: Button
 
     @errorSummary(form.errors.distinct)
 
-    @formWithCsrf(action = controllers.benefits.carVanFuel.routes.CompanyCarBenefitsController.submit(taxYear, employmentId)) {
+    @formWithCsrf(action = controllers.benefits.fuel.routes.CompanyCarBenefitsController.submit(taxYear, employmentId)) {
 
     @inputRadio(
         form = form,
