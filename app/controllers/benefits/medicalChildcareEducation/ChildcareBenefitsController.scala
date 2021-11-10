@@ -18,6 +18,7 @@ package controllers.benefits.medicalChildcareEducation
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.medicalChildcareEducation.routes.ChildcareBenefitsAmountController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
@@ -96,8 +97,7 @@ class ChildcareBenefitsController @Inject()(implicit val cc: MessagesControllerC
                 if (data.isPriorSubmission) {
                   Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                 } else {
-//                  TODO: Will redirect to the childcare amount page when its created
-                  Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                  Redirect(ChildcareBenefitsAmountController.show(taxYear, employmentId))
                 }
               }
             }

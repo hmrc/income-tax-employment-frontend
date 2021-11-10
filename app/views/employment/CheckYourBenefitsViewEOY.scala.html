@@ -205,7 +205,7 @@
                     nurseryPlacesQuestion => showQuestionRow("checkYourBenefits.nursery", nurseryPlacesQuestion, controllers.benefits.medicalChildcareEducation.routes.ChildcareBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.medicalChildcareEducationModel.flatMap(_.nurseryPlaces).map{
-                    nurseryPlaces => showRows("checkYourBenefits.nurseryAmount", nurseryPlaces)
+                    nurseryPlaces => showRows("checkYourBenefits.nurseryAmount", nurseryPlaces, controllers.benefits.medicalChildcareEducation.routes.ChildcareBenefitsAmountController.show(taxYear: Int, employmentId: String))
                 },
                 benefits.medicalChildcareEducationModel.flatMap(_.educationalServicesQuestion).map{
                     educationalServicesQuestion => showQuestionRow("checkYourBenefits.educational", educationalServicesQuestion)
