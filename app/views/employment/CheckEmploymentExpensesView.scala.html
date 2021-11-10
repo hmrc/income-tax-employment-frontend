@@ -33,18 +33,25 @@
 
 @(taxYear: Int, expenses: Expenses, isInYear: Boolean, isMultipleEmployments: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = messages(s"employment.expenses.title.${if(user.isAgent) "agent" else "individual"}"), taxYear = Some(taxYear), isAgent = user.isAgent) {
+@layout(pageTitle = messages(s"checkYourExpenses.heading.${if(user.isAgent) "agent" else "individual"}"), taxYear = Some(taxYear), isAgent = user.isAgent) {
     @heading(
-        messages(s"employment.expenses.title.${if(user.isAgent) "agent" else "individual"}"),
+        messages(s"checkYourExpenses.heading.${if(user.isAgent) "agent" else "individual"}"),
         Some(messages(s"employment.caption", (taxYear - 1).toString, taxYear.toString)),
         "govuk-!-margin-bottom-3"
     )
 
-    <p class="govuk-body">@messages(s"employment.expenses.sub-heading.${if(user.isAgent) "agent" else "individual"}.${if(isMultipleEmployments) "multiple" else "nonMultiple"}")</p>
+    <p class="govuk-body">
+        @{if(isMultipleEmployments){
+            messages(s"checkYourExpenses.sub-heading.${if(user.isAgent) "agent" else "individual"}.multiple")
+        } else {
+            messages(s"checkYourExpenses.hmrcOnlyInfo.${if(user.isAgent) "agent" else "individual"}")
+        }
+        }
+    </p>
 
     @{
         govukInsetText(InsetText(
-            content = Text(messages(s"employment.expenses.inset.text.${if(user.isAgent) "agent" else "individual"}", taxYear.toString))
+            content = Text(messages(s"checkYourExpenses.inYearInfo.${if(user.isAgent) "agent" else "individual"}", taxYear.toString))
         ))
     }
 
@@ -64,14 +71,10 @@
         govukSummaryList(
             SummaryList(
                 Seq(
-                    toSummaryListRow(messages("employment.expenses.expense.type.business-travel"), expenses.businessTravelCosts),
-                    toSummaryListRow(messages("employment.expenses.expense.type.job"), expenses.jobExpenses),
-                    toSummaryListRow(messages("employment.expenses.expense.type.flat-rate-job"), expenses.flatRateJobExpenses),
-                    toSummaryListRow(messages("employment.expenses.expense.type.professional-subscriptions"), expenses.professionalSubscriptions),
-                    toSummaryListRow(messages("employment.expenses.expense.type.hotel-and-meal"), expenses.hotelAndMealExpenses),
-                    toSummaryListRow(messages("employment.expenses.expense.type.other-and-capital-allowances"), expenses.otherAndCapitalAllowances),
-                    toSummaryListRow(messages("employment.expenses.expense.type.vehicle"), expenses.vehicleExpenses),
-                    toSummaryListRow(messages("employment.expenses.expense.type.mileage-allowance"), expenses.mileageAllowanceRelief),
+                    toSummaryListRow(messages("checkYourExpenses.jobExpensesQuestion"), expenses.jobExpenses),
+                    toSummaryListRow(messages("checkYourExpenses.flatRateJobExpensesQuestion"), expenses.flatRateJobExpenses),
+                    toSummaryListRow(messages("checkYourExpenses.professionalSubscriptionsQuestion"), expenses.professionalSubscriptions),
+                    toSummaryListRow(messages("checkYourExpenses.otherAndCapitalAllowancesQuestionInYear"), expenses.otherAndCapitalAllowances),
                 ).collect { case Some(summaryListRow) => summaryListRow }
             )
         )

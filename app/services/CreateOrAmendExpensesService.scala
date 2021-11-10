@@ -40,8 +40,8 @@ class CreateOrAmendExpensesService @Inject()(createOrAmendExpensesConnector: Cre
     val hmrcExpenses: Option[EmploymentExpenses] = priorData.hmrcExpenses.filter(_.dateIgnored.isEmpty)
 
     hmrcExpenses match {
-      case Some(_) => handleConnectorCall(taxYear, Some(true), expensesUserData.expensesCya.expenses)(result)
-      case None => handleConnectorCall(taxYear, None, expensesUserData.expensesCya.expenses)(result)
+      case Some(_) => handleConnectorCall(taxYear, Some(true), expensesUserData.expensesCya.expenses.toExpenses)(result)
+      case None => handleConnectorCall(taxYear, None, expensesUserData.expensesCya.expenses.toExpenses)(result)
     }
   }
 

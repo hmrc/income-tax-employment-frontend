@@ -16,26 +16,22 @@
 
 package models.mongo
 
-import models.employment.{EncryptedExpenses, Expenses}
+import models.employment.{EncryptedExpensesViewModel, Expenses, ExpensesViewModel}
 import play.api.libs.json.{Json, OFormat}
-import utils.EncryptedValue
 
-case class ExpensesCYAModel(expenses: Expenses,
-                            currentDataIsHmrcHeld: Boolean)
+case class ExpensesCYAModel(expenses: ExpensesViewModel)
 
 object ExpensesCYAModel {
   implicit val format: OFormat[ExpensesCYAModel] = Json.format[ExpensesCYAModel]
 
-  def makeModel(expenses: Expenses, isUsingCustomerData: Boolean): ExpensesCYAModel = {
+  def makeModel(expenses: Expenses, isUsingCustomerData: Boolean, submittedOn: Option[String]): ExpensesCYAModel = {
     ExpensesCYAModel(
-      expenses,
-      !isUsingCustomerData
+      expenses = expenses.toExpensesViewModel(isUsingCustomerData, submittedOn)
     )
   }
-
 }
 
-case class EncryptedExpensesCYAModel(expenses: EncryptedExpenses, currentDataIsHmrcHeld: EncryptedValue)
+case class EncryptedExpensesCYAModel(expenses: EncryptedExpensesViewModel)
 
 object EncryptedExpensesCYAModel {
   implicit val format: OFormat[EncryptedExpensesCYAModel] = Json.format[EncryptedExpensesCYAModel]

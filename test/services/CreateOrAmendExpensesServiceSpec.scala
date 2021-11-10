@@ -71,7 +71,9 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
     customerExpenses = customerExpenses
   )
 
-  private val expensesCyaData = ExpensesCYAModel(Expenses(Some(1), Some(2), Some(2), Some(2), Some(2), Some(2), Some(2), Some(2)), true)
+  private val expensesCyaData = ExpensesCYAModel(ExpensesViewModel(
+    Some(1), Some(2), Some(2), Some(2), Some(2), Some(2), Some(2), Some(2),
+    Some(true), Some(true), Some(true), Some(true), isUsingCustomerData = false))
 
   private val expensesUserData =
     ExpensesUserData(
@@ -80,8 +82,11 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
       nino = nino,
       taxYear = taxYear,
       isPriorSubmission = true,
+      hasPriorExpenses = true,
       expensesCya = expensesCyaData
     )
+
+  val expensesModel: Expenses = expensesCyaData.expenses.toExpenses
 
   ".createOrAmendExpenses" should {
 
@@ -89,7 +94,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
 
       "there is both hmrc expenses and customer expenses" which {
         "expense request model contains ignoreExpenses(true) and expensesCyaData" in {
-          mockCreateOrAmendExpensesSuccess(nino, taxYear, CreateExpensesRequestModel(Some(true), expensesCyaData.expenses))
+          mockCreateOrAmendExpensesSuccess(nino, taxYear, CreateExpensesRequestModel(Some(true), expensesModel))
 
           val response = service.createOrAmendExpense(expensesUserData, priorData(Some(hmrcExpensesWithoutDateIgnored), Some(customerExpenses)), taxYear)(Ok)
 
@@ -100,7 +105,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
       "there is both hmrc expenses and customer expenses but hmrc data has dateIgnored" which {
 
         "expense request model only has expensesCyaData" in {
-          mockCreateOrAmendExpensesSuccess(nino, taxYear, CreateExpensesRequestModel(None, expensesCyaData.expenses))
+          mockCreateOrAmendExpensesSuccess(nino, taxYear, CreateExpensesRequestModel(None, expensesCyaData.expenses.toExpenses))
 
           val response = service.createOrAmendExpense(expensesUserData, priorData(Some(hmrcExpensesWithDateIgnored), Some(customerExpenses)), taxYear)(Ok)
 
@@ -111,7 +116,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
       "there is hmrc data and no customer data" which {
 
         "expense request model contains ignoreExpenses(true) and expensesCyaData" in {
-          mockCreateOrAmendExpensesSuccess(nino, taxYear, CreateExpensesRequestModel(Some(true), expensesCyaData.expenses))
+          mockCreateOrAmendExpensesSuccess(nino, taxYear, CreateExpensesRequestModel(Some(true), expensesCyaData.expenses.toExpenses))
 
           val response = service.createOrAmendExpense(expensesUserData, priorData(Some(hmrcExpensesWithoutDateIgnored), None), taxYear)(Ok)
 
@@ -122,7 +127,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
       "there is customer data and no hmrc data" which {
 
         "expense request model only has expensesCyaData" in {
-          mockCreateOrAmendExpensesSuccess(nino, taxYear, CreateExpensesRequestModel(None, expensesCyaData.expenses))
+          mockCreateOrAmendExpensesSuccess(nino, taxYear, CreateExpensesRequestModel(None, expensesCyaData.expenses.toExpenses))
 
           val response = service.createOrAmendExpense(expensesUserData, priorData(None, Some(customerExpenses)), taxYear)(Ok)
 
@@ -133,7 +138,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
       "there is no hmrc and no customer data but there is expensesCyaData" which {
 
         "expense request model only has expensesCyaData" in {
-          mockCreateOrAmendExpensesSuccess(nino, taxYear, CreateExpensesRequestModel(None, expensesCyaData.expenses))
+          mockCreateOrAmendExpensesSuccess(nino, taxYear, CreateExpensesRequestModel(None, expensesModel))
 
           val response = service.createOrAmendExpense(expensesUserData, priorData(None, None), taxYear)(Ok)
 
@@ -147,7 +152,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
     "returns an unsuccessful result" when {
 
       "the connector throws a Left" in {
-        mockCreateOrAmendExpensesError(nino, taxYear, CreateExpensesRequestModel(Some(true), expensesCyaData.expenses))
+        mockCreateOrAmendExpensesError(nino, taxYear, CreateExpensesRequestModel(Some(true), expensesModel))
 
         val response = service.createOrAmendExpense(expensesUserData, priorData(Some(hmrcExpensesWithoutDateIgnored), Some(customerExpenses)), taxYear)(Ok)
 
