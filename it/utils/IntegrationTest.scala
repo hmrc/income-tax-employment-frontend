@@ -48,9 +48,10 @@ import views.html.authErrorPages.AgentAuthErrorPageView
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
 
+// scalastyle:off number.of.methods
+// scalastyle:off number.of.types
 trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSuite with WireMockHelper
   with WiremockStubHelpers with BeforeAndAfterAll {
-
   val nino = "AA123456A"
   val mtditid = "1234567890"
   val sessionId = "sessionId-eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"
@@ -64,7 +65,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   implicit val actorSystem: ActorSystem = ActorSystem()
 
-  implicit val integrationTestClock = IntegrationTestClock
+  implicit val integrationTestClock: IntegrationTestClock.type = IntegrationTestClock
 
   implicit def wsClient: WSClient = app.injector.instanceOf[WSClient]
 
@@ -424,9 +425,12 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
       educationalServicesQuestion = Some(true),
       educationalServices = Some(300.00),
       beneficialLoanQuestion = Some(true),
-      beneficialLoan = Some(400.00),
+      beneficialLoan = Some(400.00)
     )
 
   def emptyMedicalChildcareEducationModel: MedicalChildcareEducationModel =
     MedicalChildcareEducationModel(medicalChildcareEducationQuestion = Some(false))
 }
+
+// scalastyle:off number.of.methods
+// scalastyle:off number.of.types

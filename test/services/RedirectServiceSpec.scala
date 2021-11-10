@@ -16,13 +16,14 @@
 
 package services
 
-import controllers.benefits.accommodationAndRelocation.routes._
-import controllers.benefits.carVanFuel.routes._
-import controllers.benefits.routes.ReceiveAnyBenefitsController
+import controllers.employment.routes._
 import controllers.benefits.travelAndEntertainment.routes._
 import controllers.benefits.utilitiesAndServices.routes._
 import controllers.benefits.medicalChildcareEducation.routes._
-import controllers.employment.routes._
+import controllers.benefits.accommodationAndRelocation.routes._
+import controllers.benefits.carVanFuel.routes._
+import controllers.benefits.routes.ReceiveAnyBenefitsController
+
 import models.benefits._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
@@ -733,7 +734,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => RedirectService.commonUtilitiesAndServicesBenefitsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/medical-dental-childcare-education-loans?employmentId=" + employmentId
       }
 
       "it's a prior submission and attempted to view the telephone yes no page but the utilities and services question is false" in {
@@ -889,7 +890,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => RedirectService.servicesBenefitsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2021/benefits/medical-dental-childcare-education-loans?employmentId=" + employmentId
       }
 
       "it's a prior submission and attempted to view the services amount page but the services question is false" in {
@@ -923,7 +924,7 @@ class RedirectServiceSpec extends UnitTest {
           cya => commonMedicalChildcareEducationRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe MedicalDentalChildcareBenefitsController.show(taxYear, employmentId).url
       }
 
       "it's a new submission and attempted to view the 'Medical or dental insurance' yes/no page but the Medical section question is false" in {

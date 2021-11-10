@@ -483,8 +483,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            //TODO: Point to the medical, dental, childcare, education, loans' employment benefits radio button EOY page when implemented
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/medical-dental-childcare-education-loans?employmentId=$employmentId")
         }
 
         "updates the CYA model with the new value" in {

@@ -334,8 +334,7 @@ object RedirectService extends Logging {
     utilitiesBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(utilitiesAndServicesQuestion.isEmpty, UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId)),
-        //TODO go to medical benefits section
-        ConditionalRedirect(utilitiesAndServicesQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(utilitiesAndServicesQuestion.contains(false), MedicalDentalChildcareBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(utilitiesAndServicesQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
@@ -409,8 +408,7 @@ object RedirectService extends Logging {
     servicesBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(serviceQuestion.isEmpty, OtherServicesBenefitsController.show(taxYear, employmentId)),
-        //TODO go to medical benefits yes no page
-        ConditionalRedirect(serviceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(serviceQuestion.contains(false), MedicalDentalChildcareBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(serviceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
@@ -430,8 +428,7 @@ object RedirectService extends Logging {
 
     medicalBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to Medical childcare education section yes/no page (initial yes/no page)
-        ConditionalRedirect(sectionQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(sectionQuestion.isEmpty, MedicalDentalChildcareBenefitsController.show(taxYear, employmentId)),
         //TODO go to Income Tax and incurred costs
         ConditionalRedirect(sectionQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(sectionQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
