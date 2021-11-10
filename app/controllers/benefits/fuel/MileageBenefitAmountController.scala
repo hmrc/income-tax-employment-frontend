@@ -31,7 +31,7 @@ import services.RedirectService._
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.benefits.MileageBenefitAmountView
+import views.html.benefits.fuel.MileageBenefitAmountView
 
 import scala.concurrent.Future
 

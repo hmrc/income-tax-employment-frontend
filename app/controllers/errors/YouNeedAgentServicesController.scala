@@ -17,11 +17,12 @@
 package controllers.errors
 
 import config.AppConfig
-import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.authErrorPages.YouNeedAgentServicesView
+import views.html.templates.YouNeedAgentServicesView
+
+import javax.inject.Inject
 
 class YouNeedAgentServicesController @Inject()(val mcc: MessagesControllerComponents,
                                                youNeedAgentServicesPage: YouNeedAgentServicesView,

@@ -39,7 +39,7 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import views.html.authErrorPages.AgentAuthErrorPageView
+import views.html.templates.AgentAuthErrorPageView
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
@@ -233,5 +233,4 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
     assets = Some(27.00),
     assetTransfer = Some(280000.00)
   )
-
 }

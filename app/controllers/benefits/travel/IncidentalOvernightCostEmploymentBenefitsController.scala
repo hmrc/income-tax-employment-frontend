@@ -20,7 +20,6 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.travel.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
 import models.User
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
@@ -31,14 +30,14 @@ import services.RedirectService.redirectBasedOnCurrentAnswers
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.benefits.IncidentalOvernightCostEmploymentBenefitsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class IncidentalOvernightCostEmploymentBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
                                                                     authAction: AuthorisedAction,
                                                                     inYearAction: InYearAction,
-                                                                    view: IncidentalOvernightCostEmploymentBenefitsView,
+                                                                    pageView: IncidentalOvernightCostEmploymentBenefitsView,
                                                                     appConfig: AppConfig,
                                                                     employmentSessionService: EmploymentSessionService,
                                                                     errorHandler: ErrorHandler,
@@ -62,8 +61,8 @@ class IncidentalOvernightCostEmploymentBenefitsController @Inject()(implicit val
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) match {
-            case Some(yesNo) => Future.successful(Ok(view(yesNoForm.fill(yesNo), taxYear, employmentId)))
-            case None => Future.successful(Ok(view(yesNoForm, taxYear, employmentId)))
+            case Some(yesNo) => Future.successful(Ok(pageView(yesNoForm.fill(yesNo), taxYear, employmentId)))
+            case None => Future.successful(Ok(pageView(yesNoForm, taxYear, employmentId)))
           }
         }
       }
@@ -77,7 +76,7 @@ class IncidentalOvernightCostEmploymentBenefitsController @Inject()(implicit val
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
           yesNoForm.bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(view(formWithErrors, taxYear, employmentId))),
+            formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
             yesNo => {
 
               val cya = data.employment
@@ -97,7 +96,7 @@ class IncidentalOvernightCostEmploymentBenefitsController @Inject()(implicit val
               }
 
               employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission,data.hasPriorBenefits)(errorHandler.internalServerError()) {
+                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
 
                 val nextPage = {
                   if (yesNo) {
