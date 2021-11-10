@@ -18,6 +18,8 @@ package controllers.benefits.utilitiesAndServices
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.medicalChildcareEducation.routes.MedicalDentalChildcareBenefitsController
+
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import javax.inject.Inject
@@ -90,8 +92,7 @@ class OtherServicesBenefitsAmountController @Inject()(implicit val cc: MessagesC
                   if (cya.isPriorSubmission) {
                     Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                   } else {
-                    // TODO: Point to the medical, dental, childcare, education, loans' employment benefits radio button EOY page when created
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                    Redirect(MedicalDentalChildcareBenefitsController.show(taxYear, employmentId))
                   }
                 }
             }

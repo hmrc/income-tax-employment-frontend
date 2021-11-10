@@ -690,8 +690,12 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val employerProvidedServicesBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/employer-provided-services-amount?employmentId=001"
     val professionalSubscriptionsBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/professional-fees-or-subscriptions?employmentId=001"
     val professionalSubscriptionsBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/professional-fees-or-subscriptions-amount?employmentId=001"
+    val medicalChildcareEducationHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/medical-dental-childcare-education-loans?employmentId=001"
     val childcareBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/childcare?employmentId=001"
-    }
+
+  }
+
+
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
@@ -856,7 +860,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.otherServicesAmount, "£15", 11, 9, s"${user.commonExpectedResults.changeText} ${specificResults.otherServicesAmountHiddenText}", otherServicesBenefitsAmountHref)
 
           textOnPageCheck(commonResults.medicalHeader, fieldHeaderSelector(12))
-          changeAmountRowCheck(commonResults.medicalSubheading, commonResults.yes, 13, 1, s"${user.commonExpectedResults.changeText} ${specificResults.medicalSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.medicalSubheading, commonResults.yes, 13, 1, s"${user.commonExpectedResults.changeText} ${specificResults.medicalSubheadingHiddenText}", medicalChildcareEducationHref)
           changeAmountRowCheck(commonResults.medicalIns, commonResults.yes, 13, 2, s"${user.commonExpectedResults.changeText} ${specificResults.medicalInsHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.medicalInsAmount, "£16", 13, 3, s"${user.commonExpectedResults.changeText} ${specificResults.medicalInsAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.nursery, commonResults.yes, 13, 4, s"${user.commonExpectedResults.changeText} ${specificResults.nurseryHiddenText}", childcareBenefitsHref)
@@ -958,7 +962,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.no, 11, 1, s"${user.commonExpectedResults.changeText} ${specificResults.utilitiesSubheadingHiddenText}", utilitiesOrGeneralServicesBenefitsHref)
 
           textOnPageCheck(user.commonExpectedResults.medicalHeader, fieldHeaderSelector(12))
-          changeAmountRowCheck(commonResults.medicalSubheading, commonResults.no, 13, 1, s"${user.commonExpectedResults.changeText} ${specificResults.medicalSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.medicalSubheading, commonResults.no, 13, 1, s"${user.commonExpectedResults.changeText} ${specificResults.medicalSubheadingHiddenText}", medicalChildcareEducationHref)
 
           textOnPageCheck(user.commonExpectedResults.incomeTaxHeader, fieldHeaderSelector(14))
           changeAmountRowCheck(commonResults.incomeTaxSubheading, commonResults.no, 15, 1, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxSubheadingHiddenText}", dummyHref)
@@ -1067,7 +1071,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.utilitiesSubheading, commonResults.no, 10, 1, s"${user.commonExpectedResults.changeText} ${specificResults.utilitiesSubheadingHiddenText}", utilitiesOrGeneralServicesBenefitsHref)
 
           textOnPageCheck(user.commonExpectedResults.medicalHeader, fieldHeaderSelector(11))
-          changeAmountRowCheck(commonResults.medicalSubheading, commonResults.no, 12, 1, s"${user.commonExpectedResults.changeText} ${specificResults.medicalSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.medicalSubheading, commonResults.no, 12, 1, s"${user.commonExpectedResults.changeText} ${specificResults.medicalSubheadingHiddenText}", medicalChildcareEducationHref)
 
           textOnPageCheck(user.commonExpectedResults.incomeTaxHeader, fieldHeaderSelector(13))
           changeAmountRowCheck(commonResults.incomeTaxSubheading, commonResults.no, 14, 1, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxSubheadingHiddenText}", dummyHref)

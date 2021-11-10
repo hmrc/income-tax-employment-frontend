@@ -17,6 +17,7 @@
 package controllers.benefits.utilitiesAndServices
 
 import controllers.benefits.utilitiesAndServices.routes.UtilitiesOrGeneralServicesBenefitsController
+import controllers.benefits.medicalChildcareEducation.routes.MedicalDentalChildcareBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.User
@@ -295,8 +296,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-//        TODO: Update to the first medical page when the redirect method is there
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(MedicalDentalChildcareBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
     }
@@ -415,8 +415,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        //        TODO: Update to the first medical page when the redirect method is there
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(MedicalDentalChildcareBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
     }
