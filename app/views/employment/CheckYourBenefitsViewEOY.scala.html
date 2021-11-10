@@ -202,7 +202,7 @@
                     medicalInsurance => showRows("checkYourBenefits.medicalInsAmount", medicalInsurance)
                 },
                 benefits.medicalChildcareEducationModel.flatMap(_.nurseryPlacesQuestion).map{
-                    nurseryPlacesQuestion => showQuestionRow("checkYourBenefits.nursery", nurseryPlacesQuestion)
+                    nurseryPlacesQuestion => showQuestionRow("checkYourBenefits.nursery", nurseryPlacesQuestion, controllers.benefits.medicalChildcareEducation.routes.ChildcareBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.medicalChildcareEducationModel.flatMap(_.nurseryPlaces).map{
                     nurseryPlaces => showRows("checkYourBenefits.nurseryAmount", nurseryPlaces)
