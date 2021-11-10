@@ -125,7 +125,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   //scalastyle:off
-  def createOrUpdateExpensesSessionData[A](cyaModel: ExpensesCYAModel, taxYear: Int, isPriorSubmission: Boolean)
+  def createOrUpdateExpensesSessionData[A](cyaModel: ExpensesCYAModel, taxYear: Int, isPriorSubmission: Boolean, hasPriorExpenses: Boolean)
                                           (onFail: A)(onSuccess: A)(implicit user: User[_], clock: Clock): Future[A] = {
     val userData = ExpensesUserData(
       user.sessionId,
@@ -133,6 +133,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       user.nino,
       taxYear,
       isPriorSubmission,
+      hasPriorExpenses,
       cyaModel,
       clock.now(DateTimeZone.UTC)
     )

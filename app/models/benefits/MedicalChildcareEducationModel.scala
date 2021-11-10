@@ -16,6 +16,7 @@
 
 package models.benefits
 
+import controllers.benefits.medical.routes.{ChildcareBenefitsAmountController, ChildcareBenefitsController}
 import controllers.employment.routes._
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
@@ -42,9 +43,9 @@ case class MedicalChildcareEducationModel(medicalChildcareEducationQuestion: Opt
 
   def childcareSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     nurseryPlacesQuestion match {
-      case Some(true) => if (nurseryPlaces.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO childcare amount page
+      case Some(true) => if (nurseryPlaces.isDefined) None else Some(ChildcareBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO childcare yes/no page
+      case None => Some(ChildcareBenefitsController.show(taxYear, employmentId))
     }
   }
 

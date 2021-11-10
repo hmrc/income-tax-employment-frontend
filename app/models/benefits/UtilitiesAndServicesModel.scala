@@ -16,7 +16,7 @@
 
 package models.benefits
 
-import controllers.benefits.utilitiesAndServices.routes._
+import controllers.benefits.utilities.routes._
 import controllers.employment.routes._
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call

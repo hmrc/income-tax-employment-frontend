@@ -20,21 +20,22 @@ import audit.{AuditService, ViewEmploymentExpensesAudit}
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckEmploymentExpensesController
 import controllers.predicates.{AuthorisedAction, InYearAction}
-import javax.inject.Inject
 import models.User
-import models.employment.{AllEmploymentData, EmploymentExpenses, Expenses}
+import models.employment.{AllEmploymentData, EmploymentExpenses, Expenses, ExpensesViewModel}
 import models.mongo.ExpensesCYAModel
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.employment.CheckEmploymentExpensesView
+import views.html.employment.{CheckEmploymentExpensesView, CheckEmploymentExpensesViewEOY}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAction,
                                                   checkEmploymentExpensesView: CheckEmploymentExpensesView,
+                                                  checkEmploymentExpensesViewEOY: CheckEmploymentExpensesViewEOY,
                                                   employmentSessionService: EmploymentSessionService,
                                                   auditService: AuditService,
                                                   inYearAction: InYearAction,
@@ -53,9 +54,9 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
     }
 
     def inYearResult(allEmploymentData: AllEmploymentData): Result = {
-      allEmploymentData.hmrcExpenses match {
-        case Some(EmploymentExpenses(_, _, _, Some(expenses))) => performAuditAndRenderView(expenses, taxYear, isInYear,
-          isMultipleEmployments(allEmploymentData))
+      employmentSessionService.getLatestExpenses(allEmploymentData, isInYear = true) match {
+        case Some((EmploymentExpenses(_, _, _, Some(expenses)), isUsingCustomerData)) => performAuditAndRenderView(expenses, taxYear, isInYear,
+          isMultipleEmployments(allEmploymentData), isUsingCustomerData)
         case _ => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
@@ -64,15 +65,17 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
       allEmploymentData match {
         case Some(allEmploymentData) =>
           employmentSessionService.getLatestExpenses(allEmploymentData, isInYear) match {
-            case Some((EmploymentExpenses(_, _, _, Some(expenses)), isUsingCustomerData)) =>
-              employmentSessionService.createOrUpdateExpensesSessionData(ExpensesCYAModel.makeModel(expenses, isUsingCustomerData),
-                taxYear, isPriorSubmission = true
+            case Some((EmploymentExpenses(submittedOn, _, _, Some(expenses)), isUsingCustomerData)) =>
+              employmentSessionService.createOrUpdateExpensesSessionData(ExpensesCYAModel.makeModel(expenses, isUsingCustomerData, submittedOn),
+                taxYear, isPriorSubmission = true, hasPriorExpenses = false
               )(errorHandler.internalServerError()) {
-                performAuditAndRenderView(expenses, taxYear, isInYear, isMultipleEmployments(allEmploymentData))
+                performAuditAndRenderView(expenses, taxYear, isInYear, isMultipleEmployments(allEmploymentData), isUsingCustomerData)
               }
-            case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear, isMultipleEmployments(allEmploymentData)))
+            //TODO redirect to receive any expenses page
+            case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear, isMultipleEmployments(allEmploymentData), isUsingCustomerData = true))
           }
-        case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear, isMultipleEmployments = false))
+        //TODO redirect to receive any expenses page
+        case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear, isMultipleEmployments = false, isUsingCustomerData = true))
       }
     }
 
@@ -82,8 +85,11 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
       employmentSessionService.getAndHandleExpenses(taxYear) { (cya, prior) =>
         cya match {
           case Some(cya) =>
-            val expenses = cya.expensesCya
-            Future(performAuditAndRenderView(expenses.expenses, taxYear, isInYear, prior.exists(isMultipleEmployments)))
+            val expensesViewModel: ExpensesViewModel = cya.expensesCya.expenses
+            val isUsingCustomerData = expensesViewModel.isUsingCustomerData
+
+            Future(performAuditAndRenderView(expensesViewModel.toExpenses, taxYear, isInYear, prior.exists(isMultipleEmployments),
+              isUsingCustomerData, Some(expensesViewModel)))
           case None =>
             saveCYAAndReturnEndOfYearResult(prior)
         }
@@ -91,11 +97,18 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
     }
   }
 
-  def performAuditAndRenderView(expenses: Expenses, taxYear: Int, isInYear: Boolean, isMultipleEmployments: Boolean)
+  def performAuditAndRenderView(expenses: Expenses, taxYear: Int, isInYear: Boolean, isMultipleEmployments: Boolean,
+                                isUsingCustomerData: Boolean, cya: Option[ExpensesViewModel] = None)
                                (implicit user: User[AnyContent]): Result = {
     val auditModel = ViewEmploymentExpensesAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, expenses)
     auditService.sendAudit[ViewEmploymentExpensesAudit](auditModel.toAuditModel)
-    Ok(checkEmploymentExpensesView(taxYear, expenses, isInYear, isMultipleEmployments))
+
+    if (isInYear) {
+      Ok(checkEmploymentExpensesView(taxYear, expenses, isInYear, isMultipleEmployments))
+    } else {
+      Ok(checkEmploymentExpensesViewEOY(taxYear, expenses.toExpensesViewModel(isUsingCustomerData, cyaExpenses = cya), isInYear, isMultipleEmployments))
+
+    }
   }
 
   def submit(taxYear: Int): Action[AnyContent] = authorisedAction.async { implicit user =>

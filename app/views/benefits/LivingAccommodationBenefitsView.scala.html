@@ -51,7 +51,7 @@
 
     @errorSummary(form.errors.distinct)
 
-    @formWithCsrf(action = controllers.benefits.accommodationAndRelocation.routes.LivingAccommodationBenefitsController.submit(taxYear, employmentId)) {
+    @formWithCsrf(action = controllers.benefits.accommodation.routes.LivingAccommodationBenefitsController.submit(taxYear, employmentId)) {
 
         @inputRadio(
             form = form,

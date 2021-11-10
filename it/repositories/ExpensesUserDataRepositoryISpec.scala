@@ -19,7 +19,7 @@ package repositories
 import com.mongodb.MongoTimeoutException
 import common.UUID
 import models.User
-import models.employment.Expenses
+import models.employment.{Expenses, ExpensesViewModel}
 import models.mongo._
 import org.joda.time.{DateTime, DateTimeZone}
 import org.mongodb.scala.model.Indexes.ascending
@@ -66,8 +66,9 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
     nino,
     2022,
     isPriorSubmission = true,
+    hasPriorExpenses = true,
     ExpensesCYAModel(
-      expenses = Expenses(
+      expenses = ExpensesViewModel(
         Some(100),
         Some(100),
         Some(100),
@@ -75,9 +76,13 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
         Some(100),
         Some(100),
         Some(100),
-        Some(100)
-      ),
-      currentDataIsHmrcHeld = true
+        Some(100),
+        Some(true),
+        Some(true),
+        Some(true),
+        Some(true),
+        isUsingCustomerData = false
+      )
     ),
     lastUpdated = now
   )
@@ -88,9 +93,9 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
     nino,
     2022,
     isPriorSubmission = true,
+    hasPriorExpenses = true,
     ExpensesCYAModel(
-      expenses = Expenses(),
-      currentDataIsHmrcHeld = true
+      expenses = ExpensesViewModel(isUsingCustomerData = false)
     ),
     lastUpdated = now
   )

@@ -23,7 +23,7 @@ import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import helpers.{PlaySessionCookieBaker, WireMockHelper, WiremockStubHelpers}
 import models.IncomeTaxUserData
-import models.benefits.{AccommodationRelocationModel, Benefits, CarVanFuelModel, TravelEntertainmentModel, UtilitiesAndServicesModel}
+import models.benefits.{AccommodationRelocationModel, Benefits, CarVanFuelModel, MedicalChildcareEducationModel, TravelEntertainmentModel, UtilitiesAndServicesModel}
 import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.scalatest.BeforeAndAfterAll
@@ -48,9 +48,10 @@ import views.html.authErrorPages.AgentAuthErrorPageView
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
 
+// scalastyle:off number.of.methods
+// scalastyle:off number.of.types
 trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSuite with WireMockHelper
   with WiremockStubHelpers with BeforeAndAfterAll {
-
   val nino = "AA123456A"
   val mtditid = "1234567890"
   val sessionId = "sessionId-eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"
@@ -64,7 +65,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   implicit val actorSystem: ActorSystem = ActorSystem()
 
-  implicit val integrationTestClock = IntegrationTestClock
+  implicit val integrationTestClock: IntegrationTestClock.type = IntegrationTestClock
 
   implicit def wsClient: WSClient = app.injector.instanceOf[WSClient]
 
@@ -226,13 +227,15 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   def fullEmploymentsModel(hmrcEmployment: Seq[EmploymentSource] = Seq(employmentDetailsAndBenefits()),
-                           hmrcExpenses: Option[EmploymentExpenses] = Some(employmentExpenses),
+                           hmrcExpenses: Option[EmploymentExpenses] = Some(employmentExpenses(expenses)),
                            customerEmployment: Seq[EmploymentSource] = Seq(),
                            customerExpenses: Option[EmploymentExpenses] = None): AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = hmrcEmployment,
     hmrcExpenses = hmrcExpenses,
     customerEmploymentData = customerEmployment,
     customerExpenses = customerExpenses)
+
+
 
   def employmentDetailsAndBenefits(benefits: Option[EmploymentBenefits] = None,
                                    employmentId: String = "001",
@@ -277,8 +280,9 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   lazy val expenses: Expenses = Expenses(
     Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7), Some(8)
   )
-  lazy val employmentExpenses: EmploymentExpenses = EmploymentExpenses(
-    submittedOn = None,
+
+  def employmentExpenses(expenses: Expenses): EmploymentExpenses = EmploymentExpenses(
+    submittedOn = Some("2020-02-12"),
     dateIgnored = None,
     totalExpenses = None,
     expenses = Some(expenses)
@@ -336,7 +340,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     2021,
     "employmentId",
     isPriorSubmission = true,
-    hasPriorBenefits =  true,
+    hasPriorBenefits = true,
     EmploymentCYAModel(
       EmploymentDetails("Employer Name", currentDataIsHmrcHeld = true),
       None
@@ -410,4 +414,23 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   def emptyUtilitiesAndServicesModel: UtilitiesAndServicesModel =
     UtilitiesAndServicesModel(utilitiesAndServicesQuestion = Some(false))
+
+  def fullMedicalChildcareEducationModel: MedicalChildcareEducationModel =
+    MedicalChildcareEducationModel(
+      medicalChildcareEducationQuestion = Some(true),
+      medicalInsuranceQuestion = Some(true),
+      medicalInsurance = Some(100.00),
+      nurseryPlacesQuestion = Some(true),
+      nurseryPlaces = Some(200.00),
+      educationalServicesQuestion = Some(true),
+      educationalServices = Some(300.00),
+      beneficialLoanQuestion = Some(true),
+      beneficialLoan = Some(400.00)
+    )
+
+  def emptyMedicalChildcareEducationModel: MedicalChildcareEducationModel =
+    MedicalChildcareEducationModel(medicalChildcareEducationQuestion = Some(false))
 }
+
+// scalastyle:off number.of.methods
+// scalastyle:off number.of.types
