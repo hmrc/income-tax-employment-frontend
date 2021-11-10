@@ -26,7 +26,31 @@ case class Expenses(businessTravelCosts: Option[BigDecimal] = None,
                     hotelAndMealExpenses: Option[BigDecimal] = None,
                     otherAndCapitalAllowances: Option[BigDecimal] = None,
                     vehicleExpenses: Option[BigDecimal] = None,
-                    mileageAllowanceRelief: Option[BigDecimal] = None)
+                    mileageAllowanceRelief: Option[BigDecimal] = None) {
+
+
+  def expensesPopulated(cyaExpenses: Option[ExpensesViewModel] = None): Boolean = {
+    val hasExpenses: Boolean = cyaExpenses.exists(_.claimingEmploymentExpenses)
+    hasExpenses || businessTravelCosts.isDefined || jobExpenses.isDefined || flatRateJobExpenses.isDefined ||
+      professionalSubscriptions.isDefined || hotelAndMealExpenses.isDefined || otherAndCapitalAllowances.isDefined ||
+      vehicleExpenses.isDefined || mileageAllowanceRelief.isDefined
+  }
+
+  def toExpensesViewModel(isUsingCustomerData: Boolean, submittedOn: Option[String] = None,
+                          cyaExpenses: Option[ExpensesViewModel] = None): ExpensesViewModel = {
+    ExpensesViewModel(
+      businessTravelCosts, jobExpenses, flatRateJobExpenses, professionalSubscriptions, hotelAndMealExpenses,
+      otherAndCapitalAllowances, vehicleExpenses, mileageAllowanceRelief,
+      jobExpensesQuestion = Some(jobExpenses.isDefined),
+      flatRateJobExpensesQuestion = Some(flatRateJobExpenses.isDefined),
+      professionalSubscriptionsQuestion = Some(professionalSubscriptions.isDefined),
+      otherAndCapitalAllowancesQuestion = Some(otherAndCapitalAllowances.isDefined),
+      submittedOn = submittedOn,
+      isUsingCustomerData = isUsingCustomerData,
+      claimingEmploymentExpenses = expensesPopulated(cyaExpenses)
+    )
+  }
+}
 
 object Expenses {
   implicit val format: OFormat[Expenses] = Json.format[Expenses]

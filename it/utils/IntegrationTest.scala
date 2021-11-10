@@ -226,13 +226,15 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   def fullEmploymentsModel(hmrcEmployment: Seq[EmploymentSource] = Seq(employmentDetailsAndBenefits()),
-                           hmrcExpenses: Option[EmploymentExpenses] = Some(employmentExpenses),
+                           hmrcExpenses: Option[EmploymentExpenses] = Some(employmentExpenses(expenses)),
                            customerEmployment: Seq[EmploymentSource] = Seq(),
                            customerExpenses: Option[EmploymentExpenses] = None): AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = hmrcEmployment,
     hmrcExpenses = hmrcExpenses,
     customerEmploymentData = customerEmployment,
     customerExpenses = customerExpenses)
+
+
 
   def employmentDetailsAndBenefits(benefits: Option[EmploymentBenefits] = None,
                                    employmentId: String = "001",
@@ -277,8 +279,9 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   lazy val expenses: Expenses = Expenses(
     Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7), Some(8)
   )
-  lazy val employmentExpenses: EmploymentExpenses = EmploymentExpenses(
-    submittedOn = None,
+
+  def employmentExpenses(expenses: Expenses): EmploymentExpenses = EmploymentExpenses(
+    submittedOn = Some("2020-02-12"),
     dateIgnored = None,
     totalExpenses = None,
     expenses = Some(expenses)
