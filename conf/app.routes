@@ -147,6 +147,9 @@ POST       /:taxYear/benefits/medical-dental-childcare-education-loans      cont
 GET        /:taxYear/benefits/childcare                                     controllers.benefits.medicalChildcareEducation.ChildcareBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/childcare                                     controllers.benefits.medicalChildcareEducation.ChildcareBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/childcare-amount                              controllers.benefits.medicalChildcareEducation.ChildcareBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/childcare-amount                              controllers.benefits.medicalChildcareEducation.ChildcareBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
 GET        /sign-out                                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
 GET        /error/you-need-to-sign-up                                       controllers.errors.IndividualAuthErrorController.show

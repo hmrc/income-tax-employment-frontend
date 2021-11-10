@@ -412,8 +412,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-//          TODO: This will be updated to go to the childcare amount page when its created
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/childcare-amount?employmentId=$employmentId")
       }
     }
 

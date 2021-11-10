@@ -1024,7 +1024,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => educationalServicesRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe ChildcareBenefitsController.show(taxYear, employmentId).url
       }
 
       "it's a new submission and attempted to view the 'Educational services amount' page but the Educational services question is empty" in {
