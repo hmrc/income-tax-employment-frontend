@@ -16,7 +16,7 @@
 
 package models.benefits
 
-import controllers.benefits.accommodationAndRelocation.routes._
+import controllers.benefits.accommodation.routes._
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue

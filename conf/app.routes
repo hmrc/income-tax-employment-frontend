@@ -12,11 +12,11 @@ POST       /:taxYear/check-employment-details                               cont
 GET        /:taxYear/check-employment-expenses                              controllers.employment.CheckEmploymentExpensesController.show(taxYear: Int)
 POST       /:taxYear/check-employment-expenses                              controllers.employment.CheckEmploymentExpensesController.submit(taxYear: Int)
 
-GET        /:taxYear/benefits/mileage-amount                                controllers.benefits.carVanFuel.MileageBenefitAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/mileage-amount                                controllers.benefits.carVanFuel.MileageBenefitAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/mileage-amount                                controllers.benefits.fuel.MileageBenefitAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/mileage-amount                                controllers.benefits.fuel.MileageBenefitAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/accommodation-relocation                      controllers.benefits.accommodationAndRelocation.AccommodationRelocationBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/accommodation-relocation                      controllers.benefits.accommodationAndRelocation.AccommodationRelocationBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/accommodation-relocation                      controllers.benefits.accommodation.AccommodationRelocationBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/accommodation-relocation                      controllers.benefits.accommodation.AccommodationRelocationBenefitsController.submit(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/check-employment-benefits                              controllers.employment.CheckYourBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/check-employment-benefits                              controllers.employment.CheckYourBenefitsController.submit(taxYear: Int, employmentId: String)
@@ -51,104 +51,104 @@ POST       /:taxYear/remove-employment                                      cont
 GET        /:taxYear/benefits/company-benefits                              controllers.benefits.ReceiveAnyBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/company-benefits                              controllers.benefits.ReceiveAnyBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/car-van-fuel                                  controllers.benefits.carVanFuel.CarVanFuelBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/car-van-fuel                                  controllers.benefits.carVanFuel.CarVanFuelBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/car-van-fuel                                  controllers.benefits.fuel.CarVanFuelBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/car-van-fuel                                  controllers.benefits.fuel.CarVanFuelBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/company-van                                   controllers.benefits.carVanFuel.CompanyVanBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/company-van                                   controllers.benefits.carVanFuel.CompanyVanBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/company-van                                   controllers.benefits.fuel.CompanyVanBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/company-van                                   controllers.benefits.fuel.CompanyVanBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/company-van-amount                            controllers.benefits.carVanFuel.CompanyVanBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/company-van-amount                            controllers.benefits.carVanFuel.CompanyVanBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/company-van-amount                            controllers.benefits.fuel.CompanyVanBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/company-van-amount                            controllers.benefits.fuel.CompanyVanBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/car-fuel                                      controllers.benefits.carVanFuel.CompanyCarFuelBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/car-fuel                                      controllers.benefits.carVanFuel.CompanyCarFuelBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/car-fuel                                      controllers.benefits.fuel.CompanyCarFuelBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/car-fuel                                      controllers.benefits.fuel.CompanyCarFuelBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/company-car-amount                            controllers.benefits.carVanFuel.CompanyCarBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/company-car-amount                            controllers.benefits.carVanFuel.CompanyCarBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/company-car-amount                            controllers.benefits.fuel.CompanyCarBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/company-car-amount                            controllers.benefits.fuel.CompanyCarBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/mileage                                       controllers.benefits.carVanFuel.ReceiveOwnCarMileageBenefitController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/mileage                                       controllers.benefits.carVanFuel.ReceiveOwnCarMileageBenefitController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/mileage                                       controllers.benefits.fuel.ReceiveOwnCarMileageBenefitController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/mileage                                       controllers.benefits.fuel.ReceiveOwnCarMileageBenefitController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/car-fuel-amount                               controllers.benefits.carVanFuel.CarFuelBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/car-fuel-amount                               controllers.benefits.carVanFuel.CarFuelBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/car-fuel-amount                               controllers.benefits.fuel.CarFuelBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/car-fuel-amount                               controllers.benefits.fuel.CarFuelBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/van-fuel                                      controllers.benefits.carVanFuel.CompanyVanFuelBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/van-fuel                                      controllers.benefits.carVanFuel.CompanyVanFuelBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/van-fuel                                      controllers.benefits.fuel.CompanyVanFuelBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/van-fuel                                      controllers.benefits.fuel.CompanyVanFuelBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/van-fuel-amount                               controllers.benefits.carVanFuel.CompanyVanFuelBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/van-fuel-amount                               controllers.benefits.carVanFuel.CompanyVanFuelBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/van-fuel-amount                               controllers.benefits.fuel.CompanyVanFuelBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/van-fuel-amount                               controllers.benefits.fuel.CompanyVanFuelBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/living-accommodation                          controllers.benefits.accommodationAndRelocation.LivingAccommodationBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/living-accommodation                          controllers.benefits.accommodationAndRelocation.LivingAccommodationBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/living-accommodation                          controllers.benefits.accommodation.LivingAccommodationBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/living-accommodation                          controllers.benefits.accommodation.LivingAccommodationBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/qualifying-relocation-amount                  controllers.benefits.accommodationAndRelocation.QualifyingRelocationBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/qualifying-relocation-amount                  controllers.benefits.accommodationAndRelocation.QualifyingRelocationBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/qualifying-relocation-amount                  controllers.benefits.accommodation.QualifyingRelocationBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/qualifying-relocation-amount                  controllers.benefits.accommodation.QualifyingRelocationBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/non-qualifying-relocation                     controllers.benefits.accommodationAndRelocation.NonQualifyingRelocationBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/non-qualifying-relocation                     controllers.benefits.accommodationAndRelocation.NonQualifyingRelocationBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/non-qualifying-relocation                     controllers.benefits.accommodation.NonQualifyingRelocationBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/non-qualifying-relocation                     controllers.benefits.accommodation.NonQualifyingRelocationBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/non-qualifying-relocation-amount              controllers.benefits.accommodationAndRelocation.NonQualifyingRelocationBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/non-qualifying-relocation-amount              controllers.benefits.accommodationAndRelocation.NonQualifyingRelocationBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/non-qualifying-relocation-amount              controllers.benefits.accommodation.NonQualifyingRelocationBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/non-qualifying-relocation-amount              controllers.benefits.accommodation.NonQualifyingRelocationBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/travel-entertainment                          controllers.benefits.travelAndEntertainment.TravelOrEntertainmentBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/travel-entertainment                          controllers.benefits.travelAndEntertainment.TravelOrEntertainmentBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/travel-entertainment                          controllers.benefits.travel.TravelOrEntertainmentBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/travel-entertainment                          controllers.benefits.travel.TravelOrEntertainmentBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/entertainment-expenses                        controllers.benefits.travelAndEntertainment.EntertainingBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/entertainment-expenses                        controllers.benefits.travelAndEntertainment.EntertainingBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/entertainment-expenses                        controllers.benefits.travel.EntertainingBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/entertainment-expenses                        controllers.benefits.travel.EntertainingBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/travel-subsistence-amount                     controllers.benefits.travelAndEntertainment.TravelOrSubsistenceBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/travel-subsistence-amount                     controllers.benefits.travelAndEntertainment.TravelOrSubsistenceBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/travel-subsistence-amount                     controllers.benefits.travel.TravelOrSubsistenceBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/travel-subsistence-amount                     controllers.benefits.travel.TravelOrSubsistenceBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/travel-subsistence                            controllers.benefits.travelAndEntertainment.TravelAndSubsistenceBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/travel-subsistence                            controllers.benefits.travelAndEntertainment.TravelAndSubsistenceBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/travel-subsistence                            controllers.benefits.travel.TravelAndSubsistenceBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/travel-subsistence                            controllers.benefits.travel.TravelAndSubsistenceBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/qualifying-relocation                         controllers.benefits.accommodationAndRelocation.QualifyingRelocationBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/qualifying-relocation                         controllers.benefits.accommodationAndRelocation.QualifyingRelocationBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/qualifying-relocation                         controllers.benefits.accommodation.QualifyingRelocationBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/qualifying-relocation                         controllers.benefits.accommodation.QualifyingRelocationBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/telephone-amount                              controllers.benefits.utilitiesAndServices.TelephoneEmploymentBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/telephone-amount                              controllers.benefits.utilitiesAndServices.TelephoneEmploymentBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/telephone-amount                              controllers.benefits.utilities.TelephoneEmploymentBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/telephone-amount                              controllers.benefits.utilities.TelephoneEmploymentBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/utility-general-service                       controllers.benefits.utilitiesAndServices.UtilitiesOrGeneralServicesBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/utility-general-service                       controllers.benefits.utilitiesAndServices.UtilitiesOrGeneralServicesBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/utility-general-service                       controllers.benefits.utilities.UtilitiesOrGeneralServicesBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/utility-general-service                       controllers.benefits.utilities.UtilitiesOrGeneralServicesBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/incidental-overnight-costs-amount             controllers.benefits.travelAndEntertainment.IncidentalCostsBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/incidental-overnight-costs-amount             controllers.benefits.travelAndEntertainment.IncidentalCostsBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/incidental-overnight-costs-amount             controllers.benefits.travel.IncidentalCostsBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/incidental-overnight-costs-amount             controllers.benefits.travel.IncidentalCostsBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/entertainment-expenses-amount                 controllers.benefits.travelAndEntertainment.EntertainmentBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/entertainment-expenses-amount                 controllers.benefits.travelAndEntertainment.EntertainmentBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/entertainment-expenses-amount                 controllers.benefits.travel.EntertainmentBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/entertainment-expenses-amount                 controllers.benefits.travel.EntertainmentBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/telephone                                     controllers.benefits.utilitiesAndServices.TelephoneBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/telephone                                     controllers.benefits.utilitiesAndServices.TelephoneBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/telephone                                     controllers.benefits.utilities.TelephoneBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/telephone                                     controllers.benefits.utilities.TelephoneBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/employer-provided-services-amount             controllers.benefits.utilitiesAndServices.EmployerProvidedServicesBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/employer-provided-services-amount             controllers.benefits.utilitiesAndServices.EmployerProvidedServicesBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/employer-provided-services-amount             controllers.benefits.utilities.EmployerProvidedServicesBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/employer-provided-services-amount             controllers.benefits.utilities.EmployerProvidedServicesBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/professional-fees-or-subscriptions            controllers.benefits.utilitiesAndServices.ProfessionalSubscriptionsBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/professional-fees-or-subscriptions            controllers.benefits.utilitiesAndServices.ProfessionalSubscriptionsBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/professional-fees-or-subscriptions            controllers.benefits.utilities.ProfessionalSubscriptionsBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/professional-fees-or-subscriptions            controllers.benefits.utilities.ProfessionalSubscriptionsBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/professional-fees-or-subscriptions-amount     controllers.benefits.utilitiesAndServices.ProfessionalSubscriptionsBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/professional-fees-or-subscriptions-amount     controllers.benefits.utilitiesAndServices.ProfessionalSubscriptionsBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/professional-fees-or-subscriptions-amount     controllers.benefits.utilities.ProfessionalSubscriptionsBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/professional-fees-or-subscriptions-amount     controllers.benefits.utilities.ProfessionalSubscriptionsBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/employer-provided-services                    controllers.benefits.utilitiesAndServices.EmployerProvidedServicesBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/employer-provided-services                    controllers.benefits.utilitiesAndServices.EmployerProvidedServicesBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/employer-provided-services                    controllers.benefits.utilities.EmployerProvidedServicesBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/employer-provided-services                    controllers.benefits.utilities.EmployerProvidedServicesBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/other-services                                controllers.benefits.utilitiesAndServices.OtherServicesBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/other-services                                controllers.benefits.utilitiesAndServices.OtherServicesBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/other-services                                controllers.benefits.utilities.OtherServicesBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/other-services                                controllers.benefits.utilities.OtherServicesBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/other-services-amount                         controllers.benefits.utilitiesAndServices.OtherServicesBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/other-services-amount                         controllers.benefits.utilitiesAndServices.OtherServicesBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/other-services-amount                         controllers.benefits.utilities.OtherServicesBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/other-services-amount                         controllers.benefits.utilities.OtherServicesBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/incidental-overnight-costs                    controllers.benefits.travelAndEntertainment.IncidentalOvernightCostEmploymentBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/incidental-overnight-costs                    controllers.benefits.travelAndEntertainment.IncidentalOvernightCostEmploymentBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/incidental-overnight-costs                    controllers.benefits.travel.IncidentalOvernightCostEmploymentBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/incidental-overnight-costs                    controllers.benefits.travel.IncidentalOvernightCostEmploymentBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/medical-dental-childcare-education-loans      controllers.benefits.medicalChildcareEducation.MedicalDentalChildcareBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/medical-dental-childcare-education-loans      controllers.benefits.medicalChildcareEducation.MedicalDentalChildcareBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/medical-dental-childcare-education-loans      controllers.benefits.medical.MedicalDentalChildcareBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/medical-dental-childcare-education-loans      controllers.benefits.medical.MedicalDentalChildcareBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/childcare                                     controllers.benefits.medicalChildcareEducation.ChildcareBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/childcare                                     controllers.benefits.medicalChildcareEducation.ChildcareBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/childcare                                     controllers.benefits.medical.ChildcareBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/childcare                                     controllers.benefits.medical.ChildcareBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/childcare-amount                              controllers.benefits.medicalChildcareEducation.ChildcareBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/childcare-amount                              controllers.benefits.medicalChildcareEducation.ChildcareBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/childcare-amount                              controllers.benefits.medical.ChildcareBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/childcare-amount                              controllers.benefits.medical.ChildcareBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
 GET        /sign-out                                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
@@ -166,11 +166,11 @@ POST       /:taxYear/employment-summary                                     cont
 GET        /:taxYear/uk-tax                                                 controllers.employment.EmploymentTaxController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/uk-tax                                                 controllers.employment.EmploymentTaxController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/company-car                                   controllers.benefits.carVanFuel.CompanyCarBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/company-car                                   controllers.benefits.carVanFuel.CompanyCarBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/company-car                                   controllers.benefits.fuel.CompanyCarBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/company-car                                   controllers.benefits.fuel.CompanyCarBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/living-accommodation-amount                   controllers.benefits.accommodationAndRelocation.LivingAccommodationBenefitAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/living-accommodation-amount                   controllers.benefits.accommodationAndRelocation.LivingAccommodationBenefitAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/living-accommodation-amount                   controllers.benefits.accommodation.LivingAccommodationBenefitAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/living-accommodation-amount                   controllers.benefits.accommodation.LivingAccommodationBenefitAmountController.submit(taxYear: Int, employmentId: String)
 
 GET        /language/:lang                                                  controllers.LanguageSwitchController.switchToLanguage(lang: String)
 

@@ -16,8 +16,8 @@
 
 package models.benefits
 
+import controllers.benefits.medical.routes.{ChildcareBenefitsAmountController, ChildcareBenefitsController}
 import controllers.employment.routes._
-import controllers.benefits.medicalChildcareEducation.routes._
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue
