@@ -17,6 +17,7 @@
 package models.benefits
 
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.medicalChildcareEducation.routes._
 import utils.UnitTest
 
 class MedicalChildcareEducationModelSpec extends UnitTest {
@@ -56,8 +57,7 @@ class MedicalChildcareEducationModelSpec extends UnitTest {
 
     "return call to 'Childcare amount page' when childcareQuestion is true and childcare amount not defined" in {
       val underTest = MedicalChildcareEducationModel(nurseryPlacesQuestion = Some(true), nurseryPlaces = None)
-      //TODO childcare amount page
-      underTest.childcareSectionFinished(taxYear, employmentId) shouldBe Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      underTest.childcareSectionFinished(taxYear, employmentId) shouldBe Some(ChildcareBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return None when childcareQuestion is false" in {
@@ -67,8 +67,7 @@ class MedicalChildcareEducationModelSpec extends UnitTest {
 
     "return call to 'Childcare yes/no page' when childcareQuestion is None" in {
       val underTest = MedicalChildcareEducationModel(nurseryPlacesQuestion = None)
-      //TODO childcare yes/no page
-      underTest.childcareSectionFinished(taxYear, employmentId) shouldBe Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      underTest.childcareSectionFinished(taxYear, employmentId) shouldBe Some(ChildcareBenefitsController.show(taxYear, employmentId))
     }
   }
 

@@ -422,7 +422,7 @@ object RedirectService extends Logging {
     commonBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(fullCarVanFuelFinished, accommodationRelocationFinished, travelEntertainmentFinished, utilitiesAndServicesFinished).flatten
   }
 
-  //ALL Utilities and services pages
+  //ALL Medical, Childcare and Education pages
   def commonMedicalChildcareEducationRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     val sectionQuestion = cya.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion))
 

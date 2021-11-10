@@ -871,3 +871,11 @@ benefits.childcare.onlyNeedLink = exempt limit (opens in new tab)
 benefits.childcare.error.individual = Select yes if you got a childcare benefit
 benefits.childcare.error.agent = Select yes if your client got a childcare benefit
 
+benefits.childcareBenefitsAmount.title.individual = How much was your total childcare benefit?
+benefits.childcareBenefitsAmount.title.agent = How much was your client’s total childcare benefit?
+benefits.childcareBenefitsAmount.error.noEntry.individual = Enter your childcare benefit amount
+benefits.childcareBenefitsAmount.error.incorrectFormat.individual = Enter your childcare benefit amount in the correct format
+benefits.childcareBenefitsAmount.error.overMaximum.individual = Your childcare benefit must be less than £100,000,000,000
+benefits.childcareBenefitsAmount.error.noEntry.agent = Enter your client’s childcare benefit amount
+benefits.childcareBenefitsAmount.error.incorrectFormat.agent = Enter your client’s childcare benefit amount in the correct format
+benefits.childcareBenefitsAmount.error.overMaximum.agent = Your client’s childcare benefit must be less than £100,000,000,000
