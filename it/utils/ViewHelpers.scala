@@ -114,7 +114,7 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
                            changeHiddenText: String, href: String)
                           (implicit document: () => Document): Unit = {
     textOnPageCheck(item, itemSelector)
-    textOnPageCheck(value, valueSelector)
+    textOnPageCheck(value, valueSelector, s"for the value of the $item field")
     linkCheck(changeHiddenText, changeSelector, href)
   }
 
