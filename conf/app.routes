@@ -141,6 +141,9 @@ POST       /:taxYear/benefits/other-services-amount                         cont
 GET        /:taxYear/benefits/incidental-overnight-costs                    controllers.benefits.travelAndEntertainment.IncidentalOvernightCostEmploymentBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/incidental-overnight-costs                    controllers.benefits.travelAndEntertainment.IncidentalOvernightCostEmploymentBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/childcare                                     controllers.benefits.medicalChildcareEducation.ChildcareBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/childcare                                     controllers.benefits.medicalChildcareEducation.ChildcareBenefitsController.submit(taxYear: Int, employmentId: String)
+
 GET        /sign-out                                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
 GET        /error/you-need-to-sign-up                                       controllers.errors.IndividualAuthErrorController.show

@@ -21,6 +21,7 @@ import controllers.benefits.carVanFuel.routes._
 import controllers.benefits.routes._
 import controllers.benefits.travelAndEntertainment.routes._
 import controllers.benefits.utilitiesAndServices.routes._
+import controllers.benefits.medicalChildcareEducation.routes._
 import controllers.employment.routes._
 import models.User
 import models.benefits.{AccommodationRelocationModel, CarVanFuelModel, TravelEntertainmentModel}
@@ -444,8 +445,7 @@ object RedirectService extends Logging {
       Seq(
         //TODO go to 'Medical or dental insurance' yes/no page
         ConditionalRedirect(medicalInsuranceQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
-        //TODO go to 'Childcare' yes/no page
-        ConditionalRedirect(medicalInsuranceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(medicalInsuranceQuestion.contains(false), ChildcareBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(medicalInsuranceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
@@ -462,8 +462,7 @@ object RedirectService extends Logging {
 
     childcareRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to childcare yes no page
-        ConditionalRedirect(childcareQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(childcareQuestion.isEmpty, ChildcareBenefitsController.show(taxYear, employmentId)),
         //TODO go to Educational services yes/no page
         ConditionalRedirect(childcareQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(childcareQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
