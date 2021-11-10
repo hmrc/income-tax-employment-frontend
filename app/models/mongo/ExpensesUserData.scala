@@ -25,6 +25,7 @@ case class ExpensesUserData(sessionId: String,
                             nino: String,
                             taxYear: Int,
                             isPriorSubmission: Boolean,
+                            hasPriorExpenses: Boolean,
                             expensesCya: ExpensesCYAModel,
                             lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC))
 
@@ -40,6 +41,7 @@ case class EncryptedExpensesUserData(sessionId: String,
                                      nino: String,
                                      taxYear: Int,
                                      isPriorSubmission: Boolean,
+                                     hasPriorExpenses: Boolean,
                                      expensesCya: EncryptedExpensesCYAModel,
                                      lastUpdated: DateTime = DateTime.now(DateTimeZone.UTC))
 
