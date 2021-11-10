@@ -857,6 +857,11 @@ benefits.incidentalOvernightCostEmploymentBenefits.allowanceInformation = The al
 benefits.incidentalOvernightCostEmploymentBenefits.error.individual = Select yes if you got incidental overnight costs
 benefits.incidentalOvernightCostEmploymentBenefits.error.agent = Select yes if your client got incidental overnight costs
 
+benefits.medicalDentalChildcare.title.individual = Did you get any medical, dental, childcare, education benefits or loans from this company?
+benefits.medicalDentalChildcare.title.agent = Did your client get any medical, dental, childcare, education benefits or loans from this company?
+benefits.medicalDentalChildcare.error.noEntry.individual = Select yes if you got medical, dental, childcare, education benefits or loans
+benefits.medicalDentalChildcare.error.noEntry.agent = Select yes if your client got medical, dental, childcare, education benefits or loans
+
 benefits.childcare.title.individual = Did you get a childcare benefit?
 benefits.childcare.title.agent = Did your client get a childcare benefit?
 benefits.childcare.theseAre.individual = These are childcare costs your employer paid for. It can include vouchers or commercial childcare costs.
@@ -865,3 +870,4 @@ benefits.childcare.onlyNeed = We only need to know about childcare costs above t
 benefits.childcare.onlyNeedLink = exempt limit (opens in new tab)
 benefits.childcare.error.individual = Select yes if you got a childcare benefit
 benefits.childcare.error.agent = Select yes if your client got a childcare benefit
+
