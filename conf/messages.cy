@@ -8,6 +8,7 @@ betaBar.banner.message.1 = This is a new service – your
 betaBar.banner.message.2 = feedback
 betaBar.banner.message.3 = will help us to improve it.
 
+common.fullStop = .
 common.back = Back
 common.yes = Yes
 common.no = No
@@ -835,3 +836,11 @@ benefits.incidentalOvernightCostEmploymentBenefits.allowanceInformation = The al
 benefits.incidentalOvernightCostEmploymentBenefits.error.individual = Select yes if you got incidental overnight costs
 benefits.incidentalOvernightCostEmploymentBenefits.error.agent = Select yes if your client got incidental overnight costs
 
+benefits.childcare.title.individual = Did you get a childcare benefit?
+benefits.childcare.title.agent = Did your client get a childcare benefit?
+benefits.childcare.theseAre.individual = These are childcare costs your employer paid for. It can include vouchers or commercial childcare costs.
+benefits.childcare.theseAre.agent = These are childcare costs your client’s employer paid for. It can include vouchers or commercial childcare costs.
+benefits.childcare.onlyNeed = We only need to know about childcare costs above the
+benefits.childcare.onlyNeedLink = exempt limit (opens in new tab)
+benefits.childcare.error.individual = Select yes if you got a childcare benefit
+benefits.childcare.error.agent = Select yes if your client got a childcare benefit

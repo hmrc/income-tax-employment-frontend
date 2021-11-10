@@ -21,6 +21,7 @@ import controllers.benefits.carVanFuel.routes._
 import controllers.benefits.routes.ReceiveAnyBenefitsController
 import controllers.benefits.travelAndEntertainment.routes._
 import controllers.benefits.utilitiesAndServices.routes._
+import controllers.benefits.medicalChildcareEducation.routes._
 import controllers.employment.routes._
 import models.benefits._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -962,7 +963,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => medicalInsuranceAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe ChildcareBenefitsController.show(taxYear, employmentId).url
       }
 
       "it's a new submission and attempted to view the 'Medical or dental insurance amount' page but the 'Medical or dental insurance' question is empty" in {
@@ -992,7 +993,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => childcareAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe ChildcareBenefitsController.show(taxYear, employmentId).url
       }
 
       "it's a new submission and attempted to view the 'Childcare amount' page but the childcare question is false" in {

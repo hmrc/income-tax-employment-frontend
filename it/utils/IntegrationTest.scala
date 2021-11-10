@@ -23,7 +23,7 @@ import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import helpers.{PlaySessionCookieBaker, WireMockHelper, WiremockStubHelpers}
 import models.IncomeTaxUserData
-import models.benefits.{AccommodationRelocationModel, Benefits, CarVanFuelModel, TravelEntertainmentModel, UtilitiesAndServicesModel}
+import models.benefits.{AccommodationRelocationModel, Benefits, CarVanFuelModel, MedicalChildcareEducationModel, TravelEntertainmentModel, UtilitiesAndServicesModel}
 import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.scalatest.BeforeAndAfterAll
@@ -410,4 +410,20 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   def emptyUtilitiesAndServicesModel: UtilitiesAndServicesModel =
     UtilitiesAndServicesModel(utilitiesAndServicesQuestion = Some(false))
+
+  def fullMedicalChildcareEducationModel: MedicalChildcareEducationModel =
+    MedicalChildcareEducationModel(
+      medicalChildcareEducationQuestion = Some(true),
+      medicalInsuranceQuestion = Some(true),
+      medicalInsurance = Some(100.00),
+      nurseryPlacesQuestion = Some(true),
+      nurseryPlaces = Some(200.00),
+      educationalServicesQuestion = Some(true),
+      educationalServices = Some(300.00),
+      beneficialLoanQuestion = Some(true),
+      beneficialLoan = Some(400.00),
+    )
+
+  def emptyMedicalChildcareEducationModel: MedicalChildcareEducationModel =
+    MedicalChildcareEducationModel(medicalChildcareEducationQuestion = Some(false))
 }
