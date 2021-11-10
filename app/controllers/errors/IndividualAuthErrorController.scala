@@ -17,20 +17,20 @@
 package controllers.errors
 
 import config.AppConfig
-import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.authErrorPages.IndividualUnauthorisedView
+import views.html.templates.IndividualUnauthorisedView
+
+import javax.inject.Inject
 
 class IndividualAuthErrorController @Inject()(
-                                          val mcc: MessagesControllerComponents,
-                                         implicit val appConfig: AppConfig,
-                                         view: IndividualUnauthorisedView
-                                        ) extends FrontendController(mcc) with I18nSupport {
+                                               val mcc: MessagesControllerComponents,
+                                               implicit val appConfig: AppConfig,
+                                               view: IndividualUnauthorisedView
+                                             ) extends FrontendController(mcc) with I18nSupport {
 
   def show(): Action[AnyContent] = Action { implicit request =>
     Unauthorized(view())
   }
-
 }

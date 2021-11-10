@@ -1,0 +1,63 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.templates.Layout
+@import views.html.templates.helpers.ErrorSummary
+@import views.html.templates.helpers.Button
+@import views.html.templates.helpers.InputRadio
+@import views.html.templates.helpers.Details
+@import utils.ViewUtils._
+
+@this(
+    layout: Layout,
+    inputRadio: InputRadio,
+    formWithCsrf: FormWithCSRF,
+    errorSummary: ErrorSummary,
+    button: Button,
+    details: Details
+)
+
+@(form: Form[Boolean], taxYear: Int, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+
+@titleForUse = @{messages(getAgentDynamicContent("benefits.entertainingBenefits.title", user.isAgent))}
+@headingForUse = @{titleForUse}
+
+@contentHtml = {
+    <p class="govuk-body">@messages(s"benefits.entertainingBenefits.paragraph.${if(user.isAgent) "agent" else "individual"}")</p>
+}
+
+@hasFormErrors = @{form.hasErrors}
+@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
+
+    @errorSummary(form.errors.distinct)
+
+    @formWithCsrf(action = controllers.benefits.travel.routes.EntertainingBenefitsController.submit(taxYear, employmentId)) {
+
+        @inputRadio(
+            form = form,
+            heading = headingForUse,
+            inline = true,
+            content = Some(contentHtml),
+            subheading = Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString))
+            )
+        @button()
+    }
+}
+
+@{
+// $COVERAGE-OFF$
+}
+

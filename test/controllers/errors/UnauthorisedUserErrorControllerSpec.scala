@@ -20,9 +20,9 @@ import play.api.http.Status.UNAUTHORIZED
 import play.api.test.Helpers.contentType
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import utils.{UnitTest, ViewTest}
-import views.html.authErrorPages.UnauthorisedUserErrorPageView
+import views.html.templates.UnauthorisedUserErrorPageView
 
-class UnauthorisedUserErrorControllerSpec extends UnitTest with DefaultAwaitTimeout with ViewTest{
+class UnauthorisedUserErrorControllerSpec extends UnitTest with DefaultAwaitTimeout with ViewTest {
 
   lazy val controller = new UnauthorisedUserErrorController(mockMessagesControllerComponents,
     app.injector.instanceOf[UnauthorisedUserErrorPageView], mockAppConfig)
@@ -36,7 +36,5 @@ class UnauthorisedUserErrorControllerSpec extends UnitTest with DefaultAwaitTime
       status(result) shouldBe UNAUTHORIZED
       contentType(result) shouldBe Some("text/html")
     }
-
   }
-
 }
