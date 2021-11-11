@@ -9,8 +9,8 @@ GET        /:taxYear/employer-details-and-benefits                          cont
 GET        /:taxYear/check-employment-details                               controllers.employment.CheckEmploymentDetailsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/check-employment-details                               controllers.employment.CheckEmploymentDetailsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/check-employment-expenses                              controllers.employment.CheckEmploymentExpensesController.show(taxYear: Int)
-POST       /:taxYear/check-employment-expenses                              controllers.employment.CheckEmploymentExpensesController.submit(taxYear: Int)
+GET        /:taxYear/expenses/check-employment-expenses                     controllers.employment.CheckEmploymentExpensesController.show(taxYear: Int)
+POST       /:taxYear/expenses/check-employment-expenses                     controllers.employment.CheckEmploymentExpensesController.submit(taxYear: Int)
 
 GET        /:taxYear/benefits/mileage-amount                                controllers.benefits.fuel.MileageBenefitAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/mileage-amount                                controllers.benefits.fuel.MileageBenefitAmountController.submit(taxYear: Int, employmentId: String)
