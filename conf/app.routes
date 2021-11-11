@@ -175,6 +175,9 @@ POST       /:taxYear/benefits/company-car                                   cont
 GET        /:taxYear/benefits/living-accommodation-amount                   controllers.benefits.accommodation.LivingAccommodationBenefitAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/living-accommodation-amount                   controllers.benefits.accommodation.LivingAccommodationBenefitAmountController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/medical-dental-amount                         controllers.benefits.medical.MedicalOrDentalBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/medical-dental-amount                         controllers.benefits.medical.MedicalOrDentalBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
 GET        /language/:lang                                                  controllers.LanguageSwitchController.switchToLanguage(lang: String)
 
 GET        /error/you-need-agent-services-account                           controllers.errors.YouNeedAgentServicesController.show
