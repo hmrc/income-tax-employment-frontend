@@ -20,6 +20,7 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.accommodation.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
+import javax.inject.Inject
 import models.User
 import models.benefits.{AccommodationRelocationModel, BenefitsViewModel}
 import models.employment.EmploymentBenefitsType
@@ -33,7 +34,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.QualifyingRelocationBenefitsView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class QualifyingRelocationBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,

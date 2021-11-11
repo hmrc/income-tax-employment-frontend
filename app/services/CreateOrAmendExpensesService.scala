@@ -18,6 +18,7 @@ package services
 
 import config.ErrorHandler
 import connectors.CreateOrAmendExpensesConnector
+import javax.inject.Inject
 import models.User
 import models.employment.{AllEmploymentData, EmploymentExpenses, Expenses}
 import models.expenses.CreateExpensesRequestModel
@@ -26,7 +27,6 @@ import play.api.Logging
 import play.api.mvc.Result
 import uk.gov.hmrc.http.HeaderCarrier
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 

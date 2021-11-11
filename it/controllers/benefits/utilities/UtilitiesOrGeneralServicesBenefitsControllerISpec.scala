@@ -277,7 +277,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
       }
     }
 
-    "redirect to check employments benefits page and update the UtilitiesAndServicesQuestion to yes and when the user chooses yes" which {
+    "redirect to telephone benefits page and update the UtilitiesAndServicesQuestion to yes and when the user chooses yes" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
       lazy val result: WSResponse = {
@@ -288,10 +288,10 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
         urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "redirects to the check your details page" in {
+      "redirects to the telephone benefits page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/telephone?employmentId=$employmentId")
         val utilitiesAndServicesData = findCyaData(taxYearEOY, employmentId, userRequest).get.employment.employmentBenefits.get.utilitiesAndServicesModel.get
         utilitiesAndServicesData shouldBe emptyUtilitiesAndServicesModel.copy(utilitiesAndServicesQuestion = Some(true))
       }

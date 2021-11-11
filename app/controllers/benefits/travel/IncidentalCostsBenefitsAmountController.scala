@@ -17,12 +17,14 @@
 package controllers.benefits.travel
 
 import config.{AppConfig, ErrorHandler}
+import controllers.benefits.travel.routes._
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
-import models.mongo.EmploymentCYAModel
+import javax.inject.Inject
 import models.User
 import models.employment.EmploymentBenefitsType
+import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -32,7 +34,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.IncidentalCostsBenefitsAmountView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 
@@ -102,12 +103,9 @@ class IncidentalCostsBenefitsAmountController @Inject()(implicit val cc: Message
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
                   isPriorSubmission = cya.isPriorSubmission, hasPriorBenefits = cya.hasPriorBenefits)(errorHandler.internalServerError()) {
 
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    //TODO - redirect to entertaining question
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  }
+                  val nextPage = EntertainingBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
                 }
             }
           )

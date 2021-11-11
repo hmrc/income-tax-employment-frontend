@@ -21,6 +21,7 @@ import controllers.benefits.utilities.routes._
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
+import javax.inject.Inject
 import models.User
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
@@ -33,7 +34,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.OtherServicesBenefitsView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class OtherServicesBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,

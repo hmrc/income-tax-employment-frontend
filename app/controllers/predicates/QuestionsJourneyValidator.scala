@@ -17,11 +17,11 @@
 package controllers.predicates
 
 import config.AppConfig
+import javax.inject.{Inject, Singleton}
 import models.question.Question.{Redirect, WithDependency}
 import models.question.QuestionsJourney
 import play.api.mvc.{Call, Result}
 
-import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

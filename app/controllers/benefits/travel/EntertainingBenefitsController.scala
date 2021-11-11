@@ -17,9 +17,11 @@
 package controllers.benefits.travel
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.travel.routes._
+import controllers.benefits.utilities.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
+import javax.inject.Inject
 import models.User
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
@@ -32,7 +34,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.EntertainingBenefitsView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EntertainingBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -93,7 +94,16 @@ class EntertainingBenefitsController @Inject()(implicit val cc: MessagesControll
 
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+
+                val nextPage = {
+                  if (yesNo) {
+                    EntertainmentBenefitsAmountController.show(taxYear, employmentId)
+                  } else {
+                    UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId)
+                  }
+                }
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
             }
           )

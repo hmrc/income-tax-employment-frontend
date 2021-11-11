@@ -16,17 +16,18 @@
 
 package services
 
-import models.User
-import play.api.Logging
-import play.api.mvc.{Request, Result}
-import uk.gov.hmrc.http.HeaderCarrier
 import common.EmploymentToRemove._
 import config.ErrorHandler
 import connectors.DeleteOrIgnoreEmploymentConnector
 import controllers.employment.routes.EmploymentSummaryController
-import models.employment.{AllEmploymentData, EmploymentSource}
-import play.api.mvc.Results.Redirect
 import javax.inject.Inject
+import models.User
+import models.employment.{AllEmploymentData, EmploymentSource}
+import play.api.Logging
+import play.api.mvc.Results.Redirect
+import play.api.mvc.{Request, Result}
+import uk.gov.hmrc.http.HeaderCarrier
+
 import scala.concurrent.{ExecutionContext, Future}
 
 
