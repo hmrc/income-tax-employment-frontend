@@ -886,3 +886,16 @@ benefits.beneficialLoans.theseAre.individual = These are interest free or low in
 benefits.beneficialLoans.theseAre.agent = These are any interest free or low interest loans their employer has given them.
 benefits.beneficialLoans.error.noEntry.individual = Select yes if you got beneficial loans
 benefits.beneficialLoans.error.noEntry.agent = Select yes if your client got beneficial loans
+
+benefits.medicalOrDentalBenefitsAmount.title.individual = How much was your medical or dental benefit in total?
+benefits.medicalOrDentalBenefitsAmount.title.agent = How much was your client’s medical or dental benefit in total?
+benefits.medicalOrDentalBenefitsAmount.informationText.individual = This is the total sum of medical or dental insurance your employer paid for.
+benefits.medicalOrDentalBenefitsAmount.informationText.agent = This is the total sum of medical or dental insurance your client’s employer paid for.
+benefits.medicalOrDentalBenefitsAmount.formInformationText.individual = You can find this information on your P11D form in section I, box 11.
+benefits.medicalOrDentalBenefitsAmount.formInformationText.agent = You can find this information on your client’s P11D form in section I, box 11.
+benefits.medicalOrDentalBenefitsAmount.error.noEntry.individual = Enter your medical or dental benefit amount
+benefits.medicalOrDentalBenefitsAmount.error.noEntry.agent = Enter your client’s medical or dental benefit amount
+benefits.medicalOrDentalBenefitsAmount.error.overMaximum.individual = Your medical or dental benefit must be less than £100,000,000,000
+benefits.medicalOrDentalBenefitsAmount.error.overMaximum.agent = Your client’s medical or dental benefit must be less than £100,000,000,000
+benefits.medicalOrDentalBenefitsAmount.error.invalidFormat.individual = Enter your medical or dental benefit amount in the correct format
+benefits.medicalOrDentalBenefitsAmount.error.invalidFormat.agent = Enter your client’s medical or dental benefit amount in the correct format

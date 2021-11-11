@@ -430,6 +430,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   def emptyMedicalChildcareEducationModel: MedicalChildcareEducationModel =
     MedicalChildcareEducationModel(medicalChildcareEducationQuestion = Some(false))
+
 }
 
 // scalastyle:off number.of.methods
