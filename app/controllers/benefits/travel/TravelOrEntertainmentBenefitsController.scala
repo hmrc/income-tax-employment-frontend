@@ -21,6 +21,7 @@ import controllers.benefits.travel.routes._
 import controllers.benefits.utilities.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
+import javax.inject.Inject
 import models.User
 import models.benefits.TravelEntertainmentModel
 import models.employment.EmploymentBenefitsType
@@ -34,7 +35,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.TravelOrEntertainmentBenefitsView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TravelOrEntertainmentBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,

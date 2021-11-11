@@ -20,9 +20,10 @@ import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import models.mongo.EmploymentCYAModel
+import javax.inject.Inject
 import models.User
 import models.employment.EmploymentBenefitsType
+import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -32,7 +33,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.TelephoneBenefitsView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TelephoneBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,

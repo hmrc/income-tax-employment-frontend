@@ -21,9 +21,9 @@ import controllers.benefits.accommodation.routes.AccommodationRelocationBenefits
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
+import javax.inject.Inject
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
-import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -33,7 +33,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.MileageBenefitAmountView
 
-import javax.inject.Inject
 import scala.concurrent.Future
 
 class MileageBenefitAmountController @Inject()(implicit val cc: MessagesControllerComponents,

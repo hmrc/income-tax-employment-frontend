@@ -382,7 +382,7 @@ class TravelAndSubsistenceControllerISpec extends IntegrationTest with ViewHelpe
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        "redirects to the check your details page" in {
+        "redirects to the incidental costs page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
             Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs?employmentId=$employmentId")
@@ -411,7 +411,7 @@ class TravelAndSubsistenceControllerISpec extends IntegrationTest with ViewHelpe
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        "redirects to the check your details page" in {
+        "redirects to the travel and subsistence amount page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
             Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/travel-subsistence-amount?employmentId=$employmentId")

@@ -21,6 +21,7 @@ import controllers.benefits.medical.routes.MedicalDentalChildcareBenefitsControl
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
+import javax.inject.Inject
 import models.employment.EmploymentBenefitsType
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -31,7 +32,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.OtherServicesBenefitsAmountView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class OtherServicesBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,

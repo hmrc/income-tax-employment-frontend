@@ -16,9 +16,8 @@
 
 package controllers.benefits.accommodation
 
+import controllers.benefits.accommodation.routes.{AccommodationRelocationBenefitsController, LivingAccommodationBenefitAmountController, QualifyingRelocationBenefitsController}
 import controllers.benefits.travel.routes.TravelOrEntertainmentBenefitsController
-import controllers.benefits.accommodation
-import routes.{AccommodationRelocationBenefitsController, LivingAccommodationBenefitAmountController, QualifyingRelocationBenefitsController}
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.User

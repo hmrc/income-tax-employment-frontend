@@ -443,7 +443,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
     }
 
     "redirect to utility and general services page when a valid request is made and then" should {
-      val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
+      val user = UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN))
 
 
       "redirect to check employments benefits page when a valid form is submitted and a prior submission" when {

@@ -25,7 +25,6 @@ import controllers.benefits.utilities.routes._
 import controllers.employment.routes._
 import models.User
 import models.benefits.{AccommodationRelocationModel, CarVanFuelModel, TravelEntertainmentModel, UtilitiesAndServicesModel}
-import models.benefits.{AccommodationRelocationModel, CarVanFuelModel, TravelEntertainmentModel}
 import models.employment.{EmploymentBenefitsType, EmploymentDetailsType, EmploymentType}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import models.redirects.ConditionalRedirect

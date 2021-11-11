@@ -423,7 +423,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        "redirects to the check your details page" in {
+        "redirects to the incidental costs amount page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
             Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs-amount?employmentId=$employmentId")

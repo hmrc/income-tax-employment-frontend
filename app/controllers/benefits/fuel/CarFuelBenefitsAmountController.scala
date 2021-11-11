@@ -21,6 +21,7 @@ import controllers.benefits.fuel.routes.{CompanyCarFuelBenefitsController, Compa
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
+import javax.inject.Inject
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
 import models.redirects.ConditionalRedirect
@@ -33,7 +34,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.CarFuelBenefitsAmountView
 
-import javax.inject.Inject
 import scala.concurrent.Future
 
 class CarFuelBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,

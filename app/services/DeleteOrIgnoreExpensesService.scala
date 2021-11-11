@@ -20,6 +20,7 @@ import common.EmploymentToRemove._
 import config.ErrorHandler
 import connectors.DeleteOrIgnoreExpensesConnector
 import controllers.employment.routes.EmploymentSummaryController
+import javax.inject.Inject
 import models.User
 import models.employment.{AllEmploymentData, EmploymentExpenses}
 import play.api.Logging
@@ -27,7 +28,6 @@ import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.http.HeaderCarrier
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 

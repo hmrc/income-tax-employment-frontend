@@ -18,9 +18,9 @@ package controllers.benefits.travel
 
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.travel.routes._
-import controllers.benefits.utilities.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
+import javax.inject.Inject
 import models.User
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
@@ -33,7 +33,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.TravelAndSubsistenceBenefitsView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TravelAndSubsistenceBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
