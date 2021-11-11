@@ -879,3 +879,10 @@ benefits.childcareBenefitsAmount.error.overMaximum.individual = Your childcare b
 benefits.childcareBenefitsAmount.error.noEntry.agent = Enter your client’s childcare benefit amount
 benefits.childcareBenefitsAmount.error.incorrectFormat.agent = Enter your client’s childcare benefit amount in the correct format
 benefits.childcareBenefitsAmount.error.overMaximum.agent = Your client’s childcare benefit must be less than £100,000,000,000
+
+benefits.beneficialLoans.title.individual = Did you get any beneficial loans?
+benefits.beneficialLoans.title.agent = Did your client get any beneficial loans?
+benefits.beneficialLoans.theseAre.individual = These are interest free or low interest loans from your employer.
+benefits.beneficialLoans.theseAre.agent = These are any interest free or low interest loans their employer has given them.
+benefits.beneficialLoans.error.noEntry.individual = Select yes if you got beneficial loans
+benefits.beneficialLoans.error.noEntry.agent = Select yes if your client got beneficial loans

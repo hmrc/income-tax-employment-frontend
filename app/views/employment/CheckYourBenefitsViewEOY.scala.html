@@ -214,7 +214,7 @@
                     educationalServices => showRows("checkYourBenefits.educationalAmount", educationalServices)
                 },
                 benefits.medicalChildcareEducationModel.flatMap(_.beneficialLoanQuestion).map{
-                    beneficialLoanQuestion => showQuestionRow("checkYourBenefits.beneficialLoans", beneficialLoanQuestion)
+                    beneficialLoanQuestion => showQuestionRow("checkYourBenefits.beneficialLoans", beneficialLoanQuestion, controllers.benefits.medical.routes.BeneficialLoansBenefitsController.show(taxYear: Int, employmentId: String))
                 },
                 benefits.medicalChildcareEducationModel.flatMap(_.beneficialLoan).map{
                     beneficialLoan => showRows("checkYourBenefits.beneficialLoansAmount", beneficialLoan)

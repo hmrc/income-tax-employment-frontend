@@ -460,8 +460,7 @@ object RedirectService extends Logging {
       Seq(
         //TODO go to Educational services yes/no page
         ConditionalRedirect(educationalServicesQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
-        //TODO go to Beneficial loans yes/no page
-        ConditionalRedirect(educationalServicesQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(educationalServicesQuestion.contains(false), BeneficialLoansBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(educationalServicesQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
@@ -484,8 +483,7 @@ object RedirectService extends Logging {
 
     beneficialLoansRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to Beneficial loans yes/no page
-        ConditionalRedirect(beneficialLoanQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(beneficialLoanQuestion.isEmpty, BeneficialLoansBenefitsController.show(taxYear, employmentId)),
         //TODO go to Income Tax or incurred costs yes/no page
         ConditionalRedirect(beneficialLoanQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(beneficialLoanQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
