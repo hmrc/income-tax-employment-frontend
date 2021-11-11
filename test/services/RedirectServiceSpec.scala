@@ -1073,7 +1073,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => beneficialLoansRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe EducationalServicesBenefitsAmountController.show(taxYear, employmentId).url
       }
 
       "it's a new submission and attempted to view the 'Beneficial loans amount' page but the Beneficial loans question is empty" in {

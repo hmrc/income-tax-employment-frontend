@@ -680,13 +680,14 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val incidentalCostsBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/incidental-overnight-costs-amount?employmentId=001"
     val utilitiesOrGeneralServicesBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/utility-general-service?employmentId=001"
     val entertainingBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/entertainment-expenses?employmentId=001"
-    val telephoneBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/telephone?employmentId=001"
-    val otherServicesBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/other-services-amount?employmentId=001"
+    val telephoneBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/telephone?employmentId=001"
+    val otherServicesBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/other-services-amount?employmentId=001"
     val incidentalOvernightCostEmploymentBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/incidental-overnight-costs?employmentId=001"
-    val otherServicesBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/other-services?employmentId=001"
+    val otherServicesBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/other-services?employmentId=001"
     val entertainmentAmountBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/entertainment-expenses-amount?employmentId=001"
     val employerProvidedServicesBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/employer-provided-services?employmentId=001"
     val telephoneEmploymentBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/telephone-amount?employmentId=001"
+    val educationalServicesAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/educational-services-amount?employmentId=001"
     val employerProvidedServicesBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/employer-provided-services-amount?employmentId=001"
     val professionalSubscriptionsBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/professional-fees-or-subscriptions?employmentId=001"
     val professionalSubscriptionsBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/professional-fees-or-subscriptions-amount?employmentId=001"
@@ -866,7 +867,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.nursery, commonResults.yes, 13, 4, s"${user.commonExpectedResults.changeText} ${specificResults.nurseryHiddenText}", childcareBenefitsHref)
           changeAmountRowCheck(commonResults.nurseryAmount, "£17", 13, 5, s"${user.commonExpectedResults.changeText} ${specificResults.nurseryAmountHiddenText}", childcareBenefitsAmountHref)
           changeAmountRowCheck(commonResults.educational, commonResults.yes, 13, 6, s"${user.commonExpectedResults.changeText} ${specificResults.educationalHiddenText}", dummyHref)
-          changeAmountRowCheck(commonResults.educationalAmount, "£19", 13, 7, s"${user.commonExpectedResults.changeText} ${specificResults.educationalAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.educationalAmount, "£19", 13, 7, s"${user.commonExpectedResults.changeText} ${specificResults.educationalAmountHiddenText}", educationalServicesAmountHref)
           changeAmountRowCheck(commonResults.beneficialLoans, commonResults.yes, 13, 8, s"${user.commonExpectedResults.changeText} ${specificResults.beneficialLoansHiddenText}", beneficialLoansBenefitsHref)
           changeAmountRowCheck(commonResults.beneficialLoansAmount, "£18", 13, 9, s"${user.commonExpectedResults.changeText} ${specificResults.beneficialLoansAmountHiddenText}", dummyHref)
 

@@ -20,12 +20,10 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.accommodation.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
 import models.User
 import models.benefits.{AccommodationRelocationModel, BenefitsViewModel}
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
-import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -35,6 +33,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.accommodation.QualifyingRelocationBenefitsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class QualifyingRelocationBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -52,7 +51,7 @@ class QualifyingRelocationBenefitsController @Inject()(implicit val cc: Messages
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
-          EmploymentBenefitsType)(qualifyingRelocationBenefitsRedirects(_, taxYear, employmentId)) { cya =>
+          EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           val qualifyingRelocationBenefitsQuestion: Option[Boolean] = cya.employment.employmentBenefits.flatMap(
             _.accommodationRelocationModel).flatMap(_.qualifyingRelocationExpensesQuestion)
@@ -72,8 +71,7 @@ class QualifyingRelocationBenefitsController @Inject()(implicit val cc: Messages
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { cya =>
 
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, (cya),
-          EmploymentBenefitsType)(qualifyingRelocationBenefitsRedirects(_, taxYear, employmentId)) { cya =>
+        redirectBasedOnCurrentAnswers(taxYear, employmentId, cya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(qualifyingRelocationBenefitsView(formWithErrors, taxYear, employmentId))),
@@ -121,7 +119,7 @@ class QualifyingRelocationBenefitsController @Inject()(implicit val cc: Messages
     missingInputError = s"benefits.qualifyingRelocationBenefits.error.${if (user.isAgent) "agent" else "individual"}"
   )
 
-  def qualifyingRelocationBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
     RedirectService.qualifyingRelocationBenefitsRedirects(cya, taxYear, employmentId)
   }
 }

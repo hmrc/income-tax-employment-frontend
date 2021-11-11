@@ -899,3 +899,12 @@ benefits.medicalOrDentalBenefitsAmount.error.overMaximum.individual = Your medic
 benefits.medicalOrDentalBenefitsAmount.error.overMaximum.agent = Your client’s medical or dental benefit must be less than £100,000,000,000
 benefits.medicalOrDentalBenefitsAmount.error.invalidFormat.individual = Enter your medical or dental benefit amount in the correct format
 benefits.medicalOrDentalBenefitsAmount.error.invalidFormat.agent = Enter your client’s medical or dental benefit amount in the correct format
+
+benefits.educationalServicesBenefitsAmount.title.individual = How much did you get in total for educational services?
+benefits.educationalServicesBenefitsAmount.title.agent = How much did your client get in total for educational services?
+benefits.educationalServicesBenefitsAmount.error.noEntry.individual = Enter the amount you got for educational services
+benefits.educationalServicesBenefitsAmount.error.noEntry.agent = Enter the amount your client got for educational services
+benefits.educationalServicesBenefitsAmount.error.overMaximum.individual = Your educational services benefit must be less than £100,000,000,000
+benefits.educationalServicesBenefitsAmount.error.overMaximum.agent = Your client’s educational services benefit must be less than £100,000,000,000
+benefits.educationalServicesBenefitsAmount.error.invalidFormat.individual = Enter the amount you got for educational services in the correct format
+benefits.educationalServicesBenefitsAmount.error.invalidFormat.agent = Enter the amount your client got for educational services in the correct format
