@@ -381,7 +381,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
 
       val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
 
-      "redirect to check your benefits and update the PersonalIncidentalQuestion to no and wipe the personalIncidentalAmount" +
+      "redirect to entertainment expenses page and update the PersonalIncidentalQuestion to no and wipe the personalIncidentalAmount" +
         " data when the user chooses no" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
@@ -397,7 +397,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/entertainment-expenses?employmentId=$employmentId")
           lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
           cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion)) shouldBe Some(true)
           cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe Some(true)
@@ -410,7 +410,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
 
       }
 
-      "redirect to check your benefits and update the PersonalIncidentalCostsQuestion to yes and when the user chooses yes" which {
+      "redirect to incidental overnight costs amount page and update the PersonalIncidentalCostsQuestion to yes and when the user chooses yes" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
@@ -423,10 +423,10 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        "redirects to the check your details page" in {
+        "redirects to the incidental costs amount page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs-amount?employmentId=$employmentId")
           lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
           cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion)) shouldBe Some(true)
           cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe Some (true)

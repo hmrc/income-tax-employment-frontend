@@ -16,11 +16,15 @@
 
 package services
 
+import java.util.NoSuchElementException
+
 import config.{AppConfig, ErrorHandler}
 import connectors.httpParsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmploymentDataResponse
 import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import connectors.{CreateUpdateEmploymentDataConnector, IncomeTaxUserDataConnector}
 import controllers.employment.routes.{CheckEmploymentDetailsController, EmploymentSummaryController}
+import javax.inject.{Inject, Singleton}
+import models.benefits.Benefits
 import models.employment._
 import models.employment.createUpdate._
 import models.mongo.{EmploymentCYAModel, EmploymentUserData, ExpensesCYAModel, ExpensesUserData}
@@ -34,10 +38,6 @@ import play.api.mvc.{Request, Result}
 import repositories.{EmploymentUserDataRepository, ExpensesUserDataRepository}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Clock
-import java.util.NoSuchElementException
-
-import javax.inject.{Inject, Singleton}
-import models.benefits.Benefits
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try

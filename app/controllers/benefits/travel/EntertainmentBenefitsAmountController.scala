@@ -21,17 +21,17 @@ import controllers.benefits.utilities.routes.UtilitiesOrGeneralServicesBenefitsC
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
+import javax.inject.Inject
 import models.employment.EmploymentBenefitsType
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
+import services.{EmploymentSessionService, RedirectService}
 import services.RedirectService.{entertainmentBenefitsAmountRedirects, redirectBasedOnCurrentAnswers}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.EntertainmentBenefitsAmountView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EntertainmentBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -88,12 +88,11 @@ class EntertainmentBenefitsAmountController @Inject()(implicit val cc: MessagesC
                 )
 
                 employmentSessionService.createOrUpdateSessionData(
-                  employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    Redirect(UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId))
-                  }
+                  employmentId, updatedCyaModel, taxYear,  cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
+
+                  val nextPage = UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
                 }
             }
           )

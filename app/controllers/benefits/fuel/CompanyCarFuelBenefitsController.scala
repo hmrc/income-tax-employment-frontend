@@ -20,6 +20,7 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.fuel.routes.{CarFuelBenefitsAmountController, CompanyVanBenefitsController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
+import javax.inject.Inject
 import models.User
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
@@ -32,7 +33,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.CompanyCarFuelBenefitsView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CompanyCarFuelBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,

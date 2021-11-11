@@ -16,8 +16,8 @@
 
 package controllers.benefits.utilities
 
-import controllers.employment.routes.CheckYourBenefitsController
 import controllers.benefits.utilities.routes._
+import controllers.employment.routes.CheckYourBenefitsController
 import models.User
 import models.benefits.{BenefitsViewModel, UtilitiesAndServicesModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}

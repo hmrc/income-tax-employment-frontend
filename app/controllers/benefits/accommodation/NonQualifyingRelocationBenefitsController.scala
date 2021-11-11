@@ -21,6 +21,7 @@ import controllers.benefits.accommodation.routes._
 import controllers.benefits.travel.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
+import javax.inject.Inject
 import models.User
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
@@ -33,7 +34,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.NonQualifyingRelocationBenefitsView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class NonQualifyingRelocationBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,

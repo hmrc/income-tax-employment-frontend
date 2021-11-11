@@ -17,9 +17,11 @@
 package controllers.benefits.travel
 
 import config.{AppConfig, ErrorHandler}
+import controllers.benefits.travel.routes._
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
+import javax.inject.Inject
 import models.benefits.TravelEntertainmentModel
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
@@ -32,7 +34,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.TravelOrSubsistenceBenefitsAmountView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TravelOrSubsistenceBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -75,13 +76,11 @@ class TravelOrSubsistenceBenefitsAmountController @Inject()(implicit val cc: Mes
                 val updatedCyaModel = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(travelEntertainmentModel =
                   travelEntertainment.map(_.copy(travelAndSubsistence = Some(newAmount))))))
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
-                  cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    // TODO: Point to the Personal incidental costs page
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  }
+                    cya.isPriorSubmission,cya.hasPriorBenefits)(errorHandler.internalServerError()) {
+
+                  val nextPage = IncidentalOvernightCostEmploymentBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
                 }
             }
           )
