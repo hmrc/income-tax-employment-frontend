@@ -417,8 +417,7 @@ object RedirectService extends Logging {
 
     commonMedicalChildcareEducationRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to 'Medical or dental insurance' yes/no page
-        ConditionalRedirect(medicalInsuranceQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(medicalInsuranceQuestion.isEmpty, MedicalDentalBenefitsController.show(taxYear, employmentId)),
         ConditionalRedirect(medicalInsuranceQuestion.contains(false), ChildcareBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(medicalInsuranceQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )

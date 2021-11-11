@@ -29,8 +29,12 @@
 
 @(form: Form[Boolean], taxYear: Int, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
-@titleForUse = @{messages(s"benefits.medicalDentalChildcare.title.${if(user.isAgent) "agent" else "individual"}")}
+@titleForUse = @{messages(s"benefits.medicalDentalBenefits.title.${if(user.isAgent) "agent" else "individual"}")}
 @headingForUse = @{titleForUse}
+
+@contentHtml = {
+    <p class="govuk-body">@{messages(s"benefits.medicalDentalBenefits.content.${if(user.isAgent) "agent" else "individual"}")}</p>
+}
 
 @hasFormErrors = @{form.hasErrors}
 
@@ -38,11 +42,11 @@
 
     @errorSummary(form.errors.distinct)
 
-    @formWithCsrf(action = controllers.benefits.medical.routes.MedicalDentalChildcareBenefitsController.submit(taxYear, employmentId)) {
+    @formWithCsrf(action = controllers.benefits.medical.routes.MedicalDentalBenefitsController.submit(taxYear, employmentId)) {
         @inputRadio(
             form = form,
             heading = headingForUse,
-            content = None,
+            content = Some(contentHtml),
             classes = "govuk-!-margin-bottom-4",
             inline = true,
             subheading = Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString))

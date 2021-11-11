@@ -984,7 +984,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => medicalInsuranceAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe MedicalDentalBenefitsController.show(taxYear, employmentId).url
       }
 
       "it's a new submission and attempted to view the 'Childcare' yes/no page but the medical insurance amount is empty" in {
@@ -994,7 +994,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => childcareRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe MedicalOrDentalBenefitsAmountController.show(taxYear, employmentId).url
       }
 
       "it's a new submission and attempted to view the 'Childcare amount' page but the childcare question is empty" in {
