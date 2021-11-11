@@ -153,6 +153,9 @@ POST       /:taxYear/benefits/childcare-amount                              cont
 GET        /:taxYear/benefits/beneficial-loans                              controllers.benefits.medical.BeneficialLoansBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/beneficial-loans                              controllers.benefits.medical.BeneficialLoansBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/educational-services-amount                   controllers.benefits.medical.EducationalServicesBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/educational-services-amount                   controllers.benefits.medical.EducationalServicesBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
 GET        /sign-out                                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
 GET        /error/you-need-to-sign-up                                       controllers.errors.IndividualAuthErrorController.show
