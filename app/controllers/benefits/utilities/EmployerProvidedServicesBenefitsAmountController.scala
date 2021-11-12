@@ -43,7 +43,8 @@ class EmployerProvidedServicesBenefitsAmountController @Inject()(implicit val cc
                                                                  val employmentSessionService: EmploymentSessionService,
                                                                  errorHandler: ErrorHandler,
                                                                  ec: ExecutionContext,
-                                                                 clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+                                                                 clock: Clock) extends FrontendController(cc)
+  with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -76,11 +77,10 @@ class EmployerProvidedServicesBenefitsAmountController @Inject()(implicit val cc
                   utilitiesAndServices.map(_.copy(employerProvidedServices = Some(newAmount))))))
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
                   cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    Redirect(ProfessionalSubscriptionsBenefitsController.show(taxYear, employmentId))
-                  }
+
+                  val nextPage = ProfessionalSubscriptionsBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
                 }
             }
           )

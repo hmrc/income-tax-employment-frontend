@@ -17,7 +17,7 @@
 package controllers.benefits.utilities
 
 import controllers.benefits.medical.routes.MedicalDentalChildcareBenefitsController
-import controllers.benefits.utilities.routes.UtilitiesOrGeneralServicesBenefitsController
+import controllers.benefits.utilities.routes.{EmployerProvidedServicesBenefitsAmountController, ProfessionalSubscriptionsBenefitsController, UtilitiesOrGeneralServicesBenefitsController}
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.User
@@ -440,8 +440,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        //        TODO: This will go to the amount page when its implemented
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(EmployerProvidedServicesBenefitsAmountController.show(taxYearEOY, employmentId).url)
       }
 
       s"updates the cyaModel to have the employerProvidedServicesQuestion to be true" in {
@@ -454,7 +453,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
     }
 
     "update employerProvidedServicesQuestion to Some(false) and employerProvidedServices to None when user chooses no and has prior," +
-      "redirects to the CYA page" which {
+      "redirects to the professional fees or subscriptions page" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -469,7 +468,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(ProfessionalSubscriptionsBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
       s"updates the cyaModel to have the employerProvidedServicesQuestion to be false and the value to be None" in {
@@ -481,7 +480,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
     }
 
-    "adds an employerProvidedServicesQuestion to Some(true) when user chooses yes, redirects to the amount page when no prior" which {
+    "adds an employerProvidedServicesQuestion to false when user chooses no, redirects to the amount page when no prior" which {
 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -496,8 +495,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        //        TODO: This will go to the amount page when its implemented
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(ProfessionalSubscriptionsBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
       s"updates the cyaModel to have the employerProvidedServicesQuestion to be false and the value to be None" in {
@@ -524,8 +522,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        //        TODO: This will go to the fees and subscriptions page when its implemented
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(ProfessionalSubscriptionsBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
       s"updates the cyaModel to have the employerProvidedServicesQuestion to be false and the value to be None" in {

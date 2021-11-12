@@ -366,7 +366,7 @@ class TelephoneEmploymentBenefitsAmountControllerISpec extends IntegrationTest w
       }
     }
 
-    "redirect to check employments benefits page when a valid form is submitted and prior benefits exist" when {
+    "redirect to employer services benefits page when a valid form is submitted and prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(false)
         dropEmploymentDB()
@@ -376,7 +376,7 @@ class TelephoneEmploymentBenefitsAmountControllerISpec extends IntegrationTest w
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001")
+        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/employer-provided-services?employmentId=001")
       }
 
       "updates the CYA model with the new value" in {
@@ -417,7 +417,7 @@ class TelephoneEmploymentBenefitsAmountControllerISpec extends IntegrationTest w
       }
     }
 
-    "redirect to check employments benefits page when a valid form is submitted and no prior benefits exist" when {
+    "redirect to employer services page when a valid form is submitted and no prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(false)
         dropEmploymentDB()
@@ -427,7 +427,7 @@ class TelephoneEmploymentBenefitsAmountControllerISpec extends IntegrationTest w
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/employer-provided-services-amount?employmentId=001")
+        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/employer-provided-services?employmentId=001")
       }
 
       "updates the CYA model with the new value" in {

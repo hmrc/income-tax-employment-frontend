@@ -38,7 +38,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class IncidentalOvernightCostEmploymentBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
                                                                     authAction: AuthorisedAction,
                                                                     inYearAction: InYearAction,
-                                                                    incidentalOvernightCostEmploymentBenefitsView: IncidentalOvernightCostEmploymentBenefitsView,
+                                                                    view: IncidentalOvernightCostEmploymentBenefitsView,
                                                                     appConfig: AppConfig,
                                                                     employmentSessionService: EmploymentSessionService,
                                                                     errorHandler: ErrorHandler,
@@ -62,8 +62,8 @@ class IncidentalOvernightCostEmploymentBenefitsController @Inject()(implicit val
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) match {
-            case Some(yesNo) => Future.successful(Ok(incidentalOvernightCostEmploymentBenefitsView(yesNoForm.fill(yesNo), taxYear, employmentId)))
-            case None => Future.successful(Ok(incidentalOvernightCostEmploymentBenefitsView(yesNoForm, taxYear, employmentId)))
+            case Some(yesNo) => Future.successful(Ok(view(yesNoForm.fill(yesNo), taxYear, employmentId)))
+            case None => Future.successful(Ok(view(yesNoForm, taxYear, employmentId)))
           }
         }
       }
@@ -77,7 +77,7 @@ class IncidentalOvernightCostEmploymentBenefitsController @Inject()(implicit val
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
           yesNoForm.bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(incidentalOvernightCostEmploymentBenefitsView(formWithErrors, taxYear, employmentId))),
+            formWithErrors => Future.successful(BadRequest(view(formWithErrors, taxYear, employmentId))),
             yesNo => {
 
               val cya = data.employment
