@@ -42,7 +42,8 @@ class NonQualifyingRelocationBenefitsAmountController @Inject()(implicit val cc:
                                                                 val employmentSessionService: EmploymentSessionService,
                                                                 errorHandler: ErrorHandler,
                                                                 ec: ExecutionContext,
-                                                                clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+                                                                clock: Clock) extends FrontendController(cc)
+  with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
