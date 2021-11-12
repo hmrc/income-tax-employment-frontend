@@ -77,11 +77,10 @@ class TelephoneEmploymentBenefitsAmountController @Inject()(implicit val cc: Mes
                   utilitiesAndServices.map(_.copy(telephone = Some(newAmount))))))
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
                   cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    Redirect(EmployerProvidedServicesBenefitsAmountController.show(taxYear, employmentId))
-                  }
+
+                  val nextPage = EmployerProvidedServicesBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
                 }
             }
           )

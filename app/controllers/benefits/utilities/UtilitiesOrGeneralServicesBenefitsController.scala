@@ -17,8 +17,8 @@
 package controllers.benefits.utilities
 
 import config.{AppConfig, ErrorHandler}
+import controllers.benefits.medical.routes._
 import controllers.benefits.utilities.routes._
-import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import javax.inject.Inject
@@ -91,8 +91,7 @@ class UtilitiesOrGeneralServicesBenefitsController @Inject()(implicit val cc: Me
                   if (yesNo) {
                     TelephoneBenefitsController.show(taxYear, employmentId)
                   } else {
-                    //TODO Medical first page
-                    CheckYourBenefitsController.show(taxYear, employmentId)
+                    MedicalDentalChildcareBenefitsController.show(taxYear, employmentId)
                   }
                 }
 

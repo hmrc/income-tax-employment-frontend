@@ -17,6 +17,7 @@
 package controllers.benefits.utilities
 
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.utilities.routes._
 import models.User
 import models.benefits.{BenefitsViewModel, UtilitiesAndServicesModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -326,7 +327,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
       }
     }
 
-    "redirect to check employment benefits page" when {
+    "redirect to other services page" when {
       "valid form is submitted and it's a prior submission" which {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(isAgent = false)
@@ -337,7 +338,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
 
         "has a SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(OtherServicesBenefitsController.show(taxYearEOY, employmentId).url)
         }
         "updates employerProvidedProfessionalSubscriptions to the new value" in {
           lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
@@ -359,7 +360,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
       }
     }
 
-    "redirect to check employment benefits page when valid form is submitted and not a prior submission" which {
+    "redirect to other services page when valid form is submitted and not a prior submission" which {
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -369,7 +370,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
       }
       "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001")
+        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/other-services?employmentId=001")
       }
 
       "updates employerProvidedProfessionalSubscriptions to the new value" in {

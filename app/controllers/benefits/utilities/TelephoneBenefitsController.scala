@@ -17,7 +17,7 @@
 package controllers.benefits.utilities
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.utilities.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import javax.inject.Inject
@@ -27,8 +27,8 @@ import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
 import services.RedirectService.{commonUtilitiesAndServicesBenefitsRedirects, redirectBasedOnCurrentAnswers}
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.TelephoneBenefitsView
@@ -93,7 +93,16 @@ class TelephoneBenefitsController @Inject()(implicit val cc: MessagesControllerC
 
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+
+                val nextPage = {
+                  if (yesNo) {
+                    TelephoneEmploymentBenefitsAmountController.show(taxYear, employmentId)
+                  } else {
+                    EmployerProvidedServicesBenefitsController.show(taxYear, employmentId)
+                  }
+                }
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
             }
           )

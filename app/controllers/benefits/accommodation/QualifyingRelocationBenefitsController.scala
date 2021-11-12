@@ -25,6 +25,7 @@ import models.User
 import models.benefits.{AccommodationRelocationModel, BenefitsViewModel}
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
+import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -120,7 +121,7 @@ class QualifyingRelocationBenefitsController @Inject()(implicit val cc: Messages
     missingInputError = s"benefits.qualifyingRelocationBenefits.error.${if (user.isAgent) "agent" else "individual"}"
   )
 
-  def qualifyingRelocationBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
+  def qualifyingRelocationBenefitsRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     RedirectService.qualifyingRelocationBenefitsRedirects(cya, taxYear, employmentId)
   }
 }

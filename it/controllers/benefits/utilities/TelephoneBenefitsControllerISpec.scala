@@ -374,7 +374,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
       val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
 
-      "redirect to check your benefits, update the telephoneQuestion to no and wipe the telephone amount" +
+      "redirect to employer services page, update the telephoneQuestion to no and wipe the telephone amount" +
         " data when the user chooses no" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
@@ -388,10 +388,10 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        "redirects to the check your details page" in {
+        "redirects to the employer services page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/employer-provided-services?employmentId=$employmentId")
           lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
           cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.utilitiesAndServicesQuestion)) shouldBe Some(true)
           cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.telephoneQuestion)) shouldBe Some(false)
@@ -400,7 +400,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
       }
 
-      "redirect to check your benefits and update the telephoneQuestion to yes and when the user chooses yes" which {
+      "redirect to telephone amount page and update the telephoneQuestion to yes and when the user chooses yes" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
@@ -413,10 +413,10 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        "redirects to the check your details page" in {
+        "redirects to the telephone amount page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/telephone-amount?employmentId=$employmentId")
           lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
           cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.utilitiesAndServicesQuestion)) shouldBe Some(true)
           cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.telephoneQuestion)) shouldBe Some(true)

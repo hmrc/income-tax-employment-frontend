@@ -26,8 +26,8 @@ import models.employment.EmploymentBenefitsType
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
 import services.RedirectService.{redirectBasedOnCurrentAnswers, servicesBenefitsAmountRedirects}
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.OtherServicesBenefitsAmountView
@@ -89,11 +89,10 @@ class OtherServicesBenefitsAmountController @Inject()(implicit val cc: MessagesC
 
                 employmentSessionService.createOrUpdateSessionData(
                   employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    Redirect(MedicalDentalChildcareBenefitsController.show(taxYear, employmentId))
-                  }
+
+                  val nextPage =  MedicalDentalChildcareBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
                 }
             }
           )

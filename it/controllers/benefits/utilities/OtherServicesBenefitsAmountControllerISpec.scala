@@ -444,7 +444,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
     "redirect to another page when a valid request is made and then" should {
       val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
 
-      "redirect to check employments benefits page when a valid form is submitted and a prior submission" when {
+      "redirect to medical dental childcare benefits page when a valid form is submitted and a prior submission" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
@@ -456,7 +456,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001")
+          result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/medical-dental-childcare-education-loans?employmentId=001")
         }
 
         "updates the CYA model with the new value" in {

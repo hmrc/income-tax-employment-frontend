@@ -282,7 +282,7 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
       }
     }
 
-    "redirect to check employments benefits page and update the ServiceQuestion to yes when the user chooses yes" which {
+    "redirect to other services amount benefits page and update the ServiceQuestion to yes when the user chooses yes" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
       lazy val result: WSResponse = {
@@ -293,16 +293,16 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
         urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "redirects to the check your details page" in {
+      "redirects to the other services amount benefits page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/other-services-amount?employmentId=$employmentId")
         val utilitiesAndServicesData = findCyaData(taxYearEOY, employmentId, userRequest).get.employment.employmentBenefits.get.utilitiesAndServicesModel.get
         utilitiesAndServicesData.serviceQuestion shouldBe Some(true)
       }
     }
 
-    "redirect to check employment benefits page and update ServiceQuestion no no when user chooses no" which {
+    "redirect to medical dental childcare benefits page and update ServiceQuestion no no when user chooses no" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
       lazy val result: WSResponse = {
@@ -316,7 +316,7 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/medical-dental-childcare-education-loans?employmentId=$employmentId")
         val utilitiesAndServicesData = findCyaData(taxYearEOY, employmentId, userRequest).get.employment.employmentBenefits.get.utilitiesAndServicesModel.get
         utilitiesAndServicesData.serviceQuestion shouldBe Some(false)
       }
