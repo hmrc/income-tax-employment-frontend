@@ -24,7 +24,7 @@ import controllers.benefits.travel.routes._
 import controllers.benefits.utilities.routes._
 import controllers.employment.routes._
 import models.User
-import models.benefits.{AccommodationRelocationModel, CarVanFuelModel, TravelEntertainmentModel, UtilitiesAndServicesModel}
+import models.benefits.{AccommodationRelocationModel, CarVanFuelModel, MedicalChildcareEducationModel, TravelEntertainmentModel, UtilitiesAndServicesModel}
 import models.employment.{EmploymentBenefitsType, EmploymentDetailsType, EmploymentType}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import models.redirects.ConditionalRedirect
@@ -608,14 +608,16 @@ object RedirectService extends Logging {
     val accommodationRelocationSection: AccommodationRelocationModel = cya.employmentBenefits.flatMap(_.accommodationRelocationModel).getOrElse(AccommodationRelocationModel())
     val travelOrEntertainmentSection: TravelEntertainmentModel = cya.employmentBenefits.flatMap(_.travelEntertainmentModel).getOrElse(TravelEntertainmentModel())
     val utilitiesAndServicesSection: UtilitiesAndServicesModel = cya.employmentBenefits.flatMap(_.utilitiesAndServicesModel).getOrElse(UtilitiesAndServicesModel())
+    val medicalChildcareEducationSection: MedicalChildcareEducationModel = cya.employmentBenefits.flatMap(_.medicalChildcareEducationModel).getOrElse(MedicalChildcareEducationModel())
 
     val carVanFuelSectionFinished = carVanFuelSection.isFinished
     val accommodationRelocationSectionFinished = accommodationRelocationSection.isFinished
     val travelOrEntertainmentSectionFinished = travelOrEntertainmentSection.isFinished
     val utilitiesAndServicesSectionFinished = utilitiesAndServicesSection.isFinished
+    val medicalChildcareEducationSectionFinished = medicalChildcareEducationSection.isFinished
 
     val unfinishedRedirects: Seq[Call] = Seq(carVanFuelSectionFinished, accommodationRelocationSectionFinished,
-      travelOrEntertainmentSectionFinished, utilitiesAndServicesSectionFinished).flatten
+      travelOrEntertainmentSectionFinished, utilitiesAndServicesSectionFinished, medicalChildcareEducationSectionFinished).flatten
 
     unfinishedRedirects match {
       case calls if calls.isEmpty =>

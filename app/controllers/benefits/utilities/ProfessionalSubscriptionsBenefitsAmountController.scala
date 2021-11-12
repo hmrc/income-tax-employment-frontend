@@ -17,7 +17,7 @@
 package controllers.benefits.utilities
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.utilities.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import javax.inject.Inject
@@ -44,7 +44,8 @@ class ProfessionalSubscriptionsBenefitsAmountController @Inject()(implicit val c
                                                                   val employmentSessionService: EmploymentSessionService,
                                                                   errorHandler: ErrorHandler,
                                                                   ec: ExecutionContext,
-                                                                  clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+                                                                  clock: Clock) extends FrontendController(cc)
+  with I18nSupport with SessionHelper with FormUtils {
 
   private def buildForm(isAgent: Boolean): Form[BigDecimal] = {
     AmountForm.amountForm(s"benefits.professionalSubscriptionsAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
@@ -91,12 +92,10 @@ class ProfessionalSubscriptionsBenefitsAmountController @Inject()(implicit val c
 
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
                   cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    // TODO: Go to services question radio page
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  }
+
+                  val nextPage = OtherServicesBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
                 }
             }
           )

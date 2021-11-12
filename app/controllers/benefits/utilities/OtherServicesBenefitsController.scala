@@ -17,8 +17,8 @@
 package controllers.benefits.utilities
 
 import config.{AppConfig, ErrorHandler}
+import controllers.benefits.medical.routes._
 import controllers.benefits.utilities.routes._
-import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import javax.inject.Inject
@@ -95,11 +95,16 @@ class OtherServicesBenefitsController @Inject()(implicit val cc: MessagesControl
                 data.isPriorSubmission,
                 data.hasPriorBenefits
               )(errorHandler.internalServerError()) {
-                if (data.isPriorSubmission) {
-                  Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                } else {
-                  Redirect(OtherServicesBenefitsAmountController.show(taxYear, employmentId))
+
+                val nextPage = {
+                  if (yesNo) {
+                    OtherServicesBenefitsAmountController.show(taxYear, employmentId)
+                  } else {
+                    MedicalDentalChildcareBenefitsController.show(taxYear, employmentId)
+                  }
                 }
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
             }
           )
