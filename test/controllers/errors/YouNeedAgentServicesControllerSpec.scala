@@ -20,7 +20,7 @@ import play.api.http.Status.UNAUTHORIZED
 import play.api.test.Helpers.contentType
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import utils.UnitTestWithApp
-import views.html.authErrorPages.YouNeedAgentServicesView
+import views.html.templates.YouNeedAgentServicesView
 
 class YouNeedAgentServicesControllerSpec extends UnitTestWithApp with DefaultAwaitTimeout {
 

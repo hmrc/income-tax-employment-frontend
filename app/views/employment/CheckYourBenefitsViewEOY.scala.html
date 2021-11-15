@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import views.html.headerFooterTemplate.Layout
+@import views.html.templates.Layout
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Heading
 @import utils.ViewUtils.summaryListRow
@@ -205,13 +205,13 @@
                     nurseryPlacesQuestion => showQuestionRow("checkYourBenefits.nursery", nurseryPlacesQuestion, controllers.benefits.medical.routes.ChildcareBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.medicalChildcareEducationModel.flatMap(_.nurseryPlaces).map{
-                    nurseryPlaces => showRows("checkYourBenefits.nurseryAmount", nurseryPlaces, controllers.benefits.medical.routes.ChildcareBenefitsAmountController.show(taxYear: Int, employmentId: String))
+                    nurseryPlaces => showRows("checkYourBenefits.nurseryAmount", nurseryPlaces, controllers.benefits.medical.routes.ChildcareBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.medicalChildcareEducationModel.flatMap(_.educationalServicesQuestion).map{
                     educationalServicesQuestion => showQuestionRow("checkYourBenefits.educational", educationalServicesQuestion)
                 },
                 benefits.medicalChildcareEducationModel.flatMap(_.educationalServices).map{
-                    educationalServices => showRows("checkYourBenefits.educationalAmount", educationalServices)
+                    educationalServices => showRows("checkYourBenefits.educationalAmount", educationalServices, controllers.benefits.medical.routes.EducationalServicesBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.medicalChildcareEducationModel.flatMap(_.beneficialLoanQuestion).map{
                     beneficialLoanQuestion => showQuestionRow("checkYourBenefits.beneficialLoans", beneficialLoanQuestion, controllers.benefits.medical.routes.BeneficialLoansBenefitsController.show(taxYear: Int, employmentId: String))

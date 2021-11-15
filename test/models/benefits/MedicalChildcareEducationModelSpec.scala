@@ -79,8 +79,8 @@ class MedicalChildcareEducationModelSpec extends UnitTest {
 
     "return call to 'Educational services amount page' when educationalServicesQuestion is true and educationalServices amount not defined" in {
       val underTest = MedicalChildcareEducationModel(educationalServicesQuestion = Some(true), educationalServices = None)
-      // TODO Educational services amount page
-      underTest.educationalServicesSectionFinished(taxYear, employmentId) shouldBe Some(CheckYourBenefitsController.show(taxYear, employmentId))
+
+      underTest.educationalServicesSectionFinished(taxYear, employmentId) shouldBe Some(EducationalServicesBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return None when educationalServicesQuestion is false" in {

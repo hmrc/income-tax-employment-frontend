@@ -32,7 +32,7 @@ import services.EmploymentSessionService
 import services.RedirectService.{medicalBenefitsRedirects, redirectBasedOnCurrentAnswers}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.benefits.MedicalDentalChildcareBenefitsView
+import views.html.benefits.medical.MedicalDentalChildcareBenefitsView
 
 import scala.concurrent.{ExecutionContext, Future}
 

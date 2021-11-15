@@ -30,7 +30,7 @@ import services.EmploymentSessionService
 import services.RedirectService.{beneficialLoansRedirects, redirectBasedOnCurrentAnswers}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.benefits.BeneficialLoansBenefitsView
+import views.html.benefits.medical.BeneficialLoansBenefitsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

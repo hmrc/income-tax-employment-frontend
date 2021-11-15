@@ -30,20 +30,20 @@ import services.RedirectService.redirectBasedOnCurrentAnswers
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.benefits.MedicalOrDentalBenefitsAmountView
+import views.html.benefits.medical.MedicalOrDentalBenefitsAmountView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class MedicalOrDentalBenefitsAmountController  @Inject()(implicit val cc: MessagesControllerComponents,
-                                                         authAction: AuthorisedAction,
-                                                         inYearAction: InYearAction,
-                                                         appConfig: AppConfig,
-                                                         medicalOrDentalBenefitsAmountView: MedicalOrDentalBenefitsAmountView,
-                                                         val employmentSessionService: EmploymentSessionService,
-                                                         errorHandler: ErrorHandler,
-                                                         ec: ExecutionContext,
-                                                         clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+class MedicalOrDentalBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
+                                                        authAction: AuthorisedAction,
+                                                        inYearAction: InYearAction,
+                                                        appConfig: AppConfig,
+                                                        medicalOrDentalBenefitsAmountView: MedicalOrDentalBenefitsAmountView,
+                                                        val employmentSessionService: EmploymentSessionService,
+                                                        errorHandler: ErrorHandler,
+                                                        ec: ExecutionContext,
+                                                        clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {

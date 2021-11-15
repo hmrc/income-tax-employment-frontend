@@ -30,7 +30,7 @@ import services.{EmploymentSessionService, RedirectService}
 import services.RedirectService.{entertainmentBenefitsAmountRedirects, redirectBasedOnCurrentAnswers}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.benefits.EntertainmentBenefitsAmountView
+import views.html.benefits.travel.EntertainmentBenefitsAmountView
 
 import scala.concurrent.{ExecutionContext, Future}
 
