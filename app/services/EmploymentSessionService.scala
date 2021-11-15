@@ -91,6 +91,14 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
   }
 
+  def getExpensesSessionDataResult(taxYear: Int)(result: Option[ExpensesUserData] => Future[Result])
+                                  (implicit user: User[_], request: Request[_]): Future[Result] = {
+    expensesUserDataRepository.find(taxYear).flatMap {
+      case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+      case Right(value) => result(value)
+    }
+  }
+
   def getSessionDataAndReturnResult(taxYear: Int, employmentId: String)(redirectUrl: String = appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
                                    (result: EmploymentUserData => Future[Result])
                                    (implicit user: User[_]): Future[Result] = {

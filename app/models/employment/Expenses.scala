@@ -38,17 +38,19 @@ case class Expenses(businessTravelCosts: Option[BigDecimal] = None,
 
   def toExpensesViewModel(isUsingCustomerData: Boolean, submittedOn: Option[String] = None,
                           cyaExpenses: Option[ExpensesViewModel] = None): ExpensesViewModel = {
-    ExpensesViewModel(
-      businessTravelCosts, jobExpenses, flatRateJobExpenses, professionalSubscriptions, hotelAndMealExpenses,
-      otherAndCapitalAllowances, vehicleExpenses, mileageAllowanceRelief,
-      jobExpensesQuestion = Some(jobExpenses.isDefined),
-      flatRateJobExpensesQuestion = Some(flatRateJobExpenses.isDefined),
-      professionalSubscriptionsQuestion = Some(professionalSubscriptions.isDefined),
-      otherAndCapitalAllowancesQuestion = Some(otherAndCapitalAllowances.isDefined),
-      submittedOn = submittedOn,
-      isUsingCustomerData = isUsingCustomerData,
-      claimingEmploymentExpenses = expensesPopulated(cyaExpenses)
-    )
+    cyaExpenses.fold(
+      ExpensesViewModel(
+        businessTravelCosts, jobExpenses, flatRateJobExpenses, professionalSubscriptions, hotelAndMealExpenses,
+        otherAndCapitalAllowances, vehicleExpenses, mileageAllowanceRelief,
+        jobExpensesQuestion = Some(jobExpenses.isDefined),
+        flatRateJobExpensesQuestion = Some(flatRateJobExpenses.isDefined),
+        professionalSubscriptionsQuestion = Some(professionalSubscriptions.isDefined),
+        otherAndCapitalAllowancesQuestion = Some(otherAndCapitalAllowances.isDefined),
+        submittedOn = submittedOn,
+        isUsingCustomerData = isUsingCustomerData,
+        claimingEmploymentExpenses = expensesPopulated(cyaExpenses)
+      )
+    )(x => x)
   }
 }
 
