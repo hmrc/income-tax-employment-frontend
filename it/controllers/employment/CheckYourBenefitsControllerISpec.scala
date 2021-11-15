@@ -696,6 +696,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val childcareBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/childcare-amount?employmentId=001"
     val beneficialLoansBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/beneficial-loans?employmentId=001"
     val medicalOrDentalBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/medical-dental-amount?employmentId=001"
+    val beneficialLoansAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/beneficial-loans-amount?employmentId=001"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -869,7 +870,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.educational, commonResults.yes, 13, 6, s"${user.commonExpectedResults.changeText} ${specificResults.educationalHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.educationalAmount, "£19", 13, 7, s"${user.commonExpectedResults.changeText} ${specificResults.educationalAmountHiddenText}", educationalServicesAmountHref)
           changeAmountRowCheck(commonResults.beneficialLoans, commonResults.yes, 13, 8, s"${user.commonExpectedResults.changeText} ${specificResults.beneficialLoansHiddenText}", beneficialLoansBenefitsHref)
-          changeAmountRowCheck(commonResults.beneficialLoansAmount, "£18", 13, 9, s"${user.commonExpectedResults.changeText} ${specificResults.beneficialLoansAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.beneficialLoansAmount, "£18", 13, 9, s"${user.commonExpectedResults.changeText} ${specificResults.beneficialLoansAmountHiddenText}", beneficialLoansAmountHref)
 
           textOnPageCheck(commonResults.incomeTaxHeader, fieldHeaderSelector(14))
           changeAmountRowCheck(commonResults.incomeTaxSubheading, commonResults.yes, 15, 1, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxSubheadingHiddenText}", dummyHref)
