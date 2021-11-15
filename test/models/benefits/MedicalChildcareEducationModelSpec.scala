@@ -113,8 +113,7 @@ class MedicalChildcareEducationModelSpec extends UnitTest {
 
     "return call to 'Beneficial loans yes/no page' when beneficialLoansQuestion is None" in {
       val underTest = MedicalChildcareEducationModel(beneficialLoanQuestion = None)
-      //TODO Beneficial loans yes/no page
-      underTest.beneficialLoanSectionFinished(taxYear, employmentId) shouldBe Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      underTest.beneficialLoanSectionFinished(taxYear, employmentId) shouldBe Some(BeneficialLoansBenefitsController.show(taxYear, employmentId))
     }
   }
 
