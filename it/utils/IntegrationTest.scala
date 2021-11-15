@@ -23,7 +23,7 @@ import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import helpers.{PlaySessionCookieBaker, WireMockHelper, WiremockStubHelpers}
 import models.IncomeTaxUserData
-import models.benefits.{AccommodationRelocationModel, Benefits, CarVanFuelModel, MedicalChildcareEducationModel, TravelEntertainmentModel, UtilitiesAndServicesModel}
+import models.benefits._
 import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.scalatest.BeforeAndAfterAll
@@ -43,7 +43,7 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.syntax.retrieved.authSyntaxForRetrieved
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
-import views.html.authErrorPages.AgentAuthErrorPageView
+import views.html.templates.AgentAuthErrorPageView
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
@@ -234,7 +234,6 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     hmrcExpenses = hmrcExpenses,
     customerEmploymentData = customerEmployment,
     customerExpenses = customerExpenses)
-
 
 
   def employmentDetailsAndBenefits(benefits: Option[EmploymentBenefits] = None,

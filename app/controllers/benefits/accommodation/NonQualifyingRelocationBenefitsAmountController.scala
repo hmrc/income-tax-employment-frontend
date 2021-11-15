@@ -30,7 +30,7 @@ import services.RedirectService.{nonQualifyingRelocationBenefitsAmountRedirects,
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.benefits.NonQualifyingRelocationBenefitsAmountView
+import views.html.benefits.accommodation.NonQualifyingRelocationBenefitsAmountView
 
 import scala.concurrent.{ExecutionContext, Future}
 

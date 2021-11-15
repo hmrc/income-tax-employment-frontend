@@ -32,7 +32,7 @@ import services.RedirectService.{commonCarVanFuelBenefitsRedirects, redirectBase
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.benefits.CarFuelBenefitsAmountView
+import views.html.benefits.fuel.CarFuelBenefitsAmountView
 
 import scala.concurrent.Future
 

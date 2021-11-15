@@ -34,7 +34,7 @@ import services.RedirectService._
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.benefits.AccommodationRelocationBenefitsView
+import views.html.benefits.accommodation.AccommodationRelocationBenefitsView
 
 import scala.concurrent.{ExecutionContext, Future}
 

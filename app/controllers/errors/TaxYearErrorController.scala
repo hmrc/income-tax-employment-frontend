@@ -26,7 +26,7 @@ import views.html.templates.TaxYearErrorTemplate
 
 class TaxYearErrorController @Inject()(val mcc: MessagesControllerComponents,
                                        implicit val appConfig: AppConfig,
-                                       taxYearErrorTemplate: TaxYearErrorTemplate) extends FrontendController(mcc) with I18nSupport with SessionHelper{
+                                       taxYearErrorTemplate: TaxYearErrorTemplate) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(): Action[AnyContent] = Action { implicit request =>
     Ok(taxYearErrorTemplate())
