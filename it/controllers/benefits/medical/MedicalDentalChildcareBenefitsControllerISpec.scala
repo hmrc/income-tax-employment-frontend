@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-  package controllers.benefits.medicalChildcareEducation
+  package controllers.benefits.medical
 
   import forms.YesNoForm
   import models.User

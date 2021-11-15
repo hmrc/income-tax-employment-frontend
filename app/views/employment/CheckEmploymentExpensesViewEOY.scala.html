@@ -61,7 +61,7 @@
     }
 
     @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourExpenses.employmentExpenses", expenses.claimingEmploymentExpenses))
+        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourExpenses.employmentExpenses", expenses.claimingEmploymentExpenses, controllers.expenses.routes.EmploymentExpensesController.submit(taxYear)))
         val rows: Seq[SummaryListRow] =
             Seq(
                 expenses.jobExpensesQuestion.map{
