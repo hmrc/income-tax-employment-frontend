@@ -729,6 +729,28 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
     }
   }
 
+  ".getExpensesSessionDataResult" should {
+    "return the Internal server error result when DatabaseError" in {
+      mockFind(taxYear, Left(DataNotUpdated))
+
+      val response = service.getExpensesSessionDataResult(taxYear) {
+        _ => Future.successful(anyResult)
+      }
+
+      status(response) shouldBe INTERNAL_SERVER_ERROR
+    }
+
+    "return the given result when no DatabaseError" in {
+      mockFind(taxYear, Right(None))
+
+      val response = service.getExpensesSessionDataResult(taxYear) {
+        _ => Future.successful(anyResult)
+      }
+
+      status(response) shouldBe anyResult.header.status
+    }
+  }
+
   ".getSessionDataResult" should {
     "return the Internal server error result when DatabaseError" in {
       mockFind(taxYear, "some-employment-id", Left(DataNotUpdated))

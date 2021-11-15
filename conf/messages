@@ -908,3 +908,18 @@ benefits.educationalServicesBenefitsAmount.error.overMaximum.individual = Your e
 benefits.educationalServicesBenefitsAmount.error.overMaximum.agent = Your client’s educational services benefit must be less than £100,000,000,000
 benefits.educationalServicesBenefitsAmount.error.invalidFormat.individual = Enter the amount you got for educational services in the correct format
 benefits.educationalServicesBenefitsAmount.error.invalidFormat.agent = Enter the amount your client got for educational services in the correct format
+
+#####Expenses Pages#######
+
+expenses.claimEmploymentExpenses.title.individual = Do you want to claim employment expenses?
+expenses.claimEmploymentExpenses.title.agent = Do you want to claim employment expenses for your client?
+expenses.claimEmploymentExpenses.canClaim.individual = You can claim employment expenses you did not claim through your employer.
+expenses.claimEmploymentExpenses.canClaim.agent = You can claim employment expenses your client did not claim through their employer.
+expenses.claimEmploymentExpenses.thisIncludes = Employment expenses include things like:
+expenses.claimEmploymentExpenses.thisIncludes.example1 = business travel and hotels and meals
+expenses.claimEmploymentExpenses.thisIncludes.example2 = professional fees and subscriptions
+expenses.claimEmploymentExpenses.thisIncludes.example3 = uniforms, work clothes and tools
+expenses.claimEmploymentExpenses.findOutMore = Find out more about
+expenses.claimEmploymentExpenses.findOutMoreLink = claiming employment expenses (opens in new tab)
+expenses.claimEmploymentExpenses.error.noEntry.individual = Select yes if you want to claim employment expenses
+expenses.claimEmploymentExpenses.error.noEntry.agent = Select yes if you want to claim for your client’s employment expenses.

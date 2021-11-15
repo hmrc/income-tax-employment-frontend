@@ -25,7 +25,7 @@ import helpers.{PlaySessionCookieBaker, WireMockHelper, WiremockStubHelpers}
 import models.IncomeTaxUserData
 import models.benefits._
 import models.employment._
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData, ExpensesCYAModel}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -236,6 +236,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     customerExpenses = customerExpenses)
 
 
+ //scalastyle:off parameter.number
   def employmentDetailsAndBenefits(benefits: Option[EmploymentBenefits] = None,
                                    employmentId: String = "001",
                                    employerName: String = "maggie",
@@ -274,7 +275,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
       employmentBenefits = benefits
     )
   }
-
+  //scalastyle:on parameter.number
 
   lazy val expenses: Expenses = Expenses(
     Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7), Some(8)
@@ -429,6 +430,42 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   def emptyMedicalChildcareEducationModel: MedicalChildcareEducationModel =
     MedicalChildcareEducationModel(medicalChildcareEducationQuestion = Some(false))
+
+  def fullExpensesCYAModel: ExpensesCYAModel =
+    ExpensesCYAModel(ExpensesViewModel(
+      businessTravelCosts = Some(100.00),
+      jobExpenses = Some(200.00),
+      flatRateJobExpenses = Some(300.00),
+      professionalSubscriptions = Some(400.00),
+      hotelAndMealExpenses = Some(500.00),
+      otherAndCapitalAllowances = Some(600.00),
+      vehicleExpenses = Some(700.00),
+      mileageAllowanceRelief = Some(800.00),
+      jobExpensesQuestion = Some(true),
+      flatRateJobExpensesQuestion = Some(true),
+      professionalSubscriptionsQuestion = Some(true),
+      otherAndCapitalAllowancesQuestion = Some(true),
+      submittedOn = None,
+      isUsingCustomerData = true,
+      claimingEmploymentExpenses = true
+    ))
+
+  def emptyExpensesCYAModel: ExpensesCYAModel =
+    ExpensesCYAModel(ExpensesViewModel(
+      isUsingCustomerData = true
+    ))
+
+  def fullExpenses:Expenses =
+    Expenses(
+      businessTravelCosts = Some(100.00),
+      jobExpenses = Some(200.00),
+      flatRateJobExpenses = Some(300.00),
+      professionalSubscriptions = Some(400.00),
+      hotelAndMealExpenses = Some(500.00),
+      otherAndCapitalAllowances = Some(600.00),
+      vehicleExpenses = Some(700.00),
+      mileageAllowanceRelief = Some(800.00)
+    )
 
 }
 

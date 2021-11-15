@@ -1,0 +1,72 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.templates.Layout
+@import views.html.templates.helpers.ErrorSummary
+@import views.html.templates.helpers.Button
+@import views.html.templates.helpers.InputRadio
+
+@this(
+        layout: Layout,
+        inputRadio: InputRadio,
+        formWithCsrf: FormWithCSRF,
+        errorSummary: ErrorSummary,
+        button: Button
+)
+
+@(form: Form[Boolean], taxYear: Int)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+
+@titleForUse = @{messages(s"expenses.claimEmploymentExpenses.title.${if(user.isAgent) "agent" else "individual"}")}
+@headingForUse = @{titleForUse}
+
+@hasFormErrors = @{form.hasErrors}
+
+ @contentHtml = {
+    <p class="govuk-body">@{messages(s"expenses.claimEmploymentExpenses.canClaim.${if(user.isAgent) "agent" else "individual"}")}</p>
+    <p class="govuk-body">@{messages("expenses.claimEmploymentExpenses.thisIncludes")}</p>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@{messages("expenses.claimEmploymentExpenses.thisIncludes.example1")}</li>
+        <li>@{messages("expenses.claimEmploymentExpenses.thisIncludes.example2")}</li>
+        <li>@{messages("expenses.claimEmploymentExpenses.thisIncludes.example3")}</li>
+    </ul>
+
+     <p class="govuk-body">
+         @messages("expenses.claimEmploymentExpenses.findOutMore")
+         <a target="_blank" id="expenses-link" href="https://www.gov.uk/tax-relief-for-employees"
+         class="govuk-link">@messages("expenses.claimEmploymentExpenses.findOutMoreLink")</a>@messages("common.fullStop")
+     </p>
+}
+
+@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
+
+    @errorSummary(form.errors.distinct)
+
+    @formWithCsrf(action = controllers.expenses.routes.EmploymentExpensesController.submit(taxYear)) {
+        @inputRadio(
+            form = form,
+            heading = headingForUse,
+            content = Some(contentHtml),
+            classes = "govuk-!-margin-bottom-4",
+            inline = true,
+            subheading = Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString))
+        )
+        @button()
+    }
+}
+
+@{
+    // $COVERAGE-OFF$
+}

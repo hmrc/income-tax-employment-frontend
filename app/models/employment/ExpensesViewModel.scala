@@ -48,6 +48,8 @@ case class ExpensesViewModel(
 
 object ExpensesViewModel {
 
+  def clear(isUsingCustomerData:Boolean): ExpensesViewModel = ExpensesViewModel(isUsingCustomerData = isUsingCustomerData)
+
   val firstSetOfFields: OFormat[(Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal],
     Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal])] = (
     (__ \ "businessTravelCosts").formatNullable[BigDecimal] and
