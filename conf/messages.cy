@@ -909,6 +909,17 @@ benefits.educationalServicesBenefitsAmount.error.overMaximum.agent = Your client
 benefits.educationalServicesBenefitsAmount.error.invalidFormat.individual = Enter the amount you got for educational services in the correct format
 benefits.educationalServicesBenefitsAmount.error.invalidFormat.agent = Enter the amount your client got for educational services in the correct format
 
+benefits.beneficialLoansAmount.title.individual = How much were your beneficial loans in total?
+benefits.beneficialLoansAmount.title.agent = How much were your client’s beneficial loans in total?
+benefits.beneficialLoansAmount.youCanFind.individual = You can find this information on your P11D form in section H, box 15.
+benefits.beneficialLoansAmount.youCanFind.agent = You can find this information on your client’s P11D form in section H, box 15.
+benefits.beneficialLoansAmount.error.noEntry.individual = Enter your beneficial loans amount
+benefits.beneficialLoansAmount.error.noEntry.agent = Enter your client’s beneficial loans amount
+benefits.beneficialLoansAmount.error.incorrectFormat.individual = Enter your beneficial loans amount in the correct format
+benefits.beneficialLoansAmount.error.incorrectFormat.agent = Enter your client’s beneficial loans amount in the correct format
+benefits.beneficialLoansAmount.error.overMaximum.individual = Your beneficial loans must be less than £100,000,000,000
+benefits.beneficialLoansAmount.error.overMaximum.agent = Your client’s beneficial loans must be less than £100,000,000,000
+
 #####Expenses Pages#######
 
 expenses.claimEmploymentExpenses.title.individual = Do you want to claim employment expenses?

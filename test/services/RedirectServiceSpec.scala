@@ -1115,7 +1115,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => incomeTaxAndCostsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe BeneficialLoansBenefitsController.show(taxYear, employmentId).url
       }
 
       "it's a new submission and attempted to view the 'Income Tax paid by employer' yes/no page but the Income Tax section question is empty" in {
