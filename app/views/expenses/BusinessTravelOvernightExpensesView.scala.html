@@ -1,0 +1,90 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.templates.Layout
+@import views.html.templates.helpers.ErrorSummary
+@import views.html.templates.helpers.Button
+@import views.html.templates.helpers.InputRadio
+@import views.html.templates.helpers.Details
+
+@this(
+    layout: Layout,
+    inputRadio: InputRadio,
+    formWithCsrf: FormWithCSRF,
+    errorSummary: ErrorSummary,
+    button: Button,
+    details: Details
+)
+
+@(form: Form[Boolean], taxYear: Int)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+
+@titleForUse = @{messages(s"expenses.BusinessTravelOvernightExpenses.title.${if(user.isAgent) "agent" else "individual"}")}
+@headingForUse = @{titleForUse}
+
+@hasFormErrors = @{form.hasErrors}
+
+@contentHtml = {
+    <p class="govuk-body">@{messages("expenses.BusinessTravelOvernightExpenses.paragraph")}</p>
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@{messages("expenses.BusinessTravelOvernightExpenses.example1")}</li>
+        <li>@{messages("expenses.BusinessTravelOvernightExpenses.example2")}</li>
+        <li>@{messages("expenses.BusinessTravelOvernightExpenses.example3")}</li>
+        <li>@{messages("expenses.BusinessTravelOvernightExpenses.example4")}</li>
+        <li>@{messages("expenses.BusinessTravelOvernightExpenses.example5")}</li>
+        <li>@{messages("expenses.BusinessTravelOvernightExpenses.example6")}</li>
+    </ul>
+    <p class="govuk-body">@messages(s"expenses.BusinessTravelOvernightExpenses.doNotInclude.${if(user.isAgent) "agent" else "individual"}")</p>
+}
+
+@detailsHtml = {
+    <p class="govuk-body">@messages(s"expenses.BusinessTravelOvernightExpenses.details.info.${if(user.isAgent) "agent" else "individual"}")</p>
+    <ol class="govuk-list govuk-list--number">
+        <li class="govuk-body">@messages(s"expenses.BusinessTravelOvernightExpenses.details.1.${if(user.isAgent) "agent" else "individual"}")</li>
+        <li class="govuk-body">@messages("expenses.BusinessTravelOvernightExpenses.details.2")</li>
+        <li class="govuk-body">@messages(s"expenses.BusinessTravelOvernightExpenses.details.3.${if(user.isAgent) "agent" else "individual"}")</li>
+    </ol>
+
+    <h2 class="govuk-heading-s">@messages("expenses.BusinessTravelOvernightExpenses.details.approvedMileage")</h2>
+    <h3 class="govuk-heading-s govuk-!-margin-bottom-0">@messages("expenses.BusinessTravelOvernightExpenses.details.carVan.heading")</h3>
+    <p class="govuk-body govuk-!-margin-bottom-0">@messages("expenses.BusinessTravelOvernightExpenses.details.carVan.text1")</p>
+    <p class="govuk-body">@messages("expenses.BusinessTravelOvernightExpenses.details.carVan.text2")</p>
+    <h3 class="govuk-heading-s govuk-!-margin-bottom-0">@messages("expenses.BusinessTravelOvernightExpenses.details.motorcycle.heading")</h3>
+    <p class="govuk-body">@messages("expenses.BusinessTravelOvernightExpenses.details.motorcycle.text")</p>
+    <h3 class="govuk-heading-s govuk-!-margin-bottom-0">@messages("expenses.BusinessTravelOvernightExpenses.details.bicycle.heading")</h3>
+    <p class="govuk-body">@messages("expenses.BusinessTravelOvernightExpenses.details.bicycle.text")</p>
+}
+
+@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
+
+    @errorSummary(form.errors.distinct)
+
+    @formWithCsrf(action = controllers.expenses.routes.BusinessTravelOvernightExpensesController.submit(taxYear)) {
+        @inputRadio(
+            form = form,
+            heading = headingForUse,
+            content = Some(contentHtml),
+            classes = "govuk-!-margin-bottom-4",
+            inline = true,
+            subheading = Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString))
+        )
+        @button()
+        @details("expenses.BusinessTravelOvernightExpenses.details.title", detailsHtml)
+    }
+}
+
+@{
+// $COVERAGE-OFF$
+}
