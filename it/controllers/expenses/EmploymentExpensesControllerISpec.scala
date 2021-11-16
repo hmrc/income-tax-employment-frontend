@@ -101,7 +101,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
     val expectedHeading = "Do you want to claim employment expenses for your client?"
     val expectedCanClaim = "You can claim employment expenses your client did not claim through their employer."
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorText = "Select yes if you want to claim for your client’s employment expenses."
+    val expectedErrorText = "Select yes if you want to claim for your client’s employment expenses"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -109,7 +109,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
     val expectedHeading = "Do you want to claim employment expenses for your client?"
     val expectedCanClaim = "You can claim employment expenses your client did not claim through their employer."
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorText = "Select yes if you want to claim for your client’s employment expenses."
+    val expectedErrorText = "Select yes if you want to claim for your client’s employment expenses"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
