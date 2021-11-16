@@ -920,6 +920,11 @@ benefits.beneficialLoansAmount.error.incorrectFormat.agent = Enter your client�
 benefits.beneficialLoansAmount.error.overMaximum.individual = Your beneficial loans must be less than £100,000,000,000
 benefits.beneficialLoansAmount.error.overMaximum.agent = Your client’s beneficial loans must be less than £100,000,000,000
 
+benefits.incomeTaxOrIncurredCosts.title.individual = Did your employer pay any of your Income Tax or incurred costs?
+benefits.incomeTaxOrIncurredCosts.title.agent = Did your client’s employer pay any of their Income Tax or incurred costs?
+benefits.incomeTaxOrIncurredCosts.error.individual = Select yes if your employer paid any of your Income Tax or incurred costs
+benefits.incomeTaxOrIncurredCosts.error.agent = Select yes if your client’s employer paid any of their Income Tax or incurred costs
+
 #####Expenses Pages#######
 
 expenses.claimEmploymentExpenses.title.individual = Do you want to claim employment expenses?

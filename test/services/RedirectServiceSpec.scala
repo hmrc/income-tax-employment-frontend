@@ -22,6 +22,7 @@ import controllers.benefits.medical.routes._
 import controllers.benefits.routes.ReceiveAnyBenefitsController
 import controllers.benefits.travel.routes._
 import controllers.benefits.utilities.routes._
+import controllers.benefits.incomeTax.routes._
 import controllers.employment.routes._
 import models.benefits._
 import models.employment.{EmploymentBenefitsType, EmploymentDetailsType}
@@ -1093,7 +1094,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => beneficialLoansAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId).url
       }
 
       "it's a prior submission and attempted to view the 'Beneficial loans amount' page but the Beneficial loans question is false" in {
@@ -1125,7 +1126,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => commonIncomeTaxAndCostsModelRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId).url
       }
 
       "it's a new submission and attempted to view the 'Income Tax paid by employer' yes/no page but the Income Tax section question is false" in {

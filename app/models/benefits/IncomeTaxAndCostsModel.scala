@@ -17,6 +17,7 @@
 package models.benefits
 
 import controllers.employment.routes._
+import controllers.benefits.incomeTax.routes._
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue
@@ -53,7 +54,7 @@ case class IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion: Option[Boolean] = No
         case _ => None
       }
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO Income tax or costs section yes/no page
+      case None => Some(IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId))
     }
   }
 }
