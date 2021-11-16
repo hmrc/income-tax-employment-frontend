@@ -227,7 +227,7 @@
 
     <h2 class="govuk-label--m">@messages("checkYourBenefits.incomeTaxHeader")</h2>
     @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.incomeTaxSubheading", benefits.incomeTaxDetailsPopulated))
+        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.incomeTaxSubheading", benefits.incomeTaxAndCostsModel.flatMap(_.incomeTaxOrCostsQuestion).getOrElse(false), controllers.benefits.incomeTax.routes.IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
         if(benefits.incomeTaxDetailsPopulated){
             Seq(
