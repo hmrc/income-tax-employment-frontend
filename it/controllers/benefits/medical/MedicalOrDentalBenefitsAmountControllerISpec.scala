@@ -16,7 +16,9 @@
 
 package controllers.benefits.medical
 
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.medical.routes._
+import controllers.benefits.routes._
+import controllers.employment.routes._
 import forms.AmountForm
 import models.User
 import models.benefits.{BenefitsViewModel, MedicalChildcareEducationModel}
@@ -283,7 +285,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
         }
       }
 
-      "redirect to the other services question page when there is a medical insurance amount but no medicalInsuranceQuestion" when {
+      "redirect to the medical insurance question page when there is a medical insurance amount but no medicalInsuranceQuestion" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
@@ -295,7 +297,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(MedicalDentalBenefitsController.show(taxYearEOY, employmentId).url)
         }
       }
 
@@ -310,12 +312,11 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
         }
       }
 
-      "redirect the user to the check employment benefits page when there's no benefits and prior submission" when {
+      "redirect the user to the medical insurance question page when there's no benefits and prior submission" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
@@ -326,8 +327,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe Some(MedicalDentalBenefitsController.show(taxYearEOY, employmentId).url)
         }
       }
     }
@@ -538,7 +538,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
         }
       }
 
-      "redirect to the other services question page when there is a medical insurance amount but no medicalInsuranceQuestion" when {
+      "redirect to the medical insurance question page when there is a medical insurance amount but no medicalInsuranceQuestion" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
@@ -549,8 +549,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe Some(MedicalDentalBenefitsController.show(taxYearEOY, employmentId).url)
         }
       }
 
@@ -565,12 +564,11 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
         }
       }
 
-      "redirect the user to the check employment benefits page when there's no benefits and prior submission" when {
+      "redirect the user to the medical insurance question page when there's no benefits and prior submission" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
@@ -581,8 +579,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe Some(MedicalDentalBenefitsController.show(taxYearEOY, employmentId).url)
         }
       }
     }

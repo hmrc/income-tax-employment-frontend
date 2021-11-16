@@ -692,6 +692,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val professionalSubscriptionsBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/professional-fees-or-subscriptions?employmentId=001"
     val professionalSubscriptionsBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/professional-fees-or-subscriptions-amount?employmentId=001"
     val medicalChildcareEducationHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/medical-dental-childcare-education-loans?employmentId=001"
+    val medicalDentalHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/medical-dental?employmentId=001"
     val childcareBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/childcare?employmentId=001"
     val childcareBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/childcare-amount?employmentId=001"
     val beneficialLoansBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/beneficial-loans?employmentId=001"
@@ -699,6 +700,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val beneficialLoansAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/beneficial-loans-amount?employmentId=001"
     val incomeTaxOrIncurredCostsBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/employer-income-tax-or-incurred-costs?employmentId=001"
   }
+
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
@@ -864,7 +866,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           textOnPageCheck(commonResults.medicalHeader, fieldHeaderSelector(12))
           changeAmountRowCheck(commonResults.medicalSubheading, commonResults.yes, 13, 1, s"${user.commonExpectedResults.changeText} ${specificResults.medicalSubheadingHiddenText}", medicalChildcareEducationHref)
-          changeAmountRowCheck(commonResults.medicalIns, commonResults.yes, 13, 2, s"${user.commonExpectedResults.changeText} ${specificResults.medicalInsHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.medicalIns, commonResults.yes, 13, 2, s"${user.commonExpectedResults.changeText} ${specificResults.medicalInsHiddenText}", medicalDentalHref)
           changeAmountRowCheck(commonResults.medicalInsAmount, "£16", 13, 3, s"${user.commonExpectedResults.changeText} ${specificResults.medicalInsAmountHiddenText}", medicalOrDentalBenefitsAmountHref)
           changeAmountRowCheck(commonResults.nursery, commonResults.yes, 13, 4, s"${user.commonExpectedResults.changeText} ${specificResults.nurseryHiddenText}", childcareBenefitsHref)
           changeAmountRowCheck(commonResults.nurseryAmount, "£17", 13, 5, s"${user.commonExpectedResults.changeText} ${specificResults.nurseryAmountHiddenText}", childcareBenefitsAmountHref)

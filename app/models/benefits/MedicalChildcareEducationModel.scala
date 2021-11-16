@@ -16,7 +16,7 @@
 
 package models.benefits
 
-import controllers.benefits.medical.routes.{BeneficialLoansAmountController, BeneficialLoansBenefitsController, ChildcareBenefitsAmountController, ChildcareBenefitsController, EducationalServicesBenefitsAmountController}
+import controllers.benefits.medical.routes._
 import controllers.employment.routes._
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
@@ -35,9 +35,9 @@ case class MedicalChildcareEducationModel(medicalChildcareEducationQuestion: Opt
   //scalastyle:off
   def medicalInsuranceSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     medicalInsuranceQuestion match {
-      case Some(true) => if (medicalInsurance.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO medical insurance amount page
+      case Some(true) => if (medicalInsurance.isDefined) None else Some(MedicalOrDentalBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO medical insurance yes/no page
+      case None => Some(MedicalDentalBenefitsController.show(taxYear, employmentId))
     }
   }
   //scalastyle:on

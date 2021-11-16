@@ -196,7 +196,7 @@
         if(benefits.medicalDetailsPopulated){
             Seq(
                 benefits.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion).map{
-                    medicalInsuranceQuestion => showQuestionRow("checkYourBenefits.medicalIns", medicalInsuranceQuestion)
+                    medicalInsuranceQuestion => showQuestionRow("checkYourBenefits.medicalIns", benefits.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion).getOrElse(false), controllers.benefits.medical.routes.MedicalDentalBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.medicalChildcareEducationModel.flatMap(_.medicalInsurance).map{
                     medicalInsurance => showRows("checkYourBenefits.medicalInsAmount", medicalInsurance, controllers.benefits.medical.routes.MedicalOrDentalBenefitsAmountController.show(taxYear, employmentId))

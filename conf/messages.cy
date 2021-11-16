@@ -862,6 +862,13 @@ benefits.medicalDentalChildcare.title.agent = Did your client get any medical, d
 benefits.medicalDentalChildcare.error.noEntry.individual = Select yes if you got medical, dental, childcare, education benefits or loans
 benefits.medicalDentalChildcare.error.noEntry.agent = Select yes if your client got medical, dental, childcare, education benefits or loans
 
+benefits.medicalDentalBenefits.title.individual = Did you get a medical or dental benefit?
+benefits.medicalDentalBenefits.title.agent = Did your client get a medical or dental benefit?
+benefits.medicalDentalBenefits.content.individual = This is medical or dental treatment or insurance provided by your employer.
+benefits.medicalDentalBenefits.content.agent = This is medical or dental treatment or insurance provided by their employer.
+benefits.medicalDentalBenefits.error.noEntry.individual = Select yes if you got a medical or dental benefit
+benefits.medicalDentalBenefits.error.noEntry.agent = Select yes if your client got a medical or dental benefit
+
 benefits.childcare.title.individual = Did you get a childcare benefit?
 benefits.childcare.title.agent = Did your client get a childcare benefit?
 benefits.childcare.theseAre.individual = These are childcare costs your employer paid for. It can include vouchers or commercial childcare costs.

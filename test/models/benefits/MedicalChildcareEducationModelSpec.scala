@@ -33,8 +33,7 @@ class MedicalChildcareEducationModelSpec extends UnitTest {
 
     "return call to 'Medical insurance amount page' when medicalInsuranceQuestion is true and medicalInsurance amount not defined" in {
       val underTest = MedicalChildcareEducationModel(medicalInsuranceQuestion = Some(true), medicalInsurance = None)
-      //TODO medical insurance amount page
-      underTest.medicalInsuranceSectionFinished(taxYear, employmentId) shouldBe Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      underTest.medicalInsuranceSectionFinished(taxYear, employmentId) shouldBe Some(MedicalOrDentalBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return None when medicalInsuranceQuestion is false" in {
@@ -44,8 +43,7 @@ class MedicalChildcareEducationModelSpec extends UnitTest {
 
     "return call to 'Medical insurance yes/no page' when medicalInsuranceQuestion is None" in {
       val underTest = MedicalChildcareEducationModel(medicalInsuranceQuestion = None)
-      //TODO medical insurance yes/no page
-      underTest.medicalInsuranceSectionFinished(taxYear, employmentId) shouldBe Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      underTest.medicalInsuranceSectionFinished(taxYear, employmentId) shouldBe Some(MedicalDentalBenefitsController.show(taxYear, employmentId))
     }
   }
 
