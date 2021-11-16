@@ -65,7 +65,7 @@
         val rows: Seq[SummaryListRow] =
             Seq(
                 expenses.jobExpensesQuestion.map{
-                    jobExpensesQuestion => showQuestionRow("checkYourExpenses.jobExpensesQuestion", jobExpensesQuestion)
+                    jobExpensesQuestion => showQuestionRow("checkYourExpenses.jobExpensesQuestion", jobExpensesQuestion, controllers.expenses.routes.BusinessTravelOvernightExpensesController.show(taxYear))
                 },
                 expenses.jobExpenses.map{
                     jobExpenses => showRows("checkYourExpenses.jobExpensesAmount", jobExpenses)
