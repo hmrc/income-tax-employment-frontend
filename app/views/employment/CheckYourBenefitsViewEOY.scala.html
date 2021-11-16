@@ -217,7 +217,7 @@
                     beneficialLoanQuestion => showQuestionRow("checkYourBenefits.beneficialLoans", beneficialLoanQuestion, controllers.benefits.medical.routes.BeneficialLoansBenefitsController.show(taxYear: Int, employmentId: String))
                 },
                 benefits.medicalChildcareEducationModel.flatMap(_.beneficialLoan).map{
-                    beneficialLoan => showRows("checkYourBenefits.beneficialLoansAmount", beneficialLoan)
+                    beneficialLoan => showRows("checkYourBenefits.beneficialLoansAmount", beneficialLoan, controllers.benefits.medical.routes.BeneficialLoansAmountController.show(taxYear: Int, employmentId: String))
                 }
             ).flatten
         } else { Seq() }
