@@ -945,7 +945,7 @@ expenses.claimEmploymentExpenses.thisIncludes.example3 = uniforms, work clothes 
 expenses.claimEmploymentExpenses.findOutMore = Find out more about
 expenses.claimEmploymentExpenses.findOutMoreLink = claiming employment expenses (opens in new tab)
 expenses.claimEmploymentExpenses.error.noEntry.individual = Select yes if you want to claim employment expenses
-expenses.claimEmploymentExpenses.error.noEntry.agent = Select yes if you want to claim for your client’s employment expenses.
+expenses.claimEmploymentExpenses.error.noEntry.agent = Select yes if you want to claim for your client’s employment expenses
 
 expenses.BusinessTravelOvernightExpenses.title.individual = Do you want to claim business travel and overnight expenses?
 expenses.BusinessTravelOvernightExpenses.title.agent = Do you want to claim your client’s business travel and overnight expenses?
