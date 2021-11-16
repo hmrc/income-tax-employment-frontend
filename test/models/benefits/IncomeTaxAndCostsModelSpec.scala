@@ -17,6 +17,7 @@
 package models.benefits
 
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.incomeTax.routes._
 import utils.UnitTest
 
 class IncomeTaxAndCostsModelSpec extends UnitTest {
@@ -99,7 +100,7 @@ class IncomeTaxAndCostsModelSpec extends UnitTest {
 
     "return call to 'Income tax or costs' section yes/no page when incomeTaxOrCostsQuestion is None" in {
       val underTest = IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion = None)
-      underTest.isFinished(taxYear, employmentId) shouldBe Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      underTest.isFinished(taxYear, employmentId) shouldBe Some(IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId))
     }
   }
 

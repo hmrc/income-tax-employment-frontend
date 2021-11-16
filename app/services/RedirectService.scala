@@ -22,6 +22,7 @@ import controllers.benefits.medical.routes._
 import controllers.benefits.routes._
 import controllers.benefits.travel.routes._
 import controllers.benefits.utilities.routes._
+import controllers.benefits.incomeTax.routes._
 import controllers.employment.routes._
 import models.User
 import models.benefits.{AccommodationRelocationModel, CarVanFuelModel, MedicalChildcareEducationModel, TravelEntertainmentModel, UtilitiesAndServicesModel}
@@ -484,8 +485,7 @@ object RedirectService extends Logging {
     beneficialLoansRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(beneficialLoanQuestion.isEmpty, BeneficialLoansBenefitsController.show(taxYear, employmentId)),
-        //TODO go to Income Tax or incurred costs yes/no page
-        ConditionalRedirect(beneficialLoanQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(beneficialLoanQuestion.contains(false), IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(beneficialLoanQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
@@ -506,8 +506,7 @@ object RedirectService extends Logging {
 
     medicalBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to Income Tax section yes/no page (initial yes/no page)
-        ConditionalRedirect(sectionQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(sectionQuestion.isEmpty, IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId)),
         //TODO go to Reimbursed costs, vouchers, and non-cash benefits
         ConditionalRedirect(sectionQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(sectionQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
