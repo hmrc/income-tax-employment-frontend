@@ -71,7 +71,7 @@
                     jobExpenses => showRows("checkYourExpenses.jobExpensesAmount", jobExpenses)
                 },
                 expenses.flatRateJobExpensesQuestion.map{
-                    flatRateJobExpensesQuestion => showQuestionRow("checkYourExpenses.flatRateJobExpensesQuestion", flatRateJobExpensesQuestion)
+                    flatRateJobExpensesQuestion => showQuestionRow("checkYourExpenses.flatRateJobExpensesQuestion", flatRateJobExpensesQuestion, controllers.expenses.routes.UniformsOrToolsExpensesController.show(taxYear))
                 },
                 expenses.flatRateJobExpenses.map{
                     flatRateJobExpenses => showRows("checkYourExpenses.flatRateJobExpensesAmount", flatRateJobExpenses)
