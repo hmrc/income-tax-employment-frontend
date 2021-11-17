@@ -127,7 +127,9 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
   }
 
   def benefits(utilitiesModel: UtilitiesAndServicesModel): BenefitsViewModel =
-    BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true, utilitiesAndServicesModel = Some(utilitiesModel))
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel),isUsingCustomerData = true,
+      isBenefitsReceived = true, utilitiesAndServicesModel = Some(utilitiesModel))
 
   val benefitsWithNoBenefitsReceived: Option[BenefitsViewModel] = Some(BenefitsViewModel(isUsingCustomerData = true))
 

@@ -65,7 +65,8 @@ class AccommodationRelocationControllerISpec extends IntegrationTest with ViewHe
     )
 
   def benefits(accModel: Option[AccommodationRelocationModel]): BenefitsViewModel =
-    BenefitsViewModel(accommodationRelocationModel = accModel, isBenefitsReceived = true, isUsingCustomerData = true)
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = accModel,
+      isBenefitsReceived = true, isUsingCustomerData = true)
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"

@@ -429,6 +429,14 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
       beneficialLoan = Some(400.00)
     )
 
+  def fullIncomeTaxAndCostsModel: IncomeTaxAndCostsModel = IncomeTaxAndCostsModel(
+    incomeTaxOrCostsQuestion = Some(true),
+    incomeTaxPaidByDirectorQuestion = Some(true),
+    incomeTaxPaidByDirector = Some(255.00),
+    paymentsOnEmployeesBehalfQuestion = Some(true),
+    paymentsOnEmployeesBehalf = Some(255.00)
+  )
+
   def emptyMedicalChildcareEducationModel: MedicalChildcareEducationModel =
     MedicalChildcareEducationModel(medicalChildcareEducationQuestion = Some(false))
 

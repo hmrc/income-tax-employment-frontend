@@ -255,34 +255,34 @@
         val rows: Seq[SummaryListRow] =
         if(benefits.reimbursedDetailsPopulated){
             Seq(
-                benefits.expensesQuestion.map{
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expensesQuestion).map{
                     expensesQuestion => showQuestionRow("checkYourBenefits.nonTaxable", expensesQuestion)
                 },
-                benefits.expenses.map{
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expenses).map{
                     expenses => showRows("checkYourBenefits.nonTaxableAmount", expenses)
                 },
-                benefits.taxableExpensesQuestion.map{
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpensesQuestion).map{
                     taxableExpensesQuestion => showQuestionRow("checkYourBenefits.taxableCosts", taxableExpensesQuestion)
                 },
-                benefits.taxableExpenses.map{
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpenses).map{
                     taxableExpenses => showRows("checkYourBenefits.taxableCostsAmount", taxableExpenses)
                 },
-                benefits.vouchersAndCreditCardsQuestion.map{
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCardsQuestion).map{
                     vouchersAndCreditCardsQuestion => showQuestionRow("checkYourBenefits.vouchers", vouchersAndCreditCardsQuestion)
                 },
-                benefits.vouchersAndCreditCards.map{
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCards).map{
                     vouchersAndCreditCards => showRows("checkYourBenefits.vouchersAmount", vouchersAndCreditCards)
                 },
-                benefits.nonCashQuestion.map{
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCashQuestion).map{
                     nonCashQuestion => showQuestionRow("checkYourBenefits.nonCash", nonCashQuestion)
                 },
-                benefits.nonCash.map{
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash).map{
                     nonCash => showRows("checkYourBenefits.nonCashAmount", nonCash)
                 },
-                benefits.otherItemsQuestion.map{
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItemsQuestion).map{
                     otherItemsQuestion => showQuestionRow("checkYourBenefits.otherBenefits", otherItemsQuestion)
                 },
-                benefits.otherItems.map{
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItems).map{
                     otherItems => showRows("checkYourBenefits.otherBenefitsAmount", otherItems)
                 }
             ).flatten
@@ -297,16 +297,16 @@
         val rows: Seq[SummaryListRow] =
         if(benefits.assetsDetailsPopulated){
             Seq(
-                benefits.assetsQuestion.map{
+                benefits.assetsModel.flatMap(_.assetsQuestion).map{
                     assetsQuestion => showQuestionRow("checkYourBenefits.assets", assetsQuestion)
                 },
-                benefits.assets.map{
+                benefits.assetsModel.flatMap(_.assets).map{
                     assets => showRows("checkYourBenefits.assetsAmount", assets)
                 },
-                benefits.assetTransferQuestion.map{
+                benefits.assetsModel.flatMap(_.assetTransferQuestion).map{
                     assetTransferQuestion => showQuestionRow("checkYourBenefits.assetTransfers", assetTransferQuestion)
                 },
-                benefits.assetTransfer.map{
+                benefits.assetsModel.flatMap(_.assetTransfer).map{
                     assetTransfer => showRows("checkYourBenefits.assetTransfersAmount", assetTransfer)
                 }
             ).flatten

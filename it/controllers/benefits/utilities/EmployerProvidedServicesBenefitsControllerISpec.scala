@@ -49,7 +49,9 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
   def benefits(utilitiesModel: UtilitiesAndServicesModel): BenefitsViewModel =
-    BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true, utilitiesAndServicesModel = Some(utilitiesModel))
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel),isUsingCustomerData = true,
+      isBenefitsReceived = true, utilitiesAndServicesModel = Some(utilitiesModel))
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"

@@ -185,6 +185,61 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
       paymentsOnEmployeesBehalf = incomeTaxAndCostsModel.paymentsOnEmployeesBehalf.map(secureGCMCipher.encrypt)
     )
   }
+  private def encryptReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonCashModel: ReimbursedCostsVouchersAndNonCashModel)
+                                                           (implicit textAndKey: TextAndKey): EncryptedReimbursedCostsVouchersAndNonCashModel = {
+    EncryptedReimbursedCostsVouchersAndNonCashModel(
+      reimbursedCostsVouchersAndNonCashQuestion = reimbursedCostsVouchersAndNonCashModel.reimbursedCostsVouchersAndNonCashQuestion.map(secureGCMCipher.encrypt),
+      expensesQuestion = reimbursedCostsVouchersAndNonCashModel.expensesQuestion.map(secureGCMCipher.encrypt),
+      expenses = reimbursedCostsVouchersAndNonCashModel.expenses.map(secureGCMCipher.encrypt),
+      taxableExpensesQuestion = reimbursedCostsVouchersAndNonCashModel.taxableExpensesQuestion.map(secureGCMCipher.encrypt),
+      taxableExpenses = reimbursedCostsVouchersAndNonCashModel.taxableExpenses.map(secureGCMCipher.encrypt),
+      vouchersAndCreditCardsQuestion = reimbursedCostsVouchersAndNonCashModel.vouchersAndCreditCardsQuestion.map(secureGCMCipher.encrypt),
+      vouchersAndCreditCards = reimbursedCostsVouchersAndNonCashModel.vouchersAndCreditCards.map(secureGCMCipher.encrypt),
+      nonCashQuestion = reimbursedCostsVouchersAndNonCashModel.nonCashQuestion.map(secureGCMCipher.encrypt),
+      nonCash = reimbursedCostsVouchersAndNonCashModel.nonCash.map(secureGCMCipher.encrypt),
+      otherItemsQuestion = reimbursedCostsVouchersAndNonCashModel.otherItemsQuestion.map(secureGCMCipher.encrypt),
+      otherItems = reimbursedCostsVouchersAndNonCashModel.otherItems.map(secureGCMCipher.encrypt)
+    )
+  }
+  private def encryptAssetsModel(assetsModel: AssetsModel)
+                                (implicit textAndKey: TextAndKey): EncryptedAssetsModel = {
+    EncryptedAssetsModel(
+      assetsAndAssetsTransferQuestion = assetsModel.assetsAndAssetsTransferQuestion.map(secureGCMCipher.encrypt),
+      assetsQuestion = assetsModel.assetsQuestion.map(secureGCMCipher.encrypt),
+      assets = assetsModel.assets.map(secureGCMCipher.encrypt),
+      assetTransferQuestion = assetsModel.assetTransferQuestion.map(secureGCMCipher.encrypt),
+      assetTransfer = assetsModel.assetTransfer.map(secureGCMCipher.encrypt)
+    )
+  }
+
+  private def decryptReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonCashModel: EncryptedReimbursedCostsVouchersAndNonCashModel)
+                                                           (implicit textAndKey: TextAndKey): ReimbursedCostsVouchersAndNonCashModel = {
+    ReimbursedCostsVouchersAndNonCashModel(
+      reimbursedCostsVouchersAndNonCashQuestion = reimbursedCostsVouchersAndNonCashModel.reimbursedCostsVouchersAndNonCashQuestion.map(
+        x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      expensesQuestion = reimbursedCostsVouchersAndNonCashModel.expensesQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      expenses = reimbursedCostsVouchersAndNonCashModel.expenses.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
+      taxableExpensesQuestion = reimbursedCostsVouchersAndNonCashModel.taxableExpensesQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      taxableExpenses = reimbursedCostsVouchersAndNonCashModel.taxableExpenses.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
+      vouchersAndCreditCardsQuestion = reimbursedCostsVouchersAndNonCashModel.vouchersAndCreditCardsQuestion.map(
+        x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      vouchersAndCreditCards = reimbursedCostsVouchersAndNonCashModel.vouchersAndCreditCards.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
+      nonCashQuestion = reimbursedCostsVouchersAndNonCashModel.nonCashQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      nonCash = reimbursedCostsVouchersAndNonCashModel.nonCash.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
+      otherItemsQuestion = reimbursedCostsVouchersAndNonCashModel.otherItemsQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      otherItems = reimbursedCostsVouchersAndNonCashModel.otherItems.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce))
+    )
+  }
+  private def decryptAssetsModel(assetsModel: EncryptedAssetsModel)
+                                (implicit textAndKey: TextAndKey): AssetsModel = {
+    AssetsModel(
+      assetsAndAssetsTransferQuestion = assetsModel.assetsAndAssetsTransferQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      assetsQuestion = assetsModel.assetsQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      assets = assetsModel.assets.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
+      assetTransferQuestion = assetsModel.assetTransferQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      assetTransfer = assetsModel.assetTransfer.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce))
+    )
+  }
 
   private def decryptTravelEntertainmentModel(travelEntertainmentModel: EncryptedTravelEntertainmentModel)
                                              (implicit textAndKey: TextAndKey): TravelEntertainmentModel = {
@@ -253,20 +308,8 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
       utilitiesAndServicesModel = e.utilitiesAndServicesModel.map(encryptUtilitiesAndServicesModel),
       medicalChildcareEducationModel = e.medicalChildcareEducationModel.map(encryptMedicalChildcareEducationModel),
       incomeTaxAndCostsModel = e.incomeTaxAndCostsModel.map(encryptIncomeTaxAndCostsModel),
-      assets = e.assets.map(secureGCMCipher.encrypt),
-      assetTransfer = e.assetTransfer.map(secureGCMCipher.encrypt),
-      expenses = e.expenses.map(secureGCMCipher.encrypt),
-      taxableExpenses = e.taxableExpenses.map(secureGCMCipher.encrypt),
-      otherItems = e.otherItems.map(secureGCMCipher.encrypt),
-      vouchersAndCreditCards = e.vouchersAndCreditCards.map(secureGCMCipher.encrypt),
-      nonCash = e.nonCash.map(secureGCMCipher.encrypt),
-      assetsQuestion = e.assetsQuestion.map(secureGCMCipher.encrypt),
-      assetTransferQuestion = e.assetTransferQuestion.map(secureGCMCipher.encrypt),
-      expensesQuestion = e.expensesQuestion.map(secureGCMCipher.encrypt),
-      taxableExpensesQuestion = e.taxableExpensesQuestion.map(secureGCMCipher.encrypt),
-      otherItemsQuestion = e.otherItemsQuestion.map(secureGCMCipher.encrypt),
-      vouchersAndCreditCardsQuestion = e.vouchersAndCreditCardsQuestion.map(secureGCMCipher.encrypt),
-      nonCashQuestion = e.nonCashQuestion.map(secureGCMCipher.encrypt),
+      reimbursedCostsVouchersAndNonCashModel = e.reimbursedCostsVouchersAndNonCashModel.map(encryptReimbursedCostsVouchersAndNonCashModel),
+      assetsModel = e.assetsModel.map(encryptAssetsModel),
       submittedOn = e.submittedOn.map(secureGCMCipher.encrypt),
       isUsingCustomerData = secureGCMCipher.encrypt(e.isUsingCustomerData),
       isBenefitsReceived = secureGCMCipher.encrypt(e.isBenefitsReceived)
@@ -281,20 +324,8 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
       utilitiesAndServicesModel = e.utilitiesAndServicesModel.map(decryptUtilitiesAndServicesModel),
       medicalChildcareEducationModel = e.medicalChildcareEducationModel.map(decryptMedicalChildcareEducationModel),
       incomeTaxAndCostsModel = e.incomeTaxAndCostsModel.map(decryptIncomeTaxAndCostsModel),
-      assets = e.assets.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
-      assetTransfer = e.assetTransfer.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
-      expenses = e.expenses.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
-      taxableExpenses = e.taxableExpenses.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
-      otherItems = e.otherItems.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
-      vouchersAndCreditCards = e.vouchersAndCreditCards.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
-      nonCash = e.nonCash.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
-      assetsQuestion = e.assetsQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
-      assetTransferQuestion = e.assetTransferQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
-      expensesQuestion = e.expensesQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
-      taxableExpensesQuestion = e.taxableExpensesQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
-      otherItemsQuestion = e.otherItemsQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
-      vouchersAndCreditCardsQuestion = e.vouchersAndCreditCardsQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
-      nonCashQuestion = e.nonCashQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      reimbursedCostsVouchersAndNonCashModel = e.reimbursedCostsVouchersAndNonCashModel.map(decryptReimbursedCostsVouchersAndNonCashModel),
+      assetsModel = e.assetsModel.map(decryptAssetsModel),
       submittedOn = e.submittedOn.map(x => secureGCMCipher.decrypt[String](x.value, x.nonce)),
       isUsingCustomerData = secureGCMCipher.decrypt[Boolean](e.isUsingCustomerData.value, e.isUsingCustomerData.nonce),
       isBenefitsReceived = secureGCMCipher.decrypt[Boolean](e.isBenefitsReceived.value, e.isBenefitsReceived.nonce)

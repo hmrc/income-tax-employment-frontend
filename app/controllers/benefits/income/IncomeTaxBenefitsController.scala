@@ -43,7 +43,7 @@ class IncomeTaxBenefitsController @Inject()(implicit val cc: MessagesControllerC
                                             employmentSessionService: EmploymentSessionService,
                                             errorHandler: ErrorHandler,
                                             clock: Clock
-                                            ) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                           ) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   implicit val ec: ExecutionContext = cc.executionContext
 
