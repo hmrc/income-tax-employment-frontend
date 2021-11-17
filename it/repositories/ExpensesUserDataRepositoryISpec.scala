@@ -19,7 +19,7 @@ package repositories
 import com.mongodb.MongoTimeoutException
 import common.UUID
 import models.User
-import models.employment.{Expenses, ExpensesViewModel}
+import models.expenses.ExpensesViewModel
 import models.mongo._
 import org.joda.time.{DateTime, DateTimeZone}
 import org.mongodb.scala.model.Indexes.ascending
@@ -42,13 +42,6 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
 
   private def count = await(repo.collection.countDocuments().toFuture())
 
-  private def find(expensesUserData: ExpensesUserData)(implicit user: User[_]): Future[Option[EncryptedExpensesUserData]] = {
-    repo.collection
-      .find(filter = Repository.filterExpenses(user.sessionId, user.mtditid, user.nino, expensesUserData.taxYear))
-      .toFuture()
-      .map(_.headOption)
-  }
-
   class EmptyDatabase {
     await(repo.collection.drop().toFuture())
     await(repo.ensureIndexes)
@@ -64,25 +57,24 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
     sessionIdOne,
     mtditid,
     nino,
-    2022,
+    taxYear,
     isPriorSubmission = true,
     hasPriorExpenses = true,
     ExpensesCYAModel(
       expenses = ExpensesViewModel(
-        Some(100),
-        Some(100),
-        Some(100),
-        Some(100),
-        Some(100),
-        Some(100),
-        Some(100),
-        Some(100),
-        Some(true),
-        Some(true),
-        Some(true),
-        Some(true),
-        isUsingCustomerData = false
-      )
+        jobExpensesQuestion = Some(true),
+        jobExpenses = Some(100.00),
+        flatRateJobExpensesQuestion = Some(true),
+        flatRateJobExpenses = Some(100.00),
+        professionalSubscriptionsQuestion = Some(true),
+        professionalSubscriptions = Some(100.00),
+        otherAndCapitalAllowancesQuestion = Some(true),
+        otherAndCapitalAllowances = Some(100.00),
+        businessTravelCosts = Some(100.00),
+        hotelAndMealExpenses = Some(100.00),
+        vehicleExpenses = Some(100.00),
+        mileageAllowanceRelief = Some(100.00),
+        isUsingCustomerData = false)
     ),
     lastUpdated = now
   )
@@ -91,7 +83,7 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
     sessionIdTwo,
     mtditid,
     nino,
-    2022,
+    taxYear,
     isPriorSubmission = true,
     hasPriorExpenses = true,
     ExpensesCYAModel(
@@ -104,11 +96,9 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
 
   implicit val request: FakeRequest[AnyContent] = fakeRequest
 
-  val userOne = User(expensesUserDataOne.mtdItId, None, expensesUserDataOne.nino, expensesUserDataOne.sessionId, AffinityGroup.Individual.toString)
-  val userTwo = User(expensesUserDataTwo.mtdItId, None, expensesUserDataTwo.nino, expensesUserDataTwo.sessionId, AffinityGroup.Individual.toString)
+  private val userOne = User(expensesUserDataOne.mtdItId, None, expensesUserDataOne.nino, expensesUserDataOne.sessionId, AffinityGroup.Individual.toString)
 
-  val repoWithInvalidEncryption = appWithInvalidEncryptionKey.injector.instanceOf[ExpensesUserDataRepositoryImpl]
-  val serviceWithInvalidEncryption: EncryptionService = appWithInvalidEncryptionKey.injector.instanceOf[EncryptionService]
+  private val repoWithInvalidEncryption = appWithInvalidEncryptionKey.injector.instanceOf[ExpensesUserDataRepositoryImpl]
 
   "update with invalid encryption" should {
     "fail to add data" in new EmptyDatabase {
@@ -124,7 +114,7 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
       countFromOtherDatabase mustBe 0
       await(repoWithInvalidEncryption.collection.insertOne(encryptionService.encryptExpenses(expensesUserDataOne)).toFuture())
       countFromOtherDatabase mustBe 1
-      val res = await(repoWithInvalidEncryption.find(expensesUserDataOne.taxYear)(userOne))
+      private val res = await(repoWithInvalidEncryption.find(expensesUserDataOne.taxYear)(userOne))
       res mustBe Left(EncryptionDecryptionError(
         "Key being used is not valid. It could be due to invalid encoding, wrong length or uninitialized for decrypt Invalid AES key length: 2 bytes"))
     }
@@ -157,17 +147,17 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
 
       def ensureIndexes: Future[Seq[String]] = {
         val indexes = Seq(IndexModel(ascending("taxYear"), IndexOptions().unique(true).name("fakeIndex")))
-        MongoUtils.ensureIndexes(repo.collection, indexes, true)
+        MongoUtils.ensureIndexes(repo.collection, indexes, replaceIndexes = true)
       }
 
       await(ensureIndexes)
       count mustBe 0
 
-      val res = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
+      private val res = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
       res mustBe Right()
       count mustBe 1
 
-      val res2 = await(repo.createOrUpdate(expensesUserDataOne.copy(sessionId = "1234567890"))(userOne))
+      private val res2 = await(repo.createOrUpdate(expensesUserDataOne.copy(sessionId = "1234567890"))(userOne))
       res2.left.get.message must include("Command failed with error 11000 (DuplicateKey)")
       count mustBe 1
     }
@@ -178,13 +168,13 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
     }
 
     "update a document in collection when one already exists" in new EmptyDatabase {
-      val createAttempt = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
+      private val createAttempt = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
       createAttempt mustBe Right()
       count mustBe 1
 
-      val updatedEmploymentDetails = expensesUserDataOne.expensesCya.expenses.copy(jobExpenses = Some(34234))
-      val updatedEmploymentCyaModel = expensesUserDataOne.expensesCya.copy(expenses = updatedEmploymentDetails)
-      val updatedEmploymentUserData = expensesUserDataOne.copy(expensesCya = updatedEmploymentCyaModel)
+      private val updatedEmploymentDetails = expensesUserDataOne.expensesCya.expenses.copy(jobExpenses = Some(34234.00))
+      private val updatedEmploymentCyaModel = expensesUserDataOne.expensesCya.copy(expenses = updatedEmploymentDetails)
+      private val updatedEmploymentUserData = expensesUserDataOne.copy(expensesCya = updatedEmploymentCyaModel)
 
       await(repo.createOrUpdate(updatedEmploymentUserData)(userOne)) mustBe Right()
       count mustBe 1
@@ -193,13 +183,13 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
 
   "find" should {
     "get a document and update the TTL" in new EmptyDatabase {
-      val now = DateTime.now(DateTimeZone.UTC)
-      val data = expensesUserDataOne.copy(lastUpdated = now)
+      private val now = DateTime.now(DateTimeZone.UTC)
+      private val data = expensesUserDataOne.copy(lastUpdated = now)
 
       await(repo.createOrUpdate(data)(userOne)) mustBe Right()
       count mustBe 1
 
-      val findResult = await(repo.find(data.taxYear)(userOne))
+      private val findResult = await(repo.find(data.taxYear)(userOne))
 
       findResult.right.get.map(_.copy(lastUpdated = data.lastUpdated)) mustBe Some(data)
       findResult.right.get.map(_.lastUpdated.isAfter(data.lastUpdated)) mustBe Some(true)
@@ -218,7 +208,7 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
 
       private val encryptedExpensesUserData: EncryptedExpensesUserData = encryptionService.encryptExpenses(expensesUserDataOne)
 
-      val caught = intercept[MongoWriteException](await(repo.collection.insertOne(encryptedExpensesUserData).toFuture()))
+      private val caught = intercept[MongoWriteException](await(repo.collection.insertOne(encryptedExpensesUserData).toFuture()))
 
       caught.getMessage must include("E11000 duplicate key error collection: income-tax-employment-frontend.expensesUserData index: UserDataLookupIndex dup key:")
     }

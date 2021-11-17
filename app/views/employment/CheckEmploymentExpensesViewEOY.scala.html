@@ -18,7 +18,7 @@
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Heading
 @import utils.ViewUtils.summaryListRow
-@import models.employment.ExpensesViewModel
+@import models.expenses.ExpensesViewModel
 @import utils.ViewUtils.bigDecimalCurrency
 
 @this(
@@ -71,7 +71,7 @@
                     jobExpenses => showRows("checkYourExpenses.jobExpensesAmount", jobExpenses)
                 },
                 expenses.flatRateJobExpensesQuestion.map{
-                    flatRateJobExpensesQuestion => showQuestionRow("checkYourExpenses.flatRateJobExpensesQuestion", flatRateJobExpensesQuestion)
+                    flatRateJobExpensesQuestion => showQuestionRow("checkYourExpenses.flatRateJobExpensesQuestion", flatRateJobExpensesQuestion, controllers.expenses.routes.UniformsOrToolsExpensesController.show(taxYear))
                 },
                 expenses.flatRateJobExpenses.map{
                     flatRateJobExpenses => showRows("checkYourExpenses.flatRateJobExpensesAmount", flatRateJobExpenses)

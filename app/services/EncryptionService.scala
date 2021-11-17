@@ -17,11 +17,12 @@
 package services
 
 import config.AppConfig
-import javax.inject.Inject
 import models.benefits._
-import models.employment._
+import models.expenses.{EncryptedExpensesViewModel, ExpensesViewModel}
 import models.mongo._
 import utils.SecureGCMCipher
+
+import javax.inject.Inject
 
 class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: AppConfig) {
 
@@ -342,27 +343,25 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
 
     implicit val textAndKey: TextAndKey = TextAndKey(userData.mtdItId, appConfig.encryptionKey)
 
-    val expenses = ExpensesViewModel(
-      businessTravelCosts = userData.expensesCya.expenses.businessTravelCosts.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
+    val expenses = ExpensesViewModel(claimingEmploymentExpenses = secureGCMCipher
+      .decrypt[Boolean](userData.expensesCya.expenses.claimingEmploymentExpenses.value, userData.expensesCya.expenses.claimingEmploymentExpenses.nonce),
+      jobExpensesQuestion = userData.expensesCya.expenses.jobExpensesQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       jobExpenses = userData.expensesCya.expenses.jobExpenses.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
+      flatRateJobExpensesQuestion = userData.expensesCya.expenses.flatRateJobExpensesQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       flatRateJobExpenses = userData.expensesCya.expenses.flatRateJobExpenses.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
+      professionalSubscriptionsQuestion =
+        userData.expensesCya.expenses.professionalSubscriptionsQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       professionalSubscriptions = userData.expensesCya.expenses.professionalSubscriptions.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
-      hotelAndMealExpenses = userData.expensesCya.expenses.hotelAndMealExpenses.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
+      otherAndCapitalAllowancesQuestion =
+        userData.expensesCya.expenses.otherAndCapitalAllowancesQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       otherAndCapitalAllowances = userData.expensesCya.expenses.otherAndCapitalAllowances.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
+      businessTravelCosts = userData.expensesCya.expenses.businessTravelCosts.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
+      hotelAndMealExpenses = userData.expensesCya.expenses.hotelAndMealExpenses.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       vehicleExpenses = userData.expensesCya.expenses.vehicleExpenses.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       mileageAllowanceRelief = userData.expensesCya.expenses.mileageAllowanceRelief.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
-      jobExpensesQuestion = userData.expensesCya.expenses.jobExpensesQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
-      flatRateJobExpensesQuestion = userData.expensesCya.expenses.flatRateJobExpensesQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
-      professionalSubscriptionsQuestion = userData.expensesCya.expenses.professionalSubscriptionsQuestion
-        .map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
-      otherAndCapitalAllowancesQuestion = userData.expensesCya.expenses.otherAndCapitalAllowancesQuestion
-        .map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       submittedOn = userData.expensesCya.expenses.submittedOn.map(x => secureGCMCipher.decrypt[String](x.value, x.nonce)),
-      isUsingCustomerData = secureGCMCipher
-        .decrypt[Boolean](userData.expensesCya.expenses.isUsingCustomerData.value, userData.expensesCya.expenses.isUsingCustomerData.nonce),
-      claimingEmploymentExpenses = secureGCMCipher
-        .decrypt[Boolean](userData.expensesCya.expenses.claimingEmploymentExpenses.value, userData.expensesCya.expenses.claimingEmploymentExpenses.nonce)
-    )
+      isUsingCustomerData =
+        secureGCMCipher.decrypt[Boolean](userData.expensesCya.expenses.isUsingCustomerData.value, userData.expensesCya.expenses.isUsingCustomerData.nonce))
 
     val expensesCYA = ExpensesCYAModel(
       expenses = expenses

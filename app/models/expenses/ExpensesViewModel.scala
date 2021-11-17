@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 
-package models.employment
+package models.expenses
 
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.{OFormat, __}
 import utils.EncryptedValue
 
-case class ExpensesViewModel(
-                              businessTravelCosts: Option[BigDecimal] = None,
-                              jobExpenses: Option[BigDecimal] = None,
-                              flatRateJobExpenses: Option[BigDecimal] = None,
-                              professionalSubscriptions: Option[BigDecimal] = None,
-                              hotelAndMealExpenses: Option[BigDecimal] = None,
-                              otherAndCapitalAllowances: Option[BigDecimal] = None,
-                              vehicleExpenses: Option[BigDecimal] = None,
-                              mileageAllowanceRelief: Option[BigDecimal] = None,
-                              jobExpensesQuestion: Option[Boolean] = None,
-                              flatRateJobExpensesQuestion: Option[Boolean] = None,
-                              professionalSubscriptionsQuestion: Option[Boolean] = None,
-                              otherAndCapitalAllowancesQuestion: Option[Boolean] = None,
-                              submittedOn: Option[String] = None,
-                              isUsingCustomerData: Boolean,
-                              claimingEmploymentExpenses: Boolean = false
-                            ) {
+case class ExpensesViewModel(claimingEmploymentExpenses: Boolean = false,
+                             jobExpensesQuestion: Option[Boolean] = None,
+                             jobExpenses: Option[BigDecimal] = None,
+                             flatRateJobExpensesQuestion: Option[Boolean] = None,
+                             flatRateJobExpenses: Option[BigDecimal] = None,
+                             professionalSubscriptionsQuestion: Option[Boolean] = None,
+                             professionalSubscriptions: Option[BigDecimal] = None,
+                             otherAndCapitalAllowancesQuestion: Option[Boolean] = None,
+                             otherAndCapitalAllowances: Option[BigDecimal] = None,
+                             businessTravelCosts: Option[BigDecimal] = None,
+                             hotelAndMealExpenses: Option[BigDecimal] = None,
+                             vehicleExpenses: Option[BigDecimal] = None,
+                             mileageAllowanceRelief: Option[BigDecimal] = None,
+                             submittedOn: Option[String] = None,
+                             isUsingCustomerData: Boolean) {
 
   def toExpenses: Expenses = {
     Expenses(
@@ -48,7 +46,7 @@ case class ExpensesViewModel(
 
 object ExpensesViewModel {
 
-  def clear(isUsingCustomerData:Boolean): ExpensesViewModel = ExpensesViewModel(isUsingCustomerData = isUsingCustomerData)
+  def clear(isUsingCustomerData: Boolean): ExpensesViewModel = ExpensesViewModel(isUsingCustomerData = isUsingCustomerData)
 
   val firstSetOfFields: OFormat[(Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal],
     Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal])] = (
@@ -80,12 +78,22 @@ object ExpensesViewModel {
         otherAndCapitalAllowances, vehicleExpenses, mileageAllowanceRelief),
         (jobExpensesQuestion, flatRateJobExpensesQuestion, professionalSubscriptionsQuestion,
         otherAndCapitalAllowancesQuestion, submittedOn, isUsingCustomerData, claimEmploymentExpenses)
-        ) =>
-        ExpensesViewModel(
-          businessTravelCosts, jobExpenses, flatRateJobExpenses, professionalSubscriptions, hotelAndMealExpenses,
-          otherAndCapitalAllowances, vehicleExpenses, mileageAllowanceRelief, jobExpensesQuestion, flatRateJobExpensesQuestion,
-          professionalSubscriptionsQuestion, otherAndCapitalAllowancesQuestion, submittedOn, isUsingCustomerData, claimEmploymentExpenses
-        )
+        ) => ExpensesViewModel(
+        claimEmploymentExpenses,
+        jobExpensesQuestion,
+        jobExpenses,
+        flatRateJobExpensesQuestion,
+        flatRateJobExpenses,
+        professionalSubscriptionsQuestion,
+        professionalSubscriptions,
+        otherAndCapitalAllowancesQuestion,
+        otherAndCapitalAllowances,
+        businessTravelCosts,
+        hotelAndMealExpenses,
+        vehicleExpenses,
+        mileageAllowanceRelief,
+        submittedOn,
+        isUsingCustomerData)
     }, {
       expenses =>
         (
@@ -95,7 +103,6 @@ object ExpensesViewModel {
             expenses.otherAndCapitalAllowancesQuestion, expenses.submittedOn, expenses.isUsingCustomerData, expenses.claimingEmploymentExpenses)
         )
     })
-
   }
 }
 
@@ -164,7 +171,6 @@ object EncryptedExpensesViewModel {
             expenses.otherAndCapitalAllowancesQuestion, expenses.submittedOn, expenses.isUsingCustomerData, expenses.claimingEmploymentExpenses)
         )
     })
-
   }
 }
 

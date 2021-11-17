@@ -18,7 +18,7 @@ package controllers.expenses
 
 import forms.YesNoForm
 import models.User
-import models.employment.Expenses
+import models.expenses.Expenses
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -363,20 +363,20 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYearEOY).url)
-          lazy val cyamodel = findExpensesCyaData(taxYearEOY, userRequest).get
+          lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
 
-          cyamodel.expensesCya.expenses.claimingEmploymentExpenses shouldBe false
-          cyamodel.expensesCya.expenses.jobExpensesQuestion shouldBe None
-          cyamodel.expensesCya.expenses.flatRateJobExpensesQuestion shouldBe None
-          cyamodel.expensesCya.expenses.otherAndCapitalAllowancesQuestion shouldBe None
-          cyamodel.expensesCya.expenses.businessTravelCosts shouldBe None
-          cyamodel.expensesCya.expenses.jobExpenses shouldBe None
-          cyamodel.expensesCya.expenses.flatRateJobExpenses shouldBe None
-          cyamodel.expensesCya.expenses.professionalSubscriptions shouldBe None
-          cyamodel.expensesCya.expenses.hotelAndMealExpenses shouldBe None
-          cyamodel.expensesCya.expenses.otherAndCapitalAllowances shouldBe None
-          cyamodel.expensesCya.expenses.vehicleExpenses shouldBe None
-          cyamodel.expensesCya.expenses.mileageAllowanceRelief shouldBe None
+          cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe false
+          cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe None
+          cyaModel.expensesCya.expenses.flatRateJobExpensesQuestion shouldBe None
+          cyaModel.expensesCya.expenses.otherAndCapitalAllowancesQuestion shouldBe None
+          cyaModel.expensesCya.expenses.businessTravelCosts shouldBe None
+          cyaModel.expensesCya.expenses.jobExpenses shouldBe None
+          cyaModel.expensesCya.expenses.flatRateJobExpenses shouldBe None
+          cyaModel.expensesCya.expenses.professionalSubscriptions shouldBe None
+          cyaModel.expensesCya.expenses.hotelAndMealExpenses shouldBe None
+          cyaModel.expensesCya.expenses.otherAndCapitalAllowances shouldBe None
+          cyaModel.expensesCya.expenses.vehicleExpenses shouldBe None
+          cyaModel.expensesCya.expenses.mileageAllowanceRelief shouldBe None
         }
 
       }
@@ -398,21 +398,20 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYearEOY).url)
 
-          lazy val cyamodel = findExpensesCyaData(taxYearEOY, userRequest).get
-          cyamodel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
-          cyamodel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(true)
-          cyamodel.expensesCya.expenses.flatRateJobExpensesQuestion shouldBe Some(true)
-          cyamodel.expensesCya.expenses.otherAndCapitalAllowancesQuestion shouldBe Some(true)
-          cyamodel.expensesCya.expenses.businessTravelCosts shouldBe Some(100.00)
-          cyamodel.expensesCya.expenses.jobExpenses shouldBe Some(200.00)
-          cyamodel.expensesCya.expenses.flatRateJobExpenses shouldBe Some(300.00)
-          cyamodel.expensesCya.expenses.professionalSubscriptions shouldBe Some(400.00)
-          cyamodel.expensesCya.expenses.hotelAndMealExpenses shouldBe Some(500.00)
-          cyamodel.expensesCya.expenses.otherAndCapitalAllowances shouldBe Some(600.00)
-          cyamodel.expensesCya.expenses.vehicleExpenses shouldBe Some(700.00)
-          cyamodel.expensesCya.expenses.mileageAllowanceRelief shouldBe Some(800.00)
+          lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
+          cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
+          cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(true)
+          cyaModel.expensesCya.expenses.flatRateJobExpensesQuestion shouldBe Some(true)
+          cyaModel.expensesCya.expenses.otherAndCapitalAllowancesQuestion shouldBe Some(true)
+          cyaModel.expensesCya.expenses.businessTravelCosts shouldBe Some(100.00)
+          cyaModel.expensesCya.expenses.jobExpenses shouldBe Some(200.00)
+          cyaModel.expensesCya.expenses.flatRateJobExpenses shouldBe Some(300.00)
+          cyaModel.expensesCya.expenses.professionalSubscriptions shouldBe Some(400.00)
+          cyaModel.expensesCya.expenses.hotelAndMealExpenses shouldBe Some(500.00)
+          cyaModel.expensesCya.expenses.otherAndCapitalAllowances shouldBe Some(600.00)
+          cyaModel.expensesCya.expenses.vehicleExpenses shouldBe Some(700.00)
+          cyaModel.expensesCya.expenses.mileageAllowanceRelief shouldBe Some(800.00)
         }
-
       }
 
       "return a redirect when in year" which {
