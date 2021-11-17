@@ -171,6 +171,9 @@ POST       /:taxYear/benefits/employer-income-tax                           cont
 GET        /:taxYear/expenses/claim-employment-expenses                     controllers.expenses.EmploymentExpensesController.show(taxYear: Int)
 POST       /:taxYear/expenses/claim-employment-expenses                     controllers.expenses.EmploymentExpensesController.submit(taxYear: Int)
 
+GET        /:taxYear/benefits/educational-services                          controllers.benefits.medical.EducationalServicesBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/educational-services                          controllers.benefits.medical.EducationalServicesBenefitsController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/expenses/business-travel-and-overnight-expenses        controllers.expenses.BusinessTravelOvernightExpensesController.show(taxYear: Int)
 POST       /:taxYear/expenses/business-travel-and-overnight-expenses        controllers.expenses.BusinessTravelOvernightExpensesController.submit(taxYear: Int)
 

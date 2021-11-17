@@ -887,6 +887,13 @@ benefits.childcareBenefitsAmount.error.noEntry.agent = Enter your client’s chi
 benefits.childcareBenefitsAmount.error.incorrectFormat.agent = Enter your client’s childcare benefit amount in the correct format
 benefits.childcareBenefitsAmount.error.overMaximum.agent = Your client’s childcare benefit must be less than £100,000,000,000
 
+benefits.educationalServices.title.individual = Did you get any benefits for educational services?
+benefits.educationalServices.title.agent = Did your client get any benefits for educational services?
+benefits.educationalServices.theseAre.individual = These are scholarships or school fees paid for by your employer.
+benefits.educationalServices.theseAre.agent = These are scholarships or school fees paid for by their employer.
+benefits.educationalServices.error.individual = Select yes if you got benefits for educational services
+benefits.educationalServices.error.agent = Select yes if your client got benefits for educational services
+
 benefits.beneficialLoans.title.individual = Did you get any beneficial loans?
 benefits.beneficialLoans.title.agent = Did your client get any beneficial loans?
 benefits.beneficialLoans.theseAre.individual = These are interest free or low interest loans from your employer.
