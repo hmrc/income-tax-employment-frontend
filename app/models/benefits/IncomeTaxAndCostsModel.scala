@@ -17,7 +17,7 @@
 package models.benefits
 
 import controllers.employment.routes._
-import controllers.benefits.incomeTax.routes._
+import controllers.benefits.income.routes._
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue

@@ -932,6 +932,13 @@ benefits.incomeTaxOrIncurredCosts.title.agent = Did your client’s employer pay
 benefits.incomeTaxOrIncurredCosts.error.individual = Select yes if your employer paid any of your Income Tax or incurred costs
 benefits.incomeTaxOrIncurredCosts.error.agent = Select yes if your client’s employer paid any of their Income Tax or incurred costs
 
+benefits.incomeTax.title.individual = Did your employer pay any of your Income Tax?
+benefits.incomeTax.title.agent = Did your client’s employer pay any of their Income Tax?
+benefits.incomeTax.ifYou.individual = If you have not paid PAYE tax, we can recover this from your employer.
+benefits.incomeTax.ifYou.agent = If your client has not paid PAYE tax, we can recover this from their employer.
+benefits.incomeTax.error.individual = Select yes if your employer paid any of your Income Tax
+benefits.incomeTax.error.agent = Select yes if your client’s employer paid any of their Income Tax
+
 #####Expenses Pages#######
 
 expenses.claimEmploymentExpenses.title.individual = Do you want to claim employment expenses?
