@@ -48,7 +48,8 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
 
   def benefits(travelEntertainmentModel: TravelEntertainmentModel): BenefitsViewModel =
-    BenefitsViewModel(travelEntertainmentModel = Some(travelEntertainmentModel), isUsingCustomerData = true, isBenefitsReceived = true)
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(travelEntertainmentModel), isUsingCustomerData = true, isBenefitsReceived = true)
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"

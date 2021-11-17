@@ -126,7 +126,9 @@ class TelephoneEmploymentBenefitsAmountControllerISpec extends IntegrationTest w
   }
 
   private def benefits(UtilitiesAndServicesModel: UtilitiesAndServicesModel) =
-    BenefitsViewModel(utilitiesAndServicesModel = Some(UtilitiesAndServicesModel), isUsingCustomerData = true, isBenefitsReceived = true)
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel), utilitiesAndServicesModel = Some(UtilitiesAndServicesModel),
+      isUsingCustomerData = true, isBenefitsReceived = true)
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(

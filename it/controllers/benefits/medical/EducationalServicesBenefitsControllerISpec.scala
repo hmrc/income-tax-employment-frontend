@@ -44,7 +44,9 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
   def benefits(medicalChildcareEducationModel: MedicalChildcareEducationModel): BenefitsViewModel =
-    BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true, medicalChildcareEducationModel = Some(medicalChildcareEducationModel))
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel), utilitiesAndServicesModel = Some(fullUtilitiesAndServicesModel),
+      isUsingCustomerData = true, isBenefitsReceived = true, medicalChildcareEducationModel = Some(medicalChildcareEducationModel))
 
   private def educationServiceQuestionPageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/educational-services?employmentId=$employmentId"
 

@@ -42,7 +42,9 @@ class OtherServicesBenefitsControllerISpec extends IntegrationTest with ViewHelp
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
   private def benefits(utilitiesAndServicesModel: UtilitiesAndServicesModel) =
-    BenefitsViewModel(utilitiesAndServicesModel = Some(utilitiesAndServicesModel), isUsingCustomerData = true, isBenefitsReceived = true)
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel),utilitiesAndServicesModel = Some(utilitiesAndServicesModel),
+      isUsingCustomerData = true, isBenefitsReceived = true)
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/other-services?employmentId=$employmentId"
 

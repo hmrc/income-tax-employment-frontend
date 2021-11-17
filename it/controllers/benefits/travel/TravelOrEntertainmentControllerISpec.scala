@@ -41,7 +41,8 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
   private def benefits(travelEntertainmentModel: TravelEntertainmentModel): BenefitsViewModel =
-    BenefitsViewModel(travelEntertainmentModel = Some(travelEntertainmentModel), isUsingCustomerData = true, isBenefitsReceived = true)
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(travelEntertainmentModel), isUsingCustomerData = true, isBenefitsReceived = true)
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/travel-entertainment?employmentId=$employmentId"
 
@@ -131,7 +132,9 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-              benefits = Some(BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true)))), userRequest)
+              benefits = Some(BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel),
+                accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+                isUsingCustomerData = true, isBenefitsReceived = true)))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -413,7 +416,9 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-            benefits = Some(BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true)))), userRequest)
+            benefits = Some(BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel),
+              accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+              isUsingCustomerData = true, isBenefitsReceived = true)))), userRequest)
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))

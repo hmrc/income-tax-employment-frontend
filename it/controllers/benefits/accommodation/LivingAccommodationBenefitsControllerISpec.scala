@@ -48,7 +48,8 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
   def benefits(accommodationModel: AccommodationRelocationModel): BenefitsViewModel =
-    BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true, accommodationRelocationModel = Some(accommodationModel))
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), isUsingCustomerData = true,
+      isBenefitsReceived = true, accommodationRelocationModel = Some(accommodationModel))
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"

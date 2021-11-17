@@ -51,7 +51,9 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
   def benefits(medicalChildcareEducationModel: MedicalChildcareEducationModel): BenefitsViewModel =
-    BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true, medicalChildcareEducationModel = Some(medicalChildcareEducationModel))
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel), utilitiesAndServicesModel = Some(fullUtilitiesAndServicesModel),
+      isUsingCustomerData = true, isBenefitsReceived = true, medicalChildcareEducationModel = Some(medicalChildcareEducationModel))
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > label > header > p"

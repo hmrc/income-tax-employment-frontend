@@ -42,7 +42,9 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
   private def benefits(utilitiesAndServicesModel: UtilitiesAndServicesModel) =
-    BenefitsViewModel(utilitiesAndServicesModel = Some(utilitiesAndServicesModel), isUsingCustomerData = true, isBenefitsReceived = true)
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel), utilitiesAndServicesModel = Some(utilitiesAndServicesModel),
+      isUsingCustomerData = true, isBenefitsReceived = true)
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/utility-general-service?employmentId=$employmentId"
 
@@ -130,7 +132,10 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("employer", hmrc = true,
-              benefits = Some(BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true)))), userRequest)
+              benefits = Some(BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel),
+                accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+                travelEntertainmentModel = Some(fullTravelOrEntertainmentModel),
+                isUsingCustomerData = true, isBenefitsReceived = true)))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }

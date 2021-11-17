@@ -47,7 +47,10 @@ class IncomeTaxOrIncurredCostsControllerISpec extends IntegrationTest with ViewH
     EmploymentCYAModel(EmploymentDetails("employerName", currentDataIsHmrcHeld = true), benefits)
 
   def benefits(incomeModel: Option[IncomeTaxAndCostsModel]): BenefitsViewModel =
-    BenefitsViewModel(incomeTaxAndCostsModel = incomeModel, isBenefitsReceived = true, isUsingCustomerData = true)
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel), utilitiesAndServicesModel = Some(fullUtilitiesAndServicesModel),
+      medicalChildcareEducationModel = Some(fullMedicalChildcareEducationModel),
+      incomeTaxAndCostsModel = incomeModel, isBenefitsReceived = true, isUsingCustomerData = true)
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"

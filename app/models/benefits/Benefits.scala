@@ -179,6 +179,40 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
     }
   }
 
+  def reimbursedCostsVouchersAndNonCashModel(cyaBenefits: Option[BenefitsViewModel] = None): Option[ReimbursedCostsVouchersAndNonCashModel] = {
+    if (cyaBenefits.isDefined && cyaBenefits.map(_.reimbursedCostsVouchersAndNonCashModel).isDefined) {
+      cyaBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel)
+    } else {
+      Some(ReimbursedCostsVouchersAndNonCashModel(
+        reimbursedCostsVouchersAndNonCashQuestion = Some(reimbursedDetailsPopulated),
+        expensesQuestion = Some(expenses.isDefined),
+        expenses = expenses,
+        taxableExpensesQuestion = Some(taxableExpenses.isDefined),
+        taxableExpenses = taxableExpenses,
+        vouchersAndCreditCardsQuestion = Some(vouchersAndCreditCards.isDefined),
+        vouchersAndCreditCards = vouchersAndCreditCards,
+        nonCashQuestion = Some(nonCash.isDefined),
+        nonCash = nonCash,
+        otherItemsQuestion = Some(otherItems.isDefined),
+        otherItems = otherItems
+      ))
+    }
+  }
+
+  def assetsModel(cyaBenefits: Option[BenefitsViewModel] = None): Option[AssetsModel] = {
+    if (cyaBenefits.isDefined && cyaBenefits.map(_.assetsModel).isDefined) {
+      cyaBenefits.flatMap(_.assetsModel)
+    } else {
+      Some(AssetsModel(
+        assetsAndAssetsTransferQuestion = Some(assetsDetailsPopulated),
+        assetsQuestion = Some(assets.isDefined),
+        assets = assets,
+        assetTransferQuestion = Some(assetTransfer.isDefined),
+        assetTransfer = assetTransfer
+      ))
+    }
+  }
+
   def benefitsPopulated(cyaBenefits: Option[BenefitsViewModel] = None): Boolean = {
     val hasBenefits: Boolean = cyaBenefits.exists(_.isBenefitsReceived)
     hasBenefits || vehicleDetailsPopulated || accommodationDetailsPopulated || travelDetailsPopulated || utilitiesDetailsPopulated ||
@@ -194,15 +228,8 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
       utilitiesAndServicesModel = utilitiesAndServicesSection(cyaBenefits),
       medicalChildcareEducationModel = medicalChildcareEducationModel(cyaBenefits),
       incomeTaxAndCostsModel = incomeTaxAndCostsModel(cyaBenefits),
-      assets, assetTransfer, expenses, taxableExpenses,
-      otherItems, vouchersAndCreditCards, nonCash,
-      assetsQuestion = Some(assets.isDefined),
-      assetTransferQuestion = Some(assetTransfer.isDefined),
-      expensesQuestion = Some(expenses.isDefined),
-      taxableExpensesQuestion = Some(taxableExpenses.isDefined),
-      otherItemsQuestion = Some(otherItems.isDefined),
-      vouchersAndCreditCardsQuestion = Some(vouchersAndCreditCards.isDefined),
-      nonCashQuestion = Some(nonCash.isDefined),
+      reimbursedCostsVouchersAndNonCashModel = reimbursedCostsVouchersAndNonCashModel(cyaBenefits),
+      assetsModel = assetsModel(cyaBenefits),
       submittedOn = submittedOn,
       isUsingCustomerData = isUsingCustomerData,
       isBenefitsReceived = benefitsPopulated(cyaBenefits)

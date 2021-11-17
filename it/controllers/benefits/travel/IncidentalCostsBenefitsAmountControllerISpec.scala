@@ -52,7 +52,8 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
   def benefits(travelEntertainmentModel: TravelEntertainmentModel): BenefitsViewModel =
-    BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true, travelEntertainmentModel = Some(travelEntertainmentModel))
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      isUsingCustomerData = true, isBenefitsReceived = true, travelEntertainmentModel = Some(travelEntertainmentModel))
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > label > header > p"
