@@ -25,6 +25,7 @@ import helpers.{PlaySessionCookieBaker, WireMockHelper, WiremockStubHelpers}
 import models.IncomeTaxUserData
 import models.benefits._
 import models.employment._
+import models.expenses.{Expenses, ExpensesViewModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData, ExpensesCYAModel}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
@@ -207,7 +208,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
     stubGetWithHeadersCheck(
       s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,
-      Json.toJson(userData).toString(), ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
+      Json.toJson(userData).toString(), "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
   }
 
   def userDataStubDeleteOrIgnoreEmployment(userData: IncomeTaxUserData, nino: String, taxYear: Int, employmentId: String, sourceType: String): StubMapping = {
@@ -221,7 +222,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
     stubGetWithHeadersCheck(
       s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", NO_CONTENT,
-      "{}", ("X-Session-ID" -> sessionId), ("mtditid" -> mtditid))
+      "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
   }
 
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
@@ -236,7 +237,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     customerExpenses = customerExpenses)
 
 
- //scalastyle:off parameter.number
+  //scalastyle:off parameter.number
   def employmentDetailsAndBenefits(benefits: Option[EmploymentBenefits] = None,
                                    employmentId: String = "001",
                                    employerName: String = "maggie",
@@ -337,7 +338,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     sessionId,
     mtditid,
     nino,
-    2021,
+    taxYear - 1,
     "employmentId",
     isPriorSubmission = true,
     hasPriorBenefits = true,
@@ -351,15 +352,15 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     CarVanFuelModel(
       carVanFuelQuestion = Some(true),
       carQuestion = Some(true),
-      car = Some(100),
+      car = Some(100.00),
       carFuelQuestion = Some(true),
-      carFuel = Some(200),
+      carFuel = Some(200.00),
       vanQuestion = Some(true),
-      van = Some(300),
+      van = Some(300.00),
       vanFuelQuestion = Some(true),
-      vanFuel = Some(400),
+      vanFuel = Some(400.00),
       mileageQuestion = Some(true),
-      mileage = Some(400)
+      mileage = Some(400.00)
     )
 
   def emptyCarVanFuelModel: CarVanFuelModel =
@@ -445,29 +446,27 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   def fullExpensesCYAModel: ExpensesCYAModel =
     ExpensesCYAModel(ExpensesViewModel(
-      businessTravelCosts = Some(100.00),
+      claimingEmploymentExpenses = true,
+      jobExpensesQuestion = Some(true),
       jobExpenses = Some(200.00),
+      flatRateJobExpensesQuestion = Some(true),
       flatRateJobExpenses = Some(300.00),
+      professionalSubscriptionsQuestion = Some(true),
       professionalSubscriptions = Some(400.00),
-      hotelAndMealExpenses = Some(500.00),
+      otherAndCapitalAllowancesQuestion = Some(true),
       otherAndCapitalAllowances = Some(600.00),
+      businessTravelCosts = Some(100.00),
+      hotelAndMealExpenses = Some(500.00),
       vehicleExpenses = Some(700.00),
       mileageAllowanceRelief = Some(800.00),
-      jobExpensesQuestion = Some(true),
-      flatRateJobExpensesQuestion = Some(true),
-      professionalSubscriptionsQuestion = Some(true),
-      otherAndCapitalAllowancesQuestion = Some(true),
       submittedOn = None,
-      isUsingCustomerData = true,
-      claimingEmploymentExpenses = true
-    ))
-
-  def emptyExpensesCYAModel: ExpensesCYAModel =
-    ExpensesCYAModel(ExpensesViewModel(
       isUsingCustomerData = true
     ))
 
-  def fullExpenses:Expenses =
+  def emptyExpensesCYAModel: ExpensesCYAModel =
+    ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = true))
+
+  def fullExpenses: Expenses =
     Expenses(
       businessTravelCosts = Some(100.00),
       jobExpenses = Some(200.00),

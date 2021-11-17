@@ -19,7 +19,7 @@ package controllers.expenses
 import controllers.employment.routes.CheckEmploymentExpensesController
 import forms.YesNoForm
 import models.User
-import models.employment.{Expenses, ExpensesViewModel}
+import models.expenses.{Expenses, ExpensesViewModel}
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -41,7 +41,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
     ExpensesCYAModel.makeModel(expenses, isUsingCustomerData, submittedOn = None)
 
   def expensesViewModel(jobExpensesQuestion: Option[Boolean] = None): ExpensesViewModel =
-    ExpensesViewModel(isUsingCustomerData = true, claimingEmploymentExpenses = true, jobExpensesQuestion = jobExpensesQuestion)
+    ExpensesViewModel(claimingEmploymentExpenses = true, jobExpensesQuestion = jobExpensesQuestion, isUsingCustomerData = true)
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/business-travel-and-overnight-expenses"
 
@@ -55,6 +55,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
     val noSelector = "#value-no"
     val detailsSelector: String = s"#main-content > div > div > form > details > summary > span"
     val h2Selector: String = s"#main-content > div > div > form > details > div > h2"
+
     def h3Selector(index: Int): String = s"#main-content > div > div > form > details > div > h3:nth-child($index)"
     def paragraphSelector(index: Int): String = s"#main-content > div > div > form > div > fieldset > legend > p:nth-child($index)"
     def bulletListSelector(index: Int): String = s"#main-content > div > div > form > div > fieldset > legend > ul > li:nth-child($index)"

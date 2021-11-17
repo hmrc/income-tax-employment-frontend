@@ -18,7 +18,7 @@ package services
 
 import config.{AppConfig, ErrorHandler, MockCreateOrAmendExpensesConnector}
 import models.employment._
-import models.expenses.CreateExpensesRequestModel
+import models.expenses.{CreateExpensesRequestModel, Expenses, ExpensesViewModel}
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.i18n.MessagesApi
@@ -71,9 +71,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
     customerExpenses = customerExpenses
   )
 
-  private val expensesCyaData = ExpensesCYAModel(ExpensesViewModel(
-    Some(1), Some(2), Some(2), Some(2), Some(2), Some(2), Some(2), Some(2),
-    Some(true), Some(true), Some(true), Some(true), isUsingCustomerData = false))
+  private val expensesCyaData = ExpensesCYAModel(ExpensesViewModel(jobExpensesQuestion = Some(true), jobExpenses = Some(2), flatRateJobExpensesQuestion = Some(true), flatRateJobExpenses = Some(2), professionalSubscriptionsQuestion = Some(true), professionalSubscriptions = Some(2), otherAndCapitalAllowancesQuestion = Some(true), otherAndCapitalAllowances = Some(2), businessTravelCosts = Some(1), hotelAndMealExpenses = Some(2), vehicleExpenses = Some(2), mileageAllowanceRelief = Some(2), isUsingCustomerData = false))
 
   private val expensesUserData =
     ExpensesUserData(

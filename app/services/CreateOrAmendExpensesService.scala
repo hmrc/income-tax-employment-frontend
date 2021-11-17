@@ -18,24 +18,23 @@ package services
 
 import config.ErrorHandler
 import connectors.CreateOrAmendExpensesConnector
-import javax.inject.Inject
 import models.User
-import models.employment.{AllEmploymentData, EmploymentExpenses, Expenses}
-import models.expenses.CreateExpensesRequestModel
+import models.employment.{AllEmploymentData, EmploymentExpenses}
+import models.expenses.{CreateExpensesRequestModel, Expenses}
 import models.mongo.ExpensesUserData
 import play.api.Logging
 import play.api.mvc.Result
 import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-
 
 class CreateOrAmendExpensesService @Inject()(createOrAmendExpensesConnector: CreateOrAmendExpensesConnector,
                                              errorHandler: ErrorHandler,
                                              implicit val executionContext: ExecutionContext) extends Logging {
 
   def createOrAmendExpense(expensesUserData: ExpensesUserData, priorData: AllEmploymentData, taxYear: Int)(result: Result)
-                            (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
+                          (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
 
     val hmrcExpenses: Option[EmploymentExpenses] = priorData.hmrcExpenses.filter(_.dateIgnored.isEmpty)
 
@@ -48,9 +47,9 @@ class CreateOrAmendExpensesService @Inject()(createOrAmendExpensesConnector: Cre
   private def handleConnectorCall(taxYear: Int, ignoreExpenses: Option[Boolean], expenses: Expenses)(result: Result)
                                  (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
 
-    val hcWithMtditid = hc.withExtraHeaders("mtditid" -> user.mtditid)
+    val headerCarrier = hc.withExtraHeaders("mtditid" -> user.mtditid)
 
-    createOrAmendExpensesConnector.createOrAmendExpenses(user.nino, taxYear, CreateExpensesRequestModel(ignoreExpenses, expenses))(hcWithMtditid).map {
+    createOrAmendExpensesConnector.createOrAmendExpenses(user.nino, taxYear, CreateExpensesRequestModel(ignoreExpenses, expenses))(headerCarrier).map {
       case Left(error) => errorHandler.handleError(error.status)(user)
       case Right(_) => result
     }

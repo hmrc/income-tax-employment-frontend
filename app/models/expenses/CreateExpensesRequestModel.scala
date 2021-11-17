@@ -16,7 +16,6 @@
 
 package models.expenses
 
-import models.employment.Expenses
 import play.api.libs.json.Json
 
 case class CreateExpensesRequestModel(ignoreExpenses: Option[Boolean], expenses: Expenses)
