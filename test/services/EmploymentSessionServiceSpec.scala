@@ -20,7 +20,8 @@ import config._
 import models.benefits.{Benefits, BenefitsViewModel}
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
-import models.mongo.{DataNotFound, DataNotUpdated, EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.expenses.Expenses
+import models.mongo._
 import models.{APIErrorBodyModel, APIErrorModel, User}
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.i18n.MessagesApi
@@ -55,7 +56,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
   def result(allEmploymentData: AllEmploymentData): Result = {
     allEmploymentData.hmrcExpenses match {
-      case Some(expenses) => Ok("Ok")
+      case Some(_) => Ok("Ok")
       case None => Redirect("303")
     }
   }
@@ -92,9 +93,9 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
     ),
     hmrcExpenses = Some(
       EmploymentExpenses(
-        Some("2020-01-04T05:01:01Z"), None, Some(800), Some(
+        Some("2020-01-04T05:01:01Z"), None, Some(800.00), Some(
           Expenses(
-            Some(100), Some(100), Some(100), Some(100), Some(100), Some(100), Some(100), Some(100)
+            Some(100.00), Some(100.00), Some(100.00), Some(100.00), Some(100.00), Some(100.00), Some(100.00), Some(100.00)
           )
         )
       )
@@ -102,9 +103,9 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
     customerEmploymentData = Seq(),
     customerExpenses = Some(
       EmploymentExpenses(
-        Some("2020-01-04T05:01:01Z"), None, Some(800), Some(
+        Some("2020-01-04T05:01:01Z"), None, Some(800.00), Some(
           Expenses(
-            Some(100), Some(100), Some(100), Some(100), Some(100), Some(100), Some(100), Some(100)
+            Some(100.00), Some(100.00), Some(100.00), Some(100.00), Some(100.00), Some(100.00), Some(100.00), Some(100.00)
           )
         )
       )
@@ -127,14 +128,14 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       ),
       employmentBenefits = Some(
         BenefitsViewModel(
-          assets = Some(100), submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true
+          assets = Some(100.00), submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true
         )
       ))
   }
 
   val employmentDataFull: EmploymentUserData = {
-    EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", true,
-      hasPriorBenefits =  true, employmentCYA, testClock.now())
+    EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", isPriorSubmission = true,
+      hasPriorBenefits = true, employmentCYA, testClock.now())
   }
   val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
     None,
@@ -159,7 +160,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
     "redirect if no data and redirect is set to true" in {
       mockFind(taxYear, "employmentId", Right(None))
       mockFindNoContent(nino, taxYear)
-      val response = service.getAndHandle(taxYear, "employmentId", true)((_, _) => Future(Ok))
+      val response = service.getAndHandle(taxYear, "employmentId", redirectWhenNoPrior = true)((_, _) => Future(Ok))
 
       status(response) shouldBe SEE_OTHER
     }
@@ -172,6 +173,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
       status(response) shouldBe INTERNAL_SERVER_ERROR
     }
+
     "return an internal server error if the CYA find failed" in {
       mockFind(taxYear, "employmentId", Left(DataNotFound))
       mockFindNoContent(nino, taxYear)
@@ -181,6 +183,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       status(response) shouldBe INTERNAL_SERVER_ERROR
     }
   }
+
   "getAndHandleExpenses" should {
     "return an error if the call failed" in {
       mockFindFail(nino, taxYear)
@@ -190,6 +193,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
       status(response) shouldBe INTERNAL_SERVER_ERROR
     }
+
     "return an internal server error if the CYA find failed" in {
       mockFind(taxYear, Left(DataNotFound))
       mockFindNoContent(nino, taxYear)
@@ -269,7 +273,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
     "create the model to send and return the correct result" in {
       val response = service.createModelAndReturnResult(
         employmentDataFull, Some(allEmploymentData), taxYear
-      )(model => Future.successful(Redirect("303")))
+      )(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
       redirectUrl(response) shouldBe "303"
@@ -277,10 +281,11 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
     "create the model to send and return the correct result when there is no prior employment data" in {
       val response = service.createModelAndReturnResult(
-        employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(employmentId = "employmentId", employmentData = None, employmentBenefits = Some(EmploymentBenefits(
-          "2020-04-04T01:01:01Z", Some(Benefits(Some(100)))
-        )))))), taxYear
-      )(model => Future.successful(Redirect("303")))
+        employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = allEmploymentData.hmrcEmploymentData
+          .map(_.copy(employmentId = "employmentId", employmentData = None, employmentBenefits = Some(EmploymentBenefits(
+            "2020-04-04T01:01:01Z", Some(Benefits(Some(100.00)))
+          )))))), taxYear
+      )(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
       redirectUrl(response) shouldBe "303"
@@ -288,10 +293,11 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
     "create the model to send and return the correct result when there are benefits already" in {
       val response = service.createModelAndReturnResult(
-        employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(employmentId = "employmentId", employmentBenefits = Some(EmploymentBenefits(
-          "2020-04-04T01:01:01Z", Some(Benefits(Some(100)))
-        )))))), taxYear
-      )(model => Future.successful(Redirect("303")))
+        employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = allEmploymentData.hmrcEmploymentData
+          .map(_.copy(employmentId = "employmentId", employmentBenefits = Some(EmploymentBenefits(
+            "2020-04-04T01:01:01Z", Some(Benefits(Some(100.00)))
+          )))))), taxYear
+      )(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
       redirectUrl(response) shouldBe "303"
@@ -300,7 +306,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
     "create the model to send and return the correct result when its a customer update" in {
       val response = service.createModelAndReturnResult(
         employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(employmentId = "employmentId")))), taxYear
-      )(model => Future.successful(Redirect("303")))
+      )(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
       redirectUrl(response) shouldBe "303"
@@ -387,7 +393,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
             )
           )
         ), Some(allEmploymentData), taxYear
-      )(model => Future.successful(Redirect("303")))
+      )(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
       redirectUrl(response) shouldBe "/income-through-software/return/employment-income/2022/check-employment-details?employmentId=employmentId"
@@ -399,15 +405,15 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       EmploymentDetails("Employer Name", currentDataIsHmrcHeld = true),
       None
     )
-    val employmentData: EmploymentUserData = EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", true,
-      hasPriorBenefits =  true, cya, testClock.now())
+    val employmentData: EmploymentUserData = EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", isPriorSubmission = true,
+      hasPriorBenefits = true, cya, testClock.now())
 
     "return SEE_OTHER(303) status when createOrUpdate succeeds" in {
       mockCreateOrUpdate(employmentData, Right())
 
       val response = service.createOrUpdateSessionData(
-        "employmentId", cya, taxYear, true,
-          hasPriorBenefits =  true,
+        "employmentId", cya, taxYear, isPriorSubmission = true,
+        hasPriorBenefits = true,
       )(Redirect("400"))(Redirect("303"))
 
       status(response) shouldBe SEE_OTHER
@@ -423,8 +429,8 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       mockCreateOrUpdate(employmentData, Left(DataNotUpdated))
 
       val response = service.createOrUpdateSessionData(
-        "employmentId", cya, taxYear, true,
-        hasPriorBenefits =  true
+        "employmentId", cya, taxYear, isPriorSubmission = true,
+        hasPriorBenefits = true
       )(Redirect("400"))(Redirect("303"))
 
       status(response) shouldBe SEE_OTHER
@@ -437,8 +443,8 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       EmploymentDetails("Employer Name", currentDataIsHmrcHeld = true),
       None
     )
-    val employmentData: EmploymentUserData = EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", true,
-      hasPriorBenefits =  true, cya, testClock.now())
+    val employmentData: EmploymentUserData = EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", isPriorSubmission = true,
+      hasPriorBenefits = true, cya, testClock.now())
 
     "redirect when data is retrieved" in {
       mockFind(taxYear, "employmentId", Right(Some(employmentData)))
@@ -476,44 +482,44 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
   "getLatestExpenses" should {
     "return the latest expenses data" when {
       "only hmrc data is found in year" in {
-        val response = service.getLatestExpenses(allEmploymentData, true)
+        val response = service.getLatestExpenses(allEmploymentData, isInYear = true)
         response shouldBe Some((allEmploymentData.hmrcExpenses.get, false))
       }
 
       "only hmrc data is found at the end of the year" in {
-        val response = service.getLatestExpenses(allEmploymentData.copy(customerExpenses = None), false)
+        val response = service.getLatestExpenses(allEmploymentData.copy(customerExpenses = None), isInYear = false)
         response shouldBe Some((allEmploymentData.hmrcExpenses.get, false))
       }
 
       "only customer data is found at the end of the year" in {
-        val response = service.getLatestExpenses(allEmploymentData.copy(hmrcExpenses = None), false)
+        val response = service.getLatestExpenses(allEmploymentData.copy(hmrcExpenses = None), isInYear = false)
         response shouldBe Some((allEmploymentData.customerExpenses.get, true))
       }
 
       "there is both customer and hmrc data" in {
-        val response = service.getLatestExpenses(allEmploymentData, false)
+        val response = service.getLatestExpenses(allEmploymentData, isInYear = false)
         response shouldBe Some((allEmploymentData.customerExpenses.get, true))
       }
 
       "there is both customer and hmrc data but customer has a time submitted" in {
-        val response = service.getLatestExpenses(allEmploymentData.copy(hmrcExpenses = allEmploymentData.hmrcExpenses.map(_.copy(submittedOn = None))), false)
+        val response = service.getLatestExpenses(allEmploymentData.copy(hmrcExpenses = allEmploymentData.hmrcExpenses.map(_.copy(submittedOn = None))), isInYear = false)
         response shouldBe Some((allEmploymentData.customerExpenses.get, true))
       }
 
       "there is both customer and hmrc data but neither has a time submitted" in {
         val response = service.getLatestExpenses(allEmploymentData.copy(hmrcExpenses = allEmploymentData.hmrcExpenses.map(_.copy(submittedOn = None)),
-          customerExpenses = allEmploymentData.customerExpenses.map(_.copy(submittedOn = None))), false)
+          customerExpenses = allEmploymentData.customerExpenses.map(_.copy(submittedOn = None))), isInYear = false)
         response shouldBe Some((allEmploymentData.customerExpenses.map(_.copy(submittedOn = None)).get, true))
       }
 
       "there is both customer and hmrc data but customer is the latest" in {
         val response = service.getLatestExpenses(allEmploymentData.copy(
-          customerExpenses = allEmploymentData.customerExpenses.map(_.copy(submittedOn = Some("2020-02-04T05:01:01Z")))), false)
+          customerExpenses = allEmploymentData.customerExpenses.map(_.copy(submittedOn = Some("2020-02-04T05:01:01Z")))), isInYear = false)
         response shouldBe Some((allEmploymentData.customerExpenses.map(_.copy(submittedOn = Some("2020-02-04T05:01:01Z"))).get, true))
       }
 
       "there are no expenses" in {
-        val response = service.getLatestExpenses(allEmploymentData.copy(hmrcExpenses = None, customerExpenses = None), false)
+        val response = service.getLatestExpenses(allEmploymentData.copy(hmrcExpenses = None, customerExpenses = None), isInYear = false)
         response shouldBe None
       }
     }
@@ -522,33 +528,33 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
   "getLatestEmploymentData" should {
     "return the latest employment data" when {
       "only hmrc data is found in year" in {
-        val response = service.getLatestEmploymentData(allEmploymentData, true)
+        val response = service.getLatestEmploymentData(allEmploymentData, isInYear = true)
         response shouldBe allEmploymentData.hmrcEmploymentData
       }
 
       "only hmrc data is found at the end of the year" in {
-        val response = service.getLatestEmploymentData(allEmploymentData, false)
+        val response = service.getLatestEmploymentData(allEmploymentData, isInYear = false)
         response shouldBe allEmploymentData.hmrcEmploymentData
       }
 
       "when there is no data in year" in {
-        val response = service.getLatestEmploymentData(allEmploymentData.copy(hmrcEmploymentData = Seq()), true)
+        val response = service.getLatestEmploymentData(allEmploymentData.copy(hmrcEmploymentData = Seq()), isInYear = true)
         response shouldBe Seq()
       }
 
       "when there is no data at the end of the year" in {
-        val response = service.getLatestEmploymentData(allEmploymentData.copy(hmrcEmploymentData = Seq()), false)
+        val response = service.getLatestEmploymentData(allEmploymentData.copy(hmrcEmploymentData = Seq()), isInYear = false)
         response shouldBe Seq()
       }
 
       "when there is hmrc data and customer data at the end of the year" in {
-        val response = service.getLatestEmploymentData(allEmploymentData.copy(customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(employmentId = "C001"))), false)
+        val response = service.getLatestEmploymentData(allEmploymentData.copy(customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(employmentId = "C001"))), isInYear = false)
         response shouldBe Seq(allEmploymentData.hmrcEmploymentData.head, allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "C001"))
       }
 
       "when there is hmrc data and customer data at the end of the year where the hmrc has been ignored" in {
         val response = service.getLatestEmploymentData(allEmploymentData.copy(customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(employmentId = "C001")),
-          hmrcEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(dateIgnored = Some("2020-01-04T05:01:01Z")))), false)
+          hmrcEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(dateIgnored = Some("2020-01-04T05:01:01Z")))), isInYear = false)
         response shouldBe Seq(allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "C001"))
       }
 
@@ -557,7 +563,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
           allEmploymentData.hmrcEmploymentData.head.copy(employerName = "Mr Bean"),
           allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "C001")
         ),
-          hmrcEmploymentData = Seq(allEmploymentData.hmrcEmploymentData.head, allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "002"))), false)
+          hmrcEmploymentData = Seq(allEmploymentData.hmrcEmploymentData.head, allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "002"))), isInYear = false)
         response shouldBe Seq(
           allEmploymentData.hmrcEmploymentData.head,
           allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "002"),
@@ -575,7 +581,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
           hmrcEmploymentData = Seq(
             allEmploymentData.hmrcEmploymentData.head.copy(submittedOn = Some("2020-01-04T05:01:01Z")),
             allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "002", submittedOn = Some("2020-01-04T05:01:01Z"))
-          )), false)
+          )), isInYear = false)
         response shouldBe Seq(
           allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "002", submittedOn = Some("2020-05-04T05:01:01Z")),
           allEmploymentData.hmrcEmploymentData.head.copy(submittedOn = Some("2020-01-04T05:01:01Z")),
@@ -587,7 +593,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
       "when there is only customer data at the end of the year" in {
         val response = service.getLatestEmploymentData(allEmploymentData.copy(customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(employmentId = "C001")),
-          hmrcEmploymentData = Seq()), false)
+          hmrcEmploymentData = Seq()), isInYear = false)
         response shouldBe Seq(allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "C001"))
       }
     }
@@ -596,27 +602,27 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
   "employmentSourceToUse" should {
     "return the latest employment source and whether it is customer data" when {
       "only hmrc data is found in year" in {
-        val response = service.employmentSourceToUse(allEmploymentData, "001", true)
+        val response = service.employmentSourceToUse(allEmploymentData, "001", isInYear = true)
         response shouldBe Some(allEmploymentData.hmrcEmploymentData.head, false)
       }
 
       "only hmrc data is found at the end of the year" in {
-        val response = service.employmentSourceToUse(allEmploymentData, "001", false)
+        val response = service.employmentSourceToUse(allEmploymentData, "001", isInYear = false)
         response shouldBe Some(allEmploymentData.hmrcEmploymentData.head, false)
       }
 
       "there is no data" in {
-        val response = service.employmentSourceToUse(allEmploymentData.copy(hmrcEmploymentData = Seq()), "001", false)
+        val response = service.employmentSourceToUse(allEmploymentData.copy(hmrcEmploymentData = Seq()), "001", isInYear = false)
         response shouldBe None
       }
 
       "there is only customer data in year" in {
-        val response = service.employmentSourceToUse(allEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = allEmploymentData.hmrcEmploymentData), "001", true)
+        val response = service.employmentSourceToUse(allEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = allEmploymentData.hmrcEmploymentData), "001", isInYear = true)
         response shouldBe None
       }
 
       "there is only customer data at the end of the year" in {
-        val response = service.employmentSourceToUse(allEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = allEmploymentData.hmrcEmploymentData), "001", false)
+        val response = service.employmentSourceToUse(allEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = allEmploymentData.hmrcEmploymentData), "001", isInYear = false)
         response shouldBe Some(allEmploymentData.hmrcEmploymentData.head, true)
       }
 
@@ -626,7 +632,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
             hmrcEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(submittedOn = Some("2020-01-04T05:01:01Z"))),
             customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(submittedOn = Some("2020-01-04T05:01:01Z"))),
           ),
-          "001", false)
+          "001", isInYear = false)
         response shouldBe Some(allEmploymentData.hmrcEmploymentData.head.copy(submittedOn = Some("2020-01-04T05:01:01Z")), true)
       }
 
@@ -636,7 +642,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
             hmrcEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(submittedOn = Some("2020-01-04T05:01:01Z"))),
             customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(submittedOn = Some("2020-02-04T05:01:01Z"))),
           ),
-          "001", false)
+          "001", isInYear = false)
         response shouldBe Some(allEmploymentData.hmrcEmploymentData.head.copy(submittedOn = Some("2020-02-04T05:01:01Z")), true)
       }
 
@@ -646,7 +652,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
             hmrcEmploymentData = allEmploymentData.hmrcEmploymentData,
             customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(submittedOn = Some("2020-01-04T05:01:01Z")))
           ),
-          "001", false)
+          "001", isInYear = false)
         response shouldBe Some(allEmploymentData.hmrcEmploymentData.head.copy(submittedOn = Some("2020-01-04T05:01:01Z")), true)
       }
 
@@ -656,7 +662,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
             hmrcEmploymentData = allEmploymentData.hmrcEmploymentData,
             customerEmploymentData = allEmploymentData.hmrcEmploymentData
           ),
-          "001", false)
+          "001", isInYear = false)
         response shouldBe Some(allEmploymentData.hmrcEmploymentData.head, true)
       }
     }
@@ -664,7 +670,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
   ".clear" should {
     "redirect when the record in the database has been removed" in {
-      mockClear(taxYear, "employmentId", true)
+      mockClear(taxYear, "employmentId", response = true)
 
       val response = service.clear(taxYear, "employmentId")(Redirect("303"))
 
@@ -673,7 +679,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
     }
 
     "redirect to error when the record in the database has not been removed" in {
-      mockClear(taxYear, "employmentId", false)
+      mockClear(taxYear, "employmentId", response = false)
 
       val response = service.clear(taxYear, "employmentId")(Redirect("303"))
 

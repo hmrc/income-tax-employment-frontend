@@ -16,11 +16,13 @@
 
 package audit
 
-import models.employment.Expenses
+import models.expenses.Expenses
 import play.api.libs.json.Json
 import utils.UnitTestWithApp
 
 class ViewEmploymentExpensesSpec extends UnitTestWithApp {
+
+  private val taxYear = 2020
 
   "writes" when {
     "passed a ViewEmploymentExpensesModel" should {
@@ -43,16 +45,19 @@ class ViewEmploymentExpensesSpec extends UnitTestWithApp {
             | }
             |}""".stripMargin)
 
-        val auditModel = ViewEmploymentExpensesAudit(2020, "individual", "AA12343AA", "mtditid",
+        val auditModel = ViewEmploymentExpensesAudit(taxYear,
+          "individual",
+          "AA12343AA",
+          "mtditid",
           Expenses(
-            businessTravelCosts = Some(100),
-            jobExpenses = Some(150),
-            flatRateJobExpenses = Some(200),
-            professionalSubscriptions = Some(250),
-            hotelAndMealExpenses = Some(300),
-            otherAndCapitalAllowances = Some(350),
-            vehicleExpenses = Some(400),
-            mileageAllowanceRelief = Some(450)
+            businessTravelCosts = Some(100.00),
+            jobExpenses = Some(150.00),
+            flatRateJobExpenses = Some(200.00),
+            professionalSubscriptions = Some(250.00),
+            hotelAndMealExpenses = Some(300.00),
+            otherAndCapitalAllowances = Some(350.00),
+            vehicleExpenses = Some(400.00),
+            mileageAllowanceRelief = Some(450.00)
           )
         )
 
@@ -60,5 +65,4 @@ class ViewEmploymentExpensesSpec extends UnitTestWithApp {
       }
     }
   }
-
 }

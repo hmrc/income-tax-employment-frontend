@@ -16,7 +16,7 @@
 
 package models.mongo
 
-import models.employment.{EncryptedExpensesViewModel, Expenses, ExpensesViewModel}
+import models.expenses.{EncryptedExpensesViewModel, Expenses, ExpensesViewModel}
 import play.api.libs.json.{Json, OFormat}
 
 case class ExpensesCYAModel(expenses: ExpensesViewModel)

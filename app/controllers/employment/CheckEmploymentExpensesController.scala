@@ -20,9 +20,9 @@ import audit.{AuditService, ViewEmploymentExpensesAudit}
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckEmploymentExpensesController
 import controllers.predicates.{AuthorisedAction, InYearAction}
-import javax.inject.Inject
 import models.User
-import models.employment.{AllEmploymentData, EmploymentExpenses, Expenses, ExpensesViewModel}
+import models.employment.{AllEmploymentData, EmploymentExpenses}
+import models.expenses.{Expenses, ExpensesViewModel}
 import models.mongo.ExpensesCYAModel
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -31,6 +31,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.{CheckEmploymentExpensesView, CheckEmploymentExpensesViewEOY}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAction,

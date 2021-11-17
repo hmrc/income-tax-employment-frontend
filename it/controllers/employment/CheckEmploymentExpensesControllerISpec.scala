@@ -16,7 +16,8 @@
 
 package controllers.employment
 
-import models.employment.{AllEmploymentData, Expenses}
+import models.employment.AllEmploymentData
+import models.expenses.Expenses
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import models.{IncomeTaxUserData, User}
 import org.jsoup.Jsoup

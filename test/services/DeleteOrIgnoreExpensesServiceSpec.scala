@@ -19,6 +19,7 @@ package services
 import config.{AppConfig, ErrorHandler, MockDeleteOrIgnoreExpensesConnector}
 import controllers.employment.routes.EmploymentSummaryController
 import models.employment._
+import models.expenses.Expenses
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.i18n.MessagesApi
 import play.api.mvc.Results.{Ok, Redirect}
@@ -59,7 +60,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest with MockDeleteOrIgnore
     EmploymentExpenses(
       None,
       None,
-      Some(40),
+      Some(40.00),
       Some(Expenses(Some(5), Some(5), Some(5), Some(5), Some(5), Some(5), Some(5), Some(5)))
     )
 

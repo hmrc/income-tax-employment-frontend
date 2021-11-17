@@ -23,6 +23,7 @@ import config.{AppConfig, ErrorHandler, MockAppConfig}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.benefits.Benefits
 import models.employment._
+import models.expenses.Expenses
 import models.{IncomeTaxUserData, User}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterEach
