@@ -183,6 +183,9 @@ POST       /:taxYear/benefits/educational-services                          cont
 GET        /:taxYear/expenses/business-travel-and-overnight-expenses        controllers.expenses.BusinessTravelOvernightExpensesController.show(taxYear: Int)
 POST       /:taxYear/expenses/business-travel-and-overnight-expenses        controllers.expenses.BusinessTravelOvernightExpensesController.submit(taxYear: Int)
 
+GET        /:taxYear/expenses/travel-amount                                 controllers.expenses.TravelAndOvernightAmountController.show(taxYear: Int)
+POST       /:taxYear/expenses/travel-amount                                 controllers.expenses.TravelAndOvernightAmountController.submit(taxYear: Int)
+
 GET        /:taxYear/expenses/uniforms-work-clothes-or-tools                controllers.expenses.UniformsOrToolsExpensesController.show(taxYear: Int)
 POST       /:taxYear/expenses/uniforms-work-clothes-or-tools                controllers.expenses.UniformsOrToolsExpensesController.submit(taxYear: Int)
 
