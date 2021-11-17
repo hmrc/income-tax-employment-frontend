@@ -701,6 +701,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val incomeTaxOrIncurredCostsBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/employer-income-tax-or-incurred-costs?employmentId=001"
     val incomeTaxBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/employer-income-tax?employmentId=001"
     val educationServiceBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/educational-services?employmentId=001"
+    val incurredCostsBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/incurred-costs?employmentId=001"
   }
 
 
@@ -881,7 +882,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.incomeTaxSubheading, commonResults.yes, 15, 1, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxSubheadingHiddenText}", incomeTaxOrIncurredCostsBenefitsHref)
           changeAmountRowCheck(commonResults.incomeTaxPaid, commonResults.yes, 15, 2, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxPaidHiddenText}", incomeTaxBenefitsHref)
           changeAmountRowCheck(commonResults.incomeTaxPaidAmount, "£20", 15, 3, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxPaidAmountHiddenText}", dummyHref)
-          changeAmountRowCheck(commonResults.incurredCostsPaid, commonResults.yes, 15, 4, s"${user.commonExpectedResults.changeText} ${specificResults.incurredCostsPaidHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.incurredCostsPaid, commonResults.yes, 15, 4, s"${user.commonExpectedResults.changeText} ${specificResults.incurredCostsPaidHiddenText}", incurredCostsBenefitsHref)
           changeAmountRowCheck(commonResults.incurredCostsPaidAmount, "£21", 15, 5, s"${user.commonExpectedResults.changeText} ${specificResults.incurredCostsPaidAmountHiddenText}", dummyHref)
 
           textOnPageCheck(commonResults.reimbursedHeader, fieldHeaderSelector(16))
