@@ -22,7 +22,7 @@ import controllers.benefits.medical.routes._
 import controllers.benefits.routes._
 import controllers.benefits.travel.routes._
 import controllers.benefits.utilities.routes._
-import controllers.benefits.incomeTax.routes._
+import controllers.benefits.income.routes._
 import controllers.employment.routes._
 import models.User
 import models.benefits.{AccommodationRelocationModel, CarVanFuelModel, MedicalChildcareEducationModel, TravelEntertainmentModel, UtilitiesAndServicesModel}
@@ -406,8 +406,7 @@ object RedirectService extends Logging {
     medicalBenefitsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(sectionQuestion.isEmpty, MedicalDentalChildcareBenefitsController.show(taxYear, employmentId)),
-        //TODO go to Income Tax and incurred costs
-        ConditionalRedirect(sectionQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(sectionQuestion.contains(false), IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(sectionQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
@@ -517,8 +516,7 @@ object RedirectService extends Logging {
 
     commonIncomeTaxAndCostsModelRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to 'Income Tax paid by employer' yes/no page
-        ConditionalRedirect(incomeTaxPaidByDirectorQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(incomeTaxPaidByDirectorQuestion.isEmpty, IncomeTaxBenefitsController.show(taxYear, employmentId)),
         //TODO go to 'Incurred costs paid by employer' yes/no page
         ConditionalRedirect(incomeTaxPaidByDirectorQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(incomeTaxPaidByDirectorQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))

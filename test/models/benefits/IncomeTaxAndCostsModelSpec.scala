@@ -17,7 +17,7 @@
 package models.benefits
 
 import controllers.employment.routes.CheckYourBenefitsController
-import controllers.benefits.incomeTax.routes._
+import controllers.benefits.income.routes._
 import utils.UnitTest
 
 class IncomeTaxAndCostsModelSpec extends UnitTest {

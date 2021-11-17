@@ -22,7 +22,7 @@ import controllers.benefits.medical.routes._
 import controllers.benefits.routes.ReceiveAnyBenefitsController
 import controllers.benefits.travel.routes._
 import controllers.benefits.utilities.routes._
-import controllers.benefits.incomeTax.routes._
+import controllers.benefits.income.routes._
 import controllers.employment.routes._
 import models.benefits._
 import models.employment.{EmploymentBenefitsType, EmploymentDetailsType}
@@ -944,7 +944,7 @@ class RedirectServiceSpec extends UnitTest {
           cya => commonMedicalChildcareEducationRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId).url
       }
 
       "it's a prior submission and attempted to view the 'Medical or dental insurance' yes/no page but the Medical section question is false" in {
@@ -1176,7 +1176,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => incomeTaxPaidByDirectorAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe IncomeTaxBenefitsController.show(taxYear, employmentId).url
       }
 
       "it's a new submission and attempted to view the 'Incurred costs paid by employer' yes/no page but the Income Tax paid by employer amount is empty" in {
