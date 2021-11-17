@@ -1166,7 +1166,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => incomeTaxPaidByDirectorAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe IncurredCostsBenefitsController.show(taxYear, employmentId).url
       }
 
       "it's a new submission and attempted to view the 'Income Tax paid by employer amount' page but the 'Income Tax paid by employer' question is empty" in {
@@ -1197,7 +1197,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => incurredCostsPaidByEmployerAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe IncurredCostsBenefitsController.show(taxYear, employmentId).url
       }
 
       "it's a new submission and attempted to view the 'Incurred costs paid by employer amount' page " +
@@ -1232,7 +1232,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => reimbursedCostsVouchersAndNonCashRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe IncurredCostsBenefitsController.show(taxYear, employmentId).url
       }
     }
 

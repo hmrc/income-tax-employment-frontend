@@ -33,7 +33,7 @@ case class IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion: Option[Boolean] = No
     incomeTaxPaidByDirectorQuestion match {
       case Some(true) => if (incomeTaxPaidByDirector.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO Income tax paid by director amount page (Amount of Income Tax paid by employer)
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO Income tax paid by director yes/no page
+      case None => Some(IncomeTaxBenefitsController.show(taxYear, employmentId))
     }
   }
 
@@ -41,7 +41,7 @@ case class IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion: Option[Boolean] = No
     paymentsOnEmployeesBehalfQuestion match {
       case Some(true) => if (paymentsOnEmployeesBehalf.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO Payments on employees behalf amount page (Amount of incurred costs paid by employer)
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO Payments on employees behalf yes/no page (Incurred costs paid by employer)
+      case None => Some(IncurredCostsBenefitsController.show(taxYear, employmentId))
     }
   }
   //scalastyle:on
