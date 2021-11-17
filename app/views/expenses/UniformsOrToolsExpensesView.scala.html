@@ -45,7 +45,7 @@
 
      <p class="govuk-body">
          <a target="_blank" id="uniforms-and-tools-link" href="https://www.gov.uk/guidance/job-expenses-for-uniforms-work-clothing-and-tools" class="govuk-link">
-             @messages("expenses.uniformsWorkClothesTools.checkIfYouCanClaimLink")
+             @messages(s"expenses.uniformsWorkClothesTools.checkIfYouCanClaimLink.${if(user.isAgent) "agent" else "individual"}")
          </a>
      </p>
 }
