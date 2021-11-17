@@ -700,6 +700,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val beneficialLoansAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/beneficial-loans-amount?employmentId=001"
     val incomeTaxOrIncurredCostsBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/employer-income-tax-or-incurred-costs?employmentId=001"
     val incomeTaxBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/employer-income-tax?employmentId=001"
+    val educationServiceBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/educational-services?employmentId=001"
   }
 
 
@@ -871,7 +872,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.medicalInsAmount, "£16", 13, 3, s"${user.commonExpectedResults.changeText} ${specificResults.medicalInsAmountHiddenText}", medicalOrDentalBenefitsAmountHref)
           changeAmountRowCheck(commonResults.nursery, commonResults.yes, 13, 4, s"${user.commonExpectedResults.changeText} ${specificResults.nurseryHiddenText}", childcareBenefitsHref)
           changeAmountRowCheck(commonResults.nurseryAmount, "£17", 13, 5, s"${user.commonExpectedResults.changeText} ${specificResults.nurseryAmountHiddenText}", childcareBenefitsAmountHref)
-          changeAmountRowCheck(commonResults.educational, commonResults.yes, 13, 6, s"${user.commonExpectedResults.changeText} ${specificResults.educationalHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.educational, commonResults.yes, 13, 6, s"${user.commonExpectedResults.changeText} ${specificResults.educationalHiddenText}", educationServiceBenefitsHref)
           changeAmountRowCheck(commonResults.educationalAmount, "£19", 13, 7, s"${user.commonExpectedResults.changeText} ${specificResults.educationalAmountHiddenText}", educationalServicesAmountHref)
           changeAmountRowCheck(commonResults.beneficialLoans, commonResults.yes, 13, 8, s"${user.commonExpectedResults.changeText} ${specificResults.beneficialLoansHiddenText}", beneficialLoansBenefitsHref)
           changeAmountRowCheck(commonResults.beneficialLoansAmount, "£18", 13, 9, s"${user.commonExpectedResults.changeText} ${specificResults.beneficialLoansAmountHiddenText}", beneficialLoansAmountHref)
