@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.benefits.incomeTax
+package controllers.benefits.income
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
@@ -32,7 +32,7 @@ import services.RedirectService._
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.benefits.incomeTax.IncomeTaxOrIncurredCostsBenefitsView
+import views.html.benefits.income.IncomeTaxOrIncurredCostsBenefitsView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

@@ -162,8 +162,11 @@ POST       /:taxYear/benefits/medical-dental                                cont
 GET        /:taxYear/benefits/beneficial-loans-amount                       controllers.benefits.medical.BeneficialLoansAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/beneficial-loans-amount                       controllers.benefits.medical.BeneficialLoansAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/employer-income-tax-or-incurred-costs         controllers.benefits.incomeTax.IncomeTaxOrIncurredCostsBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/employer-income-tax-or-incurred-costs         controllers.benefits.incomeTax.IncomeTaxOrIncurredCostsBenefitsController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/employer-income-tax-or-incurred-costs         controllers.benefits.income.IncomeTaxOrIncurredCostsBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/employer-income-tax-or-incurred-costs         controllers.benefits.income.IncomeTaxOrIncurredCostsBenefitsController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/benefits/employer-income-tax                           controllers.benefits.income.IncomeTaxBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/employer-income-tax                           controllers.benefits.income.IncomeTaxBenefitsController.submit(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/expenses/claim-employment-expenses                     controllers.expenses.EmploymentExpensesController.show(taxYear: Int)
 POST       /:taxYear/expenses/claim-employment-expenses                     controllers.expenses.EmploymentExpensesController.submit(taxYear: Int)

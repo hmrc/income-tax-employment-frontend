@@ -38,7 +38,7 @@
 
      @errorSummary(form.errors.distinct)
 
-     @formWithCsrf(action = controllers.benefits.incomeTax.routes.IncomeTaxOrIncurredCostsBenefitsController.submit(taxYear, employmentId)) {
+     @formWithCsrf(action = controllers.benefits.income.routes.IncomeTaxOrIncurredCostsBenefitsController.submit(taxYear, employmentId)) {
          @inputRadio(
              form = form,
              heading = headingForUse,

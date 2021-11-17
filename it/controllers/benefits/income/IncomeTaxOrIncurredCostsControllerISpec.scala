@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.benefits.incomeTax
+package controllers.benefits.income
 
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
