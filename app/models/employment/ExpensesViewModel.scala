@@ -48,7 +48,7 @@ case class ExpensesViewModel(
 
 object ExpensesViewModel {
 
-  def clear(isUsingCustomerData:Boolean): ExpensesViewModel = ExpensesViewModel(isUsingCustomerData = isUsingCustomerData)
+  def clear(isUsingCustomerData: Boolean): ExpensesViewModel = ExpensesViewModel(isUsingCustomerData = isUsingCustomerData)
 
   val firstSetOfFields: OFormat[(Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal],
     Option[BigDecimal], Option[BigDecimal], Option[BigDecimal], Option[BigDecimal])] = (
@@ -95,7 +95,6 @@ object ExpensesViewModel {
             expenses.otherAndCapitalAllowancesQuestion, expenses.submittedOn, expenses.isUsingCustomerData, expenses.claimingEmploymentExpenses)
         )
     })
-
   }
 }
 
@@ -164,7 +163,6 @@ object EncryptedExpensesViewModel {
             expenses.otherAndCapitalAllowancesQuestion, expenses.submittedOn, expenses.isUsingCustomerData, expenses.claimingEmploymentExpenses)
         )
     })
-
   }
 }
 

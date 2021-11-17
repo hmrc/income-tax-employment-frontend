@@ -27,10 +27,9 @@ import play.api.http.Status._
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
-
 class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper {
 
-  def url(taxYearToUse: Int = taxYear): String = s"$appUrl/$taxYearToUse/check-employment-expenses"
+  private def url(taxYearToUse: Int = taxYear): String = s"$appUrl/$taxYearToUse/check-employment-expenses"
 
   object Selectors {
     val headingSelector = "#main-content > div > div > header > h1"
@@ -45,15 +44,11 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     def summaryListRowFieldAmountSelector(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dd.govuk-summary-list__value"
 
     def changeLinkSelector(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dd > a"
-
   }
 
   trait SpecificExpectedResults {
     val expectedH1: String
     val expectedTitle: String
-
-    def expectedInsetText(taxYear: Int = taxYear): String
-
     val expectedContentSingle: String
     val expectedContentMultiple: String
     val expectedInsetMultiple: String
@@ -67,13 +62,12 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val profSubscriptionsAmountHiddenText: String
     val otherEquipmentHiddenText: String
     val otherEquipmentAmountHiddenText: String
+
+    def expectedInsetText(taxYear: Int = taxYear): String
   }
 
   trait CommonExpectedResults {
     val changeText: String
-
-    def expectedCaption(taxYear: Int = taxYear): String
-
     val employmentExpenses: String
     val jobExpensesQuestion: String
     val jobExpensesAmount: String
@@ -88,13 +82,11 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val yes: String
     val no: String
 
+    def expectedCaption(taxYear: Int = taxYear): String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
     val changeText: String = "Change"
-
-    def expectedCaption(taxYear: Int = taxYear): String = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-
     val employmentExpenses = "Employment expenses"
     val jobExpensesQuestion = "Business travel and overnight stays"
     val jobExpensesAmount = "Amount for business travel and overnight stays"
@@ -113,13 +105,12 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     )
     val yes: String = "Yes"
     val no: String = "No"
+
+    def expectedCaption(taxYear: Int = taxYear): String = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val changeText: String = "Change"
-
-    def expectedCaption(taxYear: Int = taxYear): String = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-
     val employmentExpenses = "Employment expenses"
     val jobExpensesQuestion = "Business travel and overnight stays"
     val jobExpensesAmount = "Amount for business travel and overnight stays"
@@ -139,6 +130,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     )
     val yes: String = "Yes"
     val no: String = "No"
+
+    def expectedCaption(taxYear: Int = taxYear): String = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -147,9 +140,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedContentSingle = "Your employment expenses are based on the information we already hold about you."
     val expectedContentMultiple: String = "Your employment expenses are based on the information we already hold about you. " +
       "This is a total of expenses from all employment in the tax year."
-
-    def expectedInsetText(taxYear: Int = taxYear): String = s"You cannot update your employment expenses until 6 April $taxYear."
-
     val expectedInsetMultiple = "Your employment expenses is a total of all employment in the tax year."
     val hmrcOnlyInfo = "Your employment expenses are based on the information we already hold about you."
     val expensesHiddenText = "Change if you want to claim employment expenses"
@@ -162,7 +152,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val otherEquipmentHiddenText = "Change if you want to claim for other equipment"
     val otherEquipmentAmountHiddenText = "Change the amount you want to claim for other equipment"
 
-
+    def expectedInsetText(taxYear: Int = taxYear): String = s"You cannot update your employment expenses until 6 April $taxYear."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -171,9 +161,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedContentSingle = "Your client’s employment expenses are based on the information we already hold about them."
     val expectedContentMultiple: String = "Your client’s employment expenses are based on the information we already hold about them. " +
       "This is a total of expenses from all employment in the tax year."
-
-    def expectedInsetText(taxYear: Int = taxYear): String = s"You cannot update your client’s employment expenses until 6 April $taxYear."
-
     val expectedInsetMultiple = "Your client’s employment expenses is a total of all employment in the tax year."
     val hmrcOnlyInfo = "Your client’s employment expenses are based on the information we already hold about them."
     val expensesHiddenText = "Change if you want to claim employment expenses for your client"
@@ -185,6 +172,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val profSubscriptionsAmountHiddenText = "Change the amount you want to claim for your client’s professional fees and subscriptions"
     val otherEquipmentHiddenText = "Change if you want to claim for other equipment for your client"
     val otherEquipmentAmountHiddenText = "Change the amount you want to claim for your client’s other equipment"
+
+    def expectedInsetText(taxYear: Int = taxYear): String = s"You cannot update your client’s employment expenses until 6 April $taxYear."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -193,9 +182,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedContentSingle = "Your employment expenses are based on the information we already hold about you."
     val expectedContentMultiple: String = "Your employment expenses are based on the information we already hold about you. " +
       "This is a total of expenses from all employment in the tax year."
-
-    def expectedInsetText(taxYear: Int = taxYear): String = s"You cannot update your employment expenses until 6 April $taxYear."
-
     val expectedInsetMultiple = "Your employment expenses is a total of all employment in the tax year."
     val hmrcOnlyInfo = "Your employment expenses are based on the information we already hold about you."
     val expensesHiddenText = "Change if you want to claim employment expenses"
@@ -207,6 +193,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val profSubscriptionsAmountHiddenText = "Change the amount you want to claim for professional fees and subscriptions"
     val otherEquipmentHiddenText = "Change if you want to claim for other equipment"
     val otherEquipmentAmountHiddenText = "Change the amount you want to claim for other equipment"
+
+    def expectedInsetText(taxYear: Int = taxYear): String = s"You cannot update your employment expenses until 6 April $taxYear."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -215,9 +203,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedContentSingle = "Your client’s employment expenses are based on the information we already hold about them."
     val expectedContentMultiple: String = "Your client’s employment expenses are based on the information we already hold about them. " +
       "This is a total of expenses from all employment in the tax year."
-
-    def expectedInsetText(taxYear: Int = taxYear): String = s"You cannot update your client’s employment expenses until 6 April $taxYear."
-
     val expectedInsetMultiple = "Your client’s employment expenses is a total of all employment in the tax year."
     val hmrcOnlyInfo = "Your client’s employment expenses are based on the information we already hold about them."
     val expensesHiddenText = "Change if you want to claim employment expenses for your client"
@@ -229,6 +214,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val profSubscriptionsAmountHiddenText = "Change the amount you want to claim for your client’s professional fees and subscriptions"
     val otherEquipmentHiddenText = "Change if you want to claim for other equipment for your client"
     val otherEquipmentAmountHiddenText = "Change the amount you want to claim for your client’s other equipment"
+
+    def expectedInsetText(taxYear: Int = taxYear): String = s"You cannot update your client’s employment expenses until 6 April $taxYear."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
@@ -238,16 +225,15 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
 
-  val multipleEmployments: AllEmploymentData = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"), employmentDetailsAndBenefits()))
-  val partExpenses: Expenses = Expenses(Some(1), Some(2))
+  private val multipleEmployments: AllEmploymentData = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"), employmentDetailsAndBenefits()))
+  private val partExpenses: Expenses = Expenses(Some(1), Some(2))
 
-  object Hrefs{
+  object Hrefs {
     val dummyHref = s"/income-through-software/return/employment-income/${taxYear - 1}/check-employment-expenses"
     val claimExpensesHref = s"/income-through-software/return/employment-income/${taxYear - 1}/expenses/claim-employment-expenses"
     val businessTravelOvernightExpensesHref = s"/income-through-software/return/employment-income/${taxYear - 1}/expenses/business-travel-and-overnight-expenses"
+    val uniformsOrToolsExpensesHref = s"/income-through-software/return/employment-income/${taxYear - 1}/expenses/uniforms-work-clothes-or-tools"
   }
-
-
 
   ".show" when {
     import Hrefs._
@@ -255,9 +241,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "return a fully populated page when all the fields are populated" which {
-
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -282,12 +266,9 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           textOnPageCheck("£4", summaryListRowFieldAmountSelector(3))
           textOnPageCheck(user.commonExpectedResults.fieldNames(3), summaryListRowFieldNameSelector(4))
           textOnPageCheck("£6", summaryListRowFieldAmountSelector(4))
-
-
         }
 
         "return a fully populated page when all the fields are populated at the end of the year" which {
-
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -312,7 +293,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           changeAmountRowCheck(commonResults.jobExpensesAmount, "£2", summaryListRowFieldNameSelector(3), summaryListRowFieldAmountSelector(3),
             changeLinkSelector(3), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(4), summaryListRowFieldAmountSelector(4),
-            changeLinkSelector(4), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateHiddenText}", dummyHref)
+            changeLinkSelector(4), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateHiddenText}", uniformsOrToolsExpensesHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesAmount, "£3", summaryListRowFieldNameSelector(5), summaryListRowFieldAmountSelector(5),
             changeLinkSelector(5), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.professionalSubscriptionsQuestion, commonResults.yes, summaryListRowFieldNameSelector(6), summaryListRowFieldAmountSelector(6),
@@ -323,11 +304,9 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
             changeLinkSelector(8), s"${user.commonExpectedResults.changeText} ${specificResults.otherEquipmentHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.otherAndCapitalAllowancesAmount, "£6", summaryListRowFieldNameSelector(9), summaryListRowFieldAmountSelector(9),
             changeLinkSelector(9), s"${user.commonExpectedResults.changeText} ${specificResults.otherEquipmentAmountHiddenText}", dummyHref)
-
         }
 
         "return a empty populated page when all the fields are empty at the end of the year" which {
-
           val commonResults = user.commonExpectedResults
           val specificResults = user.specificExpectedResults.get
 
@@ -349,7 +328,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         }
 
         "return a empty populated page when there is no prior data at the end of the year" which {
-
           val commonResults = user.commonExpectedResults
           val specificResults = user.specificExpectedResults.get
 
@@ -372,7 +350,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         }
 
         "return a fully populated page when all the fields are populated at the end of the year when there is CYA data" which {
-
           def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
             ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
 
@@ -405,7 +382,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           changeAmountRowCheck(commonResults.jobExpensesAmount, "£2", summaryListRowFieldNameSelector(3), summaryListRowFieldAmountSelector(3),
             changeLinkSelector(3), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(4), summaryListRowFieldAmountSelector(4),
-            changeLinkSelector(4), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateHiddenText}", dummyHref)
+            changeLinkSelector(4), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateHiddenText}", uniformsOrToolsExpensesHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesAmount, "£3", summaryListRowFieldNameSelector(5), summaryListRowFieldAmountSelector(5),
             changeLinkSelector(5), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.professionalSubscriptionsQuestion, commonResults.yes, summaryListRowFieldNameSelector(6), summaryListRowFieldAmountSelector(6),
@@ -416,11 +393,9 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
             changeLinkSelector(8), s"${user.commonExpectedResults.changeText} ${specificResults.otherEquipmentHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.otherAndCapitalAllowancesAmount, "£6", summaryListRowFieldNameSelector(9), summaryListRowFieldAmountSelector(9),
             changeLinkSelector(9), s"${user.commonExpectedResults.changeText} ${specificResults.otherEquipmentAmountHiddenText}", dummyHref)
-
         }
 
         "return a fully populated page with correct paragraph text when all the fields are populated and there are multiple employments" which {
-
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -444,11 +419,9 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           textOnPageCheck("£4", summaryListRowFieldAmountSelector(3))
           textOnPageCheck(user.commonExpectedResults.fieldNames(3), summaryListRowFieldNameSelector(4))
           textOnPageCheck("£6", summaryListRowFieldAmountSelector(4))
-
         }
 
         "return a fully populated page with correct paragraph text when there are multiple employments and its end of year" which {
-
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -473,7 +446,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           changeAmountRowCheck(commonResults.jobExpensesAmount, "£2", summaryListRowFieldNameSelector(3), summaryListRowFieldAmountSelector(3),
             changeLinkSelector(3), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(4), summaryListRowFieldAmountSelector(4),
-            changeLinkSelector(4), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateHiddenText}", dummyHref)
+            changeLinkSelector(4), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateHiddenText}", uniformsOrToolsExpensesHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesAmount, "£3", summaryListRowFieldNameSelector(5), summaryListRowFieldAmountSelector(5),
             changeLinkSelector(5), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.professionalSubscriptionsQuestion, commonResults.yes, summaryListRowFieldNameSelector(6), summaryListRowFieldAmountSelector(6),
@@ -484,11 +457,9 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
             changeLinkSelector(8), s"${user.commonExpectedResults.changeText} ${specificResults.otherEquipmentHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.otherAndCapitalAllowancesAmount, "£6", summaryListRowFieldNameSelector(9), summaryListRowFieldAmountSelector(9),
             changeLinkSelector(9), s"${user.commonExpectedResults.changeText} ${specificResults.otherEquipmentAmountHiddenText}", dummyHref)
-
         }
 
         "return a partly populated page with only relevant data and the others default to 'No' at the end of the year " which {
-
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -514,7 +485,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           changeAmountRowCheck(commonResults.jobExpensesAmount, "£2", summaryListRowFieldNameSelector(3), summaryListRowFieldAmountSelector(3),
             changeLinkSelector(3), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesQuestion, commonResults.no, summaryListRowFieldNameSelector(4), summaryListRowFieldAmountSelector(4),
-            changeLinkSelector(4), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateHiddenText}", dummyHref)
+            changeLinkSelector(4), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateHiddenText}", uniformsOrToolsExpensesHref)
           changeAmountRowCheck(commonResults.professionalSubscriptionsQuestion, commonResults.no, summaryListRowFieldNameSelector(5), summaryListRowFieldAmountSelector(5),
             changeLinkSelector(5), s"${user.commonExpectedResults.changeText} ${specificResults.profSubscriptionsHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.otherAndCapitalAllowancesQuestion, commonResults.no, summaryListRowFieldNameSelector(6), summaryListRowFieldAmountSelector(6),
@@ -524,7 +495,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     }
 
     "redirect to overview page when theres no expenses" in {
-
       lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -549,9 +519,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   }
 
   ".submit" when {
-
     "return a redirect when in year" which {
-
       implicit lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -588,7 +556,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     }
 
     "return a redirect to show method when at end of year" which {
-
       implicit lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -603,6 +570,5 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-expenses")
       }
     }
-
   }
 }

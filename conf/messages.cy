@@ -940,7 +940,6 @@ benefits.incomeTax.error.individual = Select yes if your employer paid any of yo
 benefits.incomeTax.error.agent = Select yes if your client’s employer paid any of their Income Tax
 
 #####Expenses Pages#######
-
 expenses.claimEmploymentExpenses.title.individual = Do you want to claim employment expenses?
 expenses.claimEmploymentExpenses.title.agent = Do you want to claim employment expenses for your client?
 expenses.claimEmploymentExpenses.canClaim.individual = You can claim employment expenses you did not claim through your employer.
@@ -983,3 +982,14 @@ expenses.BusinessTravelOvernightExpenses.details.bicycle.heading = Bicycle
 expenses.BusinessTravelOvernightExpenses.details.bicycle.text = 20p a mile
 expenses.BusinessTravelOvernightExpenses.error.individual = Select yes to claim travel and overnight stays
 expenses.BusinessTravelOvernightExpenses.error.agent = Select yes to claim for your client’s travel and overnight stays
+
+expenses.uniformsWorkClothesTools.title.individual = Do you want to claim for uniforms, work clothes, or tools?
+expenses.uniformsWorkClothesTools.title.agent = Do you want to claim for uniforms, work clothes, or tools for your client?
+expenses.uniformsWorkClothesTools.canClaim = You might be able to claim for the cost of:
+expenses.uniformsWorkClothesTools.canClaim.example1.individual = repairing or replacing small tools you need to do your job
+expenses.uniformsWorkClothesTools.canClaim.example1.agent = repairing or replacing small tools your client needs to do their job
+expenses.uniformsWorkClothesTools.canClaim.example2 = cleaning, repairing or replacing uniforms or specialist work clothes
+expenses.uniformsWorkClothesTools.flatRateExpense = These expenses are paid at an agreed rate (a ‘flat rate expense’ or ‘fixed deduction’).
+expenses.uniformsWorkClothesTools.checkIfYouCanClaimLink = Check if you can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab).
+expenses.uniformsWorkClothesTools.error.noEntry.individual = Select yes to claim for uniforms, work clothes, or tools
+expenses.uniformsWorkClothesTools.error.noEntry.agent = Select yes to claim for your client’s uniforms, work clothes, or tools
