@@ -947,6 +947,12 @@ benefits.incomeTax.ifYou.agent = If your client has not paid PAYE tax, we can re
 benefits.incomeTax.error.individual = Select yes if your employer paid any of your Income Tax
 benefits.incomeTax.error.agent = Select yes if your client’s employer paid any of their Income Tax
 
+benefits.incurredCosts.title.individual = Did your employer pay any of your incurred costs?
+benefits.incurredCosts.title.agent = Did your client’s employer pay any of their incurred costs?
+benefits.incurredCosts.forExample = For example, a speeding ticket or childcare.
+benefits.incurredCosts.error.individual = Select yes if your employer paid any of your incurred costs
+benefits.incurredCosts.error.agent = Select yes if your client’s employer paid any of their incurred costs
+
 #####Expenses Pages#######
 expenses.claimEmploymentExpenses.title.individual = Do you want to claim employment expenses?
 expenses.claimEmploymentExpenses.title.agent = Do you want to claim employment expenses for your client?

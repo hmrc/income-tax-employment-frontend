@@ -43,7 +43,7 @@ class IncomeTaxAndCostsModelSpec extends UnitTest {
 
     "return call to 'Income tax paid by director' yes/no page when incomeTaxPaidByDirectorQuestion is None" in {
       val underTest = IncomeTaxAndCostsModel(incomeTaxPaidByDirectorQuestion = None)
-      underTest.incomeTaxPaidByDirectorSectionFinished(taxYear, employmentId) shouldBe Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      underTest.incomeTaxPaidByDirectorSectionFinished(taxYear, employmentId) shouldBe Some(IncomeTaxBenefitsController.show(taxYear, employmentId))
     }
   }
 
@@ -65,7 +65,7 @@ class IncomeTaxAndCostsModelSpec extends UnitTest {
 
     "return call to 'Payments on employees behalf' yes/no page when paymentsOnEmployeesBehalfQuestion is None" in {
       val underTest = IncomeTaxAndCostsModel(paymentsOnEmployeesBehalfQuestion = None)
-      underTest.paymentsOnEmployeesBehalfSectionFinished(taxYear, employmentId) shouldBe Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      underTest.paymentsOnEmployeesBehalfSectionFinished(taxYear, employmentId) shouldBe Some(IncurredCostsBenefitsController.show(taxYear, employmentId))
     }
   }
 

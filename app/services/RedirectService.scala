@@ -517,8 +517,7 @@ object RedirectService extends Logging {
     commonIncomeTaxAndCostsModelRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(incomeTaxPaidByDirectorQuestion.isEmpty, IncomeTaxBenefitsController.show(taxYear, employmentId)),
-        //TODO go to 'Incurred costs paid by employer' yes/no page
-        ConditionalRedirect(incomeTaxPaidByDirectorQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(incomeTaxPaidByDirectorQuestion.contains(false), IncurredCostsBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(incomeTaxPaidByDirectorQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
@@ -535,8 +534,7 @@ object RedirectService extends Logging {
 
     commonIncomeTaxAndCostsModelRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to Incurred costs paid by employer  yes/no page
-        ConditionalRedirect(paymentsOnEmployeesBehalfQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(paymentsOnEmployeesBehalfQuestion.isEmpty, IncurredCostsBenefitsController.show(taxYear, employmentId)),
         //TODO go to Reimbursed costs, vouchers, and non-cash benefits yes/no page
         ConditionalRedirect(paymentsOnEmployeesBehalfQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(paymentsOnEmployeesBehalfQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
