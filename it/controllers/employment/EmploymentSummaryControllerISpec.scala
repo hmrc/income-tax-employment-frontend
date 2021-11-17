@@ -22,6 +22,7 @@ import controllers.employment.routes._
 import forms.YesNoForm
 import models.benefits.Benefits
 import models.employment._
+import models.expenses.Expenses
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import models.{IncomeTaxUserData, User}
 import org.jsoup.Jsoup
@@ -51,11 +52,19 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     val expensesParagraphSubheadingSelector = "#main-content > div > div > p:nth-child(6)"
     val expensesSummaryListRowFieldNameSelector = s"#main-content > div > div > div:nth-child(7) > ul > li > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
     val expensesSummaryListRowFieldActionSelector = s"#main-content > div > div > div:nth-child(7) > ul > li > span.hmrc-add-to-a-list__change"
+
     def employmentDetailsRowLinkSelector: String = s"$employmentDetailsRowSelector > a"
+
     def employmentBenefitsRowLinkSelector: String = s"$employmentBenefitsRowSelector > a"
+
     def employmentExpensesRowLinkSelector: String = s"$employmentExpensesRowSelector > a"
-    def employerSummaryListRowFieldNameSelector(i: Int) = s"#main-content > div > div > div:nth-child(4) > ul > li:nth-child($i) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light > a"
-    def employerSummaryListRowFieldActionSelector(i: Int) = s"#main-content > div > div > div:nth-child(4) > ul > li:nth-child($i) > span.hmrc-add-to-a-list__change"
+
+    def employerSummaryListRowFieldNameSelector(i: Int) =
+      s"#main-content > div > div > div:nth-child(4) > ul > li:nth-child($i) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light > a"
+
+    def employerSummaryListRowFieldActionSelector(i: Int) =
+      s"#main-content > div > div > div:nth-child(4) > ul > li:nth-child($i) > span.hmrc-add-to-a-list__change"
+
     def expensesSummaryListRowFieldNameLinkSelector = s"$expensesSummaryListRowFieldNameSelector > a"
   }
 
@@ -129,7 +138,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true,  CommonExpectedEN, Some(ExpectedAgentEN)),
+      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
       UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
@@ -283,13 +292,13 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             userDataStub(IncomeTaxUserData(Some(fullEmploymentsModel(hmrcEmployment =
               Seq(EmploymentSource(employmentId = "001", employerName = "maggie",
                 None, None, None, None, dateIgnored = Some("2020-03-11"), None, None, None))
-            ))), nino, taxYear-1)
-            urlGet(s"$appUrl/${taxYear-1}/employment-summary", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1)))
+            ))), nino, taxYear - 1)
+            urlGet(s"$appUrl/${taxYear - 1}/employment-summary", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
-            result.header(HeaderNames.LOCATION) shouldBe Some(AddEmploymentController.show(taxYear-1).url)
+            result.header(HeaderNames.LOCATION) shouldBe Some(AddEmploymentController.show(taxYear - 1).url)
           }
 
         }
@@ -314,7 +323,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
     def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-      EmploymentUserData(sessionId, mtditid, nino, taxYear -1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
+      EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
     def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc))
 
@@ -330,8 +339,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
-            userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear-1)
-            urlPost(s"$appUrl/${taxYear-1}/employment-summary", follow=false, body=yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1,
+            userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear - 1)
+            urlPost(s"$appUrl/${taxYear - 1}/employment-summary", follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
           }
 
@@ -350,8 +359,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
-            userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear-1)
-            urlPost(s"$appUrl/${taxYear-1}/employment-summary", follow=false, body=yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear-1,
+            userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear - 1)
+            urlPost(s"$appUrl/${taxYear - 1}/employment-summary", follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
           }
 
@@ -386,8 +395,8 @@ object EmploymentSummaryControllerISpec {
       "2020-04-04T01:01:01Z",
       Some(
         Benefits(
-          accommodation = Some(100),
-          assets = Some(1000)
+          accommodation = Some(100.00),
+          assets = Some(1000.00)
         )
       )
     )
@@ -395,8 +404,8 @@ object EmploymentSummaryControllerISpec {
     val employmentExpenses = EmploymentExpenses(
       Some("2020-04-04T01:01:01Z"),
       Some("2020-04-04T01:01:01Z"),
-      totalExpenses = Some(100),
-      Some(Expenses(businessTravelCosts = Some(100), None, None, None, None, None, None, None))
+      totalExpenses = Some(100.00),
+      Some(Expenses(businessTravelCosts = Some(100.00), None, None, None, None, None, None, None))
     )
 
     val employmentSource = EmploymentSource(
@@ -510,7 +519,5 @@ object EmploymentSummaryControllerISpec {
       customerEmploymentData = Seq(),
       customerExpenses = None
     )
-
   }
-
 }

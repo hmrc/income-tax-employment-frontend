@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.employment
+package models.expenses
 
 import play.api.libs.json.{Json, OFormat}
 import utils.EncryptedValue
@@ -39,17 +39,21 @@ case class Expenses(businessTravelCosts: Option[BigDecimal] = None,
   def toExpensesViewModel(isUsingCustomerData: Boolean, submittedOn: Option[String] = None,
                           cyaExpenses: Option[ExpensesViewModel] = None): ExpensesViewModel = {
     cyaExpenses.fold(
-      ExpensesViewModel(
-        businessTravelCosts, jobExpenses, flatRateJobExpenses, professionalSubscriptions, hotelAndMealExpenses,
-        otherAndCapitalAllowances, vehicleExpenses, mileageAllowanceRelief,
+      ExpensesViewModel(claimingEmploymentExpenses = expensesPopulated(cyaExpenses),
         jobExpensesQuestion = Some(jobExpenses.isDefined),
+        jobExpenses,
         flatRateJobExpensesQuestion = Some(flatRateJobExpenses.isDefined),
+        flatRateJobExpenses,
         professionalSubscriptionsQuestion = Some(professionalSubscriptions.isDefined),
+        professionalSubscriptions,
         otherAndCapitalAllowancesQuestion = Some(otherAndCapitalAllowances.isDefined),
+        otherAndCapitalAllowances,
+        businessTravelCosts,
+        hotelAndMealExpenses,
+        vehicleExpenses,
+        mileageAllowanceRelief,
         submittedOn = submittedOn,
-        isUsingCustomerData = isUsingCustomerData,
-        claimingEmploymentExpenses = expensesPopulated(cyaExpenses)
-      )
+        isUsingCustomerData = isUsingCustomerData)
     )(x => x)
   }
 }

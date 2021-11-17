@@ -16,12 +16,12 @@
 
 package controllers.expenses
 
-import controllers.employment.routes.CheckEmploymentExpensesController
 import config.{AppConfig, ErrorHandler}
+import controllers.employment.routes.CheckEmploymentExpensesController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
-import models.employment.ExpensesViewModel
+import models.expenses.ExpensesViewModel
 import models.mongo.ExpensesCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -58,7 +58,6 @@ class EmploymentExpensesController @Inject()(implicit val cc: MessagesController
           Future.successful(Ok(employmentExpensesView(yesNoForm, taxYear)))
       }
     }
-
   }
 
   def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>

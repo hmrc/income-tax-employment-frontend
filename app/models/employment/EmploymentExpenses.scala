@@ -15,10 +15,9 @@
  */
 
 package models.employment
-import play.api.libs.json.{Json, OFormat}
-import utils.DateTimeUtil.getSubmittedOnDateTime
 
-import java.time.ZonedDateTime
+import models.expenses.Expenses
+import play.api.libs.json.{Json, OFormat}
 
 case class EmploymentExpenses(submittedOn: Option[String],
                               dateIgnored: Option[String],
