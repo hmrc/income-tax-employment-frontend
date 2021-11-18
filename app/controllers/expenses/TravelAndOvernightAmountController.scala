@@ -43,22 +43,31 @@ class TravelAndOvernightAmountController @Inject()(implicit val cc: MessagesCont
                                                    clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def amountForm(implicit user: User[_]): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"expenses.businessTravelAndOvernight.error.noEntry.${if (user.isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"expenses.businessTravelAndOvernight.error.incorrectFormat.${if (user.isAgent) "agent" else "individual"}",
-    exceedsMaxAmountKey = s"expenses.businessTravelAndOvernight.error.overMaximum.${if (user.isAgent) "agent" else "individual"}"
+    emptyFieldKey = s"expenses.businessTravelAndOvernightAmount.error.noEntry.${if (user.isAgent) "agent" else "individual"}",
+    wrongFormatKey = s"expenses.businessTravelAndOvernightAmount.error.incorrectFormat.${if (user.isAgent) "agent" else "individual"}",
+    exceedsMaxAmountKey = s"expenses.businessTravelAndOvernightAmount.error.overMaximum.${if (user.isAgent) "agent" else "individual"}"
   )
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getExpensesSessionDataResult(taxYear) {
-        case Some(data) =>
-          val existingData: Option[BigDecimal] = data.expensesCya.expenses.businessTravelCosts
-          Future.successful(Ok(travelAndOvernightAmountView(taxYear,
-            existingData.fold(amountForm)(cya => amountForm.fill(cya)),
-            existingData
-          )))
-        case None =>
-          Future.successful(Redirect(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)))
+      employmentSessionService.getAndHandleExpenses(taxYear) { (optCya, prior) =>
+
+        optCya.map(_.expensesCya.expenses) match {
+          case Some(cya) =>
+
+            // TODO: move navigation logic to redirect service
+            if(cya.jobExpensesQuestion.contains(true)) {
+              val form = fillExpensesFormFromPriorAndCYA(amountForm, prior, cya.jobExpenses)(expenses => expenses.expenses.flatMap(_.jobExpenses))
+              Future.successful(Ok(
+                travelAndOvernightAmountView(taxYear, form, cya.jobExpenses)
+              ))
+            } else {
+              Future.successful(Redirect(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)))
+            }
+
+          case None =>
+            Future.successful(Redirect(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)))
+        }
       }
     }
   }
@@ -75,7 +84,7 @@ class TravelAndOvernightAmountController @Inject()(implicit val cc: MessagesCont
               val cya = expensesUserData.expenses
 
               val updatedCyaModel: ExpensesCYAModel =
-                expensesUserData.copy(expenses = cya.copy(businessTravelCosts = Some(amount)))
+                expensesUserData.copy(expenses = cya.copy(jobExpenses = Some(amount)))
 
               employmentSessionService.createOrUpdateExpensesSessionData(
                 updatedCyaModel, taxYear, data.isPriorSubmission, data.isPriorSubmission)(errorHandler.internalServerError()) {
