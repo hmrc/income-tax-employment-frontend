@@ -1057,3 +1057,5 @@ expenses.businessTravelAndOvernightAmount.error.incorrectFormat.individual = Ent
 expenses.businessTravelAndOvernightAmount.error.incorrectFormat.agent = Enter the amount you want to claim for business travel and overnight stays for your client in the correct format
 expenses.businessTravelAndOvernightAmount.error.overMaximum.individual = The amount you want to claim for business travel and overnight stays must be less than £100,000,000,000
 expenses.businessTravelAndOvernightAmount.error.overMaximum.agent = The amount you want to claim for your client’s business travel and overnight stays must be less than £100,000,000,000
+expenses.businessTravelAndOvernightAmount.replay.individual = You told us you want to claim {0} for other business travel and overnight stays. Tell us if this has changed.
+expenses.businessTravelAndOvernightAmount.replay.agent = You told us you want to claim {0} for your client’s other business travel and overnight stays. Tell us if this has changed.
