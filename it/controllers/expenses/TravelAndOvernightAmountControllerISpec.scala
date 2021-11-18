@@ -18,7 +18,7 @@ package controllers.expenses
 
 import forms.AmountForm
 import models.User
-import models.employment.{Expenses, ExpensesViewModel}
+import models.expenses.{Expenses, ExpensesViewModel}
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
