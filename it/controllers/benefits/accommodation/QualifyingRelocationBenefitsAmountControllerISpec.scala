@@ -125,7 +125,8 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
   }
 
   private def benefits(accommodationRelocationModel: AccommodationRelocationModel) =
-    BenefitsViewModel(accommodationRelocationModel = Some(accommodationRelocationModel), isUsingCustomerData = true, isBenefitsReceived = true)
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(accommodationRelocationModel),
+      isUsingCustomerData = true, isBenefitsReceived = true)
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(

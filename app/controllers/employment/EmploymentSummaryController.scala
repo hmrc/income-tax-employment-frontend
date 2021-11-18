@@ -21,7 +21,6 @@ import config.AppConfig
 import controllers.employment.routes.{AddEmploymentController, EmployerNameController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
 import models.User
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -31,6 +30,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.employment.{MultipleEmploymentsSummaryView, SingleEmploymentSummaryView, SingleEmploymentSummaryViewEOY}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmploymentSummaryController @Inject()(implicit val mcc: MessagesControllerComponents,
@@ -54,7 +54,8 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
     findPriorDataAndReturnResult(taxYear,isInYear,yesNoForm)
   }
 
-  def findPriorDataAndReturnResult(taxYear: Int, isInYear: Boolean, yesNoForm: Form[Boolean])(implicit user: User[_]): Future[Result] ={
+  def findPriorDataAndReturnResult(taxYear: Int, isInYear: Boolean, yesNoForm: Form[Boolean])
+                                  (implicit user: User[_]): Future[Result] ={
 
     val status = if(yesNoForm.hasErrors) BadRequest else Ok
 

@@ -42,7 +42,8 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
 
 
   def benefits(travelEntertainmentModel: TravelEntertainmentModel): BenefitsViewModel =
-    BenefitsViewModel(travelEntertainmentModel = Some(travelEntertainmentModel), isUsingCustomerData = true, isBenefitsReceived = true)
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(travelEntertainmentModel), isUsingCustomerData = true, isBenefitsReceived = true)
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/incidental-overnight-costs?employmentId=$employmentId"
 

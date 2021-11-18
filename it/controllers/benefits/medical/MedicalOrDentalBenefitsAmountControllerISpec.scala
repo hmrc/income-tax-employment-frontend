@@ -17,7 +17,6 @@
 package controllers.benefits.medical
 
 import controllers.benefits.medical.routes._
-import controllers.benefits.routes._
 import controllers.employment.routes._
 import forms.AmountForm
 import models.User
@@ -55,7 +54,9 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
   def benefits(medicalChildcareModel: MedicalChildcareEducationModel): BenefitsViewModel =
-    BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true, medicalChildcareEducationModel = Some(medicalChildcareModel))
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel), utilitiesAndServicesModel = Some(fullUtilitiesAndServicesModel),
+      isUsingCustomerData = true, isBenefitsReceived = true, medicalChildcareEducationModel = Some(medicalChildcareModel))
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 

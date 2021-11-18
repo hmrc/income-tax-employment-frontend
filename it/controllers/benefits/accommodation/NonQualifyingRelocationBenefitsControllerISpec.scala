@@ -46,7 +46,8 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
 
 
   def benefits(accModel: AccommodationRelocationModel): BenefitsViewModel =
-    BenefitsViewModel(accommodationRelocationModel = Some(accModel), isBenefitsReceived = true, isUsingCustomerData = true)
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(accModel),
+      isBenefitsReceived = true, isUsingCustomerData = true)
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"

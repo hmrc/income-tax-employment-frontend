@@ -17,7 +17,7 @@
 package services
 
 import config._
-import models.benefits.{Benefits, BenefitsViewModel}
+import models.benefits.{AssetsModel, Benefits, BenefitsViewModel}
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.expenses.Expenses
@@ -128,7 +128,8 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       ),
       employmentBenefits = Some(
         BenefitsViewModel(
-          assets = Some(100.00), submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true
+          assetsModel = Some(AssetsModel(Some(true),Some(true),Some(100.00),Some(true),Some(100.00))),
+          submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true
         )
       ))
   }

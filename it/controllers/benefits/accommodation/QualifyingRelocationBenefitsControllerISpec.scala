@@ -55,7 +55,8 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
   def benefits(accommodationModel: AccommodationRelocationModel): BenefitsViewModel =
-    BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true, accommodationRelocationModel = Some(accommodationModel))
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), isUsingCustomerData = true, isBenefitsReceived = true,
+      accommodationRelocationModel = Some(accommodationModel))
 
   private def employmentUserData(hasPriorBenefits: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = hasPriorBenefits,

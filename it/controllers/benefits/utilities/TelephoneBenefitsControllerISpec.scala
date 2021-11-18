@@ -42,7 +42,9 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
   def benefits(utilitiesModel: UtilitiesAndServicesModel): BenefitsViewModel =
-    BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true, utilitiesAndServicesModel = Some(utilitiesModel))
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel),isUsingCustomerData = true,
+      isBenefitsReceived = true, utilitiesAndServicesModel = Some(utilitiesModel))
 
   private def telephoneQuestionPageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/telephone?employmentId=$employmentId"
 

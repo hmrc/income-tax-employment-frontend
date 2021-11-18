@@ -126,7 +126,9 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
   }
 
   private def benefits(utilitiesAndServicesModel: UtilitiesAndServicesModel) =
-    BenefitsViewModel(utilitiesAndServicesModel = Some(utilitiesAndServicesModel), isUsingCustomerData = true, isBenefitsReceived = true)
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel), utilitiesAndServicesModel = Some(utilitiesAndServicesModel),
+      isUsingCustomerData = true, isBenefitsReceived = true)
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(

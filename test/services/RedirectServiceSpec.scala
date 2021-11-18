@@ -62,6 +62,10 @@ class RedirectServiceSpec extends UnitTest {
     paymentsOnEmployeesBehalf = Some(255.00)
   )
 
+  val amount = 4564.09
+  private val fullReimbursedCostsVouchersAndNonCashModel = ReimbursedCostsVouchersAndNonCashModel(Some(true),Some(true),Some(amount), Some(true),Some(amount), Some(true),Some(amount), Some(true),Some(amount), Some(true),Some(amount))
+  private val fullAssetsModel = AssetsModel(Some(true),Some(true),Some(amount), Some(true),Some(amount))
+
   private val employmentCYA: EmploymentCYAModel = {
     EmploymentCYAModel(
       employmentDetails = EmploymentDetails(
@@ -128,7 +132,7 @@ class RedirectServiceSpec extends UnitTest {
           ),
           medicalChildcareEducationModel = Some(fullMedicalModel),
           incomeTaxAndCostsModel = Some(fullIncomeTaxAndCostsModel),
-          assets = Some(100.00),
+          assetsModel = Some(AssetsModel(Some(true),Some(true),Some(100),Some(true),Some(100))),
           submittedOn = Some("2020-02-04T05:01:01Z"),
           isUsingCustomerData = true,
           isBenefitsReceived = true
@@ -1228,11 +1232,452 @@ class RedirectServiceSpec extends UnitTest {
         "but the income tax and incurred costs section is not finished" in {
         val model = Some(fullIncomeTaxAndCostsModel.copy(paymentsOnEmployeesBehalfQuestion = None))
         val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(incomeTaxAndCostsModel = model)))
-        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
           EmploymentBenefitsType)(cya => reimbursedCostsVouchersAndNonCashRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
         redirectUrl(response) shouldBe IncurredCostsBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a new submission and attempted to view the ' Vouchers, non-cash benefits or reimbursed costs' " +
+        "but the carVanFuel section is not finished" in {
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = None)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => reimbursedCostsVouchersAndNonCashRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CarVanFuelBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a new submission and attempted to view the ' Vouchers, non-cash benefits or reimbursed costs' " +
+        "but the accommodationRelocation section is not finished" in {
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = None)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => reimbursedCostsVouchersAndNonCashRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe AccommodationRelocationBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a new submission and attempted to view the ' Vouchers, non-cash benefits or reimbursed costs' " +
+        "but the travelEntertainment section is not finished" in {
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = None)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => reimbursedCostsVouchersAndNonCashRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe TravelOrEntertainmentBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a new submission and attempted to view the ' Vouchers, non-cash benefits or reimbursed costs' " +
+        "but the utilitiesAndServices section is not finished" in {
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = None)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => reimbursedCostsVouchersAndNonCashRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a new submission and attempted to view the ' Vouchers, non-cash benefits or reimbursed costs' " +
+        "but the medicalChildcareEducation section is not finished" in {
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(medicalChildcareEducationModel = None)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => reimbursedCostsVouchersAndNonCashRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a new submission and attempted to view 'Vouchers, non-cash benefits or reimbursed costs' section" +
+        "but the reimbursedCostsVouchersAndNonCash Question is not answered" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(reimbursedCostsVouchersAndNonCashQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => commonReimbursedCostsVouchersAndNonCashModelRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a new submission and attempted to view 'Vouchers, non-cash benefits or reimbursed costs' section" +
+        "but the reimbursedCostsVouchersAndNonCash Question is false" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(reimbursedCostsVouchersAndNonCashQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => commonReimbursedCostsVouchersAndNonCashModelRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a prior submission and attempted to view 'Vouchers, non-cash benefits or reimbursed costs' section" +
+        "but the reimbursedCostsVouchersAndNonCash Question is false" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(reimbursedCostsVouchersAndNonCashQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => commonReimbursedCostsVouchersAndNonCashModelRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a prior submission and attempted to view 'expenses amount' page" +
+        "but the expenses Question is false" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(expensesQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => expensesAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view 'expenses amount' page" +
+        "but the expenses Question is false" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(expensesQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => expensesAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view 'expenses amount' page" +
+        "but the expenses Question is empty" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(expensesQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => expensesAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view 'taxable expenses' page" +
+        "but the expenses amount is empty" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(expenses = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => taxableExpensesRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view 'taxable expenses amount' page" +
+        "but the taxable expenses question is empty" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(taxableExpensesQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => taxableExpensesAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view 'taxable expenses amount' page" +
+        "but the taxable expenses question is false" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(taxableExpensesQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => taxableExpensesAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a prior submission and attempted to view 'taxable expenses amount' page" +
+        "but the taxable expenses question is false" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(taxableExpensesQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => taxableExpensesAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view 'vouchers And Credit Cards' page" +
+        "but the taxable expenses amount is empty" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(taxableExpenses = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => vouchersAndCreditCardsRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view 'vouchers And Credit Cards amount' page" +
+        "but the vouchers And Credit Cards question is empty" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(vouchersAndCreditCardsQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => vouchersAndCreditCardsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view 'vouchers And Credit Cards amount' page" +
+        "but the vouchers And Credit Cards question is false" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(vouchersAndCreditCardsQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => vouchersAndCreditCardsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a prior submission and attempted to view 'vouchers And Credit Cards amount' page" +
+        "but the vouchers And Credit Cards question is false" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(vouchersAndCreditCardsQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => vouchersAndCreditCardsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view 'non cash question' page" +
+        "but the vouchers And Credit Cards amount is empty" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(vouchersAndCreditCards = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => nonCashRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view 'non cash amount' page" +
+        "but the non cash question is empty" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(nonCashQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => nonCashAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view 'non cash amount' page" +
+        "but the non cash question is false" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(nonCashQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => nonCashAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a prior submission and attempted to view 'non cash amount' page" +
+        "but the non cash question is false" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(nonCashQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => nonCashAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a new submission and attempted to view 'other items' page" +
+        "but the non cash amount is empty" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(nonCash = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => otherItemsRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+
+      "it's a prior submission and attempted to view 'other items amount' page" +
+        "but the other items question is false" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(otherItemsQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => otherItemsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view 'other items amount' page" +
+        "but the other items question is false" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(otherItemsQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => otherItemsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view 'other items amount' page" +
+        "but the other items question is empty" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(otherItemsQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => otherItemsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+    }
+
+    "redirect using assets benefits methods" when {
+      "it's a new submission and attempted to view the 'Assets and assets transfer' page" +
+        "but the reimbursed costs section is not finished" in {
+        val model = Some(fullReimbursedCostsVouchersAndNonCashModel.copy(otherItemsQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => assetsRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view the 'Assets and assets transfer' page " +
+        "but the income tax section is not finished" in {
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(incomeTaxAndCostsModel = None)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => assetsRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view the 'Assets and assets transfer' page " +
+        "but the medical section is not finished" in {
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(medicalChildcareEducationModel = None)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => assetsRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view the 'Assets and assets transfer' page " +
+        "but the utilities section is not finished" in {
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(utilitiesAndServicesModel = None)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => assetsRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view the 'Assets and assets transfer' page " +
+        "but the travel section is not finished" in {
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(travelEntertainmentModel = None)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => assetsRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe TravelOrEntertainmentBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view the 'Assets and assets transfer' page " +
+        "but the accommodation section is not finished" in {
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(accommodationRelocationModel = None)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => assetsRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe AccommodationRelocationBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view the 'Assets and assets transfer' page " +
+        "but the car section is not finished" in {
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(carVanFuelModel = None)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => assetsRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CarVanFuelBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view the 'Assets and assets transfer' section" +
+        "but the Assets and assets transfer question is empty" in {
+        val model = Some(fullAssetsModel.copy(assetsAndAssetsTransferQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(assetsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => commonAssetsModelRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view the 'Assets and assets transfer' section" +
+        "but the Assets and assets transfer question is false" in {
+        val model = Some(fullAssetsModel.copy(assetsAndAssetsTransferQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(assetsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => commonAssetsModelRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a prior submission and attempted to view the 'Assets and assets transfer' section" +
+        "but the Assets and assets transfer question is false" in {
+        val model = Some(fullAssetsModel.copy(assetsAndAssetsTransferQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(assetsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => commonAssetsModelRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a prior submission and attempted to view the 'Assets amount' page" +
+        "but the Assets question is false" in {
+        val model = Some(fullAssetsModel.copy(assetsQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(assetsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => assetsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view the 'Assets amount' page" +
+        "but the Assets question is false" in {
+        val model = Some(fullAssetsModel.copy(assetsQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(assetsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => assetsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view the 'Assets amount' page" +
+        "but the Assets question is empty" in {
+        val model = Some(fullAssetsModel.copy(assetsQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(assetsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => assetsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view the 'Assets transfer question' page" +
+        "but the Assets amount is empty" in {
+        val model = Some(fullAssetsModel.copy(assets = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(assetsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => assetTransferRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view the 'Assets transfer amount' page" +
+        "but the Assets transfer question is empty" in {
+        val model = Some(fullAssetsModel.copy(assetTransferQuestion = None))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(assetsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => assetTransferAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a new submission and attempted to view the 'Assets transfer amount' page" +
+        "but the Assets transfer question is false" in {
+        val model = Some(fullAssetsModel.copy(assetTransferQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(assetsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
+          EmploymentBenefitsType)(cya => assetTransferAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+      }
+      "it's a prior submission and attempted to view the 'Assets transfer amount' page" +
+        "but the Assets transfer question is false" in {
+        val model = Some(fullAssetsModel.copy(assetTransferQuestion = Some(false)))
+        val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(assetsModel = model)))
+        val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
+          EmploymentBenefitsType)(cya => assetTransferAmountRedirects(cya, taxYear, employmentId)) { _ => result }
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
       }
     }
 
