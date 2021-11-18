@@ -16,18 +16,17 @@
 
 package controllers.benefits.medical
 
-import controllers.employment.routes.CheckYourBenefitsController
 import config.{AppConfig, ErrorHandler}
+import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
+import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
-import models.employment.EmploymentBenefitsType
-
 import services.RedirectService.{commonMedicalChildcareEducationRedirects, redirectBasedOnCurrentAnswers}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}

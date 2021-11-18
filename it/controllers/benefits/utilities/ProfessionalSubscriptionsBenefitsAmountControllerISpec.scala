@@ -16,8 +16,8 @@
 
 package controllers.benefits.utilities
 
-import controllers.employment.routes.CheckYourBenefitsController
 import controllers.benefits.utilities.routes._
+import controllers.employment.routes.CheckYourBenefitsController
 import models.User
 import models.benefits.{BenefitsViewModel, UtilitiesAndServicesModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -135,7 +135,9 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
   }
 
   private def benefits(utilitiesAndServicesModel: UtilitiesAndServicesModel) =
-    BenefitsViewModel(utilitiesAndServicesModel = Some(utilitiesAndServicesModel), isUsingCustomerData = true, isBenefitsReceived = true)
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel),utilitiesAndServicesModel = Some(utilitiesAndServicesModel),
+      isUsingCustomerData = true, isBenefitsReceived = true)
 
   ".show" should {
     userScenarios.foreach { user =>

@@ -16,8 +16,8 @@
 
 package controllers.benefits.utilities
 
-import controllers.employment.routes.CheckYourBenefitsController
 import controllers.benefits.utilities.routes._
+import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.User
 import models.benefits.{BenefitsViewModel, UtilitiesAndServicesModel}
@@ -49,7 +49,9 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
   def benefits(utilitiesAndServicesModel: UtilitiesAndServicesModel): BenefitsViewModel =
-    BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true, utilitiesAndServicesModel = Some(utilitiesAndServicesModel))
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel), isUsingCustomerData = true,
+      isBenefitsReceived = true, utilitiesAndServicesModel = Some(utilitiesAndServicesModel))
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"

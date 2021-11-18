@@ -16,11 +16,11 @@
 
 package controllers.benefits.medical
 
-import forms.YesNoForm
-import models.User
 import controllers.benefits.medical.routes._
 import controllers.benefits.routes._
 import controllers.employment.routes._
+import forms.YesNoForm
+import models.User
 import models.benefits.{BenefitsViewModel, MedicalChildcareEducationModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
@@ -45,7 +45,9 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
   def benefits(medicalChildcareEducationModel: MedicalChildcareEducationModel): BenefitsViewModel =
-    BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true, medicalChildcareEducationModel = Some(medicalChildcareEducationModel))
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel), utilitiesAndServicesModel = Some(fullUtilitiesAndServicesModel),
+      isUsingCustomerData = true, isBenefitsReceived = true, medicalChildcareEducationModel = Some(medicalChildcareEducationModel))
 
   private def medicalDentalQuestionPageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/medical-dental?employmentId=$employmentId"
 

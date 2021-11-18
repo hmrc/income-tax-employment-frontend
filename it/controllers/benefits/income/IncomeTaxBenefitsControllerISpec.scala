@@ -43,7 +43,11 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     EmploymentCYAModel(EmploymentDetails("employerName", currentDataIsHmrcHeld = true), benefits)
 
   def benefits(incomeTaxModel: IncomeTaxAndCostsModel): BenefitsViewModel =
-    BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true, incomeTaxAndCostsModel = Some(incomeTaxModel))
+    BenefitsViewModel(
+      carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel), utilitiesAndServicesModel = Some(fullUtilitiesAndServicesModel),
+      medicalChildcareEducationModel = Some(fullMedicalChildcareEducationModel),
+      isUsingCustomerData = true, isBenefitsReceived = true, incomeTaxAndCostsModel = Some(incomeTaxModel))
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/employer-income-tax?employmentId=$employmentId"
 

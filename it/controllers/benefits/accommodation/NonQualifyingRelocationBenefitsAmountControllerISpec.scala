@@ -125,7 +125,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec  extends IntegrationT
   }
 
   def benefits(accommodationModel: AccommodationRelocationModel): BenefitsViewModel =
-    BenefitsViewModel(None, Some(accommodationModel), isUsingCustomerData = true, isBenefitsReceived = true)
+    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), Some(accommodationModel), isUsingCustomerData = true, isBenefitsReceived = true)
 
   val benefitsWithNoBenefitsReceived: Option[BenefitsViewModel] = Some(BenefitsViewModel(isUsingCustomerData = true))
 
