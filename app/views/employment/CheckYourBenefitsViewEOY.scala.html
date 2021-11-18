@@ -241,7 +241,7 @@
                     paymentsOnEmployeesBehalfQuestion => showQuestionRow("checkYourBenefits.incurredCostsPaid", paymentsOnEmployeesBehalfQuestion, controllers.benefits.income.routes.IncurredCostsBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalf).map{
-                    paymentsOnEmployeesBehalf => showRows("checkYourBenefits.incurredCostsPaidAmount", paymentsOnEmployeesBehalf)
+                    paymentsOnEmployeesBehalf => showRows("checkYourBenefits.incurredCostsPaidAmount", paymentsOnEmployeesBehalf, controllers.benefits.income.routes.IncurredCostsBenefitsAmountController.show(taxYear, employmentId))
                 }
             ).flatten
         } else { Seq() }
