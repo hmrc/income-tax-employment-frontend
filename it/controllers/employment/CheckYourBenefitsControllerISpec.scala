@@ -702,6 +702,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val incomeTaxBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/employer-income-tax?employmentId=001"
     val educationServiceBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/educational-services?employmentId=001"
     val incurredCostsBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/incurred-costs?employmentId=001"
+    val incurredCostsBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/incurred-costs-amount?employmentId=001"
   }
 
 
@@ -883,7 +884,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.incomeTaxPaid, commonResults.yes, 15, 2, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxPaidHiddenText}", incomeTaxBenefitsHref)
           changeAmountRowCheck(commonResults.incomeTaxPaidAmount, "£20", 15, 3, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxPaidAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.incurredCostsPaid, commonResults.yes, 15, 4, s"${user.commonExpectedResults.changeText} ${specificResults.incurredCostsPaidHiddenText}", incurredCostsBenefitsHref)
-          changeAmountRowCheck(commonResults.incurredCostsPaidAmount, "£21", 15, 5, s"${user.commonExpectedResults.changeText} ${specificResults.incurredCostsPaidAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.incurredCostsPaidAmount, "£21", 15, 5, s"${user.commonExpectedResults.changeText} ${specificResults.incurredCostsPaidAmountHiddenText}", incurredCostsBenefitsAmountHref)
 
           textOnPageCheck(commonResults.reimbursedHeader, fieldHeaderSelector(16))
           changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.yes, 17, 1, s"${user.commonExpectedResults.changeText} ${specificResults.reimbursedSubheadingHiddenText}", dummyHref)

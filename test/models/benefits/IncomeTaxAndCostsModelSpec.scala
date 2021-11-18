@@ -55,7 +55,7 @@ class IncomeTaxAndCostsModelSpec extends UnitTest {
 
     "return call to 'Payments on employees behalf' amount page when paymentsOnEmployeesBehalfQuestion is true and paymentsOnEmployeesBehalf not defined" in {
       val underTest = IncomeTaxAndCostsModel(paymentsOnEmployeesBehalfQuestion = Some(true), paymentsOnEmployeesBehalf = None)
-      underTest.paymentsOnEmployeesBehalfSectionFinished(taxYear, employmentId) shouldBe Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      underTest.paymentsOnEmployeesBehalfSectionFinished(taxYear, employmentId) shouldBe Some(IncurredCostsBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return None when paymentsOnEmployeesBehalfQuestion is false" in {

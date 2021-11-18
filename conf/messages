@@ -953,6 +953,16 @@ benefits.incurredCosts.forExample = For example, a speeding ticket or childcare.
 benefits.incurredCosts.error.individual = Select yes if your employer paid any of your incurred costs
 benefits.incurredCosts.error.agent = Select yes if your client’s employer paid any of their incurred costs
 
+benefits.incurredCostsAmount.title.individual = How much of your incurred costs did your employer pay?
+benefits.incurredCostsAmount.title.agent = How much of your client’s incurred costs did their employer pay?
+benefits.incurredCostsAmount.enterTotal = Enter the total.
+benefits.incurredCostsAmount.error.noEntry.individual = Enter the amount of incurred costs paid by your employer
+benefits.incurredCostsAmount.error.incorrectFormat.individual = Enter the amount of incurred costs paid by your employer in the correct format
+benefits.incurredCostsAmount.error.overMaximum.individual = The incurred costs paid by your employer must be less than £100,000,000,000
+benefits.incurredCostsAmount.error.noEntry.agent = Enter the amount of incurred costs paid by your client’s employer
+benefits.incurredCostsAmount.error.incorrectFormat.agent = Enter the amount of incurred costs paid by your client’s employer in the correct format
+benefits.incurredCostsAmount.error.overMaximum.agent = The incurred costs paid by your client’s employer must be less than £100,000,000,000
+
 #####Expenses Pages#######
 expenses.claimEmploymentExpenses.title.individual = Do you want to claim employment expenses?
 expenses.claimEmploymentExpenses.title.agent = Do you want to claim employment expenses for your client?
