@@ -39,7 +39,7 @@ case class IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion: Option[Boolean] = No
 
   def paymentsOnEmployeesBehalfSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     paymentsOnEmployeesBehalfQuestion match {
-      case Some(true) => if (paymentsOnEmployeesBehalf.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO Payments on employees behalf amount page (Amount of incurred costs paid by employer)
+      case Some(true) => if (paymentsOnEmployeesBehalf.isDefined) None else Some(IncurredCostsBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(IncurredCostsBenefitsController.show(taxYear, employmentId))
     }
