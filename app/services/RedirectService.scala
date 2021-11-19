@@ -23,6 +23,7 @@ import controllers.benefits.routes._
 import controllers.benefits.travel.routes._
 import controllers.benefits.utilities.routes._
 import controllers.benefits.income.routes._
+import controllers.benefits.reimbursed.routes._
 import controllers.employment.routes._
 import models.User
 import models.benefits.{AccommodationRelocationModel, CarVanFuelModel, IncomeTaxAndCostsModel, MedicalChildcareEducationModel,
@@ -494,8 +495,7 @@ object RedirectService extends Logging {
     incomeTaxAndCostsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(sectionQuestion.isEmpty, IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId)),
-        //TODO go to Reimbursed costs, vouchers, and non-cash benefits
-        ConditionalRedirect(sectionQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(sectionQuestion.contains(false), ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(sectionQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
@@ -524,8 +524,7 @@ object RedirectService extends Logging {
     incurredCostsPaidByEmployerRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(paymentsOnEmployeesBehalfQuestion.isEmpty, IncurredCostsBenefitsController.show(taxYear, employmentId)),
-        //TODO go to Reimbursed costs, vouchers, and non-cash benefits yes/no page
-        ConditionalRedirect(paymentsOnEmployeesBehalfQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(paymentsOnEmployeesBehalfQuestion.contains(false), ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(paymentsOnEmployeesBehalfQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
@@ -547,8 +546,7 @@ object RedirectService extends Logging {
 
     reimbursedCostsVouchersAndNonCashRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to Reimbursed costs and vouchers section yes/no page (initial yes/no page)
-        ConditionalRedirect(sectionQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(sectionQuestion.isEmpty, ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId)),
         //TODO go to Assets section
         ConditionalRedirect(sectionQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(sectionQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))

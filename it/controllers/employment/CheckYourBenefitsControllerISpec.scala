@@ -703,6 +703,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val educationServiceBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/educational-services?employmentId=001"
     val incurredCostsBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/incurred-costs?employmentId=001"
     val incurredCostsBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/incurred-costs-amount?employmentId=001"
+    val reimbursedCostsVouchersAndNonCashBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/reimbursed-costs-vouchers-non-cash-benefits?employmentId=001"
   }
 
 
@@ -887,7 +888,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.incurredCostsPaidAmount, "£21", 15, 5, s"${user.commonExpectedResults.changeText} ${specificResults.incurredCostsPaidAmountHiddenText}", incurredCostsBenefitsAmountHref)
 
           textOnPageCheck(commonResults.reimbursedHeader, fieldHeaderSelector(16))
-          changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.yes, 17, 1, s"${user.commonExpectedResults.changeText} ${specificResults.reimbursedSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.yes, 17, 1, s"${user.commonExpectedResults.changeText} ${specificResults.reimbursedSubheadingHiddenText}", reimbursedCostsVouchersAndNonCashBenefitsHref)
           changeAmountRowCheck(commonResults.nonTaxable, commonResults.yes, 17, 2, s"${user.commonExpectedResults.changeText} ${specificResults.nonTaxableHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.nonTaxableAmount, "£22", 17, 3, s"${user.commonExpectedResults.changeText} ${specificResults.nonTaxableAmountHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.taxableCosts, commonResults.yes, 17, 4, s"${user.commonExpectedResults.changeText} ${specificResults.taxableCostsHiddenText}", dummyHref)
@@ -977,7 +978,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.incomeTaxSubheading, commonResults.no, 15, 1, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxSubheadingHiddenText}", incomeTaxOrIncurredCostsBenefitsHref)
 
           textOnPageCheck(user.commonExpectedResults.reimbursedHeader, fieldHeaderSelector(16))
-          changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.no, 17, 1, s"${user.commonExpectedResults.changeText} ${specificResults.reimbursedSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.no, 17, 1, s"${user.commonExpectedResults.changeText} ${specificResults.reimbursedSubheadingHiddenText}", reimbursedCostsVouchersAndNonCashBenefitsHref)
 
           textOnPageCheck(user.commonExpectedResults.assetsHeader, fieldHeaderSelector(18))
           changeAmountRowCheck(commonResults.assetsSubheading, commonResults.no, 19, 1, s"${user.commonExpectedResults.changeText} ${specificResults.assetsSubheadingHiddenText}", dummyHref)
@@ -1086,7 +1087,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.incomeTaxSubheading, commonResults.no, 14, 1, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxSubheadingHiddenText}", incomeTaxOrIncurredCostsBenefitsHref)
 
           textOnPageCheck(user.commonExpectedResults.reimbursedHeader, fieldHeaderSelector(15))
-          changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.no, 16, 1, s"${user.commonExpectedResults.changeText} ${specificResults.reimbursedSubheadingHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.no, 16, 1, s"${user.commonExpectedResults.changeText} ${specificResults.reimbursedSubheadingHiddenText}", reimbursedCostsVouchersAndNonCashBenefitsHref)
 
           textOnPageCheck(user.commonExpectedResults.assetsHeader, fieldHeaderSelector(17))
           changeAmountRowCheck(commonResults.assetsSubheading, commonResults.no, 18, 1, s"${user.commonExpectedResults.changeText} ${specificResults.assetsSubheadingHiddenText}", dummyHref)

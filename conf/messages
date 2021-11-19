@@ -963,6 +963,11 @@ benefits.incurredCostsAmount.error.noEntry.agent = Enter the amount of incurred 
 benefits.incurredCostsAmount.error.incorrectFormat.agent = Enter the amount of incurred costs paid by your client’s employer in the correct format
 benefits.incurredCostsAmount.error.overMaximum.agent = The incurred costs paid by your client’s employer must be less than £100,000,000,000
 
+benefits.reimbursedCostsVouchersAndNonCash.title.individual = Did you get any reimbursed costs, vouchers or non-cash benefits from your employer?
+benefits.reimbursedCostsVouchersAndNonCash.title.agent = Did your client get any reimbursed costs, vouchers or non-cash benefits from their employer?
+benefits.reimbursedCostsVouchersAndNonCash.error.individual = Select yes if you got reimbursed costs, vouchers or non-cash benefits from your employer
+benefits.reimbursedCostsVouchersAndNonCash.error.agent = Select yes if your client got reimbursed costs, vouchers or non-cash benefits from their employer
+
 #####Expenses Pages#######
 expenses.caption = Employment expenses for 6 April {0} to 5 April {1}
 expenses.claimEmploymentExpenses.title.individual = Do you want to claim employment expenses?
