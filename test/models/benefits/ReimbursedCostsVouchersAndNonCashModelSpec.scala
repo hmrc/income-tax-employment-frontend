@@ -17,6 +17,7 @@
 package models.benefits
 
 import utils.UnitTest
+import controllers.benefits.reimbursed.routes._
 
 class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
 
@@ -39,7 +40,7 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
   "isFinished" should {
     "return reimbursedCostsVouchersAndNonCash yes no page" in {
       model.copy(reimbursedCostsVouchersAndNonCashQuestion = None).isFinished(taxYear, employmentId) shouldBe
-        Some(controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId))
     }
     "return none when section is finished" in {
       model.copy(reimbursedCostsVouchersAndNonCashQuestion = Some(false)).isFinished(taxYear, "employmentId") shouldBe None
