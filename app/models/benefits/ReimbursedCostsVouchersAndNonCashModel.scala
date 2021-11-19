@@ -16,6 +16,7 @@
 
 package models.benefits
 
+import controllers.benefits.reimbursed.routes.ReimbursedCostsVouchersAndNonCashBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
@@ -47,7 +48,7 @@ case class ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonC
           case _ => None
         }
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      case None => Some(ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId))
     }
   }
 
