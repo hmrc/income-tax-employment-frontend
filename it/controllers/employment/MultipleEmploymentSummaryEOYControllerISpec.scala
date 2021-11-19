@@ -169,9 +169,9 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
   val employmentId1 = "001"
   val employmentId2 = "002"
 
-  def changeLinkHref(empId: String) = s"/income-through-software/return/employment-income/$validTaxYear2021/employer-details-and-benefits?employmentId=$empId"
+  def changeLinkHref(empId: String) = s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employer-details-and-benefits?employmentId=$empId"
 
-  def removeLinkHref(empId: String) = s"/income-through-software/return/employment-income/$validTaxYear2021/remove-employment?employmentId=$empId"
+  def removeLinkHref(empId: String) = s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/remove-employment?employmentId=$empId"
 
   val employmentSource: EmploymentSource = EmploymentSource(
     employmentId = employmentId1,
@@ -263,8 +263,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             textOnPageCheck(thisIsATotal, thisIsATotalSelector(5))
             "has an expenses section" should {
               textOnPageCheck(expensesText, expensesSelector(6))
-              linkCheck(specific.changeExpenses, changeExpensesSelector(6), "/income-through-software/return/employment-income/2021/check-employment-expenses")
-              linkCheck(specific.removeExpenses, removeExpensesSelector(6), "/income-through-software/return/employment-income/2021/check-employment-expenses")
+              linkCheck(specific.changeExpenses, changeExpensesSelector(6), "/update-and-submit-income-tax-return/employment-income/2021/check-employment-expenses")
+              linkCheck(specific.removeExpenses, removeExpensesSelector(6), "/update-and-submit-income-tax-return/employment-income/2021/check-employment-expenses")
             }
             textOnPageCheck(doYouNeedAnother, doYouNeedAnotherSelector)
             textOnPageCheck(specific.youMustTell, youMustTellSelector)
@@ -272,7 +272,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             radioButtonCheck(noText, 2)
             buttonCheck(continueButton)
 
-            formPostLinkCheck(s"/income-through-software/return/employment-income/$validTaxYear2021/employment-summary", formSelector)
+            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employment-summary", formSelector)
             formRadioValueCheck(selected = true, formRadioButtonValueSelector)
           }
 
@@ -306,8 +306,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             textOnPageCheck(thisIsATotal, thisIsATotalSelector(5))
             "has an expenses section" should {
               textOnPageCheck(expensesText, expensesSelector(6))
-              linkCheck(specific.changeExpenses, changeExpensesSelector(6), "/income-through-software/return/employment-income/2021/check-employment-expenses")
-              linkCheck(specific.removeExpenses, removeExpensesSelector(6), "/income-through-software/return/employment-income/2021/check-employment-expenses")
+              linkCheck(specific.changeExpenses, changeExpensesSelector(6), "/update-and-submit-income-tax-return/employment-income/2021/check-employment-expenses")
+              linkCheck(specific.removeExpenses, removeExpensesSelector(6), "/update-and-submit-income-tax-return/employment-income/2021/check-employment-expenses")
             }
             textOnPageCheck(doYouNeedAnother, doYouNeedAnotherSelector)
             textOnPageCheck(specific.youMustTell, youMustTellSelector)
@@ -315,7 +315,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             radioButtonCheck(noText, 2)
             buttonCheck(continueButton)
 
-            formPostLinkCheck(s"/income-through-software/return/employment-income/$validTaxYear2021/employment-summary", formSelector)
+            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employment-summary", formSelector)
             formRadioValueCheck(selected = true, formRadioButtonValueSelector)
           }
 
@@ -354,7 +354,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
 
             "redirect to the employer name page" in {
               result.header(HeaderNames.LOCATION).getOrElse("") contains
-                "/income-through-software/return/employment-income/2021/employer-name?employmentId=" shouldBe true
+                "/update-and-submit-income-tax-return/employment-income/2021/employer-name?employmentId=" shouldBe true
             }
           }
 
@@ -407,8 +407,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             textOnPageCheck(thisIsATotal, thisIsATotalSelector(6))
             "has an expenses section" should {
               textOnPageCheck(expensesText, expensesSelector(7))
-              linkCheck(specific.changeExpenses, changeExpensesSelector(7), "/income-through-software/return/employment-income/2021/check-employment-expenses")
-              linkCheck(specific.removeExpenses, removeExpensesSelector(7), "/income-through-software/return/employment-income/2021/check-employment-expenses")
+              linkCheck(specific.changeExpenses, changeExpensesSelector(7), "/update-and-submit-income-tax-return/employment-income/2021/check-employment-expenses")
+              linkCheck(specific.removeExpenses, removeExpensesSelector(7), "/update-and-submit-income-tax-return/employment-income/2021/check-employment-expenses")
             }
             textOnPageCheck(doYouNeedAnother, doYouNeedAnotherSelector)
             textOnPageCheck(specific.youMustTell, youMustTellSelector)
@@ -418,7 +418,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             radioButtonCheck(noText, 2)
             buttonCheck(continueButton)
 
-            formPostLinkCheck(s"/income-through-software/return/employment-income/$validTaxYear2021/employment-summary", formSelector)
+            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employment-summary", formSelector)
             formRadioValueCheck(selected = true, formRadioButtonValueSelector)
           }
         }

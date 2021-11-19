@@ -51,7 +51,7 @@ class MockAppConfig extends MockFactory {
 
     override def incomeTaxSubmissionBaseUrl: String = ""
 
-    override def incomeTaxSubmissionIvRedirect: String = "/income-through-software/return/iv-uplift"
+    override def incomeTaxSubmissionIvRedirect: String = "/update-and-submit-income-tax-return/iv-uplift"
 
     override lazy val encryptionKey: String = "encryptionKey12345"
     override lazy val useEncryption: Boolean = encrypt

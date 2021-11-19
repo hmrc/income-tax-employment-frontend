@@ -50,7 +50,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
 
   private def educationServiceQuestionPageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/educational-services?employmentId=$employmentId"
 
-  val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/educational-services?employmentId=$employmentId"
+  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/educational-services?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"

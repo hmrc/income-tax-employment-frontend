@@ -32,7 +32,7 @@ class AppConfigSpec extends UnitTest {
   (mockServicesConfig.getString(_: String)).expects("microservice.services.contact-frontend.url").returns("http://contact-frontend:9250")
   (mockServicesConfig.getString(_: String)).expects("microservice.services.income-tax-submission.url").returns("http://income-tax-submission")
   (mockServicesConfig.getString(_: String)).expects("microservice.services.income-tax-submission-frontend.url").returns("http://income-tax-submission-frontend").twice()
-  (mockServicesConfig.getString(_: String)).expects("microservice.services.income-tax-submission-frontend.context").returns("/income-through-software/return").twice()
+  (mockServicesConfig.getString(_: String)).expects("microservice.services.income-tax-submission-frontend.context").returns("/update-and-submit-income-tax-return").twice()
   (mockServicesConfig.getString(_: String)).expects("microservice.services.income-tax-submission-frontend.iv-redirect").returns("/iv-uplift")
   (mockServicesConfig.getString(_: String)).expects("microservice.services.view-and-change.url").returns("http://view-and-change")
   (mockServicesConfig.getString(_: String)).expects("microservice.services.sign-in.url").returns("http://sign-in")
@@ -66,10 +66,10 @@ class AppConfigSpec extends UnitTest {
       appConfig.signInUrl shouldBe expectedSignInUrl
       appConfig.signInContinueUrl shouldBe expectedSignInContinueUrl
 
-      appConfig.incomeTaxSubmissionBaseUrl shouldBe "http://income-tax-submission-frontend/income-through-software/return"
+      appConfig.incomeTaxSubmissionBaseUrl shouldBe "http://income-tax-submission-frontend/update-and-submit-income-tax-return"
       appConfig.viewAndChangeEnterUtrUrl shouldBe "http://view-and-change/report-quarterly/income-and-expenses/view/agents/client-utr"
       appConfig.incomeTaxSubmissionBEBaseUrl shouldBe "http://income-tax-submission/income-tax-submission-service"
-      appConfig.incomeTaxSubmissionIvRedirect shouldBe "http://income-tax-submission-frontend/income-through-software/return/iv-uplift"
+      appConfig.incomeTaxSubmissionIvRedirect shouldBe "http://income-tax-submission-frontend/update-and-submit-income-tax-return/iv-uplift"
     }
 
     "return the correct feedback url when the user is an agent" in {

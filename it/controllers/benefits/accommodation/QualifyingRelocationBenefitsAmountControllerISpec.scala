@@ -34,7 +34,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
 
   private def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/qualifying-relocation-amount?employmentId=$employmentId"
 
-  private val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/qualifying-relocation-amount?employmentId=$employmentId"
+  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/qualifying-relocation-amount?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -231,7 +231,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
   }
@@ -347,7 +347,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/non-qualifying-relocation?employmentId=001")
+        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/benefits/non-qualifying-relocation?employmentId=001")
       }
 
       "updates the CYA model with the new value" in {
@@ -367,7 +367,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/non-qualifying-relocation?employmentId=001")
+        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/benefits/non-qualifying-relocation?employmentId=001")
       }
 
       "updates the CYA model with the new value" in {
@@ -400,7 +400,7 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
   }

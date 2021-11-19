@@ -35,7 +35,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
 
   def beneficialLoansAmountPageUrl(taxYear: Int): String = s"$appUrl/$taxYear/benefits/beneficial-loans-amount?employmentId=$employmentId"
 
-  val formPostLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/beneficial-loans-amount?employmentId=$employmentId"
+  val formPostLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/beneficial-loans-amount?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > label > header > p"

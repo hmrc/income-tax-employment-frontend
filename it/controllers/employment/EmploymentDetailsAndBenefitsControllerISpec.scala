@@ -40,9 +40,9 @@ val taxYearEOY=taxYear -1
     def taskListRowFieldAmountSelector(i: Int) = s"#main-content > div > div > ul > li:nth-child($i) > span.hmrc-status-tag"
   }
 
-  def employmentDetailsUrl(taxYear: Int) = s"/income-through-software/return/employment-income/$taxYear/check-employment-details?employmentId=001"
-  def employmentBenefitsUrl(taxYear: Int) = s"/income-through-software/return/employment-income/$taxYear/check-employment-benefits?employmentId=001"
-  def employmentExpensesUrl(taxYear: Int) = s"/income-through-software/return/employment-income/$taxYear/check-employment-expenses"
+  def employmentDetailsUrl(taxYear: Int) = s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-details?employmentId=001"
+  def employmentBenefitsUrl(taxYear: Int) = s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-benefits?employmentId=001"
+  def employmentExpensesUrl(taxYear: Int) = s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-expenses"
 
   object ExpectedResults {
 
@@ -162,7 +162,7 @@ val taxYearEOY=taxYear -1
             textOnPageCheck(user.commonExpectedResults.cannotUpdate, taskListRowFieldAmountSelector(2))
           }
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
-          formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary", "#main-content > div > div > form")
+          formGetLinkCheck("/update-and-submit-income-tax-return/employment-income/2022/employment-summary", "#main-content > div > div > form")
 
           welshToggleCheck(user.isWelsh)
         }
@@ -192,7 +192,7 @@ val taxYearEOY=taxYear -1
             textOnPageCheck(user.commonExpectedResults.cannotUpdate, taskListRowFieldAmountSelector(2))
           }
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
-          formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary", "#main-content > div > div > form")
+          formGetLinkCheck("/update-and-submit-income-tax-return/employment-income/2022/employment-summary", "#main-content > div > div > form")
 
           welshToggleCheck(user.isWelsh)
         }
@@ -216,7 +216,7 @@ val taxYearEOY=taxYear -1
           }
 
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
-          formGetLinkCheck("/income-through-software/return/employment-income/2021/employment-summary", "#main-content > div > div > form")
+          formGetLinkCheck("/update-and-submit-income-tax-return/employment-income/2021/employment-summary", "#main-content > div > div > form")
 
           welshToggleCheck(user.isWelsh)
         }
@@ -241,7 +241,7 @@ val taxYearEOY=taxYear -1
           }
 
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
-          formGetLinkCheck("/income-through-software/return/employment-income/2021/employment-summary", "#main-content > div > div > form")
+          formGetLinkCheck("/update-and-submit-income-tax-return/employment-income/2021/employment-summary", "#main-content > div > div > form")
 
           welshToggleCheck(user.isWelsh)
         }
@@ -255,7 +255,7 @@ val taxYearEOY=taxYear -1
           }
 
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
         }
 
         "render the page where the status for benefits is Updated when there is Benefits data in year" which {
@@ -284,7 +284,7 @@ val taxYearEOY=taxYear -1
           }
 
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
-          formGetLinkCheck("/income-through-software/return/employment-income/2022/employment-summary",
+          formGetLinkCheck("/update-and-submit-income-tax-return/employment-income/2022/employment-summary",
             "#main-content > div > div > form")
 
           welshToggleCheck(user.isWelsh)
@@ -315,7 +315,7 @@ val taxYearEOY=taxYear -1
           }
 
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
-          formGetLinkCheck("/income-through-software/return/employment-income/2021/employment-summary",
+          formGetLinkCheck("/update-and-submit-income-tax-return/employment-income/2021/employment-summary",
             "#main-content > div > div > form")
 
           welshToggleCheck(user.isWelsh)
@@ -346,7 +346,7 @@ val taxYearEOY=taxYear -1
           }
 
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
-          formGetLinkCheck("/income-through-software/return/employment-income/2021/employment-summary",
+          formGetLinkCheck("/update-and-submit-income-tax-return/employment-income/2021/employment-summary",
             "#main-content > div > div > form")
 
           welshToggleCheck(user.isWelsh)

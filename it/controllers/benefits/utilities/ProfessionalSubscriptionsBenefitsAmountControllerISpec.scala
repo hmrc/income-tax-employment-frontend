@@ -35,7 +35,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
 
   private def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/professional-fees-or-subscriptions-amount?employmentId=$employmentId"
 
-  private val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/professional-fees-or-subscriptions-amount?employmentId=$employmentId"
+  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/professional-fees-or-subscriptions-amount?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -227,7 +227,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
 
       "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
 
     }
@@ -372,7 +372,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
       }
       "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/other-services?employmentId=001")
+        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/benefits/other-services?employmentId=001")
       }
 
       "updates employerProvidedProfessionalSubscriptions to the new value" in {
@@ -391,7 +391,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
   }

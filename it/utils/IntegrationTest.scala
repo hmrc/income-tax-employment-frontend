@@ -70,7 +70,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   implicit def wsClient: WSClient = app.injector.instanceOf[WSClient]
 
-  lazy val appUrl = s"http://localhost:$port/income-through-software/return/employment-income"
+  lazy val appUrl = s"http://localhost:$port/update-and-submit-income-tax-return/employment-income"
 
   def await[T](awaitable: Awaitable[T]): T = Await.result(awaitable, Duration.Inf)
 
