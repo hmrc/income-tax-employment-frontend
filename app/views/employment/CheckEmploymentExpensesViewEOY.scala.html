@@ -77,7 +77,7 @@
                     flatRateJobExpenses => showRows("checkYourExpenses.flatRateJobExpensesAmount", flatRateJobExpenses)
                 },
                 expenses.professionalSubscriptionsQuestion.map{
-                    professionalSubscriptionsQuestion => showQuestionRow("checkYourExpenses.professionalSubscriptionsQuestion", professionalSubscriptionsQuestion)
+                    professionalSubscriptionsQuestion => showQuestionRow("checkYourExpenses.professionalSubscriptionsQuestion", professionalSubscriptionsQuestion,controllers.expenses.routes.ProfessionalFeesAndSubscriptionsExpensesController.show(taxYear))
                 },
                 expenses.professionalSubscriptions.map{
                     professionalSubscriptions => showRows("checkYourExpenses.professionalSubscriptionsAmount", professionalSubscriptions)
