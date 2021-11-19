@@ -251,7 +251,7 @@
 
     <h2 class="govuk-label--m">@messages("checkYourBenefits.reimbursedHeader")</h2>
     @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.reimbursedSubheading", benefits.reimbursedDetailsPopulated))
+        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.reimbursedSubheading", benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.reimbursedCostsVouchersAndNonCashQuestion).getOrElse(false), controllers.benefits.reimbursed.routes.ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
         if(benefits.reimbursedDetailsPopulated){
             Seq(
