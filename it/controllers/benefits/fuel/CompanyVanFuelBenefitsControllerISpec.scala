@@ -36,7 +36,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
   val urlEOY = s"$appUrl/$taxYearEOY/benefits/van-fuel?employmentId=$employmentId"
   val urlInYear = s"$appUrl/$taxYear/benefits/van-fuel?employmentId=$employmentId"
 
-  val continueButtonLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/van-fuel?employmentId=$employmentId"
+  val continueButtonLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/van-fuel?employmentId=$employmentId"
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   private val userRequest: User[_] = User(mtditid, None, nino, sessionId, affinityGroup)
@@ -273,7 +273,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
 
@@ -287,7 +287,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
       }
     }
 
@@ -303,7 +303,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
       }
     }
   }
@@ -358,7 +358,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       "redirects to the mileage page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/mileage?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/mileage?employmentId=$employmentId")
       }
 
       "update the vanFuelQuestion to false and vanFuel to none" in {
@@ -383,7 +383,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       "redirects to the mileage benefits page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/mileage?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/mileage?employmentId=$employmentId")
       }
 
       "update the vanFuelQuestion to false and vanFuel to none" in {
@@ -409,7 +409,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       "redirects to the van fuel amount benefits page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/van-fuel-amount?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/van-fuel-amount?employmentId=$employmentId")
       }
 
       "update the vanFuelQuestion to true" in {
@@ -433,7 +433,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       "redirects to the van fuel amount benefits page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/van-fuel-amount?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/van-fuel-amount?employmentId=$employmentId")
       }
 
       "update the vanFuelQuestion to true" in {
@@ -456,7 +456,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
       }
     }
 
@@ -471,7 +471,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
 
@@ -488,7 +488,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
       }
     }
 

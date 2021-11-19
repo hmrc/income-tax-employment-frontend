@@ -47,7 +47,7 @@
 //
 //  val employmentId = "001"
 //  val otherPaymentsAmountPageUrl = s"$appUrl/2021/amount-of-payments-not-on-p60?employmentId=$employmentId"
-//  val continueLink = "/income-through-software/return/employment-income/2021/amount-of-payments-not-on-p60?employmentId=001"
+//  val continueLink = "/update-and-submit-income-tax-return/employment-income/2021/amount-of-payments-not-on-p60?employmentId=001"
 //
 //  val amount: String = "100"
 //  val maxLimit: String = "100,000,000,000"

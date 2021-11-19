@@ -34,7 +34,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
 
   def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/non-qualifying-relocation?employmentId=$employmentId"
 
-  val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/non-qualifying-relocation?employmentId=$employmentId"
+  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/non-qualifying-relocation?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -216,7 +216,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
       }
 
@@ -231,7 +231,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
       }
     }
@@ -245,7 +245,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
       }
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
   }
@@ -308,7 +308,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
       "has a SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/non-qualifying-relocation-amount?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/non-qualifying-relocation-amount?employmentId=$employmentId")
       }
 
       "updates non-QualifyingRelocation Expenses Question to Yes" in {
@@ -331,7 +331,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
       "has a SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/travel-entertainment?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/travel-entertainment?employmentId=$employmentId")
       }
 
       "updates non-QualifyingRelocation Expenses Question to No and removes non-QualifyingRelocation Expenses amount" in {
@@ -360,7 +360,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
       "has a SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/non-qualifying-relocation-amount?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/non-qualifying-relocation-amount?employmentId=$employmentId")
       }
 
       "updates non-QualifyingRelocation Expenses Question to Yes" in {
@@ -381,7 +381,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
       "has a SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
       }
     }
 
@@ -395,7 +395,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
   }

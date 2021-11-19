@@ -40,7 +40,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
     s"$appUrl/$taxYear/benefits/childcare-amount?employmentId=$employmentId"
 
   val formLink: String =
-    s"/income-through-software/return/employment-income/$taxYearEOY/benefits/childcare-amount?employmentId=$employmentId"
+    s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/childcare-amount?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 

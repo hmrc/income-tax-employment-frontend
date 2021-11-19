@@ -38,7 +38,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
   val urlEOY = s"$appUrl/$taxYearEOY/benefits/living-accommodation-amount?employmentId=$employmentId"
   val urlInYear = s"$appUrl/$taxYear/benefits/living-accommodation-amount?employmentId=$employmentId"
 
-  val continueButtonLink: String = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/living-accommodation-amount?employmentId=$employmentId"
+  val continueButtonLink: String = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/living-accommodation-amount?employmentId=$employmentId"
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   private val userRequest: User[_]=  User(mtditid, None, nino, sessionId, affinityGroup)
@@ -268,7 +268,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
 
@@ -491,7 +491,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           "redirects to the check your benefits page" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/qualifying-relocation?employmentId=$employmentId")
+              Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/qualifying-relocation?employmentId=$employmentId")
           }
 
           "updates the CYA model with the new value" in {
@@ -514,7 +514,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
 

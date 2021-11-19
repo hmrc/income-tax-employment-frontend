@@ -36,7 +36,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
   def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/company-van?employmentId=$employmentId"
 
-  val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId"
+  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -212,7 +212,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
         }
 
       }
@@ -283,7 +283,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
         s"has a SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
         }
 
       }

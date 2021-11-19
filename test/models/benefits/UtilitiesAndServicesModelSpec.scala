@@ -39,7 +39,7 @@ class UtilitiesAndServicesModelSpec extends UnitTest {
   "isFinished" should {
     "return utilities and services yes no page" in {
       model.copy(utilitiesAndServicesQuestion = None).isFinished(taxYear, "id") shouldBe
-        result(s"/income-through-software/return/employment-income/$taxYear/benefits/utility-general-service?employmentId=id")
+        result(s"/update-and-submit-income-tax-return/employment-income/$taxYear/benefits/utility-general-service?employmentId=id")
     }
     "return none when section is finished" in {
       model.copy(utilitiesAndServicesQuestion = Some(false)).isFinished(taxYear, "employmentId") shouldBe None
@@ -50,12 +50,12 @@ class UtilitiesAndServicesModelSpec extends UnitTest {
   "telephoneSectionFinished" should {
     "return telephone yes no page" in {
       model.copy(telephoneQuestion = None).telephoneSectionFinished(taxYear, "id") shouldBe
-        result("/income-through-software/return/employment-income/2022/benefits/telephone?employmentId=id")
+        result("/update-and-submit-income-tax-return/employment-income/2022/benefits/telephone?employmentId=id")
     }
 
     "return telephone amount page" in {
       model.copy(telephone = None).telephoneSectionFinished(taxYear, "id") shouldBe
-        result(s"/income-through-software/return/employment-income/$taxYear/check-employment-benefits?employmentId=id")
+        result(s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-benefits?employmentId=id")
     }
 
     "return none when section is finished" in {
@@ -68,12 +68,12 @@ class UtilitiesAndServicesModelSpec extends UnitTest {
 
     "return employerProvidedServices yes no page" in {
       model.copy(employerProvidedServicesQuestion = None).employerProvidedServicesSectionFinished(taxYear, "id") shouldBe
-        result(s"/income-through-software/return/employment-income/$taxYear/benefits/employer-provided-services?employmentId=id")
+        result(s"/update-and-submit-income-tax-return/employment-income/$taxYear/benefits/employer-provided-services?employmentId=id")
     }
 
     "return employerProvidedServices amount page" in {
       model.copy(employerProvidedServices = None).employerProvidedServicesSectionFinished(taxYear, "id") shouldBe
-        result(s"/income-through-software/return/employment-income/$taxYear/benefits/employer-provided-services-amount?employmentId=id")
+        result(s"/update-and-submit-income-tax-return/employment-income/$taxYear/benefits/employer-provided-services-amount?employmentId=id")
     }
 
     "return none when section is finished" in {
@@ -86,12 +86,12 @@ class UtilitiesAndServicesModelSpec extends UnitTest {
 
     "return employerProvidedProfessionalSubscriptions yes no page" in {
       model.copy(employerProvidedProfessionalSubscriptionsQuestion = None).employerProvidedProfessionalSubscriptionsSectionFinished(taxYear, "id") shouldBe
-        result(s"/income-through-software/return/employment-income/$taxYear/benefits/professional-fees-or-subscriptions?employmentId=id")
+        result(s"/update-and-submit-income-tax-return/employment-income/$taxYear/benefits/professional-fees-or-subscriptions?employmentId=id")
     }
 
     "return employerProvidedProfessionalSubscriptions amount page" in {
       model.copy(employerProvidedProfessionalSubscriptions = None).employerProvidedProfessionalSubscriptionsSectionFinished(taxYear, "id") shouldBe
-        result(s"/income-through-software/return/employment-income/$taxYear/benefits/professional-fees-or-subscriptions-amount?employmentId=id")
+        result(s"/update-and-submit-income-tax-return/employment-income/$taxYear/benefits/professional-fees-or-subscriptions-amount?employmentId=id")
     }
 
     "return none when section is finished" in {
@@ -103,12 +103,12 @@ class UtilitiesAndServicesModelSpec extends UnitTest {
   "serviceSectionFinished" should {
     "return service yes no page" in {
       model.copy(serviceQuestion = None).serviceSectionFinished(taxYear, "id") shouldBe
-        result(s"/income-through-software/return/employment-income/$taxYear/benefits/other-services?employmentId=id")
+        result(s"/update-and-submit-income-tax-return/employment-income/$taxYear/benefits/other-services?employmentId=id")
     }
 
     "return service amount page" in {
       model.copy(service = None).serviceSectionFinished(taxYear, "id") shouldBe
-        result(s"/income-through-software/return/employment-income/$taxYear/check-employment-benefits?employmentId=id")
+        result(s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-benefits?employmentId=id")
     }
 
     "return none when section is finished" in {

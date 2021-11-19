@@ -34,7 +34,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
   def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/entertainment-expenses-amount?employmentId=$employmentId"
 
-  val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/entertainment-expenses-amount?employmentId=$employmentId"
+  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/entertainment-expenses-amount?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -278,7 +278,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
         }
       }
 
@@ -294,7 +294,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/entertainment-expenses?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/entertainment-expenses?employmentId=$employmentId")
         }
       }
 
@@ -310,7 +310,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
       }
 
@@ -327,7 +327,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
       }
 
@@ -459,7 +459,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/utility-general-service?employmentId=001")
+          result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/benefits/utility-general-service?employmentId=001")
         }
 
         "updates the CYA model with the new value" in {
@@ -484,7 +484,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/utility-general-service?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/utility-general-service?employmentId=$employmentId")
         }
 
         "updates the CYA model with the new value" in {
@@ -523,7 +523,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
         }
       }
 
@@ -541,7 +541,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/entertainment-expenses?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/entertainment-expenses?employmentId=$employmentId")
         }
       }
 
@@ -558,7 +558,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
       }
 
@@ -576,7 +576,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
       }
 

@@ -40,7 +40,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
   def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/mileage-amount?employmentId=$employmentId"
 
-  val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/mileage-amount?employmentId=$employmentId"
+  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/mileage-amount?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -240,7 +240,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/accommodation-relocation?employmentId=001")
+          result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/benefits/accommodation-relocation?employmentId=001")
         }
 
       }
@@ -331,7 +331,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
         }
       }
     }
@@ -457,7 +457,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         s"has a SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/accommodation-relocation?employmentId=001")
+          result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/benefits/accommodation-relocation?employmentId=001")
         }
       }
 
@@ -471,7 +471,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         s"has a SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
         }
 
       }

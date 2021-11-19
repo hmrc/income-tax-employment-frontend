@@ -34,7 +34,7 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
 
   private def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/travel-subsistence-amount?employmentId=$employmentId"
 
-  private val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/travel-subsistence-amount?employmentId=$employmentId"
+  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/travel-subsistence-amount?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -237,7 +237,7 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
   }
@@ -353,7 +353,7 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/incidental-overnight-costs?employmentId=001")
+        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/benefits/incidental-overnight-costs?employmentId=001")
       }
 
       "updates the CYA model with the new value" in {
@@ -373,7 +373,7 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/incidental-overnight-costs?employmentId=001")
+        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/benefits/incidental-overnight-costs?employmentId=001")
       }
 
       "updates the CYA model with the new value" in {
@@ -406,7 +406,7 @@ class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest w
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
   }

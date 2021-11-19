@@ -38,7 +38,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/uniforms-work-clothes-or-tools"
 
-  private val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/expenses/uniforms-work-clothes-or-tools"
+  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/uniforms-work-clothes-or-tools"
   private val uniformsAndToolsLink = "https://www.gov.uk/guidance/job-expenses-for-uniforms-work-clothing-and-tools"
 
   object Selectors {

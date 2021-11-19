@@ -51,7 +51,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
   private def medicalDentalQuestionPageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/medical-dental?employmentId=$employmentId"
 
-  val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/medical-dental?employmentId=$employmentId"
+  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/medical-dental?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -289,7 +289,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
 
         }
       }
@@ -426,7 +426,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
         }
       }
 
