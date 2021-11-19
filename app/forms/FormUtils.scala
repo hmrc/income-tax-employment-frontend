@@ -16,7 +16,7 @@
 
 package forms
 
-import models.employment.{AllEmploymentData, EmploymentSource}
+import models.employment.{AllEmploymentData, EmploymentExpenses, EmploymentSource}
 import play.api.data.Form
 import services.EmploymentSessionService
 
@@ -31,6 +31,19 @@ trait FormUtils {
       employmentSessionService.employmentSourceToUse(priorEmp, employmentId, isInYear = false).flatMap {
         employmentSource =>
           f(employmentSource._1)
+      }
+    }
+
+    fillForm(form,priorAmount,cya)
+  }
+
+  def fillExpensesFormFromPriorAndCYA(form: Form[BigDecimal], prior: Option[AllEmploymentData],
+                                      cya: Option[BigDecimal])(f: EmploymentExpenses => Option[BigDecimal]): Form[BigDecimal] ={
+
+    val priorAmount = prior.flatMap { priorEmp =>
+      employmentSessionService.getLatestExpenses(priorEmp, isInYear = false).flatMap {
+        expenses =>
+          f(expenses._1)
       }
     }
 

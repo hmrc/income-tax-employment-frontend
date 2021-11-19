@@ -121,7 +121,6 @@ employment.employmentDetails.heading.individual = Check your employment details
 employment.employmentDetails.heading.agent = Check your client’s employment details
 
 employment.caption = Employment for 6 April {0} to 5 April {1}
-expense.caption = Employment expenses for 6 April {0} to 5 April {1}
 
 employment.employmentInformation.content.individual = Your employment details are based on the information we already hold about you.
 employment.employmentInformation.content.agent = Your client’s employment details are based on the information we already hold about them.
@@ -965,6 +964,7 @@ benefits.incurredCostsAmount.error.incorrectFormat.agent = Enter the amount of i
 benefits.incurredCostsAmount.error.overMaximum.agent = The incurred costs paid by your client’s employer must be less than £100,000,000,000
 
 #####Expenses Pages#######
+expenses.caption = Employment expenses for 6 April {0} to 5 April {1}
 expenses.claimEmploymentExpenses.title.individual = Do you want to claim employment expenses?
 expenses.claimEmploymentExpenses.title.agent = Do you want to claim employment expenses for your client?
 expenses.claimEmploymentExpenses.canClaim.individual = You can claim employment expenses you did not claim through your employer.
@@ -1020,6 +1020,18 @@ expenses.uniformsWorkClothesTools.checkIfYouCanClaimLink.agent = Check if your c
 expenses.uniformsWorkClothesTools.error.noEntry.individual = Select yes to claim for uniforms, work clothes, or tools
 expenses.uniformsWorkClothesTools.error.noEntry.agent = Select yes to claim for your client’s uniforms, work clothes, or tools
 
+expenses.uniformsWorkClothesToolsAmount.title.individual = How much do you want to claim for uniforms, work clothes, or tools?
+expenses.uniformsWorkClothesToolsAmount.title.agent = How much do you want to claim for uniforms, work clothes, or tools for your client?
+expenses.uniformsWorkClothesToolsAmount.wantToClaim.individual =  You told us you want to claim {0} for uniform, work clothes, or tools. Tell us if this has changed.
+expenses.uniformsWorkClothesToolsAmount.wantToClaim.agent =  You told us you want to claim {0} for your client’s uniform, work clothes, or tools. Tell us if this has changed.
+expenses.uniformsWorkClothesToolsAmount.cannotClaim = You cannot claim for the initial cost of buying small tools or clothing for work.
+expenses.uniformsWorkClothesToolsAmount.error.noEntry.individual = Enter the amount you want to claim for uniforms, work clothes, or tools
+expenses.uniformsWorkClothesToolsAmount.error.noEntry.agent = Enter the amount you want to claim for your client’s uniforms, work clothes, or tools
+expenses.uniformsWorkClothesToolsAmount.error.overMaximum.individual = The amount  you want to claim for uniforms, work clothes, or tools must be less than £100,000,000,000
+expenses.uniformsWorkClothesToolsAmount.error.overMaximum.agent = The amount  you want to claim for your client’s uniforms, work clothes, or tools must be less than £100,000,000,000
+expenses.uniformsWorkClothesToolsAmount.error.invalidFormat.individual = Enter the amount you want to claim for uniforms, work clothes, or tools in the correct format
+expenses.uniformsWorkClothesToolsAmount.error.invalidFormat.agent = Enter the amount you want to claim for your client’s uniforms, work clothes, or tools in the correct format
+
 expenses.professionalFeesAndSubscriptions.title.individual = Do you want to claim for professional fees and subscriptions?
 expenses.professionalFeesAndSubscriptions.title.agent = Do you want to claim for professional fees and subscriptions for your client?
 expenses.professionalFeesAndSubscriptions.thisIncludes = This includes things like:
@@ -1031,3 +1043,4 @@ expenses.professionalFeesAndSubscriptions.error.individual = Select yes to claim
 expenses.professionalFeesAndSubscriptions.error.agent = Select yes to claim for your client’s professional fees and subscriptions
 expenses.professionalFeesAndSubscriptions.checkLink.individual = Check if you can claim for professional fees and subscriptions (opens in new tab)
 expenses.professionalFeesAndSubscriptions.checkLink.agent = Check if your client can claim for professional fees and subscriptions (opens in new tab)
+

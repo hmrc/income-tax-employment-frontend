@@ -113,7 +113,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedThisIncludes = "Employment expenses include things like:"
     val expectedThisIncludesExample1 = "business travel and hotels and meals"
     val expectedThisIncludesExample2 = "professional fees and subscriptions"
@@ -126,7 +126,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedThisIncludes = "Employment expenses include things like:"
     val expectedThisIncludesExample1 = "business travel and hotels and meals"
     val expectedThisIncludesExample2 = "professional fees and subscriptions"
