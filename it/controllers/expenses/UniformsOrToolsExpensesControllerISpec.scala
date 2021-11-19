@@ -111,7 +111,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedCanClaim = "You might be able to claim for the cost of:"
     val expectedCanClaimExample2 = "cleaning, repairing or replacing uniforms or specialist work clothes"
     val flatRateExpense = "These expenses are paid at an agreed rate (a ‘flat rate expense’ or ‘fixed deduction’)."
@@ -121,7 +121,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedCanClaim = "You might be able to claim for the cost of:"
     val expectedCanClaimExample2 = "cleaning, repairing or replacing uniforms or specialist work clothes"
     val flatRateExpense = "These expenses are paid at an agreed rate (a ‘flat rate expense’ or ‘fixed deduction’)."

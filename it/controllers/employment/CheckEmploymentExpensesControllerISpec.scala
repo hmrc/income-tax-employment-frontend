@@ -234,6 +234,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val claimExpensesHref = s"/income-through-software/return/employment-income/${taxYear - 1}/expenses/claim-employment-expenses"
     val businessTravelOvernightExpensesHref = s"/income-through-software/return/employment-income/${taxYear - 1}/expenses/business-travel-and-overnight-expenses"
     val uniformsOrToolsExpensesHref = s"/income-through-software/return/employment-income/${taxYear - 1}/expenses/uniforms-work-clothes-or-tools"
+    val uniformsOrToolsExpensesAmountHref = s"/income-through-software/return/employment-income/${taxYear - 1}/expenses/amount-for-uniforms-work-clothes-or-tools"
     val professionalFeesAndSubscriptionsHref = s"/income-through-software/return/employment-income/${taxYear - 1}/expenses/professional-fees-and-subscriptions"
   }
 
@@ -298,7 +299,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           changeAmountRowCheck(commonResults.flatRateJobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(4), summaryListRowFieldAmountSelector(4),
             changeLinkSelector(4), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateHiddenText}", uniformsOrToolsExpensesHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesAmount, "£3", summaryListRowFieldNameSelector(5), summaryListRowFieldAmountSelector(5),
-            changeLinkSelector(5), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateAmountHiddenText}", dummyHref)
+            changeLinkSelector(5), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateAmountHiddenText}", uniformsOrToolsExpensesAmountHref)
           changeAmountRowCheck(commonResults.professionalSubscriptionsQuestion, commonResults.yes, summaryListRowFieldNameSelector(6), summaryListRowFieldAmountSelector(6),
             changeLinkSelector(6), s"${user.commonExpectedResults.changeText} ${specificResults.profSubscriptionsHiddenText}", professionalFeesAndSubscriptionsHref)
           changeAmountRowCheck(commonResults.professionalSubscriptionsAmount, "£4", summaryListRowFieldNameSelector(7), summaryListRowFieldAmountSelector(7),
@@ -387,7 +388,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           changeAmountRowCheck(commonResults.flatRateJobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(4), summaryListRowFieldAmountSelector(4),
             changeLinkSelector(4), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateHiddenText}", uniformsOrToolsExpensesHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesAmount, "£3", summaryListRowFieldNameSelector(5), summaryListRowFieldAmountSelector(5),
-            changeLinkSelector(5), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateAmountHiddenText}", dummyHref)
+            changeLinkSelector(5), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateAmountHiddenText}", uniformsOrToolsExpensesAmountHref)
           changeAmountRowCheck(commonResults.professionalSubscriptionsQuestion, commonResults.yes, summaryListRowFieldNameSelector(6), summaryListRowFieldAmountSelector(6),
             changeLinkSelector(6), s"${user.commonExpectedResults.changeText} ${specificResults.profSubscriptionsHiddenText}", professionalFeesAndSubscriptionsHref)
           changeAmountRowCheck(commonResults.professionalSubscriptionsAmount, "£4", summaryListRowFieldNameSelector(7), summaryListRowFieldAmountSelector(7),
@@ -451,7 +452,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           changeAmountRowCheck(commonResults.flatRateJobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(4), summaryListRowFieldAmountSelector(4),
             changeLinkSelector(4), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateHiddenText}", uniformsOrToolsExpensesHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesAmount, "£3", summaryListRowFieldNameSelector(5), summaryListRowFieldAmountSelector(5),
-            changeLinkSelector(5), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateAmountHiddenText}", dummyHref)
+            changeLinkSelector(5), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateAmountHiddenText}", uniformsOrToolsExpensesAmountHref)
           changeAmountRowCheck(commonResults.professionalSubscriptionsQuestion, commonResults.yes, summaryListRowFieldNameSelector(6), summaryListRowFieldAmountSelector(6),
             changeLinkSelector(6), s"${user.commonExpectedResults.changeText} ${specificResults.profSubscriptionsHiddenText}", professionalFeesAndSubscriptionsHref)
           changeAmountRowCheck(commonResults.professionalSubscriptionsAmount, "£4", summaryListRowFieldNameSelector(7), summaryListRowFieldAmountSelector(7),
