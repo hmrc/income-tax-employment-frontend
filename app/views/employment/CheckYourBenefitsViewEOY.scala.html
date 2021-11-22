@@ -193,7 +193,6 @@
     @{
         val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.medicalSubheading", benefits.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion).getOrElse(false), controllers.benefits.medical.routes.MedicalDentalChildcareBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
-        if(benefits.medicalDetailsPopulated){
             Seq(
                 benefits.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion).map{
                     medicalInsuranceQuestion => showQuestionRow("checkYourBenefits.medicalIns", benefits.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion).getOrElse(false), controllers.benefits.medical.routes.MedicalDentalBenefitsController.show(taxYear, employmentId))
@@ -220,7 +219,6 @@
                     beneficialLoan => showRows("checkYourBenefits.beneficialLoansAmount", beneficialLoan, controllers.benefits.medical.routes.BeneficialLoansAmountController.show(taxYear: Int, employmentId: String))
                 }
             ).flatten
-        } else { Seq() }
 
         govukSummaryList(SummaryList(header ++ rows))
     }

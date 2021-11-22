@@ -17,7 +17,8 @@
 package controllers.benefits.medical
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.income.routes._
+import controllers.benefits.medical.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import javax.inject.Inject
@@ -28,8 +29,8 @@ import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
 import services.RedirectService.{medicalBenefitsRedirects, redirectBasedOnCurrentAnswers}
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.medical.MedicalDentalChildcareBenefitsView
@@ -83,17 +84,26 @@ class MedicalDentalChildcareBenefitsController @Inject()(implicit val cc: Messag
               val medicalChildcareEducationModel = benefits.flatMap(_.medicalChildcareEducationModel)
 
               val updatedCyaModel: EmploymentCYAModel = {
-                if (yesNo) {
-                  cya.copy(employmentBenefits = benefits.map(_.copy(medicalChildcareEducationModel =
-                    medicalChildcareEducationModel.map(_.copy(medicalChildcareEducationQuestion = Some(true))))))
-                } else {
-                  cya.copy(employmentBenefits = benefits.map(_.copy(medicalChildcareEducationModel = Some(MedicalChildcareEducationModel.clear))))
+                medicalChildcareEducationModel match {
+                  case Some(_) if !yesNo =>
+                    cya.copy(employmentBenefits = benefits.map(_.copy(medicalChildcareEducationModel = Some(MedicalChildcareEducationModel.clear))))
+
+                  case medicalChildcareEducation =>
+                    cya.copy(employmentBenefits = benefits.map(_.copy(medicalChildcareEducationModel = Some(
+                      medicalChildcareEducation.map(_.copy(medicalChildcareEducationQuestion = Some(yesNo))).getOrElse
+                      (MedicalChildcareEducationModel(medicalChildcareEducationQuestion = Some(yesNo)))
+                    ))))
                 }
               }
 
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+
+                val nextPage = {
+                  if (yesNo) MedicalDentalBenefitsController.show(taxYear, employmentId) else IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId)
+                }
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
             }
           )
