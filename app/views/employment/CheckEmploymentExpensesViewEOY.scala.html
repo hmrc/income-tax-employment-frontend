@@ -50,7 +50,7 @@
 
     @heading(headingForUse, Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-5")
 
-    @if(expenses.isUsingCustomerData == false){
+    @if(!expenses.isUsingCustomerData){
         <p class="govuk-body">@messages(s"checkYourExpenses.hmrcOnlyInfo.${if(user.isAgent) "agent" else "individual"}")</p>
     }
 
@@ -83,7 +83,7 @@
                     professionalSubscriptions => showRows("checkYourExpenses.professionalSubscriptionsAmount", professionalSubscriptions, controllers.expenses.routes.ProfFeesAndSubscriptionsExpensesAmountController.show(taxYear))
                 },
                 expenses.otherAndCapitalAllowancesQuestion.map{
-                    otherAndCapitalAllowancesQuestion => showQuestionRow("checkYourExpenses.otherAndCapitalAllowancesQuestion", otherAndCapitalAllowancesQuestion)
+                    otherAndCapitalAllowancesQuestion => showQuestionRow("checkYourExpenses.otherAndCapitalAllowancesQuestion", otherAndCapitalAllowancesQuestion, controllers.expenses.routes.OtherEquipmentController.show(taxYear))
                 },
                 expenses.otherAndCapitalAllowances.map{
                     otherAndCapitalAllowances => showRows("checkYourExpenses.otherAndCapitalAllowancesAmount", otherAndCapitalAllowances)
