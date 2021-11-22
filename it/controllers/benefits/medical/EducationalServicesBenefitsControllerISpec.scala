@@ -28,6 +28,8 @@ import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.benefits.routes.ReceiveAnyBenefitsController
+import controllers.benefits.income.routes._
+import controllers.benefits.medical.routes._
 
 class EducationalServicesBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -345,7 +347,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
 
       val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
 
-      "redirect to check your benefits, update the educationServiceEmploymentQuestion to no" which {
+      "redirect to beneficial loans page, update the educationServiceEmploymentQuestion to no" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -358,10 +360,9 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        "redirects to the check your details page" in {
+        "redirects to the beneficial loans page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(BeneficialLoansBenefitsController.show(taxYearEOY, employmentId).url)
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
 
           cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) shouldBe Some(true)
@@ -371,7 +372,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
 
       }
 
-      "redirect to check your benefits and update the educationServiceEmploymentQuestion to yes when the user chooses yes" which {
+      "redirect to educational services amount page and update the educationServiceEmploymentQuestion to yes when the user chooses yes" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
         lazy val result: WSResponse = {
@@ -383,10 +384,9 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        "redirects to the check your details page" in {
+        "redirects to the educational services amount page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(EducationalServicesBenefitsAmountController.show(taxYearEOY, employmentId).url)
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
           cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) shouldBe Some(true)
           cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.educationalServicesQuestion)) shouldBe Some(true)

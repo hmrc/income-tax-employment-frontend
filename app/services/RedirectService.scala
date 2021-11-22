@@ -18,16 +18,15 @@ package services
 
 import controllers.benefits.accommodation.routes._
 import controllers.benefits.fuel.routes._
+import controllers.benefits.income.routes._
 import controllers.benefits.medical.routes._
+import controllers.benefits.reimbursed.routes._
 import controllers.benefits.routes._
 import controllers.benefits.travel.routes._
 import controllers.benefits.utilities.routes._
-import controllers.benefits.income.routes._
-import controllers.benefits.reimbursed.routes._
 import controllers.employment.routes._
 import models.User
-import models.benefits.{AccommodationRelocationModel, CarVanFuelModel, IncomeTaxAndCostsModel, MedicalChildcareEducationModel,
-  ReimbursedCostsVouchersAndNonCashModel, TravelEntertainmentModel, UtilitiesAndServicesModel}
+import models.benefits._
 import models.employment.{EmploymentBenefitsType, EmploymentDetailsType, EmploymentType}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import models.redirects.ConditionalRedirect
@@ -770,15 +769,18 @@ object RedirectService extends Logging {
     val travelOrEntertainmentSection: TravelEntertainmentModel = cya.employmentBenefits.flatMap(_.travelEntertainmentModel).getOrElse(TravelEntertainmentModel())
     val utilitiesAndServicesSection: UtilitiesAndServicesModel = cya.employmentBenefits.flatMap(_.utilitiesAndServicesModel).getOrElse(UtilitiesAndServicesModel())
     val medicalChildcareEducationSection: MedicalChildcareEducationModel = cya.employmentBenefits.flatMap(_.medicalChildcareEducationModel).getOrElse(MedicalChildcareEducationModel())
+    val incomeTaxAndCostsSection: IncomeTaxAndCostsModel = cya.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).getOrElse(IncomeTaxAndCostsModel())
 
     val carVanFuelSectionFinished = carVanFuelSection.isFinished
     val accommodationRelocationSectionFinished = accommodationRelocationSection.isFinished
     val travelOrEntertainmentSectionFinished = travelOrEntertainmentSection.isFinished
     val utilitiesAndServicesSectionFinished = utilitiesAndServicesSection.isFinished
     val medicalChildcareEducationSectionFinished = medicalChildcareEducationSection.isFinished
+    val incomeTaxAndCostsSectionFinished = incomeTaxAndCostsSection.isFinished
 
     val unfinishedRedirects: Seq[Call] = Seq(carVanFuelSectionFinished, accommodationRelocationSectionFinished,
-      travelOrEntertainmentSectionFinished, utilitiesAndServicesSectionFinished, medicalChildcareEducationSectionFinished).flatten
+      travelOrEntertainmentSectionFinished, utilitiesAndServicesSectionFinished, medicalChildcareEducationSectionFinished,
+      incomeTaxAndCostsSectionFinished).flatten
 
     unfinishedRedirects match {
       case calls if calls.isEmpty =>
