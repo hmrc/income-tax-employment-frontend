@@ -48,7 +48,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
 
   private def beneficialLoansPageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/beneficial-loans?employmentId=$employmentId"
 
-  val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/beneficial-loans?employmentId=$employmentId"
+  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/beneficial-loans?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -244,7 +244,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
       }
 
@@ -262,7 +262,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
       }
 
@@ -277,7 +277,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
       }
 
@@ -292,7 +292,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
 
         }
       }
@@ -309,7 +309,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
 
         "doesn't create any benefits data" in {
@@ -388,7 +388,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
 
         "updates beneficialLoanQuestion to no and beneficialLoan to none" in {
@@ -417,7 +417,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
 
         "updates beneficialLoanQuestion to no and beneficialLoan to none" in {
@@ -445,7 +445,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
 //          TODO: This will be updated to the beneficial loans amount page when its created
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
 
         "updates beneficialLoanQuestion to yes" in {
@@ -464,7 +464,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
         }
       }
 
@@ -483,7 +483,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
 
         "doesn't create any benefits data" in {
@@ -507,7 +507,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
       }
 
@@ -528,7 +528,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
       }
 

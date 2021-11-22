@@ -40,7 +40,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
     s"$appUrl/$taxYear/benefits/incurred-costs-amount?employmentId=$employmentId"
 
   val formLink: String =
-    s"/income-through-software/return/employment-income/$taxYearEOY/benefits/incurred-costs-amount?employmentId=$employmentId"
+    s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/incurred-costs-amount?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 

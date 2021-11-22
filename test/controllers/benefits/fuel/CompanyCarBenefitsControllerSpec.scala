@@ -92,7 +92,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
         val result = controller.handleShow(taxYear, employmentId, Some(employmentUserDataWithoutBenefits))
 
         status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe s"/income-through-software/return/employment-income/2021/benefits/company-benefits?employmentId=223%2FAB12399"
+        redirectUrl(result) shouldBe s"/update-and-submit-income-tax-return/employment-income/2021/benefits/company-benefits?employmentId=223%2FAB12399"
       }
     }
 

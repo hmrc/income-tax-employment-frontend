@@ -155,7 +155,7 @@ class AuthorisedActionSpec extends UnitTest {
           status(result) shouldBe SEE_OTHER
         }
         "returns an redirect to the correct page" in {
-          redirectUrl(result) shouldBe "/income-through-software/return/employment-income/error/you-need-to-sign-up"
+          redirectUrl(result) shouldBe "/update-and-submit-income-tax-return/employment-income/error/you-need-to-sign-up"
         }
       }
 
@@ -183,7 +183,7 @@ class AuthorisedActionSpec extends UnitTest {
         }
 
         "redirects to the iv url" in {
-          await(result).header.headers("Location") shouldBe "/income-through-software/return/iv-uplift"
+          await(result).header.headers("Location") shouldBe "/update-and-submit-income-tax-return/iv-uplift"
         }
       }
     }

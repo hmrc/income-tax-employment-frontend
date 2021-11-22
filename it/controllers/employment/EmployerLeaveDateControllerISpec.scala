@@ -52,7 +52,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
   private def employerEndDatePageUrl(taxYear: Int) = s"$appUrl/$taxYear/employment-end-date?employmentId=$employmentId"
 
-  val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/employment-end-date?employmentId=$employmentId"
+  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employment-end-date?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -206,7 +206,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"/income-through-software/return/employment-income/$taxYearEOY/still-working-for-employer?employmentId=001")
+            result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/still-working-for-employer?employmentId=001")
           }
         }
         "redirect when earlier question answered true - still with employer" which {
@@ -223,7 +223,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-details?employmentId=001")
+            result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-details?employmentId=001")
           }
         }
         "render the 'leave date' page with the correct content" which {
@@ -296,7 +296,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+            result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
           }
 
         }
@@ -318,7 +318,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+            result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
           }
         }
 
@@ -336,7 +336,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-details?employmentId=001")
+            result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-details?employmentId=001")
           }
         }
         "redirect when earlier question answered true - still with employer" which {
@@ -353,7 +353,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-details?employmentId=001")
+            result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-details?employmentId=001")
           }
         }
 
@@ -371,7 +371,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
           "redirects to the check your details page" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-details?employmentId=$employmentId")
+            result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-details?employmentId=$employmentId")
             lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
             cyamodel.employment.employmentDetails.cessationDate shouldBe Some(employmentLeaveDate)
           }

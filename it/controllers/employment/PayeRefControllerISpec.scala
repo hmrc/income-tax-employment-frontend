@@ -32,7 +32,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
   val payeRef: String = "123/AA12345"
   def url (taxYear:Int): String = s"$appUrl/${taxYear.toString}/employer-paye-reference?employmentId=001"
 
-  val continueButtonLink: String = "/income-through-software/return/employment-income/2021/employer-paye-reference?employmentId=001"
+  val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=001"
 
   implicit val request = FakeRequest()
   private val userRequest: User[_]=  User(mtditid, None, nino, sessionId, affinityGroup)
@@ -278,7 +278,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-details?employmentId=001")
+            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001")
           }
         }
 
@@ -293,7 +293,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+            result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
           }
         }
 
@@ -364,7 +364,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-details?employmentId=001")
+            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001")
           }
         }
       }

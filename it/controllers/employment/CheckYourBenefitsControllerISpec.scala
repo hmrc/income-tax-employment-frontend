@@ -655,55 +655,55 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object Hrefs {
-    val receiveAnyBenefitsHref = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/company-benefits?employmentId=001"
-    val carVanFuelBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/car-van-fuel?employmentId=001"
-    val companyCarHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/company-car?employmentId=001"
-    val companyCarAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/company-car-amount?employmentId=001"
-    val companyCarFuelBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/car-fuel?employmentId=001"
-    val carFuelAmountBenefitsHref = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/car-fuel-amount?employmentId=001"
-    val mileageAmountBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/mileage-amount?employmentId=001"
-    val receivedOwnCarMileageBenefitHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/mileage?employmentId=001"
-    val companyVanBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/company-van?employmentId=001"
-    val companyVanFuelBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/van-fuel?employmentId=001"
-    val companyVanBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/company-van-amount?employmentId=001"
-    val companyVanFuelBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/van-fuel-amount?employmentId=001"
-    val accommodationRelocationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/accommodation-relocation?employmentId=001"
-    val livingAccommodationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/living-accommodation?employmentId=001"
-    val livingAccommodationAmountBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/living-accommodation-amount?employmentId=001"
-    val qualifyingRelocationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/qualifying-relocation?employmentId=001"
-    val qualifyingRelocationBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/qualifying-relocation-amount?employmentId=001"
-    val nonQualifyingRelocationBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/non-qualifying-relocation?employmentId=001"
-    val nonQualifyingRelocationAmountBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/non-qualifying-relocation-amount?employmentId=001"
-    val travelEntertainmentBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/travel-entertainment?employmentId=001"
-    val travelOrSubsistenceBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/travel-subsistence?employmentId=001"
-    val travelOrSubsistenceBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/travel-subsistence-amount?employmentId=001"
-    val incidentalCostsBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/incidental-overnight-costs-amount?employmentId=001"
-    val utilitiesOrGeneralServicesBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/utility-general-service?employmentId=001"
-    val entertainingBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/entertainment-expenses?employmentId=001"
-    val telephoneBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/telephone?employmentId=001"
-    val otherServicesBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/other-services-amount?employmentId=001"
-    val incidentalOvernightCostEmploymentBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/incidental-overnight-costs?employmentId=001"
-    val otherServicesBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/other-services?employmentId=001"
-    val entertainmentAmountBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/entertainment-expenses-amount?employmentId=001"
-    val employerProvidedServicesBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/employer-provided-services?employmentId=001"
-    val telephoneEmploymentBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/telephone-amount?employmentId=001"
-    val educationalServicesAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/benefits/educational-services-amount?employmentId=001"
-    val employerProvidedServicesBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/employer-provided-services-amount?employmentId=001"
-    val professionalSubscriptionsBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/professional-fees-or-subscriptions?employmentId=001"
-    val professionalSubscriptionsBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/professional-fees-or-subscriptions-amount?employmentId=001"
-    val medicalChildcareEducationHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/medical-dental-childcare-education-loans?employmentId=001"
-    val medicalDentalHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/medical-dental?employmentId=001"
-    val childcareBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/childcare?employmentId=001"
-    val childcareBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/childcare-amount?employmentId=001"
-    val beneficialLoansBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/beneficial-loans?employmentId=001"
-    val medicalOrDentalBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/medical-dental-amount?employmentId=001"
-    val beneficialLoansAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/beneficial-loans-amount?employmentId=001"
-    val incomeTaxOrIncurredCostsBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/employer-income-tax-or-incurred-costs?employmentId=001"
-    val incomeTaxBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/employer-income-tax?employmentId=001"
-    val educationServiceBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/educational-services?employmentId=001"
-    val incurredCostsBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/incurred-costs?employmentId=001"
-    val incurredCostsBenefitsAmountHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/incurred-costs-amount?employmentId=001"
-    val reimbursedCostsVouchersAndNonCashBenefitsHref: String = s"/income-through-software/return/employment-income/${defaultTaxYear-1}/benefits/reimbursed-costs-vouchers-non-cash-benefits?employmentId=001"
+    val receiveAnyBenefitsHref = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/company-benefits?employmentId=001"
+    val carVanFuelBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/car-van-fuel?employmentId=001"
+    val companyCarHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/company-car?employmentId=001"
+    val companyCarAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/company-car-amount?employmentId=001"
+    val companyCarFuelBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/car-fuel?employmentId=001"
+    val carFuelAmountBenefitsHref = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/car-fuel-amount?employmentId=001"
+    val mileageAmountBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/mileage-amount?employmentId=001"
+    val receivedOwnCarMileageBenefitHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/mileage?employmentId=001"
+    val companyVanBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/company-van?employmentId=001"
+    val companyVanFuelBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/van-fuel?employmentId=001"
+    val companyVanBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/company-van-amount?employmentId=001"
+    val companyVanFuelBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/van-fuel-amount?employmentId=001"
+    val accommodationRelocationBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/accommodation-relocation?employmentId=001"
+    val livingAccommodationBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/living-accommodation?employmentId=001"
+    val livingAccommodationAmountBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/living-accommodation-amount?employmentId=001"
+    val qualifyingRelocationBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/qualifying-relocation?employmentId=001"
+    val qualifyingRelocationBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/qualifying-relocation-amount?employmentId=001"
+    val nonQualifyingRelocationBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/non-qualifying-relocation?employmentId=001"
+    val nonQualifyingRelocationAmountBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/non-qualifying-relocation-amount?employmentId=001"
+    val travelEntertainmentBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/travel-entertainment?employmentId=001"
+    val travelOrSubsistenceBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/travel-subsistence?employmentId=001"
+    val travelOrSubsistenceBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/travel-subsistence-amount?employmentId=001"
+    val incidentalCostsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/incidental-overnight-costs-amount?employmentId=001"
+    val utilitiesOrGeneralServicesBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/utility-general-service?employmentId=001"
+    val entertainingBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/entertainment-expenses?employmentId=001"
+    val telephoneBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/telephone?employmentId=001"
+    val otherServicesBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/other-services-amount?employmentId=001"
+    val incidentalOvernightCostEmploymentBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/incidental-overnight-costs?employmentId=001"
+    val otherServicesBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/other-services?employmentId=001"
+    val entertainmentAmountBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/entertainment-expenses-amount?employmentId=001"
+    val employerProvidedServicesBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/employer-provided-services?employmentId=001"
+    val telephoneEmploymentBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/telephone-amount?employmentId=001"
+    val educationalServicesAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/educational-services-amount?employmentId=001"
+    val employerProvidedServicesBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/employer-provided-services-amount?employmentId=001"
+    val professionalSubscriptionsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/professional-fees-or-subscriptions?employmentId=001"
+    val professionalSubscriptionsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/professional-fees-or-subscriptions-amount?employmentId=001"
+    val medicalChildcareEducationHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/medical-dental-childcare-education-loans?employmentId=001"
+    val medicalDentalHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/medical-dental?employmentId=001"
+    val childcareBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/childcare?employmentId=001"
+    val childcareBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/childcare-amount?employmentId=001"
+    val beneficialLoansBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/beneficial-loans?employmentId=001"
+    val medicalOrDentalBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/medical-dental-amount?employmentId=001"
+    val beneficialLoansAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/beneficial-loans-amount?employmentId=001"
+    val incomeTaxOrIncurredCostsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/employer-income-tax-or-incurred-costs?employmentId=001"
+    val incomeTaxBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/employer-income-tax?employmentId=001"
+    val educationServiceBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/educational-services?employmentId=001"
+    val incurredCostsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/incurred-costs?employmentId=001"
+    val incurredCostsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/incurred-costs-amount?employmentId=001"
+    val reimbursedCostsVouchersAndNonCashBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/reimbursed-costs-vouchers-non-cash-benefits?employmentId=001"
   }
 
 
@@ -815,7 +815,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           val specificResults = user.specificExpectedResults.get
           val commonResults = user.commonExpectedResults
-          val dummyHref = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/check-employment-benefits?employmentId=001"
+          val dummyHref = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/check-employment-benefits?employmentId=001"
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
@@ -925,7 +925,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2021/view")
+          result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2021/view")
         }
 
         "return only the relevant data on the page when only certain data items are in mongo for EOY" which {
@@ -941,7 +941,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           val specificResults = user.specificExpectedResults.get
           val commonResults = user.commonExpectedResults
-          val dummyHref = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/check-employment-benefits?employmentId=001"
+          val dummyHref = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/check-employment-benefits?employmentId=001"
 
           titleCheck(specificResults.expectedTitle)
           h1Check(specificResults.expectedH1)
@@ -1055,7 +1055,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           val specificResults = user.specificExpectedResults.get
           val commonResults = user.commonExpectedResults
-          val dummyHref = s"/income-through-software/return/employment-income/${defaultTaxYear - 1}/check-employment-benefits?employmentId=001"
+          val dummyHref = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/check-employment-benefits?employmentId=001"
 
           titleCheck(specificResults.expectedTitle)
           h1Check(specificResults.expectedH1)
@@ -1220,7 +1220,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/company-benefits?employmentId=001")
+          result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/benefits/company-benefits?employmentId=001")
 
         }
 
@@ -1239,7 +1239,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/benefits/company-benefits?employmentId=001")
+          result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/benefits/company-benefits?employmentId=001")
 
         }
 
@@ -1253,7 +1253,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+          result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
         }
 
         "return only the relevant data on the page when only certain data items are in mongo and in year" which {
@@ -1348,7 +1348,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has a url of overview page" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+            result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
           }
         }
 
@@ -1392,7 +1392,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has a url of benefits show method" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-benefits?employmentId=001")
+            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-benefits?employmentId=001")
           }
         }
       }

@@ -38,7 +38,7 @@ class IncomeTaxOrIncurredCostsControllerISpec extends IntegrationTest with ViewH
 
   def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/employer-income-tax-or-incurred-costs?employmentId=$employmentId"
 
-  val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/employer-income-tax-or-incurred-costs?employmentId=$employmentId"
+  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/employer-income-tax-or-incurred-costs?employmentId=$employmentId"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
@@ -250,7 +250,7 @@ class IncomeTaxOrIncurredCostsControllerISpec extends IntegrationTest with ViewH
       }
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+        result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
       }
     }
 
@@ -304,7 +304,7 @@ class IncomeTaxOrIncurredCostsControllerISpec extends IntegrationTest with ViewH
         }
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+          result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
         }
       }
 

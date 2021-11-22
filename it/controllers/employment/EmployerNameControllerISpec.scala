@@ -47,7 +47,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
   private def employerNamePageUrl(taxYear: Int) = s"$appUrl/$taxYear/employer-name?employmentId=$employmentId"
 
-  val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/employer-name?employmentId=$employmentId"
+  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-name?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > label > header > p"
@@ -218,7 +218,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+            result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
           }
 
         }
@@ -240,7 +240,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+            result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
           }
         }
 
@@ -256,7 +256,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
           "redirects to the next question page (PAYE reference)" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/employer-paye-reference?employmentId=001")
+            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=001")
             lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
             cyamodel.employment.employmentDetails.employerName shouldBe employerName
           }
@@ -276,7 +276,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
           "redirects to the next question page (PAYE reference)" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/employer-paye-reference?employmentId=001")
+            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=001")
             lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
             cyamodel.employment.employmentDetails.employerName shouldBe employerName
           }
