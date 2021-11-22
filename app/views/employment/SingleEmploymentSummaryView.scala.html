@@ -35,44 +35,42 @@
 }
 
 @employmentTable(employment: EmploymentSource) = {
-<div class="govuk-form-group">
-    <ul class="hmrc-add-to-a-list hmrc-add-to-a-list--short">
-        <li class="hmrc-add-to-a-list__contents">
-            <span class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light">
+    <ol style="padding-left:0;" class="app-task-list__items">
+        <li class="app-task-list__item">
+            <span class="app-task-list__task-name">
                 <a class="govuk-link" href="@controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employment.employmentId)">
                     @messages("common.employmentDetails")
                 </a>
             </span>
-            <span class="hmrc-add-to-a-list__change">
+            <span class="hmrc-status-tag">
                  @messages("common.status.updated")
             </span>
         </li>
-        <li class="hmrc-add-to-a-list__contents">
-            <span class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light">
+        <li class="app-task-list__item">
+            <span class="app-task-list__task-name">
                 @employment.employmentBenefits.map{ _ =>
                     <a class="govuk-link" href="@controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employment.employmentId)">
                     @messages("common.benefits")
                     </a>
                 }.getOrElse{@messages("common.benefits")}
             </span>
-            <span class="hmrc-add-to-a-list__change">
+            <span class="hmrc-status-tag">
                 @if(employment.employmentBenefits.isDefined){ @messages("common.status.updated") }else{ @messages("common.status.cannotUpdate")}
             </span>
         </li>
-        <li class="hmrc-add-to-a-list__contents">
-            <span class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light">
+        <li class="app-task-list__item">
+            <span class="app-task-list__task-name">
                 @if(expensesExist) {
                     <a class="govuk-link" href="@controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)">
                     @messages("employment.expenses.label")
                     </a>
                 } else {@messages("employment.expenses.label")}
             </span>
-            <span class="hmrc-add-to-a-list__change">
+            <span class="hmrc-status-tag">
                 @if(expensesExist){ @messages("common.status.updated") }else{ @messages("common.status.cannotUpdate")}
             </span>
         </li>
-    </ul>
-</div>
+    </ol>
 }
 
 @layout(pageTitle = messages("employment.employmentSummary.heading"), taxYear = Some(taxYear), isAgent = user.isAgent) {
