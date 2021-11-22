@@ -17,9 +17,10 @@
 package controllers.benefits.medical
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.income.routes.IncomeTaxOrIncurredCostsBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
+import javax.inject.Inject
 import models.User
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
@@ -32,7 +33,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.BeneficialLoansAmountView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class BeneficialLoansAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -76,11 +76,9 @@ class BeneficialLoansAmountController @Inject()(implicit val cc: MessagesControl
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
 
-      val redirectUrl = CheckYourBenefitsController.show(taxYear, employmentId).url
+      employmentSessionService.getSessionDataResult(taxYear, employmentId) { cya =>
 
-      employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
-
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+        redirectBasedOnCurrentAnswers(taxYear, employmentId, cya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           amountForm.bindFromRequest().fold(
             { formWithErrors =>
@@ -100,12 +98,9 @@ class BeneficialLoansAmountController @Inject()(implicit val cc: MessagesControl
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
                   isPriorSubmission = cya.isPriorSubmission, hasPriorBenefits = cya.hasPriorBenefits)(errorHandler.internalServerError()) {
 
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    //TODO - redirect to the first page of the income tax and costs benefits section
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  }
+                  val nextPage = IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
                 }
             }
           )

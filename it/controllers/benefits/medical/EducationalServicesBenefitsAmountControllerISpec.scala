@@ -377,7 +377,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
     }
 
     "redirect to another page when a valid request is made and then" should {
-      "redirect to check employment benefits page when a valid form is submitted and a prior submission" when {
+      "redirect to beneficial loans page when a valid form is submitted and a prior submission" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
@@ -388,7 +388,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
 
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(BeneficialLoansBenefitsController.show(taxYearEOY, employmentId).url)
         }
 
         "updates the CYA model with the new value" in {

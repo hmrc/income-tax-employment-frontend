@@ -17,22 +17,22 @@
 package controllers.benefits.medical
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.medical.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
+import javax.inject.Inject
 import models.User
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
 import services.RedirectService.{commonMedicalChildcareEducationRedirects, redirectBasedOnCurrentAnswers}
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.medical.MedicalDentalBenefitsView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class MedicalDentalBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -95,7 +95,12 @@ class MedicalDentalBenefitsController @Inject()(implicit val cc: MessagesControl
 
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+
+                val nextPage = {
+                  if (yesNo) MedicalOrDentalBenefitsAmountController.show(taxYear, employmentId) else ChildcareBenefitsController.show(taxYear, employmentId)
+                }
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
             }
           )
