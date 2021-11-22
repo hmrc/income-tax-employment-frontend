@@ -45,7 +45,7 @@ class BusinessTravelOvernightExpensesController @Inject()(implicit val cc: Messa
 
 
   def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"expenses.BusinessTravelOvernightExpenses.error.${if (user.isAgent) "agent" else "individual"}"
+    missingInputError = s"expenses.businessTravelOvernightExpenses.error.${if (user.isAgent) "agent" else "individual"}"
   )
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
