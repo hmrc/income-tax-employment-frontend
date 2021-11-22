@@ -40,7 +40,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
     s"$appUrl/$taxYear/benefits/incidental-overnight-costs-amount?employmentId=$employmentId"
 
   val continueLink: String =
-    s"/income-through-software/return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs-amount?employmentId=$employmentId"
+    s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs-amount?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -275,7 +275,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
       s"has a SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs?employmentId=$employmentId")
+        result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs?employmentId=$employmentId")
       }
     }
 
@@ -511,7 +511,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
       s"has a SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs?employmentId=$employmentId")
+        result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs?employmentId=$employmentId")
       }
     }
 

@@ -116,7 +116,7 @@
 //  private val employmentId = UUID.randomUUID
 //  private def url(taxYear: Int) = s"$appUrl/$taxYear/payments-not-on-p60?employmentId=$employmentId"
 //  val otherPaymentsAmountUrl =
-//    s"/income-through-software/return/employment-income/$validTaxYear2021/amount-of-payments-not-on-p60?employmentId=$employmentId"
+//    s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/amount-of-payments-not-on-p60?employmentId=$employmentId"
 //
 //  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 //  private def employmentUserData(employmentCyaModel: EmploymentCYAModel) =
@@ -170,7 +170,7 @@
 //            textOnPageCheck(specific.detailsContent, detailsSelector)
 //            textOnPageCheck(expectedCaption, captionSelector)
 //            buttonCheck(continueButton)
-//            formPostLinkCheck(s"/income-through-software/return/employment-income/" +
+//            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/" +
 //              s"2021/payments-not-on-p60?employmentId=$employmentId", formSelector)
 //            formRadioValueCheck(selected = true, formRadioButtonValueSelector)
 //          }
@@ -393,7 +393,7 @@
 //            textOnPageCheck(specific.detailsContent, detailsSelector)
 //            textOnPageCheck(expectedCaption, captionSelector)
 //            buttonCheck(continueButton)
-//            formPostLinkCheck(s"/income-through-software/return/employment-income/" +
+//            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/" +
 //              s"2021/payments-not-on-p60?employmentId=$employmentId", formSelector)
 //          }
 //        }

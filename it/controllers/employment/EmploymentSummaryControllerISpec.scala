@@ -351,7 +351,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           "redirect to employer name page" in {
-            result.header(HeaderNames.LOCATION).get.contains("/income-through-software/return/employment-income/2021/employer-name") shouldBe true
+            result.header(HeaderNames.LOCATION).get.contains("/update-and-submit-income-tax-return/employment-income/2021/employer-name") shouldBe true
           }
         }
         "redirect to overview page and  clear any existing new employments when selected no" which {
@@ -371,7 +371,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           "redirect to employer name page" in {
-            result.header(HeaderNames.LOCATION).get shouldBe "http://localhost:11111/income-through-software/return/2021/view"
+            result.header(HeaderNames.LOCATION).get shouldBe "http://localhost:11111/update-and-submit-income-tax-return/2021/view"
           }
         }
       }

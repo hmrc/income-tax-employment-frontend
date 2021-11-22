@@ -40,7 +40,7 @@ class CarVanFuelModelSpec extends UnitTest {
 
   "isFinished" should {
     "return car yes no page" in {
-      model.copy(carQuestion = None).isFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/company-car?employmentId=id")
+      model.copy(carQuestion = None).isFinished(2022, "id") shouldBe result("/update-and-submit-income-tax-return/employment-income/2022/benefits/company-car?employmentId=id")
     }
     "return none when section is finished" in {
       model.copy(carQuestion = Some(false)).isFinished(2022, "employmentId") shouldBe None
@@ -50,11 +50,11 @@ class CarVanFuelModelSpec extends UnitTest {
 
   "fullCarSectionFinished" should {
     "return car fuel yes no page" in {
-      model.copy(carFuelQuestion = None).fullCarSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/car-fuel?employmentId=id")
+      model.copy(carFuelQuestion = None).fullCarSectionFinished(2022, "id") shouldBe result("/update-and-submit-income-tax-return/employment-income/2022/benefits/car-fuel?employmentId=id")
     }
 
     "return car amount page" in {
-      model.copy(car = None).fullCarSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/company-car-amount?employmentId=id")
+      model.copy(car = None).fullCarSectionFinished(2022, "id") shouldBe result("/update-and-submit-income-tax-return/employment-income/2022/benefits/company-car-amount?employmentId=id")
     }
 
     "return none when section is finished" in {
@@ -65,7 +65,7 @@ class CarVanFuelModelSpec extends UnitTest {
 
   "carFuelSectionFinished" should {
     "return car fuel yes no page" in {
-      model.copy(carFuelQuestion = None).carFuelSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/car-fuel?employmentId=id")
+      model.copy(carFuelQuestion = None).carFuelSectionFinished(2022, "id") shouldBe result("/update-and-submit-income-tax-return/employment-income/2022/benefits/car-fuel?employmentId=id")
     }
 
     "return none when section is finished" in {
@@ -76,10 +76,10 @@ class CarVanFuelModelSpec extends UnitTest {
 
   "vanSectionFinished" should {
     "return van yes no page" in {
-      model.copy(vanQuestion = None).vanSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/company-van?employmentId=id")
+      model.copy(vanQuestion = None).vanSectionFinished(2022, "id") shouldBe result("/update-and-submit-income-tax-return/employment-income/2022/benefits/company-van?employmentId=id")
     }
     "return van amount page" in {
-      model.copy(van = None).vanSectionFinished(2022, "id") shouldBe result("/income-through-software/return/employment-income/2022/benefits/company-van-amount?employmentId=id")
+      model.copy(van = None).vanSectionFinished(2022, "id") shouldBe result("/update-and-submit-income-tax-return/employment-income/2022/benefits/company-van-amount?employmentId=id")
     }
 
     "return none when section is finished" in {

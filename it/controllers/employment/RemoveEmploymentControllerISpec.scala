@@ -36,7 +36,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
   private def url(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/remove-employment?employmentId=$employmentId"
 
   private def continueLink(taxYear: Int, employmentId: String): String =
-    s"/income-through-software/return/employment-income/$taxYear/remove-employment?employmentId=$employmentId"
+    s"/update-and-submit-income-tax-return/employment-income/$taxYear/remove-employment?employmentId=$employmentId"
 
   val model: AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(
@@ -205,7 +205,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
             s"has a SEE_OTHER ($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+              result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
             }
           }
 
@@ -220,7 +220,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
             s"has a SEE_OTHER ($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYearEOY/view")
+              result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYearEOY/view")
             }
 
           }
@@ -251,7 +251,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
             }
             s"has a SEE_OTHER ($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+              result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
             }
 
           }
@@ -267,7 +267,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
             s"has a SEE_OTHER ($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYearEOY/view")
+              result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYearEOY/view")
             }
 
           }
@@ -283,7 +283,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
             s"has a SEE_OTHER ($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYearEOY/view")
+              result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYearEOY/view")
             }
 
           }

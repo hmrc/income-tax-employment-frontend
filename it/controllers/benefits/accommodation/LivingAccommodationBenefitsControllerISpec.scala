@@ -37,7 +37,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
   def livingAccommodationPageUrl(taxYear: Int): String = s"$appUrl/$taxYear/benefits/living-accommodation?employmentId=$employmentId"
 
-  val continueButtonLink: String = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/living-accommodation?employmentId=$employmentId"
+  val continueButtonLink: String = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/living-accommodation?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -275,7 +275,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
 
     }
@@ -433,7 +433,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
 

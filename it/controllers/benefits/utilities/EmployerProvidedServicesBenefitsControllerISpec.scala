@@ -38,7 +38,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
   def employerProvidedServicesPageUrl(taxYear: Int): String = s"$appUrl/$taxYear/benefits/employer-provided-services?employmentId=$employmentId"
 
   private val continueButtonLink =
-    s"/income-through-software/return/employment-income/$taxYearEOY/benefits/employer-provided-services?employmentId=$employmentId"
+    s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/employer-provided-services?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -249,7 +249,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
 
     }
@@ -365,7 +365,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
 
     }

@@ -43,7 +43,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
 
   private def employmentExpensesAmountPageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/amount-for-uniforms-work-clothes-or-tools"
 
-  val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/expenses/amount-for-uniforms-work-clothes-or-tools"
+  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/amount-for-uniforms-work-clothes-or-tools"
 
   object Selectors {
     val formSelector = "#main-content > div > div > form"
