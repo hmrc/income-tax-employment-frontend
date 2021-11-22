@@ -40,83 +40,94 @@
 
 @employmentRow(employmentName: String, changeLink: Call) = {
 
-    <li class="hmrc-add-to-a-list__contents">
-        <span class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light">
+    <li class="app-task-list__item">
+        <span class="app-task-list__task-name">
             <a class="govuk-link" href="@changeLink">@employmentName</a>
         </span>
-        <span class="hmrc-add-to-a-list__change">@messages("common.status.updated")</span>
+        <span class="hmrc-status-tag">
+            @messages("common.status.updated")
+        </span>
     </li>
 }
 
 @employmentRowEOY(employmentName: String, changeLink: Call, removeLink: Call) = {
 
-    <li class="hmrc-add-to-a-list__contents">
-        <span class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light">@employmentName</span>
-        <span class="hmrc-add-to-a-list__change">
-            <a class="govuk-link" href="@changeLink">
-                <span aria-hidden="true">@messages("common.change")</span>
-                <span class="govuk-visually-hidden">@messages("common.change") @messages("employment.hiddenText", employmentName)</span>
-            </a>
-        </span>
-        <span class="hmrc-add-to-a-list__remove">
-            <a class="govuk-link" href="@removeLink">
-                <span aria-hidden="true">@messages("common.remove")</span>
-                <span class="govuk-visually-hidden">@messages("common.remove") @messages("employment.hiddenText", employmentName)</span>
-            </a>
-        </span>
-    </li>
+        <li class="hmrc-add-to-a-list__contents">
+            <span class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light">@employmentName</span>
+            <span class="hmrc-add-to-a-list__change">
+                    <a class="govuk-link" href="@changeLink">
+                        <span aria-hidden="true">@messages("common.change")</span>
+                        <span class="govuk-visually-hidden">@messages("common.change") @messages("employment.hiddenText", employmentName)</span>
+                    </a>
+                </span>
+            <span class="hmrc-add-to-a-list__remove">
+                    <a class="govuk-link" href="@removeLink">
+                        <span aria-hidden="true">@messages("common.remove")</span>
+                        <span class="govuk-visually-hidden">@messages("common.remove") @messages("employment.hiddenText", employmentName)</span>
+                    </a>
+                </span>
+        </li>
+
 }
 
 @employmentList(employments: Seq[EmploymentSource]) = {
     @if(employments.nonEmpty) {
-        <div class="govuk-form-group">
-            <ul class="hmrc-add-to-a-list hmrc-add-to-a-list--short">
+        @if(isInYear){
+            <ol style="padding-left:0;" class="app-task-list__items">
                 @employments.map { (employment:EmploymentSource) =>
-                    @if(isInYear){
                         @employmentRow(employment.employerName, controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employment.employmentId))
-                    } else {
-                        @employmentRowEOY(employment.employerName, controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employment.employmentId), controllers.employment.routes.RemoveEmploymentController.show(taxYear, employment.employmentId))
-                    }
                 }
-            </ul>
-        </div>
+            </ol>
+        } else {
+            <div class="govuk-form-group">
+                    <ul class="hmrc-add-to-a-list hmrc-add-to-a-list--short">
+                        @employments.map { (employment:EmploymentSource) =>
+                            @employmentRowEOY(employment.employerName, controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employment.employmentId), controllers.employment.routes.RemoveEmploymentController.show(taxYear, employment.employmentId))
+                        }
+                    </ul>
+            </div>
+        }
     }
 }
 
 @expensesList() = {
-<div class="govuk-form-group">
-    <ul class="hmrc-add-to-a-list hmrc-add-to-a-list--short">
-        <li class="hmrc-add-to-a-list__contents">
-            @if(isInYear){
-                <span class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light">
+    @if(isInYear){
+        <ol style="padding-left:0;" class="app-task-list__items">
+            <li class="app-task-list__item">
+                <span class="app-task-list__task-name">
                     @if(expensesExist) {
                         <a class="govuk-link" href="@controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)">
                             @messages("employment.expenses.label")
                         </a>
                     } else {@messages("employment.expenses.label")}
                 </span>
-                <span class="hmrc-add-to-a-list__change">
+                <span class="hmrc-status-tag">
                     @if(expensesExist){ @messages("common.status.updated") } else{ @messages("common.status.cannotUpdate")}
                 </span>
-            } else {
-                <span class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light">@messages("employment.expenses.label")</span>
-                <span class="hmrc-add-to-a-list__change">
+            </li>
+        </ol>
+    } else {
+        <div class="govuk-form-group">
+            <ul class="hmrc-add-to-a-list hmrc-add-to-a-list--short">
+                <li class="hmrc-add-to-a-list__contents">
+                    <span class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light">@messages("employment.expenses.label")</span>
+                    <span class="hmrc-add-to-a-list__change">
                     <a class="govuk-link" href="@controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)">
                         <span aria-hidden="true">@messages("common.change")</span>
                         <span class="govuk-visually-hidden">@messages("common.change") @messages(s"expenses.hiddenText.${if(user.isAgent) "agent" else "individual"}")</span>
                     </a>
                 </span>
-                <span class="hmrc-add-to-a-list__remove">
+                    <span class="hmrc-add-to-a-list__remove">
                     <!--TODO Update Link to go to remove expenses page-->
                     <a class="govuk-link" href="@controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)">
                         <span aria-hidden="true">@messages("common.remove")</span>
                         <span class="govuk-visually-hidden">@messages("common.remove") @messages(s"expenses.hiddenText.${if(user.isAgent) "agent" else "individual"}")</span>
                     </a>
                 </span>
-            }
-        </li>
-    </ul>
-</div>
+                </li>
+            </ul>
+        </div>
+    }
 }
 
 @secondHeader = @{

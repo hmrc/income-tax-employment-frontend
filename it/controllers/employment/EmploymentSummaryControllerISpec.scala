@@ -42,16 +42,16 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     val captionSelector = "#main-content > div > div > header > p"
     val employmentSummaryParagraphSelector = "#main-content > div > div > p:nth-child(2)"
     val employmentDetailsRowSelector: String =
-      s"#main-content > div > div > div.govuk-form-group > ul > li:nth-child(1) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
+      s"#main-content > div > div > ol > li:nth-child(1) > span.app-task-list__task-name"
     val employmentBenefitsRowSelector: String =
-      s"#main-content > div > div > div.govuk-form-group > ul > li:nth-child(2) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
+      s"#main-content > div > div > ol > li:nth-child(2) > span.app-task-list__task-name"
     val employmentExpensesRowSelector: String =
-      s"#main-content > div > div > div.govuk-form-group > ul > li:nth-child(3) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
+      s"#main-content > div > div > ol > li:nth-child(3) > span.app-task-list__task-name"
     val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
     val expensesParagraphHeadingSelector = "#main-content > div > div > h2.govuk-label--m"
     val expensesParagraphSubheadingSelector = "#main-content > div > div > p:nth-child(6)"
-    val expensesSummaryListRowFieldNameSelector = s"#main-content > div > div > div:nth-child(7) > ul > li > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
-    val expensesSummaryListRowFieldActionSelector = s"#main-content > div > div > div:nth-child(7) > ul > li > span.hmrc-add-to-a-list__change"
+    val expensesSummaryListRowFieldNameSelector = s"#main-content > div > div > ol:nth-child(7) > li > span.app-task-list__task-name"
+    val expensesSummaryListRowFieldActionSelector = s"#main-content > div > div > ol:nth-child(7) > li > span.hmrc-status-tag"
 
     def employmentDetailsRowLinkSelector: String = s"$employmentDetailsRowSelector > a"
 
@@ -60,10 +60,10 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     def employmentExpensesRowLinkSelector: String = s"$employmentExpensesRowSelector > a"
 
     def employerSummaryListRowFieldNameSelector(i: Int) =
-      s"#main-content > div > div > div:nth-child(4) > ul > li:nth-child($i) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light > a"
+      s"#main-content > div > div > ol:nth-child(4) > li:nth-child($i) > span.app-task-list__task-name > a"
 
     def employerSummaryListRowFieldActionSelector(i: Int) =
-      s"#main-content > div > div > div:nth-child(4) > ul > li:nth-child($i) > span.hmrc-add-to-a-list__change"
+      s"#main-content > div > div > ol:nth-child(4) > li:nth-child($i) > span.hmrc-status-tag"
 
     def expensesSummaryListRowFieldNameLinkSelector = s"$expensesSummaryListRowFieldNameSelector > a"
   }
