@@ -16,6 +16,8 @@
 
 package controllers.benefits.medical
 
+import controllers.benefits.medical.routes._
+import controllers.benefits.income.routes._
 import forms.YesNoForm
 import models.User
 import models.benefits.{BenefitsViewModel, MedicalChildcareEducationModel}
@@ -372,7 +374,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
 
       val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
 
-      "Update the beneficialLoansQuestion to no, and beneficialLoans to none when the user chooses no, redirects to CYA if prior submission" which {
+      "Update the beneficialLoansQuestion to no, and beneficialLoans to none when the user chooses no, redirects to income tax section if prior submission" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -387,8 +389,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe Some(IncomeTaxOrIncurredCostsBenefitsController.show(taxYearEOY, employmentId).url)
         }
 
         "updates beneficialLoanQuestion to no and beneficialLoan to none" in {
@@ -413,11 +414,9 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-//          TODO: This will need updating to the next page in the flow when the navigation is hooked up
-        "redirects to the check your details page" in {
+        "redirects to the income tax section" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe Some(IncomeTaxOrIncurredCostsBenefitsController.show(taxYearEOY, employmentId).url)
         }
 
         "updates beneficialLoanQuestion to no and beneficialLoan to none" in {
@@ -443,9 +442,7 @@ class BeneficialLoansBenefitsControllerISpec extends IntegrationTest with ViewHe
 
         "redirects to the beneficial loans amount page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-//          TODO: This will be updated to the beneficial loans amount page when its created
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe Some(BeneficialLoansAmountController.show(taxYearEOY, employmentId).url)
         }
 
         "updates beneficialLoanQuestion to yes" in {
