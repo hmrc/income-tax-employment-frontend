@@ -16,7 +16,7 @@
 
 package models.benefits
 
-import controllers.benefits.reimbursed.routes.{ReimbursedCostsVouchersAndNonCashBenefitsController, TaxableCostsBenefitsAmountController}
+import controllers.benefits.reimbursed.routes._
 import controllers.employment.routes.CheckYourBenefitsController
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
@@ -63,7 +63,7 @@ case class ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonC
     taxableExpensesQuestion match {
       case Some(true) => if (taxableExpenses.isDefined) None else Some(TaxableCostsBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO taxableExpenses yes no page
+      case None => Some(TaxableCostsBenefitsController.show(taxYear, employmentId))
     }
   }
 
