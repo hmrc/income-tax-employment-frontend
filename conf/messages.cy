@@ -33,6 +33,7 @@ common.error.invalid_currency_format = Enter the amount in the correct format
 common.ifItWasNot = If it was not {0}, tell us the correct amount.
 common.checkWithEmployer.individual = Check with your employer if you are unsure.
 common.checkWithEmployer.agent = Check with your client’s employer if you are unsure.
+common.enterTheTotal = Enter the total.
 
 common.error.self-assessment.paragraph.1.1 = If the web address is correct or you selected a link or button, you can use
 common.error.self-assessment.paragraph.1.2 = Self Assessment: general enquiries (opens in new tab)
@@ -954,7 +955,6 @@ benefits.incurredCosts.error.agent = Select yes if your client’s employer paid
 
 benefits.incurredCostsAmount.title.individual = How much of your incurred costs did your employer pay?
 benefits.incurredCostsAmount.title.agent = How much of your client’s incurred costs did their employer pay?
-benefits.incurredCostsAmount.enterTotal = Enter the total.
 benefits.incurredCostsAmount.error.noEntry.individual = Enter the amount of incurred costs paid by your employer
 benefits.incurredCostsAmount.error.incorrectFormat.individual = Enter the amount of incurred costs paid by your employer in the correct format
 benefits.incurredCostsAmount.error.overMaximum.individual = The incurred costs paid by your employer must be less than £100,000,000,000
@@ -966,6 +966,15 @@ benefits.reimbursedCostsVouchersAndNonCash.title.individual = Did you get any re
 benefits.reimbursedCostsVouchersAndNonCash.title.agent = Did your client get any reimbursed costs, vouchers or non-cash benefits from their employer?
 benefits.reimbursedCostsVouchersAndNonCash.error.individual = Select yes if you got reimbursed costs, vouchers or non-cash benefits from your employer
 benefits.reimbursedCostsVouchersAndNonCash.error.agent = Select yes if your client got reimbursed costs, vouchers or non-cash benefits from their employer
+
+benefits.taxableCostsBenefitsAmount.title.individual = How much of your taxable costs were reimbursed by your employer?
+benefits.taxableCostsBenefitsAmount.title.agent = How much of your client’s taxable costs were reimbursed by their employer?
+benefits.taxableCostsBenefitsAmount.error.noEntry.individual = Enter the amount of taxable costs reimbursed by your employer
+benefits.taxableCostsBenefitsAmount.error.incorrectFormat.individual = Enter the amount of taxable costs reimbursed by your employer in the correct format
+benefits.taxableCostsBenefitsAmount.error.overMaximum.individual = The taxable costs reimbursed by your employer must be less than £100,000,000,000
+benefits.taxableCostsBenefitsAmount.error.noEntry.agent = Enter the amount of taxable costs reimbursed by your client’s employer
+benefits.taxableCostsBenefitsAmount.error.incorrectFormat.agent = Enter the amount of taxable costs reimbursed by your client’s employer in the correct format
+benefits.taxableCostsBenefitsAmount.error.overMaximum.agent = The taxable costs reimbursed by your client’s employer must be less than £100,000,000,000
 
 #####Expenses Pages#######
 expenses.caption = Employment expenses for 6 April {0} to 5 April {1}
