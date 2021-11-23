@@ -104,8 +104,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val changeLinkExpected = "Change"
     val continueButtonText = "Save and continue"
-    val continueButtonLink = "/income-through-software/return/employment-income/2021/check-employment-details?employmentId=001"
-    val taxButtonLink = "/income-through-software/return/employment-income/2021/uk-tax?employmentId=001"
+    val continueButtonLink = "/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001"
+    val taxButtonLink = "/update-and-submit-income-tax-return/employment-income/2021/uk-tax?employmentId=001"
     val employerNameField1 = "Employer"
     val employmentStartDateField1 = "Employment start date"
     val employmentEndDateField1 = "Employment end date"
@@ -122,8 +122,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val changeLinkExpected = "Change"
     val continueButtonText = "Save and continue"
-    val continueButtonLink = "/income-through-software/return/employment-income/2021/check-employment-details?employmentId=001"
-    val taxButtonLink = "/income-through-software/return/employment-income/2021/uk-tax?employmentId=001"
+    val continueButtonLink = "/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001"
+    val taxButtonLink = "/update-and-submit-income-tax-return/employment-income/2021/uk-tax?employmentId=001"
     val employerNameField1 = "Employer"
     val employmentStartDateField1 = "Employment start date"
     val employmentEndDateField1 = "Employment end date"
@@ -349,7 +349,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           "has an SEE OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2021/view")
+            result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2021/view")
           }
         }
         //noinspection ScalaStyle
@@ -364,7 +364,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           "has an SEE OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2021/view")
+            result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2021/view")
           }
         }
         //noinspection ScalaStyle
@@ -450,7 +450,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           }
 
           "has a redirect url of employer reference page" in {
-            result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/employer-paye-reference?employmentId=001")
+            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=001")
           }
         }
         //noinspection ScalaStyle
@@ -507,7 +507,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             result.status shouldBe OK
           }
 
-          val taxHref = "/income-through-software/return/employment-income/2021/uk-tax?employmentId=001"
+          val taxHref = "/update-and-submit-income-tax-return/employment-income/2021/uk-tax?employmentId=001"
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -594,7 +594,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             result.status shouldBe OK
           }
 
-          val taxHref = "/income-through-software/return/employment-income/2021/uk-tax?employmentId=001"
+          val taxHref = "/update-and-submit-income-tax-return/employment-income/2021/uk-tax?employmentId=001"
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -673,7 +673,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           }
 
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+          result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
         }
       }
     }
@@ -698,7 +698,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           "has an SEE OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+            result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
           }
         }
         //noinspection ScalaStyle
@@ -714,7 +714,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           "has an SEE OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-details?employmentId=employmentId")
+            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=employmentId")
           }
         }
         //noinspection ScalaStyle
@@ -911,7 +911,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           "has an SEE OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-details?employmentId=employmentId")
+            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=employmentId")
           }
         }
       }

@@ -17,6 +17,8 @@
 package controllers.benefits.medical
 
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.income.routes._
+import controllers.benefits.medical.routes._
 import forms.AmountForm
 import models.User
 import models.benefits.{BenefitsViewModel, MedicalChildcareEducationModel}
@@ -35,7 +37,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
 
   def beneficialLoansAmountPageUrl(taxYear: Int): String = s"$appUrl/$taxYear/benefits/beneficial-loans-amount?employmentId=$employmentId"
 
-  val formPostLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/beneficial-loans-amount?employmentId=$employmentId"
+  val formPostLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/beneficial-loans-amount?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > label > header > p"
@@ -447,9 +449,9 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      s"update medicalChildcareEducationModel and redirect to check your benefits page" in {
+      s"update medicalChildcareEducationModel and redirect to income tax section" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(IncomeTaxOrIncurredCostsBenefitsController.show(taxYearEOY, employmentId).url)
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
         cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoanQuestion)) shouldBe Some(true)
@@ -472,8 +474,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
 
       s"update medicalChildcareEducationModel and redirect to income tax and costs yes no page" in {
         result.status shouldBe SEE_OTHER
-        //TODO - redirect to income tax and costs yes no question page
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(IncomeTaxOrIncurredCostsBenefitsController.show(taxYearEOY, employmentId).url)
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
         cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoanQuestion)) shouldBe Some(true)

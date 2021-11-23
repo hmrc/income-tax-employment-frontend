@@ -51,7 +51,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
   private def medicalDentalQuestionPageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/medical-dental?employmentId=$employmentId"
 
-  val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/medical-dental?employmentId=$employmentId"
+  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/medical-dental?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -289,7 +289,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
 
         }
       }
@@ -368,7 +368,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
       val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
 
-      "redirect to check your benefits, update the medical dental question to no and wipe the medical dental amount" +
+      "redirect to child care page, update the medical dental question to no and wipe the medical dental amount" +
         " data when the user chooses no" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
@@ -382,9 +382,9 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        "redirects to the check your details page" in {
+        "redirects to the child care page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(ChildcareBenefitsController.show(taxYearEOY, employmentId).url)
           lazy val cyModel = findCyaData(taxYearEOY, employmentId, userRequest).get
           cyModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) shouldBe Some(true)
           cyModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion)) shouldBe Some(false)
@@ -393,7 +393,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
       }
 
-      "redirect to check your benefits and update the medical dental question to yes and when the user chooses yes" which {
+      "redirect to medical dental amount page and update the medical dental question to yes and when the user chooses yes" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
@@ -406,9 +406,9 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        "redirects to the check your details page" in {
+        "redirects to the medical dental amount page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(MedicalOrDentalBenefitsAmountController.show(taxYearEOY, employmentId).url)
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
           cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) shouldBe Some(true)
           cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion)) shouldBe Some(true)
@@ -426,7 +426,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
         }
       }
 

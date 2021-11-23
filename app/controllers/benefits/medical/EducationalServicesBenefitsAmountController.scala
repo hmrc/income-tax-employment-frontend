@@ -17,22 +17,21 @@
 package controllers.benefits.medical
 
 import config.{AppConfig, ErrorHandler}
-import controllers.benefits.medical.routes.BeneficialLoansBenefitsController
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.medical.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
+import javax.inject.Inject
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
 import services.RedirectService.{educationalServicesAmountRedirects, redirectBasedOnCurrentAnswers}
+import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.medical.EducationalServicesBenefitsAmountView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EducationalServicesBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -62,8 +61,8 @@ class EducationalServicesBenefitsAmountController @Inject()(implicit val cc: Mes
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(CheckYourBenefitsController.show(taxYear, employmentId).url) { cya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+      employmentSessionService.getSessionDataResult(taxYear, employmentId) { cya =>
+        redirectBasedOnCurrentAnswers(taxYear, employmentId, cya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           buildForm(user.isAgent).bindFromRequest().fold({
             formWithErrors =>
               val fillValue = cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel).flatMap(_.educationalServices)
@@ -80,11 +79,10 @@ class EducationalServicesBenefitsAmountController @Inject()(implicit val cc: Mes
 
               employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission,
                 cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                if (cya.isPriorSubmission) {
-                  Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                } else {
-                  Redirect(BeneficialLoansBenefitsController.show(taxYear, employmentId))
-                }
+
+                val nextPage = BeneficialLoansBenefitsController.show(taxYear, employmentId)
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
           })
         }

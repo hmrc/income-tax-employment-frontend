@@ -33,6 +33,7 @@ common.error.invalid_currency_format = Enter the amount in the correct format
 common.ifItWasNot = If it was not {0}, tell us the correct amount.
 common.checkWithEmployer.individual = Check with your employer if you are unsure.
 common.checkWithEmployer.agent = Check with your client’s employer if you are unsure.
+common.enterTheTotal = Enter the total.
 
 common.error.self-assessment.paragraph.1.1 = If the web address is correct or you selected a link or button, you can use
 common.error.self-assessment.paragraph.1.2 = Self Assessment: general enquiries (opens in new tab)
@@ -954,13 +955,26 @@ benefits.incurredCosts.error.agent = Select yes if your client’s employer paid
 
 benefits.incurredCostsAmount.title.individual = How much of your incurred costs did your employer pay?
 benefits.incurredCostsAmount.title.agent = How much of your client’s incurred costs did their employer pay?
-benefits.incurredCostsAmount.enterTotal = Enter the total.
 benefits.incurredCostsAmount.error.noEntry.individual = Enter the amount of incurred costs paid by your employer
 benefits.incurredCostsAmount.error.incorrectFormat.individual = Enter the amount of incurred costs paid by your employer in the correct format
 benefits.incurredCostsAmount.error.overMaximum.individual = The incurred costs paid by your employer must be less than £100,000,000,000
 benefits.incurredCostsAmount.error.noEntry.agent = Enter the amount of incurred costs paid by your client’s employer
 benefits.incurredCostsAmount.error.incorrectFormat.agent = Enter the amount of incurred costs paid by your client’s employer in the correct format
 benefits.incurredCostsAmount.error.overMaximum.agent = The incurred costs paid by your client’s employer must be less than £100,000,000,000
+
+benefits.reimbursedCostsVouchersAndNonCash.title.individual = Did you get any reimbursed costs, vouchers or non-cash benefits from your employer?
+benefits.reimbursedCostsVouchersAndNonCash.title.agent = Did your client get any reimbursed costs, vouchers or non-cash benefits from their employer?
+benefits.reimbursedCostsVouchersAndNonCash.error.individual = Select yes if you got reimbursed costs, vouchers or non-cash benefits from your employer
+benefits.reimbursedCostsVouchersAndNonCash.error.agent = Select yes if your client got reimbursed costs, vouchers or non-cash benefits from their employer
+
+benefits.taxableCostsBenefitsAmount.title.individual = How much of your taxable costs were reimbursed by your employer?
+benefits.taxableCostsBenefitsAmount.title.agent = How much of your client’s taxable costs were reimbursed by their employer?
+benefits.taxableCostsBenefitsAmount.error.noEntry.individual = Enter the amount of taxable costs reimbursed by your employer
+benefits.taxableCostsBenefitsAmount.error.incorrectFormat.individual = Enter the amount of taxable costs reimbursed by your employer in the correct format
+benefits.taxableCostsBenefitsAmount.error.overMaximum.individual = The taxable costs reimbursed by your employer must be less than £100,000,000,000
+benefits.taxableCostsBenefitsAmount.error.noEntry.agent = Enter the amount of taxable costs reimbursed by your client’s employer
+benefits.taxableCostsBenefitsAmount.error.incorrectFormat.agent = Enter the amount of taxable costs reimbursed by your client’s employer in the correct format
+benefits.taxableCostsBenefitsAmount.error.overMaximum.agent = The taxable costs reimbursed by your client’s employer must be less than £100,000,000,000
 
 #####Expenses Pages#######
 
@@ -979,35 +993,35 @@ expenses.claimEmploymentExpenses.findOutMoreLink = claiming employment expenses 
 expenses.claimEmploymentExpenses.error.noEntry.individual = Select yes if you want to claim employment expenses
 expenses.claimEmploymentExpenses.error.noEntry.agent = Select yes if you want to claim for your client’s employment expenses
 
-expenses.BusinessTravelOvernightExpenses.title.individual = Do you want to claim business travel and overnight expenses?
-expenses.BusinessTravelOvernightExpenses.title.agent = Do you want to claim your client’s business travel and overnight expenses?
-expenses.BusinessTravelOvernightExpenses.paragraph = These expenses are things like:
-expenses.BusinessTravelOvernightExpenses.example1 = public transport costs
-expenses.BusinessTravelOvernightExpenses.example2 = using a vehicle for business travel
-expenses.BusinessTravelOvernightExpenses.example3 = hotel accommodation if you have to stay overnight
-expenses.BusinessTravelOvernightExpenses.example4 = food and drink
-expenses.BusinessTravelOvernightExpenses.example5 = congestion charges, tolls and parking fees
-expenses.BusinessTravelOvernightExpenses.example6 = business phone calls and printing costs
-expenses.BusinessTravelOvernightExpenses.doNotInclude.individual = Do not include your usual travel to work costs.
-expenses.BusinessTravelOvernightExpenses.doNotInclude.agent = Do not include your client’s usual travel to work costs.
-expenses.BusinessTravelOvernightExpenses.details.title = Using your own vehicle for business travel
-expenses.BusinessTravelOvernightExpenses.details.info.individual = To work out how much you can claim for the tax year, you’ll need to:
-expenses.BusinessTravelOvernightExpenses.details.info.agent = To work out how much your client can claim for the tax year, you’ll need to:
-expenses.BusinessTravelOvernightExpenses.details.1.individual = add up the mileage for each vehicle type you’ve used for work
-expenses.BusinessTravelOvernightExpenses.details.1.agent = add up the mileage for each vehicle type your client used for work
-expenses.BusinessTravelOvernightExpenses.details.2 = multiply the mileage by the approved mileage allowance
-expenses.BusinessTravelOvernightExpenses.details.3.individual = take away any amount your employer paid you towards your costs
-expenses.BusinessTravelOvernightExpenses.details.3.agent = take away any amount your client’s employer paid them towards their costs
-expenses.BusinessTravelOvernightExpenses.details.approvedMileage = Approved mileage allowance
-expenses.BusinessTravelOvernightExpenses.details.carVan.heading = Car and vans
-expenses.BusinessTravelOvernightExpenses.details.carVan.text1 = 45p for the first 10,000 miles
-expenses.BusinessTravelOvernightExpenses.details.carVan.text2 = 25p for every mile over 10,000
-expenses.BusinessTravelOvernightExpenses.details.motorcycle.heading = Motorcycle
-expenses.BusinessTravelOvernightExpenses.details.motorcycle.text = 24p a mile
-expenses.BusinessTravelOvernightExpenses.details.bicycle.heading = Bicycle
-expenses.BusinessTravelOvernightExpenses.details.bicycle.text = 20p a mile
-expenses.BusinessTravelOvernightExpenses.error.individual = Select yes to claim travel and overnight stays
-expenses.BusinessTravelOvernightExpenses.error.agent = Select yes to claim for your client’s travel and overnight stays
+expenses.businessTravelOvernightExpenses.title.individual = Do you want to claim business travel and overnight expenses?
+expenses.businessTravelOvernightExpenses.title.agent = Do you want to claim your client’s business travel and overnight expenses?
+expenses.businessTravelOvernightExpenses.paragraph = These expenses are things like:
+expenses.businessTravelOvernightExpenses.example1 = public transport costs
+expenses.businessTravelOvernightExpenses.example2 = using a vehicle for business travel
+expenses.businessTravelOvernightExpenses.example3 = hotel accommodation if you have to stay overnight
+expenses.businessTravelOvernightExpenses.example4 = food and drink
+expenses.businessTravelOvernightExpenses.example5 = congestion charges, tolls and parking fees
+expenses.businessTravelOvernightExpenses.example6 = business phone calls and printing costs
+expenses.businessTravelOvernightExpenses.doNotInclude.individual = Do not include your usual travel to work costs.
+expenses.businessTravelOvernightExpenses.doNotInclude.agent = Do not include your client’s usual travel to work costs.
+expenses.businessTravelOvernightExpenses.details.title = Using your own vehicle for business travel
+expenses.businessTravelOvernightExpenses.details.info.individual = To work out how much you can claim for the tax year, you’ll need to:
+expenses.businessTravelOvernightExpenses.details.info.agent = To work out how much your client can claim for the tax year, you’ll need to:
+expenses.businessTravelOvernightExpenses.details.1.individual = add up the mileage for each vehicle type you’ve used for work
+expenses.businessTravelOvernightExpenses.details.1.agent = add up the mileage for each vehicle type your client used for work
+expenses.businessTravelOvernightExpenses.details.2 = multiply the mileage by the approved mileage allowance
+expenses.businessTravelOvernightExpenses.details.3.individual = take away any amount your employer paid you towards your costs
+expenses.businessTravelOvernightExpenses.details.3.agent = take away any amount your client’s employer paid them towards their costs
+expenses.businessTravelOvernightExpenses.details.approvedMileage = Approved mileage allowance
+expenses.businessTravelOvernightExpenses.details.carVan.heading = Car and vans
+expenses.businessTravelOvernightExpenses.details.carVan.text1 = 45p for the first 10,000 miles
+expenses.businessTravelOvernightExpenses.details.carVan.text2 = 25p for every mile over 10,000
+expenses.businessTravelOvernightExpenses.details.motorcycle.heading = Motorcycle
+expenses.businessTravelOvernightExpenses.details.motorcycle.text = 24p a mile
+expenses.businessTravelOvernightExpenses.details.bicycle.heading = Bicycle
+expenses.businessTravelOvernightExpenses.details.bicycle.text = 20p a mile
+expenses.businessTravelOvernightExpenses.error.individual = Select yes to claim travel and overnight stays
+expenses.businessTravelOvernightExpenses.error.agent = Select yes to claim for your client’s travel and overnight stays
 
 expenses.uniformsWorkClothesTools.title.individual = Do you want to claim for uniforms, work clothes, or tools?
 expenses.uniformsWorkClothesTools.title.agent = Do you want to claim for uniforms, work clothes, or tools for your client?
@@ -1058,3 +1072,15 @@ expenses.businessTravelAndOvernightAmount.error.overMaximum.individual = The amo
 expenses.businessTravelAndOvernightAmount.error.overMaximum.agent = The amount you want to claim for your client’s business travel and overnight stays must be less than £100,000,000,000
 expenses.businessTravelAndOvernightAmount.replay.individual = You told us you want to claim {0} for other business travel and overnight stays. Tell us if this has changed.
 expenses.businessTravelAndOvernightAmount.replay.agent = You told us you want to claim {0} for your client’s other business travel and overnight stays. Tell us if this has changed.
+
+expenses.professionalFeesAndSubscriptionsAmount.title.individual = How much do you want to claim for professional fees and subscriptions?
+expenses.professionalFeesAndSubscriptionsAmount.title.agent = How much do you want to claim for professional fees and subscriptions for your client?
+expenses.professionalFeesAndSubscriptionsAmount.error.noEntry.individual = Enter the amount you want to claim for professional fees and subscriptions
+expenses.professionalFeesAndSubscriptionsAmount.error.noEntry.agent = Enter the amount you want to claim for your client’s professional fees and subscriptions
+expenses.professionalFeesAndSubscriptionsAmount.error.overMaximum.individual = The amount you want to claim for professional fees and subscriptions must be less than £100,000,000,000
+expenses.professionalFeesAndSubscriptionsAmount.error.overMaximum.agent = The amount you want to claim for your client’s professional fees and subscriptions must be less than £100,000,000,000
+expenses.professionalFeesAndSubscriptionsAmount.error.invalidFormat.individual = Enter the amount you want to claim for professional fees and subscriptions in the correct format
+expenses.professionalFeesAndSubscriptionsAmount.error.invalidFormat.agent = Enter the amount you want to claim for your client’s professional fees and subscriptions in the correct format
+expenses.professionalFeesAndSubscriptionsAmount.replayContent.individual = You told us you want to claim {0} for professional fees and subscriptions. Tell us if this has changed.
+expenses.professionalFeesAndSubscriptionsAmount.replayContent.agent = You told us you want to claim {0} for your client’s professional fees and subscriptions. Tell us if this has changed.
+

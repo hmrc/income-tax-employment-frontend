@@ -18,11 +18,12 @@ package services
 
 import controllers.benefits.accommodation.routes._
 import controllers.benefits.fuel.routes._
+import controllers.benefits.income.routes._
 import controllers.benefits.medical.routes._
+import controllers.benefits.reimbursed.routes._
 import controllers.benefits.routes.ReceiveAnyBenefitsController
 import controllers.benefits.travel.routes._
 import controllers.benefits.utilities.routes._
-import controllers.benefits.income.routes._
 import controllers.employment.routes._
 import models.benefits._
 import models.employment.{EmploymentBenefitsType, EmploymentDetailsType}
@@ -63,8 +64,8 @@ class RedirectServiceSpec extends UnitTest {
   )
 
   val amount = 4564.09
-  private val fullReimbursedCostsVouchersAndNonCashModel = ReimbursedCostsVouchersAndNonCashModel(Some(true),Some(true),Some(amount), Some(true),Some(amount), Some(true),Some(amount), Some(true),Some(amount), Some(true),Some(amount))
-  private val fullAssetsModel = AssetsModel(Some(true),Some(true),Some(amount), Some(true),Some(amount))
+  private val fullReimbursedCostsVouchersAndNonCashModel = ReimbursedCostsVouchersAndNonCashModel(Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))
+  private val fullAssetsModel = AssetsModel(Some(true), Some(true), Some(amount), Some(true), Some(amount))
 
   private val employmentCYA: EmploymentCYAModel = {
     EmploymentCYAModel(
@@ -132,7 +133,8 @@ class RedirectServiceSpec extends UnitTest {
           ),
           medicalChildcareEducationModel = Some(fullMedicalModel),
           incomeTaxAndCostsModel = Some(fullIncomeTaxAndCostsModel),
-          assetsModel = Some(AssetsModel(Some(true),Some(true),Some(100),Some(true),Some(100))),
+          reimbursedCostsVouchersAndNonCashModel = Some(fullReimbursedCostsVouchersAndNonCashModel),
+          assetsModel = Some(AssetsModel(Some(true), Some(true), Some(100), Some(true), Some(100))),
           submittedOn = Some("2020-02-04T05:01:01Z"),
           isUsingCustomerData = true,
           isBenefitsReceived = true
@@ -1140,7 +1142,7 @@ class RedirectServiceSpec extends UnitTest {
           cya => commonIncomeTaxAndCostsModelRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId).url
       }
 
       "it's a prior submission and attempted to view the 'Income Tax paid by employer' yes/no page but the Income Tax section question is false" in {
@@ -1212,7 +1214,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => incurredCostsPaidByEmployerAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId).url
       }
 
       "it's a prior submission and attempted to view the 'Incurred costs paid by employer amount' page " +
@@ -1297,7 +1299,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => commonReimbursedCostsVouchersAndNonCashModelRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId).url
       }
 
       "it's a new submission and attempted to view 'Vouchers, non-cash benefits or reimbursed costs' section" +
@@ -1398,7 +1400,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => vouchersAndCreditCardsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe TaxableCostsBenefitsAmountController.show(taxYear, employmentId).url
       }
       "it's a new submission and attempted to view 'vouchers And Credit Cards amount' page" +
         "but the vouchers And Credit Cards question is empty" in {

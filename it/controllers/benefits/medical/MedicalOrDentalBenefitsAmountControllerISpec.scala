@@ -44,7 +44,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
 
   def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/medical-dental-amount?employmentId=$employmentId"
 
-  def continueLink(taxYear: Int) = s"/income-through-software/return/employment-income/$taxYear/benefits/medical-dental-amount?employmentId=$employmentId"
+  def continueLink(taxYear: Int) = s"/update-and-submit-income-tax-return/employment-income/$taxYear/benefits/medical-dental-amount?employmentId=$employmentId"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId,
@@ -282,7 +282,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
         }
       }
 
@@ -459,7 +459,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
 
       lazy val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
 
-      "Redirect to cya page when all is valid in previous data flow" which {
+      "Redirect to child care page when all is valid in previous data flow" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
           userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
@@ -471,7 +471,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(ChildcareBenefitsController.show(taxYearEOY, employmentId).url)
           lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
           cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) shouldBe Some(true)
           cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion)) shouldBe Some(true)
@@ -480,8 +480,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
 
       }
 
-      "Redirect to cya page when all is valid in new data flow" which {
-        //TODO: should change to childcare later
+      "Redirect to child care page when all is valid in new data flow" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
           userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
@@ -493,7 +492,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(ChildcareBenefitsController.show(taxYearEOY, employmentId).url)
           lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
           cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) shouldBe Some(true)
           cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion)) shouldBe Some(true)
@@ -535,7 +534,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
         }
       }
 

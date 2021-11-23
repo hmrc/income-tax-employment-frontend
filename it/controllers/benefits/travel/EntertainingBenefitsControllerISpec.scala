@@ -36,7 +36,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
   def entertainingQuestionUrl(taxYear: Int): String = s"$appUrl/$taxYear/benefits/entertainment-expenses?employmentId=$employmentId"
 
-  val continueLink: String = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/entertainment-expenses?employmentId=$employmentId"
+  val continueLink: String = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/entertainment-expenses?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -200,7 +200,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
         s"has a SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
       }
 
@@ -216,7 +216,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
         s"has a SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
       }
     }
@@ -245,7 +245,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
   }
@@ -370,7 +370,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
       "has a SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
       }
     }
 
@@ -384,7 +384,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
   }

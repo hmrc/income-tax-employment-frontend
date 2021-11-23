@@ -18,15 +18,15 @@ package services
 
 import controllers.benefits.accommodation.routes._
 import controllers.benefits.fuel.routes._
+import controllers.benefits.income.routes._
 import controllers.benefits.medical.routes._
+import controllers.benefits.reimbursed.routes._
 import controllers.benefits.routes._
 import controllers.benefits.travel.routes._
 import controllers.benefits.utilities.routes._
-import controllers.benefits.income.routes._
 import controllers.employment.routes._
 import models.User
-import models.benefits.{AccommodationRelocationModel, CarVanFuelModel, IncomeTaxAndCostsModel, MedicalChildcareEducationModel,
-  ReimbursedCostsVouchersAndNonCashModel, TravelEntertainmentModel, UtilitiesAndServicesModel}
+import models.benefits._
 import models.employment.{EmploymentBenefitsType, EmploymentDetailsType, EmploymentType}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import models.redirects.ConditionalRedirect
@@ -494,8 +494,7 @@ object RedirectService extends Logging {
     incomeTaxAndCostsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(sectionQuestion.isEmpty, IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId)),
-        //TODO go to Reimbursed costs, vouchers, and non-cash benefits
-        ConditionalRedirect(sectionQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(sectionQuestion.contains(false), ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(sectionQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
@@ -524,8 +523,7 @@ object RedirectService extends Logging {
     incurredCostsPaidByEmployerRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(paymentsOnEmployeesBehalfQuestion.isEmpty, IncurredCostsBenefitsController.show(taxYear, employmentId)),
-        //TODO go to Reimbursed costs, vouchers, and non-cash benefits yes/no page
-        ConditionalRedirect(paymentsOnEmployeesBehalfQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(paymentsOnEmployeesBehalfQuestion.contains(false), ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(paymentsOnEmployeesBehalfQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
@@ -547,8 +545,7 @@ object RedirectService extends Logging {
 
     reimbursedCostsVouchersAndNonCashRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to Reimbursed costs and vouchers section yes/no page (initial yes/no page)
-        ConditionalRedirect(sectionQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(sectionQuestion.isEmpty, ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId)),
         //TODO go to Assets section
         ConditionalRedirect(sectionQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(sectionQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
@@ -772,15 +769,18 @@ object RedirectService extends Logging {
     val travelOrEntertainmentSection: TravelEntertainmentModel = cya.employmentBenefits.flatMap(_.travelEntertainmentModel).getOrElse(TravelEntertainmentModel())
     val utilitiesAndServicesSection: UtilitiesAndServicesModel = cya.employmentBenefits.flatMap(_.utilitiesAndServicesModel).getOrElse(UtilitiesAndServicesModel())
     val medicalChildcareEducationSection: MedicalChildcareEducationModel = cya.employmentBenefits.flatMap(_.medicalChildcareEducationModel).getOrElse(MedicalChildcareEducationModel())
+    val incomeTaxAndCostsSection: IncomeTaxAndCostsModel = cya.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).getOrElse(IncomeTaxAndCostsModel())
 
     val carVanFuelSectionFinished = carVanFuelSection.isFinished
     val accommodationRelocationSectionFinished = accommodationRelocationSection.isFinished
     val travelOrEntertainmentSectionFinished = travelOrEntertainmentSection.isFinished
     val utilitiesAndServicesSectionFinished = utilitiesAndServicesSection.isFinished
     val medicalChildcareEducationSectionFinished = medicalChildcareEducationSection.isFinished
+    val incomeTaxAndCostsSectionFinished = incomeTaxAndCostsSection.isFinished
 
     val unfinishedRedirects: Seq[Call] = Seq(carVanFuelSectionFinished, accommodationRelocationSectionFinished,
-      travelOrEntertainmentSectionFinished, utilitiesAndServicesSectionFinished, medicalChildcareEducationSectionFinished).flatten
+      travelOrEntertainmentSectionFinished, utilitiesAndServicesSectionFinished, medicalChildcareEducationSectionFinished,
+      incomeTaxAndCostsSectionFinished).flatten
 
     unfinishedRedirects match {
       case calls if calls.isEmpty =>

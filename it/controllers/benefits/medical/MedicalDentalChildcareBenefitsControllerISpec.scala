@@ -16,6 +16,8 @@
 
   package controllers.benefits.medical
 
+  import controllers.benefits.medical.routes._
+  import controllers.benefits.income.routes._
   import forms.YesNoForm
   import models.User
   import models.benefits.{BenefitsViewModel, MedicalChildcareEducationModel}
@@ -48,7 +50,7 @@
 
     private def medicalDentalChildcareQuestionPageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/medical-dental-childcare-education-loans?employmentId=$employmentId"
 
-    val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/medical-dental-childcare-education-loans?employmentId=$employmentId"
+    val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/medical-dental-childcare-education-loans?employmentId=$employmentId"
 
     object Selectors {
       val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -207,7 +209,7 @@
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+              Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
 
           }
         }
@@ -225,7 +227,7 @@
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/company-benefits?employmentId=$employmentId")
+              Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-benefits?employmentId=$employmentId")
 
           }
         }
@@ -241,7 +243,7 @@
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+              Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
 
           }
         }
@@ -257,7 +259,7 @@
 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+            result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
 
           }
         }
@@ -274,7 +276,7 @@
           "redirects to the check your details page" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+              Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
           }
 
           "doesn't create any benefits data" in {
@@ -336,7 +338,7 @@
 
         val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
 
-        "redirect to check your benefits, update the medicalChildcareEducationQuestion to no and wipe the medical, child care and" +
+        "redirect to income tax section, update the medicalChildcareEducationQuestion to no and wipe the medical, child care and" +
           " education data when the user chooses no" which {
 
           lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
@@ -350,10 +352,9 @@
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          "redirects to the check your details page" in {
+          "redirects to the income tax section" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            result.header("location") shouldBe Some(IncomeTaxOrIncurredCostsBenefitsController.show(taxYearEOY, employmentId).url)
             lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
 
             cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) shouldBe Some(false)
@@ -369,7 +370,7 @@
 
         }
 
-        "redirect to check your benefits and update the medicalChildcareEducationQuestion to yes when the user chooses yes" which {
+        "redirect to medical dental page and update the medicalChildcareEducationQuestion to yes when the user chooses yes" which {
 
           lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
           lazy val result: WSResponse = {
@@ -381,10 +382,10 @@
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          "redirects to the check your details page" in {
+          "redirects to the medical dental page" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            result.header("location") shouldBe Some(MedicalDentalBenefitsController.show(taxYearEOY, employmentId).url)
+
             lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
             cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) shouldBe Some(true)
             cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion)) shouldBe Some(true)
@@ -408,7 +409,7 @@
 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+            result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
           }
         }
 
@@ -427,7 +428,7 @@
           "redirects to the check your details page" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+              Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
           }
 
           "doesn't create any benefits data" in {

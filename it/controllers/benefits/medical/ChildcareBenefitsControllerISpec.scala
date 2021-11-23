@@ -18,6 +18,8 @@ package controllers.benefits.medical
 
 import forms.YesNoForm
 import models.User
+import controllers.benefits.income.routes._
+import controllers.benefits.medical.routes._
 import models.benefits.{BenefitsViewModel, MedicalChildcareEducationModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
@@ -48,7 +50,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/childcare?employmentId=$employmentId"
 
-  private val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/childcare?employmentId=$employmentId"
+  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/childcare?employmentId=$employmentId"
   private val exemptLink = "https://www.gov.uk/expenses-and-benefits-childcare/whats-exempt"
 
   object Selectors {
@@ -251,7 +253,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
         }
       }
 
@@ -266,7 +268,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
 
         "doesn't create any benefits data" in {
@@ -287,7 +289,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
       }
 
@@ -303,7 +305,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
-            Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
       }
 
@@ -352,7 +354,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       }
     }
 
-    "redirect to check employments benefits page and update the NurseryPlacesQuestion to yes when the user chooses yes, has prior benefits" which {
+    "redirect to child care amount page and update the NurseryPlacesQuestion to yes when the user chooses yes, has prior benefits" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
       lazy val result: WSResponse = {
@@ -363,10 +365,9 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "redirects to the check employment benefits page" in {
+      "redirects to the child care amount page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+        result.header("location") shouldBe Some(ChildcareBenefitsAmountController.show(taxYearEOY, employmentId).url)
       }
 
       "update the NurseryPlacesQuestion to true" in {
@@ -375,7 +376,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       }
     }
 
-    "redirect to check employment benefits page and update NurseryPlacesQuestion to no when user chooses no, has prior benefits" which {
+    "redirect to educational services page and update NurseryPlacesQuestion to no when user chooses no, has prior benefits" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
       lazy val result: WSResponse = {
@@ -386,10 +387,9 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "redirects to the check employment benefits page" in {
+      "redirects to the educational services page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+        result.header("location") shouldBe Some(EducationalServicesBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
       "update the NurseryPlacesQuestion to false, and nurseryPlaces to None" in {
@@ -414,7 +414,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/childcare-amount?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/childcare-amount?employmentId=$employmentId")
       }
     }
 
@@ -429,7 +429,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
 
@@ -446,7 +446,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
       }
 
       "doesn't create any benefits data" in {
@@ -469,7 +469,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       "redirects to the check employment benefits page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
       }
     }
 
@@ -487,7 +487,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       "redirects to the check employment benefits page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
       }
     }
 

@@ -34,7 +34,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
   val payrollId: String = "123456"
   def url (taxYear:Int): String = s"$appUrl/${taxYear.toString}/payroll-id?employmentId=001"
 
-  val continueButtonLink: String = "/income-through-software/return/employment-income/2021/payroll-id?employmentId=001"
+  val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/payroll-id?employmentId=001"
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   private val userRequest: User[_]=  User(mtditid, None, nino, sessionId, affinityGroup)
@@ -252,7 +252,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-details?employmentId=001")
+            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001")
           }
         }
 
@@ -267,7 +267,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+            result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
           }
         }
 
@@ -417,7 +417,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           "redirect to the Check Employment Details page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some("/income-through-software/return/employment-income/2021/check-employment-details?employmentId=001")
+            result.header(HeaderNames.LOCATION) shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001")
           }
 
           s"update the cya models payroll id to be $payrollId" in {

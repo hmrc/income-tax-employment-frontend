@@ -100,7 +100,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
   private def url(taxYear: Int) = s"$appUrl/$taxYear/benefits/company-benefits?employmentId=$employmentID"
 
-  private val postUrl = s"/income-through-software/return/employment-income/2021/benefits/company-benefits?employmentId=$employmentID"
+  private val postUrl = s"/update-and-submit-income-tax-return/employment-income/2021/benefits/company-benefits?employmentId=$employmentID"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -195,7 +195,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       }
 
       "redirect to Check Employment Details page" in {
-        result.header(HeaderNames.LOCATION) shouldBe Some(s"http://localhost:11111/income-through-software/return/$validTaxYear2021/view")
+        result.header(HeaderNames.LOCATION) shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$validTaxYear2021/view")
       }
     }
 
@@ -369,7 +369,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       }
 
       "redirect to Check Employment Benefits page" in {
-        result.header(HeaderNames.LOCATION) shouldBe Some(s"http://localhost:11111/income-through-software/return/$validTaxYear2021/view")
+        result.header(HeaderNames.LOCATION) shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$validTaxYear2021/view")
       }
     }
   }

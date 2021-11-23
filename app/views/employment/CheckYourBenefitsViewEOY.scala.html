@@ -193,7 +193,6 @@
     @{
         val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.medicalSubheading", benefits.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion).getOrElse(false), controllers.benefits.medical.routes.MedicalDentalChildcareBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
-        if(benefits.medicalDetailsPopulated){
             Seq(
                 benefits.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion).map{
                     medicalInsuranceQuestion => showQuestionRow("checkYourBenefits.medicalIns", benefits.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion).getOrElse(false), controllers.benefits.medical.routes.MedicalDentalBenefitsController.show(taxYear, employmentId))
@@ -220,7 +219,6 @@
                     beneficialLoan => showRows("checkYourBenefits.beneficialLoansAmount", beneficialLoan, controllers.benefits.medical.routes.BeneficialLoansAmountController.show(taxYear: Int, employmentId: String))
                 }
             ).flatten
-        } else { Seq() }
 
         govukSummaryList(SummaryList(header ++ rows))
     }
@@ -251,7 +249,7 @@
 
     <h2 class="govuk-label--m">@messages("checkYourBenefits.reimbursedHeader")</h2>
     @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.reimbursedSubheading", benefits.reimbursedDetailsPopulated))
+        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.reimbursedSubheading", benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.reimbursedCostsVouchersAndNonCashQuestion).getOrElse(false), controllers.benefits.reimbursed.routes.ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
         if(benefits.reimbursedDetailsPopulated){
             Seq(
@@ -265,7 +263,7 @@
                     taxableExpensesQuestion => showQuestionRow("checkYourBenefits.taxableCosts", taxableExpensesQuestion)
                 },
                 benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpenses).map{
-                    taxableExpenses => showRows("checkYourBenefits.taxableCostsAmount", taxableExpenses)
+                    taxableExpenses => showRows("checkYourBenefits.taxableCostsAmount", taxableExpenses, controllers.benefits.reimbursed.routes.TaxableCostsBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCardsQuestion).map{
                     vouchersAndCreditCardsQuestion => showQuestionRow("checkYourBenefits.vouchers", vouchersAndCreditCardsQuestion)

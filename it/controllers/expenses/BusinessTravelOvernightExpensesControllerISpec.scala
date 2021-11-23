@@ -45,7 +45,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/business-travel-and-overnight-expenses"
 
-  private val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/expenses/business-travel-and-overnight-expenses"
+  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/business-travel-and-overnight-expenses"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -363,7 +363,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+        result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
       }
     }
 
@@ -519,7 +519,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+        result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
       }
     }
 

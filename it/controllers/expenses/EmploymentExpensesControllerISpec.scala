@@ -41,7 +41,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
   private def employmentExpensesQuestionPageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/claim-employment-expenses"
 
-  val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/expenses/claim-employment-expenses"
+  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/claim-employment-expenses"
   private val expensesLink = "https://www.gov.uk/tax-relief-for-employees"
 
   object Selectors {
@@ -285,7 +285,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+          result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
         }
       }
     }
@@ -430,7 +430,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("http://localhost:11111/income-through-software/return/2022/view")
+          result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
         }
       }
 

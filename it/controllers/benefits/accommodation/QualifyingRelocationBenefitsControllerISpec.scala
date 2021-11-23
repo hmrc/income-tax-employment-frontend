@@ -39,7 +39,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
   val urlEOY = s"$appUrl/$taxYearEOY/benefits/qualifying-relocation?employmentId=$employmentId"
   val urlInYear = s"$appUrl/$taxYear/benefits/qualifying-relocation?employmentId=$employmentId"
 
-  val continueButtonLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/qualifying-relocation?employmentId=$employmentId"
+  val continueButtonLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/qualifying-relocation?employmentId=$employmentId"
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   val someAmount: Option[BigDecimal] = Some(123.45)
@@ -282,7 +282,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
     "redirect to the travel or entertainment page when accommodationRelocationQuestion is Some(false) and no prior benefits exist" which {
@@ -432,7 +432,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
 

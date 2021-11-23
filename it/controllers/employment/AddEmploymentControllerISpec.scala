@@ -99,7 +99,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
   private def url(taxYear: Int) = s"$appUrl/$taxYear/add-employment"
 
   val addEmploymentURl =
-    s"/income-through-software/return/employment-income/$validTaxYear2021/add-employment"
+    s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/add-employment"
 
 
 
@@ -151,7 +151,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           textOnPageCheck(expectedCaption, captionSelector)
           buttonCheck(continueButton)
           formRadioValueCheckPreFilled(isChecked = false, yesRadioButton)
-          formPostLinkCheck("/income-through-software/return/employment-income/2021/add-employment", formSelector)
+          formPostLinkCheck("/update-and-submit-income-tax-return/employment-income/2021/add-employment", formSelector)
         }
 
         "return Add an employment page page with yes pre-filled when there is session value employment id is defined" when {
@@ -176,7 +176,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           h1Check(specific.expectedH1)
           textOnPageCheck(expectedCaption, captionSelector)
           buttonCheck(continueButton)
-          formPostLinkCheck("/income-through-software/return/employment-income/2021/add-employment", formSelector)
+          formPostLinkCheck("/update-and-submit-income-tax-return/employment-income/2021/add-employment", formSelector)
           formRadioValueCheckPreFilled(isChecked = true, yesRadioButton)
         }
 
@@ -254,7 +254,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           textOnPageCheck(expectedCaption, captionSelector)
           buttonCheck(continueButton)
           errorSummaryCheck(specific.expectedErrorText, expectedErrorHref)
-          formPostLinkCheck("/income-through-software/return/employment-income/2021/add-employment", formSelector)
+          formPostLinkCheck("/update-and-submit-income-tax-return/employment-income/2021/add-employment", formSelector)
         }
 
         "redirect to Overview Page when radio button no is selected" when {
@@ -287,7 +287,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to employer name page" in {
-            result.header(HeaderNames.LOCATION).toString.contains("/income-through-software/return/employment-income/2021/employer-name?employmentId=") shouldBe true
+            result.header(HeaderNames.LOCATION).toString.contains("/update-and-submit-income-tax-return/employment-income/2021/employer-name?employmentId=") shouldBe true
           }
         }
 
@@ -305,7 +305,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to employer name page" in {
-            result.header(HeaderNames.LOCATION).toString.contains(s"/income-through-software/return/employment-income/2021/employer-name?employmentId=$employmentId") shouldBe true
+            result.header(HeaderNames.LOCATION).toString.contains(s"/update-and-submit-income-tax-return/employment-income/2021/employer-name?employmentId=$employmentId") shouldBe true
           }
         }
 
@@ -324,7 +324,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to paye ref page" in {
-            result.header(HeaderNames.LOCATION).get shouldBe s"/income-through-software/return/employment-income/2021/employer-paye-reference?employmentId=$employmentId"
+            result.header(HeaderNames.LOCATION).get shouldBe s"/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=$employmentId"
           }
         }
         "redirect to overview page when radio button no is selected when an id is in session and there is cya data" when {
@@ -342,7 +342,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to overview page" in {
-            result.header(HeaderNames.LOCATION).get shouldBe "http://localhost:11111/income-through-software/return/2021/view"
+            result.header(HeaderNames.LOCATION).get shouldBe "http://localhost:11111/update-and-submit-income-tax-return/2021/view"
           }
         }
 

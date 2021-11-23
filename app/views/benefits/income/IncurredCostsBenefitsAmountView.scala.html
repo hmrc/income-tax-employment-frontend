@@ -33,7 +33,7 @@
     @if(preAmount.isDefined) {
         <p class="govuk-body">@messages("common.ifItWasNot", bigDecimalCurrency(preAmount.get.toString))</p>
     }
-    <p class="govuk-body">@messages("benefits.incurredCostsAmount.enterTotal")</p>
+    <p class="govuk-body">@messages("common.enterTheTotal")</p>
 }
 
 @layout(pageTitle = titleText, taxYear = Some(taxYear), hasErrors = form.hasErrors) {

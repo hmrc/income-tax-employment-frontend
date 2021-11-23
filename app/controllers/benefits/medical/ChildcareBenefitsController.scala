@@ -17,8 +17,7 @@
 package controllers.benefits.medical
 
 import config.{AppConfig, ErrorHandler}
-import controllers.benefits.medical.routes.ChildcareBenefitsAmountController
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.medical.routes.{ChildcareBenefitsAmountController, EducationalServicesBenefitsController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import javax.inject.Inject
@@ -95,11 +94,16 @@ class ChildcareBenefitsController @Inject()(implicit val cc: MessagesControllerC
                 data.isPriorSubmission,
                 data.hasPriorBenefits
               )(errorHandler.internalServerError()) {
-                if (data.isPriorSubmission) {
-                  Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                } else {
-                  Redirect(ChildcareBenefitsAmountController.show(taxYear, employmentId))
+
+                val nextPage = {
+                  if (yesNo){
+                    ChildcareBenefitsAmountController.show(taxYear, employmentId)
+                  } else {
+                    EducationalServicesBenefitsController.show(taxYear, employmentId)
+                  }
                 }
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
             }
           )
