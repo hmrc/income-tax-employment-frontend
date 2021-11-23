@@ -967,6 +967,12 @@ benefits.reimbursedCostsVouchersAndNonCash.title.agent = Did your client get any
 benefits.reimbursedCostsVouchersAndNonCash.error.individual = Select yes if you got reimbursed costs, vouchers or non-cash benefits from your employer
 benefits.reimbursedCostsVouchersAndNonCash.error.agent = Select yes if your client got reimbursed costs, vouchers or non-cash benefits from their employer
 
+benefits.taxableCosts.title.individual = Were any of your taxable costs reimbursed by your employer?
+benefits.taxableCosts.title.agent = Were any of your client’s taxable costs reimbursed by their employer?
+benefits.taxableCosts.theseAre = These are any costs that are not taxed at source, for example, commuting for a non-business purpose.
+benefits.taxableCosts.error.individual = Select yes if any of your taxable costs were reimbursed by your employer
+benefits.taxableCosts.error.agent = Select yes if any of your client’s taxable costs were reimbursed by their employer
+
 benefits.taxableCostsBenefitsAmount.title.individual = How much of your taxable costs were reimbursed by your employer?
 benefits.taxableCostsBenefitsAmount.title.agent = How much of your client’s taxable costs were reimbursed by their employer?
 benefits.taxableCostsBenefitsAmount.error.noEntry.individual = Enter the amount of taxable costs reimbursed by your employer

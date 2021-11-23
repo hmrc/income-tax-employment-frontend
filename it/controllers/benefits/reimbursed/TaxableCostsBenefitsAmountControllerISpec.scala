@@ -17,6 +17,7 @@
 package controllers.benefits.reimbursed
 
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.reimbursed.routes.TaxableCostsBenefitsController
 import models.User
 import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -271,8 +272,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
         }
 
         result.status shouldBe SEE_OTHER
-        // TODO: Should go to 'Taxable cost' question page
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(TaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
       }
     }
   }
@@ -459,8 +459,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
         }
 
         result.status shouldBe SEE_OTHER
-        // TODO: Should go to 'Taxable cost' question page
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(TaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
       }
     }
   }
