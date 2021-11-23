@@ -45,7 +45,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/travel-amount"
 
-  private val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/expenses/travel-amount"
+  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/travel-amount"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > label > header > p"
