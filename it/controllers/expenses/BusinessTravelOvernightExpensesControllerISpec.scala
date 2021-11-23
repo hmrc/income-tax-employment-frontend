@@ -201,7 +201,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-        "render the Business Travel and Overnight Expenses Question page with no pre-filled radio buttons" which {
+        "render the Business Travel and Overnight Amount Question page with no pre-filled radio buttons" which {
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)

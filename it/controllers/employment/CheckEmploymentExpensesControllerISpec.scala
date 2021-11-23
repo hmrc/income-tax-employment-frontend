@@ -236,6 +236,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val uniformsOrToolsExpensesHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/uniforms-work-clothes-or-tools"
     val uniformsOrToolsExpensesAmountHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/amount-for-uniforms-work-clothes-or-tools"
     val professionalFeesAndSubscriptionsHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/professional-fees-and-subscriptions"
+    val travelAndOvernightAmountHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear-1}/expenses/travel-amount"
     val professionalFeesSubscriptionsAmountHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/amount-for-professional-fees-and-subscriptions"
   }
 
@@ -295,7 +296,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           changeAmountRowCheck(commonResults.jobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(2), summaryListRowFieldAmountSelector(2),
             changeLinkSelector(2), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesHiddenText}", businessTravelOvernightExpensesHref)
           changeAmountRowCheck(commonResults.jobExpensesAmount, "£2", summaryListRowFieldNameSelector(3), summaryListRowFieldAmountSelector(3),
-            changeLinkSelector(3), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesAmountHiddenText}", dummyHref)
+            changeLinkSelector(3), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesAmountHiddenText}", travelAndOvernightAmountHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(4), summaryListRowFieldAmountSelector(4),
             changeLinkSelector(4), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateHiddenText}", uniformsOrToolsExpensesHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesAmount, "£3", summaryListRowFieldNameSelector(5), summaryListRowFieldAmountSelector(5),
@@ -384,7 +385,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           changeAmountRowCheck(commonResults.jobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(2), summaryListRowFieldAmountSelector(2),
             changeLinkSelector(2), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesHiddenText}", businessTravelOvernightExpensesHref)
           changeAmountRowCheck(commonResults.jobExpensesAmount, "£2", summaryListRowFieldNameSelector(3), summaryListRowFieldAmountSelector(3),
-            changeLinkSelector(3), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesAmountHiddenText}", dummyHref)
+            changeLinkSelector(3), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesAmountHiddenText}", travelAndOvernightAmountHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(4), summaryListRowFieldAmountSelector(4),
             changeLinkSelector(4), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateHiddenText}", uniformsOrToolsExpensesHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesAmount, "£3", summaryListRowFieldNameSelector(5), summaryListRowFieldAmountSelector(5),
@@ -448,7 +449,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           changeAmountRowCheck(commonResults.jobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(2), summaryListRowFieldAmountSelector(2),
             changeLinkSelector(2), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesHiddenText}", businessTravelOvernightExpensesHref)
           changeAmountRowCheck(commonResults.jobExpensesAmount, "£2", summaryListRowFieldNameSelector(3), summaryListRowFieldAmountSelector(3),
-            changeLinkSelector(3), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesAmountHiddenText}", dummyHref)
+            changeLinkSelector(3), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesAmountHiddenText}", travelAndOvernightAmountHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(4), summaryListRowFieldAmountSelector(4),
             changeLinkSelector(4), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateHiddenText}", uniformsOrToolsExpensesHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesAmount, "£3", summaryListRowFieldNameSelector(5), summaryListRowFieldAmountSelector(5),
@@ -487,7 +488,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           changeAmountRowCheck(commonResults.jobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(2), summaryListRowFieldAmountSelector(2),
             changeLinkSelector(2), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesHiddenText}", businessTravelOvernightExpensesHref)
           changeAmountRowCheck(commonResults.jobExpensesAmount, "£2", summaryListRowFieldNameSelector(3), summaryListRowFieldAmountSelector(3),
-            changeLinkSelector(3), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesAmountHiddenText}", dummyHref)
+            changeLinkSelector(3), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesAmountHiddenText}", travelAndOvernightAmountHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesQuestion, commonResults.no, summaryListRowFieldNameSelector(4), summaryListRowFieldAmountSelector(4),
             changeLinkSelector(4), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateHiddenText}", uniformsOrToolsExpensesHref)
           changeAmountRowCheck(commonResults.professionalSubscriptionsQuestion, commonResults.no, summaryListRowFieldNameSelector(5), summaryListRowFieldAmountSelector(5),

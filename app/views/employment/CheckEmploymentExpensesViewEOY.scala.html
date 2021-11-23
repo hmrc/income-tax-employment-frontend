@@ -68,7 +68,7 @@
                     jobExpensesQuestion => showQuestionRow("checkYourExpenses.jobExpensesQuestion", jobExpensesQuestion, controllers.expenses.routes.BusinessTravelOvernightExpensesController.show(taxYear))
                 },
                 expenses.jobExpenses.map{
-                    jobExpenses => showRows("checkYourExpenses.jobExpensesAmount", jobExpenses)
+                    jobExpenses => showRows("checkYourExpenses.jobExpensesAmount", jobExpenses, controllers.expenses.routes.TravelAndOvernightAmountController.show(taxYear))
                 },
                 expenses.flatRateJobExpensesQuestion.map{
                     flatRateJobExpensesQuestion => showQuestionRow("checkYourExpenses.flatRateJobExpensesQuestion", flatRateJobExpensesQuestion, controllers.expenses.routes.UniformsOrToolsExpensesController.show(taxYear))

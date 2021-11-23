@@ -977,7 +977,9 @@ benefits.taxableCostsBenefitsAmount.error.incorrectFormat.agent = Enter the amou
 benefits.taxableCostsBenefitsAmount.error.overMaximum.agent = The taxable costs reimbursed by your client’s employer must be less than £100,000,000,000
 
 #####Expenses Pages#######
+
 expenses.caption = Employment expenses for 6 April {0} to 5 April {1}
+
 expenses.claimEmploymentExpenses.title.individual = Do you want to claim employment expenses?
 expenses.claimEmploymentExpenses.title.agent = Do you want to claim employment expenses for your client?
 expenses.claimEmploymentExpenses.canClaim.individual = You can claim employment expenses you did not claim through your employer.
@@ -1057,6 +1059,20 @@ expenses.professionalFeesAndSubscriptions.error.agent = Select yes to claim for 
 expenses.professionalFeesAndSubscriptions.checkLink.individual = Check if you can claim for professional fees and subscriptions (opens in new tab)
 expenses.professionalFeesAndSubscriptions.checkLink.agent = Check if your client can claim for professional fees and subscriptions (opens in new tab)
 
+expenses.businessTravelAndOvernightAmount.title.individual = How much do you want to claim for business travel and overnight stays?
+expenses.businessTravelAndOvernightAmount.title.agent = How much do you want to claim for your client’s business travel and overnight stays?
+expenses.businessTravelAndOvernightAmount.doNotClaim.individual = Do not claim any amount your employer has paid you for.
+expenses.businessTravelAndOvernightAmount.doNotClaim.agent = Do not claim any amount your client’s employer has paid them for.
+expenses.businessTravelAndOvernightAmount.totalForYear = Total amount for the year
+expenses.businessTravelAndOvernightAmount.error.noEntry.individual = Enter the amount you want to claim for business travel and overnight stays
+expenses.businessTravelAndOvernightAmount.error.noEntry.agent = Enter the amount you want to claim for your client’s business travel and overnight stays
+expenses.businessTravelAndOvernightAmount.error.incorrectFormat.individual = Enter the amount you want to claim for business travel and overnight stays in the correct format
+expenses.businessTravelAndOvernightAmount.error.incorrectFormat.agent = Enter the amount you want to claim for business travel and overnight stays for your client in the correct format
+expenses.businessTravelAndOvernightAmount.error.overMaximum.individual = The amount you want to claim for business travel and overnight stays must be less than £100,000,000,000
+expenses.businessTravelAndOvernightAmount.error.overMaximum.agent = The amount you want to claim for your client’s business travel and overnight stays must be less than £100,000,000,000
+expenses.businessTravelAndOvernightAmount.replay.individual = You told us you want to claim {0} for other business travel and overnight stays. Tell us if this has changed.
+expenses.businessTravelAndOvernightAmount.replay.agent = You told us you want to claim {0} for your client’s other business travel and overnight stays. Tell us if this has changed.
+
 expenses.professionalFeesAndSubscriptionsAmount.title.individual = How much do you want to claim for professional fees and subscriptions?
 expenses.professionalFeesAndSubscriptionsAmount.title.agent = How much do you want to claim for professional fees and subscriptions for your client?
 expenses.professionalFeesAndSubscriptionsAmount.error.noEntry.individual = Enter the amount you want to claim for professional fees and subscriptions
@@ -1067,3 +1083,4 @@ expenses.professionalFeesAndSubscriptionsAmount.error.invalidFormat.individual =
 expenses.professionalFeesAndSubscriptionsAmount.error.invalidFormat.agent = Enter the amount you want to claim for your client’s professional fees and subscriptions in the correct format
 expenses.professionalFeesAndSubscriptionsAmount.replayContent.individual = You told us you want to claim {0} for professional fees and subscriptions. Tell us if this has changed.
 expenses.professionalFeesAndSubscriptionsAmount.replayContent.agent = You told us you want to claim {0} for your client’s professional fees and subscriptions. Tell us if this has changed.
+
