@@ -1360,7 +1360,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => taxableExpensesRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe NonTaxableCostsBenefitsAmountController.show(taxYear, employmentId).url
       }
       "it's a new submission and attempted to view 'taxable expenses amount' page" +
         "but the taxable expenses question is empty" in {
