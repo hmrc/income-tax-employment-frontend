@@ -230,13 +230,13 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   private val partExpenses: Expenses = Expenses(Some(1), Some(2))
 
   object Hrefs {
-    val dummyHref = s"/income-through-software/return/employment-income/${taxYear - 1}/check-employment-expenses"
-    val claimExpensesHref = s"/income-through-software/return/employment-income/${taxYear - 1}/expenses/claim-employment-expenses"
-    val businessTravelOvernightExpensesHref = s"/income-through-software/return/employment-income/${taxYear - 1}/expenses/business-travel-and-overnight-expenses"
-    val uniformsOrToolsExpensesHref = s"/income-through-software/return/employment-income/${taxYear - 1}/expenses/uniforms-work-clothes-or-tools"
-    val uniformsOrToolsExpensesAmountHref = s"/income-through-software/return/employment-income/${taxYear - 1}/expenses/amount-for-uniforms-work-clothes-or-tools"
-    val professionalFeesAndSubscriptionsHref = s"/income-through-software/return/employment-income/${taxYear - 1}/expenses/professional-fees-and-subscriptions"
-    val travelAndOvernightAmountHref = s"/income-through-software/return/employment-income/${taxYear-1}/expenses/travel-amount"
+    val dummyHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/check-employment-expenses"
+    val claimExpensesHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/claim-employment-expenses"
+    val businessTravelOvernightExpensesHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/business-travel-and-overnight-expenses"
+    val uniformsOrToolsExpensesHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/uniforms-work-clothes-or-tools"
+    val uniformsOrToolsExpensesAmountHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/amount-for-uniforms-work-clothes-or-tools"
+    val professionalFeesAndSubscriptionsHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/professional-fees-and-subscriptions"
+    val travelAndOvernightAmountHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear-1}/expenses/travel-amount"
     val professionalFeesSubscriptionsAmountHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/amount-for-professional-fees-and-subscriptions"
   }
 
