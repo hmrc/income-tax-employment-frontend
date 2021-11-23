@@ -39,33 +39,40 @@ case class BenefitsViewModel(
       carVanFuelModel.flatMap(_.van).isDefined ||
       carVanFuelModel.flatMap(_.vanFuel).isDefined ||
       carVanFuelModel.flatMap(_.mileage).isDefined
+
   val accommodationDetailsPopulated: Boolean =
     accommodationRelocationModel.flatMap(_.accommodation).isDefined ||
       accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses).isDefined ||
       accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses).isDefined
+
   val travelDetailsPopulated: Boolean =
     travelEntertainmentModel.flatMap(_.travelAndSubsistence).isDefined ||
       travelEntertainmentModel.flatMap(_.personalIncidentalExpenses).isDefined ||
       travelEntertainmentModel.flatMap(_.entertaining).isDefined
+
   val utilitiesDetailsPopulated: Boolean =
     utilitiesAndServicesModel.flatMap(_.telephone).isDefined ||
       utilitiesAndServicesModel.flatMap(_.employerProvidedServices).isDefined ||
       utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions).isDefined ||
       utilitiesAndServicesModel.flatMap(_.service).isDefined
+
   val medicalDetailsPopulated: Boolean =
     medicalChildcareEducationModel.flatMap(_.medicalInsurance).isDefined ||
       medicalChildcareEducationModel.flatMap(_.nurseryPlaces).isDefined ||
       medicalChildcareEducationModel.flatMap(_.beneficialLoan).isDefined ||
       medicalChildcareEducationModel.flatMap(_.educationalServices).isDefined
+
   val incomeTaxDetailsPopulated: Boolean =
     incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirector).isDefined ||
       incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalf).isDefined
+
   val reimbursedDetailsPopulated: Boolean =
     reimbursedCostsVouchersAndNonCashModel.flatMap(_.expenses).isDefined ||
       reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpenses).isDefined ||
       reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCards).isDefined ||
       reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash).isDefined ||
       reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItems).isDefined
+
   val assetsDetailsPopulated: Boolean =
     assetsModel.flatMap(_.assets).isDefined ||
       assetsModel.flatMap(_.assetTransfer).isDefined

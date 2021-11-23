@@ -16,7 +16,7 @@
 
 package models.benefits
 
-import controllers.benefits.reimbursed.routes.ReimbursedCostsVouchersAndNonCashBenefitsController
+import controllers.benefits.reimbursed.routes.{ReimbursedCostsVouchersAndNonCashBenefitsController, TaxableCostsBenefitsAmountController}
 import controllers.employment.routes.CheckYourBenefitsController
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
@@ -32,14 +32,13 @@ case class ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonC
                                                   nonCashQuestion: Option[Boolean] = None,
                                                   nonCash: Option[BigDecimal] = None,
                                                   otherItemsQuestion: Option[Boolean] = None,
-                                                  otherItems: Option[BigDecimal] = None){
+                                                  otherItems: Option[BigDecimal] = None) {
 
-  def isFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
-
+  def isFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     reimbursedCostsVouchersAndNonCashQuestion match {
       case Some(true) =>
-        (expensesSectionFinished,taxableExpensesSectionFinished,
-          vouchersAndCreditCardsSectionFinished, nonCashSectionFinished, otherItemsSectionFinished) match {
+        (expensesSectionFinished, taxableExpensesSectionFinished, vouchersAndCreditCardsSectionFinished,
+          nonCashSectionFinished, otherItemsSectionFinished) match {
           case (call@Some(_), _, _, _, _) => call
           case (_, call@Some(_), _, _, _) => call
           case (_, _, call@Some(_), _, _) => call
@@ -52,43 +51,42 @@ case class ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonC
     }
   }
 
-  def expensesSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
+  def expensesSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     expensesQuestion match {
-      case Some(true) => if(expenses.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO expenses amount page
+      case Some(true) => if (expenses.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO expenses amount page
       case Some(false) => None
       case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO expenses yes no page
     }
   }
 
-  def taxableExpensesSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
+  def taxableExpensesSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     taxableExpensesQuestion match {
-      case Some(true) => if(taxableExpenses.isDefined) None else Some(
-        CheckYourBenefitsController.show(taxYear, employmentId)) //TODO taxableExpenses amount page
+      case Some(true) => if (taxableExpenses.isDefined) None else Some(TaxableCostsBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO taxableExpenses yes no page
     }
   }
 
-  def vouchersAndCreditCardsSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
+  def vouchersAndCreditCardsSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     vouchersAndCreditCardsQuestion match {
-      case Some(true) => if(vouchersAndCreditCards.isDefined) None else Some(
+      case Some(true) => if (vouchersAndCreditCards.isDefined) None else Some(
         CheckYourBenefitsController.show(taxYear, employmentId)) //TODO vouchersAndCreditCards amount page
       case Some(false) => None
       case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO vouchersAndCreditCards yes no page
     }
   }
 
-  def nonCashSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
+  def nonCashSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     nonCashQuestion match {
-      case Some(true) => if(nonCash.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO nonCash amount page
+      case Some(true) => if (nonCash.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO nonCash amount page
       case Some(false) => None
       case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO nonCash yes no page
     }
   }
 
-  def otherItemsSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
+  def otherItemsSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     otherItemsQuestion match {
-      case Some(true) => if(otherItems.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO otherItems amount page
+      case Some(true) => if (otherItems.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO otherItems amount page
       case Some(false) => None
       case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO otherItems yes no page
     }
