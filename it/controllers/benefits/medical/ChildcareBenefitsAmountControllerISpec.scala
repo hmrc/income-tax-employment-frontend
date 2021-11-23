@@ -17,6 +17,7 @@
 package controllers.benefits.medical
 
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.medical.routes._
 import forms.AmountForm
 import models.User
 import models.benefits.{BenefitsViewModel, MedicalChildcareEducationModel}
@@ -40,7 +41,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
     s"$appUrl/$taxYear/benefits/childcare-amount?employmentId=$employmentId"
 
   val formLink: String =
-    s"/income-through-software/return/employment-income/$taxYearEOY/benefits/childcare-amount?employmentId=$employmentId"
+    s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/childcare-amount?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -398,9 +399,9 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      s"update medicalChildcareEducationModel and redirect to check your benefits page" in {
+      s"update medicalChildcareEducationModel and redirect to educational services page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(EducationalServicesBenefitsController.show(taxYearEOY, employmentId).url)
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
         cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.nurseryPlacesQuestion)) shouldBe Some(true)
@@ -423,8 +424,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       s"update medicalChildcareEducationModel and redirect to educational services yes no page" in {
         result.status shouldBe SEE_OTHER
-        //TODO - redirect to educational services yes no question
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(EducationalServicesBenefitsController.show(taxYearEOY, employmentId).url)
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
         cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.nurseryPlacesQuestion)) shouldBe Some(true)

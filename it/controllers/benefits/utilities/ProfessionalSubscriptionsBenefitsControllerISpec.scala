@@ -38,7 +38,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
     s"$appUrl/$taxYear/benefits/professional-fees-or-subscriptions?employmentId=$employmentId"
 
   val formLink: String =
-    s"/income-through-software/return/employment-income/$taxYearEOY/benefits/professional-fees-or-subscriptions?employmentId=$employmentId"
+    s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/professional-fees-or-subscriptions?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 

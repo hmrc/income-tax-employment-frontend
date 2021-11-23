@@ -43,7 +43,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/professional-fees-and-subscriptions"
 
-  private val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/expenses/professional-fees-and-subscriptions"
+  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/professional-fees-and-subscriptions"
   private val professionalFeesLink = "https://www.gov.uk/tax-relief-for-employees/professional-fees-and-subscriptions"
 
   object Selectors {

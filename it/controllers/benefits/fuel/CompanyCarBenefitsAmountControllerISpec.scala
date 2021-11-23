@@ -41,7 +41,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
   def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/company-car-amount?employmentId=$employmentId"
 
-  val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/company-car-amount?employmentId=$employmentId"
+  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-car-amount?employmentId=$employmentId"
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
@@ -264,7 +264,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
 
@@ -294,7 +294,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/company-car?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-car?employmentId=$employmentId")
       }
     }
 
@@ -310,7 +310,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
       }
     }
 
@@ -326,7 +326,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
       }
     }
 
@@ -342,7 +342,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/accommodation-relocation?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/accommodation-relocation?employmentId=$employmentId")
       }
     }
 
@@ -358,7 +358,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
       }
     }
   }
@@ -535,7 +535,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
 

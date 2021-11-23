@@ -33,7 +33,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
   private val taxYearEOY: Int = taxYear - 1
   private val employmentId = "001"
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
-  private val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/educational-services-amount?employmentId=$employmentId"
+  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/educational-services-amount?employmentId=$employmentId"
 
   private def pageUrl(taxYear: Int): String = s"$appUrl/$taxYear/benefits/educational-services-amount?employmentId=$employmentId"
 
@@ -257,7 +257,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
         }
 
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
 
       "Redirect to educational services question page when there is educational services amount but has no educationalServicesQuestion" in {
@@ -377,7 +377,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
     }
 
     "redirect to another page when a valid request is made and then" should {
-      "redirect to check employment benefits page when a valid form is submitted and a prior submission" when {
+      "redirect to beneficial loans page when a valid form is submitted and a prior submission" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
@@ -388,7 +388,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
 
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(BeneficialLoansBenefitsController.show(taxYearEOY, employmentId).url)
         }
 
         "updates the CYA model with the new value" in {
@@ -442,7 +442,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
         }
       }
 

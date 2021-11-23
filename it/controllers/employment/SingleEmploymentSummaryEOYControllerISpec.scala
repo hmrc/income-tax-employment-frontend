@@ -123,8 +123,8 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
 
   private def url(taxYear: Int) = s"$appUrl/$taxYear/employment-summary"
   val employmentId = "001"
-  val changeLinkHref = s"/income-through-software/return/employment-income/$validTaxYear2021/employer-details-and-benefits?employmentId=$employmentId"
-  val removeLinkHref = s"/income-through-software/return/employment-income/$validTaxYear2021/remove-employment?employmentId=$employmentId"
+  val changeLinkHref = s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employer-details-and-benefits?employmentId=$employmentId"
+  val removeLinkHref = s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/remove-employment?employmentId=$employmentId"
 
   val employmentSource: EmploymentSource = EmploymentSource(
     employmentId = employmentId,
@@ -204,7 +204,7 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
             radioButtonCheck(noText, 2)
             buttonCheck(continueButton)
 
-            formPostLinkCheck(s"/income-through-software/return/employment-income/$validTaxYear2021/employment-summary", formSelector)
+            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employment-summary", formSelector)
             formRadioValueCheck(selected = true, formRadioButtonValueSelector)
           }
         }
@@ -242,7 +242,7 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
 
             "redirect to the employer name page" in {
               result.header(HeaderNames.LOCATION).getOrElse("") contains
-                "/income-through-software/return/employment-income/2021/employer-name?employmentId=" shouldBe true
+                "/update-and-submit-income-tax-return/employment-income/2021/employer-name?employmentId=" shouldBe true
             }
           }
 
@@ -296,7 +296,7 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
             radioButtonCheck(noText, 2)
             buttonCheck(continueButton)
 
-            formPostLinkCheck(s"/income-through-software/return/employment-income/$validTaxYear2021/employment-summary", formSelector)
+            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employment-summary", formSelector)
             formRadioValueCheck(selected = true, formRadioButtonValueSelector)
           }
         }

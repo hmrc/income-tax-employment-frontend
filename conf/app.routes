@@ -60,6 +60,9 @@ POST       /:taxYear/benefits/company-van                                   cont
 GET        /:taxYear/benefits/company-van-amount                            controllers.benefits.fuel.CompanyVanBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/company-van-amount                            controllers.benefits.fuel.CompanyVanBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/company-car                                   controllers.benefits.fuel.CompanyCarBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/company-car                                   controllers.benefits.fuel.CompanyCarBenefitsController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/benefits/car-fuel                                      controllers.benefits.fuel.CompanyCarFuelBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/car-fuel                                      controllers.benefits.fuel.CompanyCarFuelBenefitsController.submit(taxYear: Int, employmentId: String)
 
@@ -80,6 +83,9 @@ POST       /:taxYear/benefits/van-fuel-amount                               cont
 
 GET        /:taxYear/benefits/living-accommodation                          controllers.benefits.accommodation.LivingAccommodationBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/living-accommodation                          controllers.benefits.accommodation.LivingAccommodationBenefitsController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/benefits/living-accommodation-amount                   controllers.benefits.accommodation.LivingAccommodationBenefitAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/living-accommodation-amount                   controllers.benefits.accommodation.LivingAccommodationBenefitAmountController.submit(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/benefits/qualifying-relocation-amount                  controllers.benefits.accommodation.QualifyingRelocationBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/qualifying-relocation-amount                  controllers.benefits.accommodation.QualifyingRelocationBenefitsAmountController.submit(taxYear: Int, employmentId: String)
@@ -159,6 +165,9 @@ POST       /:taxYear/benefits/educational-services-amount                   cont
 GET        /:taxYear/benefits/medical-dental                                controllers.benefits.medical.MedicalDentalBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/medical-dental                                controllers.benefits.medical.MedicalDentalBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/medical-dental-amount                         controllers.benefits.medical.MedicalOrDentalBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/medical-dental-amount                         controllers.benefits.medical.MedicalOrDentalBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/benefits/beneficial-loans-amount                       controllers.benefits.medical.BeneficialLoansAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/beneficial-loans-amount                       controllers.benefits.medical.BeneficialLoansAmountController.submit(taxYear: Int, employmentId: String)
 
@@ -173,6 +182,12 @@ POST       /:taxYear/benefits/incurred-costs                                cont
 
 GET        /:taxYear/benefits/incurred-costs-amount                         controllers.benefits.income.IncurredCostsBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/incurred-costs-amount                         controllers.benefits.income.IncurredCostsBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/benefits/reimbursed-costs-vouchers-non-cash-benefits   controllers.benefits.reimbursed.ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/reimbursed-costs-vouchers-non-cash-benefits   controllers.benefits.reimbursed.ReimbursedCostsVouchersAndNonCashBenefitsController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/benefits/taxable-costs-amount                          controllers.benefits.reimbursed.TaxableCostsBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/taxable-costs-amount                          controllers.benefits.reimbursed.TaxableCostsBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/expenses/claim-employment-expenses                     controllers.expenses.EmploymentExpensesController.show(taxYear: Int)
 POST       /:taxYear/expenses/claim-employment-expenses                     controllers.expenses.EmploymentExpensesController.submit(taxYear: Int)
@@ -192,6 +207,12 @@ POST       /:taxYear/expenses/uniforms-work-clothes-or-tools                cont
 GET        /:taxYear/expenses/amount-for-uniforms-work-clothes-or-tools     controllers.expenses.UniformsOrToolsExpensesAmountController.show(taxYear: Int)
 POST       /:taxYear/expenses/amount-for-uniforms-work-clothes-or-tools     controllers.expenses.UniformsOrToolsExpensesAmountController.submit(taxYear: Int)
 
+GET        /:taxYear/expenses/professional-fees-and-subscriptions           controllers.expenses.ProfessionalFeesAndSubscriptionsExpensesController.show(taxYear: Int)
+POST       /:taxYear/expenses/professional-fees-and-subscriptions           controllers.expenses.ProfessionalFeesAndSubscriptionsExpensesController.submit(taxYear: Int)
+
+GET        /:taxYear/expenses/amount-for-professional-fees-and-subscriptions        controllers.expenses.ProfFeesAndSubscriptionsExpensesAmountController.show(taxYear: Int)
+POST       /:taxYear/expenses/amount-for-professional-fees-and-subscriptions        controllers.expenses.ProfFeesAndSubscriptionsExpensesAmountController.submit(taxYear: Int)
+
 GET        /sign-out                                                        controllers.SignOutController.signOut(isAgent: Boolean)
 
 GET        /error/you-need-to-sign-up                                       controllers.errors.IndividualAuthErrorController.show
@@ -207,18 +228,6 @@ POST       /:taxYear/employment-summary                                     cont
 
 GET        /:taxYear/uk-tax                                                 controllers.employment.EmploymentTaxController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/uk-tax                                                 controllers.employment.EmploymentTaxController.submit(taxYear: Int, employmentId: String)
-
-GET        /:taxYear/benefits/company-car                                   controllers.benefits.fuel.CompanyCarBenefitsController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/company-car                                   controllers.benefits.fuel.CompanyCarBenefitsController.submit(taxYear: Int, employmentId: String)
-
-GET        /:taxYear/benefits/living-accommodation-amount                   controllers.benefits.accommodation.LivingAccommodationBenefitAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/living-accommodation-amount                   controllers.benefits.accommodation.LivingAccommodationBenefitAmountController.submit(taxYear: Int, employmentId: String)
-
-GET        /:taxYear/benefits/medical-dental-amount                         controllers.benefits.medical.MedicalOrDentalBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/medical-dental-amount                         controllers.benefits.medical.MedicalOrDentalBenefitsAmountController.submit(taxYear: Int, employmentId: String)
-
-GET        /:taxYear/expenses/professional-fees-and-subscriptions           controllers.expenses.ProfessionalFeesAndSubscriptionsExpensesController.show(taxYear: Int)
-POST       /:taxYear/expenses/professional-fees-and-subscriptions           controllers.expenses.ProfessionalFeesAndSubscriptionsExpensesController.submit(taxYear: Int)
 
 GET        /language/:lang                                                  controllers.LanguageSwitchController.switchToLanguage(lang: String)
 

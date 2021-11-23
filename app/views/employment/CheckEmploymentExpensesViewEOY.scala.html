@@ -80,7 +80,7 @@
                     professionalSubscriptionsQuestion => showQuestionRow("checkYourExpenses.professionalSubscriptionsQuestion", professionalSubscriptionsQuestion,controllers.expenses.routes.ProfessionalFeesAndSubscriptionsExpensesController.show(taxYear))
                 },
                 expenses.professionalSubscriptions.map{
-                    professionalSubscriptions => showRows("checkYourExpenses.professionalSubscriptionsAmount", professionalSubscriptions)
+                    professionalSubscriptions => showRows("checkYourExpenses.professionalSubscriptionsAmount", professionalSubscriptions, controllers.expenses.routes.ProfFeesAndSubscriptionsExpensesAmountController.show(taxYear))
                 },
                 expenses.otherAndCapitalAllowancesQuestion.map{
                     otherAndCapitalAllowancesQuestion => showQuestionRow("checkYourExpenses.otherAndCapitalAllowancesQuestion", otherAndCapitalAllowancesQuestion)

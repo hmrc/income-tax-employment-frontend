@@ -46,7 +46,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
   private def carFuelBenefitsPage(taxYear: Int) = s"$appUrl/$taxYear/benefits/car-fuel?employmentId=$employmentId"
 
-  val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/benefits/car-fuel?employmentId=$employmentId"
+  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/car-fuel?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -259,7 +259,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
     }
 
@@ -278,7 +278,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
       }
 
       "updates the carFuelQuestion to false and carFuel to None" in {
@@ -305,7 +305,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
       }
 
       "updates the carFuelQuestion to false and carFuel to None" in {
@@ -333,7 +333,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       "redirects to the car fuel amount page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/car-fuel-amount?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/car-fuel-amount?employmentId=$employmentId")
       }
 
       "updates the car fuel question to be true" in {
@@ -360,7 +360,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       "redirects to the car fuel amount page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe
-          Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/car-fuel-amount?employmentId=$employmentId")
+          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/car-fuel-amount?employmentId=$employmentId")
       }
 
       "updates the car fuel question to be true" in {

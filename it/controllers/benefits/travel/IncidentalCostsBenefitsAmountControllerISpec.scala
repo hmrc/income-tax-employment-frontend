@@ -40,7 +40,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
     s"$appUrl/$taxYear/benefits/incidental-overnight-costs-amount?employmentId=$employmentId"
 
   val continueLink: String =
-    s"/income-through-software/return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs-amount?employmentId=$employmentId"
+    s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs-amount?employmentId=$employmentId"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -86,7 +86,9 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+
     def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
+
     val expectedHintText = "For example, £600 or £193.54"
     val currencyPrefix = "£"
     val continueButtonText = "Continue"
@@ -94,7 +96,9 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+
     def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
+
     val expectedHintText = "For example, £600 or £193.54"
     val currencyPrefix = "£"
     val continueButtonText = "Continue"
@@ -275,7 +279,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
       s"has a SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs?employmentId=$employmentId")
+        result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs?employmentId=$employmentId")
       }
     }
 
@@ -448,10 +452,10 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
       s"redirect to the entertaining page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(EntertainingBenefitsController.show(taxYearEOY, employmentId).url)
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe Some(newAmount)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe Some(newAmount)
       }
 
     }
@@ -474,12 +478,11 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
       s"redirect to the entertaining question page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(EntertainingBenefitsController.show(taxYearEOY, employmentId).url)
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe Some(newAmount)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe Some(newAmount)
       }
-
     }
 
     "redirect to the overview page when it's not end of year" which {
@@ -511,7 +514,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
       s"has a SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"/income-through-software/return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs?employmentId=$employmentId")
+        result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs?employmentId=$employmentId")
       }
     }
 

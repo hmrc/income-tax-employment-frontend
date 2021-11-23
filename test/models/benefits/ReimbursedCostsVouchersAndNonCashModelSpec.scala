@@ -16,6 +16,8 @@
 
 package models.benefits
 
+import controllers.benefits.reimbursed.routes._
+import controllers.employment.routes.CheckYourBenefitsController
 import utils.UnitTest
 
 class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
@@ -39,7 +41,7 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
   "isFinished" should {
     "return reimbursedCostsVouchersAndNonCash yes no page" in {
       model.copy(reimbursedCostsVouchersAndNonCashQuestion = None).isFinished(taxYear, employmentId) shouldBe
-        Some(controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId))
     }
     "return none when section is finished" in {
       model.copy(reimbursedCostsVouchersAndNonCashQuestion = Some(false)).isFinished(taxYear, "employmentId") shouldBe None
@@ -50,12 +52,12 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
   "expensesSectionFinished" should {
     "return expenses yes no page" in {
       model.copy(expensesQuestion = None).expensesSectionFinished(taxYear, employmentId) shouldBe
-        Some(controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(CheckYourBenefitsController.show(taxYear, employmentId))
     }
 
     "return expenses amount page" in {
       model.copy(expenses = None).expensesSectionFinished(taxYear, employmentId) shouldBe
-        Some(controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(CheckYourBenefitsController.show(taxYear, employmentId))
     }
 
     "return none when section is finished" in {
@@ -67,12 +69,12 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
   "taxableExpensesSectionFinished" should {
     "return taxableExpenses yes no page" in {
       model.copy(taxableExpensesQuestion = None).taxableExpensesSectionFinished(taxYear, employmentId) shouldBe
-        Some(controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(CheckYourBenefitsController.show(taxYear, employmentId))
     }
 
     "return taxableExpenses amount page" in {
       model.copy(taxableExpenses = None).taxableExpensesSectionFinished(taxYear, employmentId) shouldBe
-        Some(controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(TaxableCostsBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return none when section is finished" in {
@@ -84,12 +86,12 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
   "vouchersAndCreditCardsSectionFinished" should {
     "return vouchersAndCreditCards yes no page" in {
       model.copy(vouchersAndCreditCardsQuestion = None).vouchersAndCreditCardsSectionFinished(taxYear, employmentId) shouldBe
-        Some(controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(CheckYourBenefitsController.show(taxYear, employmentId))
     }
 
     "return vouchersAndCreditCards amount page" in {
       model.copy(vouchersAndCreditCards = None).vouchersAndCreditCardsSectionFinished(taxYear, employmentId) shouldBe
-        Some(controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(CheckYourBenefitsController.show(taxYear, employmentId))
     }
 
     "return none when section is finished" in {
@@ -101,12 +103,12 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
   "nonCashSectionFinished" should {
     "return nonCash yes no page" in {
       model.copy(nonCashQuestion = None).nonCashSectionFinished(taxYear, employmentId) shouldBe
-        Some(controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(CheckYourBenefitsController.show(taxYear, employmentId))
     }
 
     "return nonCash amount page" in {
       model.copy(nonCash = None).nonCashSectionFinished(taxYear, employmentId) shouldBe
-        Some(controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(CheckYourBenefitsController.show(taxYear, employmentId))
     }
 
     "return none when section is finished" in {
@@ -118,12 +120,12 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
   "otherItemsSectionFinished" should {
     "return otherItems yes no page" in {
       model.copy(otherItemsQuestion = None).otherItemsSectionFinished(taxYear, employmentId) shouldBe
-        Some(controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(CheckYourBenefitsController.show(taxYear, employmentId))
     }
 
     "return otherItems amount page" in {
       model.copy(otherItems = None).otherItemsSectionFinished(taxYear, employmentId) shouldBe
-        Some(controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(CheckYourBenefitsController.show(taxYear, employmentId))
     }
 
     "return none when section is finished" in {

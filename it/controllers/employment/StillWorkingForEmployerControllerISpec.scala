@@ -46,7 +46,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
   private def stillWorkingForEmployerPageUrl(taxYear: Int) = s"$appUrl/$taxYear/still-working-for-employer?employmentId=$employmentId"
 
-  val continueLink = s"/income-through-software/return/employment-income/$taxYearEOY/still-working-for-employer?employmentId=$employmentId"
+  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/still-working-for-employer?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -270,7 +270,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+            result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
           }
 
         }
@@ -291,7 +291,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"http://localhost:11111/income-through-software/return/$taxYear/view")
+            result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
           }
         }
 
@@ -312,7 +312,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           "redirects to the how much pay page" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/how-much-pay?employmentId=$employmentId")
+              Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/how-much-pay?employmentId=$employmentId")
             lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
             cyamodel.employment.employmentDetails.cessationDate shouldBe None
             cyamodel.employment.employmentDetails.cessationDateQuestion shouldBe Some(true)
@@ -339,7 +339,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           "redirects to the how much pay details page" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/how-much-pay?employmentId=$employmentId")
+              Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/how-much-pay?employmentId=$employmentId")
             lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
             cyamodel.employment.employmentDetails.cessationDate shouldBe cessationDate
             cyamodel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)
@@ -365,7 +365,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           "redirects to the missing start date page page" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
-              Some(s"/income-through-software/return/employment-income/$taxYearEOY/employment-start-date?employmentId=$employmentId")
+              Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employment-start-date?employmentId=$employmentId")
             lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
             cyamodel.employment.employmentDetails.cessationDate shouldBe cessationDate
             cyamodel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)

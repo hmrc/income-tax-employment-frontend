@@ -70,7 +70,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   implicit def wsClient: WSClient = app.injector.instanceOf[WSClient]
 
-  lazy val appUrl = s"http://localhost:$port/income-through-software/return/employment-income"
+  lazy val appUrl = s"http://localhost:$port/update-and-submit-income-tax-return/employment-income"
 
   def await[T](awaitable: Awaitable[T]): T = Await.result(awaitable, Duration.Inf)
 
@@ -446,11 +446,29 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
       incomeTaxPaidByDirectorQuestion = Some(true),
       incomeTaxPaidByDirector = Some(100.00),
       paymentsOnEmployeesBehalfQuestion = Some(true),
-      paymentsOnEmployeesBehalf = Some(200.00),
+      paymentsOnEmployeesBehalf = Some(200.00)
     )
 
   def emptyIncomeTaxOrIncurredCostsModel: IncomeTaxAndCostsModel =
     IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion = Some(false))
+
+  def fullReimbursedCostsVouchersAndNonCashModel: ReimbursedCostsVouchersAndNonCashModel =
+    ReimbursedCostsVouchersAndNonCashModel(
+      reimbursedCostsVouchersAndNonCashQuestion = Some(true),
+      expensesQuestion = Some(true),
+      expenses = Some(100.00),
+      taxableExpensesQuestion = Some(true),
+      taxableExpenses = Some(200.00),
+      vouchersAndCreditCardsQuestion = Some(true),
+      vouchersAndCreditCards = Some(300.00),
+      nonCashQuestion = Some(true),
+      nonCash = Some(400.00),
+      otherItemsQuestion = Some(true),
+      otherItems = Some(500.00)
+    )
+
+  def emptyReimbursedCostsVouchersAndNonCashModel: ReimbursedCostsVouchersAndNonCashModel =
+    ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonCashQuestion = Some(false))
 
   def fullExpensesCYAModel: ExpensesCYAModel =
     ExpensesCYAModel(ExpensesViewModel(
