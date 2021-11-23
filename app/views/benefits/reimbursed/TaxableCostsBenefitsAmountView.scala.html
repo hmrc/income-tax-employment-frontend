@@ -26,21 +26,21 @@
 @(taxYear: Int, form: Form[BigDecimal], preAmount: Option[BigDecimal], empId:String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @titleText = @{
-    messages(s"benefits.incurredCostsAmount.title.${if(user.isAgent) "agent" else "individual"}")
+    messages(s"benefits.taxableCostsBenefitsAmount.title.${if(user.isAgent) "agent" else "individual"}")
 }
 
 @contentHtml = {
-    @if(preAmount.isDefined) {
-        <p class="govuk-body">@messages("common.ifItWasNot", bigDecimalCurrency(preAmount.get.toString))</p>
+    @if(preAmount.isDefined){
+        <p class="govuk-body" id="previous-amount-text">@messages("common.ifItWasNot", bigDecimalCurrency(preAmount.get.toString))</p>
     }
-    <p class="govuk-body">@messages("common.enterTheTotal")</p>
+    <p class="govuk-body" id="enter-total-text">@messages("common.enterTheTotal")</p>
 }
 
 @layout(pageTitle = titleText, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
 
     @errorSummary(form.errors)
 
-    @formWithCsrf(controllers.benefits.income.routes.IncurredCostsBenefitsAmountController.submit(taxYear, empId)) {
+    @formWithCsrf(action = controllers.benefits.reimbursed.routes.TaxableCostsBenefitsAmountController.submit(taxYear, empId)) {
         @inputText(
             form,
             id = "amount",
@@ -53,11 +53,10 @@
             isPageHeading = false,
             currency = true
         )
-
         @button()
     }
 }
 
 @{
-// $COVERAGE-OFF$
+    // $COVERAGE-OFF$
 }
