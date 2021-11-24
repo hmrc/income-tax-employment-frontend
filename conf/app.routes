@@ -213,6 +213,9 @@ POST       /:taxYear/expenses/uniforms-work-clothes-or-tools                cont
 GET        /:taxYear/expenses/amount-for-uniforms-work-clothes-or-tools     controllers.expenses.UniformsOrToolsExpensesAmountController.show(taxYear: Int)
 POST       /:taxYear/expenses/amount-for-uniforms-work-clothes-or-tools     controllers.expenses.UniformsOrToolsExpensesAmountController.submit(taxYear: Int)
 
+GET        /:taxYear/expenses/amount-for-other-equipment                    controllers.expenses.OtherEquipmentAmountController.show(taxYear: Int)
+POST       /:taxYear/expenses/amount-for-other-equipment                    controllers.expenses.OtherEquipmentAmountController.submit(taxYear: Int)
+
 GET        /:taxYear/expenses/professional-fees-and-subscriptions           controllers.expenses.ProfessionalFeesAndSubscriptionsExpensesController.show(taxYear: Int)
 POST       /:taxYear/expenses/professional-fees-and-subscriptions           controllers.expenses.ProfessionalFeesAndSubscriptionsExpensesController.submit(taxYear: Int)
 
