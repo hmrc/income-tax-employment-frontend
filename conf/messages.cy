@@ -1105,3 +1105,14 @@ expenses.otherEquipment.thisIncludes.example1 = the cost of buying small items -
 expenses.otherEquipment.thisIncludes.example2 = capital allowances for larger items - like machinery and computers
 expenses.otherEquipment.error.individual = Select yes to claim for buying other equipment
 expenses.otherEquipment.error.agent = Select yes to claim for your client buying other equipment
+
+expenses.otherEquipmentAmount.title.individual = How much do you want to claim for buying other equipment?
+expenses.otherEquipmentAmount.title.agent = How much do you want to claim for buying other equipment for your client?
+expenses.otherEquipmentAmount.wantToClaim.individual =  You told us you want to claim {0} for buying other equipment. Tell us if this has changed.
+expenses.otherEquipmentAmount.wantToClaim.agent =  You told us you want to claim {0} for buying other equipment for your client. Tell us if this has changed.
+expenses.otherEquipmentAmount.error.noEntry.individual = Enter the amount you want to claim for buying other equipment
+expenses.otherEquipmentAmount.error.noEntry.agent = Enter the amount you want to claim for your client buying other equipment
+expenses.otherEquipmentAmount.error.overMaximum.individual = The amount you want to claim for buying other equipment must be less than £100,000,000,000
+expenses.otherEquipmentAmount.error.overMaximum.agent = The amount you want to claim for your client buying other equipment must be less than £100,000,000,000
+expenses.otherEquipmentAmount.error.invalidFormat.individual = Enter the amount you want to claim for buying other equipment in the correct format
+expenses.otherEquipmentAmount.error.invalidFormat.agent = Enter the amount you want to claim for your client buying other equipment in the correct format
