@@ -55,7 +55,7 @@ case class ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonC
     expensesQuestion match {
       case Some(true) => if(expenses.isDefined) None else Some(NonTaxableCostsBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO expenses yes no page
+      case None => Some(NonTaxableCostsBenefitsController.show(taxYear, employmentId))
     }
   }
 

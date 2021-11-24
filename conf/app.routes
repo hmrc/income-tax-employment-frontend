@@ -186,6 +186,9 @@ POST       /:taxYear/benefits/incurred-costs-amount                         cont
 GET        /:taxYear/benefits/reimbursed-costs-vouchers-non-cash-benefits   controllers.benefits.reimbursed.ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/reimbursed-costs-vouchers-non-cash-benefits   controllers.benefits.reimbursed.ReimbursedCostsVouchersAndNonCashBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/non-taxable-costs                             controllers.benefits.reimbursed.NonTaxableCostsBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/non-taxable-costs                             controllers.benefits.reimbursed.NonTaxableCostsBenefitsController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/benefits/non-taxable-costs-amount                      controllers.benefits.reimbursed.NonTaxableCostsBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/non-taxable-costs-amount                      controllers.benefits.reimbursed.NonTaxableCostsBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
