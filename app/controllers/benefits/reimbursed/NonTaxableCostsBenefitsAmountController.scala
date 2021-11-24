@@ -18,6 +18,7 @@ package controllers.benefits.reimbursed
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.reimbursed.routes.TaxableCostsBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import models.User
@@ -100,11 +101,10 @@ class NonTaxableCostsBenefitsAmountController @Inject()(implicit val cc: Message
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
                   isPriorSubmission = cya.isPriorSubmission, hasPriorBenefits = cya.hasPriorBenefits)(errorHandler.internalServerError()) {
 
-                  if (cya.isPriorSubmission) {
+                  if (cya.hasPriorBenefits) {
                     Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                   } else {
-                    //TODO - redirect to taxable expenses yes no question
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                    Redirect(TaxableCostsBenefitsController.show(taxYear, employmentId))
                   }
                 }
             }

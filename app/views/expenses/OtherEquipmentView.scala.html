@@ -29,7 +29,7 @@
 
 @(form: Form[Boolean], taxYear: Int)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
-@titleForUse = @{messages(s"expenses.professionalFeesAndSubscriptions.title.${if(user.isAgent) "agent" else "individual"}")}
+@titleForUse = @{messages(s"expenses.otherEquipment.title.${if(user.isAgent) "agent" else "individual"}")}
 @headingForUse = @{titleForUse}
 
 @hasFormErrors = @{form.hasErrors}
@@ -37,20 +37,16 @@
 @contentHtml = {
     <p class="govuk-body">@{messages("common.thisIncludes")}</p>
     <ul class="govuk-list govuk-list--bullet">
-        <li>@{messages(s"expenses.professionalFeesAndSubscriptions.thisIncludes.example1.${if(user.isAgent) "agent" else "individual"}")}</li>
-        <li>@{messages(s"expenses.professionalFeesAndSubscriptions.thisIncludes.example2.${if(user.isAgent) "agent" else "individual"}")}</li>
+        <li>@{messages(s"expenses.otherEquipment.thisIncludes.example1")}</li>
+        <li>@{messages(s"expenses.otherEquipment.thisIncludes.example2")}</li>
     </ul>
-    <p class="govuk-body">
-            <a target="_blank" id=professional-fees-link href="https://www.gov.uk/tax-relief-for-employees/professional-fees-and-subscriptions"
-               class="govuk-link">@{messages(s"expenses.professionalFeesAndSubscriptions.checkLink.${if(user.isAgent) "agent" else "individual"}")}</a>@messages("common.fullStop")
-    </p>
 }
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
 
     @errorSummary(form.errors.distinct)
 
-    @formWithCsrf(action = controllers.expenses.routes.ProfessionalFeesAndSubscriptionsExpensesController.submit(taxYear)) {
+    @formWithCsrf(action = controllers.expenses.routes.OtherEquipmentController.submit(taxYear)) {
         @inputRadio(
             form = form,
             heading = headingForUse,

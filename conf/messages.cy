@@ -47,6 +47,7 @@ common.currency.hint = For example, £600 or £193.54
 common.employmentDetails = Employment details
 common.employmentDetailsAndBenefits = Employment details and benefits
 common.benefits = Benefits
+common.thisIncludes = This includes things like:
 
 common.status.updated = Updated
 common.status.cannotUpdate = Cannot update
@@ -1064,7 +1065,6 @@ expenses.uniformsWorkClothesToolsAmount.error.invalidFormat.agent = Enter the am
 
 expenses.professionalFeesAndSubscriptions.title.individual = Do you want to claim for professional fees and subscriptions?
 expenses.professionalFeesAndSubscriptions.title.agent = Do you want to claim for professional fees and subscriptions for your client?
-expenses.professionalFeesAndSubscriptions.thisIncludes = This includes things like:
 expenses.professionalFeesAndSubscriptions.thisIncludes.example1.individual = professional membership fees, if you have to pay the fees to do your job
 expenses.professionalFeesAndSubscriptions.thisIncludes.example1.agent = professional membership fees, if your client has to pay the fees to do their job
 expenses.professionalFeesAndSubscriptions.thisIncludes.example2.individual = yearly subscriptions to approved professional bodies or learned societies relevant to your job
@@ -1098,3 +1098,10 @@ expenses.professionalFeesAndSubscriptionsAmount.error.invalidFormat.individual =
 expenses.professionalFeesAndSubscriptionsAmount.error.invalidFormat.agent = Enter the amount you want to claim for your client’s professional fees and subscriptions in the correct format
 expenses.professionalFeesAndSubscriptionsAmount.replayContent.individual = You told us you want to claim {0} for professional fees and subscriptions. Tell us if this has changed.
 expenses.professionalFeesAndSubscriptionsAmount.replayContent.agent = You told us you want to claim {0} for your client’s professional fees and subscriptions. Tell us if this has changed.
+
+expenses.otherEquipment.title.individual = Do you want to claim for buying other equipment?
+expenses.otherEquipment.title.agent = Do you want to claim for buying other equipment for your client?
+expenses.otherEquipment.thisIncludes.example1 = the cost of buying small items - like electrical drills and protective clothing
+expenses.otherEquipment.thisIncludes.example2 = capital allowances for larger items - like machinery and computers
+expenses.otherEquipment.error.individual = Select yes to claim for buying other equipment
+expenses.otherEquipment.error.agent = Select yes to claim for your client buying other equipment
