@@ -254,7 +254,7 @@
         if(benefits.reimbursedDetailsPopulated){
             Seq(
                 benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expensesQuestion).map{
-                    expensesQuestion => showQuestionRow("checkYourBenefits.nonTaxable", expensesQuestion)
+                    expensesQuestion => showQuestionRow("checkYourBenefits.nonTaxable", expensesQuestion, controllers.benefits.reimbursed.routes.NonTaxableCostsBenefitsController.show(taxYear,employmentId))
                 },
                 benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expenses).map{
                     expenses => showRows("checkYourBenefits.nonTaxableAmount", expenses, controllers.benefits.reimbursed.routes.NonTaxableCostsBenefitsAmountController.show(taxYear, employmentId))

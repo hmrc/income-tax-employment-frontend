@@ -52,7 +52,7 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
   "expensesSectionFinished" should {
     "return expenses yes no page" in {
       model.copy(expensesQuestion = None).expensesSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(controllers.benefits.reimbursed.routes.NonTaxableCostsBenefitsController.show(taxYear, employmentId))
     }
 
     "return expenses amount page" in {

@@ -557,8 +557,7 @@ object RedirectService extends Logging {
 
     commonReimbursedCostsVouchersAndNonCashModelRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to expenses yes/no page
-        ConditionalRedirect(expensesQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(expensesQuestion.isEmpty, NonTaxableCostsBenefitsController.show(taxYear, employmentId)),
         ConditionalRedirect(expensesQuestion.contains(false), TaxableCostsBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(expensesQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
