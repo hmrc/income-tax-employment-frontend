@@ -17,6 +17,7 @@
 package controllers.benefits.reimbursed
 
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.reimbursed.routes.TaxableCostsBenefitsController
 import forms.AmountForm
 import models.User
 import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
@@ -129,8 +130,8 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   private def employmentUserData(hasPriorBenefits: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = true, hasPriorBenefits = hasPriorBenefits, employmentCyaModel)
 
-  def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
-    EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
+  def cyaModel(benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
+    EmploymentCYAModel(EmploymentDetails(employerName = "employerName", currentDataIsHmrcHeld = true), benefits)
 
   def benefits(reimbursedModel: Option[ReimbursedCostsVouchersAndNonCashModel]): BenefitsViewModel =
     BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
@@ -164,8 +165,8 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
-                Some(benefits(Some(fullReimbursedCostsVouchersAndNonCashModel.copy(expenses = Some(22.00))))))), userRequest)
+              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
+                Some(fullReimbursedCostsVouchersAndNonCashModel.copy(expenses = Some(22.00))))))), userRequest)
               urlGet(nonTaxableCostsBenefitsAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -190,14 +191,14 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
           }
 
-          "expenses is None" which {
+          "there is no prior value (expenses is None)" which {
 
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel("name", hmrc = true,
-                Some(benefits(Some(fullReimbursedCostsVouchersAndNonCashModel.copy(expenses = None)))))), userRequest)
+              insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel(Some(benefits(
+                Some(fullReimbursedCostsVouchersAndNonCashModel.copy(expenses = None)))))), userRequest)
               urlGet(nonTaxableCostsBenefitsAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -230,8 +231,8 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
-                Some(benefits(Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
+              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
+                Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
               urlGet(nonTaxableCostsBenefitsAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -261,8 +262,8 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel("name", hmrc = true,
-                Some(benefits(Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
+              insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel(Some(benefits(
+                Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
               urlGet(nonTaxableCostsBenefitsAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -295,8 +296,8 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
-          Some(benefits(Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
+          Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
         urlGet(nonTaxableCostsBenefitsAmountPageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -319,6 +320,40 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
       }
     }
 
+    "redirect to taxable expenses question when non-taxable expenses question is false" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel(Some(benefits(
+          Some(fullReimbursedCostsVouchersAndNonCashModel.copy(expensesQuestion = Some(false))))))), userRequest)
+        urlGet(nonTaxableCostsBenefitsAmountPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      s"has an SEE OTHER($SEE_OTHER) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(TaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
+      }
+
+    }
+
+    "redirect to check your benefits page when reimbursed costs, vouchers and non-cash question is false" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel(Some(benefits(
+          Some(emptyReimbursedCostsVouchersAndNonCashModel))))), userRequest)
+        urlGet(nonTaxableCostsBenefitsAmountPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      s"has an SEE OTHER($SEE_OTHER) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+      }
+
+    }
+
   }
 
   ".submit" should {
@@ -334,7 +369,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true, Some(benefits(
+              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
                 Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
               urlPost(nonTaxableCostsBenefitsAmountPageUrl(taxYearEOY), body = "", welsh = user.isWelsh,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -372,7 +407,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true, Some(benefits(
+              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
                 Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
               urlPost(nonTaxableCostsBenefitsAmountPageUrl(taxYearEOY), body = form, welsh = user.isWelsh,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -405,7 +440,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true, Some(benefits(
+              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
                 Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
               urlPost(nonTaxableCostsBenefitsAmountPageUrl(taxYearEOY), body = form, welsh = user.isWelsh,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -444,8 +479,8 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
-          Some(benefits(Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
+          Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
         urlPost(nonTaxableCostsBenefitsAmountPageUrl(taxYearEOY), follow = false, body = form,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -471,36 +506,33 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel("name", hmrc = true,
-          Some(benefits(Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
+        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel(Some(benefits(
+          Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
         urlPost(nonTaxableCostsBenefitsAmountPageUrl(taxYearEOY), follow = false, body = form,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"redirect to taxable expenses yes/no question page" in {
         result.status shouldBe SEE_OTHER
-        //TODO - redirect to taxable expenses yes no question page when available
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(TaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
       s"update expenses in reimbursedCostsVouchersAndNonCash model" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.reimbursedCostsVouchersAndNonCashQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expensesQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expenses)) shouldBe Some(newAmount)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.reimbursedCostsVouchersAndNonCashQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expensesQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expenses)) shouldBe Some(newAmount)
       }
 
-
     }
-
 
     "redirect to the overview page when it's not EOY" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
-          Some(benefits(Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
+          Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
         urlPost(nonTaxableCostsBenefitsAmountPageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -521,6 +553,40 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
       }
+    }
+
+    "redirect to taxable expenses question when non-taxable expenses question is false" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel(Some(benefits(
+          Some(fullReimbursedCostsVouchersAndNonCashModel.copy(expensesQuestion = Some(false))))))), userRequest)
+        urlPost(nonTaxableCostsBenefitsAmountPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      s"has an SEE OTHER($SEE_OTHER) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(TaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
+      }
+
+    }
+
+    "redirect to check your benefits page when reimbursed costs, vouchers and non-cash question is false" which {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel(Some(benefits(
+          Some(emptyReimbursedCostsVouchersAndNonCashModel))))), userRequest)
+        urlPost(nonTaxableCostsBenefitsAmountPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      s"has an SEE OTHER($SEE_OTHER) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+      }
+
     }
 
   }
