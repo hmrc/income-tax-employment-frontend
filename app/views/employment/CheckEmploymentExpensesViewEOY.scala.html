@@ -86,7 +86,7 @@
                     otherAndCapitalAllowancesQuestion => showQuestionRow("checkYourExpenses.otherAndCapitalAllowancesQuestion", otherAndCapitalAllowancesQuestion, controllers.expenses.routes.OtherEquipmentController.show(taxYear))
                 },
                 expenses.otherAndCapitalAllowances.map{
-                    otherAndCapitalAllowances => showRows("checkYourExpenses.otherAndCapitalAllowancesAmount", otherAndCapitalAllowances)
+                    otherAndCapitalAllowances => showRows("checkYourExpenses.otherAndCapitalAllowancesAmount", otherAndCapitalAllowances, controllers.expenses.routes.OtherEquipmentAmountController.show(taxYear))
                 }
             ).flatten
 
