@@ -23,5 +23,5 @@
         isExternal: Boolean = false
 )(implicit messages: Messages)
 
-<a href="@link" class="govuk-link" @id.map(x => s"id=$x") @if(isExternal) { target="_blank" }>@messages(messageKey)@if(isExternal)(" " + messages("common.opensInNewWindowOrTab"))</a>
+<a href="@link" class="govuk-link" @id.map(x => s"id=$x") @if(isExternal) { target="_blank"  rel="noopener norefferer" }>@messages(messageKey)@if(isExternal)(" " + messages("common.opensInNewWindowOrTab"))</a>
 
