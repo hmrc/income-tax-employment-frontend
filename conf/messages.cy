@@ -968,6 +968,15 @@ benefits.reimbursedCostsVouchersAndNonCash.title.agent = Did your client get any
 benefits.reimbursedCostsVouchersAndNonCash.error.individual = Select yes if you got reimbursed costs, vouchers or non-cash benefits from your employer
 benefits.reimbursedCostsVouchersAndNonCash.error.agent = Select yes if your client got reimbursed costs, vouchers or non-cash benefits from their employer
 
+benefits.nonTaxableCostsBenefitsAmount.title.individual = How much of your non-taxable costs were reimbursed by your employer?
+benefits.nonTaxableCostsBenefitsAmount.title.agent = How much of your client’s non-taxable costs were reimbursed by their employer?
+benefits.nonTaxableCostsBenefitsAmount.error.noEntry.individual = Enter the amount of non-taxable costs reimbursed by your employer
+benefits.nonTaxableCostsBenefitsAmount.error.noEntry.agent = Enter the amount of non-taxable costs reimbursed by your client’s employer
+benefits.nonTaxableCostsBenefitsAmount.error.incorrectFormat.individual = Enter the amount of non-taxable costs reimbursed by your employer in the correct format
+benefits.nonTaxableCostsBenefitsAmount.error.incorrectFormat.agent = Enter the amount of non-taxable costs reimbursed by your client’s employer in the correct format
+benefits.nonTaxableCostsBenefitsAmount.error.overMaximum.individual = The non-taxable costs reimbursed by your employer must be less than £100,000,000,000
+benefits.nonTaxableCostsBenefitsAmount.error.overMaximum.agent = The non-taxable costs reimbursed by your client’s employer must be less than £100,000,000,000
+
 benefits.taxableCosts.title.individual = Were any of your taxable costs reimbursed by your employer?
 benefits.taxableCosts.title.agent = Were any of your client’s taxable costs reimbursed by their employer?
 benefits.taxableCosts.theseAre = These are any costs that are not taxed at source, for example, commuting for a non-business purpose.

@@ -711,6 +711,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val reimbursedCostsVouchersAndNonCashBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/reimbursed-costs-vouchers-non-cash-benefits?employmentId=001"
     val taxableCostsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/taxable-costs?employmentId=001"
     val taxableCostsReimbursedByEmployerAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/taxable-costs-amount?employmentId=001"
+    val nonTaxableCostsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/non-taxable-costs-amount?employmentId=001"
   }
 
 
@@ -897,7 +898,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(commonResults.reimbursedHeader, fieldHeaderSelector(16))
           changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.yes, 17, 1, s"${user.commonExpectedResults.changeText} ${specificResults.reimbursedSubheadingHiddenText}", reimbursedCostsVouchersAndNonCashBenefitsHref)
           changeAmountRowCheck(commonResults.nonTaxable, commonResults.yes, 17, 2, s"${user.commonExpectedResults.changeText} ${specificResults.nonTaxableHiddenText}", dummyHref)
-          changeAmountRowCheck(commonResults.nonTaxableAmount, "£22", 17, 3, s"${user.commonExpectedResults.changeText} ${specificResults.nonTaxableAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.nonTaxableAmount, "£22", 17, 3, s"${user.commonExpectedResults.changeText} ${specificResults.nonTaxableAmountHiddenText}", nonTaxableCostsBenefitsAmountHref)
           changeAmountRowCheck(commonResults.taxableCosts, commonResults.yes, 17, 4, s"${user.commonExpectedResults.changeText} ${specificResults.taxableCostsHiddenText}", taxableCostsBenefitsHref)
           changeAmountRowCheck(commonResults.taxableCostsAmount, "£23", 17, 5, s"${user.commonExpectedResults.changeText} ${specificResults.taxableCostsAmountHiddenText}", taxableCostsReimbursedByEmployerAmountHref)
           changeAmountRowCheck(commonResults.vouchers, commonResults.yes, 17, 6, s"${user.commonExpectedResults.changeText} ${specificResults.vouchersHiddenText}", dummyHref)
