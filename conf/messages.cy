@@ -968,6 +968,13 @@ benefits.reimbursedCostsVouchersAndNonCash.title.agent = Did your client get any
 benefits.reimbursedCostsVouchersAndNonCash.error.individual = Select yes if you got reimbursed costs, vouchers or non-cash benefits from your employer
 benefits.reimbursedCostsVouchersAndNonCash.error.agent = Select yes if your client got reimbursed costs, vouchers or non-cash benefits from their employer
 
+benefits.nonTaxableCosts.title.individual = Were any of your non-taxable costs reimbursed by your employer?
+benefits.nonTaxableCosts.title.agent = Were any of your client’s non-taxable costs reimbursed by their employer?
+benefits.nonTaxableCosts.paragraph.individual = This includes costs of equipment or supplies required to carry out your job.
+benefits.nonTaxableCosts.paragraph.agent = This includes costs of equipment or supplies required to carry out their job.
+benefits.nonTaxableCosts.error.noEntry.individual = Select yes if any of your non-taxable costs were reimbursed by your employer
+benefits.nonTaxableCosts.error.noEntry.agent = Select yes if any of your client’s non-taxable costs were reimbursed by their employer
+
 benefits.nonTaxableCostsBenefitsAmount.title.individual = How much of your non-taxable costs were reimbursed by your employer?
 benefits.nonTaxableCostsBenefitsAmount.title.agent = How much of your client’s non-taxable costs were reimbursed by their employer?
 benefits.nonTaxableCostsBenefitsAmount.error.noEntry.individual = Enter the amount of non-taxable costs reimbursed by your employer

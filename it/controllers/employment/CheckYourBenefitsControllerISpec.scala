@@ -693,22 +693,23 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val employerProvidedServicesBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/employer-provided-services?employmentId=001"
     val telephoneEmploymentBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/telephone-amount?employmentId=001"
     val educationalServicesAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/educational-services-amount?employmentId=001"
-    val employerProvidedServicesBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/employer-provided-services-amount?employmentId=001"
-    val professionalSubscriptionsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/professional-fees-or-subscriptions?employmentId=001"
-    val professionalSubscriptionsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/professional-fees-or-subscriptions-amount?employmentId=001"
-    val medicalChildcareEducationHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/medical-dental-childcare-education-loans?employmentId=001"
-    val medicalDentalHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/medical-dental?employmentId=001"
-    val childcareBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/childcare?employmentId=001"
-    val childcareBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/childcare-amount?employmentId=001"
-    val beneficialLoansBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/beneficial-loans?employmentId=001"
-    val medicalOrDentalBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/medical-dental-amount?employmentId=001"
-    val beneficialLoansAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/beneficial-loans-amount?employmentId=001"
-    val incomeTaxOrIncurredCostsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/employer-income-tax-or-incurred-costs?employmentId=001"
-    val incomeTaxBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/employer-income-tax?employmentId=001"
-    val educationServiceBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/educational-services?employmentId=001"
-    val incurredCostsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/incurred-costs?employmentId=001"
-    val incurredCostsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/incurred-costs-amount?employmentId=001"
-    val reimbursedCostsVouchersAndNonCashBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/reimbursed-costs-vouchers-non-cash-benefits?employmentId=001"
+    val employerProvidedServicesBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/employer-provided-services-amount?employmentId=001"
+    val professionalSubscriptionsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/professional-fees-or-subscriptions?employmentId=001"
+    val professionalSubscriptionsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/professional-fees-or-subscriptions-amount?employmentId=001"
+    val medicalChildcareEducationHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/medical-dental-childcare-education-loans?employmentId=001"
+    val medicalDentalHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/medical-dental?employmentId=001"
+    val childcareBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/childcare?employmentId=001"
+    val childcareBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/childcare-amount?employmentId=001"
+    val beneficialLoansBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/beneficial-loans?employmentId=001"
+    val medicalOrDentalBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/medical-dental-amount?employmentId=001"
+    val beneficialLoansAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/beneficial-loans-amount?employmentId=001"
+    val incomeTaxOrIncurredCostsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/employer-income-tax-or-incurred-costs?employmentId=001"
+    val incomeTaxBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/employer-income-tax?employmentId=001"
+    val educationServiceBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/educational-services?employmentId=001"
+    val incurredCostsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/incurred-costs?employmentId=001"
+    val incurredCostsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/incurred-costs-amount?employmentId=001"
+    val reimbursedCostsVouchersAndNonCashBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/reimbursed-costs-vouchers-non-cash-benefits?employmentId=001"
+    val nonTaxableCostsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/non-taxable-costs?employmentId=001"
     val taxableCostsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/taxable-costs?employmentId=001"
     val taxableCostsReimbursedByEmployerAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/taxable-costs-amount?employmentId=001"
     val nonTaxableCostsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/non-taxable-costs-amount?employmentId=001"
@@ -897,8 +898,10 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           textOnPageCheck(commonResults.reimbursedHeader, fieldHeaderSelector(16))
           changeAmountRowCheck(commonResults.reimbursedSubheading, commonResults.yes, 17, 1, s"${user.commonExpectedResults.changeText} ${specificResults.reimbursedSubheadingHiddenText}", reimbursedCostsVouchersAndNonCashBenefitsHref)
-          changeAmountRowCheck(commonResults.nonTaxable, commonResults.yes, 17, 2, s"${user.commonExpectedResults.changeText} ${specificResults.nonTaxableHiddenText}", dummyHref)
+
+          changeAmountRowCheck(commonResults.nonTaxable, commonResults.yes, 17, 2, s"${user.commonExpectedResults.changeText} ${specificResults.nonTaxableHiddenText}", nonTaxableCostsHref)
           changeAmountRowCheck(commonResults.nonTaxableAmount, "£22", 17, 3, s"${user.commonExpectedResults.changeText} ${specificResults.nonTaxableAmountHiddenText}", nonTaxableCostsBenefitsAmountHref)
+
           changeAmountRowCheck(commonResults.taxableCosts, commonResults.yes, 17, 4, s"${user.commonExpectedResults.changeText} ${specificResults.taxableCostsHiddenText}", taxableCostsBenefitsHref)
           changeAmountRowCheck(commonResults.taxableCostsAmount, "£23", 17, 5, s"${user.commonExpectedResults.changeText} ${specificResults.taxableCostsAmountHiddenText}", taxableCostsReimbursedByEmployerAmountHref)
           changeAmountRowCheck(commonResults.vouchers, commonResults.yes, 17, 6, s"${user.commonExpectedResults.changeText} ${specificResults.vouchersHiddenText}", dummyHref)
