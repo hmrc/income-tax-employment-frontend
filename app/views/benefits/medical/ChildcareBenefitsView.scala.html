@@ -20,11 +20,11 @@
 @import views.html.templates.helpers.InputRadio
 
 @this(
-        layout: Layout,
-        inputRadio: InputRadio,
-        formWithCsrf: FormWithCSRF,
-        errorSummary: ErrorSummary,
-        button: Button
+    layout: Layout,
+    inputRadio: InputRadio,
+    formWithCsrf: FormWithCSRF,
+    errorSummary: ErrorSummary,
+    button: Button
 )
 
 @(form: Form[Boolean], taxYear: Int, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
@@ -39,7 +39,7 @@
     <p class="govuk-body">
         @messages("benefits.childcare.onlyNeed")
         <a target="_blank" id=exempt-link href="https://www.gov.uk/expenses-and-benefits-childcare/whats-exempt"
-           class="govuk-link">@messages("benefits.childcare.onlyNeedLink")</a>@messages("common.fullStop")
+           class="govuk-link" rel="noopener norefferer">@messages("benefits.childcare.onlyNeedLink")</a>@messages("common.fullStop")
     </p>
     <p class="govuk-body">@{messages(s"common.checkWithEmployer.${if(user.isAgent) "agent" else "individual"}")}</p>
 }
