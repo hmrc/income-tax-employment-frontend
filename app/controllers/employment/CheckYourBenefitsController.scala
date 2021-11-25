@@ -21,10 +21,9 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.routes.ReceiveAnyBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
-import javax.inject.Inject
 import models.User
 import models.benefits.{Benefits, BenefitsViewModel}
-import models.employment.AllEmploymentData
+import models.employment.{AllEmploymentData, EmploymentSource}
 import models.mongo.EmploymentCYAModel
 import play.api.Logging
 import play.api.i18n.I18nSupport
@@ -34,6 +33,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.{CheckYourBenefitsView, CheckYourBenefitsViewEOY}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
@@ -60,7 +60,7 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
         case Some((source, isUsingCustomerData)) =>
           val benefits = source.employmentBenefits.flatMap(_.benefits)
           benefits match {
-            case Some(benefits) => performAuditAndRenderView(benefits, taxYear, isInYear, employmentId, isUsingCustomerData)
+            case Some(benefits) => performAuditAndRenderView(benefits, taxYear, isInYear, employmentId, isUsingCustomerData, allEmploymentData = allEmploymentData)
             case None => redirect
           }
         case None => redirect
@@ -71,12 +71,12 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
       employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear) match {
         case Some((source, isUsingCustomerData)) =>
           employmentSessionService.createOrUpdateSessionData(employmentId, EmploymentCYAModel.apply(source, isUsingCustomerData),
-            taxYear, isPriorSubmission = true, source.hasPriorBenefits()
+            taxYear, isPriorSubmission = true, source.hasPriorBenefits
           )(errorHandler.internalServerError()) {
             val benefits: Option[Benefits] = source.employmentBenefits.flatMap(_.benefits)
             benefits match {
               case Some(benefits) =>
-                performAuditAndRenderView(benefits, taxYear, isInYear, employmentId, isUsingCustomerData)
+                performAuditAndRenderView(benefits, taxYear, isInYear, employmentId, isUsingCustomerData, allEmploymentData = allEmploymentData)
               case None =>
                 Redirect(ReceiveAnyBenefitsController.show(taxYear, employmentId))
             }
@@ -99,7 +99,7 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
             benefits match {
               case Some(benefits) =>
                 val isUsingCustomer = benefits.isUsingCustomerData
-                Future(performAuditAndRenderView(benefits.toBenefits, taxYear, isInYear, employmentId, isUsingCustomer, Some(benefits)))
+                Future(performAuditAndRenderView(benefits.toBenefits, taxYear, isInYear, employmentId, isUsingCustomer, Some(benefits), allEmploymentData = prior.get))
               case None =>
                 Future(Redirect(ReceiveAnyBenefitsController.show(taxYear, employmentId)))
             }
@@ -111,19 +111,22 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
   }
 
   def performAuditAndRenderView(benefits: Benefits, taxYear: Int, isInYear: Boolean,
-                                employmentId: String, isUsingCustomerData: Boolean, cya: Option[BenefitsViewModel] = None)(implicit user: User[AnyContent]): Result ={
+                                employmentId: String, isUsingCustomerData: Boolean, cya: Option[BenefitsViewModel] = None, allEmploymentData: AllEmploymentData)(implicit user: User[AnyContent]): Result = {
     val auditModel = ViewEmploymentBenefitsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, benefits)
     auditService.sendAudit[ViewEmploymentBenefitsAudit](auditModel.toAuditModel)
-    if(isInYear){
-      Ok(checkYourBenefitsView(taxYear, benefits))
+    val employmentSource: Seq[EmploymentSource] = employmentSessionService.getLatestEmploymentData(allEmploymentData, isInYear)
+    val isSingleEmployment: Boolean = employmentSource.length == 1
+
+    if (isInYear) {
+      Ok(checkYourBenefitsView(taxYear, benefits, isSingleEmployment, isInYear, employmentId))
     } else {
       Ok(checkYourBenefitsViewEOY(taxYear, benefits.toBenefitsViewModel(isUsingCustomerData, cyaBenefits = cya), employmentId, isUsingCustomerData))
     }
   }
 
-  def submit(taxYear:Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
 
-    inYearAction.notInYear(taxYear){
+    inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
           case Some(cya) =>
@@ -138,7 +141,7 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
             //            }
             Future.successful(errorHandler.internalServerError())
 
-          case None => Future.successful(Redirect(CheckYourBenefitsController.show(taxYear,employmentId)))
+          case None => Future.successful(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
         }
       }
     }

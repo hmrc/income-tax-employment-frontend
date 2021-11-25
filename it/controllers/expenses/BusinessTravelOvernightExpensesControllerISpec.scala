@@ -16,11 +16,15 @@
 
 package controllers.expenses
 
-import controllers.employment.routes.CheckEmploymentExpensesController
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
+import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
+import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
+import controllers.expenses.routes.{CheckEmploymentExpensesController, TravelAndOvernightAmountController}
 import forms.YesNoForm
-import models.User
-import models.expenses.{Expenses, ExpensesViewModel}
-import models.mongo.{ExpensesCYAModel, ExpensesUserData}
+import models.expenses.ExpensesViewModel
+import models.mongo.ExpensesCYAModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -30,18 +34,10 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear - 1
+  private val taxYearEOY: Int = taxYear - 1
 
-  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
-
-  private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
-    ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
-
-  def cyaModel(isUsingCustomerData: Boolean, expenses: Expenses): ExpensesCYAModel =
-    ExpensesCYAModel.makeModel(expenses, isUsingCustomerData, submittedOn = None)
-
-  def expensesViewModel(jobExpensesQuestion: Option[Boolean] = None): ExpensesViewModel =
-    ExpensesViewModel(claimingEmploymentExpenses = true, jobExpensesQuestion = jobExpensesQuestion, isUsingCustomerData = true)
+  private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel) =
+    anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/business-travel-and-overnight-expenses"
 
@@ -57,9 +53,13 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
     val h2Selector: String = s"#main-content > div > div > form > details > div > h2"
 
     def h3Selector(index: Int): String = s"#main-content > div > div > form > details > div > h3:nth-child($index)"
+
     def paragraphSelector(index: Int): String = s"#main-content > div > div > form > div > fieldset > legend > p:nth-child($index)"
+
     def bulletListSelector(index: Int): String = s"#main-content > div > div > form > div > fieldset > legend > ul > li:nth-child($index)"
+
     def detailsParagraphSelector(index: Int): String = s"#main-content > div > div > form > details > div > p:nth-child($index)"
+
     def detailsBulletList(index: Int): String = s"#main-content > div > div > form > details > div > ol > li:nth-child($index)"
   }
 
@@ -190,23 +190,22 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
     val expectedDetails3 = "take away any amount your client’s employer paid them towards their costs"
   }
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   ".show" should {
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "render the Business Travel and Overnight Amount Question page with no pre-filled radio buttons" which {
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              emptyExpensesCYAModel.copy(expensesViewModel())), userRequest)
+            val expensesViewModel = anExpensesViewModel.copy(jobExpensesQuestion = None)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel.copy(expensesViewModel)), aUserRequest)
             urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -230,8 +229,8 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           textOnPageCheck(expectedExample5, bulletListSelector(5))
           textOnPageCheck(expectedExample6, bulletListSelector(6))
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotInclude, paragraphSelector(4))
-          radioButtonCheck(yesText, 1, None)
-          radioButtonCheck(noText, 2, None)
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
 
           textOnPageCheck(expectedDetailsTitle, detailsSelector)
@@ -255,8 +254,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              fullExpensesCYAModel), userRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -280,8 +278,8 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           textOnPageCheck(expectedExample5, bulletListSelector(5))
           textOnPageCheck(expectedExample6, bulletListSelector(6))
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotInclude, paragraphSelector(4))
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
 
           textOnPageCheck(expectedDetailsTitle, detailsSelector)
@@ -305,8 +303,8 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              emptyExpensesCYAModel.copy(expensesViewModel(Some(false)))), userRequest)
+            val expensesViewModel = anExpensesViewModel.copy(jobExpensesQuestion = Some(false))
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel.copy(expensesViewModel)), aUserRequest)
             urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -330,8 +328,8 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           textOnPageCheck(expectedExample5, bulletListSelector(5))
           textOnPageCheck(expectedExample6, bulletListSelector(6))
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotInclude, paragraphSelector(4))
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(true))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = true)
           buttonCheck(buttonText, continueButtonSelector)
 
           textOnPageCheck(expectedDetailsTitle, detailsSelector)
@@ -357,7 +355,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
       implicit lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
+        userDataStub(anIncomeTaxUserData, nino, taxYear)
         urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -391,7 +389,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           lazy val result: WSResponse = {
             dropExpensesDB()
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              emptyExpensesCYAModel.copy(expensesViewModel())), userRequest)
+              anExpensesCYAModel.copy(anExpensesViewModel.copy(jobExpensesQuestion = None))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(pageUrl(taxYearEOY), body = form, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -415,8 +413,8 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           textOnPageCheck(expectedExample5, bulletListSelector(5))
           textOnPageCheck(expectedExample6, bulletListSelector(6))
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotInclude, paragraphSelector(4))
-          radioButtonCheck(yesText, 1, None)
-          radioButtonCheck(noText, 2, None)
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
 
           textOnPageCheck(expectedDetailsTitle, detailsSelector)
@@ -440,88 +438,88 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
       }
     }
 
-    "redirect to Check Employment Expenses page" when {
-
-      "user selects 'yes' and not a prior submission" which {
-        lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
-
-        lazy val result: WSResponse = {
-          dropExpensesDB()
-          authoriseAgentOrIndividual(isAgent = false)
-          userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
-          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-            emptyExpensesCYAModel.copy(expensesViewModel(Some(false)))), userRequest)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        "has a SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
-        }
-
-        "updates jobExpensesQuestion to Some(true)" in {
-          lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
-          cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
-          cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(true)
-        }
-
-      }
-
-      "user selects no and it's a prior submission" which {
-        lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
-
-        lazy val result: WSResponse = {
-          dropExpensesDB()
-          authoriseAgentOrIndividual(isAgent = false)
-          userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
-          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-            fullExpensesCYAModel), userRequest)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        "has a SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
-        }
-
-        "update jobExpensesQuestion to Some(false) and wipes jobExpenses amount" in {
-          lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
-
-          cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
-          cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(false)
-          cyaModel.expensesCya.expenses.jobExpenses shouldBe None
-        }
-      }
-
-      "user has no expenses" which {
-        lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
-
-        lazy val result: WSResponse = {
-          dropExpensesDB()
-          authoriseAgentOrIndividual(isAgent = false)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        "has an SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
-        }
-      }
-    }
-
-    "redirect to tax overview page if it's not EOY" which {
-      implicit lazy val result: WSResponse = {
+    "redirect to Travel and Overnight Expenses amount page when user selects 'yes' and not a prior submission" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
+      lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
-        urlPost(pageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val expensesViewModel = ExpensesViewModel(claimingEmploymentExpenses = true, Some(true), isUsingCustomerData = false)
+        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(expensesViewModel)), aUserRequest)
+        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "has a url of overview page" in {
+      "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
+        result.header("location") shouldBe Some(TravelAndOvernightAmountController.show(taxYearEOY).url)
+      }
+
+      "updates jobExpensesQuestion to Some(true)" in {
+        lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
+        cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
+        cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(true)
+      }
+    }
+    "updates jobExpensesQuestion to Some(true)" in {
+      lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
+      cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
+      cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(true)
+    }
+  }
+
+  "redirect to Check Employment Expenses page" when {
+    "user selects no and it's a prior submission" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
+
+      lazy val result: WSResponse = {
+        dropExpensesDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYear)
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
+        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has a SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+      }
+
+      "update jobExpensesQuestion to Some(false) and wipes jobExpenses amount" in {
+        lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
+
+        cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
+        cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(false)
+        cyaModel.expensesCya.expenses.jobExpenses shouldBe None
       }
     }
 
+    "user has no expenses" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
+
+      lazy val result: WSResponse = {
+        dropExpensesDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+      }
+    }
+  }
+
+  "redirect to tax overview page if it's not EOY" which {
+    implicit lazy val result: WSResponse = {
+      dropExpensesDB()
+      authoriseAgentOrIndividual(isAgent = false)
+      userDataStub(anIncomeTaxUserData, nino, taxYear)
+      urlPost(pageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+    }
+
+    "has a url of overview page" in {
+      result.status shouldBe SEE_OTHER
+      result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
+    }
   }
 }

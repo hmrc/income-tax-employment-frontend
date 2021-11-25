@@ -16,12 +16,16 @@
 
 package controllers.benefits.utilities
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import builders.models.benefits.UtilitiesAndServicesModelBuilder.aUtilitiesAndServicesModel
+import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import controllers.benefits.utilities.routes._
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
-import models.User
-import models.benefits.{BenefitsViewModel, UtilitiesAndServicesModel}
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -31,27 +35,16 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest with EmploymentDatabaseHelper with ViewHelpers {
 
-  val taxYearEOY: Int = taxYear - 1
-  val employmentId: String = "001"
-
-  def professionalSubscriptionsBenefitsPageUrl(taxYear: Int): String =
-    s"$appUrl/$taxYear/benefits/professional-fees-or-subscriptions?employmentId=$employmentId"
-
-  val formLink: String =
+  private val taxYearEOY: Int = taxYear - 1
+  private val employmentId: String = "employmentId"
+  private val formLink: String =
     s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/professional-fees-or-subscriptions?employmentId=$employmentId"
 
-  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+  private def professionalSubscriptionsBenefitsPageUrl(taxYear: Int): String =
+    s"$appUrl/$taxYear/benefits/professional-fees-or-subscriptions?employmentId=$employmentId"
 
   private def employmentUserData(hasPriorBenefits: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = true, hasPriorBenefits = hasPriorBenefits, employmentCyaModel)
-
-  def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
-    EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
-
-  def benefits(utilitiesAndServicesModel: UtilitiesAndServicesModel): BenefitsViewModel =
-    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
-      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel), isUsingCustomerData = true,
-      isBenefitsReceived = true, utilitiesAndServicesModel = Some(utilitiesAndServicesModel))
+    anEmploymentUserData.copy(isPriorSubmission = true, hasPriorBenefits = hasPriorBenefits, employment = employmentCyaModel)
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -133,33 +126,26 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
     val expectedErrorMessage = "Select yes if your client’s employer covered costs for any professional fees or subscriptions"
   }
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-    )
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   ".show" should {
-
     userScenarios.foreach { user =>
-
       import Selectors._
       import user.commonExpectedResults._
-
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "render the employer professional subscriptions page with no pre-filled radio buttons" which {
-
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-            insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
-              Some(benefits(fullUtilitiesAndServicesModel.copy(employerProvidedProfessionalSubscriptionsQuestion = None))))), userRequest)
-            urlGet(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(employerProvidedProfessionalSubscriptionsQuestion = None)))
+            insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+            urlGet(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has an OK($OK) status" in {
@@ -173,22 +159,20 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
           captionCheck(expectedCaption(taxYearEOY), captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
           textOnPageCheck(user.specificExpectedResults.get.checkWithEmployerText, checkWithEmployerSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(formLink, formSelector)
 
           welshToggleCheck(user.isWelsh)
-
         }
 
         "render the employer professional subscriptions page with the yes radio button pre-filled and the user has cya data and prior benefits" which {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-            insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
-              Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             urlGet(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -204,21 +188,20 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
           captionCheck(expectedCaption(taxYearEOY), captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
           textOnPageCheck(user.specificExpectedResults.get.checkWithEmployerText, checkWithEmployerSelector)
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(formLink, formSelector)
 
           welshToggleCheck(user.isWelsh)
-
         }
 
         "render the employer professional subscriptions page with the no radio button pre-filled and the user has cya data but no prior benefits" which {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel("name", hmrc = true,
-              Some(benefits(fullUtilitiesAndServicesModel.copy(employerProvidedProfessionalSubscriptionsQuestion = Some(false)))))), userRequest)
+            val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(employerProvidedProfessionalSubscriptionsQuestion = Some(false))))
+            insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
             urlGet(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -234,15 +217,13 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
           captionCheck(expectedCaption(taxYearEOY), captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
           textOnPageCheck(user.specificExpectedResults.get.checkWithEmployerText, checkWithEmployerSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(true))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = true)
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(formLink, formSelector)
 
           welshToggleCheck(user.isWelsh)
-
         }
-
       }
     }
 
@@ -250,9 +231,8 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
-          Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
         urlGet(professionalSubscriptionsBenefitsPageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -260,7 +240,6 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
-
     }
 
     "redirect to the check your benefits page when there is no cya data found" which {
@@ -274,27 +253,21 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
       }
-
     }
   }
 
   ".submit" should {
-
     userScenarios.foreach { user =>
-
       import Selectors._
       import user.commonExpectedResults._
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "return an error when a form is submitted with no entry" which {
-
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-            insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true, Some(benefits(
-              fullUtilitiesAndServicesModel)))), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             urlPost(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), body = "", welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -310,8 +283,8 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
           captionCheck(expectedCaption(taxYearEOY), captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
           textOnPageCheck(user.specificExpectedResults.get.checkWithEmployerText, checkWithEmployerSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           errorSummaryCheck(user.specificExpectedResults.get.expectedErrorMessage, yesRadioSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorMessage, Some("value"))
           formPostLinkCheck(formLink, formSelector)
@@ -320,40 +293,35 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
     }
 
     "successfully submit a form when a user answers no and has prior benefits" which {
-
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
-
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true, Some(benefits(
-          fullUtilitiesAndServicesModel)))), userRequest)
-        urlPost(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), body = form, follow = false,
-          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        urlPost(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"update the utilitiesAndServicesModel model and redirect to other services benefits page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(OtherServicesBenefitsController.show(taxYearEOY, employmentId).url)
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.utilitiesAndServicesQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptionsQuestion)) shouldBe Some(false)
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions)) shouldBe None
-
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptionsQuestion)) shouldBe Some(false)
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions)) shouldBe None
       }
-
     }
 
     "successfully submit a form when a user answers yes and doesn't have prior benefits" which {
-
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
-
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel("name", hmrc = true, Some(benefits(
-          fullUtilitiesAndServicesModel.copy(employerProvidedProfessionalSubscriptionsQuestion = None))))), userRequest)
+        val benefitsViewModel = aBenefitsViewModel
+          .copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(employerProvidedProfessionalSubscriptionsQuestion = None)))
+          .copy(medicalChildcareEducationModel = None)
+        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         urlPost(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), body = form, follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -361,9 +329,9 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
       s"update the utilitiesAndServicesModel model and redirect to the professional subscriptions amount page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(ProfessionalSubscriptionsBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.utilitiesAndServicesQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptionsQuestion)) shouldBe Some(true)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptionsQuestion)) shouldBe Some(true)
       }
 
     }
@@ -372,9 +340,8 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("name", hmrc = true,
-          Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
         urlPost(professionalSubscriptionsBenefitsPageUrl(taxYear), body = "", follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
@@ -397,9 +364,6 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
       }
-
     }
-
   }
-
 }

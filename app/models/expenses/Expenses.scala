@@ -28,12 +28,22 @@ case class Expenses(businessTravelCosts: Option[BigDecimal] = None,
                     vehicleExpenses: Option[BigDecimal] = None,
                     mileageAllowanceRelief: Option[BigDecimal] = None) {
 
-
   def expensesPopulated(cyaExpenses: Option[ExpensesViewModel] = None): Boolean = {
     val hasExpenses: Boolean = cyaExpenses.exists(_.claimingEmploymentExpenses)
     hasExpenses || businessTravelCosts.isDefined || jobExpenses.isDefined || flatRateJobExpenses.isDefined ||
       professionalSubscriptions.isDefined || hotelAndMealExpenses.isDefined || otherAndCapitalAllowances.isDefined ||
       vehicleExpenses.isDefined || mileageAllowanceRelief.isDefined
+  }
+
+  def isEmpty: Boolean = {
+    businessTravelCosts.isEmpty &&
+      jobExpenses.isEmpty &&
+      flatRateJobExpenses.isEmpty &&
+      professionalSubscriptions.isEmpty &&
+      hotelAndMealExpenses.isEmpty &&
+      otherAndCapitalAllowances.isEmpty &&
+      vehicleExpenses.isEmpty &&
+      mileageAllowanceRelief.isEmpty
   }
 
   def toExpensesViewModel(isUsingCustomerData: Boolean, submittedOn: Option[String] = None,

@@ -16,8 +16,12 @@
 
 package controllers.employment
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import controllers.employment.routes.CheckEmploymentDetailsController
-import models.User
+import models.employment.AllEmploymentData
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -30,6 +34,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
 
   override val taxYear = 2021
   val url = s"$appUrl/$taxYear/uk-tax?employmentId=001"
+  val amountInputName = "amount"
 
   trait CommonExpectedResults {
     val hint: String
@@ -60,35 +65,33 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
     val expectedH1: String = s"How much UK tax was taken from your maggie earnings?"
     val expectedTitle: String = s"How much UK tax was taken from your earnings?"
     val expectedPTextNoData: String = "You can usually find this amount in the ‘Pay and Income Tax details’ section of your P60."
-    val expectedPTextWithData: String = s"If £6,782.92 was not taken in UK tax, tell us the correct amount."
+    val expectedPTextWithData: String = s"If £200 was not taken in UK tax, tell us the correct amount."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedH1: String = s"How much UK tax was taken from your client’s maggie earnings?"
     val expectedTitle: String = s"How much UK tax was taken from your client’s earnings?"
     val expectedPTextNoData: String = "You can usually find this amount in the ‘Pay and Income Tax details’ section of your client’s P60."
-    val expectedPTextWithData: String = s"If £6,782.92 was not taken in UK tax, tell us the correct amount."
-
+    val expectedPTextWithData: String = s"If £200 was not taken in UK tax, tell us the correct amount."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedH1: String = s"How much UK tax was taken from your maggie earnings?"
     val expectedTitle: String = s"How much UK tax was taken from your earnings?"
     val expectedPTextNoData: String = "You can usually find this amount in the ‘Pay and Income Tax details’ section of your P60."
-    val expectedPTextWithData: String = s"If £6,782.92 was not taken in UK tax, tell us the correct amount."
-
+    val expectedPTextWithData: String = s"If £200 was not taken in UK tax, tell us the correct amount."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedH1: String = s"How much UK tax was taken from your client’s maggie earnings?"
     val expectedTitle: String = s"How much UK tax was taken from your client’s earnings?"
     val expectedPTextNoData: String = "You can usually find this amount in the ‘Pay and Income Tax details’ section of your client’s P60."
-    val expectedPTextWithData: String = s"If £6,782.92 was not taken in UK tax, tell us the correct amount."
+    val expectedPTextWithData: String = s"If £200 was not taken in UK tax, tell us the correct amount."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true,  CommonExpectedEN, Some(ExpectedAgentEN)),
+      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
       UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
@@ -102,33 +105,30 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
     val inputAmountField = "#amount"
   }
 
-
-
-    def cya(taxToDate:Option[BigDecimal] =Some(6782.92), isPriorSubmission:Boolean=true): EmploymentUserData =
-      EmploymentUserData (sessionId, mtditid,nino, taxYear, "001", isPriorSubmission, hasPriorBenefits = isPriorSubmission,
+  private def cya(taxToDate: Option[BigDecimal] = Some(200), isPriorSubmission: Boolean = true): EmploymentUserData =
+    EmploymentUserData(sessionId, mtditid, nino, taxYear, "001", isPriorSubmission, hasPriorBenefits = isPriorSubmission,
       EmploymentCYAModel(
         EmploymentDetails("maggie", totalTaxToDate = taxToDate, currentDataIsHmrcHeld = false),
         None
       )
     )
 
-
-  val multipleEmployments = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"), employmentDetailsAndBenefits()))
+  val multipleEmployments: AllEmploymentData = anAllEmploymentData.copy(hmrcEmploymentData = Seq(
+    anEmploymentSource.copy(employmentBenefits = None),
+    anEmploymentSource.copy(employmentId = "002", employmentBenefits = None)
+  ))
 
   ".show" when {
-
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
         import Selectors._
-
         //noinspection ScalaStyle
         "for end of year return a page with prior data" which {
-
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
-            insertCyaData(cya(), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+            userDataStub(anIncomeTaxUserData, nino, taxYear)
+            insertCyaData(cya(), aUserRequest)
             urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -144,16 +144,15 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           textOnPageCheck(user.specificExpectedResults.get.expectedPTextWithData, pText)
           buttonCheck(user.commonExpectedResults.continue, continueButton)
           textOnPageCheck(user.commonExpectedResults.hint, hintText)
-          inputFieldCheck(user.commonExpectedResults.amount, currencyBox)
+          inputFieldValueCheck(amountInputName, inputAmountField, "")
         }
 
         //noinspection ScalaStyle
         "for end of year return a page without prior data" which {
-
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(cya(None), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+            insertCyaData(cya(None), aUserRequest)
             urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -169,7 +168,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           textOnPageCheck(user.specificExpectedResults.get.expectedPTextNoData, pText)
           buttonCheck(user.commonExpectedResults.continue, continueButton)
           textOnPageCheck(user.commonExpectedResults.hint, hintText)
-          inputFieldCheck(user.commonExpectedResults.amount, currencyBox)
+          inputFieldValueCheck(amountInputName, inputAmountField, "")
         }
 
 
@@ -181,30 +180,27 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 noUserDataStub(nino, taxYear)
-                insertCyaData(cya(None, isPriorSubmission = false), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+                insertCyaData(cya(None, isPriorSubmission = false), aUserRequest)
                 urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-              inputFieldValueCheck("", inputAmountField)
-
+              inputFieldValueCheck(amountInputName, inputAmountField, "")
             }
-
 
             "cya data and prior data are the same(i.e. user has clicked on change link)" when {
               implicit lazy val result: WSResponse = {
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
-                userDataStub(userData(multipleEmployments), nino, taxYear)
-                insertCyaData(cya(), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+                userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYear)
+                insertCyaData(cya(), aUserRequest)
                 urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-              inputFieldValueCheck("", inputAmountField)
-
+              inputFieldValueCheck(amountInputName, inputAmountField, "")
             }
           }
 
@@ -213,14 +209,14 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
               implicit lazy val result: WSResponse = {
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
-                userDataStub(userData(multipleEmployments), nino, taxYear)
-                insertCyaData(cya(Some(100.00)), User(mtditid, None, nino, sessionId, "test")(fakeRequest))
+                userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYear)
+                insertCyaData(cya(Some(100.00)), aUserRequest)
                 urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-              inputFieldValueCheck("100", inputAmountField)
+              inputFieldValueCheck(amountInputName, inputAmountField, "100")
             }
 
             "cya amount field is filled and prior data is none (i.e user has added a new employment and updated their tax but now want to change it)" when {
@@ -228,12 +224,13 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 noUserDataStub(nino, taxYear)
-                insertCyaData(cya(Some(100.00), isPriorSubmission = false), User(mtditid, None, nino, sessionId, "agent")(fakeRequest))
+                insertCyaData(cya(Some(100.00), isPriorSubmission = false), aUserRequest)
                 urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
+
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-              inputFieldValueCheck("100", inputAmountField)
+              inputFieldValueCheck(amountInputName, inputAmountField, "100")
             }
           }
         }

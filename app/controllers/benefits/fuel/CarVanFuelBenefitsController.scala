@@ -61,7 +61,7 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
-          cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion)) match {
+          cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) match {
             case Some(questionResult) => Future.successful(Ok(carVanFuelBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
             case None => Future.successful(Ok(carVanFuelBenefitsView(yesNoForm, taxYear, employmentId)))
           }
@@ -86,11 +86,11 @@ class CarVanFuelBenefitsController @Inject()(implicit val cc: MessagesController
               val updatedCyaModel: EmploymentCYAModel = {
                 carVanFuel match {
                   case Some(carVanFuelModel) if yesNo =>
-                    cya.copy(employmentBenefits = benefits.map(_.copy(carVanFuelModel = Some(carVanFuelModel.copy(carVanFuelQuestion = Some(true))))))
+                    cya.copy(employmentBenefits = benefits.map(_.copy(carVanFuelModel = Some(carVanFuelModel.copy(sectionQuestion = Some(true))))))
                   case Some(_) =>
                     cya.copy(employmentBenefits = benefits.map(_.copy(carVanFuelModel = Some(CarVanFuelModel.clear))))
                   case _ =>
-                    cya.copy(employmentBenefits = benefits.map(_.copy(carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(yesNo))))))
+                    cya.copy(employmentBenefits = benefits.map(_.copy(carVanFuelModel = Some(CarVanFuelModel(sectionQuestion = Some(yesNo))))))
                 }
               }
 

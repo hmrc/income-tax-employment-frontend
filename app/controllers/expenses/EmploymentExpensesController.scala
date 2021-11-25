@@ -17,7 +17,7 @@
 package controllers.expenses
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckEmploymentExpensesController
+import controllers.expenses.routes.{CheckEmploymentExpensesController, ExpensesInterruptPageController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
@@ -26,7 +26,7 @@ import models.mongo.ExpensesCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
+import services.{EmploymentSessionService, ExpensesRedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.expenses.EmploymentExpensesView
@@ -81,12 +81,16 @@ class EmploymentExpensesController @Inject()(implicit val cc: MessagesController
 
               employmentSessionService.createOrUpdateExpensesSessionData(
                 updatedCyaModel, taxYear, data.exists(_.isPriorSubmission), data.exists(_.isPriorSubmission))(errorHandler.internalServerError()) {
-                Redirect(CheckEmploymentExpensesController.show(taxYear))
+                val nextPage = if(yesNo) {
+                  ExpensesInterruptPageController.show(taxYear)
+                } else {
+                  CheckEmploymentExpensesController.show(taxYear)
+                }
+                ExpensesRedirectService.expensesSubmitRedirect(updatedCyaModel, nextPage)(taxYear)
               }
             }
           )
       }
     }
-
   }
 }

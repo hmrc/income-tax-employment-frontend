@@ -33,7 +33,7 @@ class IncomeTaxAndCostsModelSpec extends UnitTest {
 
     "return call to 'Income tax paid by director amount' page when incomeTaxPaidByDirectorQuestion is true and incomeTaxPaidByDirector amount not defined" in {
       val underTest = IncomeTaxAndCostsModel(incomeTaxPaidByDirectorQuestion = Some(true), incomeTaxPaidByDirector = None)
-      underTest.incomeTaxPaidByDirectorSectionFinished(taxYear, employmentId) shouldBe Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      underTest.incomeTaxPaidByDirectorSectionFinished(taxYear, employmentId) shouldBe Some(IncomeTaxBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return None when incomeTaxPaidByDirectorQuestion is false" in {
@@ -71,13 +71,13 @@ class IncomeTaxAndCostsModelSpec extends UnitTest {
 
   "isFinished" should {
     "return result of incomeTaxPaidByDirectorSectionFinished when incomeTaxOrCostsQuestion is true and incomeTaxPaidByDirectorQuestion is not None" in {
-      val underTest = IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion = Some(true), incomeTaxPaidByDirectorQuestion = None)
+      val underTest = IncomeTaxAndCostsModel(sectionQuestion = Some(true), incomeTaxPaidByDirectorQuestion = None)
       underTest.isFinished(taxYear, employmentId) shouldBe underTest.incomeTaxPaidByDirectorSectionFinished(taxYear, employmentId)
     }
 
     "return result of paymentsOnEmployeesBehalfSectionFinished when incomeTaxOrCostsQuestion is true and incomeTaxPaidByDirectorQuestion is false and " +
       "paymentsOnEmployeesBehalfQuestion is None" in {
-      val underTest = IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion = Some(true),
+      val underTest = IncomeTaxAndCostsModel(sectionQuestion = Some(true),
         incomeTaxPaidByDirectorQuestion = Some(false),
         paymentsOnEmployeesBehalfQuestion = None)
 
@@ -85,7 +85,7 @@ class IncomeTaxAndCostsModelSpec extends UnitTest {
     }
 
     "return None when incomeTaxOrCostsQuestion is true and incomeTaxPaidByDirectorQuestion and paymentsOnEmployeesBehalfQuestion are false" in {
-      val underTest = IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion = Some(true),
+      val underTest = IncomeTaxAndCostsModel(sectionQuestion = Some(true),
         incomeTaxPaidByDirectorQuestion = Some(false),
         paymentsOnEmployeesBehalfQuestion = Some(false)
       )
@@ -94,12 +94,12 @@ class IncomeTaxAndCostsModelSpec extends UnitTest {
     }
 
     "return None when incomeTaxOrCostsQuestion is false" in {
-      val underTest = IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion = Some(false))
+      val underTest = IncomeTaxAndCostsModel(sectionQuestion = Some(false))
       underTest.isFinished(taxYear, employmentId) shouldBe None
     }
 
     "return call to 'Income tax or costs' section yes/no page when incomeTaxOrCostsQuestion is None" in {
-      val underTest = IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion = None)
+      val underTest = IncomeTaxAndCostsModel(sectionQuestion = None)
       underTest.isFinished(taxYear, employmentId) shouldBe Some(IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId))
     }
   }
@@ -107,7 +107,7 @@ class IncomeTaxAndCostsModelSpec extends UnitTest {
   "clear" should {
     "return empty IncomeTaxAndCostsModel with main question set to false" in {
       IncomeTaxAndCostsModel.clear shouldBe IncomeTaxAndCostsModel(
-        incomeTaxOrCostsQuestion = Some(false),
+        sectionQuestion = Some(false),
         incomeTaxPaidByDirectorQuestion = None,
         incomeTaxPaidByDirector = None,
         paymentsOnEmployeesBehalfQuestion = None,

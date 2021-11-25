@@ -62,7 +62,7 @@ class AccommodationRelocationBenefitsController @Inject()(implicit val cc: Messa
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
-          cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodationRelocationQuestion)) match {
+          cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.sectionQuestion)) match {
             case Some(questionResult) => Future.successful(Ok(accommodationRelocationBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
             case None => Future.successful(Ok(accommodationRelocationBenefitsView(yesNoForm, taxYear, employmentId)))
           }
@@ -89,13 +89,13 @@ class AccommodationRelocationBenefitsController @Inject()(implicit val cc: Messa
                 accommodationRelocation match {
                   case Some(accommodationRelocationModel) if yesNo =>
                     cya.copy(employmentBenefits = benefits.map(_.copy(accommodationRelocationModel =
-                      Some(accommodationRelocationModel.copy(accommodationRelocationQuestion = Some(true))))))
+                      Some(accommodationRelocationModel.copy(sectionQuestion = Some(true))))))
                   case Some(_) =>
                     cya.copy(employmentBenefits = benefits.map(_.copy(accommodationRelocationModel =
                       Some(AccommodationRelocationModel.clear))))
                   case _ =>
                     cya.copy(employmentBenefits = benefits.map(_.copy(accommodationRelocationModel =
-                      Some(AccommodationRelocationModel(accommodationRelocationQuestion = Some(yesNo))))))
+                      Some(AccommodationRelocationModel(sectionQuestion = Some(yesNo))))))
                 }
               }
 

@@ -25,7 +25,7 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
   private val employmentId = "id"
   private val taxYear = 2022
   private val model = ReimbursedCostsVouchersAndNonCashModel(
-    reimbursedCostsVouchersAndNonCashQuestion = Some(true),
+    sectionQuestion = Some(true),
     expensesQuestion = Some(true),
     expenses = Some(55.55),
     taxableExpensesQuestion = Some(true),
@@ -40,11 +40,11 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
 
   "isFinished" should {
     "return reimbursedCostsVouchersAndNonCash yes no page" in {
-      model.copy(reimbursedCostsVouchersAndNonCashQuestion = None).isFinished(taxYear, employmentId) shouldBe
+      model.copy(sectionQuestion = None).isFinished(taxYear, employmentId) shouldBe
         Some(ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId))
     }
     "return none when section is finished" in {
-      model.copy(reimbursedCostsVouchersAndNonCashQuestion = Some(false)).isFinished(taxYear, "employmentId") shouldBe None
+      model.copy(sectionQuestion = Some(false)).isFinished(taxYear, "employmentId") shouldBe None
       model.isFinished(taxYear, "employmentId") shouldBe None
     }
   }
@@ -58,7 +58,7 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
     "return expenses amount page" in {
       model.copy(expenses = None).expensesSectionFinished(taxYear, employmentId) shouldBe
         Some(controllers.benefits.reimbursed.routes.NonTaxableCostsBenefitsAmountController.show(taxYear, employmentId))
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      Some(CheckYourBenefitsController.show(taxYear, employmentId))
     }
 
     "return none when section is finished" in {
@@ -87,12 +87,12 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
   "vouchersAndCreditCardsSectionFinished" should {
     "return vouchersAndCreditCards yes no page" in {
       model.copy(vouchersAndCreditCardsQuestion = None).vouchersAndCreditCardsSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(VouchersBenefitsController.show(taxYear, employmentId))
     }
 
     "return vouchersAndCreditCards amount page" in {
       model.copy(vouchersAndCreditCards = None).vouchersAndCreditCardsSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(VouchersBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return none when section is finished" in {
@@ -104,12 +104,12 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
   "nonCashSectionFinished" should {
     "return nonCash yes no page" in {
       model.copy(nonCashQuestion = None).nonCashSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(NonCashBenefitsController.show(taxYear, employmentId))
     }
 
     "return nonCash amount page" in {
       model.copy(nonCash = None).nonCashSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(NonCashBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return none when section is finished" in {
@@ -121,12 +121,12 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
   "otherItemsSectionFinished" should {
     "return otherItems yes no page" in {
       model.copy(otherItemsQuestion = None).otherItemsSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(OtherBenefitsController.show(taxYear, employmentId))
     }
 
     "return otherItems amount page" in {
       model.copy(otherItems = None).otherItemsSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(OtherBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return none when section is finished" in {
@@ -137,7 +137,7 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
 
   "clear" should {
     "clear the model" in {
-      ReimbursedCostsVouchersAndNonCashModel.clear shouldBe ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonCashQuestion = Some(false))
+      ReimbursedCostsVouchersAndNonCashModel.clear shouldBe ReimbursedCostsVouchersAndNonCashModel(sectionQuestion = Some(false))
     }
   }
 }

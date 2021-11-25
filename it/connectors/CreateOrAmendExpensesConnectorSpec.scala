@@ -16,9 +16,10 @@
 
 package connectors
 
+import builders.models.expenses.ExpensesBuilder.anExpenses
 import com.github.tomakehurst.wiremock.http.HttpHeader
 import connectors.httpParsers.CreateOrAmendExpensesHttpParser.CreateOrAmendExpensesResponse
-import models.expenses.CreateExpensesRequestModel
+import models.expenses.createUpdate.CreateUpdateExpensesRequest
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status._
 import play.api.libs.json.Json
@@ -37,7 +38,7 @@ class CreateOrAmendExpensesConnectorSpec extends IntegrationTest {
 
   val url: String = s"/income-tax-expenses/income-tax/nino/$nino/sources\\?taxYear=$taxYear"
 
-  val createExpensesRequestModel = CreateExpensesRequestModel(Some(false), expenses)
+  private val createExpensesRequestModel = CreateUpdateExpensesRequest(Some(false), anExpenses)
 
   "CreateOrAmendExpensesConnector - createOrAmendExpenses" should {
     val requestBodyJson = Json.toJson(createExpensesRequestModel).toString()

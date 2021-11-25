@@ -1,0 +1,110 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.templates.Layout
+@import views.html.templates.helpers.Button
+@import views.html.templates.helpers.Heading
+@import controllers.employment.routes._
+@import controllers.expenses.routes._
+@import utils.ViewUtils.summaryListRow
+@import models.expenses.ExpensesViewModel
+@import utils.ViewUtils.bigDecimalCurrency
+
+@this(
+        layout: Layout,
+        formWithCSRF: FormWithCSRF,
+        button: Button,
+        heading: Heading,
+        govukSummaryList: GovukSummaryList,
+        govukInsetText : GovukInsetText
+)
+
+@(taxYear: Int, expenses: ExpensesViewModel, isInYear: Boolean, isMultipleEmployments: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+
+    @headingForUse = @{messages(s"checkYourExpenses.heading.${if(user.isAgent) "agent" else "individual"}")}
+
+    @titleForUse = @{messages(s"checkYourExpenses.heading.${if(user.isAgent) "agent" else "individual"}")}
+
+    @hiddenText(item:String) = @{Some(messages(s"$item.hiddenText.${if(user.isAgent) "agent" else "individual"}"))}
+
+    @showRows(item: String, value: BigDecimal, route: Call = CheckEmploymentExpensesController.show(taxYear)) = @{
+        summaryListRow(HtmlContent(messages(item)),HtmlContent(bigDecimalCurrency(value.toString)),actions = Seq((route, messages("common.change"), hiddenText(item))), keyClasses="govuk-!-width-two-thirds")
+    }
+
+    @showQuestionRow(item: String, value: Boolean, route: Call = CheckEmploymentExpensesController.show(taxYear)) = @{
+        summaryListRow(HtmlContent(messages(item)),HtmlContent(if(value){messages("common.yes")} else {messages("common.no")}),actions = Seq((route, messages("common.change"), hiddenText(item))), keyClasses="govuk-!-width-two-thirds")
+    }
+
+    @layout(pageTitle = titleForUse, taxYear = Some(taxYear)) {
+
+        @heading(headingForUse, Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-5")
+
+        @if(!expenses.isUsingCustomerData){
+            <p class="govuk-body">@messages(s"checkYourExpenses.hmrcOnlyInfo.${if(user.isAgent) "agent" else "individual"}")</p>
+        }
+
+        @if(isMultipleEmployments){
+            <p class="govuk-inset-text">
+            @messages(s"checkYourExpenses.multiple.${if(user.isAgent) "agent" else "individual"}")
+            </p>
+        }
+
+        @{
+            val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourExpenses.employmentExpenses", expenses.claimingEmploymentExpenses, EmploymentExpensesController.submit(taxYear)))
+            val rows: Seq[SummaryListRow] =
+                Seq(
+                    expenses.jobExpensesQuestion.map{
+                        jobExpensesQuestion => showQuestionRow("checkYourExpenses.jobExpensesQuestion", jobExpensesQuestion, BusinessTravelOvernightExpensesController.show(taxYear))
+                    },
+                    expenses.jobExpenses.map{
+                        jobExpenses => showRows("checkYourExpenses.jobExpensesAmount", jobExpenses, TravelAndOvernightAmountController.show(taxYear))
+                    },
+                    expenses.flatRateJobExpensesQuestion.map{
+                        flatRateJobExpensesQuestion => showQuestionRow("checkYourExpenses.flatRateJobExpensesQuestion", flatRateJobExpensesQuestion,UniformsOrToolsExpensesController.show(taxYear))
+                    },
+                    expenses.flatRateJobExpenses.map{
+                        flatRateJobExpenses => showRows("checkYourExpenses.flatRateJobExpensesAmount", flatRateJobExpenses, UniformsOrToolsExpensesAmountController.show(taxYear))
+                    },
+                    expenses.professionalSubscriptionsQuestion.map{
+                        professionalSubscriptionsQuestion => showQuestionRow("checkYourExpenses.professionalSubscriptionsQuestion", professionalSubscriptionsQuestion, ProfessionalFeesAndSubscriptionsExpensesController.show(taxYear))
+                    },
+                    expenses.professionalSubscriptions.map{
+                        professionalSubscriptions => showRows("checkYourExpenses.professionalSubscriptionsAmount", professionalSubscriptions, ProfFeesAndSubscriptionsExpensesAmountController.show(taxYear))
+                    },
+                    expenses.otherAndCapitalAllowancesQuestion.map{
+                        otherAndCapitalAllowancesQuestion => showQuestionRow("checkYourExpenses.otherAndCapitalAllowancesQuestion", otherAndCapitalAllowancesQuestion, OtherEquipmentController.show(taxYear))
+                    },
+                    expenses.otherAndCapitalAllowances.map{
+                        otherAndCapitalAllowances => showRows("checkYourExpenses.otherAndCapitalAllowancesAmount", otherAndCapitalAllowances, OtherEquipmentAmountController.show(taxYear))
+                    }
+                ).flatten
+
+            if(expenses.claimingEmploymentExpenses){
+                govukSummaryList(SummaryList(header ++ rows))
+            } else {
+                govukSummaryList(SummaryList(header))
+            }
+
+        }
+
+        @formWithCSRF(action = controllers.expenses.routes.CheckEmploymentExpensesController.submit(taxYear)) {
+            @button("common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))
+        }
+    }
+
+    @{
+        // $COVERAGE-OFF$
+    }

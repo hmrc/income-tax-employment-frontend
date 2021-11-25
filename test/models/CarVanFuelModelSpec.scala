@@ -23,7 +23,7 @@ import utils.UnitTest
 class CarVanFuelModelSpec extends UnitTest {
 
   val model = CarVanFuelModel(
-    carVanFuelQuestion = Some(true),
+    sectionQuestion = Some(true),
     carQuestion = Some(true),
     car = Some(5555),
     carFuelQuestion = Some(true),
@@ -90,7 +90,7 @@ class CarVanFuelModelSpec extends UnitTest {
 
   "clear" should {
     "clear the model" in {
-      CarVanFuelModel.clear shouldBe CarVanFuelModel(carVanFuelQuestion = Some(false))
+      CarVanFuelModel.clear shouldBe CarVanFuelModel(sectionQuestion = Some(false))
     }
   }
 }

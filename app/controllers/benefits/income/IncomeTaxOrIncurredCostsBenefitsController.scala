@@ -17,7 +17,8 @@
 package controllers.benefits.income
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.income.routes.IncomeTaxBenefitsController
+import controllers.benefits.reimbursed.routes.ReimbursedCostsVouchersAndNonCashBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
@@ -61,7 +62,7 @@ class IncomeTaxOrIncurredCostsBenefitsController @Inject()(implicit val cc: Mess
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
-          cya.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.incomeTaxOrCostsQuestion)) match {
+          cya.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.sectionQuestion)) match {
             case Some(questionResult) => Future.successful(Ok(incomeTaxOrIncurredCostsBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
             case None => Future.successful(Ok(incomeTaxOrIncurredCostsBenefitsView(yesNoForm, taxYear, employmentId)))
           }
@@ -88,20 +89,27 @@ class IncomeTaxOrIncurredCostsBenefitsController @Inject()(implicit val cc: Mess
                 incomeTaxOrCosts match {
                   case Some(incomeTaxOrCosts) if yesNo =>
                     cya.copy(employmentBenefits = benefits.map(_.copy(incomeTaxAndCostsModel =
-                      Some(incomeTaxOrCosts.copy(incomeTaxOrCostsQuestion = Some(true))))))
+                      Some(incomeTaxOrCosts.copy(sectionQuestion = Some(true))))))
                   case Some(_) =>
                     cya.copy(employmentBenefits = benefits.map(_.copy(incomeTaxAndCostsModel =
                       Some(IncomeTaxAndCostsModel.clear))))
                   case _ =>
                     cya.copy(employmentBenefits = benefits.map(_.copy(incomeTaxAndCostsModel =
-                      Some(IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion = Some(yesNo))))))
+                      Some(IncomeTaxAndCostsModel(sectionQuestion = Some(yesNo))))))
                 }
               }
 
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-              }
+                val nextPage = {
+                  if (yesNo) {
+                    IncomeTaxBenefitsController.show(taxYear, employmentId)
+                  } else {
+                    ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId)
+                  }
+                }
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)              }
             }
           )
         }

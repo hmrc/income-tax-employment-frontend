@@ -132,18 +132,6 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
 
   }
 
-  def formRadioValueCheck(selected: Boolean, selector: String)(implicit document: () => Document): Unit = {
-    s"have a radio button form with the value set to '$selected'" in {
-      document().select(selector).attr("value") shouldBe selected.toString
-    }
-  }
-
-  def formRadioValueCheckPreFilled(isChecked: Boolean, selector: String)(implicit document: () => Document): Unit = {
-    s"have a radio button that ${if(isChecked) "is" else "isn't"} pre-filled for selector '$selector'" in {
-      document().select(selector).hasAttr("checked") shouldBe isChecked
-    }
-  }
-
   def formGetLinkCheck(text: String, selector: String)(implicit document: () => Document): Unit = {
     s"have a form with a GET action of '$text'" in {
       document().select(selector).attr("action") shouldBe text
@@ -175,7 +163,7 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
     }
   }
 
-  def radioButtonCheck(text: String, radioNumber: Int, checked: Option[Boolean] = None)(implicit document: () => Document): Unit = {
+  def radioButtonCheck(text: String, radioNumber: Int, checked: Boolean)(implicit document: () => Document): Unit = {
     s"have a $text radio button" which {
       s"is of type radio button" in {
         val selector = ".govuk-radios__item > input"
@@ -185,11 +173,9 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
         val selector = ".govuk-radios__item > label"
         document().select(selector).get(radioNumber - 1).text() shouldBe text
       }
-      if (checked.isDefined) {
-        s"has the checked value set to ${checked.get}" in {
-          val selector = ".govuk-radios__item > input"
-          document().select(selector).get(radioNumber - 1).hasAttr("checked") shouldBe checked.get
-        }
+      s"has the checked value set to $checked" in {
+        val selector = ".govuk-radios__item > input"
+        document().select(selector).get(radioNumber - 1).hasAttr("checked") shouldBe checked
       }
     }
   }
@@ -199,8 +185,6 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
       s"has the text '$text' and a href to '$href'" in {
 
         if(hiddenTextSelector.isDefined){
-          println(document().select(selector).text())
-          println(document().select(hiddenTextSelector.get).text())
           document().select(hiddenTextSelector.get).text() shouldBe text.split(" ").drop(1).mkString(" ")
         }
 
@@ -210,13 +194,10 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
     }
   }
 
-  def inputFieldCheck(name: String, selector: String)(implicit document: () => Document): Unit = {
-    s"has a name of '$name'" in {
+  def inputFieldValueCheck(name: String, selector: String, value: String)(implicit document: () => Document): Unit = {
+    s"'$selector' has a name of '$name'" in {
       document().select(selector).attr("name") shouldBe name
     }
-  }
-
-  def inputFieldValueCheck(value: String, selector: String)(implicit document: () => Document): Unit = {
     s"'$selector' has a value of '$value'" in {
       document().select(selector).attr("value") shouldBe value
     }
@@ -227,7 +208,7 @@ trait ViewHelpers { self: AnyWordSpec with Matchers with WireMockHelper =>
       elementExist(".govuk-error-summary")
     }
     "contains the text 'There is a problem'" in {
-      document().select(".govuk-error-summary__title").text() shouldBe "There is a problem"
+      document().select(".govuk-error-summary__title").text() should (be ("There is a problem") or be ("Mae problem wedi codi"))
     }
     s"has a $text error in the error summary" which {
       s"has the text '$text'" in {

@@ -16,11 +16,16 @@
 
 package controllers.benefits.reimbursed
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import builders.models.benefits.ReimbursedCostsVouchersAndNonCashModelBuilder.aReimbursedCostsVouchersAndNonCashModel
+import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
+import controllers.benefits.reimbursed.routes.{TaxableCostsBenefitsController, VouchersBenefitsController}
 import controllers.employment.routes.CheckYourBenefitsController
-import controllers.benefits.reimbursed.routes.TaxableCostsBenefitsController
-import models.User
-import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.benefits.BenefitsViewModel
+import models.mongo.EmploymentCYAModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -31,17 +36,15 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val taxYearEOY: Int = taxYear - 1
-  private val employmentId = "001"
-  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+  private val employmentId = "employmentId"
   private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/taxable-costs-amount?employmentId=$employmentId"
+  private val poundPrefixText = "£"
+  private val amountInputName = "amount"
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/taxable-costs-amount?employmentId=$employmentId"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel) =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
-
-  private def cyaModel(benefits: Option[BenefitsViewModel] = None) =
-    EmploymentCYAModel(EmploymentDetails("some-name", currentDataIsHmrcHeld = true), benefits)
+    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employment = employmentCyaModel)
 
   object Selectors {
     val enterTotalTextSelector = "#enter-total-text"
@@ -54,9 +57,6 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
     val subheading = "#main-content > div > div > form > div > label > header > p"
     val expectedErrorHref = "#amount"
   }
-
-  private val poundPrefixText = "£"
-  private val amountInputName = "amount"
 
   trait CommonExpectedResults {
     val expectedCaption: String
@@ -127,12 +127,6 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
     val maxAmountErrorText: String = "The taxable costs reimbursed by your client’s employer must be less than £100,000,000,000"
   }
 
-  private def benefits(reimbursedCostsVouchersAndNonCashModel: ReimbursedCostsVouchersAndNonCashModel): BenefitsViewModel =
-    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
-      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel), utilitiesAndServicesModel = Some(fullUtilitiesAndServicesModel),
-      medicalChildcareEducationModel = Some(fullMedicalChildcareEducationModel), incomeTaxAndCostsModel = Some(fullIncomeTaxAndCostsModel),
-      isUsingCustomerData = true, isBenefitsReceived = true, reimbursedCostsVouchersAndNonCashModel = Some(reimbursedCostsVouchersAndNonCashModel))
-
   private val benefitsWithNoBenefitsReceived: Option[BenefitsViewModel] = Some(BenefitsViewModel(isUsingCustomerData = true))
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -151,9 +145,9 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            val model = fullReimbursedCostsVouchersAndNonCashModel.copy(taxableExpenses = None)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(model)))), userRequest)
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
+            val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(taxableExpenses = None)))
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -162,6 +156,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
           "has an OK status" in {
             result.status shouldBe OK
           }
+
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption)
@@ -169,8 +164,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
           textOnPageCheck(enterTotalText, enterTotalTextSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -179,8 +173,8 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
         "render the 'Amount for taxable costs reimbursed by employer' page with pre-filled form and no prior submitted data" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = false, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -198,8 +192,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
           textOnPageCheck(enterTotalText, enterTotalTextSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("200", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "200")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -208,8 +201,8 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
         "render the 'Amount for taxable costs reimbursed by employer' page with pre-filled form and prior submitted data" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -227,8 +220,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
           textOnPageCheck(enterTotalText, enterTotalTextSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("200", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "200")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -236,44 +228,43 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
       }
     }
 
-    "redirect to another page when the request is valid but they aren't allowed to view the page and" should {
-      "Redirect user to the check your benefits page with no cya data in session" in {
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-          authoriseAgentOrIndividual(isAgent = false)
-          urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+    "Redirect user to the check your benefits page with no cya data in session" in {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "Redirect user to the tax overview page when in year" in {
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-          insertCyaData(employmentUserData(isPrior = false, cyaModel(benefitsWithNoBenefitsReceived)), userRequest)
-          authoriseAgentOrIndividual(isAgent = false)
-          urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
+      result.status shouldBe SEE_OTHER
+      result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+    }
 
-        result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+    "Redirect user to the tax overview page when in year" in {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = benefitsWithNoBenefitsReceived)), aUserRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "Redirect to 'Taxable cost' question page when there is taxableExpenses amount but has no taxableExpensesQuestion" in {
-        implicit lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(isAgent = false)
-          dropEmploymentDB()
-          val model = fullReimbursedCostsVouchersAndNonCashModel.copy(taxableExpensesQuestion = None, taxableExpenses = Some(11.0))
-          insertCyaData(employmentUserData(isPrior = false, cyaModel(Some(benefits(model)))), userRequest)
-          urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
+      result.status shouldBe SEE_OTHER
+      result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+    }
 
-        result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(TaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
+    "Redirect to 'Taxable cost' question page when there is taxableExpenses amount but has no taxableExpensesQuestion" in {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        val model = aReimbursedCostsVouchersAndNonCashModel.copy(taxableExpensesQuestion = None, taxableExpenses = Some(11.0))
+        val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(model))
+        insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
+
+      result.status shouldBe SEE_OTHER
+      result.header("location") shouldBe Some(TaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
     }
   }
 
@@ -282,12 +273,11 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
         import Selectors._
         import user.commonExpectedResults._
-
         "should render the amount page with empty value error text when there is no input" which {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             urlPost(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
           }
 
@@ -304,8 +294,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
           textOnPageCheck(enterTotalText, enterTotalTextSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -318,7 +307,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             urlPost(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "abc"))
           }
 
@@ -335,8 +324,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
           textOnPageCheck(enterTotalText, enterTotalTextSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("abc", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "abc")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -349,9 +337,8 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
-            urlPost(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)),
-              body = Map("amount" -> "100,000,000,000"))
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            urlPost(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100,000,000,000"))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -367,8 +354,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
           textOnPageCheck(enterTotalText, enterTotalTextSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("100,000,000,000", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "100,000,000,000")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -379,88 +365,86 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
       }
     }
 
-    "redirect to another page when a valid request is made and then" should {
-      "redirect to check employment benefits page when a valid form is submitted and a prior submission" when {
-        implicit lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(isAgent = false)
-          dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
-          urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "123.45"))
-        }
-
-        "has an SEE_OTHER status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
-        }
-
-        "updates the CYA model with the new value" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          val taxableExpenses = cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpenses))
-          taxableExpenses shouldBe Some(123.45)
-        }
+    "redirect to check employment benefits page when a valid form is submitted and a prior submission" when {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel), aUserRequest)
+        urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "123.45"))
       }
 
-      "redirect to to Vouchers yes/no page when a valid form is submitted and not prior submission" when {
-        implicit lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(isAgent = false)
-          dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = false, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
-          urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "234.56"))
-        }
-
-        "has an SEE_OTHER status" in {
-          result.status shouldBe SEE_OTHER
-          // TODO: Should go to Vouchers question page
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
-        }
-
-        "updates the CYA model with the new value" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          val taxableExpenses = cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpenses))
-          taxableExpenses shouldBe Some(234.56)
-        }
-      }
-
-      "redirect user to the check your benefits page with no cya data" which {
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          authoriseAgentOrIndividual(isAgent = false)
-          urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "345.67"))
-        }
-
-        "has an SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
-        }
-      }
-
-      "redirect user to the tax overview page when in year" which {
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
-          authoriseAgentOrIndividual(isAgent = false)
-          urlPost(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.50"))
-        }
-
-        "has an SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-        }
-      }
-
-      "redirect to taxable expenses question page when there is taxableExpenses amount but has no taxableExpensesQuestion" in {
-        implicit lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(isAgent = false)
-          dropEmploymentDB()
-          val model = fullReimbursedCostsVouchersAndNonCashModel.copy(taxableExpensesQuestion = None)
-          insertCyaData(employmentUserData(isPrior = false, cyaModel(Some(benefits(model)))), userRequest)
-          urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
-        }
-
+      "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(TaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
       }
+
+      "updates the CYA model with the new value" in {
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        val taxableExpenses = cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpenses))
+        taxableExpenses shouldBe Some(123.45)
+      }
+    }
+
+    "redirect to the vouchers benefits question page when a valid form is submitted and not prior submission" when {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(vouchersAndCreditCardsQuestion = None)))
+        insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "234.56"))
+      }
+
+      "has an SEE_OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(VouchersBenefitsController.show(taxYearEOY, employmentId).url)
+      }
+
+      "updates the CYA model with the new value" in {
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        val taxableExpenses = cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpenses))
+        taxableExpenses shouldBe Some(234.56)
+      }
+    }
+
+    "redirect user to the check your benefits page with no cya data" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "345.67"))
+      }
+
+      "has an SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+      }
+    }
+
+    "redirect user to the tax overview page when in year" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.50"))
+      }
+
+      "has an SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      }
+    }
+
+    "redirect to taxable expenses question page when there is taxableExpenses amount but has no taxableExpensesQuestion" in {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(taxableExpensesQuestion = None)))
+        insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+      }
+
+      result.status shouldBe SEE_OTHER
+      result.header("location") shouldBe Some(TaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
     }
   }
 }

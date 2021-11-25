@@ -27,6 +27,7 @@ import javax.inject.{Inject, Singleton}
 import models.benefits.Benefits
 import models.employment._
 import models.employment.createUpdate._
+import utils.EmploymentExpensesUtils.{getLatestExpenses => utilsGetLatestExpenses}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData, ExpensesCYAModel, ExpensesUserData}
 import models.{IncomeTaxUserData, User}
 import org.joda.time.DateTimeZone
@@ -214,7 +215,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     lazy val default = EmploymentDataAndDataRemainsUnchanged(newCreateUpdateEmployment, dataHasNotChanged = false)
     prior.fold[EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmployment]](default) {
       prior =>
-        val priorData: Option[EmploymentSource] = employmentSourceToUse(prior, cya.employmentId, false).map(_._1)
+        val priorData: Option[EmploymentSource] = employmentSourceToUse(prior, cya.employmentId, isInYear = false).map(_._1)
 
         priorData.fold[EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmployment]](default) {
           prior =>
@@ -240,7 +241,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
     prior.fold[EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmploymentData]](default) {
       prior =>
-        val priorData: Option[EmploymentSource] = employmentSourceToUse(prior, cya.employmentId, false).map(_._1)
+        val priorData: Option[EmploymentSource] = employmentSourceToUse(prior, cya.employmentId, isInYear = false).map(_._1)
 
         priorData.fold[EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmploymentData]](default) {
           prior =>
@@ -324,6 +325,13 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
   }
 
+  def clearExpenses(taxYear: Int)(onSuccess: Result)(implicit user: User[_]): Future[Result] = {
+    expensesUserDataRepository.clear(taxYear).map {
+      case true => onSuccess
+      case false => errorHandler.internalServerError()
+    }
+  }
+
   def employmentSourceToUse(allEmploymentData: AllEmploymentData, employmentId: String, isInYear: Boolean): Option[(EmploymentSource, Boolean)] = {
     if (isInYear) {
       allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId)).map((_, false))
@@ -348,18 +356,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   def getLatestExpenses(allEmploymentData: AllEmploymentData, isInYear: Boolean): Option[(EmploymentExpenses, Boolean)] = {
-    if (isInYear) {
-      allEmploymentData.hmrcExpenses.map((_, false))
-    } else {
-      val hmrcExpenses = allEmploymentData.hmrcExpenses.filter(_.dateIgnored.isEmpty)
-      val customerExpenses = allEmploymentData.customerExpenses
-
-      if (hmrcExpenses.isDefined && customerExpenses.isDefined && hmrcExpenses.get.dateIgnored.isEmpty) {
-        logger.warn("[EmploymentSessionService][getLatestExpenses] Hmrc expenses and customer expenses exist but hmrc expenses have not been ignored")
-      }
-
-      allEmploymentData.customerExpenses.fold(allEmploymentData.hmrcExpenses.map((_, false)))(customerExpenses => Some(customerExpenses, true))
-    }
+    utilsGetLatestExpenses(allEmploymentData, isInYear)
   }
 }
 

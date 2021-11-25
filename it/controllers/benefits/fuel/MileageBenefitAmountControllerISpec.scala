@@ -16,13 +16,18 @@
 
 package controllers.benefits.fuel
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
+import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import controllers.benefits.accommodation.routes._
 import controllers.benefits.fuel.routes._
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.AmountForm
-import models.benefits.{BenefitsViewModel, CarVanFuelModel}
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
-import models.{IncomeTaxUserData, User}
+import models.IncomeTaxUserData
+import models.mongo.EmploymentCYAModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -32,44 +37,16 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear - 1
-  val employmentId = "001"
+  private val taxYearEOY: Int = taxYear - 1
+  private val employmentId = "employmentId"
+  private val poundPrefixText = "£"
+  private val amountInputName = "amount"
+  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/mileage-amount?employmentId=$employmentId"
 
-  val poundPrefixText = "£"
-  val amountField = "#amount"
+  private def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/mileage-amount?employmentId=$employmentId"
 
-  def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/mileage-amount?employmentId=$employmentId"
-
-  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/mileage-amount?employmentId=$employmentId"
-
-  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
-
-  private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
-
-  def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
-    EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
-
-  override def fullCarVanFuelModel: CarVanFuelModel =
-    CarVanFuelModel(
-      carVanFuelQuestion = Some(true),
-      carQuestion = Some(true),
-      car = Some(100.00),
-      carFuelQuestion = Some(true),
-      carFuel = Some(200.00),
-      vanQuestion = Some(true),
-      van = Some(300.00),
-      vanFuelQuestion = Some(true),
-      vanFuel = Some(350.00),
-      mileageQuestion = Some(true),
-      mileage = Some(400.00)
-    )
-
-  override def emptyCarVanFuelModel: CarVanFuelModel = CarVanFuelModel(None)
-
-  def emptyMileageModel: CarVanFuelModel = fullCarVanFuelModel.copy(mileageQuestion = None, mileage = None)
-
-  def benefits(carModel: CarVanFuelModel): BenefitsViewModel = BenefitsViewModel(isBenefitsReceived = true, carVanFuelModel = Some(carModel), isUsingCustomerData = true)
+  private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel) =
+    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employment = employmentCyaModel)
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -78,10 +55,12 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
     val contentSelector = "#main-content > div > div > form > div > label > p"
     val hintTextSelector = "#amount-hint"
     val poundPrefixSelector = ".govuk-input__prefix"
+    val inputSelector = "#amount"
   }
 
   trait CommonExpectedResults {
     def expectedCaption(taxYear: Int): String
+
     val continueButtonText: String
     val hintText: String
   }
@@ -99,12 +78,14 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
   object CommonExpectedEN extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+
     val hintText = "For example, £600 or £193.54"
     val continueButtonText = "Continue"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+
     val hintText = "For example, £600 or £193.54"
     val continueButtonText = "Continue"
   }
@@ -115,7 +96,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount of mileage benefit you got for using your own car"
     val expectedParagraph: String = "You can find this information on your P11D form in section E, box 12."
-    val expectedParagraphWithPrefill: String = "If it was not £400.0, tell us the correct amount. You can find this information on your P11D form in section E, box 12."
+    val expectedParagraphWithPrefill: String = "If it was not £500.0, tell us the correct amount. You can find this information on your P11D form in section E, box 12."
     val expectedWrongFormatErrorMessage: String = "Enter the amount of mileage benefit you got in the correct format"
     val expectedMaxErrorMessage: String = "Your mileage benefit must be less than £100,000,000,000"
   }
@@ -126,7 +107,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount of mileage benefit you got for using your own car"
     val expectedParagraph: String = "You can find this information on your P11D form in section E, box 12."
-    val expectedParagraphWithPrefill: String = "If it was not £400.0, tell us the correct amount. You can find this information on your P11D form in section E, box 12."
+    val expectedParagraphWithPrefill: String = "If it was not £500.0, tell us the correct amount. You can find this information on your P11D form in section E, box 12."
     val expectedWrongFormatErrorMessage: String = "Enter the amount of mileage benefit you got in the correct format"
     val expectedMaxErrorMessage: String = "Your mileage benefit must be less than £100,000,000,000"
   }
@@ -137,7 +118,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount of mileage benefit your client got for using their own car"
     val expectedParagraph: String = "You can find this information on your client’s P11D form in section E, box 12."
-    val expectedParagraphWithPrefill: String = "If it was not £400.0, tell us the correct amount. You can find this information on your client’s P11D form in section E, box 12."
+    val expectedParagraphWithPrefill: String = "If it was not £500.0, tell us the correct amount. You can find this information on your client’s P11D form in section E, box 12."
     val expectedWrongFormatErrorMessage: String = "Enter the amount of mileage benefit your client got in the correct format"
     val expectedMaxErrorMessage: String = "Your client’s mileage benefit must be less than £100,000,000,000"
   }
@@ -148,27 +129,27 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount of mileage benefit your client got for using their own car"
     val expectedParagraph: String = "You can find this information on your client’s P11D form in section E, box 12."
-    val expectedParagraphWithPrefill: String = "If it was not £400.0, tell us the correct amount. You can find this information on your client’s P11D form in section E, box 12."
+    val expectedParagraphWithPrefill: String = "If it was not £500.0, tell us the correct amount. You can find this information on your client’s P11D form in section E, box 12."
     val expectedWrongFormatErrorMessage: String = "Enter the amount of mileage benefit your client got in the correct format"
     val expectedMaxErrorMessage: String = "Your client’s mileage benefit must be less than £100,000,000,000"
   }
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   ".show" should {
-
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
         "render the mileage amount page with no pre-filled amount" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits.map(_.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(mileage = None))))))))), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(mileage = None))))), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(mileage = None)))
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -185,18 +166,17 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, contentSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("", amountField)
+          inputFieldValueCheck(amountInputName, Selectors.inputSelector, "")
           formPostLinkCheck(continueLink, formSelector)
           welshToggleCheck(user.isWelsh)
 
         }
 
         "render the mileage amount page with amount pre-filled" which {
-
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel)))), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -217,30 +197,27 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphWithPrefill, contentSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("400", amountField)
+          inputFieldValueCheck(amountInputName, Selectors.inputSelector, "500")
           formPostLinkCheck(continueLink, formSelector)
           welshToggleCheck(user.isWelsh)
-
         }
       }
     }
 
-    val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
-
     "redirect" when {
-
       "redirect to accommodation relocation page when the mileage question is no" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
           noUserDataStub(nino, taxYearEOY)
-          insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(mileageQuestion = Some(false)))))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+          val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(mileageQuestion = Some(false))))
+          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          authoriseAgentOrIndividual(isAgent = false)
+          urlGet(url(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
         }
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/benefits/accommodation-relocation?employmentId=001")
+          result.header("location") shouldBe Some(AccommodationRelocationBenefitsController.show(taxYearEOY, employmentId).url)
         }
 
       }
@@ -248,39 +225,42 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
         lazy val result: WSResponse = {
           dropEmploymentDB()
           noUserDataStub(nino, taxYearEOY)
-          insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(mileageQuestion = None))))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+          val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(mileageQuestion = None)))
+          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          authoriseAgentOrIndividual(isAgent = false)
+          urlGet(url(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
         }
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(ReceiveOwnCarMileageBenefitController.show(taxYearEOY, employmentId).url)
         }
-
       }
+
       "car section isn't finished" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
           noUserDataStub(nino, taxYearEOY)
-          insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(carQuestion = None))))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+          val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(carQuestion = None)))
+          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          authoriseAgentOrIndividual(isAgent = false)
+          urlGet(url(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
         }
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(CompanyCarBenefitsController.show(taxYearEOY, employmentId).url)
         }
-
       }
+
       "van section isn't finished" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
           noUserDataStub(nino, taxYearEOY)
-          insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(vanQuestion = None))))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+          val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(vanQuestion = None)))
+          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          authoriseAgentOrIndividual(isAgent = false)
+          urlGet(url(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
         }
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
@@ -293,40 +273,40 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
         lazy val result: WSResponse = {
           dropEmploymentDB()
           noUserDataStub(nino, taxYearEOY)
-          insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(carFuelQuestion = None))))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+          val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(carFuelQuestion = None)))
+          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          authoriseAgentOrIndividual(isAgent = false)
+          urlGet(url(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
         }
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(CompanyCarFuelBenefitsController.show(taxYearEOY, employmentId).url)
         }
-
       }
+
       "there is no data in session for that user" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
           noUserDataStub(nino, taxYearEOY)
           userDataStub(IncomeTaxUserData(None), nino, taxYearEOY)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+          authoriseAgentOrIndividual(isAgent = false)
+          urlGet(url(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
         }
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
         }
-
       }
 
       "it is not EOY" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
           noUserDataStub(nino, taxYear)
-          insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true)), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          authoriseAgentOrIndividual(false)
+          urlGet(url(taxYear), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
         }
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
@@ -335,21 +315,17 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
         }
       }
     }
-
   }
 
   ".submit" should {
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "return an error where there is no entry" which {
-
           val form: Map[String, String] = Map[String, String]()
-
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -362,19 +338,17 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, amountField)
-          inputFieldValueCheck("", amountField)
+          errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Selectors.inputSelector)
+          inputFieldValueCheck(amountInputName, Selectors.inputSelector, "")
           errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage)
           welshToggleCheck(user.isWelsh)
         }
 
         "return an error when it is the wrong format" which {
-
-          lazy val form: Map[String, String] = Map(AmountForm.amount -> "fgfggffg")
-
+          lazy val form: Map[String, String] = Map(AmountForm.amount -> "abc")
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -387,20 +361,18 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          errorSummaryCheck(user.specificExpectedResults.get.expectedWrongFormatErrorMessage, amountField)
-          inputFieldValueCheck("fgfggffg", amountField)
+          errorSummaryCheck(user.specificExpectedResults.get.expectedWrongFormatErrorMessage, Selectors.inputSelector)
+          inputFieldValueCheck(amountInputName, Selectors.inputSelector, "abc")
           errorAboveElementCheck(user.specificExpectedResults.get.expectedWrongFormatErrorMessage)
 
           welshToggleCheck(user.isWelsh)
         }
 
         "return an error when the value is too large" which {
-
           lazy val form: Map[String, String] = Map(AmountForm.amount -> "2353453425345234")
-
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -413,8 +385,8 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          errorSummaryCheck(user.specificExpectedResults.get.expectedMaxErrorMessage, amountField)
-          inputFieldValueCheck("2353453425345234", amountField)
+          errorSummaryCheck(user.specificExpectedResults.get.expectedMaxErrorMessage, Selectors.inputSelector)
+          inputFieldValueCheck(amountInputName, Selectors.inputSelector, "2353453425345234")
           errorAboveElementCheck(user.specificExpectedResults.get.expectedMaxErrorMessage)
 
           welshToggleCheck(user.isWelsh)
@@ -422,71 +394,63 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
       }
     }
 
-    val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
-
     "redirect" when {
-
       "there is no cya data in session for that user" which {
-
         lazy val form: Map[String, String] = Map(AmountForm.amount -> "200.00")
-
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true)), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         s"has a SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel) shouldBe None
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+          cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel) shouldBe None
         }
       }
+
       "redirect to accommodation relocation page when the mileage question is no" which {
-
         lazy val form: Map[String, String] = Map(AmountForm.amount -> "200.00")
-
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(mileageQuestion = Some(false)))))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(mileageQuestion = Some(false))))
+          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         s"has a SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/benefits/accommodation-relocation?employmentId=001")
+          result.header("location") shouldBe Some(AccommodationRelocationBenefitsController.show(taxYearEOY, employmentId).url)
         }
       }
 
       "it isn't end of year" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true)), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(url(taxYear), body = "", user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(url(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         s"has a SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
         }
-
       }
-
     }
 
     "update mileage amount to 200 when the user submits and prior benefits exist, redirects to accommodation page" which {
-
       lazy val form: Map[String, String] = Map(AmountForm.amount -> "200.00")
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel)))), userRequest)
-        authoriseAgentOrIndividual(user.isAgent)
-        urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to the accommodation page" in {
@@ -495,22 +459,20 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
       }
 
       "updates the mileage benefit to be 200" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)) shouldBe Some(200.00)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)) shouldBe Some(200.00)
       }
-
     }
 
     "update mileage amount to 200 when the user submits and no prior benefits exist, redirects to the accommodation relocation page" which {
-
       lazy val form: Map[String, String] = Map(AmountForm.amount -> "200.00")
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel)))), userRequest)
-        authoriseAgentOrIndividual(user.isAgent)
-        urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
+        insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to the accommodation relocation controller page" in {
@@ -519,12 +481,10 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
       }
 
       "updates the mileage benefit to be 200" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)) shouldBe Some(200.00)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)) shouldBe Some(200.00)
       }
-
     }
   }
 }
-

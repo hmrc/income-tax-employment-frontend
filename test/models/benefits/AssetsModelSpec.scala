@@ -16,6 +16,7 @@
 
 package models.benefits
 
+import controllers.benefits.assets.routes._
 import controllers.employment.routes.CheckYourBenefitsController
 import utils.UnitTest
 
@@ -24,7 +25,7 @@ class AssetsModelSpec extends UnitTest {
   private val employmentId = "id"
   private val taxYear = 2022
   private val model = AssetsModel(
-    assetsAndAssetsTransferQuestion = Some(true),
+    sectionQuestion = Some(true),
     assetsQuestion = Some(true),
     assets = Some(55.55),
     assetTransferQuestion = Some(true),
@@ -33,11 +34,11 @@ class AssetsModelSpec extends UnitTest {
 
   "isFinished" should {
     "return assetsAndAssetsTransfer yes no page" in {
-      model.copy(assetsAndAssetsTransferQuestion = None).isFinished(taxYear, employmentId) shouldBe
+      model.copy(sectionQuestion = None).isFinished(taxYear, employmentId) shouldBe
         Some(CheckYourBenefitsController.show(taxYear, employmentId))
     }
     "return none when section is finished" in {
-      model.copy(assetsAndAssetsTransferQuestion = Some(false)).isFinished(taxYear, "employmentId") shouldBe None
+      model.copy(sectionQuestion = Some(false)).isFinished(taxYear, "employmentId") shouldBe None
       model.isFinished(taxYear, "employmentId") shouldBe None
     }
   }
@@ -49,7 +50,7 @@ class AssetsModelSpec extends UnitTest {
 
     "return assets amount page when assetsQuestion is true and no amount" in {
       model.copy(assetsQuestion = Some(true), assets = None).assetsSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(AssetsBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return None when assetsQuestion is false" in {
@@ -58,7 +59,7 @@ class AssetsModelSpec extends UnitTest {
 
     "return assets yes no page when assetsQuestion is None" in {
       model.copy(assetsQuestion = None).assetsSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(AssetsBenefitsController.show(taxYear, employmentId))
     }
   }
 
@@ -69,7 +70,7 @@ class AssetsModelSpec extends UnitTest {
 
     "return assetTransfer amount page when assetTransferQuestion is true and asset transfer amount is None" in {
       model.copy(assetTransferQuestion = Some(true), assetTransfer = None).assetTransferSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(AssetsTransfersBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return None when assetTransferQuestion is false" in {
@@ -78,13 +79,13 @@ class AssetsModelSpec extends UnitTest {
 
     "return assetTransfer yes no page" in {
       model.copy(assetTransferQuestion = None).assetTransferSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(AssetTransfersBenefitsController.show(taxYear, employmentId))
     }
   }
 
   "clear" should {
     "clear the model" in {
-      AssetsModel.clear shouldBe AssetsModel(assetsAndAssetsTransferQuestion = Some(false))
+      AssetsModel.clear shouldBe AssetsModel(sectionQuestion = Some(false))
     }
   }
 }

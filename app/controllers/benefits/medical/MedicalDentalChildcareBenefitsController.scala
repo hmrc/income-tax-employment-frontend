@@ -58,7 +58,7 @@ class MedicalDentalChildcareBenefitsController @Inject()(implicit val cc: Messag
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
           EmploymentBenefitsType)(medicalBenefitsRedirects(_, taxYear, employmentId)) { cya =>
 
-          cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) match {
+          cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) match {
             case Some(questionResult) =>
               Future.successful(Ok(medicalDentalChildcareBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
             case None => Future.successful(Ok(medicalDentalChildcareBenefitsView(yesNoForm, taxYear, employmentId)))
@@ -90,8 +90,8 @@ class MedicalDentalChildcareBenefitsController @Inject()(implicit val cc: Messag
 
                   case medicalChildcareEducation =>
                     cya.copy(employmentBenefits = benefits.map(_.copy(medicalChildcareEducationModel = Some(
-                      medicalChildcareEducation.map(_.copy(medicalChildcareEducationQuestion = Some(yesNo))).getOrElse
-                      (MedicalChildcareEducationModel(medicalChildcareEducationQuestion = Some(yesNo)))
+                      medicalChildcareEducation.map(_.copy(sectionQuestion = Some(yesNo))).getOrElse
+                      (MedicalChildcareEducationModel(sectionQuestion = Some(yesNo)))
                     ))))
                 }
               }
@@ -100,7 +100,9 @@ class MedicalDentalChildcareBenefitsController @Inject()(implicit val cc: Messag
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
 
                 val nextPage = {
-                  if (yesNo) MedicalDentalBenefitsController.show(taxYear, employmentId) else IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId)
+                  if (yesNo){ MedicalDentalBenefitsController.show(taxYear, employmentId)} else {
+                    IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId)
+                  }
                 }
 
                 RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
@@ -113,3 +115,4 @@ class MedicalDentalChildcareBenefitsController @Inject()(implicit val cc: Messag
   }
 
 }
+

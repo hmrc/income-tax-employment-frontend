@@ -22,7 +22,16 @@ import play.api.libs.json.{Json, OFormat}
 case class EmploymentExpenses(submittedOn: Option[String],
                               dateIgnored: Option[String],
                               totalExpenses: Option[BigDecimal],
-                              expenses: Option[Expenses])
+                              expenses: Option[Expenses]) {
+
+  def dataHasNotChanged(createUpdateExpenses: Expenses): Boolean = {
+
+    expenses match {
+      case Some(data) => data == createUpdateExpenses
+      case None => if (createUpdateExpenses.isEmpty) true else false
+    }
+  }
+}
 
 object EmploymentExpenses {
   implicit val format: OFormat[EmploymentExpenses] = Json.format[EmploymentExpenses]

@@ -117,20 +117,20 @@ class MedicalChildcareEducationModelSpec extends UnitTest {
 
   "isFinished" should {
     "return result of medicalInsuranceSectionFinished when medicalChildcareEducationQuestion is true and medicalInsuranceQuestion is not None" in {
-      val underTest = MedicalChildcareEducationModel(medicalChildcareEducationQuestion = Some(true), medicalInsuranceQuestion = None)
+      val underTest = MedicalChildcareEducationModel(sectionQuestion = Some(true), medicalInsuranceQuestion = None)
 
       underTest.isFinished(taxYear, employmentId) shouldBe underTest.medicalInsuranceSectionFinished(taxYear, employmentId)
     }
 
     "return result of childcareSectionFinished when medicalChildcareEducationQuestion is true and medicalInsuranceQuestion is false" in {
-      val underTest = MedicalChildcareEducationModel(medicalChildcareEducationQuestion = Some(true), medicalInsuranceQuestion = Some(false))
+      val underTest = MedicalChildcareEducationModel(sectionQuestion = Some(true), medicalInsuranceQuestion = Some(false))
 
       underTest.isFinished(taxYear, employmentId) shouldBe underTest.childcareSectionFinished(taxYear, employmentId)
     }
 
     "return result of educationalServicesSectionFinished when medicalChildcareEducationQuestion is true and " +
       "medicalInsuranceQuestion is false and childcareQuestion is false" in {
-      val underTest = MedicalChildcareEducationModel(medicalChildcareEducationQuestion = Some(true),
+      val underTest = MedicalChildcareEducationModel(sectionQuestion = Some(true),
         medicalInsuranceQuestion = Some(false),
         nurseryPlacesQuestion = Some(false))
 
@@ -139,7 +139,7 @@ class MedicalChildcareEducationModelSpec extends UnitTest {
 
     "return result of beneficialLoanSectionFinished when medicalChildcareEducationQuestion is true and " +
       "medicalInsuranceQuestion is false and childcareQuestion is false and educationalServicesQuestion is false" in {
-      val underTest = MedicalChildcareEducationModel(medicalChildcareEducationQuestion = Some(true),
+      val underTest = MedicalChildcareEducationModel(sectionQuestion = Some(true),
         medicalInsuranceQuestion = Some(false),
         nurseryPlacesQuestion = Some(false),
         educationalServicesQuestion = Some(false))
@@ -149,7 +149,7 @@ class MedicalChildcareEducationModelSpec extends UnitTest {
 
     "return None when medicalChildcareEducationQuestion is true and medicalInsuranceQuestion, " +
       "childcareQuestion, educationalServicesQuestion, beneficialLoansQuestion are false" in {
-      val underTest = MedicalChildcareEducationModel(medicalChildcareEducationQuestion = Some(true),
+      val underTest = MedicalChildcareEducationModel(sectionQuestion = Some(true),
         medicalInsuranceQuestion = Some(false),
         nurseryPlacesQuestion = Some(false),
         educationalServicesQuestion = Some(false),
@@ -160,13 +160,13 @@ class MedicalChildcareEducationModelSpec extends UnitTest {
     }
 
     "return None when medicalChildcareEducationQuestion is false" in {
-      val underTest = MedicalChildcareEducationModel(medicalChildcareEducationQuestion = Some(false))
+      val underTest = MedicalChildcareEducationModel(sectionQuestion = Some(false))
 
       underTest.isFinished(taxYear, employmentId) shouldBe None
     }
 
     "return call to 'Medical childcare education section yes/no page' when medicalChildcareEducationQuestion is None" in {
-      val underTest = MedicalChildcareEducationModel(medicalChildcareEducationQuestion = None)
+      val underTest = MedicalChildcareEducationModel(sectionQuestion = None)
 
       underTest.isFinished(taxYear, employmentId) shouldBe Some(CheckYourBenefitsController.show(taxYear, employmentId))
     }
@@ -175,7 +175,7 @@ class MedicalChildcareEducationModelSpec extends UnitTest {
   "clear" should {
     "return empty MedicalChildcareEducationModel with main question set to false" in {
       MedicalChildcareEducationModel.clear shouldBe MedicalChildcareEducationModel(
-        medicalChildcareEducationQuestion = Some(false),
+        sectionQuestion = Some(false),
         medicalInsuranceQuestion = None,
         medicalInsurance = None,
         nurseryPlacesQuestion = None,

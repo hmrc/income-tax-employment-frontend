@@ -28,6 +28,7 @@ object ConfigKeys {
   val viewAndChangeUrl = "microservice.services.view-and-change.url"
   val signInUrl = "microservice.services.sign-in.url"
   val signInContinueUrl = "microservice.services.sign-in.continueUrl"
+  val incomeTaxNrsProxyUrl = "microservice.services.income-tax-nrs-proxy.url"
 
   val defaultTaxYear = "defaultTaxYear"
 }

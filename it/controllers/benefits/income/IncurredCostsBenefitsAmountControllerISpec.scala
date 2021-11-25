@@ -16,11 +16,17 @@
 
 package controllers.benefits.income
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import builders.models.benefits.IncomeTaxAndCostsModelBuilder.aIncomeTaxAndCostsModel
+import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
+import controllers.benefits.reimbursed.routes.ReimbursedCostsVouchersAndNonCashBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.AmountForm
-import models.User
 import models.benefits.{BenefitsViewModel, IncomeTaxAndCostsModel}
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -30,46 +36,35 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear - 1
-  val employmentId: String = "001"
-  val amount: BigDecimal = 200
-  val amountFieldName = "amount"
-  val expectedErrorHref = "#amount"
+  private val taxYearEOY: Int = taxYear - 1
+  private val employmentId: String = "employmentId"
+  private val amount: BigDecimal = 255
+  private val amountInputName = "amount"
+  private val expectedErrorHref = "#amount"
+  private val formLink: String = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/incurred-costs-amount?employmentId=$employmentId"
 
-  def pageUrl(taxYear: Int): String =
-    s"$appUrl/$taxYear/benefits/incurred-costs-amount?employmentId=$employmentId"
+  private def pageUrl(taxYear: Int): String = s"$appUrl/$taxYear/benefits/incurred-costs-amount?employmentId=$employmentId"
 
-  val formLink: String =
-    s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/incurred-costs-amount?employmentId=$employmentId"
-
-  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
   private def employmentUserData(hasPriorBenefits: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = true, hasPriorBenefits = hasPriorBenefits, employmentCyaModel)
-
-  def cyaModel(benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
-    EmploymentCYAModel(EmploymentDetails("employerName", currentDataIsHmrcHeld = true), benefits)
-
-  def benefits(incomeTaxModel: IncomeTaxAndCostsModel): BenefitsViewModel =
-    BenefitsViewModel(
-      carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
-      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel), utilitiesAndServicesModel = Some(fullUtilitiesAndServicesModel),
-      medicalChildcareEducationModel = Some(fullMedicalChildcareEducationModel),
-      isUsingCustomerData = true, isBenefitsReceived = true, incomeTaxAndCostsModel = Some(incomeTaxModel))
+    anEmploymentUserData.copy(isPriorSubmission = true, hasPriorBenefits = hasPriorBenefits, employment = employmentCyaModel)
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > label > header > p"
-    def paragraphSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
     val hintTextSelector = "#amount-hint"
     val currencyPrefixSelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
-    val amountFieldSelector = "#amount"
+    val inputSelector = "#amount"
     val continueButtonSelector = "#continue"
     val formSelector = "#main-content > div > div > form"
+
+    def paragraphSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
   }
 
   trait CommonExpectedResults {
     val expectedCaption: String
+
     def optionalParagraphText(amount: BigDecimal): String
+
     val expectedHintText: String
     val currencyPrefix: String
     val continueButtonText: String
@@ -87,7 +82,9 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption: String = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+
     def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
+
     val expectedHintText = "For example, £600 or £193.54"
     val currencyPrefix = "£"
     val continueButtonText = "Continue"
@@ -96,7 +93,9 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: String = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+
     def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
+
     val expectedHintText = "For example, £600 or £193.54"
     val currencyPrefix = "£"
     val continueButtonText = "Continue"
@@ -139,13 +138,12 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
     val expectedErrorOverMaximum = "The incurred costs paid by your client’s employer must be less than £100,000,000,000"
   }
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-    )
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   ".show" should {
     userScenarios.foreach { user =>
@@ -157,9 +155,9 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-            insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(
-              Some(benefits(fullIncomeTaxOrIncurredCostsModel.copy(paymentsOnEmployeesBehalf = None))))), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(aIncomeTaxAndCostsModel.copy(paymentsOnEmployeesBehalf = None)))
+            insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
             urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -174,8 +172,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
           captionCheck(expectedCaption, captionSelector)
           textOnPageCheck(enterTotalText, paragraphSelector(2))
           textOnPageCheck(expectedHintText, hintTextSelector)
-          inputFieldCheck(amountFieldName, amountFieldSelector)
-          inputFieldValueCheck("", amountFieldSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(formLink, formSelector)
 
@@ -186,9 +183,8 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-            insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(
-              Some(benefits(fullIncomeTaxOrIncurredCostsModel)))), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -204,8 +200,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
           textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
           textOnPageCheck(enterTotalText, paragraphSelector(3))
           textOnPageCheck(expectedHintText, hintTextSelector)
-          inputFieldCheck(amountFieldName, amountFieldSelector)
-          inputFieldValueCheck(amount.toString(), amountFieldSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(formLink, formSelector)
 
@@ -216,8 +211,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel(
-              Some(benefits(fullIncomeTaxOrIncurredCostsModel)))), userRequest)
+            insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -233,8 +227,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
           textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
           textOnPageCheck(enterTotalText, paragraphSelector(3))
           textOnPageCheck(expectedHintText, hintTextSelector)
-          inputFieldCheck(amountFieldName, amountFieldSelector)
-          inputFieldValueCheck(amount.toString(), amountFieldSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(formLink, formSelector)
 
@@ -247,9 +240,8 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(
-          Some(benefits(fullIncomeTaxOrIncurredCostsModel)))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
         urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -276,9 +268,9 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(
-          Some(benefits(fullIncomeTaxOrIncurredCostsModel.copy(paymentsOnEmployeesBehalfQuestion = Some(false), paymentsOnEmployeesBehalf = None))))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(aIncomeTaxAndCostsModel.copy(paymentsOnEmployeesBehalfQuestion = Some(false), paymentsOnEmployeesBehalf = None)))
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -292,9 +284,9 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(
-          Some(benefits(emptyIncomeTaxOrIncurredCostsModel)))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(IncomeTaxAndCostsModel(sectionQuestion = Some(false))))
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -308,9 +300,8 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(
-          Some(BenefitsViewModel(isUsingCustomerData = true)))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(BenefitsViewModel(isUsingCustomerData = true)))), aUserRequest)
         urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -332,11 +323,9 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
-              userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
-                fullIncomeTaxOrIncurredCostsModel)))), userRequest)
-              urlPost(pageUrl(taxYearEOY), body = "", welsh = user.isWelsh,
-                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+              insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+              urlPost(pageUrl(taxYearEOY), body = "", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has an BAD REQUEST($BAD_REQUEST) status" in {
@@ -351,11 +340,10 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
             textOnPageCheck(enterTotalText, paragraphSelector(3))
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck("", amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorNoEntry, expectedErrorHref)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Some(amountFieldName))
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Some(amountInputName))
             formPostLinkCheck(formLink, formSelector)
 
             welshToggleCheck(user.isWelsh)
@@ -364,15 +352,12 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
           "a form is submitted with an incorrectly formatted amount" which {
             val incorrectFormatAmount = "abc"
             val form: Map[String, String] = Map(AmountForm.amount -> incorrectFormatAmount)
-
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
-              userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
-                fullIncomeTaxOrIncurredCostsModel)))), userRequest)
-              urlPost(pageUrl(taxYearEOY), body = form, welsh = user.isWelsh,
-                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+              insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+              urlPost(pageUrl(taxYearEOY), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has an BAD REQUEST($BAD_REQUEST) status" in {
@@ -387,11 +372,10 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
             textOnPageCheck(enterTotalText, paragraphSelector(3))
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck(incorrectFormatAmount, amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, incorrectFormatAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, expectedErrorHref)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, Some(amountFieldName))
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, Some(amountInputName))
             formPostLinkCheck(formLink, formSelector)
 
             welshToggleCheck(user.isWelsh)
@@ -400,15 +384,12 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
           "a form is submitted and the amount is over the maximum limit" which {
             val overMaximumAmount = "100,000,000,000,000,000,000"
             val form: Map[String, String] = Map(AmountForm.amount -> overMaximumAmount)
-
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
-              userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
-                fullIncomeTaxOrIncurredCostsModel)))), userRequest)
-              urlPost(pageUrl(taxYearEOY), body = form, welsh = user.isWelsh,
-                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+              insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+              urlPost(pageUrl(taxYearEOY), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has an BAD REQUEST($BAD_REQUEST) status" in {
@@ -423,11 +404,10 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
             textOnPageCheck(enterTotalText, paragraphSelector(3))
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck(overMaximumAmount, amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, overMaximumAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, expectedErrorHref)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, Some(amountFieldName))
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, Some(amountInputName))
             formPostLinkCheck(formLink, formSelector)
 
             welshToggleCheck(user.isWelsh)
@@ -439,12 +419,11 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
     "update the paymentsOnEmployeesBehalf value when a user submits a valid form and has prior benefits, redirects to CYA" which {
       val newAmount: BigDecimal = 123.45
       val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
-
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(fullIncomeTaxOrIncurredCostsModel)))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
         urlPost(pageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -454,7 +433,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
       }
 
       "update the paymentsOnEmployeesBehalf value to the new amount" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalf)) shouldBe Some(newAmount)
       }
     }
@@ -462,23 +441,22 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
     "update the paymentsOnEmployeesBehalf value when a user submits a valid form and has no prior benefits, redirects to reimbursed section" which {
       val newAmount: BigDecimal = 123.45
       val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
-
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(fullIncomeTaxOrIncurredCostsModel)))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = None)
+        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         urlPost(pageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to the reimbursed costs section page" in {
         result.status shouldBe SEE_OTHER
-//        TODO: This will update to the reimbursed costs section page when created
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
       "update the paymentsOnEmployeesBehalf value to the new amount" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalf)) shouldBe Some(newAmount)
       }
     }
@@ -487,8 +465,8 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(fullIncomeTaxOrIncurredCostsModel)))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
         urlPost(pageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -514,13 +492,12 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
     "redirect to the check your benefits page when the incurred costs question is set to false" which {
       val newAmount: BigDecimal = 123.45
       val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
-
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(
-          Some(benefits(fullIncomeTaxOrIncurredCostsModel.copy(paymentsOnEmployeesBehalfQuestion = Some(false), paymentsOnEmployeesBehalf = None))))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(aIncomeTaxAndCostsModel.copy(paymentsOnEmployeesBehalfQuestion = Some(false), paymentsOnEmployeesBehalf = None)))
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         urlPost(pageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -533,12 +510,12 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
     "redirect to the check your benefits page when the income tax or incurred costs question is set to false" which {
       val newAmount: BigDecimal = 123.45
       val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
-
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(emptyIncomeTaxOrIncurredCostsModel)))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(IncomeTaxAndCostsModel(sectionQuestion = Some(false))))
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         urlPost(pageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -551,12 +528,11 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
     "redirect to the check your benefits page when the benefits received question is set to false" which {
       val newAmount: BigDecimal = 123.45
       val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
-
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(BenefitsViewModel(isUsingCustomerData = true)))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(BenefitsViewModel(isUsingCustomerData = true)))), aUserRequest)
         urlPost(pageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -566,5 +542,4 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
       }
     }
   }
-
 }

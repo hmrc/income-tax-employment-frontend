@@ -26,8 +26,7 @@ import views.html.employment.{CheckYourBenefitsView, CheckYourBenefitsViewEOY}
 
 import scala.concurrent.Future
 
-class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockEmploymentSessionService with UnitTest with MockAuditService{
-
+class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockEmploymentSessionService with UnitTest with MockAuditService {
 
   lazy val view: CheckYourBenefitsView = app.injector.instanceOf[CheckYourBenefitsView]
   lazy val viewEOY: CheckYourBenefitsViewEOY = app.injector.instanceOf[CheckYourBenefitsViewEOY]
@@ -55,7 +54,7 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockEmploymen
 
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {
-          mockFind(taxYear,Ok(view(taxYear, employmentsModel.hmrcEmploymentData.head.employmentBenefits.get.benefits.get)))
+          mockFind(taxYear, Ok(view(taxYear, employmentsModel.hmrcEmploymentData.head.employmentBenefits.get.benefits.get, isSingleEmployment = true, isInYear = true, employmentId)))
           controller.show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))
@@ -82,7 +81,7 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockEmploymen
 
     "redirect the User to the Overview page no data in mongo" which {
 
-      s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth{
+      s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
         val result: Future[Result] = {
           mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
           controller.show(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))

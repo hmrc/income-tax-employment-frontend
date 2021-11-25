@@ -101,11 +101,9 @@ class NonTaxableCostsBenefitsAmountController @Inject()(implicit val cc: Message
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
                   isPriorSubmission = cya.isPriorSubmission, hasPriorBenefits = cya.hasPriorBenefits)(errorHandler.internalServerError()) {
 
-                  if (cya.hasPriorBenefits) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    Redirect(TaxableCostsBenefitsController.show(taxYear, employmentId))
-                  }
+                  val nextPage = TaxableCostsBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
                 }
             }
           )

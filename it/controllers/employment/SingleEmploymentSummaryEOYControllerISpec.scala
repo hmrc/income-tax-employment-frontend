@@ -70,8 +70,10 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
     val yesText: String = "Yes"
     val noText: String = "No"
     val name: String = "Maggie"
-    val change: String = s"Change Change employment information for $name" //change is included twice because selector is for the whole link. First change is the text/link, second change is part of hidden text
-    val remove: String = s"Remove Remove employment information for $name" //remove is included twice because selector is for the whole link. First remove is the text/link, second remove is part of hidden text
+    val change: String = s"Change Change employment information for $name"
+    //change is included twice because selector is for the whole link. First change is the text/link, second change is part of hidden text
+    val remove: String = s"Remove Remove employment information for $name"
+    //remove is included twice because selector is for the whole link. First remove is the text/link, second remove is part of hidden text
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -200,12 +202,11 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
             linkCheck(remove, removeLinkSelector, removeLinkHref)
             textOnPageCheck(doYouNeedAnother, doYouNeedAnotherSelector)
             textOnPageCheck(specific.youMustTell, youMustTellSelector)
-            radioButtonCheck(yesText, 1)
-            radioButtonCheck(noText, 2)
+            radioButtonCheck(yesText, 1, checked = false)
+            radioButtonCheck(noText, 2, checked = false)
             buttonCheck(continueButton)
 
             formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employment-summary", formSelector)
-            formRadioValueCheck(selected = true, formRadioButtonValueSelector)
           }
         }
       }
@@ -292,12 +293,11 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
             textOnPageCheck(specific.youMustTell, youMustTellSelector)
             errorSummaryCheck(specific.expectedErrorText, valueHref)
             errorAboveElementCheck(specific.expectedErrorText)
-            radioButtonCheck(yesText, 1)
-            radioButtonCheck(noText, 2)
+            radioButtonCheck(yesText, 1, checked = false)
+            radioButtonCheck(noText, 2, checked = false)
             buttonCheck(continueButton)
 
             formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employment-summary", formSelector)
-            formRadioValueCheck(selected = true, formRadioButtonValueSelector)
           }
         }
 

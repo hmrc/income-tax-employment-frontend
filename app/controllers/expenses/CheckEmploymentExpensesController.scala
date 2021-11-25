@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package controllers.employment
+package controllers.expenses
 
 import audit.{AuditService, ViewEmploymentExpensesAudit}
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckEmploymentExpensesController
+import controllers.expenses.routes.CheckEmploymentExpensesController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.User
 import models.employment.{AllEmploymentData, EmploymentExpenses}
@@ -26,10 +26,10 @@ import models.expenses.{Expenses, ExpensesViewModel}
 import models.mongo.ExpensesCYAModel
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.EmploymentSessionService
+import services.{CreateOrAmendExpensesService, EmploymentSessionService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.employment.{CheckEmploymentExpensesView, CheckEmploymentExpensesViewEOY}
+import views.html.expenses.{CheckEmploymentExpensesView, CheckEmploymentExpensesViewEOY}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,6 +37,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAction,
                                                   checkEmploymentExpensesView: CheckEmploymentExpensesView,
                                                   checkEmploymentExpensesViewEOY: CheckEmploymentExpensesViewEOY,
+                                                  createOrAmendExpensesService: CreateOrAmendExpensesService,
                                                   employmentSessionService: EmploymentSessionService,
                                                   auditService: AuditService,
                                                   inYearAction: InYearAction,
@@ -115,19 +116,29 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
   def submit(taxYear: Int): Action[AnyContent] = authorisedAction.async { implicit user =>
 
     inYearAction.notInYear(taxYear) {
+
       employmentSessionService.getAndHandleExpenses(taxYear) { (cya, prior) =>
         cya match {
           case Some(cya) =>
 
-            //TODO create CreateUpdateExpensesRequest model with new expenses data
-            //            employmentSessionService.createModelAndReturnResult(cya,prior,taxYear){
-            //              model =>
-            //                employmentSessionService.createOrUpdateEmploymentResult(taxYear,model).flatMap{
-            //                  result =>
-            //                    employmentSessionService.clear(taxYear)(errorHandler.internalServerError())(result)
-            //                }
-            //            }
-            Future.successful(errorHandler.internalServerError())
+            cya.expensesCya.expenses.expensesIsFinished(taxYear) match {
+              // TODO: potentially navigate elsewhere - design to confirm
+              case Some(unfinishedRedirect) => Future.successful(Redirect(unfinishedRedirect))
+              case _ =>
+                createOrAmendExpensesService.createExpensesModelAndReturnResult(cya, prior, taxYear) {
+                  model =>
+
+                    createOrAmendExpensesService.createOrUpdateExpensesResult(taxYear, model).flatMap {
+                      case Left(result) =>
+                        Future.successful(result)
+                      case Right(result) =>
+                        //TODO: perform Submit audit
+                        employmentSessionService.clearExpenses(taxYear)(
+                          result
+                        )
+                    }
+                }
+            }
 
           case None => Future.successful(Redirect(CheckEmploymentExpensesController.show(taxYear)))
         }

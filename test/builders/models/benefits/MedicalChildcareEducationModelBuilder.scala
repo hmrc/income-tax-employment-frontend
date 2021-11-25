@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-package models.expenses
+package builders.models.benefits
 
-import play.api.libs.json.Json
+import models.benefits.MedicalChildcareEducationModel
 
-case class CreateExpensesRequestModel(ignoreExpenses: Option[Boolean], expenses: Expenses)
+object MedicalChildcareEducationModelBuilder {
 
-object CreateExpensesRequestModel {
-  implicit val format = Json.format[CreateExpensesRequestModel]
+  val aMedicalChildcareEducationModel: MedicalChildcareEducationModel = MedicalChildcareEducationModel(
+    sectionQuestion = Some(true),
+    medicalInsuranceQuestion = Some(true),
+    medicalInsurance = Some(100.00),
+    nurseryPlacesQuestion = Some(true),
+    nurseryPlaces = Some(200.00),
+    educationalServicesQuestion = Some(true),
+    educationalServices = Some(300.00),
+    beneficialLoanQuestion = Some(true),
+    beneficialLoan = Some(400.00)
+  )
 }

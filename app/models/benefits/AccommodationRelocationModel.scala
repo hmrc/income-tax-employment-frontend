@@ -21,14 +21,13 @@ import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue
 
-case class AccommodationRelocationModel(
-                                         accommodationRelocationQuestion: Option[Boolean] = None,
-                                         accommodationQuestion: Option[Boolean] = None,
-                                         accommodation: Option[BigDecimal] = None,
-                                         qualifyingRelocationExpensesQuestion: Option[Boolean] = None,
-                                         qualifyingRelocationExpenses: Option[BigDecimal] = None,
-                                         nonQualifyingRelocationExpensesQuestion: Option[Boolean] = None,
-                                         nonQualifyingRelocationExpenses: Option[BigDecimal] = None
+case class AccommodationRelocationModel(sectionQuestion: Option[Boolean] = None,
+                                        accommodationQuestion: Option[Boolean] = None,
+                                        accommodation: Option[BigDecimal] = None,
+                                        qualifyingRelocationExpensesQuestion: Option[Boolean] = None,
+                                        qualifyingRelocationExpenses: Option[BigDecimal] = None,
+                                        nonQualifyingRelocationExpensesQuestion: Option[Boolean] = None,
+                                        nonQualifyingRelocationExpenses: Option[BigDecimal] = None
                                        ) {
 
   def qualifyingRelocationSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
@@ -58,7 +57,7 @@ case class AccommodationRelocationModel(
   //scalastyle:on
 
   def isFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
-    accommodationRelocationQuestion match {
+    sectionQuestion match {
       case Some(true) =>
         (accommodationSectionFinished, qualifyingRelocationSectionFinished, nonQualifyingRelocationSectionFinished) match {
           case (call@Some(_), _, _) => call
@@ -75,18 +74,17 @@ case class AccommodationRelocationModel(
 object AccommodationRelocationModel {
   implicit val formats: OFormat[AccommodationRelocationModel] = Json.format[AccommodationRelocationModel]
 
-  def clear: AccommodationRelocationModel = AccommodationRelocationModel(accommodationRelocationQuestion = Some(false))
+  def clear: AccommodationRelocationModel = AccommodationRelocationModel(sectionQuestion = Some(false))
 }
 
 
-case class EncryptedAccommodationRelocationModel(
-                                                  accommodationRelocationQuestion: Option[EncryptedValue] = None,
-                                                  accommodationQuestion: Option[EncryptedValue] = None,
-                                                  accommodation: Option[EncryptedValue] = None,
-                                                  qualifyingRelocationExpensesQuestion: Option[EncryptedValue] = None,
-                                                  qualifyingRelocationExpenses: Option[EncryptedValue] = None,
-                                                  nonQualifyingRelocationExpensesQuestion: Option[EncryptedValue] = None,
-                                                  nonQualifyingRelocationExpenses: Option[EncryptedValue] = None
+case class EncryptedAccommodationRelocationModel(sectionQuestion: Option[EncryptedValue] = None,
+                                                 accommodationQuestion: Option[EncryptedValue] = None,
+                                                 accommodation: Option[EncryptedValue] = None,
+                                                 qualifyingRelocationExpensesQuestion: Option[EncryptedValue] = None,
+                                                 qualifyingRelocationExpenses: Option[EncryptedValue] = None,
+                                                 nonQualifyingRelocationExpensesQuestion: Option[EncryptedValue] = None,
+                                                 nonQualifyingRelocationExpenses: Option[EncryptedValue] = None
                                                 )
 
 object EncryptedAccommodationRelocationModel {

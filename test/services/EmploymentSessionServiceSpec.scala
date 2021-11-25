@@ -747,6 +747,25 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       status(response) shouldBe INTERNAL_SERVER_ERROR
     }
 
+    ".clearExpenses" should {
+      "redirect when the record in the database has been removed" in {
+        mockClear(taxYear, response = true)
+
+        val response = service.clearExpenses(taxYear)(Redirect("303"))
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "303"
+      }
+
+      "redirect to error when the record in the database has not been removed" in {
+        mockClear(taxYear, response = false)
+
+        val response = service.clearExpenses(taxYear)(Redirect("303"))
+
+        status(response) shouldBe INTERNAL_SERVER_ERROR
+      }
+    }
+
     "return the given result when no DatabaseError" in {
       mockFind(taxYear, Right(None))
 

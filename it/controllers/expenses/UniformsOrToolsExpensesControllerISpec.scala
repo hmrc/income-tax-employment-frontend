@@ -16,10 +16,14 @@
 
 package controllers.expenses
 
-import controllers.employment.routes.CheckEmploymentExpensesController
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
+import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
+import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
+import controllers.expenses.routes.CheckEmploymentExpensesController
 import forms.YesNoForm
-import models.User
-import models.mongo.{ExpensesCYAModel, ExpensesUserData}
+import models.mongo.ExpensesCYAModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -31,10 +35,8 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
 
   private val taxYearEOY: Int = taxYear - 1
 
-  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
-
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel) =
-    ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
+    anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/uniforms-work-clothes-or-tools"
 
@@ -59,6 +61,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedTitle: String
     val expectedHeading: String
     val expectedCanClaimExample1: String
+    val expectedUniformsAndToolsText: String
     val expectedUniformsAndToolsLink: String
     val expectedErrorTitle: String
     val expectedErrorText: String
@@ -78,7 +81,8 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedTitle = "Do you want to claim for uniforms, work clothes, or tools?"
     val expectedHeading = "Do you want to claim for uniforms, work clothes, or tools?"
     val expectedCanClaimExample1 = "repairing or replacing small tools you need to do your job"
-    val expectedUniformsAndToolsLink = "Check if you can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)."
+    val expectedUniformsAndToolsText = "Check if you can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)."
+    val expectedUniformsAndToolsLink = "Check if you can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorText = "Select yes to claim for uniforms, work clothes, or tools"
   }
@@ -87,7 +91,8 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedTitle = "Do you want to claim for uniforms, work clothes, or tools?"
     val expectedHeading = "Do you want to claim for uniforms, work clothes, or tools?"
     val expectedCanClaimExample1 = "repairing or replacing small tools you need to do your job"
-    val expectedUniformsAndToolsLink = "Check if you can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)."
+    val expectedUniformsAndToolsText = "Check if you can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)."
+    val expectedUniformsAndToolsLink = "Check if you can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorText = "Select yes to claim for uniforms, work clothes, or tools"
   }
@@ -96,7 +101,8 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedTitle = "Do you want to claim for uniforms, work clothes, or tools for your client?"
     val expectedHeading = "Do you want to claim for uniforms, work clothes, or tools for your client?"
     val expectedCanClaimExample1 = "repairing or replacing small tools your client needs to do their job"
-    val expectedUniformsAndToolsLink = "Check if your client can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)."
+    val expectedUniformsAndToolsText = "Check if your client can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)."
+    val expectedUniformsAndToolsLink = "Check if your client can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorText = "Select yes to claim for your client’s uniforms, work clothes, or tools"
   }
@@ -105,7 +111,8 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedTitle = "Do you want to claim for uniforms, work clothes, or tools for your client?"
     val expectedHeading = "Do you want to claim for uniforms, work clothes, or tools for your client?"
     val expectedCanClaimExample1 = "repairing or replacing small tools your client needs to do their job"
-    val expectedUniformsAndToolsLink = "Check if your client can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)."
+    val expectedUniformsAndToolsText = "Check if your client can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)."
+    val expectedUniformsAndToolsLink = "Check if your client can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorText = "Select yes to claim for your client’s uniforms, work clothes, or tools"
   }
@@ -147,7 +154,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, emptyExpensesCYAModel), userRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(anExpensesViewModel.copy(flatRateJobExpensesQuestion = None))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -165,9 +172,10 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           textOnPageCheck(user.specificExpectedResults.get.expectedCanClaimExample1, canClaimExample1Selector)
           textOnPageCheck(expectedCanClaimExample2, canClaimExample2Selector)
           textOnPageCheck(flatRateExpense, flatRateExpenseParagraphSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedUniformsAndToolsText, findOutMoreParagraphSelector)
           linkCheck(user.specificExpectedResults.get.expectedUniformsAndToolsLink, uniformsAndToolsLinkSelector, uniformsAndToolsLink)
-          radioButtonCheck(yesText, 1, None)
-          radioButtonCheck(noText, 2, None)
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -176,8 +184,8 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
         "render 'Do you want to claim for uniforms, work clothes, or tools?' page with the correct content with yes value pre-filled" which {
           lazy val result: WSResponse = {
             dropExpensesDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYear - 1)
-            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, fullExpensesCYAModel), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
+            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -198,9 +206,10 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           textOnPageCheck(flatRateExpense, flatRateExpenseParagraphSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedCanClaimExample1, canClaimExample1Selector)
           textOnPageCheck(expectedCanClaimExample2, canClaimExample2Selector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedUniformsAndToolsText, findOutMoreParagraphSelector)
           linkCheck(user.specificExpectedResults.get.expectedUniformsAndToolsLink, uniformsAndToolsLinkSelector, uniformsAndToolsLink)
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -209,9 +218,9 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
         "render 'Do you want to claim for uniforms, work clothes, or tools?' page with the correct content with no value pre-filled" which {
           lazy val result: WSResponse = {
             dropExpensesDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
-            val model = fullExpensesCYAModel.expenses.copy(flatRateJobExpensesQuestion = Some(false))
-            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, fullExpensesCYAModel.copy(expenses = model)), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            val expensesViewModel = anExpensesViewModel.copy(flatRateJobExpensesQuestion = Some(false))
+            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel.copy(expenses = expensesViewModel)), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -229,9 +238,10 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           textOnPageCheck(flatRateExpense, flatRateExpenseParagraphSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedCanClaimExample1, canClaimExample1Selector)
           textOnPageCheck(expectedCanClaimExample2, canClaimExample2Selector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedUniformsAndToolsText, findOutMoreParagraphSelector)
           linkCheck(user.specificExpectedResults.get.expectedUniformsAndToolsLink, uniformsAndToolsLinkSelector, uniformsAndToolsLink)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(true))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = true)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -244,7 +254,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
         implicit lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
-          userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
+          userDataStub(anIncomeTaxUserData, nino, taxYear)
           urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
@@ -282,8 +292,8 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
 
             lazy val result: WSResponse = {
               dropExpensesDB()
-              userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
-              insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, fullExpensesCYAModel), userRequest)
+              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+              insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(pageUrl(taxYearEOY), body = form, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -304,9 +314,10 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
             textOnPageCheck(flatRateExpense, flatRateExpenseParagraphSelector)
             textOnPageCheck(user.specificExpectedResults.get.expectedCanClaimExample1, canClaimExample1Selector)
             textOnPageCheck(expectedCanClaimExample2, canClaimExample2Selector)
+            textOnPageCheck(user.specificExpectedResults.get.expectedUniformsAndToolsText, findOutMoreParagraphSelector)
             linkCheck(user.specificExpectedResults.get.expectedUniformsAndToolsLink, uniformsAndToolsLinkSelector, uniformsAndToolsLink)
-            radioButtonCheck(yesText, 1, Some(false))
-            radioButtonCheck(noText, 2, Some(false))
+            radioButtonCheck(yesText, 1, checked = false)
+            radioButtonCheck(noText, 2, checked = false)
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
@@ -324,7 +335,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
 
         lazy val result: WSResponse = {
           dropExpensesDB()
-          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, fullExpensesCYAModel), userRequest)
+          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
           urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -332,7 +343,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header(name = "location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
-          lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
+          lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.flatRateJobExpensesQuestion shouldBe Some(false)
           cyaModel.expensesCya.expenses.flatRateJobExpenses shouldBe None
@@ -344,8 +355,8 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
 
         lazy val result: WSResponse = {
           dropExpensesDB()
-          val expenses = fullExpensesCYAModel.expenses.copy(flatRateJobExpensesQuestion = None, flatRateJobExpenses = Some(10.00))
-          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, fullExpensesCYAModel.copy(expenses = expenses)), userRequest)
+          val expenses = anExpensesViewModel.copy(flatRateJobExpensesQuestion = None, flatRateJobExpenses = Some(10.00))
+          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel.copy(expenses = expenses)), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
           urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -353,7 +364,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
-          lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
+          lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.flatRateJobExpensesQuestion shouldBe Some(true)
           cyaModel.expensesCya.expenses.flatRateJobExpenses shouldBe Some(10.00)
@@ -364,7 +375,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
         implicit lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
-          userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
+          userDataStub(anIncomeTaxUserData, nino, taxYear)
           urlPost(pageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 

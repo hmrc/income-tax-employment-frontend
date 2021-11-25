@@ -16,14 +16,7 @@
 
 package models.employment
 
-import models.mongo.EmploymentDetails
-import play.api.Logging
 import play.api.libs.json.{Json, OFormat}
-import utils.DateTimeUtil.getSubmittedOnDateTime
-import java.time.ZonedDateTime
-
-import models.benefits.BenefitsViewModel
-import models.employment.createUpdate.CreateUpdateEmployment
 
 case class AllEmploymentData(hmrcEmploymentData: Seq[EmploymentSource],
                              hmrcExpenses: Option[EmploymentExpenses],
@@ -32,69 +25,4 @@ case class AllEmploymentData(hmrcEmploymentData: Seq[EmploymentSource],
 
 object AllEmploymentData {
   implicit val format: OFormat[AllEmploymentData] = Json.format[AllEmploymentData]
-}
-
-case class EmploymentSource(employmentId: String,
-                            employerName: String,
-                            employerRef: Option[String],
-                            payrollId: Option[String],
-                            startDate: Option[String],
-                            cessationDate: Option[String],
-                            dateIgnored: Option[String],
-                            submittedOn: Option[String],
-                            employmentData: Option[EmploymentData],
-                            employmentBenefits: Option[EmploymentBenefits]) extends Logging {
-
-  def hasPriorBenefits(): Boolean ={
-    employmentBenefits.exists(_.benefits.exists(_.hasBenefitsPopulated))
-  }
-
-  def dataHasNotChanged(createUpdateEmployment: CreateUpdateEmployment): Boolean = {
-    employerRef == createUpdateEmployment.employerRef &&
-      employerName == createUpdateEmployment.employerName &&
-      startDate.contains(createUpdateEmployment.startDate) &&
-      cessationDate == createUpdateEmployment.cessationDate &&
-      payrollId == createUpdateEmployment.payrollId
-  }
-
-  def toBenefitsViewModel(isUsingCustomerData: Boolean): Option[BenefitsViewModel] ={
-    val submittedOn: Option[String] = employmentBenefits.map(_.submittedOn)
-    employmentBenefits.flatMap(_.benefits.map(_.toBenefitsViewModel(isUsingCustomerData,submittedOn)))
-  }
-
-  def toEmploymentDetails(isUsingCustomerData: Boolean): EmploymentDetails = {
-    EmploymentDetails(
-      employerName = employerName,
-      employerRef = employerRef,
-      startDate = startDate,
-      payrollId = payrollId,
-      cessationDateQuestion = Some(cessationDate.isEmpty),
-      cessationDate = cessationDate,
-      dateIgnored = dateIgnored,
-      employmentSubmittedOn = submittedOn,
-      employmentDetailsSubmittedOn = employmentData.map(_.submittedOn),
-      taxablePayToDate = employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
-      totalTaxToDate = employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
-      currentDataIsHmrcHeld = !isUsingCustomerData
-    )
-  }
-
-  def toEmploymentDetailsViewModel(isUsingCustomerData: Boolean): EmploymentDetailsViewModel = {
-    EmploymentDetailsViewModel(
-      employerName,
-      employerRef,
-      payrollId,
-      employmentId,
-      startDate,
-      Some(cessationDate.isEmpty),
-      cessationDate,
-      employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
-      employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
-      isUsingCustomerData
-    )
-  }
-}
-
-object EmploymentSource {
-  implicit val format: OFormat[EmploymentSource] = Json.format[EmploymentSource]
 }

@@ -17,14 +17,16 @@
 package controllers.expenses
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckEmploymentExpensesController
+import controllers.expenses.routes.CheckEmploymentExpensesController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
-import models.mongo.ExpensesUserData
+import models.mongo.ExpensesCYAModel
+import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
+import services.ExpensesRedirectService.redirectBasedOnCurrentAnswers
+import services.{EmploymentSessionService, ExpensesRedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.expenses.OtherEquipmentAmountView
@@ -34,67 +36,58 @@ import scala.concurrent.{ExecutionContext, Future}
 
 
 class OtherEquipmentAmountController @Inject()(implicit val cc: MessagesControllerComponents,
-                                                        authAction: AuthorisedAction,
-                                                        inYearAction: InYearAction,
-                                                        otherEquipmentAmountView: OtherEquipmentAmountView,
-                                                        appConfig: AppConfig,
-                                                        val employmentSessionService: EmploymentSessionService,
-                                                        errorHandler: ErrorHandler,
-                                                        ec: ExecutionContext,
-                                                        clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+                                               authAction: AuthorisedAction,
+                                               inYearAction: InYearAction,
+                                               otherEquipmentAmountView: OtherEquipmentAmountView,
+                                               appConfig: AppConfig,
+                                               val employmentSessionService: EmploymentSessionService,
+                                               errorHandler: ErrorHandler,
+                                               ec: ExecutionContext,
+                                               clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandleExpenses(taxYear) { (optCya, prior) =>
+        redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { cyaData =>
 
-        optCya match {
-          case Some(cyaData) =>
+          val cyaAmount = cyaData.expensesCya.expenses.otherAndCapitalAllowances
 
-            // TODO: move navigation logic to redirect service
-            if(cyaData.expensesCya.expenses.otherAndCapitalAllowancesQuestion.contains(false)) {
-              Future.successful(Redirect(CheckEmploymentExpensesController.show(taxYear)))
-            } else {
-
-              val cyaAmount = cyaData.expensesCya.expenses.otherAndCapitalAllowances
-
-              val form = fillExpensesFormFromPriorAndCYA(buildForm(user.isAgent), prior, cyaAmount) { employmentExpenses =>
-                employmentExpenses.expenses.flatMap(_.otherAndCapitalAllowances)
-              }
-
-              Future(Ok(otherEquipmentAmountView(taxYear, form, cyaAmount)))
-            }
-
-          case None => Future.successful(Redirect(CheckEmploymentExpensesController.show(taxYear)))
+          val form = fillExpensesFormFromPriorAndCYA(buildForm(user.isAgent), prior, cyaAmount) { employmentExpenses =>
+            employmentExpenses.expenses.flatMap(_.otherAndCapitalAllowances)
+          }
+          Future.successful(Ok(otherEquipmentAmountView(taxYear, form, cyaAmount)))
         }
       }
-
     }
   }
 
   def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getExpensesSessionDataResult(taxYear) {
-        case Some(expensesUserData: ExpensesUserData) => buildForm(user.isAgent).bindFromRequest().fold(
-          { formWithErrors =>
-            val fillValue = expensesUserData.expensesCya.expenses.otherAndCapitalAllowances
-            Future.successful(BadRequest(otherEquipmentAmountView(taxYear, formWithErrors, fillValue)))
-          }, {
-            newAmount =>
+      employmentSessionService.getExpensesSessionDataResult(taxYear) { cya =>
+        redirectBasedOnCurrentAnswers(taxYear, cya)(redirects(_, taxYear)) { data =>
+          buildForm(user.isAgent).bindFromRequest().fold(
+            { formWithErrors =>
+              val fillValue = data.expensesCya.expenses.otherAndCapitalAllowances
+              Future.successful(BadRequest(otherEquipmentAmountView(taxYear, formWithErrors, fillValue)))
+            }, {
+              newAmount =>
 
-              val expensesCYAModel = expensesUserData.expensesCya
-              val expensesViewModel = expensesCYAModel.expenses
-              val updatedCyaModel = expensesCYAModel.copy(expenses = expensesViewModel.copy(otherAndCapitalAllowances = Some(newAmount)))
+                val expensesCYAModel = data.expensesCya
+                val expensesViewModel = expensesCYAModel.expenses
+                val updatedCyaModel = expensesCYAModel.copy(expenses = expensesViewModel.copy(otherAndCapitalAllowances = Some(newAmount)))
 
-              employmentSessionService.createOrUpdateExpensesSessionData(updatedCyaModel,
-                taxYear,
-                expensesUserData.isPriorSubmission,
-                expensesUserData.isPriorSubmission)(errorHandler.internalServerError()) {
-                  Redirect(CheckEmploymentExpensesController.show(taxYear))
-              }
-          }
-        )
-        case None => Future.successful(Redirect(CheckEmploymentExpensesController.show(taxYear)))
+                employmentSessionService.createOrUpdateExpensesSessionData(updatedCyaModel,
+                  taxYear,
+                  data.isPriorSubmission,
+                  data.isPriorSubmission)(errorHandler.internalServerError()) {
+
+                  val nextPage = CheckEmploymentExpensesController.show(taxYear)
+                  ExpensesRedirectService.expensesSubmitRedirect(updatedCyaModel, nextPage)(taxYear)
+                }
+            }
+          )
+        }
       }
     }
   }
@@ -103,5 +96,9 @@ class OtherEquipmentAmountController @Inject()(implicit val cc: MessagesControll
     AmountForm.amountForm(s"expenses.otherEquipmentAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
       s"expenses.otherEquipmentAmount.error.invalidFormat.${if (isAgent) "agent" else "individual"}",
       s"expenses.otherEquipmentAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}")
+  }
+
+  private def redirects(cya: ExpensesCYAModel, taxYear: Int): Seq[ConditionalRedirect] = {
+    ExpensesRedirectService.otherAllowanceAmountRedirects(cya, taxYear)
   }
 }

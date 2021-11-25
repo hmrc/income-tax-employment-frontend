@@ -14,23 +14,37 @@
  * limitations under the License.
  */
 
-package controllers.employment
+package controllers.expenses
 
+
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import controllers.employment.routes.EmploymentSummaryController
+import builders.models.UserBuilder.aUserRequest
+import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
+import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import builders.models.expenses.ExpensesBuilder.anExpenses
+import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
+import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
+import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
+import controllers.expenses.routes._
+import models.IncomeTaxUserData
 import models.employment.AllEmploymentData
 import models.expenses.Expenses
+import models.expenses.createUpdate.CreateUpdateExpensesRequest
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
-import models.{IncomeTaxUserData, User}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
 import play.api.http.HeaderNames
 import play.api.http.Status._
+import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper {
 
-  private def url(taxYearToUse: Int = taxYear): String = s"$appUrl/$taxYearToUse/check-employment-expenses"
+  private def url(taxYearToUse: Int = taxYear): String = s"$appUrl/$taxYearToUse/expenses/check-employment-expenses"
 
   object Selectors {
     val headingSelector = "#main-content > div > div > header > h1"
@@ -39,6 +53,9 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val insetEOYSelector = "#main-content > div > div > p.govuk-inset-text"
     val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
     val summaryListSelector = "#main-content > div > div > dl"
+    val continueButtonFormSelector = "#main-content > div > div > form"
+    val continueButtonSelector = "#continue"
+    val returnToEmploymentSummarySelector = "#returnToEmploymentSummaryBtn"
 
     def summaryListRowFieldNameSelector(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dt"
 
@@ -82,6 +99,10 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val fieldNames: Seq[String]
     val yes: String
     val no: String
+    val continueButtonText: String
+    val continueButtonLink: String
+    val returnToEmploymentSummaryText: String
+    val returnToEmploymentSummaryLink: String
 
     def expectedCaption(taxYear: Int = taxYear): String
   }
@@ -98,6 +119,10 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val otherAndCapitalAllowancesQuestionInYear = "Other expenses"
     val otherAndCapitalAllowancesQuestion = "Other equipment"
     val otherAndCapitalAllowancesAmount = "Amount for other equipment"
+    val continueButtonText = "Save and continue"
+    val continueButtonLink = "/update-and-submit-income-tax-return/employment-income/2021/expenses/check-employment-expenses"
+    val returnToEmploymentSummaryText: String = "Return to employment summary"
+    val returnToEmploymentSummaryLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employment-summary"
     val fieldNames = Seq(
       "Business travel and overnight stays",
       "Uniforms, work clothes, or tools",
@@ -122,6 +147,10 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val otherAndCapitalAllowancesQuestionInYear = "Other expenses"
     val otherAndCapitalAllowancesQuestion = "Other equipment"
     val otherAndCapitalAllowancesAmount = "Amount for other equipment"
+    val continueButtonText = "Save and continue"
+    val continueButtonLink = "/update-and-submit-income-tax-return/employment-income/2021/expenses/check-employment-expenses"
+    val returnToEmploymentSummaryText: String = "Return to employment summary"
+    val returnToEmploymentSummaryLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employment-summary"
 
     val fieldNames = Seq(
       "Business travel and overnight stays",
@@ -226,17 +255,20 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
 
-  private val multipleEmployments: AllEmploymentData = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"), employmentDetailsAndBenefits()))
+  private val multipleEmployments: AllEmploymentData = anAllEmploymentData.copy(Seq(
+    anEmploymentSource,
+    anEmploymentSource.copy(employmentId = "002")
+  ))
   private val partExpenses: Expenses = Expenses(Some(1), Some(2))
 
   object Hrefs {
-    val dummyHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/check-employment-expenses"
+    val dummyHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/check-employment-expenses"
     val claimExpensesHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/claim-employment-expenses"
     val businessTravelOvernightExpensesHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/business-travel-and-overnight-expenses"
     val uniformsOrToolsExpensesHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/uniforms-work-clothes-or-tools"
     val uniformsOrToolsExpensesAmountHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/amount-for-uniforms-work-clothes-or-tools"
     val professionalFeesAndSubscriptionsHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/professional-fees-and-subscriptions"
-    val travelAndOvernightAmountHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear-1}/expenses/travel-amount"
+    val travelAndOvernightAmountHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/travel-amount"
     val professionalFeesSubscriptionsAmountHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/amount-for-professional-fees-and-subscriptions"
     val otherEquipmentHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/other-equipment"
     val otherEquipmentAmountHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/amount-for-other-equipment"
@@ -252,7 +284,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
+            userDataStub(anIncomeTaxUserData, nino, taxYear)
             urlGet(url(), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -266,20 +298,21 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           welshToggleCheck(user.isWelsh)
 
           textOnPageCheck(user.commonExpectedResults.fieldNames.head, summaryListRowFieldNameSelector(1))
-          textOnPageCheck("£2", summaryListRowFieldAmountSelector(1))
+          textOnPageCheck("£200", summaryListRowFieldAmountSelector(1))
           textOnPageCheck(user.commonExpectedResults.fieldNames(1), summaryListRowFieldNameSelector(2))
-          textOnPageCheck("£3", summaryListRowFieldAmountSelector(2))
+          textOnPageCheck("£300", summaryListRowFieldAmountSelector(2))
           textOnPageCheck(user.commonExpectedResults.fieldNames(2), summaryListRowFieldNameSelector(3))
-          textOnPageCheck("£4", summaryListRowFieldAmountSelector(3))
+          textOnPageCheck("£400", summaryListRowFieldAmountSelector(3))
           textOnPageCheck(user.commonExpectedResults.fieldNames(3), summaryListRowFieldNameSelector(4))
-          textOnPageCheck("£6", summaryListRowFieldAmountSelector(4))
+          textOnPageCheck("£600", summaryListRowFieldAmountSelector(4))
+          buttonCheck(user.commonExpectedResults.returnToEmploymentSummaryText, Selectors.returnToEmploymentSummarySelector)
         }
 
         "return a fully populated page when all the fields are populated at the end of the year" which {
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYear - 1)
+            userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
             urlGet(url(taxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
           val commonResults = user.commonExpectedResults
@@ -292,24 +325,26 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           captionCheck(commonResults.expectedCaption(taxYear - 1))
           textOnPageCheck(specificResults.expectedContentSingle, contentSelector)
           welshToggleCheck(user.isWelsh)
+          buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
+          formPostLinkCheck(user.commonExpectedResults.continueButtonLink, continueButtonFormSelector)
 
           changeAmountRowCheck(commonResults.employmentExpenses, commonResults.yes, summaryListRowFieldNameSelector(1), summaryListRowFieldAmountSelector(1),
             changeLinkSelector(1), s"${user.commonExpectedResults.changeText} ${specificResults.expensesHiddenText}", claimExpensesHref)
           changeAmountRowCheck(commonResults.jobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(2), summaryListRowFieldAmountSelector(2),
             changeLinkSelector(2), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesHiddenText}", businessTravelOvernightExpensesHref)
-          changeAmountRowCheck(commonResults.jobExpensesAmount, "£2", summaryListRowFieldNameSelector(3), summaryListRowFieldAmountSelector(3),
+          changeAmountRowCheck(commonResults.jobExpensesAmount, "£200", summaryListRowFieldNameSelector(3), summaryListRowFieldAmountSelector(3),
             changeLinkSelector(3), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesAmountHiddenText}", travelAndOvernightAmountHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(4), summaryListRowFieldAmountSelector(4),
             changeLinkSelector(4), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateHiddenText}", uniformsOrToolsExpensesHref)
-          changeAmountRowCheck(commonResults.flatRateJobExpensesAmount, "£3", summaryListRowFieldNameSelector(5), summaryListRowFieldAmountSelector(5),
+          changeAmountRowCheck(commonResults.flatRateJobExpensesAmount, "£300", summaryListRowFieldNameSelector(5), summaryListRowFieldAmountSelector(5),
             changeLinkSelector(5), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateAmountHiddenText}", uniformsOrToolsExpensesAmountHref)
           changeAmountRowCheck(commonResults.professionalSubscriptionsQuestion, commonResults.yes, summaryListRowFieldNameSelector(6), summaryListRowFieldAmountSelector(6),
             changeLinkSelector(6), s"${user.commonExpectedResults.changeText} ${specificResults.profSubscriptionsHiddenText}", professionalFeesAndSubscriptionsHref)
-          changeAmountRowCheck(commonResults.professionalSubscriptionsAmount, "£4", summaryListRowFieldNameSelector(7), summaryListRowFieldAmountSelector(7),
+          changeAmountRowCheck(commonResults.professionalSubscriptionsAmount, "£400", summaryListRowFieldNameSelector(7), summaryListRowFieldAmountSelector(7),
             changeLinkSelector(7), s"${user.commonExpectedResults.changeText} ${specificResults.profSubscriptionsAmountHiddenText}", professionalFeesSubscriptionsAmountHref)
           changeAmountRowCheck(commonResults.otherAndCapitalAllowancesQuestion, commonResults.yes, summaryListRowFieldNameSelector(8), summaryListRowFieldAmountSelector(8),
             changeLinkSelector(8), s"${user.commonExpectedResults.changeText} ${specificResults.otherEquipmentHiddenText}", otherEquipmentHref)
-          changeAmountRowCheck(commonResults.otherAndCapitalAllowancesAmount, "£6", summaryListRowFieldNameSelector(9), summaryListRowFieldAmountSelector(9),
+          changeAmountRowCheck(commonResults.otherAndCapitalAllowancesAmount, "£600", summaryListRowFieldNameSelector(9), summaryListRowFieldAmountSelector(9),
             changeLinkSelector(9), s"${user.commonExpectedResults.changeText} ${specificResults.otherEquipmentAmountHiddenText}", otherEquipmentAmountHref)
         }
 
@@ -320,7 +355,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel().copy(hmrcExpenses = None)), nino, taxYear - 1)
+            userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcExpenses = None))), nino, taxYear - 1)
             urlGet(url(taxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
@@ -351,6 +386,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
           welshToggleCheck(user.isWelsh)
+          buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
+          formPostLinkCheck(user.commonExpectedResults.continueButtonLink, continueButtonFormSelector)
           changeAmountRowCheck(commonResults.employmentExpenses, commonResults.no, summaryListRowFieldNameSelector(1), summaryListRowFieldAmountSelector(1),
             changeLinkSelector(1), s"${user.commonExpectedResults.changeText} ${specificResults.expensesHiddenText}", claimExpensesHref)
 
@@ -358,16 +395,14 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
         "return a fully populated page when all the fields are populated at the end of the year when there is CYA data" which {
           def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
-            ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
-
-          val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+            anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
 
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-              ExpensesCYAModel(expenses.toExpensesViewModel(fullEmploymentsModel().customerExpenses.isDefined))), userRequest)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYear - 1)
+            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel.copy(
+              anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))), aUserRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
             urlGet(url(taxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
@@ -381,24 +416,26 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
           textOnPageCheck(user.specificExpectedResults.get.expectedContentSingle, contentSelector)
           welshToggleCheck(user.isWelsh)
+          buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
+          formPostLinkCheck(user.commonExpectedResults.continueButtonLink, continueButtonFormSelector)
 
           changeAmountRowCheck(commonResults.employmentExpenses, commonResults.yes, summaryListRowFieldNameSelector(1), summaryListRowFieldAmountSelector(1),
             changeLinkSelector(1), s"${user.commonExpectedResults.changeText} ${specificResults.expensesHiddenText}", claimExpensesHref)
           changeAmountRowCheck(commonResults.jobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(2), summaryListRowFieldAmountSelector(2),
             changeLinkSelector(2), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesHiddenText}", businessTravelOvernightExpensesHref)
-          changeAmountRowCheck(commonResults.jobExpensesAmount, "£2", summaryListRowFieldNameSelector(3), summaryListRowFieldAmountSelector(3),
+          changeAmountRowCheck(commonResults.jobExpensesAmount, "£200", summaryListRowFieldNameSelector(3), summaryListRowFieldAmountSelector(3),
             changeLinkSelector(3), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesAmountHiddenText}", travelAndOvernightAmountHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(4), summaryListRowFieldAmountSelector(4),
             changeLinkSelector(4), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateHiddenText}", uniformsOrToolsExpensesHref)
-          changeAmountRowCheck(commonResults.flatRateJobExpensesAmount, "£3", summaryListRowFieldNameSelector(5), summaryListRowFieldAmountSelector(5),
+          changeAmountRowCheck(commonResults.flatRateJobExpensesAmount, "£300", summaryListRowFieldNameSelector(5), summaryListRowFieldAmountSelector(5),
             changeLinkSelector(5), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateAmountHiddenText}", uniformsOrToolsExpensesAmountHref)
           changeAmountRowCheck(commonResults.professionalSubscriptionsQuestion, commonResults.yes, summaryListRowFieldNameSelector(6), summaryListRowFieldAmountSelector(6),
             changeLinkSelector(6), s"${user.commonExpectedResults.changeText} ${specificResults.profSubscriptionsHiddenText}", professionalFeesAndSubscriptionsHref)
-          changeAmountRowCheck(commonResults.professionalSubscriptionsAmount, "£4", summaryListRowFieldNameSelector(7), summaryListRowFieldAmountSelector(7),
+          changeAmountRowCheck(commonResults.professionalSubscriptionsAmount, "£400", summaryListRowFieldNameSelector(7), summaryListRowFieldAmountSelector(7),
             changeLinkSelector(7), s"${user.commonExpectedResults.changeText} ${specificResults.profSubscriptionsAmountHiddenText}", professionalFeesSubscriptionsAmountHref)
           changeAmountRowCheck(commonResults.otherAndCapitalAllowancesQuestion, commonResults.yes, summaryListRowFieldNameSelector(8), summaryListRowFieldAmountSelector(8),
             changeLinkSelector(8), s"${user.commonExpectedResults.changeText} ${specificResults.otherEquipmentHiddenText}", otherEquipmentHref)
-          changeAmountRowCheck(commonResults.otherAndCapitalAllowancesAmount, "£6", summaryListRowFieldNameSelector(9), summaryListRowFieldAmountSelector(9),
+          changeAmountRowCheck(commonResults.otherAndCapitalAllowancesAmount, "£600", summaryListRowFieldNameSelector(9), summaryListRowFieldAmountSelector(9),
             changeLinkSelector(9), s"${user.commonExpectedResults.changeText} ${specificResults.otherEquipmentAmountHiddenText}", otherEquipmentAmountHref)
         }
 
@@ -406,7 +443,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(multipleEmployments), nino, taxYear)
+            userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYear)
             urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -419,20 +456,21 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetText(taxYear), insetTextSelector)
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(user.commonExpectedResults.fieldNames.head, summaryListRowFieldNameSelector(1))
-          textOnPageCheck("£2", summaryListRowFieldAmountSelector(1))
+          textOnPageCheck("£200", summaryListRowFieldAmountSelector(1))
           textOnPageCheck(user.commonExpectedResults.fieldNames(1), summaryListRowFieldNameSelector(2))
-          textOnPageCheck("£3", summaryListRowFieldAmountSelector(2))
+          textOnPageCheck("£300", summaryListRowFieldAmountSelector(2))
           textOnPageCheck(user.commonExpectedResults.fieldNames(2), summaryListRowFieldNameSelector(3))
-          textOnPageCheck("£4", summaryListRowFieldAmountSelector(3))
+          textOnPageCheck("£400", summaryListRowFieldAmountSelector(3))
           textOnPageCheck(user.commonExpectedResults.fieldNames(3), summaryListRowFieldNameSelector(4))
-          textOnPageCheck("£6", summaryListRowFieldAmountSelector(4))
+          textOnPageCheck("£600", summaryListRowFieldAmountSelector(4))
+          buttonCheck(user.commonExpectedResults.returnToEmploymentSummaryText, Selectors.returnToEmploymentSummarySelector)
         }
 
         "return a fully populated page with correct paragraph text when there are multiple employments and its end of year" which {
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(multipleEmployments), nino, taxYear - 1)
+            userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYear - 1)
             urlGet(url(taxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
           val commonResults = user.commonExpectedResults
@@ -444,25 +482,26 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetMultiple, insetEOYSelector)
-
+          buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
+          formPostLinkCheck(user.commonExpectedResults.continueButtonLink, continueButtonFormSelector)
 
           changeAmountRowCheck(commonResults.employmentExpenses, commonResults.yes, summaryListRowFieldNameSelector(1), summaryListRowFieldAmountSelector(1),
             changeLinkSelector(1), s"${user.commonExpectedResults.changeText} ${specificResults.expensesHiddenText}", claimExpensesHref)
           changeAmountRowCheck(commonResults.jobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(2), summaryListRowFieldAmountSelector(2),
             changeLinkSelector(2), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesHiddenText}", businessTravelOvernightExpensesHref)
-          changeAmountRowCheck(commonResults.jobExpensesAmount, "£2", summaryListRowFieldNameSelector(3), summaryListRowFieldAmountSelector(3),
+          changeAmountRowCheck(commonResults.jobExpensesAmount, "£200", summaryListRowFieldNameSelector(3), summaryListRowFieldAmountSelector(3),
             changeLinkSelector(3), s"${user.commonExpectedResults.changeText} ${specificResults.jobExpensesAmountHiddenText}", travelAndOvernightAmountHref)
           changeAmountRowCheck(commonResults.flatRateJobExpensesQuestion, commonResults.yes, summaryListRowFieldNameSelector(4), summaryListRowFieldAmountSelector(4),
             changeLinkSelector(4), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateHiddenText}", uniformsOrToolsExpensesHref)
-          changeAmountRowCheck(commonResults.flatRateJobExpensesAmount, "£3", summaryListRowFieldNameSelector(5), summaryListRowFieldAmountSelector(5),
+          changeAmountRowCheck(commonResults.flatRateJobExpensesAmount, "£300", summaryListRowFieldNameSelector(5), summaryListRowFieldAmountSelector(5),
             changeLinkSelector(5), s"${user.commonExpectedResults.changeText} ${specificResults.flatRateAmountHiddenText}", uniformsOrToolsExpensesAmountHref)
           changeAmountRowCheck(commonResults.professionalSubscriptionsQuestion, commonResults.yes, summaryListRowFieldNameSelector(6), summaryListRowFieldAmountSelector(6),
             changeLinkSelector(6), s"${user.commonExpectedResults.changeText} ${specificResults.profSubscriptionsHiddenText}", professionalFeesAndSubscriptionsHref)
-          changeAmountRowCheck(commonResults.professionalSubscriptionsAmount, "£4", summaryListRowFieldNameSelector(7), summaryListRowFieldAmountSelector(7),
+          changeAmountRowCheck(commonResults.professionalSubscriptionsAmount, "£400", summaryListRowFieldNameSelector(7), summaryListRowFieldAmountSelector(7),
             changeLinkSelector(7), s"${user.commonExpectedResults.changeText} ${specificResults.profSubscriptionsAmountHiddenText}", professionalFeesSubscriptionsAmountHref)
           changeAmountRowCheck(commonResults.otherAndCapitalAllowancesQuestion, commonResults.yes, summaryListRowFieldNameSelector(8), summaryListRowFieldAmountSelector(8),
             changeLinkSelector(8), s"${user.commonExpectedResults.changeText} ${specificResults.otherEquipmentHiddenText}", otherEquipmentHref)
-          changeAmountRowCheck(commonResults.otherAndCapitalAllowancesAmount, "£6", summaryListRowFieldNameSelector(9), summaryListRowFieldAmountSelector(9),
+          changeAmountRowCheck(commonResults.otherAndCapitalAllowancesAmount, "£600", summaryListRowFieldNameSelector(9), summaryListRowFieldAmountSelector(9),
             changeLinkSelector(9), s"${user.commonExpectedResults.changeText} ${specificResults.otherEquipmentAmountHiddenText}", otherEquipmentAmountHref)
         }
 
@@ -470,7 +509,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(partExpenses)))), nino, taxYear - 1)
+            val employmentData = anAllEmploymentData.copy(hmrcExpenses = Some(anEmploymentExpenses.copy(expenses = Some(partExpenses))))
+            userDataStub(anIncomeTaxUserData.copy(Some(employmentData)), nino, taxYear - 1)
             urlGet(url(taxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
@@ -484,6 +524,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
           textOnPageCheck(user.specificExpectedResults.get.expectedContentSingle, contentSelector)
           welshToggleCheck(user.isWelsh)
+          buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
+          formPostLinkCheck(user.commonExpectedResults.continueButtonLink, continueButtonFormSelector)
 
           changeAmountRowCheck(commonResults.employmentExpenses, commonResults.yes, summaryListRowFieldNameSelector(1), summaryListRowFieldAmountSelector(1),
             changeLinkSelector(1), s"${user.commonExpectedResults.changeText} ${specificResults.expensesHiddenText}", claimExpensesHref)
@@ -505,12 +547,12 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
       lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel().copy(hmrcExpenses = None)), nino, taxYear)
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcExpenses = None))), nino, taxYear)
         urlGet(url(), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
+      result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
     }
 
     "returns an action when auth call fails" which {
@@ -526,11 +568,14 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   }
 
   ".submit" when {
+    def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
+      ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
+
     "return a redirect when in year" which {
       implicit lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
+        userDataStub(anIncomeTaxUserData, nino, taxYear)
         urlPost(url(), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -538,35 +583,15 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
+        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
 
-    "return internal server error page whilst not implemented" in {
-      def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
-        ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
-
-      val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
-
+    "redirect when at the end of the year when no cya data" which {
       implicit lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-          ExpensesCYAModel(expenses.toExpensesViewModel(fullEmploymentsModel().customerExpenses.isDefined))), userRequest)
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYear - 1)
-        urlPost(url(taxYear - 1), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
-      }
-
-      implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-      result.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return a redirect to show method when at end of year" which {
-      implicit lazy val result: WSResponse = {
-        dropExpensesDB()
-        authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYear - 1)
+        userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
         urlPost(url(taxYear - 1), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
@@ -574,8 +599,126 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "has a url of expenses show method" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear - 1).url)
+        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYear - 1).url)
       }
     }
+
+    "redirect to the missing section if the expense questions are incomplete when submitting CYA data at the end of the year" which {
+
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
+
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
+          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined).copy(professionalSubscriptionsQuestion = None))), aUserRequest)
+
+        urlPost(url(taxYear - 1), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+      }
+
+      implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+      "has a url of expenses show method" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(ProfessionalFeesAndSubscriptionsExpensesController.show(taxYear - 1).url)
+      }
+    }
+
+    "redirect to the first missing section if there are more than one incomplete expense questions when submitting CYA data at the end of the year" which {
+
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
+
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
+          ExpensesCYAModel(anExpensesViewModel.copy(
+            professionalSubscriptionsQuestion = None, otherAndCapitalAllowancesQuestion = None))), aUserRequest)
+
+        urlPost(url(taxYear - 1), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+      }
+
+      "has a url of expenses show method" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(ProfessionalFeesAndSubscriptionsExpensesController.show(taxYear - 1).url)
+      }
+    }
+
+    "create the model to update the data and return the correct redirect when no customer data and cya data submitted cya data is different from hmrc expense" which {
+
+      implicit lazy val result: WSResponse = {
+
+        val newAmount = BigDecimal(10000.99)
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
+
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
+          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined).copy(
+            professionalSubscriptions = Some(newAmount)))), aUserRequest)
+
+        val model = CreateUpdateExpensesRequest(
+          Some(true), anExpenses.copy(professionalSubscriptions = Some(newAmount))
+        )
+
+        stubPutWithHeadersCheck(s"/income-tax-expenses/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
+          Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+
+        urlPost(url(taxYear - 1), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+      }
+
+      "has an SEE OTHER status and cyaData cleared as data was submitted" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
+        findExpensesCyaData(taxYear - 1, aUserRequest) shouldBe None
+      }
+
+    }
+
+    "create the model to update the data and return redirect when there is no customer expenses and nothing has changed in relation to hmrc expenses" which {
+
+      implicit lazy val result: WSResponse = {
+
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
+
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
+          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))), aUserRequest)
+
+        urlPost(url(taxYear - 1), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+      }
+
+      "has an SEE OTHER status and cyaData not cleared as no changes were made" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
+        findExpensesCyaData(taxYear - 1, aUserRequest) shouldBe defined
+      }
+
+    }
+
+    "create the model to update the data and return redirect when there are no hmrc expenses and nothing has changed in relation to customer expenses" which {
+
+      implicit lazy val result: WSResponse = {
+
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcExpenses = None, customerExpenses = Some(anEmploymentExpenses)))), nino, taxYear - 1)
+
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
+          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))), aUserRequest)
+
+        urlPost(url(taxYear - 1), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+      }
+
+      "has an SEE OTHER status and cyaData not cleared as no changes were made" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
+        findExpensesCyaData(taxYear - 1, aUserRequest) shouldBe defined
+      }
+
+    }
+
   }
+
 }

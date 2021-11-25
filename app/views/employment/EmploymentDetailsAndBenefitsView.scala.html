@@ -17,6 +17,8 @@
 @import views.html.templates.Layout
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Heading
+@import controllers.employment.routes._
+@import controllers.expenses.routes._
 
 @this(
         layout: Layout,
@@ -40,7 +42,7 @@
 <ul class="app-task-list__items govuk-!-padding-left-0">
         <li class="app-task-list__item">
               <span class="app-task-list__task-name">
-                  <a class="govuk-link" id="employment-details_link" href=@{controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, empId)}>
+                  <a class="govuk-link" id="employment-details_link" href=@{CheckEmploymentDetailsController.show(taxYear, empId)}>
                       @messages("common.employmentDetails")
                   </a>
               </span>
@@ -50,7 +52,7 @@
         <li class="app-task-list__item">
               <span class="app-task-list__task-name">
                   @if(benefitsDefined || !isInYear){
-                  <a class=class="govuk-link" id="employment-benefits_link" href=@{controllers.employment.routes.CheckYourBenefitsController.show(taxYear,empId)}>
+                  <a class=class="govuk-link" id="employment-benefits_link" href=@{CheckYourBenefitsController.show(taxYear,empId)}>
                       @messages("common.benefits")
                   </a>
                   } else {
@@ -67,7 +69,7 @@
         </li>
   @if(isSingleEmployment && !isInYear){<li class="app-task-list__item">
             <span class="app-task-list__task-name">
-                  <a class="govuk-link" id="employment-expenses_link" href="@controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)">
+                  <a class="govuk-link" id="employment-expenses_link" href="@CheckEmploymentExpensesController.show(taxYear)">
                   @messages("employment.expenses.label")
                   </a>
             </span>
@@ -81,7 +83,7 @@
     </li>}
 </ul>
 
-@formWithCSRF(action = controllers.employment.routes.EmploymentSummaryController.show(taxYear)) {
+@formWithCSRF(action = EmploymentSummaryController.show(taxYear)) {
     @govUkButton(Button(
             attributes = Map("id" -> "employmentSummaryBtn"),
             preventDoubleClick = true,

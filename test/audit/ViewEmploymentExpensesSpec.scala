@@ -17,7 +17,7 @@
 package audit
 
 import models.expenses.Expenses
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import utils.UnitTestWithApp
 
 class ViewEmploymentExpensesSpec extends UnitTestWithApp {
@@ -27,25 +27,22 @@ class ViewEmploymentExpensesSpec extends UnitTestWithApp {
   "writes" when {
     "passed a ViewEmploymentExpensesModel" should {
       "produce a valid json" in {
-        val json = Json.parse(
+        val auditJson: JsValue = Json.parse(
           """{
             | "taxYear": 2020,
             | "userType": "individual",
             | "nino": "AA12343AA",
             | "mtditid": "mtditid",
             | "expenses": {
-            |   "businessTravelCosts": 100,
             |   "jobExpenses": 150,
             |   "flatRateJobExpenses": 200,
             |   "professionalSubscriptions": 250,
-            |   "hotelAndMealExpenses": 300,
-            |   "otherAndCapitalAllowances": 350,
-            |   "vehicleExpenses": 400,
-            |   "mileageAllowanceRelief": 450
+            |   "otherAndCapitalAllowances": 350
             | }
             |}""".stripMargin)
 
-        val auditModel = ViewEmploymentExpensesAudit(taxYear,
+        val auditModel: ViewEmploymentExpensesAudit = ViewEmploymentExpensesAudit(
+          taxYear,
           "individual",
           "AA12343AA",
           "mtditid",
@@ -59,9 +56,9 @@ class ViewEmploymentExpensesSpec extends UnitTestWithApp {
             vehicleExpenses = Some(400.00),
             mileageAllowanceRelief = Some(450.00)
           )
-        )
+        ).toAuditModel.detail
 
-        Json.toJson(auditModel) shouldBe json
+        Json.toJson(auditModel) shouldBe auditJson
       }
     }
   }

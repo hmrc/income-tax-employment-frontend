@@ -17,19 +17,22 @@
 package controllers.expenses
 
 import config.{AppConfig, ErrorHandler}
+import controllers.expenses.routes.UniformsOrToolsExpensesController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
-import javax.inject.Inject
 import models.User
 import models.mongo.ExpensesCYAModel
+import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
+import services.ExpensesRedirectService.redirectBasedOnCurrentAnswers
+import services.{EmploymentSessionService, ExpensesRedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.expenses.TravelAndOvernightAmountView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TravelAndOvernightAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -48,54 +51,52 @@ class TravelAndOvernightAmountController @Inject()(implicit val cc: MessagesCont
     exceedsMaxAmountKey = s"expenses.businessTravelAndOvernightAmount.error.overMaximum.${if (user.isAgent) "agent" else "individual"}"
   )
 
+  private def redirects(cya: ExpensesCYAModel, taxYear: Int): Seq[ConditionalRedirect] = {
+    ExpensesRedirectService.jobExpensesAmountRedirects(cya, taxYear)
+  }
+
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandleExpenses(taxYear) { (optCya, prior) =>
+        redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { data =>
+          val cyaAmount = data.expensesCya.expenses.jobExpenses
 
-        optCya.map(_.expensesCya.expenses) match {
-          case Some(cya) =>
-
-            // TODO: move navigation logic to redirect service
-            if(cya.jobExpensesQuestion.contains(true)) {
-              val form = fillExpensesFormFromPriorAndCYA(amountForm, prior, cya.jobExpenses)(expenses => expenses.expenses.flatMap(_.jobExpenses))
-              Future.successful(Ok(
-                travelAndOvernightAmountView(taxYear, form, cya.jobExpenses)
-              ))
-            } else {
-              Future.successful(Redirect(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)))
-            }
-
-          case None =>
-            Future.successful(Redirect(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)))
+          val form = fillExpensesFormFromPriorAndCYA(amountForm, prior, cyaAmount)(
+            expenses => expenses.expenses.flatMap(_.jobExpenses)
+          )
+          Future.successful(Ok(travelAndOvernightAmountView(taxYear, form, cyaAmount)))
         }
       }
     }
   }
 
-  def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
-    inYearAction.notInYear(taxYear) {
+  def submit(taxYear: Int): Action[AnyContent] = authAction.async {
+    implicit user =>
+      inYearAction.notInYear(taxYear) {
 
-      employmentSessionService.getExpensesSessionDataResult(taxYear) {
-        case Some(data) =>
-          amountForm.bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(travelAndOvernightAmountView(taxYear, formWithErrors, None))),
-            amount => {
-              val expensesUserData = data.expensesCya
-              val cya = expensesUserData.expenses
+        employmentSessionService.getExpensesSessionDataResult(taxYear) { cya =>
+          redirectBasedOnCurrentAnswers(taxYear, cya)(redirects(_, taxYear)) { data =>
 
-              val updatedCyaModel: ExpensesCYAModel =
-                expensesUserData.copy(expenses = cya.copy(jobExpenses = Some(amount)))
+            amountForm.bindFromRequest().fold(
+              formWithErrors => Future.successful(BadRequest(travelAndOvernightAmountView(taxYear, formWithErrors, None))),
+              amount => {
+                val expensesUserData = data.expensesCya
+                val cya = expensesUserData.expenses
 
-              employmentSessionService.createOrUpdateExpensesSessionData(
-                updatedCyaModel, taxYear, data.isPriorSubmission, data.isPriorSubmission)(errorHandler.internalServerError()) {
-                Redirect(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear))
+                val updatedCyaModel: ExpensesCYAModel =
+                  expensesUserData.copy(expenses = cya.copy(jobExpenses = Some(amount)))
+
+                employmentSessionService.createOrUpdateExpensesSessionData(
+                  updatedCyaModel, taxYear, data.isPriorSubmission, data.isPriorSubmission)(errorHandler.internalServerError()) {
+                  val nextPage = UniformsOrToolsExpensesController.show(taxYear)
+
+                  ExpensesRedirectService.expensesSubmitRedirect(updatedCyaModel, nextPage)(taxYear)
+                }
               }
-            }
-          )
-        case None =>
-          Future.successful(Redirect(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)))
-      }
-    }
-  }
+            )
+          }
 
+        }
+      }
+  }
 }

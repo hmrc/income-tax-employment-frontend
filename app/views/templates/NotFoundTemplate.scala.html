@@ -16,8 +16,9 @@
 
 @import views.html.templates.Layout
 @import views.html.templates.helpers.Heading
+@import views.html.templates.helpers.Link
 
-@this(layout: Layout, heading: Heading)
+@this(layout: Layout, heading: Heading, link: Link)
 @()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = messages("not-found-template.heading")) {
@@ -28,10 +29,7 @@
         <p>@messages("not-found-template.paragraph.2")</p>
 
         <p>
-            @messages("common.error.self-assessment.paragraph.1.1")
-            <a target="_blank" id=govuk-self-assessment-link href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment"
-               class="govuk-link">@messages("common.error.self-assessment.paragraph.1.2")</a>
-            @messages("common.error.self-assessment.paragraph.1.3a")
+            @messages("common.error.self-assessment.paragraph.1.1") @link("https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment","common.error.self-assessment.paragraph.1.2",Some("govuk-self-assessment-link"),true) @messages("common.error.self-assessment.paragraph.1.3a")
         </p>
     </div>
 
