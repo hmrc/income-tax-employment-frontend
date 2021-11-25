@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-package models.employment
+package builders.models.employment
 
-import play.api.libs.json.{Json, OFormat}
+import builders.models.employment.PayBuilder.aPay
+import models.employment.EmploymentData
 
-case class AllEmploymentData(hmrcEmploymentData: Seq[EmploymentSource],
-                             hmrcExpenses: Option[EmploymentExpenses],
-                             customerEmploymentData: Seq[EmploymentSource],
-                             customerExpenses: Option[EmploymentExpenses])
+object EmploymentDataBuilder {
 
-object AllEmploymentData {
-  implicit val format: OFormat[AllEmploymentData] = Json.format[AllEmploymentData]
+  def anEmploymentData: EmploymentData = EmploymentData(
+    submittedOn = "2021-01-01",
+    employmentSequenceNumber = None,
+    companyDirector = Some(true),
+    closeCompany = Some(true),
+    directorshipCeasedDate = None,
+    occPen = Some(false),
+    disguisedRemuneration = None,
+    pay = Some(aPay),
+    deductions = None
+  )
 }

@@ -16,11 +16,31 @@
 
 package models
 
-import models.employment.AllEmploymentData
+import models.employment.{AllEmploymentData, EmploymentData, EmploymentSource}
 import play.api.libs.json.{Json, OFormat}
 
 case class IncomeTaxUserData(employment: Option[AllEmploymentData] = None)
 
 object IncomeTaxUserData {
+
   implicit val formats: OFormat[IncomeTaxUserData] = Json.format[IncomeTaxUserData]
+
+  def excludePensionIncome(incomeTaxUserData: IncomeTaxUserData): IncomeTaxUserData = {
+    incomeTaxUserData.copy(employment = incomeTaxUserData.employment.map(
+      allEmploymentData => allEmploymentData.copy(hmrcEmploymentData = excludePensionIncome(allEmploymentData.hmrcEmploymentData))
+    ))
+  }
+
+  private def excludePensionIncome(employmentData: Seq[EmploymentSource]): Seq[EmploymentSource] = {
+    employmentData.map(employmentSource => employmentSource.copy(employmentData = employmentSource.employmentData.map(excludePensionIncome)))
+  }
+
+  private def excludePensionIncome(employmentData: EmploymentData): EmploymentData = {
+    val pay = employmentData.occPen match {
+      case Some(true) => None
+      case _ => employmentData.pay
+    }
+
+    employmentData.copy(pay = pay)
+  }
 }
