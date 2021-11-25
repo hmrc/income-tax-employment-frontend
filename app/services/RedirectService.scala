@@ -576,8 +576,7 @@ object RedirectService extends Logging {
     taxableExpensesRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(taxableExpensesQuestion.isEmpty, TaxableCostsBenefitsController.show(taxYear, employmentId)),
-        //TODO go to vouchersAndCreditCards yes/no page
-        ConditionalRedirect(taxableExpensesQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(taxableExpensesQuestion.contains(false), VouchersBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(taxableExpensesQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
@@ -598,8 +597,7 @@ object RedirectService extends Logging {
 
     vouchersAndCreditCardsRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to vouchersAndCreditCards yes/no page
-        ConditionalRedirect(vouchersAndCreditCardsQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(vouchersAndCreditCardsQuestion.isEmpty, VouchersBenefitsController.show(taxYear, employmentId)),
         //TODO go to nonCash yes/no page
         ConditionalRedirect(vouchersAndCreditCardsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(vouchersAndCreditCardsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))

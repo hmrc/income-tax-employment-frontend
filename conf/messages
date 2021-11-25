@@ -968,6 +968,15 @@ benefits.reimbursedCostsVouchersAndNonCash.title.agent = Did your client get any
 benefits.reimbursedCostsVouchersAndNonCash.error.individual = Select yes if you got reimbursed costs, vouchers or non-cash benefits from your employer
 benefits.reimbursedCostsVouchersAndNonCash.error.agent = Select yes if your client got reimbursed costs, vouchers or non-cash benefits from their employer
 
+benefits.vouchersBenefits.title.individual = Did you get vouchers or credit cards?
+benefits.vouchersBenefits.title.agent = Did your client get vouchers or credit cards?
+benefits.vouchersBenefits.paragraph.individual = We only need to know about vouchers you can exchange for:
+benefits.vouchersBenefits.paragraph.agent = We only need to know about vouchers your client can exchange for:
+benefits.vouchersBenefits.bullet1 = goods and services
+benefits.vouchersBenefits.bullet2 = a sum of money substantially less than the cost to provide them
+benefits.vouchersBenefits.error.individual = Select yes if you got vouchers or credit cards
+benefits.vouchersBenefits.error.agent = Select yes if your client got vouchers or credit cards
+
 benefits.nonTaxableCosts.title.individual = Were any of your non-taxable costs reimbursed by your employer?
 benefits.nonTaxableCosts.title.agent = Were any of your client’s non-taxable costs reimbursed by their employer?
 benefits.nonTaxableCosts.paragraph.individual = This includes costs of equipment or supplies required to carry out your job.

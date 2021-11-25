@@ -58,7 +58,7 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
     "return expenses amount page" in {
       model.copy(expenses = None).expensesSectionFinished(taxYear, employmentId) shouldBe
         Some(controllers.benefits.reimbursed.routes.NonTaxableCostsBenefitsAmountController.show(taxYear, employmentId))
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      Some(CheckYourBenefitsController.show(taxYear, employmentId))
     }
 
     "return none when section is finished" in {
@@ -87,7 +87,7 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
   "vouchersAndCreditCardsSectionFinished" should {
     "return vouchersAndCreditCards yes no page" in {
       model.copy(vouchersAndCreditCardsQuestion = None).vouchersAndCreditCardsSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(VouchersBenefitsController.show(taxYear, employmentId))
     }
 
     "return vouchersAndCreditCards amount page" in {

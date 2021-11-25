@@ -53,7 +53,7 @@ case class ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonC
 
   def expensesSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     expensesQuestion match {
-      case Some(true) => if(expenses.isDefined) None else Some(NonTaxableCostsBenefitsAmountController.show(taxYear, employmentId))
+      case Some(true) => if (expenses.isDefined) None else Some(NonTaxableCostsBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(NonTaxableCostsBenefitsController.show(taxYear, employmentId))
     }
@@ -72,7 +72,7 @@ case class ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonC
       case Some(true) => if (vouchersAndCreditCards.isDefined) None else Some(
         VouchersBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO vouchersAndCreditCards yes no page
+      case None => Some(VouchersBenefitsController.show(taxYear, employmentId))
     }
   }
 
