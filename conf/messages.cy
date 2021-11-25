@@ -33,6 +33,7 @@ common.error.invalid_currency_format = Enter the amount in the correct format
 common.ifItWasNot = If it was not {0}, tell us the correct amount.
 common.checkWithEmployer.individual = Check with your employer if you are unsure.
 common.checkWithEmployer.agent = Check with your client’s employer if you are unsure.
+common.thisIncludes = This includes things like:
 common.enterTheTotal = Enter the total.
 
 common.error.self-assessment.paragraph.1.1 = If the web address is correct or you selected a link or button, you can use
@@ -47,7 +48,6 @@ common.currency.hint = For example, £600 or £193.54
 common.employmentDetails = Employment details
 common.employmentDetailsAndBenefits = Employment details and benefits
 common.benefits = Benefits
-common.thisIncludes = This includes things like:
 
 common.status.updated = Updated
 common.status.cannotUpdate = Cannot update
@@ -889,19 +889,19 @@ benefits.childcareBenefitsAmount.error.noEntry.agent = Enter your client’s chi
 benefits.childcareBenefitsAmount.error.incorrectFormat.agent = Enter your client’s childcare benefit amount in the correct format
 benefits.childcareBenefitsAmount.error.overMaximum.agent = Your client’s childcare benefit must be less than £100,000,000,000
 
-benefits.educationalServices.title.individual = Did you get any benefits for educational services?
-benefits.educationalServices.title.agent = Did your client get any benefits for educational services?
-benefits.educationalServices.theseAre.individual = These are scholarships or school fees paid for by your employer.
-benefits.educationalServices.theseAre.agent = These are scholarships or school fees paid for by their employer.
-benefits.educationalServices.error.individual = Select yes if you got benefits for educational services
-benefits.educationalServices.error.agent = Select yes if your client got benefits for educational services
-
 benefits.beneficialLoans.title.individual = Did you get any beneficial loans?
 benefits.beneficialLoans.title.agent = Did your client get any beneficial loans?
 benefits.beneficialLoans.theseAre.individual = These are interest free or low interest loans from your employer.
 benefits.beneficialLoans.theseAre.agent = These are any interest free or low interest loans their employer has given them.
 benefits.beneficialLoans.error.noEntry.individual = Select yes if you got beneficial loans
 benefits.beneficialLoans.error.noEntry.agent = Select yes if your client got beneficial loans
+
+benefits.educationalServices.title.individual = Did you get any benefits for educational services?
+benefits.educationalServices.title.agent = Did your client get any benefits for educational services?
+benefits.educationalServices.theseAre.individual = These are scholarships or school fees paid for by your employer.
+benefits.educationalServices.theseAre.agent = These are scholarships or school fees paid for by their employer.
+benefits.educationalServices.error.individual = Select yes if you got benefits for educational services
+benefits.educationalServices.error.agent = Select yes if your client got benefits for educational services
 
 benefits.medicalOrDentalBenefitsAmount.title.individual = How much was your medical or dental benefit in total?
 benefits.medicalOrDentalBenefitsAmount.title.agent = How much was your client’s medical or dental benefit in total?
@@ -967,6 +967,15 @@ benefits.reimbursedCostsVouchersAndNonCash.title.individual = Did you get any re
 benefits.reimbursedCostsVouchersAndNonCash.title.agent = Did your client get any reimbursed costs, vouchers or non-cash benefits from their employer?
 benefits.reimbursedCostsVouchersAndNonCash.error.individual = Select yes if you got reimbursed costs, vouchers or non-cash benefits from your employer
 benefits.reimbursedCostsVouchersAndNonCash.error.agent = Select yes if your client got reimbursed costs, vouchers or non-cash benefits from their employer
+
+benefits.vouchersBenefits.title.individual = Did you get vouchers or credit cards?
+benefits.vouchersBenefits.title.agent = Did your client get vouchers or credit cards?
+benefits.vouchersBenefits.paragraph.individual = We only need to know about vouchers you can exchange for:
+benefits.vouchersBenefits.paragraph.agent = We only need to know about vouchers your client can exchange for:
+benefits.vouchersBenefits.bullet1 = goods and services
+benefits.vouchersBenefits.bullet2 = a sum of money substantially less than the cost to provide them
+benefits.vouchersBenefits.error.individual = Select yes if you got vouchers or credit cards
+benefits.vouchersBenefits.error.agent = Select yes if your client got vouchers or credit cards
 
 benefits.nonTaxableCosts.title.individual = Were any of your non-taxable costs reimbursed by your employer?
 benefits.nonTaxableCosts.title.agent = Were any of your client’s non-taxable costs reimbursed by their employer?

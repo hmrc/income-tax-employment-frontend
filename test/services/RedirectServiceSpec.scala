@@ -1380,7 +1380,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => taxableExpensesAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe VouchersBenefitsController.show(taxYear, employmentId).url
       }
       "it's a prior submission and attempted to view 'taxable expenses amount' page" +
         "but the taxable expenses question is false" in {
@@ -1410,7 +1410,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => vouchersAndCreditCardsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe VouchersBenefitsController.show(taxYear, employmentId).url
       }
       "it's a new submission and attempted to view 'vouchers And Credit Cards amount' page" +
         "but the vouchers And Credit Cards question is false" in {
