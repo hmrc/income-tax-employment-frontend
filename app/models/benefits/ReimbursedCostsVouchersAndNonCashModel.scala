@@ -70,7 +70,7 @@ case class ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonC
   def vouchersAndCreditCardsSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     vouchersAndCreditCardsQuestion match {
       case Some(true) => if (vouchersAndCreditCards.isDefined) None else Some(
-        CheckYourBenefitsController.show(taxYear, employmentId)) //TODO vouchersAndCreditCards amount page
+        VouchersBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO vouchersAndCreditCards yes no page
     }

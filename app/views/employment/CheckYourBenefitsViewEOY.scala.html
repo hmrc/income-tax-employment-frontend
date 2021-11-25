@@ -269,7 +269,7 @@
                     vouchersAndCreditCardsQuestion => showQuestionRow("checkYourBenefits.vouchers", vouchersAndCreditCardsQuestion)
                 },
                 benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCards).map{
-                    vouchersAndCreditCards => showRows("checkYourBenefits.vouchersAmount", vouchersAndCreditCards)
+                    vouchersAndCreditCards => showRows("checkYourBenefits.vouchersAmount", vouchersAndCreditCards, controllers.benefits.reimbursed.routes.VouchersBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCashQuestion).map{
                     nonCashQuestion => showQuestionRow("checkYourBenefits.nonCash", nonCashQuestion)
