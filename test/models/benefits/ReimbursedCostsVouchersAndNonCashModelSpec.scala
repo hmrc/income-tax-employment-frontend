@@ -92,7 +92,7 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
 
     "return vouchersAndCreditCards amount page" in {
       model.copy(vouchersAndCreditCards = None).vouchersAndCreditCardsSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(VouchersBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return none when section is finished" in {
