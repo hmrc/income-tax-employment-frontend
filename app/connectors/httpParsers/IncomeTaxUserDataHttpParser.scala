@@ -33,7 +33,7 @@ object IncomeTaxUserDataHttpParser extends APIParser {
     override def read(method: String, url: String, response: HttpResponse): IncomeTaxUserDataResponse = {
       response.status match {
         case OK => response.json.validate[IncomeTaxUserData].fold[IncomeTaxUserDataResponse](
-          jsonErrors => badSuccessJsonFromAPI,
+          _ => badSuccessJsonFromAPI,
           parsedModel => Right(excludePensionIncome(parsedModel))
         )
         case NO_CONTENT => Right(IncomeTaxUserData())
