@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-package models.employment
+package builders.models.employment
 
-import play.api.libs.json.{Json, OFormat}
+import models.employment.EmploymentSource
 
-case class AllEmploymentData(hmrcEmploymentData: Seq[EmploymentSource],
-                             hmrcExpenses: Option[EmploymentExpenses],
-                             customerEmploymentData: Seq[EmploymentSource],
-                             customerExpenses: Option[EmploymentExpenses])
+object EmploymentSourceBuilder {
 
-object AllEmploymentData {
-  implicit val format: OFormat[AllEmploymentData] = Json.format[AllEmploymentData]
+  def anEmploymentSource: EmploymentSource = EmploymentSource(
+    employmentId = "default-employment-id",
+    employerName = "default -employer-name",
+    employerRef = Some("default-employer-ref"),
+    payrollId = Some("default-payroll-id"),
+    startDate = None,
+    cessationDate = None,
+    dateIgnored = None,
+    submittedOn = None,
+    employmentData = None,
+    employmentBenefits = None
+  )
 }

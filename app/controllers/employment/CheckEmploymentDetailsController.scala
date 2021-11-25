@@ -21,7 +21,6 @@ import common.SessionValues
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckEmploymentDetailsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
-import javax.inject.Inject
 import models.User
 import models.employment.createUpdate.CreateUpdateEmploymentRequest
 import models.employment.{AllEmploymentData, EmploymentDetailsViewModel}
@@ -35,6 +34,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.CheckEmploymentDetailsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -54,7 +54,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     val isInYear: Boolean = inYearAction.inYear(taxYear)
 
     def inYearResult(allEmploymentData: AllEmploymentData): Result = {
-      employmentSessionService.employmentSourceToUse(allEmploymentData,employmentId,isInYear) match {
+      employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear) match {
         case Some((source, isUsingCustomerData)) =>
           performAuditAndRenderView(source.toEmploymentDetailsViewModel(isUsingCustomerData), taxYear, isInYear)
         case None =>
@@ -65,12 +65,12 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     }
 
     def saveCYAAndReturnEndOfYearResult(allEmploymentData: AllEmploymentData): Future[Result] = {
-      employmentSessionService.employmentSourceToUse(allEmploymentData,employmentId,isInYear) match {
+      employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear) match {
         case Some((source, isUsingCustomerData)) =>
           employmentSessionService.createOrUpdateSessionData(employmentId, EmploymentCYAModel.apply(source, isUsingCustomerData),
-            taxYear, isPriorSubmission = true, source.hasPriorBenefits()
-          )(errorHandler.internalServerError()){
-            performAuditAndRenderView(source.toEmploymentDetailsViewModel(isUsingCustomerData),taxYear, isInYear)
+            taxYear, isPriorSubmission = true, source.hasPriorBenefits
+          )(errorHandler.internalServerError()) {
+            performAuditAndRenderView(source.toEmploymentDetailsViewModel(isUsingCustomerData), taxYear, isInYear)
           }
 
         case None =>
@@ -86,8 +86,8 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
           case Some(cya) =>
-            if(!cya.isPriorSubmission && !cya.employment.employmentDetails.isFinished){
-              Future.successful(RedirectService.employmentDetailsRedirect(cya.employment,taxYear,employmentId,cya.isPriorSubmission))
+            if (!cya.isPriorSubmission && !cya.employment.employmentDetails.isFinished) {
+              Future.successful(RedirectService.employmentDetailsRedirect(cya.employment, taxYear, employmentId, cya.isPriorSubmission))
             } else {
               Future.successful(performAuditAndRenderView(cya.employment.toEmploymentDetailsView(
                 employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld), taxYear, isInYear))
@@ -101,33 +101,33 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     }
   }
 
-  def performAuditAndRenderView(employmentDetails: EmploymentDetailsViewModel, taxYear: Int, isInYear: Boolean)(implicit user: User[AnyContent]): Result ={
+  def performAuditAndRenderView(employmentDetails: EmploymentDetailsViewModel, taxYear: Int, isInYear: Boolean)(implicit user: User[AnyContent]): Result = {
     val auditModel = ViewEmploymentDetailsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, employmentDetails)
     auditService.sendAudit[ViewEmploymentDetailsAudit](auditModel.toAuditModel)
     Ok(employmentDetailsView(employmentDetails, taxYear, isInYear))
   }
 
-  def submit(taxYear:Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
 
-    inYearAction.notInYear(taxYear){
+    inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
           case Some(cya) =>
 
-            employmentSessionService.createModelAndReturnResult(cya,prior,taxYear){
+            employmentSessionService.createModelAndReturnResult(cya, prior, taxYear) {
               model =>
 
-                employmentSessionService.createOrUpdateEmploymentResult(taxYear,model).flatMap {
+                employmentSessionService.createOrUpdateEmploymentResult(taxYear, model).flatMap {
                   case Left(result) =>
                     Future.successful(result)
                   case Right(result) =>
-                    performSubmitAudits(model,employmentId,taxYear,prior)
+                    performSubmitAudits(model, employmentId, taxYear, prior)
                     employmentSessionService.clear(taxYear, employmentId)(
                       result.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)
                     )
                 }
             }
-          case None => Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear,employmentId)))
+          case None => Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
         }
       }
     }
@@ -136,20 +136,21 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
   def performSubmitAudits(model: CreateUpdateEmploymentRequest, employmentId: String, taxYear: Int,
                           prior: Option[AllEmploymentData])(implicit user: User[_]): Future[AuditResult] = {
 
-    val audit: Either[AuditModel[AmendEmploymentDetailsUpdateAudit],AuditModel[CreateNewEmploymentDetailsAudit]] = prior.flatMap{
+    val audit: Either[AuditModel[AmendEmploymentDetailsUpdateAudit], AuditModel[CreateNewEmploymentDetailsAudit]] = prior.flatMap {
       prior =>
-        val priorData = employmentSessionService.employmentSourceToUse(prior,employmentId,isInYear = false)
-        priorData.map(prior => model.toAmendAuditModel(employmentId,taxYear,prior._1).toAuditModel)
-    }.map(Left(_)).getOrElse{
+        val priorData = employmentSessionService.employmentSourceToUse(prior, employmentId, isInYear = false)
+        priorData.map(prior => model.toAmendAuditModel(employmentId, taxYear, prior._1).toAuditModel)
+    }.map(Left(_)).getOrElse {
 
-      val existingEmployments = prior.map{
-        prior => employmentSessionService.getLatestEmploymentData(prior,isInYear = false).map{
-          employment =>
-            PriorEmploymentAuditInfo(employment.employerName,employment.employerRef)
-        }
+      val existingEmployments = prior.map {
+        prior =>
+          employmentSessionService.getLatestEmploymentData(prior, isInYear = false).map {
+            employment =>
+              PriorEmploymentAuditInfo(employment.employerName, employment.employerRef)
+          }
       }.getOrElse(Seq.empty)
 
-      Right(model.toCreateAuditModel(taxYear,existingEmployments = existingEmployments).toAuditModel)
+      Right(model.toCreateAuditModel(taxYear, existingEmployments = existingEmployments).toAuditModel)
     }
 
     audit match {

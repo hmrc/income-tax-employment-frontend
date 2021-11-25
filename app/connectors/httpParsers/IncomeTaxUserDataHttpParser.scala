@@ -16,6 +16,7 @@
 
 package connectors.httpParsers
 
+import models.IncomeTaxUserData.excludePensionIncome
 import models.{APIErrorModel, IncomeTaxUserData}
 import play.api.http.Status._
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
@@ -30,11 +31,10 @@ object IncomeTaxUserDataHttpParser extends APIParser {
 
   implicit object IncomeTaxUserDataHttpReads extends HttpReads[IncomeTaxUserDataResponse] {
     override def read(method: String, url: String, response: HttpResponse): IncomeTaxUserDataResponse = {
-
       response.status match {
         case OK => response.json.validate[IncomeTaxUserData].fold[IncomeTaxUserDataResponse](
           jsonErrors => badSuccessJsonFromAPI,
-          parsedModel => Right(parsedModel)
+          parsedModel => Right(excludePensionIncome(parsedModel))
         )
         case NO_CONTENT => Right(IncomeTaxUserData())
         case INTERNAL_SERVER_ERROR =>
