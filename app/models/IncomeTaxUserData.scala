@@ -31,8 +31,8 @@ object IncomeTaxUserData {
     ))
   }
 
-  private def excludePensionIncome(employmentData: Seq[EmploymentSource]): Seq[EmploymentSource] = {
-    employmentData.map(employmentSource => employmentSource.copy(employmentData = employmentSource.employmentData.map(excludePensionIncome)))
+  private def excludePensionIncome(employmentSources: Seq[EmploymentSource]): Seq[EmploymentSource] = {
+    employmentSources.map(employmentSource => employmentSource.copy(employmentData = employmentSource.employmentData.map(excludePensionIncome)))
   }
 
   private def excludePensionIncome(employmentData: EmploymentData): EmploymentData = {
