@@ -999,6 +999,13 @@ benefits.taxableCostsBenefitsAmount.error.noEntry.agent = Enter the amount of ta
 benefits.taxableCostsBenefitsAmount.error.incorrectFormat.agent = Enter the amount of taxable costs reimbursed by your client’s employer in the correct format
 benefits.taxableCostsBenefitsAmount.error.overMaximum.agent = The taxable costs reimbursed by your client’s employer must be less than £100,000,000,000
 
+benefits.vouchersBenefitsAmount.title = What is the total value of vouchers and credit card payments?
+benefits.vouchersBenefitsAmount.youCan.individual = You can find this information on your P11D form in section C, box 12.
+benefits.vouchersBenefitsAmount.youCan.agent = You can find this information on your client’s P11D form in section C, box 12.
+benefits.vouchersBenefitsAmount.error.noEntry = Enter the amount for vouchers or credit cards
+benefits.vouchersBenefitsAmount.error.incorrectFormat = Enter the amount for vouchers or credit cards in the correct format
+benefits.vouchersBenefitsAmount.error.overMaximum = The amount for vouchers or credit cards must be less than £100,000,000,000
+
 #####Expenses Pages#######
 
 expenses.caption = Employment expenses for 6 April {0} to 5 April {1}
