@@ -35,17 +35,17 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
 
     def yourEmpInfoSelector(nthChild: Int) = s"#main-content > div > div > p:nth-child($nthChild)"
 
-    def employerName1Selector(nthChild: Int) = s"#main-content > div > div > div:nth-child($nthChild) > ul > li:nth-child(1) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
+    def employerName1Selector(nthChild: Int) = s".govuk-form-group > dl.hmrc-list-with-actions > div:nth-child($nthChild) > .hmrc-list-with-actions__name"
 
-    def changeLink1Selector(nthChild: Int) = s"#main-content > div > div > div:nth-child($nthChild) > ul > li:nth-child(1) > span.hmrc-add-to-a-list__change > a"
+    def changeLink1Selector(nthChild: Int) = s"dl.hmrc-list-with-actions > div:nth-child($nthChild) > div > dd:nth-child(1) > a > span:nth-child(1)"
 
-    def removeLink1Selector(nthChild: Int) = s"#main-content > div > div > div:nth-child($nthChild) > ul > li:nth-child(1) > span.hmrc-add-to-a-list__remove > a"
+    def removeLink1Selector(nthChild: Int) = s"dl.hmrc-list-with-actions > div:nth-child($nthChild) > div > dd:nth-child(2) > a > span:nth-child(1)"
 
-    def employerName2Selector(nthChild: Int) = s"#main-content > div > div > div:nth-child($nthChild) > ul > li:nth-child(2) > span.hmrc-add-to-a-list__identifier.hmrc-add-to-a-list__identifier--light"
+    def employerName2Selector(nthChild: Int) = s"dl.hmrc-list-with-actions > div:nth-child($nthChild) > .hmrc-list-with-actions__name"
 
-    def changeLink2Selector(nthChild: Int) = s"#main-content > div > div > div:nth-child($nthChild) > ul > li:nth-child(2) > span.hmrc-add-to-a-list__change > a"
+    def changeLink2Selector(nthChild: Int) = s"dl.hmrc-list-with-actions > div:nth-child($nthChild) > div > dd:nth-child(1) > a > span:nth-child(1)"
 
-    def removeLink2Selector(nthChild: Int) = s"#main-content > div > div > div:nth-child($nthChild) > ul > li:nth-child(2) > span.hmrc-add-to-a-list__remove > a"
+    def removeLink2Selector(nthChild: Int) = s"dl.hmrc-list-with-actions > div:nth-child($nthChild) > div > dd:nth-child(2) > a > span:nth-child(1)"
 
     val doYouNeedAnotherSelector = "#main-content > div > div > form > div > fieldset > legend"
     val youMustTellSelector = "#value-hint"

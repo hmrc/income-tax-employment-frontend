@@ -33,9 +33,9 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
   object Selectors {
     val valueHref = "#value"
     val yourEmpInfoSelector = "p.govuk-body"
-    val employerNameSelector = "span.hmrc-add-to-a-list__identifier"
-    val changeLinkSelector = "span.hmrc-add-to-a-list__change > a"
-    val removeLinkSelector = "span.hmrc-add-to-a-list__remove > a"
+    val employerNameSelector = "dt.hmrc-list-with-actions__name"
+    val changeLinkSelector = "div.hmrc-list-with-actions__actions > dd:nth-child(1) > a"
+    val removeLinkSelector = "div.hmrc-list-with-actions__actions > dd:nth-child(2) > a"
     val doYouNeedAnotherSelector = "#main-content > div > div > form > div > fieldset > legend"
     val youMustTellSelector = "#value-hint"
     val continueButtonSelector = "#continue"

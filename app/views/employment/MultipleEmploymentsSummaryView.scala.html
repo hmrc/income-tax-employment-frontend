@@ -52,21 +52,23 @@
 
 @employmentRowEOY(employmentName: String, changeLink: Call, removeLink: Call) = {
 
-        <li class="hmrc-add-to-a-list__contents">
-            <span class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light">@employmentName</span>
-            <span class="hmrc-add-to-a-list__change">
-                    <a class="govuk-link" href="@changeLink">
-                        <span aria-hidden="true">@messages("common.change")</span>
-                        <span class="govuk-visually-hidden">@messages("common.change") @messages("employment.hiddenText", employmentName)</span>
-                    </a>
-                </span>
-            <span class="hmrc-add-to-a-list__remove">
-                    <a class="govuk-link" href="@removeLink">
-                        <span aria-hidden="true">@messages("common.remove")</span>
-                        <span class="govuk-visually-hidden">@messages("common.remove") @messages("employment.hiddenText", employmentName)</span>
-                    </a>
-                </span>
-        </li>
+    <div class="hmrc-list-with-actions__item">
+        <dt class="hmrc-list-with-actions__name">@employmentName</dt>
+        <div class="hmrc-list-with-actions__actions">
+            <dd class="hmrc-list-with-actions__action">
+                <a class="govuk-link" href="@changeLink">
+                    <span aria-hidden="true">@messages("common.change")</span>
+                    <span class="govuk-visually-hidden">@messages("common.change") @messages("employment.hiddenText", employmentName)</span>
+                </a>
+            </dd>
+            <dd class="hmrc-list-with-actions__action">
+                <a class="govuk-link" href="@removeLink">
+                    <span aria-hidden="true">@messages("common.remove")</span>
+                    <span class="govuk-visually-hidden">@messages("common.remove") @messages("employment.hiddenText", employmentName)</span>
+                </a>
+            </dd>
+        </div>
+    </div>
 
 }
 
@@ -80,11 +82,11 @@
             </ol>
         } else {
             <div class="govuk-form-group">
-                    <ul class="hmrc-add-to-a-list hmrc-add-to-a-list--short">
-                        @employments.map { (employment:EmploymentSource) =>
-                            @employmentRowEOY(employment.employerName, controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employment.employmentId), controllers.employment.routes.RemoveEmploymentController.show(taxYear, employment.employmentId))
-                        }
-                    </ul>
+                <dl class="hmrc-list-with-actions">
+                    @employments.map { (employment:EmploymentSource) =>
+                        @employmentRowEOY(employment.employerName, controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employment.employmentId), controllers.employment.routes.RemoveEmploymentController.show(taxYear, employment.employmentId))
+                    }
+                </dl>
             </div>
         }
     }
@@ -108,24 +110,28 @@
         </ol>
     } else {
         <div class="govuk-form-group">
-            <ul class="hmrc-add-to-a-list hmrc-add-to-a-list--short">
-                <li class="hmrc-add-to-a-list__contents">
-                    <span class="hmrc-add-to-a-list__identifier hmrc-add-to-a-list__identifier--light">@messages("employment.expenses.label")</span>
-                    <span class="hmrc-add-to-a-list__change">
-                    <a class="govuk-link" href="@controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)">
-                        <span aria-hidden="true">@messages("common.change")</span>
-                        <span class="govuk-visually-hidden">@messages("common.change") @messages(s"expenses.hiddenText.${if(user.isAgent) "agent" else "individual"}")</span>
-                    </a>
-                </span>
-                    <span class="hmrc-add-to-a-list__remove">
-                    <!--TODO Update Link to go to remove expenses page-->
-                    <a class="govuk-link" href="@controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)">
-                        <span aria-hidden="true">@messages("common.remove")</span>
-                        <span class="govuk-visually-hidden">@messages("common.remove") @messages(s"expenses.hiddenText.${if(user.isAgent) "agent" else "individual"}")</span>
-                    </a>
-                </span>
-                </li>
-            </ul>
+            <dl class="hmrc-list-with-actions">
+                <div class="hmrc-list-with-actions__item">
+                    <dt class="hmrc-list-with-actions__name">
+                        @messages("employment.expenses.label")
+                    </dt>
+                    <div class="hmrc-list-with-actions__actions">
+                        <dd class="hmrc-list-with-actions__action">
+                            <a class="govuk-link" href="@controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)">
+                                <span aria-hidden="true">@messages("common.change")</span>
+                                <span class="govuk-visually-hidden">@messages("common.change") @messages(s"expenses.hiddenText.${if(user.isAgent) "agent" else "individual"}")</span>
+                            </a>
+                        </dd>
+                        <dd class="hmrc-list-with-actions__action">
+                        <!--TODO Update Link to go to remove expenses page-->
+                            <a class="govuk-link" href="@controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)">
+                                <span aria-hidden="true">@messages("common.remove")</span>
+                                <span class="govuk-visually-hidden">@messages("common.remove") @messages(s"expenses.hiddenText.${if(user.isAgent) "agent" else "individual"}")</span>
+                            </a>
+                        </dd>
+                    </div>
+                </div>
+            </dl>
         </div>
     }
 }
