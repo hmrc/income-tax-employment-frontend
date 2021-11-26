@@ -16,6 +16,7 @@
 
 package controllers.expenses
 
+import controllers.expenses.routes.CheckEmploymentExpensesController
 import forms.AmountForm
 import models.User
 import models.expenses.{Expenses, ExpensesViewModel}
@@ -225,7 +226,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
       "redirect to the CheckEmploymentExpenses page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYearEOY).url)
+        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
       }
     }
 
@@ -239,7 +240,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
       "redirect to the CheckEmploymentExpenses page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYearEOY).url)
+        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
       }
     }
 
@@ -401,7 +402,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
       "redirect to the CYA page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYearEOY).url)
+        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
       }
 
       "not update the CYA model" in {
@@ -423,7 +424,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
       "redirect to the CYA page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYearEOY).url)
+        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
       }
 
       "update the CYA model" in {
