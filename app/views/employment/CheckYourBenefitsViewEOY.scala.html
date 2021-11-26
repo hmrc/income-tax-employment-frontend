@@ -233,7 +233,7 @@
                     incomeTaxPaidByDirectorQuestion => showQuestionRow("checkYourBenefits.incomeTaxPaid", incomeTaxPaidByDirectorQuestion, controllers.benefits.income.routes.IncomeTaxBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirector).map{
-                    incomeTaxPaidByDirector => showRows("checkYourBenefits.incomeTaxPaidAmount", incomeTaxPaidByDirector)
+                    incomeTaxPaidByDirector => showRows("checkYourBenefits.incomeTaxPaidAmount", incomeTaxPaidByDirector, controllers.benefits.income.routes.IncomeTaxBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalfQuestion).map{
                     paymentsOnEmployeesBehalfQuestion => showQuestionRow("checkYourBenefits.incurredCostsPaid", paymentsOnEmployeesBehalfQuestion, controllers.benefits.income.routes.IncurredCostsBenefitsController.show(taxYear, employmentId))

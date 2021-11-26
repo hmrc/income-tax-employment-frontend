@@ -31,7 +31,7 @@ case class IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion: Option[Boolean] = No
   //scalastyle:off
   def incomeTaxPaidByDirectorSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     incomeTaxPaidByDirectorQuestion match {
-      case Some(true) => if (incomeTaxPaidByDirector.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO Income tax paid by director amount page (Amount of Income Tax paid by employer)
+      case Some(true) => if (incomeTaxPaidByDirector.isDefined) None else Some(IncomeTaxBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(IncomeTaxBenefitsController.show(taxYear, employmentId))
     }

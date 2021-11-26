@@ -1192,7 +1192,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => incurredCostsPaidByEmployerRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe IncomeTaxBenefitsAmountController.show(taxYear, employmentId).url
       }
 
       "it's a new submission and attempted to view the 'Incurred costs paid by employer amount' page " +
