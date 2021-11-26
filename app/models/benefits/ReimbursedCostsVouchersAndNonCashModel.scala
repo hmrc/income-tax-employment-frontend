@@ -78,7 +78,7 @@ case class ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonC
 
   def nonCashSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     nonCashQuestion match {
-      case Some(true) => if (nonCash.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO nonCash amount page
+      case Some(true) => if (nonCash.isDefined) None else Some(NonCashBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO nonCash yes no page
     }
