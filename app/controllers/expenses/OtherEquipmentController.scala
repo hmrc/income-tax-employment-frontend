@@ -28,7 +28,7 @@ import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.expenses.OtherEquipmentView
-import controllers.employment.routes.CheckEmploymentExpensesController
+import controllers.expenses.routes.CheckEmploymentExpensesController
 
 
 import javax.inject.Inject

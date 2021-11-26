@@ -16,7 +16,7 @@
 
 package controllers.expenses
 
-import controllers.employment.routes._
+import controllers.expenses.routes.{CheckEmploymentExpensesController, ProfessionalFeesAndSubscriptionsExpensesController}
 import forms.AmountForm
 import models.User
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
@@ -450,7 +450,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(controllers.expenses.routes.ProfessionalFeesAndSubscriptionsExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe Some(ProfessionalFeesAndSubscriptionsExpensesController.show(taxYearEOY).url)
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
@@ -486,7 +486,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
 
-          result.header("location") shouldBe Some(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true

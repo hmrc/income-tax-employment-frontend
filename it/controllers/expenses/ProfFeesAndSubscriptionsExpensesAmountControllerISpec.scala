@@ -15,7 +15,7 @@
  */
 
 package controllers.expenses
-import controllers.employment.routes.CheckEmploymentExpensesController
+import controllers.expenses.routes.CheckEmploymentExpensesController
 import forms.AmountForm
 import models.User
 import models.expenses.ExpensesViewModel

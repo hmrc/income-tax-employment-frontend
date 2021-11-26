@@ -16,6 +16,7 @@
 
 package controllers.expenses
 
+import controllers.expenses.routes.CheckEmploymentExpensesController
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
@@ -62,11 +63,11 @@ class TravelAndOvernightAmountController @Inject()(implicit val cc: MessagesCont
                 travelAndOvernightAmountView(taxYear, form, cya.jobExpenses)
               ))
             } else {
-              Future.successful(Redirect(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)))
+              Future.successful(Redirect(CheckEmploymentExpensesController.show(taxYear)))
             }
 
           case None =>
-            Future.successful(Redirect(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)))
+            Future.successful(Redirect(CheckEmploymentExpensesController.show(taxYear)))
         }
       }
     }
@@ -88,12 +89,12 @@ class TravelAndOvernightAmountController @Inject()(implicit val cc: MessagesCont
 
               employmentSessionService.createOrUpdateExpensesSessionData(
                 updatedCyaModel, taxYear, data.isPriorSubmission, data.isPriorSubmission)(errorHandler.internalServerError()) {
-                Redirect(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear))
+                Redirect(CheckEmploymentExpensesController.show(taxYear))
               }
             }
           )
         case None =>
-          Future.successful(Redirect(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)))
+          Future.successful(Redirect(CheckEmploymentExpensesController.show(taxYear)))
       }
     }
   }

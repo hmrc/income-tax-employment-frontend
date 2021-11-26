@@ -42,7 +42,7 @@ val taxYearEOY=taxYear -1
 
   def employmentDetailsUrl(taxYear: Int) = s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-details?employmentId=001"
   def employmentBenefitsUrl(taxYear: Int) = s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-benefits?employmentId=001"
-  def employmentExpensesUrl(taxYear: Int) = s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-expenses"
+  def employmentExpensesUrl(taxYear: Int) = s"/update-and-submit-income-tax-return/employment-income/$taxYear/expenses/check-employment-expenses"
 
   object ExpectedResults {
 

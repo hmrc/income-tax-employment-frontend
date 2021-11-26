@@ -18,6 +18,8 @@
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Heading
 @import models.employment.EmploymentSource
+@import controllers.employment.routes._
+@import controllers.expenses.routes.CheckEmploymentExpensesController
 
 @this(
         layout: Layout,
@@ -38,7 +40,7 @@
     <ol style="padding-left:0;" class="app-task-list__items">
         <li class="app-task-list__item">
             <span class="app-task-list__task-name">
-                <a class="govuk-link" href="@controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employment.employmentId)">
+                <a class="govuk-link" href="@CheckEmploymentDetailsController.show(taxYear, employment.employmentId)">
                     @messages("common.employmentDetails")
                 </a>
             </span>
@@ -49,7 +51,7 @@
         <li class="app-task-list__item">
             <span class="app-task-list__task-name">
                 @employment.employmentBenefits.map{ _ =>
-                    <a class="govuk-link" href="@controllers.employment.routes.CheckYourBenefitsController.show(taxYear, employment.employmentId)">
+                    <a class="govuk-link" href="@CheckYourBenefitsController.show(taxYear, employment.employmentId)">
                     @messages("common.benefits")
                     </a>
                 }.getOrElse{@messages("common.benefits")}
@@ -61,7 +63,7 @@
         <li class="app-task-list__item">
             <span class="app-task-list__task-name">
                 @if(expensesExist) {
-                    <a class="govuk-link" href="@controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear)">
+                    <a class="govuk-link" href="@CheckEmploymentExpensesController.show(taxYear)">
                     @messages("employment.expenses.label")
                     </a>
                 } else {@messages("employment.expenses.label")}

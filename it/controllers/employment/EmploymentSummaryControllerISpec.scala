@@ -17,6 +17,7 @@
 package controllers.employment
 
 import common.{SessionValues, UUID}
+import controllers.expenses.routes.CheckEmploymentExpensesController
 import controllers.employment.EmploymentSummaryControllerISpec.FullModel._
 import controllers.employment.routes._
 import forms.YesNoForm
