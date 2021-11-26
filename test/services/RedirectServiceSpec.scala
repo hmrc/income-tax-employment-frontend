@@ -1481,7 +1481,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => otherItemsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe NonCashBenefitsAmountController.show(taxYear, employmentId).url
       }
 
       "it's a prior submission and attempted to view 'other items amount' page" +

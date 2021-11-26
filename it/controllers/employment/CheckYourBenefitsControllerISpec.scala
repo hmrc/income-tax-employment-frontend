@@ -715,6 +715,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val nonTaxableCostsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/non-taxable-costs-amount?employmentId=001"
     val vouchersBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/vouchers-or-credit-cards?employmentId=001"
     val vouchersBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/vouchers-or-credit-cards-amount?employmentId=001"
+    val nonCashBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/non-cash-benefits-amount?employmentId=001"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -905,7 +906,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(commonResults.vouchers, commonResults.yes, 17, 6, s"${user.commonExpectedResults.changeText} ${specificResults.vouchersHiddenText}", vouchersBenefitsHref)
           changeAmountRowCheck(commonResults.vouchersAmount, "£24", 17, 7, s"${user.commonExpectedResults.changeText} ${specificResults.vouchersAmountHiddenText}", vouchersBenefitsAmountHref)
           changeAmountRowCheck(commonResults.nonCash, commonResults.yes, 17, 8, s"${user.commonExpectedResults.changeText} ${specificResults.nonCashHiddenText}", dummyHref)
-          changeAmountRowCheck(commonResults.nonCashAmount, "£25", 17, 9, s"${user.commonExpectedResults.changeText} ${specificResults.nonCashAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.nonCashAmount, "£25", 17, 9, s"${user.commonExpectedResults.changeText} ${specificResults.nonCashAmountHiddenText}", nonCashBenefitsAmountHref)
           changeAmountRowCheck(commonResults.otherBenefits, commonResults.yes, 17, 10, s"${user.commonExpectedResults.changeText} ${specificResults.otherBenefitsHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.otherBenefitsAmount, "£26", 17, 11, s"${user.commonExpectedResults.changeText} ${specificResults.otherBenefitsAmountHiddenText}", dummyHref)
 
