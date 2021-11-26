@@ -198,6 +198,9 @@ POST       /:taxYear/benefits/taxable-costs                                 cont
 GET        /:taxYear/benefits/taxable-costs-amount                          controllers.benefits.reimbursed.TaxableCostsBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/taxable-costs-amount                          controllers.benefits.reimbursed.TaxableCostsBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/vouchers-or-credit-cards                      controllers.benefits.reimbursed.VouchersBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/vouchers-or-credit-cards                      controllers.benefits.reimbursed.VouchersBenefitsController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/benefits/vouchers-or-credit-cards-amount               controllers.benefits.reimbursed.VouchersBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/vouchers-or-credit-cards-amount               controllers.benefits.reimbursed.VouchersBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
