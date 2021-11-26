@@ -963,6 +963,15 @@ benefits.incurredCostsAmount.error.noEntry.agent = Enter the amount of incurred 
 benefits.incurredCostsAmount.error.incorrectFormat.agent = Enter the amount of incurred costs paid by your client’s employer in the correct format
 benefits.incurredCostsAmount.error.overMaximum.agent = The incurred costs paid by your client’s employer must be less than £100,000,000,000
 
+benefits.incomeTaxBenefitsAmount.title.individual = How much of your Income Tax did your employer pay?
+benefits.incomeTaxBenefitsAmount.title.agent = How much of your client’s Income Tax did their employer pay?
+benefits.incomeTaxBenefitsAmount.error.noEntry.individual = Enter the amount of Income Tax paid by your employer
+benefits.incomeTaxBenefitsAmount.error.incorrectFormat.individual = Enter the amount of Income Tax paid by your employer in the correct format
+benefits.incomeTaxBenefitsAmount.error.overMaximum.individual = The Income Tax paid by your employer must be less than £100,000,000,000
+benefits.incomeTaxBenefitsAmount.error.noEntry.agent = Enter the amount of Income Tax paid by your client’s employer
+benefits.incomeTaxBenefitsAmount.error.incorrectFormat.agent = Enter the amount of Income Tax paid by your client’s employer in the correct format
+benefits.incomeTaxBenefitsAmount.error.overMaximum.agent = The Income Tax paid by your client’s employer must be less than £100,000,000,000
+
 benefits.reimbursedCostsVouchersAndNonCash.title.individual = Did you get any reimbursed costs, vouchers or non-cash benefits from your employer?
 benefits.reimbursedCostsVouchersAndNonCash.title.agent = Did your client get any reimbursed costs, vouchers or non-cash benefits from their employer?
 benefits.reimbursedCostsVouchersAndNonCash.error.individual = Select yes if you got reimbursed costs, vouchers or non-cash benefits from your employer
