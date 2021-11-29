@@ -1031,6 +1031,14 @@ benefits.nonCashBenefitsAmount.error.noEntry.agent = Enter the amount your clien
 benefits.nonCashBenefitsAmount.error.incorrectFormat = Enter the amount for non-cash benefits in the correct format
 benefits.nonCashBenefitsAmount.error.overMaximum = The amount for non-cash benefits must be less than £100,000,000,000
 
+benefits.otherBenefitsAmount.title.individual = How much did you get in total for other benefits?
+benefits.otherBenefitsAmount.title.agent = How much did your client get in total for other benefits?
+benefits.otherBenefitsAmount.error.noEntry.individual = Enter the amount you got for other benefits
+benefits.otherBenefitsAmount.error.incorrectFormat.individual = Enter the amount you got for other benefits in the correct format
+benefits.otherBenefitsAmount.error.overMaximum = The amount for other benefits must be less than £100,000,000,000
+benefits.otherBenefitsAmount.error.noEntry.agent = Enter the amount your client got for other benefits
+benefits.otherBenefitsAmount.error.incorrectFormat.agent = Enter the amount your client got for other benefits in the correct format
+
 #####Expenses Pages#######
 
 expenses.caption = Employment expenses for 6 April {0} to 5 April {1}
