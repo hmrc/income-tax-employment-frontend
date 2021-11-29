@@ -126,7 +126,7 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
 
     "return otherItems amount page" in {
       model.copy(otherItems = None).otherItemsSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(OtherBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return none when section is finished" in {
