@@ -716,6 +716,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val vouchersBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/vouchers-or-credit-cards-amount?employmentId=001"
     val nonCashBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/non-cash-benefits-amount?employmentId=001"
     val otherBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/other-benefits-amount?employmentId=001"
+    val assetsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/assets-available-for-use-amount?employmentId=001"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -913,7 +914,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(commonResults.assetsHeader, fieldHeaderSelector(18))
           changeAmountRowCheck(commonResults.assetsSubheading, commonResults.yes, 19, 1, s"${user.commonExpectedResults.changeText} ${specificResults.assetsSubheadingHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.assets, commonResults.yes, 19, 2, s"${user.commonExpectedResults.changeText} ${specificResults.assetsHiddenText}", dummyHref)
-          changeAmountRowCheck(commonResults.assetsAmount, "£27", 19, 3, s"${user.commonExpectedResults.changeText} ${specificResults.assetsAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.assetsAmount, "£27", 19, 3, s"${user.commonExpectedResults.changeText} ${specificResults.assetsAmountHiddenText}", assetsBenefitsAmountHref)
           changeAmountRowCheck(commonResults.assetTransfers, commonResults.yes, 19, 4, s"${user.commonExpectedResults.changeText} ${specificResults.assetTransfersHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.assetTransfersAmount, "£280000", 19, 5, s"${user.commonExpectedResults.changeText} ${specificResults.assetTransfersAmountHiddenText}", dummyHref)
 

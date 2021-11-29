@@ -299,7 +299,7 @@
                     assetsQuestion => showQuestionRow("checkYourBenefits.assets", assetsQuestion)
                 },
                 benefits.assetsModel.flatMap(_.assets).map{
-                    assets => showRows("checkYourBenefits.assetsAmount", assets)
+                    assets => showRows("checkYourBenefits.assetsAmount", assets, controllers.benefits.assets.routes.AssetsBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.assetsModel.flatMap(_.assetTransferQuestion).map{
                     assetTransferQuestion => showQuestionRow("checkYourBenefits.assetTransfers", assetTransferQuestion)
