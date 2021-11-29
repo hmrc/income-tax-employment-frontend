@@ -177,6 +177,9 @@ POST       /:taxYear/benefits/employer-income-tax-or-incurred-costs         cont
 GET        /:taxYear/benefits/employer-income-tax                           controllers.benefits.income.IncomeTaxBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/employer-income-tax                           controllers.benefits.income.IncomeTaxBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/employer-income-tax-amount                     controllers.benefits.income.IncomeTaxBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/employer-income-tax-amount                     controllers.benefits.income.IncomeTaxBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/benefits/incurred-costs                                controllers.benefits.income.IncurredCostsBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/incurred-costs                                controllers.benefits.income.IncurredCostsBenefitsController.submit(taxYear: Int, employmentId: String)
 
