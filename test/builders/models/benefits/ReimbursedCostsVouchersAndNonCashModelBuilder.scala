@@ -21,7 +21,7 @@ import models.benefits.ReimbursedCostsVouchersAndNonCashModel
 object ReimbursedCostsVouchersAndNonCashModelBuilder {
 
   val aReimbursedCostsVouchersAndNonCashModel: ReimbursedCostsVouchersAndNonCashModel = ReimbursedCostsVouchersAndNonCashModel(
-    reimbursedCostsVouchersAndNonCashQuestion = Some(true),
+    sectionQuestion = Some(true),
     expensesQuestion = Some(true),
     expenses = Some(100.00),
     taxableExpensesQuestion = Some(true),

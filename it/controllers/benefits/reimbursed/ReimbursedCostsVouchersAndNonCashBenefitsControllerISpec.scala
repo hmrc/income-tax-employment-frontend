@@ -322,7 +322,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
 
         "update the reimbursedCostsVouchersAndNonCashQuestion to true" in {
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.reimbursedCostsVouchersAndNonCashQuestion) shouldBe Some(true)
+          cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.sectionQuestion) shouldBe Some(true)
         }
       }
 
@@ -343,7 +343,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
 
         "updates the reimbursedCostsVouchersAndNonCashQuestion to false and wipes the other values" in {
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.reimbursedCostsVouchersAndNonCashQuestion) shouldBe Some(false)
+          cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.sectionQuestion) shouldBe Some(false)
           cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.expensesQuestion) shouldBe None
           cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.expenses) shouldBe None
           cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.taxableExpensesQuestion) shouldBe None
@@ -375,7 +375,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
 
         "creates the ReimbursedCostsVouchersAndNonCashModel with reimbursedCostsVouchersAndNonCashQuestion set to true" in {
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.reimbursedCostsVouchersAndNonCashQuestion) shouldBe Some(true)
+          cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.sectionQuestion) shouldBe Some(true)
           cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.expensesQuestion) shouldBe None
           cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.expenses) shouldBe None
           cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.taxableExpensesQuestion) shouldBe None

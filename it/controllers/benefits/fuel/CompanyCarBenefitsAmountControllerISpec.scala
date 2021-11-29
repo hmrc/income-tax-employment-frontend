@@ -49,21 +49,21 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
   val benefitsWithNoBenefitsReceived: Option[BenefitsViewModel] = Some(BenefitsViewModel(isUsingCustomerData = true))
 
   val benefitsWithFalseCarVanFuelQuestion: Option[BenefitsViewModel] = Some(BenefitsViewModel(isBenefitsReceived = true,
-    carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(false))), isUsingCustomerData = true))
+    carVanFuelModel = Some(CarVanFuelModel(sectionQuestion = Some(false))), isUsingCustomerData = true))
 
   val benefitsWithFalseCarQuestion: Option[BenefitsViewModel] = Some(BenefitsViewModel(isBenefitsReceived = true,
-    carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(true), carQuestion = Some(false))),
+    carVanFuelModel = Some(CarVanFuelModel(sectionQuestion = Some(true), carQuestion = Some(false))),
     isUsingCustomerData = true))
 
   val benefitsWithNoCarQuestion: Option[BenefitsViewModel] = Some(BenefitsViewModel(isBenefitsReceived = true,
-    carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(true))), isUsingCustomerData = true))
+    carVanFuelModel = Some(CarVanFuelModel(sectionQuestion = Some(true))), isUsingCustomerData = true))
 
   val benefitsWithNoCarAmount: Option[BenefitsViewModel] = Some(BenefitsViewModel(isBenefitsReceived = true,
-    carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(true), carQuestion = Some(true))),
+    carVanFuelModel = Some(CarVanFuelModel(sectionQuestion = Some(true), carQuestion = Some(true))),
     isUsingCustomerData = true))
 
   val benefitsWithCarAmount: Option[BenefitsViewModel] = Some(BenefitsViewModel(isBenefitsReceived = true,
-    carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(true), carQuestion = Some(true),
+    carVanFuelModel = Some(CarVanFuelModel(sectionQuestion = Some(true), carQuestion = Some(true),
       car = Some(carAmount))), isUsingCustomerData = true))
 
   def cya(isPriorSubmission: Boolean = true, benefits: Option[BenefitsViewModel]):
@@ -474,7 +474,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(CompanyCarFuelBenefitsController.show(taxYearEOY, employmentId).url)
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion)) shouldBe Some(true)
+        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car)) shouldBe Some(newAmount)
       }
@@ -496,7 +496,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(CompanyCarFuelBenefitsController.show(taxYearEOY, employmentId).url)
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion)) shouldBe Some(true)
+        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car)) shouldBe Some(carAmount)
       }
@@ -517,7 +517,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(CompanyCarFuelBenefitsController.show(taxYearEOY, employmentId).url)
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion)) shouldBe Some(true)
+        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car)) shouldBe Some(carAmount)
       }

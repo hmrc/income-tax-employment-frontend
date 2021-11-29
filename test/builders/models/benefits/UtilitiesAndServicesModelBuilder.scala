@@ -21,7 +21,7 @@ import models.benefits.UtilitiesAndServicesModel
 object UtilitiesAndServicesModelBuilder {
 
   val aUtilitiesAndServicesModel: UtilitiesAndServicesModel = UtilitiesAndServicesModel(
-    utilitiesAndServicesQuestion = Some(true),
+    sectionQuestion = Some(true),
     telephoneQuestion = Some(true),
     telephone = Some(100.00),
     employerProvidedServicesQuestion = Some(true),

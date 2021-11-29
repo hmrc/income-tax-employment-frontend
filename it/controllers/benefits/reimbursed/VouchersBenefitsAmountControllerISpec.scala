@@ -16,6 +16,7 @@
 
 package controllers.benefits.reimbursed
 
+import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
 import models.User
 import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
@@ -225,32 +226,32 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       }
     }
 
-      "redirect user to the check your benefits page with no cya data in session" in {
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-          authoriseAgentOrIndividual(isAgent = false)
-          urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+    "redirect user to the check your benefits page with no cya data in session" in {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "redirect user to the tax overview page when in year" in {
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-          insertCyaData(employmentUserData(isPrior = false, cyaModel(benefitsWithNoBenefitsReceived)), userRequest)
-          authoriseAgentOrIndividual(isAgent = false)
-          urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
+      result.status shouldBe SEE_OTHER
+      result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+    }
 
-        result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+    "redirect user to the tax overview page when in year" in {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
+        insertCyaData(employmentUserData(isPrior = false, cyaModel(benefitsWithNoBenefitsReceived)), userRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "redirect to the CYA page when vouchersAndCreditCardsQuestion is set to false" in {
+      result.status shouldBe SEE_OTHER
+      result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+    }
+
+    "redirect to the CYA page when vouchersAndCreditCardsQuestion is set to false" in {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
@@ -263,7 +264,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
     }
 
-      "redirect to the CYA page when reimbursedCostsVouchersAndNonCashQuestion is set to false" in {
+    "redirect to the Assets section question page when reimbursedCostsVouchersAndNonCashQuestion is set to false" in {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
@@ -273,10 +274,10 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+      result.header("location") shouldBe Some(AssetsOrAssetTransfersBenefitsController.show(taxYearEOY, employmentId).url)
     }
 
-      "redirect to the CYA page when benefitsReceived is set to false" in {
+    "redirect to the CYA page when benefitsReceived is set to false" in {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
@@ -395,76 +396,76 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       }
     }
 
-      "redirect to check employment benefits page when a valid form is submitted and a prior submission" when {
-        implicit lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(isAgent = false)
-          dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
-          urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "123.45"))
-        }
-
-        "has an SEE_OTHER status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
-        }
-
-        "updates the CYA model with the new value" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          val vouchers = cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCards))
-          vouchers shouldBe Some(123.45)
-        }
+    "redirect to check employment benefits page when a valid form is submitted and a prior submission" when {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
+        urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "123.45"))
       }
 
-      "redirect to the non-cash benefits question page when a valid form is submitted and not prior submission" when {
-        implicit lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(isAgent = false)
-          dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = false, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
-          urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "234.56"))
-        }
-
-        "has an SEE_OTHER status" in {
-          result.status shouldBe SEE_OTHER
-//        TODO: Should go to Non cash benefits question page
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
-        }
-
-        "updates the CYA model with the new value" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          val vouchers = cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCards))
-          vouchers shouldBe Some(234.56)
-        }
+      "has an SEE_OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
-      "redirect user to the check your benefits page with no cya data" which {
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          authoriseAgentOrIndividual(isAgent = false)
-          urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "345.67"))
-        }
+      "updates the CYA model with the new value" in {
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        val vouchers = cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCards))
+        vouchers shouldBe Some(123.45)
+      }
+    }
 
-        "has an SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
-        }
+    "redirect to the non-cash benefits question page when a valid form is submitted and not prior submission" when {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        insertCyaData(employmentUserData(isPrior = false, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
+        urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "234.56"))
       }
 
-      "redirect user to the tax overview page when in year" which {
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
-          authoriseAgentOrIndividual(isAgent = false)
-          urlPost(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.50"))
-        }
-
-        "has an SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-        }
+      "has an SEE_OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        //        TODO: Should go to Non cash benefits question page
+        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
-      "redirect to the CYA page when vouchersAndCreditCardsQuestion is set to false" in {
+      "updates the CYA model with the new value" in {
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        val vouchers = cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCards))
+        vouchers shouldBe Some(234.56)
+      }
+    }
+
+    "redirect user to the check your benefits page with no cya data" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "345.67"))
+      }
+
+      "has an SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+      }
+    }
+
+    "redirect user to the tax overview page when in year" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
+        insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.50"))
+      }
+
+      "has an SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      }
+    }
+
+    "redirect to the CYA page when vouchersAndCreditCardsQuestion is set to false" in {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
@@ -477,7 +478,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
     }
 
-      "redirect to the CYA page when reimbursedCostsVouchersAndNonCashQuestion is set to false" in {
+    "redirect to the Assets section question page when reimbursedCostsVouchersAndNonCashQuestion is set to false" in {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
@@ -487,10 +488,10 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+      result.header("location") shouldBe Some(AssetsOrAssetTransfersBenefitsController.show(taxYearEOY, employmentId).url)
     }
 
-      "redirect to the CYA page when benefitsReceived is set to false" in {
+    "redirect to the CYA page when benefitsReceived is set to false" in {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()

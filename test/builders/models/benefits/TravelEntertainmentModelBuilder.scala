@@ -21,7 +21,7 @@ import models.benefits.TravelEntertainmentModel
 object TravelEntertainmentModelBuilder {
 
   val aTravelEntertainmentModel: TravelEntertainmentModel = TravelEntertainmentModel(
-    travelEntertainmentQuestion = Some(true),
+    sectionQuestion = Some(true),
     travelAndSubsistenceQuestion = Some(true),
     travelAndSubsistence = Some(100.00),
     personalIncidentalExpensesQuestion = Some(true),

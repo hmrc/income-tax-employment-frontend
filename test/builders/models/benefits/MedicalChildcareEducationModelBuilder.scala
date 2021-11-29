@@ -21,7 +21,7 @@ import models.benefits.MedicalChildcareEducationModel
 object MedicalChildcareEducationModelBuilder {
 
   val aMedicalChildcareEducationModel: MedicalChildcareEducationModel = MedicalChildcareEducationModel(
-    medicalChildcareEducationQuestion = Some(true),
+    sectionQuestion = Some(true),
     medicalInsuranceQuestion = Some(true),
     medicalInsurance = Some(100.00),
     nurseryPlacesQuestion = Some(true),

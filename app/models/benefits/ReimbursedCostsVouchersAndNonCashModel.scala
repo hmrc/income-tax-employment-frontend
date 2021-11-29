@@ -22,7 +22,7 @@ import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue
 
-case class ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonCashQuestion: Option[Boolean] = None,
+case class ReimbursedCostsVouchersAndNonCashModel(sectionQuestion: Option[Boolean] = None,
                                                   expensesQuestion: Option[Boolean] = None,
                                                   expenses: Option[BigDecimal] = None,
                                                   taxableExpensesQuestion: Option[Boolean] = None,
@@ -35,7 +35,7 @@ case class ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonC
                                                   otherItems: Option[BigDecimal] = None) {
 
   def isFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
-    reimbursedCostsVouchersAndNonCashQuestion match {
+    sectionQuestion match {
       case Some(true) =>
         (expensesSectionFinished, taxableExpensesSectionFinished, vouchersAndCreditCardsSectionFinished,
           nonCashSectionFinished, otherItemsSectionFinished) match {
@@ -96,10 +96,10 @@ case class ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonC
 object ReimbursedCostsVouchersAndNonCashModel {
   implicit val formats: OFormat[ReimbursedCostsVouchersAndNonCashModel] = Json.format[ReimbursedCostsVouchersAndNonCashModel]
 
-  def clear: ReimbursedCostsVouchersAndNonCashModel = ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonCashQuestion = Some(false))
+  def clear: ReimbursedCostsVouchersAndNonCashModel = ReimbursedCostsVouchersAndNonCashModel(sectionQuestion = Some(false))
 }
 
-case class EncryptedReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonCashQuestion: Option[EncryptedValue] = None,
+case class EncryptedReimbursedCostsVouchersAndNonCashModel(sectionQuestion: Option[EncryptedValue] = None,
                                                            expensesQuestion: Option[EncryptedValue] = None,
                                                            expenses: Option[EncryptedValue] = None,
                                                            taxableExpensesQuestion: Option[EncryptedValue] = None,

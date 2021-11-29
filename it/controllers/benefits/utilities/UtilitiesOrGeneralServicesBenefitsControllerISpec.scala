@@ -298,7 +298,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
         result.header("location") shouldBe
           Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/telephone?employmentId=$employmentId")
         val utilitiesAndServicesData = findCyaData(taxYearEOY, employmentId, userRequest).get.employment.employmentBenefits.get.utilitiesAndServicesModel.get
-        utilitiesAndServicesData shouldBe emptyUtilitiesAndServicesModel.copy(utilitiesAndServicesQuestion = Some(true))
+        utilitiesAndServicesData shouldBe emptyUtilitiesAndServicesModel.copy(sectionQuestion = Some(true))
       }
     }
 

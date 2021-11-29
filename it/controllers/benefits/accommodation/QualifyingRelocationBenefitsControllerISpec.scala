@@ -323,7 +323,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
         insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(emptyAccommodationRelocationModel.copy(accommodationRelocationQuestion = None))))), userRequest)
+          Some(benefits(emptyAccommodationRelocationModel.copy(sectionQuestion = None))))), userRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlEOY, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -391,7 +391,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(QualifyingRelocationBenefitsAmountController.show(taxYearEOY, employmentId).url)
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodationRelocationQuestion)) shouldBe Some(true)
+        cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpensesQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses)) shouldBe Some(200.00)
       }
@@ -415,7 +415,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(NonQualifyingRelocationBenefitsController.show(taxYearEOY, employmentId).url)
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodationRelocationQuestion)) shouldBe Some(true)
+        cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpensesQuestion)) shouldBe Some(false)
         cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses)) shouldBe None
       }
@@ -442,7 +442,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
         insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(emptyAccommodationRelocationModel.copy(accommodationRelocationQuestion = None))))), userRequest)
+          Some(benefits(emptyAccommodationRelocationModel.copy(sectionQuestion = None))))), userRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(urlEOY, body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }

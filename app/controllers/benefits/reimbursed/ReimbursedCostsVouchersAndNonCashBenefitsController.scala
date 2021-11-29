@@ -61,7 +61,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsController @Inject()(implicit val
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
-          cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.reimbursedCostsVouchersAndNonCashQuestion)) match {
+          cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.sectionQuestion)) match {
             case Some(questionResult) => Future.successful(Ok(pageView(yesNoForm.fill(questionResult), taxYear, employmentId)))
             case None => Future.successful(Ok(pageView(yesNoForm, taxYear, employmentId)))
           }
@@ -88,13 +88,13 @@ class ReimbursedCostsVouchersAndNonCashBenefitsController @Inject()(implicit val
                 reimbursedCostsModel match {
                   case Some(reimbursedCosts) if yesNo =>
                     cya.copy(employmentBenefits = benefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel =
-                      Some(reimbursedCosts.copy(reimbursedCostsVouchersAndNonCashQuestion = Some(true))))))
+                      Some(reimbursedCosts.copy(sectionQuestion = Some(true))))))
                   case Some(_) =>
                     cya.copy(employmentBenefits = benefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel =
                       Some(ReimbursedCostsVouchersAndNonCashModel.clear))))
                   case _ =>
                     cya.copy(employmentBenefits = benefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel =
-                      Some(ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonCashQuestion = Some(yesNo))))))
+                      Some(ReimbursedCostsVouchersAndNonCashModel(sectionQuestion = Some(yesNo))))))
                 }
               }
 

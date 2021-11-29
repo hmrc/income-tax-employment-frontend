@@ -21,7 +21,7 @@ import models.benefits.IncomeTaxAndCostsModel
 object IncomeTaxAndCostsModelBuilder {
 
   val aIncomeTaxAndCostsModel: IncomeTaxAndCostsModel = IncomeTaxAndCostsModel(
-    incomeTaxOrCostsQuestion = Some(true),
+    sectionQuestion = Some(true),
     incomeTaxPaidByDirectorQuestion = Some(true),
     incomeTaxPaidByDirector = Some(255.00),
     paymentsOnEmployeesBehalfQuestion = Some(true),

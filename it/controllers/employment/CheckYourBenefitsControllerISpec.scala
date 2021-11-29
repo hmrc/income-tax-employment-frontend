@@ -1041,7 +1041,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
               EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc),
               Some(BenefitsViewModel(
                 accommodationRelocationModel = Some(AccommodationRelocationModel(
-                  accommodationRelocationQuestion = Some(true),
+                  sectionQuestion = Some(true),
                   accommodationQuestion = Some(true),
                   accommodation = Some(3.00),
                   qualifyingRelocationExpensesQuestion = Some(false),

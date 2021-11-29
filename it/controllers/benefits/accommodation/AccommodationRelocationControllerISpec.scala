@@ -50,12 +50,12 @@ class AccommodationRelocationControllerISpec extends IntegrationTest with ViewHe
 
   def filledAccModel(yesNo: Boolean): AccommodationRelocationModel =
     AccommodationRelocationModel(
-      accommodationRelocationQuestion = Some(yesNo)
+      sectionQuestion = Some(yesNo)
     )
 
   def fullAccModel: AccommodationRelocationModel =
     AccommodationRelocationModel(
-      accommodationRelocationQuestion = Some(true),
+      sectionQuestion = Some(true),
       accommodationQuestion = Some(true),
       accommodation = Some(100),
       qualifyingRelocationExpensesQuestion = Some(true),
@@ -273,7 +273,7 @@ class AccommodationRelocationControllerISpec extends IntegrationTest with ViewHe
               result.status shouldBe SEE_OTHER
               result.header("location") shouldBe Some(LivingAccommodationBenefitsController.show(taxYearEOY, employmentId).url)
               lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-              cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.accommodationRelocationQuestion) shouldBe Some(true)
+              cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.sectionQuestion) shouldBe Some(true)
             }
           }
 
@@ -291,7 +291,7 @@ class AccommodationRelocationControllerISpec extends IntegrationTest with ViewHe
               result.status shouldBe SEE_OTHER
               result.header("location") shouldBe Some(TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId).url)
               lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-              cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.accommodationRelocationQuestion) shouldBe Some(false)
+              cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.sectionQuestion) shouldBe Some(false)
               cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.accommodationQuestion) shouldBe None
               cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.accommodation) shouldBe None
               cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.qualifyingRelocationExpensesQuestion) shouldBe None
@@ -319,7 +319,7 @@ class AccommodationRelocationControllerISpec extends IntegrationTest with ViewHe
 
             "updates only accommodationRelocationQuestion to yes" in {
               lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-              cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.accommodationRelocationQuestion) shouldBe Some(true)
+              cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.sectionQuestion) shouldBe Some(true)
               cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.accommodationQuestion) shouldBe None
               cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.accommodation) shouldBe None
               cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.qualifyingRelocationExpensesQuestion) shouldBe None

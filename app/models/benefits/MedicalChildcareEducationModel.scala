@@ -22,7 +22,7 @@ import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue
 
-case class MedicalChildcareEducationModel(medicalChildcareEducationQuestion: Option[Boolean] = None,
+case class MedicalChildcareEducationModel(sectionQuestion: Option[Boolean] = None,
                                           medicalInsuranceQuestion: Option[Boolean] = None,
                                           medicalInsurance: Option[BigDecimal] = None,
                                           nurseryPlacesQuestion: Option[Boolean] = None,
@@ -68,7 +68,7 @@ case class MedicalChildcareEducationModel(medicalChildcareEducationQuestion: Opt
   //scalastyle:on
 
   def isFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
-    medicalChildcareEducationQuestion match {
+    sectionQuestion match {
       case Some(true) => (medicalInsuranceSectionFinished, childcareSectionFinished, educationalServicesSectionFinished, beneficialLoanSectionFinished) match {
         case (call@Some(_), _, _, _) => call
         case (_, call@Some(_), _, _) => call
@@ -85,10 +85,10 @@ case class MedicalChildcareEducationModel(medicalChildcareEducationQuestion: Opt
 object MedicalChildcareEducationModel {
   implicit val formats: OFormat[MedicalChildcareEducationModel] = Json.format[MedicalChildcareEducationModel]
 
-  def clear: MedicalChildcareEducationModel = MedicalChildcareEducationModel(medicalChildcareEducationQuestion = Some(false))
+  def clear: MedicalChildcareEducationModel = MedicalChildcareEducationModel(sectionQuestion = Some(false))
 }
 
-case class EncryptedMedicalChildcareEducationModel(medicalChildcareEducationQuestion: Option[EncryptedValue] = None,
+case class EncryptedMedicalChildcareEducationModel(sectionQuestion: Option[EncryptedValue] = None,
                                                    medicalInsuranceQuestion: Option[EncryptedValue] = None,
                                                    medicalInsurance: Option[EncryptedValue] = None,
                                                    nurseryPlacesQuestion: Option[EncryptedValue] = None,

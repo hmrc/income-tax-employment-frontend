@@ -254,7 +254,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-            benefits = Some(benefits(fullUtilitiesAndServicesModel.copy(utilitiesAndServicesQuestion = Some(false)))))), userRequest)
+            benefits = Some(benefits(fullUtilitiesAndServicesModel.copy(sectionQuestion = Some(false)))))), userRequest)
           urlGet(telephoneQuestionPageUrl(taxYearEOY), user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -272,7 +272,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-            benefits = Some(benefits(fullUtilitiesAndServicesModel.copy(utilitiesAndServicesQuestion = None))))), userRequest)
+            benefits = Some(benefits(fullUtilitiesAndServicesModel.copy(sectionQuestion = None))))), userRequest)
           urlGet(telephoneQuestionPageUrl(taxYearEOY), user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -395,7 +395,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           result.header("location") shouldBe
             Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/employer-provided-services?employmentId=$employmentId")
           lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.utilitiesAndServicesQuestion)) shouldBe Some(true)
+          cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
           cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.telephoneQuestion)) shouldBe Some(false)
           cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.telephone)) shouldBe None
         }
@@ -420,7 +420,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           result.header("location") shouldBe
             Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/telephone-amount?employmentId=$employmentId")
           lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.utilitiesAndServicesQuestion)) shouldBe Some(true)
+          cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
           cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.telephoneQuestion)) shouldBe Some(true)
           cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.telephone)) shouldBe Some(100)
         }
@@ -472,7 +472,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-            benefits = Some(benefits(fullUtilitiesAndServicesModel.copy(utilitiesAndServicesQuestion = Some(false)))))), userRequest)
+            benefits = Some(benefits(fullUtilitiesAndServicesModel.copy(sectionQuestion = Some(false)))))), userRequest)
           urlPost(telephoneQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -493,7 +493,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-            benefits = Some(benefits(fullUtilitiesAndServicesModel.copy(utilitiesAndServicesQuestion = None))))), userRequest)
+            benefits = Some(benefits(fullUtilitiesAndServicesModel.copy(sectionQuestion = None))))), userRequest)
           urlPost(telephoneQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }

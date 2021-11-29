@@ -23,7 +23,7 @@ class UtilitiesAndServicesModelSpec extends UnitTest {
 
   private val taxYear = 2022
   private val model = UtilitiesAndServicesModel(
-    utilitiesAndServicesQuestion = Some(true),
+    sectionQuestion = Some(true),
     telephoneQuestion = Some(true),
     telephone = Some(55.55),
     employerProvidedServicesQuestion = Some(true),
@@ -38,11 +38,11 @@ class UtilitiesAndServicesModelSpec extends UnitTest {
 
   "isFinished" should {
     "return utilities and services yes no page" in {
-      model.copy(utilitiesAndServicesQuestion = None).isFinished(taxYear, "id") shouldBe
+      model.copy(sectionQuestion = None).isFinished(taxYear, "id") shouldBe
         result(s"/update-and-submit-income-tax-return/employment-income/$taxYear/benefits/utility-general-service?employmentId=id")
     }
     "return none when section is finished" in {
-      model.copy(utilitiesAndServicesQuestion = Some(false)).isFinished(taxYear, "employmentId") shouldBe None
+      model.copy(sectionQuestion = Some(false)).isFinished(taxYear, "employmentId") shouldBe None
       model.isFinished(taxYear, "employmentId") shouldBe None
     }
   }
@@ -119,7 +119,7 @@ class UtilitiesAndServicesModelSpec extends UnitTest {
 
   "clear" should {
     "clear the model" in {
-      UtilitiesAndServicesModel.clear shouldBe UtilitiesAndServicesModel(utilitiesAndServicesQuestion = Some(false))
+      UtilitiesAndServicesModel.clear shouldBe UtilitiesAndServicesModel(sectionQuestion = Some(false))
     }
   }
 }

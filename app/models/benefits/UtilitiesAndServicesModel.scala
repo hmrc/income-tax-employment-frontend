@@ -22,7 +22,7 @@ import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue
 
-case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolean] = None,
+case class UtilitiesAndServicesModel(sectionQuestion: Option[Boolean] = None,
                                      telephoneQuestion: Option[Boolean] = None,
                                      telephone: Option[BigDecimal] = None,
                                      employerProvidedServicesQuestion: Option[Boolean] = None,
@@ -33,7 +33,7 @@ case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolea
                                      service: Option[BigDecimal] = None) {
 
   def isFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
-    utilitiesAndServicesQuestion match {
+    sectionQuestion match {
       case Some(true) =>
         (telephoneSectionFinished, employerProvidedServicesSectionFinished,
           employerProvidedProfessionalSubscriptionsSectionFinished, serviceSectionFinished) match {
@@ -81,17 +81,16 @@ case class UtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[Boolea
     }
   }
   //scalastyle:on
-
 }
 
 object UtilitiesAndServicesModel {
   implicit val formats: OFormat[UtilitiesAndServicesModel] = Json.format[UtilitiesAndServicesModel]
 
-  def clear: UtilitiesAndServicesModel = UtilitiesAndServicesModel(utilitiesAndServicesQuestion = Some(false))
+  def clear: UtilitiesAndServicesModel = UtilitiesAndServicesModel(sectionQuestion = Some(false))
 }
 
 
-case class EncryptedUtilitiesAndServicesModel(utilitiesAndServicesQuestion: Option[EncryptedValue] = None,
+case class EncryptedUtilitiesAndServicesModel(sectionQuestion: Option[EncryptedValue] = None,
                                               telephoneQuestion: Option[EncryptedValue] = None,
                                               telephone: Option[EncryptedValue] = None,
                                               employerProvidedServicesQuestion: Option[EncryptedValue] = None,

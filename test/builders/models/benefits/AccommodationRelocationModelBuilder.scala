@@ -21,7 +21,7 @@ import models.benefits.AccommodationRelocationModel
 object AccommodationRelocationModelBuilder {
 
   val aAccommodationRelocationModel: AccommodationRelocationModel = AccommodationRelocationModel(
-    accommodationRelocationQuestion = Some(true),
+    sectionQuestion = Some(true),
     accommodationQuestion = Some(true),
     accommodation = Some(100.00),
     qualifyingRelocationExpensesQuestion = Some(true),

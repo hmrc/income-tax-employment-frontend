@@ -68,7 +68,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
 
   private def encryptCarVanFuelModel(carVanFuelModel: CarVanFuelModel)(implicit textAndKey: TextAndKey): EncryptedCarVanFuelModel = {
     EncryptedCarVanFuelModel(
-      carVanFuelQuestion = carVanFuelModel.carVanFuelQuestion.map(secureGCMCipher.encrypt),
+      sectionQuestion = carVanFuelModel.sectionQuestion.map(secureGCMCipher.encrypt),
       carQuestion = carVanFuelModel.carQuestion.map(secureGCMCipher.encrypt),
       car = carVanFuelModel.car.map(secureGCMCipher.encrypt),
       carFuelQuestion = carVanFuelModel.carFuelQuestion.map(secureGCMCipher.encrypt),
@@ -84,7 +84,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
 
   private def decryptCarVanFuelModel(carVanFuelModel: EncryptedCarVanFuelModel)(implicit textAndKey: TextAndKey): CarVanFuelModel = {
     CarVanFuelModel(
-      carVanFuelQuestion = carVanFuelModel.carVanFuelQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      sectionQuestion = carVanFuelModel.sectionQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       carQuestion = carVanFuelModel.carQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       car = carVanFuelModel.car.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       carFuelQuestion = carVanFuelModel.carFuelQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
@@ -101,7 +101,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
   private def encryptAccommodationRelocationModel(accommodationRelocationModel: AccommodationRelocationModel)
                                                  (implicit textAndKey: TextAndKey): EncryptedAccommodationRelocationModel = {
     EncryptedAccommodationRelocationModel(
-      accommodationRelocationQuestion = accommodationRelocationModel.accommodationRelocationQuestion.map(secureGCMCipher.encrypt),
+      sectionQuestion = accommodationRelocationModel.sectionQuestion.map(secureGCMCipher.encrypt),
       accommodationQuestion = accommodationRelocationModel.accommodationQuestion.map(secureGCMCipher.encrypt),
       accommodation = accommodationRelocationModel.accommodation.map(secureGCMCipher.encrypt),
       qualifyingRelocationExpensesQuestion = accommodationRelocationModel.qualifyingRelocationExpensesQuestion.map(secureGCMCipher.encrypt),
@@ -114,7 +114,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
   private def decryptAccommodationRelocationModel(accommodationRelocationModel: EncryptedAccommodationRelocationModel)
                                                  (implicit textAndKey: TextAndKey): AccommodationRelocationModel = {
     AccommodationRelocationModel(
-      accommodationRelocationQuestion = accommodationRelocationModel.accommodationRelocationQuestion
+      sectionQuestion = accommodationRelocationModel.sectionQuestion
         .map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       accommodationQuestion = accommodationRelocationModel.accommodationQuestion
         .map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
@@ -134,7 +134,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
   private def encryptTravelEntertainmentModel(travelEntertainmentModel: TravelEntertainmentModel)
                                              (implicit textAndKey: TextAndKey): EncryptedTravelEntertainmentModel = {
     EncryptedTravelEntertainmentModel(
-      travelEntertainmentQuestion = travelEntertainmentModel.travelEntertainmentQuestion.map(secureGCMCipher.encrypt),
+      sectionQuestion = travelEntertainmentModel.sectionQuestion.map(secureGCMCipher.encrypt),
       travelAndSubsistenceQuestion = travelEntertainmentModel.travelAndSubsistenceQuestion.map(secureGCMCipher.encrypt),
       travelAndSubsistence = travelEntertainmentModel.travelAndSubsistence.map(secureGCMCipher.encrypt),
       personalIncidentalExpensesQuestion = travelEntertainmentModel.personalIncidentalExpensesQuestion.map(secureGCMCipher.encrypt),
@@ -147,7 +147,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
   private def encryptUtilitiesAndServicesModel(utilitiesAndServicesModel: UtilitiesAndServicesModel)
                                               (implicit textAndKey: TextAndKey): EncryptedUtilitiesAndServicesModel = {
     EncryptedUtilitiesAndServicesModel(
-      utilitiesAndServicesQuestion = utilitiesAndServicesModel.utilitiesAndServicesQuestion.map(secureGCMCipher.encrypt),
+      sectionQuestion = utilitiesAndServicesModel.sectionQuestion.map(secureGCMCipher.encrypt),
       telephoneQuestion = utilitiesAndServicesModel.telephoneQuestion.map(secureGCMCipher.encrypt),
       telephone = utilitiesAndServicesModel.telephone.map(secureGCMCipher.encrypt),
       employerProvidedServicesQuestion = utilitiesAndServicesModel.employerProvidedServicesQuestion.map(secureGCMCipher.encrypt),
@@ -163,7 +163,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
   private def encryptMedicalChildcareEducationModel(medicalChildcareEducationModel: MedicalChildcareEducationModel)
                                                    (implicit textAndKey: TextAndKey): EncryptedMedicalChildcareEducationModel = {
     EncryptedMedicalChildcareEducationModel(
-      medicalChildcareEducationQuestion = medicalChildcareEducationModel.medicalChildcareEducationQuestion.map(secureGCMCipher.encrypt),
+      sectionQuestion = medicalChildcareEducationModel.sectionQuestion.map(secureGCMCipher.encrypt),
       medicalInsuranceQuestion = medicalChildcareEducationModel.medicalInsuranceQuestion.map(secureGCMCipher.encrypt),
       medicalInsurance = medicalChildcareEducationModel.medicalInsurance.map(secureGCMCipher.encrypt),
       nurseryPlacesQuestion = medicalChildcareEducationModel.nurseryPlacesQuestion.map(secureGCMCipher.encrypt),
@@ -178,7 +178,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
   private def encryptIncomeTaxAndCostsModel(incomeTaxAndCostsModel: IncomeTaxAndCostsModel)
                                            (implicit textAndKey: TextAndKey): EncryptedIncomeTaxAndCostsModel = {
     EncryptedIncomeTaxAndCostsModel(
-      incomeTaxOrCostsQuestion = incomeTaxAndCostsModel.incomeTaxOrCostsQuestion.map(secureGCMCipher.encrypt),
+      sectionQuestion = incomeTaxAndCostsModel.sectionQuestion.map(secureGCMCipher.encrypt),
       incomeTaxPaidByDirectorQuestion = incomeTaxAndCostsModel.incomeTaxPaidByDirectorQuestion.map(secureGCMCipher.encrypt),
       incomeTaxPaidByDirector = incomeTaxAndCostsModel.incomeTaxPaidByDirector.map(secureGCMCipher.encrypt),
       paymentsOnEmployeesBehalfQuestion = incomeTaxAndCostsModel.paymentsOnEmployeesBehalfQuestion.map(secureGCMCipher.encrypt),
@@ -188,7 +188,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
   private def encryptReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonCashModel: ReimbursedCostsVouchersAndNonCashModel)
                                                            (implicit textAndKey: TextAndKey): EncryptedReimbursedCostsVouchersAndNonCashModel = {
     EncryptedReimbursedCostsVouchersAndNonCashModel(
-      reimbursedCostsVouchersAndNonCashQuestion = reimbursedCostsVouchersAndNonCashModel.reimbursedCostsVouchersAndNonCashQuestion.map(secureGCMCipher.encrypt),
+      sectionQuestion = reimbursedCostsVouchersAndNonCashModel.sectionQuestion.map(secureGCMCipher.encrypt),
       expensesQuestion = reimbursedCostsVouchersAndNonCashModel.expensesQuestion.map(secureGCMCipher.encrypt),
       expenses = reimbursedCostsVouchersAndNonCashModel.expenses.map(secureGCMCipher.encrypt),
       taxableExpensesQuestion = reimbursedCostsVouchersAndNonCashModel.taxableExpensesQuestion.map(secureGCMCipher.encrypt),
@@ -215,7 +215,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
   private def decryptReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonCashModel: EncryptedReimbursedCostsVouchersAndNonCashModel)
                                                            (implicit textAndKey: TextAndKey): ReimbursedCostsVouchersAndNonCashModel = {
     ReimbursedCostsVouchersAndNonCashModel(
-      reimbursedCostsVouchersAndNonCashQuestion = reimbursedCostsVouchersAndNonCashModel.reimbursedCostsVouchersAndNonCashQuestion.map(
+      sectionQuestion = reimbursedCostsVouchersAndNonCashModel.sectionQuestion.map(
         x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       expensesQuestion = reimbursedCostsVouchersAndNonCashModel.expensesQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       expenses = reimbursedCostsVouchersAndNonCashModel.expenses.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
@@ -244,7 +244,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
   private def decryptTravelEntertainmentModel(travelEntertainmentModel: EncryptedTravelEntertainmentModel)
                                              (implicit textAndKey: TextAndKey): TravelEntertainmentModel = {
     TravelEntertainmentModel(
-      travelEntertainmentQuestion = travelEntertainmentModel.travelEntertainmentQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      sectionQuestion = travelEntertainmentModel.sectionQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       travelAndSubsistenceQuestion = travelEntertainmentModel.travelAndSubsistenceQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       travelAndSubsistence = travelEntertainmentModel.travelAndSubsistence.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       personalIncidentalExpensesQuestion = travelEntertainmentModel.personalIncidentalExpensesQuestion
@@ -258,7 +258,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
   private def decryptUtilitiesAndServicesModel(utilitiesAndServicesModel: EncryptedUtilitiesAndServicesModel)
                                               (implicit textAndKey: TextAndKey): UtilitiesAndServicesModel = {
     UtilitiesAndServicesModel(
-      utilitiesAndServicesQuestion = utilitiesAndServicesModel.utilitiesAndServicesQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      sectionQuestion = utilitiesAndServicesModel.sectionQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       telephoneQuestion = utilitiesAndServicesModel.telephoneQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       telephone = utilitiesAndServicesModel.telephone.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       employerProvidedServicesQuestion = utilitiesAndServicesModel.employerProvidedServicesQuestion
@@ -276,7 +276,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
   private def decryptMedicalChildcareEducationModel(medicalChildcareEducationModel: EncryptedMedicalChildcareEducationModel)
                                                    (implicit textAndKey: TextAndKey): MedicalChildcareEducationModel = {
     MedicalChildcareEducationModel(
-      medicalChildcareEducationQuestion = medicalChildcareEducationModel.medicalChildcareEducationQuestion
+      sectionQuestion = medicalChildcareEducationModel.sectionQuestion
         .map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       medicalInsuranceQuestion = medicalChildcareEducationModel.medicalInsuranceQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       medicalInsurance = medicalChildcareEducationModel.medicalInsurance.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
@@ -292,7 +292,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
   private def decryptIncomeTaxAndCostsModel(incomeTaxAndCostsModel: EncryptedIncomeTaxAndCostsModel)
                                            (implicit textAndKey: TextAndKey): IncomeTaxAndCostsModel = {
     IncomeTaxAndCostsModel(
-      incomeTaxOrCostsQuestion = incomeTaxAndCostsModel.incomeTaxOrCostsQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      sectionQuestion = incomeTaxAndCostsModel.sectionQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       incomeTaxPaidByDirectorQuestion = incomeTaxAndCostsModel.incomeTaxPaidByDirectorQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       incomeTaxPaidByDirector = incomeTaxAndCostsModel.incomeTaxPaidByDirector.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       paymentsOnEmployeesBehalfQuestion = incomeTaxAndCostsModel.paymentsOnEmployeesBehalfQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),

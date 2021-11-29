@@ -43,7 +43,7 @@ class OtherBenefitsAmountController @Inject()(implicit val cc: MessagesControlle
                                               errorHandler: ErrorHandler,
                                               ec: ExecutionContext,
                                               clock: Clock
-                                                    ) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+                                             ) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
