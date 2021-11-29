@@ -281,7 +281,7 @@
                     otherItemsQuestion => showQuestionRow("checkYourBenefits.otherBenefits", otherItemsQuestion)
                 },
                 benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItems).map{
-                    otherItems => showRows("checkYourBenefits.otherBenefitsAmount", otherItems)
+                    otherItems => showRows("checkYourBenefits.otherBenefitsAmount", otherItems, controllers.benefits.reimbursed.routes.OtherBenefitsAmountController.show(taxYear, employmentId))
                 }
             ).flatten
         } else { Seq() }
