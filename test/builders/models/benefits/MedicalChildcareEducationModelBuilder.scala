@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-package builders.models.employment
+package builders.models.benefits
 
-import models.employment.AllEmploymentData
+import models.benefits.MedicalChildcareEducationModel
 
-object AllEmploymentDataBuilder {
+object MedicalChildcareEducationModelBuilder {
 
-  val anAllEmploymentData: AllEmploymentData = AllEmploymentData(
-    hmrcEmploymentData = Seq.empty,
-    hmrcExpenses = None,
-    customerEmploymentData = Seq.empty,
-    customerExpenses = None
+  val aMedicalChildcareEducationModel: MedicalChildcareEducationModel = MedicalChildcareEducationModel(
+    medicalChildcareEducationQuestion = Some(true),
+    medicalInsuranceQuestion = Some(true),
+    medicalInsurance = Some(100.00),
+    nurseryPlacesQuestion = Some(true),
+    nurseryPlaces = Some(200.00),
+    educationalServicesQuestion = Some(true),
+    educationalServices = Some(300.00),
+    beneficialLoanQuestion = Some(true),
+    beneficialLoan = Some(400.00)
   )
 }

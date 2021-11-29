@@ -204,7 +204,7 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
       cyaBenefits.flatMap(_.assetsModel)
     } else {
       Some(AssetsModel(
-        assetsAndAssetsTransferQuestion = Some(assetsDetailsPopulated),
+        sectionQuestion = Some(assetsDetailsPopulated),
         assetsQuestion = Some(assets.isDefined),
         assets = assets,
         assetTransferQuestion = Some(assetTransfer.isDefined),

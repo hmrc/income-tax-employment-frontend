@@ -1584,7 +1584,7 @@ class RedirectServiceSpec extends UnitTest {
       }
       "it's a new submission and attempted to view the 'Assets and assets transfer' section" +
         "but the Assets and assets transfer question is empty" in {
-        val model = Some(fullAssetsModel.copy(assetsAndAssetsTransferQuestion = None))
+        val model = Some(fullAssetsModel.copy(sectionQuestion = None))
         val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(assetsModel = model)))
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
           EmploymentBenefitsType)(cya => commonAssetsModelRedirects(cya, taxYear, employmentId)) { _ => result }
@@ -1594,7 +1594,7 @@ class RedirectServiceSpec extends UnitTest {
       }
       "it's a new submission and attempted to view the 'Assets and assets transfer' section" +
         "but the Assets and assets transfer question is false" in {
-        val model = Some(fullAssetsModel.copy(assetsAndAssetsTransferQuestion = Some(false)))
+        val model = Some(fullAssetsModel.copy(sectionQuestion = Some(false)))
         val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(assetsModel = model)))
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = false, employment = employment)),
           EmploymentBenefitsType)(cya => commonAssetsModelRedirects(cya, taxYear, employmentId)) { _ => result }
@@ -1604,7 +1604,7 @@ class RedirectServiceSpec extends UnitTest {
       }
       "it's a prior submission and attempted to view the 'Assets and assets transfer' section" +
         "but the Assets and assets transfer question is false" in {
-        val model = Some(fullAssetsModel.copy(assetsAndAssetsTransferQuestion = Some(false)))
+        val model = Some(fullAssetsModel.copy(sectionQuestion = Some(false)))
         val employment = employmentCYA.copy(employmentBenefits = employmentCYA.employmentBenefits.map(_.copy(assetsModel = model)))
         val response = redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(employmentUserData.copy(hasPriorBenefits = true, employment = employment)),
           EmploymentBenefitsType)(cya => commonAssetsModelRedirects(cya, taxYear, employmentId)) { _ => result }

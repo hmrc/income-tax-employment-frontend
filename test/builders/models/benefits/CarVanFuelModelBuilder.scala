@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-package builders.models.employment
+package builders.models.benefits
 
-import models.employment.AllEmploymentData
+import models.benefits.CarVanFuelModel
 
-object AllEmploymentDataBuilder {
+object CarVanFuelModelBuilder {
 
-  val anAllEmploymentData: AllEmploymentData = AllEmploymentData(
-    hmrcEmploymentData = Seq.empty,
-    hmrcExpenses = None,
-    customerEmploymentData = Seq.empty,
-    customerExpenses = None
+  val aCarVanFuelModel: CarVanFuelModel = CarVanFuelModel(
+    carVanFuelQuestion = Some(true),
+    carQuestion = Some(true),
+    car = Some(100.00),
+    carFuelQuestion = Some(true),
+    carFuel = Some(200.00),
+    vanQuestion = Some(true),
+    van = Some(300.00),
+    vanFuelQuestion = Some(true),
+    vanFuel = Some(400.00),
+    mileageQuestion = Some(true),
+    mileage = Some(400.00)
   )
 }

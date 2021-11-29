@@ -673,7 +673,7 @@ object RedirectService extends Logging {
 
   //ALL assets pages
   def commonAssetsModelRedirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-    val sectionQuestion = cya.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assetsAndAssetsTransferQuestion))
+    val sectionQuestion = cya.employmentBenefits.flatMap(_.assetsModel.flatMap(_.sectionQuestion))
 
     assetsRedirects(cya, taxYear, employmentId) ++
       Seq(

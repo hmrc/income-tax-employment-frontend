@@ -204,7 +204,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
   private def encryptAssetsModel(assetsModel: AssetsModel)
                                 (implicit textAndKey: TextAndKey): EncryptedAssetsModel = {
     EncryptedAssetsModel(
-      assetsAndAssetsTransferQuestion = assetsModel.assetsAndAssetsTransferQuestion.map(secureGCMCipher.encrypt),
+      sectionQuestion = assetsModel.sectionQuestion.map(secureGCMCipher.encrypt),
       assetsQuestion = assetsModel.assetsQuestion.map(secureGCMCipher.encrypt),
       assets = assetsModel.assets.map(secureGCMCipher.encrypt),
       assetTransferQuestion = assetsModel.assetTransferQuestion.map(secureGCMCipher.encrypt),
@@ -233,7 +233,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
   private def decryptAssetsModel(assetsModel: EncryptedAssetsModel)
                                 (implicit textAndKey: TextAndKey): AssetsModel = {
     AssetsModel(
-      assetsAndAssetsTransferQuestion = assetsModel.assetsAndAssetsTransferQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
+      sectionQuestion = assetsModel.sectionQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       assetsQuestion = assetsModel.assetsQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),
       assets = assetsModel.assets.map(x => secureGCMCipher.decrypt[BigDecimal](x.value, x.nonce)),
       assetTransferQuestion = assetsModel.assetTransferQuestion.map(x => secureGCMCipher.decrypt[Boolean](x.value, x.nonce)),

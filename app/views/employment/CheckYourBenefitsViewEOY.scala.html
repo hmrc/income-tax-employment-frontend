@@ -20,6 +20,7 @@
 @import utils.ViewUtils.summaryListRow
 @import models.benefits.BenefitsViewModel
 @import utils.ViewUtils.bigDecimalCurrency
+@import controllers.benefits.assets.routes._
 
 @this(
     layout: Layout,
@@ -291,7 +292,7 @@
 
     <h2 class="govuk-label--m">@messages("checkYourBenefits.assetsHeader")</h2>
     @{
-        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.assetsSubheading", benefits.assetsDetailsPopulated))
+        val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.assetsSubheading", benefits.assetsModel.flatMap(_.sectionQuestion).getOrElse(false), AssetsOrAssetTransfersBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
         if(benefits.assetsDetailsPopulated){
             Seq(

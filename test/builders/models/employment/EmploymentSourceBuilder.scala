@@ -20,7 +20,7 @@ import models.employment.EmploymentSource
 
 object EmploymentSourceBuilder {
 
-  def anEmploymentSource: EmploymentSource = EmploymentSource(
+  val anEmploymentSource: EmploymentSource = EmploymentSource(
     employmentId = "default-employment-id",
     employerName = "default -employer-name",
     employerRef = Some("default-employer-ref"),

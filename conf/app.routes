@@ -225,6 +225,9 @@ POST       /:taxYear/benefits/assets-available-for-use-amount               cont
 GET        /:taxYear/expenses/claim-employment-expenses                     controllers.expenses.EmploymentExpensesController.show(taxYear: Int)
 POST       /:taxYear/expenses/claim-employment-expenses                     controllers.expenses.EmploymentExpensesController.submit(taxYear: Int)
 
+GET        /:taxYear/benefits/assets                                        controllers.benefits.assets.AssetsOrAssetTransfersBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/assets                                        controllers.benefits.assets.AssetsOrAssetTransfersBenefitsController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/expenses/business-travel-and-overnight-expenses        controllers.expenses.BusinessTravelOvernightExpensesController.show(taxYear: Int)
 POST       /:taxYear/expenses/business-travel-and-overnight-expenses        controllers.expenses.BusinessTravelOvernightExpensesController.submit(taxYear: Int)
 
