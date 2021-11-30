@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package builders.models.employment
+package builders.models.benefits
 
-import models.employment.AllEmploymentData
+import models.benefits.AccommodationRelocationModel
 
-object AllEmploymentDataBuilder {
+object AccommodationRelocationModelBuilder {
 
-  val anAllEmploymentData: AllEmploymentData = AllEmploymentData(
-    hmrcEmploymentData = Seq.empty,
-    hmrcExpenses = None,
-    customerEmploymentData = Seq.empty,
-    customerExpenses = None
+  val aAccommodationRelocationModel: AccommodationRelocationModel = AccommodationRelocationModel(
+    sectionQuestion = Some(true),
+    accommodationQuestion = Some(true),
+    accommodation = Some(100.00),
+    qualifyingRelocationExpensesQuestion = Some(true),
+    qualifyingRelocationExpenses = Some(200.00),
+    nonQualifyingRelocationExpensesQuestion = Some(true),
+    nonQualifyingRelocationExpenses = Some(300.00)
   )
 }

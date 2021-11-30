@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package builders.models.employment
+package builders.models.benefits
 
-import models.employment.AllEmploymentData
+import models.benefits.AssetsModel
 
-object AllEmploymentDataBuilder {
+object AssetsModelBuilder {
 
-  val anAllEmploymentData: AllEmploymentData = AllEmploymentData(
-    hmrcEmploymentData = Seq.empty,
-    hmrcExpenses = None,
-    customerEmploymentData = Seq.empty,
-    customerExpenses = None
+  val anAssetsModel: AssetsModel = AssetsModel(
+    sectionQuestion = Some(true),
+    assetsQuestion = Some(true),
+    assets = Some(100),
+    assetTransferQuestion = Some(true),
+    assetTransfer = Some(200)
   )
 }

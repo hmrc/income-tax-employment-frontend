@@ -25,7 +25,7 @@ class AssetsModelSpec extends UnitTest {
   private val employmentId = "id"
   private val taxYear = 2022
   private val model = AssetsModel(
-    assetsAndAssetsTransferQuestion = Some(true),
+    sectionQuestion = Some(true),
     assetsQuestion = Some(true),
     assets = Some(55.55),
     assetTransferQuestion = Some(true),
@@ -34,11 +34,11 @@ class AssetsModelSpec extends UnitTest {
 
   "isFinished" should {
     "return assetsAndAssetsTransfer yes no page" in {
-      model.copy(assetsAndAssetsTransferQuestion = None).isFinished(taxYear, employmentId) shouldBe
+      model.copy(sectionQuestion = None).isFinished(taxYear, employmentId) shouldBe
         Some(CheckYourBenefitsController.show(taxYear, employmentId))
     }
     "return none when section is finished" in {
-      model.copy(assetsAndAssetsTransferQuestion = Some(false)).isFinished(taxYear, "employmentId") shouldBe None
+      model.copy(sectionQuestion = Some(false)).isFinished(taxYear, "employmentId") shouldBe None
       model.isFinished(taxYear, "employmentId") shouldBe None
     }
   }
@@ -85,7 +85,7 @@ class AssetsModelSpec extends UnitTest {
 
   "clear" should {
     "clear the model" in {
-      AssetsModel.clear shouldBe AssetsModel(assetsAndAssetsTransferQuestion = Some(false))
+      AssetsModel.clear shouldBe AssetsModel(sectionQuestion = Some(false))
     }
   }
 }

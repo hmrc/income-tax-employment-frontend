@@ -55,7 +55,7 @@ class UtilitiesOrGeneralServicesBenefitsController @Inject()(implicit val cc: Me
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-          cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.utilitiesAndServicesQuestion)) match {
+          cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) match {
             case Some(questionResult) => Future.successful(Ok(utilitiesOrGeneralServicesBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
             case None => Future.successful(Ok(utilitiesOrGeneralServicesBenefitsView(yesNoForm, taxYear, employmentId)))
           }
@@ -79,8 +79,8 @@ class UtilitiesOrGeneralServicesBenefitsController @Inject()(implicit val cc: Me
                 case Some(_) if !yesNo =>
                   cya.copy(employmentBenefits = benefits.map(_.copy(utilitiesAndServicesModel = Some(UtilitiesAndServicesModel.clear))))
                 case utilitiesAndServices => cya.copy(employmentBenefits = benefits.map(_.copy(utilitiesAndServicesModel = Some(utilitiesAndServices
-                  .map(_.copy(utilitiesAndServicesQuestion = Some(yesNo)))
-                  .getOrElse(UtilitiesAndServicesModel(utilitiesAndServicesQuestion = Some(yesNo)))
+                  .map(_.copy(sectionQuestion = Some(yesNo)))
+                  .getOrElse(UtilitiesAndServicesModel(sectionQuestion = Some(yesNo)))
                 ))))
               }
 

@@ -52,7 +52,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
   override def fullCarVanFuelModel: CarVanFuelModel =
     CarVanFuelModel(
-      carVanFuelQuestion = Some(true),
+      sectionQuestion = Some(true),
       carQuestion = Some(true),
       car = Some(100.00),
       carFuelQuestion = Some(true),

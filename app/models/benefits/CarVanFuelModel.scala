@@ -21,24 +21,22 @@ import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue
 
-case class CarVanFuelModel(
-                            carVanFuelQuestion: Option[Boolean] = None,
-                            carQuestion: Option[Boolean] = None,
-                            car: Option[BigDecimal] = None,
-                            carFuelQuestion: Option[Boolean] = None,
-                            carFuel: Option[BigDecimal] = None,
-                            vanQuestion: Option[Boolean] = None,
-                            van: Option[BigDecimal] = None,
-                            vanFuelQuestion: Option[Boolean] = None,
-                            vanFuel: Option[BigDecimal] = None,
-                            mileageQuestion: Option[Boolean] = None,
-                            mileage: Option[BigDecimal] = None
-                          ){
-  def isFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
-
-    carVanFuelQuestion match {
+case class CarVanFuelModel(sectionQuestion: Option[Boolean] = None,
+                           carQuestion: Option[Boolean] = None,
+                           car: Option[BigDecimal] = None,
+                           carFuelQuestion: Option[Boolean] = None,
+                           carFuel: Option[BigDecimal] = None,
+                           vanQuestion: Option[Boolean] = None,
+                           van: Option[BigDecimal] = None,
+                           vanFuelQuestion: Option[Boolean] = None,
+                           vanFuel: Option[BigDecimal] = None,
+                           mileageQuestion: Option[Boolean] = None,
+                           mileage: Option[BigDecimal] = None
+                          ) {
+  def isFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
+    sectionQuestion match {
       case Some(true) =>
-        (fullCarSectionFinished,fullVanSectionFinished,mileageSectionFinished) match {
+        (fullCarSectionFinished, fullVanSectionFinished, mileageSectionFinished) match {
           case (call@Some(_), _, _) => call
           case (_, call@Some(_), _) => call
           case (_, _, call@Some(_)) => call
@@ -49,7 +47,7 @@ case class CarVanFuelModel(
     }
   }
 
-  def fullCarSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
+  def fullCarSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     (carSectionFinished, carFuelSectionFinished) match {
       case (call@Some(_), _) => call
       case (_, call@Some(_)) => call
@@ -57,9 +55,9 @@ case class CarVanFuelModel(
     }
   }
 
-  def carSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
+  def carSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     carQuestion match {
-      case Some(true) => if(car.isDefined) None else Some(CompanyCarBenefitsAmountController.show(taxYear, employmentId))
+      case Some(true) => if (car.isDefined) None else Some(CompanyCarBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(CompanyCarBenefitsController.show(taxYear, employmentId))
     }
@@ -67,13 +65,13 @@ case class CarVanFuelModel(
 
   def carFuelSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     carFuelQuestion match {
-      case Some(true) => if(carFuel.isDefined) None else Some(CarFuelBenefitsAmountController.show(taxYear, employmentId))
+      case Some(true) => if (carFuel.isDefined) None else Some(CarFuelBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
-      case None => if(carQuestion.contains(false)) None else Some(CompanyCarFuelBenefitsController.show(taxYear, employmentId))
+      case None => if (carQuestion.contains(false)) None else Some(CompanyCarFuelBenefitsController.show(taxYear, employmentId))
     }
   }
 
-  def fullVanSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
+  def fullVanSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     (vanSectionFinished, vanFuelSectionFinished) match {
       case (call@Some(_), _) => call
       case (_, call@Some(_)) => call
@@ -81,9 +79,9 @@ case class CarVanFuelModel(
     }
   }
 
-  def vanSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] ={
+  def vanSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     vanQuestion match {
-      case Some(true) => if(van.isDefined) None else Some(CompanyVanBenefitsAmountController.show(taxYear, employmentId))
+      case Some(true) => if (van.isDefined) None else Some(CompanyVanBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(CompanyVanBenefitsController.show(taxYear, employmentId))
     }
@@ -91,15 +89,15 @@ case class CarVanFuelModel(
 
   def vanFuelSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     vanFuelQuestion match {
-      case Some(true) => if(vanFuel.isDefined) None else Some(CompanyVanFuelBenefitsAmountController.show(taxYear, employmentId))
+      case Some(true) => if (vanFuel.isDefined) None else Some(CompanyVanFuelBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
-      case None => if(vanQuestion.contains(false)) None else Some(CompanyVanFuelBenefitsController.show(taxYear, employmentId))
+      case None => if (vanQuestion.contains(false)) None else Some(CompanyVanFuelBenefitsController.show(taxYear, employmentId))
     }
   }
 
   def mileageSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     mileageQuestion match {
-      case Some(true) => if(mileage.isDefined) None else Some(MileageBenefitAmountController.show(taxYear,employmentId))
+      case Some(true) => if (mileage.isDefined) None else Some(MileageBenefitAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId))
     }
@@ -109,10 +107,10 @@ case class CarVanFuelModel(
 object CarVanFuelModel {
   implicit val formats: OFormat[CarVanFuelModel] = Json.format[CarVanFuelModel]
 
-  def clear: CarVanFuelModel = CarVanFuelModel(carVanFuelQuestion = Some(false))
+  def clear: CarVanFuelModel = CarVanFuelModel(sectionQuestion = Some(false))
 }
 
-case class EncryptedCarVanFuelModel(carVanFuelQuestion: Option[EncryptedValue] = None,
+case class EncryptedCarVanFuelModel(sectionQuestion: Option[EncryptedValue] = None,
                                     carQuestion: Option[EncryptedValue] = None,
                                     car: Option[EncryptedValue] = None,
                                     carFuelQuestion: Option[EncryptedValue] = None,

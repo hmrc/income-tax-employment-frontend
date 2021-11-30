@@ -226,7 +226,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(emptyTravelOrEntertainmentModel.copy(travelEntertainmentQuestion = None))))), userRequest)
+          Some(benefits(emptyTravelOrEntertainmentModel.copy(sectionQuestion = None))))), userRequest)
         urlGet(entertainingQuestionUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       s"has a SEE_OTHER($SEE_OTHER) status" in {

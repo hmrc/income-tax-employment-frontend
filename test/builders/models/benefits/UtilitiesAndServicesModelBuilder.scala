@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-package builders.models.employment
+package builders.models.benefits
 
-import models.employment.AllEmploymentData
+import models.benefits.UtilitiesAndServicesModel
 
-object AllEmploymentDataBuilder {
+object UtilitiesAndServicesModelBuilder {
 
-  val anAllEmploymentData: AllEmploymentData = AllEmploymentData(
-    hmrcEmploymentData = Seq.empty,
-    hmrcExpenses = None,
-    customerEmploymentData = Seq.empty,
-    customerExpenses = None
+  val aUtilitiesAndServicesModel: UtilitiesAndServicesModel = UtilitiesAndServicesModel(
+    sectionQuestion = Some(true),
+    telephoneQuestion = Some(true),
+    telephone = Some(100.00),
+    employerProvidedServicesQuestion = Some(true),
+    employerProvidedServices = Some(200.00),
+    employerProvidedProfessionalSubscriptionsQuestion = Some(true),
+    employerProvidedProfessionalSubscriptions = Some(300.00),
+    serviceQuestion = Some(true),
+    service = Some(400.00)
   )
 }

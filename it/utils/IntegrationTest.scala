@@ -350,7 +350,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   def fullCarVanFuelModel: CarVanFuelModel =
     CarVanFuelModel(
-      carVanFuelQuestion = Some(true),
+      sectionQuestion = Some(true),
       carQuestion = Some(true),
       car = Some(100.00),
       carFuelQuestion = Some(true),
@@ -365,12 +365,12 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   def emptyCarVanFuelModel: CarVanFuelModel =
     CarVanFuelModel(
-      carVanFuelQuestion = Some(false)
+      sectionQuestion = Some(false)
     )
 
   def fullAccommodationRelocationModel: AccommodationRelocationModel =
     AccommodationRelocationModel(
-      accommodationRelocationQuestion = Some(true),
+      sectionQuestion = Some(true),
       accommodationQuestion = Some(true),
       accommodation = Some(100.00),
       qualifyingRelocationExpensesQuestion = Some(true),
@@ -381,12 +381,12 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   def emptyAccommodationRelocationModel: AccommodationRelocationModel =
     AccommodationRelocationModel(
-      accommodationRelocationQuestion = Some(false)
+      sectionQuestion = Some(false)
     )
 
   def fullTravelOrEntertainmentModel: TravelEntertainmentModel =
     TravelEntertainmentModel(
-      travelEntertainmentQuestion = Some(true),
+      sectionQuestion = Some(true),
       travelAndSubsistenceQuestion = Some(true),
       travelAndSubsistence = Some(100.00),
       personalIncidentalExpensesQuestion = Some(true),
@@ -397,12 +397,12 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   def emptyTravelOrEntertainmentModel: TravelEntertainmentModel =
     TravelEntertainmentModel(
-      travelEntertainmentQuestion = Some(false)
+      sectionQuestion = Some(false)
     )
 
   def fullUtilitiesAndServicesModel: UtilitiesAndServicesModel =
     UtilitiesAndServicesModel(
-      utilitiesAndServicesQuestion = Some(true),
+      sectionQuestion = Some(true),
       telephoneQuestion = Some(true),
       telephone = Some(100.00),
       employerProvidedServicesQuestion = Some(true),
@@ -414,11 +414,11 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     )
 
   def emptyUtilitiesAndServicesModel: UtilitiesAndServicesModel =
-    UtilitiesAndServicesModel(utilitiesAndServicesQuestion = Some(false))
+    UtilitiesAndServicesModel(sectionQuestion = Some(false))
 
   def fullMedicalChildcareEducationModel: MedicalChildcareEducationModel =
     MedicalChildcareEducationModel(
-      medicalChildcareEducationQuestion = Some(true),
+      sectionQuestion = Some(true),
       medicalInsuranceQuestion = Some(true),
       medicalInsurance = Some(100.00),
       nurseryPlacesQuestion = Some(true),
@@ -430,7 +430,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     )
 
   def fullIncomeTaxAndCostsModel: IncomeTaxAndCostsModel = IncomeTaxAndCostsModel(
-    incomeTaxOrCostsQuestion = Some(true),
+    sectionQuestion = Some(true),
     incomeTaxPaidByDirectorQuestion = Some(true),
     incomeTaxPaidByDirector = Some(255.00),
     paymentsOnEmployeesBehalfQuestion = Some(true),
@@ -438,11 +438,11 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   )
 
   def emptyMedicalChildcareEducationModel: MedicalChildcareEducationModel =
-    MedicalChildcareEducationModel(medicalChildcareEducationQuestion = Some(false))
+    MedicalChildcareEducationModel(sectionQuestion = Some(false))
 
   def fullIncomeTaxOrIncurredCostsModel: IncomeTaxAndCostsModel =
     IncomeTaxAndCostsModel(
-      incomeTaxOrCostsQuestion = Some(true),
+      sectionQuestion = Some(true),
       incomeTaxPaidByDirectorQuestion = Some(true),
       incomeTaxPaidByDirector = Some(100.00),
       paymentsOnEmployeesBehalfQuestion = Some(true),
@@ -450,11 +450,11 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     )
 
   def emptyIncomeTaxOrIncurredCostsModel: IncomeTaxAndCostsModel =
-    IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion = Some(false))
+    IncomeTaxAndCostsModel(sectionQuestion = Some(false))
 
   def fullReimbursedCostsVouchersAndNonCashModel: ReimbursedCostsVouchersAndNonCashModel =
     ReimbursedCostsVouchersAndNonCashModel(
-      reimbursedCostsVouchersAndNonCashQuestion = Some(true),
+      sectionQuestion = Some(true),
       expensesQuestion = Some(true),
       expenses = Some(100.00),
       taxableExpensesQuestion = Some(true),
@@ -468,11 +468,11 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     )
 
   def emptyReimbursedCostsVouchersAndNonCashModel: ReimbursedCostsVouchersAndNonCashModel =
-    ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonCashQuestion = Some(false))
+    ReimbursedCostsVouchersAndNonCashModel(sectionQuestion = Some(false))
 
   def fullAssetsModel: AssetsModel =
     AssetsModel(
-      assetsAndAssetsTransferQuestion = Some(true),
+      sectionQuestion = Some(true),
       assetsQuestion = Some(true),
       assets = Some(100.00),
       assetTransferQuestion = Some(true),
@@ -480,7 +480,7 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     )
 
   def emptyAssetsModel: AssetsModel =
-    AssetsModel(assetsAndAssetsTransferQuestion = Some(false))
+    AssetsModel(sectionQuestion = Some(false))
 
   def fullExpensesCYAModel: ExpensesCYAModel =
     ExpensesCYAModel(ExpensesViewModel(

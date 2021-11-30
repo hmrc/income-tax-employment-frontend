@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package builders.models.employment
+package builders.models.benefits
 
-import models.employment.AllEmploymentData
+import models.benefits.IncomeTaxAndCostsModel
 
-object AllEmploymentDataBuilder {
+object IncomeTaxAndCostsModelBuilder {
 
-  val anAllEmploymentData: AllEmploymentData = AllEmploymentData(
-    hmrcEmploymentData = Seq.empty,
-    hmrcExpenses = None,
-    customerEmploymentData = Seq.empty,
-    customerExpenses = None
+  val aIncomeTaxAndCostsModel: IncomeTaxAndCostsModel = IncomeTaxAndCostsModel(
+    sectionQuestion = Some(true),
+    incomeTaxPaidByDirectorQuestion = Some(true),
+    incomeTaxPaidByDirector = Some(255.00),
+    paymentsOnEmployeesBehalfQuestion = Some(true),
+    paymentsOnEmployeesBehalf = Some(255.00)
   )
 }

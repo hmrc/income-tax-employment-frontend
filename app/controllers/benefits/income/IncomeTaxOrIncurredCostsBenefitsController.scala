@@ -61,7 +61,7 @@ class IncomeTaxOrIncurredCostsBenefitsController @Inject()(implicit val cc: Mess
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
-          cya.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.incomeTaxOrCostsQuestion)) match {
+          cya.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.sectionQuestion)) match {
             case Some(questionResult) => Future.successful(Ok(incomeTaxOrIncurredCostsBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
             case None => Future.successful(Ok(incomeTaxOrIncurredCostsBenefitsView(yesNoForm, taxYear, employmentId)))
           }
@@ -88,13 +88,13 @@ class IncomeTaxOrIncurredCostsBenefitsController @Inject()(implicit val cc: Mess
                 incomeTaxOrCosts match {
                   case Some(incomeTaxOrCosts) if yesNo =>
                     cya.copy(employmentBenefits = benefits.map(_.copy(incomeTaxAndCostsModel =
-                      Some(incomeTaxOrCosts.copy(incomeTaxOrCostsQuestion = Some(true))))))
+                      Some(incomeTaxOrCosts.copy(sectionQuestion = Some(true))))))
                   case Some(_) =>
                     cya.copy(employmentBenefits = benefits.map(_.copy(incomeTaxAndCostsModel =
                       Some(IncomeTaxAndCostsModel.clear))))
                   case _ =>
                     cya.copy(employmentBenefits = benefits.map(_.copy(incomeTaxAndCostsModel =
-                      Some(IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion = Some(yesNo))))))
+                      Some(IncomeTaxAndCostsModel(sectionQuestion = Some(yesNo))))))
                 }
               }
 

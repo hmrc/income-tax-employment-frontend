@@ -134,23 +134,23 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
   val benefitsWithNoBenefitsReceived: Option[BenefitsViewModel] = Some(BenefitsViewModel(isUsingCustomerData = true))
 
   val benefitsWithFalseCarVanFuelQuestion: Option[BenefitsViewModel] = Some(BenefitsViewModel(isBenefitsReceived = true,
-    carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(false))),
+    carVanFuelModel = Some(CarVanFuelModel(sectionQuestion = Some(false))),
     isUsingCustomerData = true))
 
   val benefitsWithFalseCarFuelQuestion: Option[BenefitsViewModel] = Some(BenefitsViewModel(isBenefitsReceived = true,
-    carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(true), carFuelQuestion = Some(false))),
+    carVanFuelModel = Some(CarVanFuelModel(sectionQuestion = Some(true), carFuelQuestion = Some(false))),
     isUsingCustomerData = true))
 
   val benefitsWithNoCarFuelQuestion: Option[BenefitsViewModel] = Some(BenefitsViewModel(isBenefitsReceived = true,
-    carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(true))),
+    carVanFuelModel = Some(CarVanFuelModel(sectionQuestion = Some(true))),
     isUsingCustomerData = true))
 
   val benefitsWithNoCarFuel: Option[BenefitsViewModel] = Some(BenefitsViewModel(isBenefitsReceived = true,
-    carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(true), carFuelQuestion = Some(true))),
+    carVanFuelModel = Some(CarVanFuelModel(sectionQuestion = Some(true), carFuelQuestion = Some(true))),
     isUsingCustomerData = true))
 
   val benefitsWithCarFuel: Option[BenefitsViewModel] = Some(BenefitsViewModel(isBenefitsReceived = true,
-    carVanFuelModel = Some(CarVanFuelModel(carVanFuelQuestion = Some(true), carFuelQuestion = Some(true),
+    carVanFuelModel = Some(CarVanFuelModel(sectionQuestion = Some(true), carFuelQuestion = Some(true),
       carFuel = carFuelAmount)), isUsingCustomerData = true))
 
   def cya(isPriorSubmission: Boolean = true, benefits: Option[BenefitsViewModel]):

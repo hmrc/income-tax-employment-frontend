@@ -22,14 +22,14 @@ import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue
 
-case class AssetsModel(assetsAndAssetsTransferQuestion: Option[Boolean] = None,
+case class AssetsModel(sectionQuestion: Option[Boolean] = None,
                        assetsQuestion: Option[Boolean] = None,
                        assets: Option[BigDecimal] = None,
                        assetTransferQuestion: Option[Boolean] = None,
                        assetTransfer: Option[BigDecimal] = None) {
 
   def isFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
-    assetsAndAssetsTransferQuestion match {
+    sectionQuestion match {
       case Some(true) =>
         (assetsSectionFinished, assetTransferSectionFinished) match {
           case (call@Some(_), _) => call
@@ -61,10 +61,10 @@ case class AssetsModel(assetsAndAssetsTransferQuestion: Option[Boolean] = None,
 object AssetsModel {
   implicit val formats: OFormat[AssetsModel] = Json.format[AssetsModel]
 
-  def clear: AssetsModel = AssetsModel(assetsAndAssetsTransferQuestion = Some(false))
+  def clear: AssetsModel = AssetsModel(sectionQuestion = Some(false))
 }
 
-case class EncryptedAssetsModel(assetsAndAssetsTransferQuestion: Option[EncryptedValue] = None,
+case class EncryptedAssetsModel(sectionQuestion: Option[EncryptedValue] = None,
                                 assetsQuestion: Option[EncryptedValue] = None,
                                 assets: Option[EncryptedValue] = None,
                                 assetTransferQuestion: Option[EncryptedValue] = None,

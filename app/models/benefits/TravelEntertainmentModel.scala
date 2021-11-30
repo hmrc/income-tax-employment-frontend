@@ -22,14 +22,13 @@ import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue
 
-case class TravelEntertainmentModel(
-                                     travelEntertainmentQuestion: Option[Boolean] = None,
-                                     travelAndSubsistenceQuestion: Option[Boolean] = None,
-                                     travelAndSubsistence: Option[BigDecimal] = None,
-                                     personalIncidentalExpensesQuestion: Option[Boolean] = None,
-                                     personalIncidentalExpenses: Option[BigDecimal] = None,
-                                     entertainingQuestion: Option[Boolean] = None,
-                                     entertaining: Option[BigDecimal] = None
+case class TravelEntertainmentModel(sectionQuestion: Option[Boolean] = None,
+                                    travelAndSubsistenceQuestion: Option[Boolean] = None,
+                                    travelAndSubsistence: Option[BigDecimal] = None,
+                                    personalIncidentalExpensesQuestion: Option[Boolean] = None,
+                                    personalIncidentalExpenses: Option[BigDecimal] = None,
+                                    entertainingQuestion: Option[Boolean] = None,
+                                    entertaining: Option[BigDecimal] = None
                                    ) {
 
   def travelSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
@@ -59,7 +58,7 @@ case class TravelEntertainmentModel(
   //scalastyle:on
 
   def isFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
-    travelEntertainmentQuestion match {
+    sectionQuestion match {
       case Some(true) =>
         (travelSectionFinished, personalIncidentalSectionFinished, entertainingSectionFinished) match {
           case (call@Some(_), _, _) => call
@@ -76,10 +75,10 @@ case class TravelEntertainmentModel(
 object TravelEntertainmentModel {
   implicit val formats: OFormat[TravelEntertainmentModel] = Json.format[TravelEntertainmentModel]
 
-  def clear: TravelEntertainmentModel = TravelEntertainmentModel(travelEntertainmentQuestion = Some(false))
+  def clear: TravelEntertainmentModel = TravelEntertainmentModel(sectionQuestion = Some(false))
 }
 
-case class EncryptedTravelEntertainmentModel(travelEntertainmentQuestion: Option[EncryptedValue] = None,
+case class EncryptedTravelEntertainmentModel(sectionQuestion: Option[EncryptedValue] = None,
                                              travelAndSubsistenceQuestion: Option[EncryptedValue] = None,
                                              travelAndSubsistence: Option[EncryptedValue] = None,
                                              personalIncidentalExpensesQuestion: Option[EncryptedValue] = None,

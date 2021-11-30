@@ -453,7 +453,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(EntertainingBenefitsController.show(taxYearEOY, employmentId).url)
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe Some(newAmount)
       }
@@ -479,7 +479,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(EntertainingBenefitsController.show(taxYearEOY, employmentId).url)
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe Some(newAmount)
       }

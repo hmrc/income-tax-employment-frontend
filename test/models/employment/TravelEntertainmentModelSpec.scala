@@ -106,20 +106,20 @@ class TravelEntertainmentModelSpec extends UnitTest {
 
   "isFinished" should {
     "return result of travelSectionFinished when travelEntertainmentQuestion is true and travelAndSubsistenceQuestion is not None" in {
-      val underTest = TravelEntertainmentModel(travelEntertainmentQuestion = Some(true), travelAndSubsistenceQuestion = None)
+      val underTest = TravelEntertainmentModel(sectionQuestion = Some(true), travelAndSubsistenceQuestion = None)
 
       underTest.isFinished(taxYear, employmentId) shouldBe underTest.travelSectionFinished(taxYear, employmentId)
     }
 
     "return result of personalIncidentalSectionFinished when travelEntertainmentQuestion is true and travelAndSubsistenceQuestion is false" in {
-      val underTest = TravelEntertainmentModel(travelEntertainmentQuestion = Some(true), travelAndSubsistenceQuestion = Some(false))
+      val underTest = TravelEntertainmentModel(sectionQuestion = Some(true), travelAndSubsistenceQuestion = Some(false))
 
       underTest.isFinished(taxYear, employmentId) shouldBe underTest.personalIncidentalSectionFinished(taxYear, employmentId)
     }
 
     "return result of entertainingSectionFinished when travelEntertainmentQuestion is true and " +
       "travelAndSubsistenceQuestion is false and personalIncidentalExpensesQuestion is false" in {
-      val underTest = TravelEntertainmentModel(travelEntertainmentQuestion = Some(true),
+      val underTest = TravelEntertainmentModel(sectionQuestion = Some(true),
         travelAndSubsistenceQuestion = Some(false),
         personalIncidentalExpensesQuestion = Some(false))
 
@@ -128,7 +128,7 @@ class TravelEntertainmentModelSpec extends UnitTest {
 
     "return None when travelEntertainmentQuestion is true and travelAndSubsistenceQuestion, " +
       "personalIncidentalExpensesQuestion, entertainingQuestion are false" in {
-      val underTest = TravelEntertainmentModel(travelEntertainmentQuestion = Some(true),
+      val underTest = TravelEntertainmentModel(sectionQuestion = Some(true),
         travelAndSubsistenceQuestion = Some(false),
         personalIncidentalExpensesQuestion = Some(false),
         entertainingQuestion = Some(false))
@@ -137,13 +137,13 @@ class TravelEntertainmentModelSpec extends UnitTest {
     }
 
     "return None when travelEntertainmentQuestion is false" in {
-      val underTest = TravelEntertainmentModel(travelEntertainmentQuestion = Some(false))
+      val underTest = TravelEntertainmentModel(sectionQuestion = Some(false))
 
       underTest.isFinished(taxYear, employmentId) shouldBe None
     }
 
     "return call to TravelOrEntertainmentBenefitsController when travelEntertainmentQuestion is None" in {
-      val underTest = TravelEntertainmentModel(travelEntertainmentQuestion = None)
+      val underTest = TravelEntertainmentModel(sectionQuestion = None)
 
       underTest.isFinished(taxYear, employmentId) shouldBe Some(TravelOrEntertainmentBenefitsController.show(taxYear, employmentId))
     }

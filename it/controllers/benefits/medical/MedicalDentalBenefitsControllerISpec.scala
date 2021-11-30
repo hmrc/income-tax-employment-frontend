@@ -251,7 +251,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-            benefits = Some(benefits(fullMedicalChildcareEducationModel.copy(medicalChildcareEducationQuestion = Some(false)))))), userRequest)
+            benefits = Some(benefits(fullMedicalChildcareEducationModel.copy(sectionQuestion = Some(false)))))), userRequest)
           urlGet(medicalDentalQuestionPageUrl(taxYearEOY), user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -267,7 +267,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-            benefits = Some(benefits(fullMedicalChildcareEducationModel.copy(medicalChildcareEducationQuestion = None))))), userRequest)
+            benefits = Some(benefits(fullMedicalChildcareEducationModel.copy(sectionQuestion = None))))), userRequest)
           urlGet(medicalDentalQuestionPageUrl(taxYearEOY), user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -386,7 +386,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(ChildcareBenefitsController.show(taxYearEOY, employmentId).url)
           lazy val cyModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) shouldBe Some(true)
+          cyModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
           cyModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion)) shouldBe Some(false)
           cyModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsurance)) shouldBe None
         }
@@ -410,7 +410,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(MedicalOrDentalBenefitsAmountController.show(taxYearEOY, employmentId).url)
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) shouldBe Some(true)
+          cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
           cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion)) shouldBe Some(true)
           cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsurance)) shouldBe Some(100.00)
         }
@@ -461,7 +461,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-            benefits = Some(benefits(fullMedicalChildcareEducationModel.copy(medicalChildcareEducationQuestion = Some(false)))))), userRequest)
+            benefits = Some(benefits(fullMedicalChildcareEducationModel.copy(sectionQuestion = Some(false)))))), userRequest)
           urlPost(medicalDentalQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -480,7 +480,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-            benefits = Some(benefits(fullMedicalChildcareEducationModel.copy(medicalChildcareEducationQuestion = None))))), userRequest)
+            benefits = Some(benefits(fullMedicalChildcareEducationModel.copy(sectionQuestion = None))))), userRequest)
           urlPost(medicalDentalQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }

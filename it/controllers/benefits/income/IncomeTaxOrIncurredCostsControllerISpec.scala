@@ -325,7 +325,7 @@ class IncomeTaxOrIncurredCostsControllerISpec extends IntegrationTest with ViewH
 
         "update the income tax or incurred costs question to true" in {
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.incomeTaxOrCostsQuestion) shouldBe Some(true)
+          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.sectionQuestion) shouldBe Some(true)
         }
       }
 
@@ -346,7 +346,7 @@ class IncomeTaxOrIncurredCostsControllerISpec extends IntegrationTest with ViewH
 
         "updates the Income tax or costs question to false and wipes the other values" in {
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.incomeTaxOrCostsQuestion) shouldBe Some(false)
+          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.sectionQuestion) shouldBe Some(false)
           cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.incomeTaxPaidByDirectorQuestion) shouldBe None
           cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.incomeTaxPaidByDirector) shouldBe None
           cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.paymentsOnEmployeesBehalfQuestion) shouldBe None
@@ -372,7 +372,7 @@ class IncomeTaxOrIncurredCostsControllerISpec extends IntegrationTest with ViewH
 
         "creates a new incomeTaxAndCostsModel with the incomeTaxOrCostsQuestion as true" in {
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.incomeTaxOrCostsQuestion) shouldBe Some(true)
+          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.sectionQuestion) shouldBe Some(true)
           cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.incomeTaxPaidByDirectorQuestion) shouldBe None
           cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.incomeTaxPaidByDirector) shouldBe None
           cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.paymentsOnEmployeesBehalfQuestion) shouldBe None

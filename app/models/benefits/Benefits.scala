@@ -152,7 +152,7 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
       cyaBenefits.flatMap(_.medicalChildcareEducationModel)
     } else {
       Some(MedicalChildcareEducationModel(
-        medicalChildcareEducationQuestion = Some(medicalDetailsPopulated),
+        sectionQuestion = Some(medicalDetailsPopulated),
         medicalInsuranceQuestion = Some(medicalInsurance.isDefined),
         medicalInsurance = medicalInsurance,
         nurseryPlacesQuestion = Some(nurseryPlaces.isDefined),
@@ -170,7 +170,7 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
       cyaBenefits.flatMap(_.incomeTaxAndCostsModel)
     } else {
       Some(IncomeTaxAndCostsModel(
-        incomeTaxOrCostsQuestion = Some(incomeTaxDetailsPopulated),
+        sectionQuestion = Some(incomeTaxDetailsPopulated),
         incomeTaxPaidByDirectorQuestion = Some(incomeTaxPaidByDirector.isDefined),
         incomeTaxPaidByDirector = incomeTaxPaidByDirector,
         paymentsOnEmployeesBehalfQuestion = Some(paymentsOnEmployeesBehalf.isDefined),
@@ -184,7 +184,7 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
       cyaBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel)
     } else {
       Some(ReimbursedCostsVouchersAndNonCashModel(
-        reimbursedCostsVouchersAndNonCashQuestion = Some(reimbursedDetailsPopulated),
+        sectionQuestion = Some(reimbursedDetailsPopulated),
         expensesQuestion = Some(expenses.isDefined),
         expenses = expenses,
         taxableExpensesQuestion = Some(taxableExpenses.isDefined),
@@ -204,7 +204,7 @@ case class Benefits(accommodation: Option[BigDecimal] = None,
       cyaBenefits.flatMap(_.assetsModel)
     } else {
       Some(AssetsModel(
-        assetsAndAssetsTransferQuestion = Some(assetsDetailsPopulated),
+        sectionQuestion = Some(assetsDetailsPopulated),
         assetsQuestion = Some(assets.isDefined),
         assets = assets,
         assetTransferQuestion = Some(assetTransfer.isDefined),
