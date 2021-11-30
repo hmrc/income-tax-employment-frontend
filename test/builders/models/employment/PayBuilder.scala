@@ -20,7 +20,7 @@ import models.employment.Pay
 
 object PayBuilder {
 
-  def aPay: Pay = Pay(
+  val aPay: Pay = Pay(
     taxablePayToDate = Some(100),
     totalTaxToDate = Some(200),
     payFrequency = None,

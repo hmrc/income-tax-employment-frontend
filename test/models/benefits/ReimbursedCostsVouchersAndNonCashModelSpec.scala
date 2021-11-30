@@ -25,7 +25,7 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
   private val employmentId = "id"
   private val taxYear = 2022
   private val model = ReimbursedCostsVouchersAndNonCashModel(
-    reimbursedCostsVouchersAndNonCashQuestion = Some(true),
+    sectionQuestion = Some(true),
     expensesQuestion = Some(true),
     expenses = Some(55.55),
     taxableExpensesQuestion = Some(true),
@@ -40,11 +40,11 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
 
   "isFinished" should {
     "return reimbursedCostsVouchersAndNonCash yes no page" in {
-      model.copy(reimbursedCostsVouchersAndNonCashQuestion = None).isFinished(taxYear, employmentId) shouldBe
+      model.copy(sectionQuestion = None).isFinished(taxYear, employmentId) shouldBe
         Some(ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId))
     }
     "return none when section is finished" in {
-      model.copy(reimbursedCostsVouchersAndNonCashQuestion = Some(false)).isFinished(taxYear, "employmentId") shouldBe None
+      model.copy(sectionQuestion = Some(false)).isFinished(taxYear, "employmentId") shouldBe None
       model.isFinished(taxYear, "employmentId") shouldBe None
     }
   }
@@ -137,7 +137,7 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
 
   "clear" should {
     "clear the model" in {
-      ReimbursedCostsVouchersAndNonCashModel.clear shouldBe ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonCashQuestion = Some(false))
+      ReimbursedCostsVouchersAndNonCashModel.clear shouldBe ReimbursedCostsVouchersAndNonCashModel(sectionQuestion = Some(false))
     }
   }
 }

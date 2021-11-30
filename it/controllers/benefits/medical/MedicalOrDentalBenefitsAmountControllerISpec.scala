@@ -473,7 +473,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(ChildcareBenefitsController.show(taxYearEOY, employmentId).url)
           lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) shouldBe Some(true)
+          cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
           cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion)) shouldBe Some(true)
           cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsurance)) shouldBe Some(newAmount)
         }
@@ -494,7 +494,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(ChildcareBenefitsController.show(taxYearEOY, employmentId).url)
           lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) shouldBe Some(true)
+          cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
           cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion)) shouldBe Some(true)
           cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsurance)) shouldBe Some(newAmount)
         }

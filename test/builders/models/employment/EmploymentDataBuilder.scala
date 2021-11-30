@@ -21,7 +21,7 @@ import models.employment.EmploymentData
 
 object EmploymentDataBuilder {
 
-  def anEmploymentData: EmploymentData = EmploymentData(
+  val anEmploymentData: EmploymentData = EmploymentData(
     submittedOn = "2021-01-01",
     employmentSequenceNumber = None,
     companyDirector = Some(true),

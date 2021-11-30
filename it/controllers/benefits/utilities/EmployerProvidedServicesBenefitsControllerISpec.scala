@@ -260,7 +260,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
         insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(emptyUtilitiesAndServicesModel.copy(utilitiesAndServicesQuestion = None))))), userRequest)
+          Some(benefits(emptyUtilitiesAndServicesModel.copy(sectionQuestion = None))))), userRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(employerProvidedServicesPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -376,7 +376,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
         insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(emptyUtilitiesAndServicesModel.copy(utilitiesAndServicesQuestion = None))))), userRequest)
+          Some(benefits(emptyUtilitiesAndServicesModel.copy(sectionQuestion = None))))), userRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(employerProvidedServicesPageUrl(taxYearEOY), body = Map(YesNoForm.yesNo -> YesNoForm.no), follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -447,7 +447,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"updates the cyaModel to have the employerProvidedServicesQuestion to be true" in {
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.utilitiesAndServicesQuestion)) shouldBe Some(true)
+        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServices)) shouldBe Some(200.00)
       }
@@ -475,7 +475,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"updates the cyaModel to have the employerProvidedServicesQuestion to be false and the value to be None" in {
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.utilitiesAndServicesQuestion)) shouldBe Some(true)
+        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion)) shouldBe Some(false)
         cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServices)) shouldBe None
       }
@@ -502,7 +502,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"updates the cyaModel to have the employerProvidedServicesQuestion to be false and the value to be None" in {
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.utilitiesAndServicesQuestion)) shouldBe Some(true)
+        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion)) shouldBe Some(false)
         cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServices)) shouldBe None
       }
@@ -529,7 +529,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"updates the cyaModel to have the employerProvidedServicesQuestion to be false and the value to be None" in {
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.utilitiesAndServicesQuestion)) shouldBe Some(true)
+        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion)) shouldBe Some(false)
         cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServices)) shouldBe None
       }

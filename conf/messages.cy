@@ -1039,6 +1039,16 @@ benefits.otherBenefitsAmount.error.overMaximum = The amount for other benefits m
 benefits.otherBenefitsAmount.error.noEntry.agent = Enter the amount your client got for other benefits
 benefits.otherBenefitsAmount.error.incorrectFormat.agent = Enter the amount your client got for other benefits in the correct format
 
+benefits.assetsOrAssetTransfers.title.individual = Did you get any assets from this company?
+benefits.assetsOrAssetTransfers.title.agent = Did your client get any assets from this company?
+benefits.assetsOrAssetTransfers.description.paragraph = Assets are things like computers, televisions or bicycles.
+benefits.assetsOrAssetTransfers.includes.paragraph.individual = Include assets that your employer let you:
+benefits.assetsOrAssetTransfers.includes.paragraph.agent = Include assets that their employer let them:
+benefits.assetsOrAssetTransfers.bullet2.individual = keep for yourself
+benefits.assetsOrAssetTransfers.bullet2.agent = keep for themselves
+benefits.assetsOrAssetTransfers.error.individual = Select yes if you got assets
+benefits.assetsOrAssetTransfers.error.agent = Select yes if your client got assets
+
 benefits.assets.title.individual = Did your employer make any assets available for your use?
 benefits.assets.title.agent = Did your client’s employer make any assets available for their use?
 benefits.assets.youCanUse.individual = You can use these assets but you do not own them.
@@ -1058,7 +1068,6 @@ benefits.assetsAmount.error.incorrectFormat.agent = Enter the amount for assets 
 benefits.assetsAmount.error.overMaximum.agent = The amount for assets made available for your client’s use must be less than £100,000,000,000
 
 #####Expenses Pages#######
-
 expenses.caption = Employment expenses for 6 April {0} to 5 April {1}
 
 expenses.claimEmploymentExpenses.title.individual = Do you want to claim employment expenses?

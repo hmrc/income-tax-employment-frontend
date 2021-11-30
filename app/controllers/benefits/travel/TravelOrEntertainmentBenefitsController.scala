@@ -61,7 +61,7 @@ class TravelOrEntertainmentBenefitsController @Inject()(implicit val cc: Message
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
-          cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelEntertainmentQuestion)) match {
+          cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.sectionQuestion)) match {
             case Some(questionResult) => Future.successful(Ok(travelOrEntertainmentBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
             case None => Future.successful(Ok(travelOrEntertainmentBenefitsView(yesNoForm, taxYear, employmentId)))
           }
@@ -90,8 +90,8 @@ class TravelOrEntertainmentBenefitsController @Inject()(implicit val cc: Message
 
                   case travelOrEntertainment =>
                     cya.copy(employmentBenefits = benefits.map(_.copy(travelEntertainmentModel = Some(
-                      travelOrEntertainment.map(_.copy(travelEntertainmentQuestion = Some(yesNo))).getOrElse
-                      (TravelEntertainmentModel(travelEntertainmentQuestion = Some(yesNo)))
+                      travelOrEntertainment.map(_.copy(sectionQuestion = Some(yesNo))).getOrElse
+                      (TravelEntertainmentModel(sectionQuestion = Some(yesNo)))
                     ))))
                 }
               }

@@ -278,7 +278,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
         insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(emptyAccommodationRelocationModel.copy(accommodationRelocationQuestion = None))))), userRequest)
+          Some(benefits(emptyAccommodationRelocationModel.copy(sectionQuestion = None))))), userRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlEOY, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -524,7 +524,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
         insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(emptyAccommodationRelocationModel.copy(accommodationRelocationQuestion = None))))), userRequest)
+          Some(benefits(emptyAccommodationRelocationModel.copy(sectionQuestion = None))))), userRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlEOY, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }

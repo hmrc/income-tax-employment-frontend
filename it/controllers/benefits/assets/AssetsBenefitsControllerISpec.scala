@@ -16,6 +16,8 @@
 
 package controllers.benefits.assets
 
+import controllers.employment.routes.CheckYourBenefitsController
+import forms.YesNoForm
 import models.User
 import models.benefits.{AssetsModel, BenefitsViewModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -25,8 +27,6 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import controllers.employment.routes.CheckYourBenefitsController
-import forms.YesNoForm
 
 class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -329,7 +329,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
       "update assetsQuestion to Some(true) in assetsModel" in {
         lazy val model = findCyaData(taxYearEOY, employmentId, userRequest).get
-        model.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assetsAndAssetsTransferQuestion)) shouldBe Some(true)
+        model.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         model.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assetsQuestion)) shouldBe Some(true)
       }
     }
@@ -351,7 +351,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
       "update assetsQuestion to Some(false) and assets to None" in {
         lazy val model = findCyaData(taxYearEOY, employmentId, userRequest).get
-        model.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assetsAndAssetsTransferQuestion)) shouldBe Some(true)
+        model.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         model.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assetsQuestion)) shouldBe Some(false)
         model.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assets)) shouldBe None
       }

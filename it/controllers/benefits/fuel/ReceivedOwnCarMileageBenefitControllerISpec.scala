@@ -122,7 +122,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
   val someAmount: Option[BigDecimal] = Some(123.45)
 
-  val allSectionsFinishedCarVanFuelModel: CarVanFuelModel = CarVanFuelModel(carVanFuelQuestion = Some(true), carQuestion = Some(true), car = someAmount,
+  val allSectionsFinishedCarVanFuelModel: CarVanFuelModel = CarVanFuelModel(sectionQuestion = Some(true), carQuestion = Some(true), car = someAmount,
     carFuelQuestion = Some(true), carFuel = someAmount, vanQuestion = Some(true), van = someAmount, vanFuelQuestion = Some(true),
     vanFuel = someAmount, mileageQuestion = Some(true), mileage = someAmount)
 
@@ -137,7 +137,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
   def benefitsWithNoCarVanFuelQuestion(carVanFuelQuestion: Option[Boolean] = Some(false)): Option[BenefitsViewModel] =
     Some(BenefitsViewModel(isBenefitsReceived = true,
-      carVanFuelModel = Some(allSectionsFinishedCarVanFuelModel.copy(carVanFuelQuestion = carVanFuelQuestion)),
+      carVanFuelModel = Some(allSectionsFinishedCarVanFuelModel.copy(sectionQuestion = carVanFuelQuestion)),
       isUsingCustomerData = true))
 
   val benefitsWithEmptyCarQuestion: Option[BenefitsViewModel] =

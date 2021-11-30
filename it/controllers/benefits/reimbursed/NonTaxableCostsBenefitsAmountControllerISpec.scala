@@ -16,8 +16,9 @@
 
 package controllers.benefits.reimbursed
 
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsController
 import controllers.benefits.reimbursed.routes.TaxableCostsBenefitsController
+import controllers.employment.routes.CheckYourBenefitsController
 import forms.AmountForm
 import models.User
 import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
@@ -55,7 +56,9 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
   trait CommonExpectedResults {
     val expectedCaption: String
+
     def ifItWasNotText(amount: BigDecimal): String
+
     val enterTotalText: String
     val expectedHintText: String
     val currencyPrefix: String
@@ -73,7 +76,9 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+
     def ifItWasNotText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
+
     val enterTotalText = "Enter the total."
     val expectedHintText = "For example, £600 or £193.54"
     val currencyPrefix = "£"
@@ -82,7 +87,9 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+
     def ifItWasNotText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
+
     val enterTotalText = "Enter the total."
     val expectedHintText = "For example, £600 or £193.54"
     val currencyPrefix = "£"
@@ -337,7 +344,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
     }
 
-    "redirect to check your benefits page when reimbursed costs, vouchers and non-cash question is false" which {
+    "redirect to Assets section question page when reimbursed costs, vouchers and non-cash question is false" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
@@ -349,11 +356,9 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(AssetsOrAssetTransfersBenefitsController.show(taxYearEOY, employmentId).url)
       }
-
     }
-
   }
 
   ".submit" should {
@@ -492,7 +497,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
       s"update expenses in reimbursedCostsVouchersAndNonCash model" in {
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.reimbursedCostsVouchersAndNonCashQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expensesQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expenses)) shouldBe Some(newAmount)
       }
@@ -519,7 +524,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
       s"update expenses in reimbursedCostsVouchersAndNonCash model" in {
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.reimbursedCostsVouchersAndNonCashQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expensesQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expenses)) shouldBe Some(newAmount)
       }
@@ -572,7 +577,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
     }
 
-    "redirect to check your benefits page when reimbursed costs, vouchers and non-cash question is false" which {
+    "redirect to Assets section question page when reimbursed costs, vouchers and non-cash question is false" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
@@ -584,11 +589,8 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(AssetsOrAssetTransfersBenefitsController.show(taxYearEOY, employmentId).url)
       }
-
     }
-
   }
-
 }

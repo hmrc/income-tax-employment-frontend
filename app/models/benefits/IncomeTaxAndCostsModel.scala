@@ -16,13 +16,12 @@
 
 package models.benefits
 
-import controllers.employment.routes._
 import controllers.benefits.income.routes._
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue
 
-case class IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion: Option[Boolean] = None,
+case class IncomeTaxAndCostsModel(sectionQuestion: Option[Boolean] = None,
                                   incomeTaxPaidByDirectorQuestion: Option[Boolean] = None,
                                   incomeTaxPaidByDirector: Option[BigDecimal] = None,
                                   paymentsOnEmployeesBehalfQuestion: Option[Boolean] = None,
@@ -47,7 +46,7 @@ case class IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion: Option[Boolean] = No
   //scalastyle:on
 
   def isFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
-    incomeTaxOrCostsQuestion match {
+    sectionQuestion match {
       case Some(true) => (incomeTaxPaidByDirectorSectionFinished, paymentsOnEmployeesBehalfSectionFinished) match {
         case (call@Some(_), _) => call
         case (_, call@Some(_)) => call
@@ -62,10 +61,10 @@ case class IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion: Option[Boolean] = No
 object IncomeTaxAndCostsModel {
   implicit val formats: OFormat[IncomeTaxAndCostsModel] = Json.format[IncomeTaxAndCostsModel]
 
-  def clear: IncomeTaxAndCostsModel = IncomeTaxAndCostsModel(incomeTaxOrCostsQuestion = Some(false))
+  def clear: IncomeTaxAndCostsModel = IncomeTaxAndCostsModel(sectionQuestion = Some(false))
 }
 
-case class EncryptedIncomeTaxAndCostsModel(incomeTaxOrCostsQuestion: Option[EncryptedValue] = None,
+case class EncryptedIncomeTaxAndCostsModel(sectionQuestion: Option[EncryptedValue] = None,
                                            incomeTaxPaidByDirectorQuestion: Option[EncryptedValue] = None,
                                            incomeTaxPaidByDirector: Option[EncryptedValue] = None,
                                            paymentsOnEmployeesBehalfQuestion: Option[EncryptedValue] = None,

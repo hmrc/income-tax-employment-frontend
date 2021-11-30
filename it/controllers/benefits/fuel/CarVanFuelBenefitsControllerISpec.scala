@@ -284,7 +284,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
         result.header("location") shouldBe
           Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/accommodation-relocation?employmentId=$employmentId")
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion)) shouldBe Some(false)
+        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(false)
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe None
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car)) shouldBe None
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) shouldBe None
@@ -320,7 +320,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
       "updates the carVanFuelQuestion to false" in {
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion)) shouldBe Some(false)
+        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(false)
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe None
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car)) shouldBe None
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) shouldBe None
@@ -355,7 +355,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
       "updates the cya model with carVanFuel to be true" in {
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion)) shouldBe Some(true)
+        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe None
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car)) shouldBe None
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) shouldBe None
@@ -390,7 +390,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
       "updates the cya model with carVanFuel to be true" in {
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion)) shouldBe Some(true)
+        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe None
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car)) shouldBe None
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) shouldBe None
@@ -426,7 +426,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
       "update only the carVanFuelQuestion to true" in {
         lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carVanFuelQuestion)) shouldBe Some(true)
+        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe None
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car)) shouldBe None
         cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) shouldBe None

@@ -135,7 +135,7 @@
               dropEmploymentDB()
               userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
               insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-                benefits = Some(benefits(fullMedicalChildcareEducationModel.copy(medicalChildcareEducationQuestion = None))))), userRequest)
+                benefits = Some(benefits(fullMedicalChildcareEducationModel.copy(sectionQuestion = None))))), userRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlGet(medicalDentalChildcareQuestionPageUrl(taxYearEOY), welsh = user.isWelsh,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -357,7 +357,7 @@
             result.header("location") shouldBe Some(IncomeTaxOrIncurredCostsBenefitsController.show(taxYearEOY, employmentId).url)
             lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
 
-            cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) shouldBe Some(false)
+            cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(false)
             cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion)) shouldBe None
             cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsurance)) shouldBe None
             cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.nurseryPlacesQuestion)) shouldBe None
@@ -376,7 +376,7 @@
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = false, cyaModel("employerName", hmrc = true,
-              Some(benefits(fullMedicalChildcareEducationModel.copy(medicalChildcareEducationQuestion = Some(false)))))), userRequest)
+              Some(benefits(fullMedicalChildcareEducationModel.copy(sectionQuestion = Some(false)))))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(medicalDentalChildcareQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -387,7 +387,7 @@
             result.header("location") shouldBe Some(MedicalDentalBenefitsController.show(taxYearEOY, employmentId).url)
 
             lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-            cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalChildcareEducationQuestion)) shouldBe Some(true)
+            cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
             cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion)) shouldBe Some(true)
             cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsurance)) shouldBe Some(100)
             cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.nurseryPlacesQuestion)) shouldBe Some(true)
