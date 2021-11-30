@@ -213,11 +213,14 @@ POST       /:taxYear/benefits/non-cash-benefits-amount                      cont
 GET        /:taxYear/benefits/other-benefits-amount                         controllers.benefits.reimbursed.OtherBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/other-benefits-amount                         controllers.benefits.reimbursed.OtherBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/expenses/claim-employment-expenses                     controllers.expenses.EmploymentExpensesController.show(taxYear: Int)
-POST       /:taxYear/expenses/claim-employment-expenses                     controllers.expenses.EmploymentExpensesController.submit(taxYear: Int)
-
 GET        /:taxYear/benefits/educational-services                          controllers.benefits.medical.EducationalServicesBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/educational-services                          controllers.benefits.medical.EducationalServicesBenefitsController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/benefits/assets-available-for-use-amount               controllers.benefits.assets.AssetsBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/assets-available-for-use-amount               controllers.benefits.assets.AssetsBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/expenses/claim-employment-expenses                     controllers.expenses.EmploymentExpensesController.show(taxYear: Int)
+POST       /:taxYear/expenses/claim-employment-expenses                     controllers.expenses.EmploymentExpensesController.submit(taxYear: Int)
 
 GET        /:taxYear/expenses/business-travel-and-overnight-expenses        controllers.expenses.BusinessTravelOvernightExpensesController.show(taxYear: Int)
 POST       /:taxYear/expenses/business-travel-and-overnight-expenses        controllers.expenses.BusinessTravelOvernightExpensesController.submit(taxYear: Int)

@@ -470,6 +470,18 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   def emptyReimbursedCostsVouchersAndNonCashModel: ReimbursedCostsVouchersAndNonCashModel =
     ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonCashQuestion = Some(false))
 
+  def fullAssetsModel: AssetsModel =
+    AssetsModel(
+      assetsAndAssetsTransferQuestion = Some(true),
+      assetsQuestion = Some(true),
+      assets = Some(100.00),
+      assetTransferQuestion = Some(true),
+      assetTransfer = Some(200.00),
+    )
+
+  def emptyAssetsModel: AssetsModel =
+    AssetsModel(assetsAndAssetsTransferQuestion = Some(false))
+
   def fullExpensesCYAModel: ExpensesCYAModel =
     ExpensesCYAModel(ExpensesViewModel(
       claimingEmploymentExpenses = true,

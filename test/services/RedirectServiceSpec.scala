@@ -21,6 +21,7 @@ import controllers.benefits.fuel.routes._
 import controllers.benefits.income.routes._
 import controllers.benefits.medical.routes._
 import controllers.benefits.reimbursed.routes._
+import controllers.benefits.assets.routes._
 import controllers.benefits.routes.ReceiveAnyBenefitsController
 import controllers.benefits.travel.routes._
 import controllers.benefits.utilities.routes._
@@ -1649,7 +1650,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => assetTransferRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe AssetsBenefitsAmountController.show(taxYear, employmentId).url
       }
       "it's a new submission and attempted to view the 'Assets transfer amount' page" +
         "but the Assets transfer question is empty" in {
