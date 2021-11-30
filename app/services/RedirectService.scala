@@ -21,6 +21,7 @@ import controllers.benefits.fuel.routes._
 import controllers.benefits.income.routes._
 import controllers.benefits.medical.routes._
 import controllers.benefits.reimbursed.routes._
+import controllers.benefits.assets.routes._
 import controllers.benefits.routes._
 import controllers.benefits.travel.routes._
 import controllers.benefits.utilities.routes._
@@ -687,8 +688,7 @@ object RedirectService extends Logging {
 
     commonAssetsModelRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to assets yes/no page
-        ConditionalRedirect(assetsQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(assetsQuestion.isEmpty, AssetsBenefitsController.show(taxYear, employmentId)),
         //TODO go to assetTransfer yes/no page
         ConditionalRedirect(assetsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(assetsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))

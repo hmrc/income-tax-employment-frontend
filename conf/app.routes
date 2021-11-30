@@ -216,6 +216,9 @@ POST       /:taxYear/benefits/other-benefits-amount                         cont
 GET        /:taxYear/benefits/educational-services                          controllers.benefits.medical.EducationalServicesBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/educational-services                          controllers.benefits.medical.EducationalServicesBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/assets-available-for-use                      controllers.benefits.assets.AssetsBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/assets-available-for-use                      controllers.benefits.assets.AssetsBenefitsController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/benefits/assets-available-for-use-amount               controllers.benefits.assets.AssetsBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/assets-available-for-use-amount               controllers.benefits.assets.AssetsBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 

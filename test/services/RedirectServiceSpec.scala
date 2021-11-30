@@ -1640,7 +1640,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => assetsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe AssetsBenefitsController.show(taxYear, employmentId).url
       }
       "it's a new submission and attempted to view the 'Assets transfer question' page" +
         "but the Assets amount is empty" in {

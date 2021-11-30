@@ -1039,6 +1039,13 @@ benefits.otherBenefitsAmount.error.overMaximum = The amount for other benefits m
 benefits.otherBenefitsAmount.error.noEntry.agent = Enter the amount your client got for other benefits
 benefits.otherBenefitsAmount.error.incorrectFormat.agent = Enter the amount your client got for other benefits in the correct format
 
+benefits.assets.title.individual = Did your employer make any assets available for your use?
+benefits.assets.title.agent = Did your client’s employer make any assets available for their use?
+benefits.assets.youCanUse.individual = You can use these assets but you do not own them.
+benefits.assets.youCanUse.agent = They can use these assets but they do not own them.
+benefits.assets.error.individual = Select yes if your employer made assets available for your use
+benefits.assets.error.agent = Select yes if your client’s employer made assets available for their use
+
 benefits.assetsAmount.title.individual = How much were the assets made available for your use?
 benefits.assetsAmount.title.agent = How much were the assets made available for your client’s use?
 benefits.assetsAmount.youCan.individual = You can find this information on your P11D form in section L, box 13.

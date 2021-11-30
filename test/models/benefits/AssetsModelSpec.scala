@@ -59,7 +59,7 @@ class AssetsModelSpec extends UnitTest {
 
     "return assets yes no page when assetsQuestion is None" in {
       model.copy(assetsQuestion = None).assetsSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(AssetsBenefitsController.show(taxYear, employmentId))
     }
   }
 
