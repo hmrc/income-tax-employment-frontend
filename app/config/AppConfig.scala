@@ -95,5 +95,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
 
   lazy val welshToggleEnabled: Boolean = servicesConfig.getBoolean("feature-switch.welshToggleEnabled")
 
+  lazy val nrsEnabled: Boolean = servicesConfig.getBoolean("feature-switch.nrsEnabled")
+
   lazy val useEncryption: Boolean = servicesConfig.getBoolean("useEncryption")
 }

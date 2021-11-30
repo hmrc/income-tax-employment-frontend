@@ -47,6 +47,8 @@ class MockAppConfig extends MockFactory {
 
     override lazy val welshToggleEnabled: Boolean = true
 
+    override lazy val nrsEnabled: Boolean = true
+
     override def viewAndChangeEnterUtrUrl: String = "/report-quarterly/income-and-expenses/view/agents/client-utr"
 
     override def incomeTaxSubmissionBaseUrl: String = ""
