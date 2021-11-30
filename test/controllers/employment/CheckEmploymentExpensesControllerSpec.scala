@@ -18,6 +18,7 @@ package controllers.employment
 
 import common.SessionValues
 import config.{MockAuditService, MockEmploymentSessionService}
+import controllers.expenses.CheckEmploymentExpensesController
 import play.api.http.HeaderNames.LOCATION
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Results.{Ok, Redirect}
@@ -25,7 +26,7 @@ import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers.header
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import utils.UnitTestWithApp
-import views.html.employment.{CheckEmploymentExpensesView, CheckEmploymentExpensesViewEOY}
+import views.html.expenses.{CheckEmploymentExpensesView, CheckEmploymentExpensesViewEOY}
 
 import scala.concurrent.Future
 

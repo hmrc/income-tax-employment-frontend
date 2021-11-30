@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package controllers.employment
+package controllers.expenses
 
+import controllers.expenses.routes.CheckEmploymentExpensesController
 import audit.{AuditService, ViewEmploymentExpensesAudit}
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckEmploymentExpensesController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.User
 import models.employment.{AllEmploymentData, EmploymentExpenses}
@@ -29,7 +29,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
-import views.html.employment.{CheckEmploymentExpensesView, CheckEmploymentExpensesViewEOY}
+import views.html.expenses.{CheckEmploymentExpensesView, CheckEmploymentExpensesViewEOY}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
