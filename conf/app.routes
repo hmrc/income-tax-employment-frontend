@@ -177,6 +177,9 @@ POST       /:taxYear/benefits/employer-income-tax-or-incurred-costs         cont
 GET        /:taxYear/benefits/employer-income-tax                           controllers.benefits.income.IncomeTaxBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/employer-income-tax                           controllers.benefits.income.IncomeTaxBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/employer-income-tax-amount                     controllers.benefits.income.IncomeTaxBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/employer-income-tax-amount                     controllers.benefits.income.IncomeTaxBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/benefits/incurred-costs                                controllers.benefits.income.IncurredCostsBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/incurred-costs                                controllers.benefits.income.IncurredCostsBenefitsController.submit(taxYear: Int, employmentId: String)
 
@@ -198,11 +201,26 @@ POST       /:taxYear/benefits/taxable-costs                                 cont
 GET        /:taxYear/benefits/taxable-costs-amount                          controllers.benefits.reimbursed.TaxableCostsBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/taxable-costs-amount                          controllers.benefits.reimbursed.TaxableCostsBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/expenses/claim-employment-expenses                     controllers.expenses.EmploymentExpensesController.show(taxYear: Int)
-POST       /:taxYear/expenses/claim-employment-expenses                     controllers.expenses.EmploymentExpensesController.submit(taxYear: Int)
+GET        /:taxYear/benefits/vouchers-or-credit-cards                      controllers.benefits.reimbursed.VouchersBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/vouchers-or-credit-cards                      controllers.benefits.reimbursed.VouchersBenefitsController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/benefits/vouchers-or-credit-cards-amount               controllers.benefits.reimbursed.VouchersBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/vouchers-or-credit-cards-amount               controllers.benefits.reimbursed.VouchersBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/benefits/non-cash-benefits-amount                      controllers.benefits.reimbursed.NonCashBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/non-cash-benefits-amount                      controllers.benefits.reimbursed.NonCashBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/benefits/other-benefits-amount                         controllers.benefits.reimbursed.OtherBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/other-benefits-amount                         controllers.benefits.reimbursed.OtherBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/benefits/educational-services                          controllers.benefits.medical.EducationalServicesBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/educational-services                          controllers.benefits.medical.EducationalServicesBenefitsController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/benefits/assets-available-for-use-amount               controllers.benefits.assets.AssetsBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/assets-available-for-use-amount               controllers.benefits.assets.AssetsBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
+GET        /:taxYear/expenses/claim-employment-expenses                     controllers.expenses.EmploymentExpensesController.show(taxYear: Int)
+POST       /:taxYear/expenses/claim-employment-expenses                     controllers.expenses.EmploymentExpensesController.submit(taxYear: Int)
 
 GET        /:taxYear/expenses/business-travel-and-overnight-expenses        controllers.expenses.BusinessTravelOvernightExpensesController.show(taxYear: Int)
 POST       /:taxYear/expenses/business-travel-and-overnight-expenses        controllers.expenses.BusinessTravelOvernightExpensesController.submit(taxYear: Int)

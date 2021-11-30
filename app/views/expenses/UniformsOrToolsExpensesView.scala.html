@@ -44,7 +44,8 @@
     <p class="govuk-body">@{messages("expenses.uniformsWorkClothesTools.flatRateExpense")}</p>
 
      <p class="govuk-body">
-         <a target="_blank" id="uniforms-and-tools-link" href="https://www.gov.uk/guidance/job-expenses-for-uniforms-work-clothing-and-tools" class="govuk-link">
+         <a href="https://www.gov.uk/guidance/job-expenses-for-uniforms-work-clothing-and-tools"
+            target="_blank" id="uniforms-and-tools-link" class="govuk-link"  rel="noopener noreferrer">
              @messages(s"expenses.uniformsWorkClothesTools.checkIfYouCanClaimLink.${if(user.isAgent) "agent" else "individual"}")
          </a>
      </p>

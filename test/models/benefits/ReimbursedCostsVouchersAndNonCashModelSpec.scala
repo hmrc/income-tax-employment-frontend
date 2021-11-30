@@ -58,7 +58,7 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
     "return expenses amount page" in {
       model.copy(expenses = None).expensesSectionFinished(taxYear, employmentId) shouldBe
         Some(controllers.benefits.reimbursed.routes.NonTaxableCostsBenefitsAmountController.show(taxYear, employmentId))
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      Some(CheckYourBenefitsController.show(taxYear, employmentId))
     }
 
     "return none when section is finished" in {
@@ -87,12 +87,12 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
   "vouchersAndCreditCardsSectionFinished" should {
     "return vouchersAndCreditCards yes no page" in {
       model.copy(vouchersAndCreditCardsQuestion = None).vouchersAndCreditCardsSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(VouchersBenefitsController.show(taxYear, employmentId))
     }
 
     "return vouchersAndCreditCards amount page" in {
       model.copy(vouchersAndCreditCards = None).vouchersAndCreditCardsSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(VouchersBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return none when section is finished" in {
@@ -109,7 +109,7 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
 
     "return nonCash amount page" in {
       model.copy(nonCash = None).nonCashSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(NonCashBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return none when section is finished" in {
@@ -126,7 +126,7 @@ class ReimbursedCostsVouchersAndNonCashModelSpec extends UnitTest {
 
     "return otherItems amount page" in {
       model.copy(otherItems = None).otherItemsSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(OtherBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return none when section is finished" in {

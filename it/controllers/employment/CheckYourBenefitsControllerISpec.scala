@@ -479,8 +479,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val mileageBenefitAmountHiddenText: String = "Change the amount for mileage as an employment benefit your client got for using their own car"
     val accommodationAmountHiddenText: String = "Change the amount for accommodation as an employment benefit your client got from this company"
     val qualifyingRelocationCostsAmountHiddenText: String = "Change the amount for qualifying relocation costs as an employment benefit your client got from this company"
-    val nonQualifyingRelocationCostsAmountHiddenText: String =
-      "Change the amount for non-qualifying relocation costs as an employment benefit your client got from this company"
+    val nonQualifyingRelocationCostsAmountHiddenText: String = "Change the amount for non-qualifying relocation costs as an employment benefit your client got from this company"
     val travelAndSubsistenceAmountHiddenText: String = "Change the amount for travel or overnight stays as an employment benefit your client got from this company"
     val personalCostsAmountHiddenText: String = "Change the amount for personal incidental costs as an employment benefit your client got from this company"
     val entertainmentAmountHiddenText: String = "Change the amount for entertainment as an employment benefit your client got from this company"
@@ -626,8 +625,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val mileageBenefitAmountHiddenText: String = "Change the amount for mileage as an employment benefit your client got for using their own car"
     val accommodationAmountHiddenText: String = "Change the amount for accommodation as an employment benefit your client got from this company"
     val qualifyingRelocationCostsAmountHiddenText: String = "Change the amount for qualifying relocation costs as an employment benefit your client got from this company"
-    val nonQualifyingRelocationCostsAmountHiddenText: String =
-      "Change the amount for non-qualifying relocation costs as an employment benefit your client got from this company"
+    val nonQualifyingRelocationCostsAmountHiddenText: String = "Change the amount for non-qualifying relocation costs as an employment benefit your client got from this company"
     val travelAndSubsistenceAmountHiddenText: String = "Change the amount for travel or overnight stays as an employment benefit your client got from this company"
     val personalCostsAmountHiddenText: String = "Change the amount for personal incidental costs as an employment benefit your client got from this company"
     val entertainmentAmountHiddenText: String = "Change the amount for entertainment as an employment benefit your client got from this company"
@@ -693,45 +691,47 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val employerProvidedServicesBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/employer-provided-services?employmentId=001"
     val telephoneEmploymentBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/telephone-amount?employmentId=001"
     val educationalServicesAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/educational-services-amount?employmentId=001"
-    val employerProvidedServicesBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/employer-provided-services-amount?employmentId=001"
-    val professionalSubscriptionsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/professional-fees-or-subscriptions?employmentId=001"
-    val professionalSubscriptionsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/professional-fees-or-subscriptions-amount?employmentId=001"
-    val medicalChildcareEducationHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/medical-dental-childcare-education-loans?employmentId=001"
-    val medicalDentalHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/medical-dental?employmentId=001"
-    val childcareBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/childcare?employmentId=001"
-    val childcareBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/childcare-amount?employmentId=001"
-    val beneficialLoansBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/beneficial-loans?employmentId=001"
-    val medicalOrDentalBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/medical-dental-amount?employmentId=001"
-    val beneficialLoansAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/beneficial-loans-amount?employmentId=001"
-    val incomeTaxOrIncurredCostsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/employer-income-tax-or-incurred-costs?employmentId=001"
-    val incomeTaxBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/employer-income-tax?employmentId=001"
-    val educationServiceBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/educational-services?employmentId=001"
-    val incurredCostsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/incurred-costs?employmentId=001"
-    val incurredCostsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/incurred-costs-amount?employmentId=001"
-    val reimbursedCostsVouchersAndNonCashBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/reimbursed-costs-vouchers-non-cash-benefits?employmentId=001"
+    val employerProvidedServicesBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/employer-provided-services-amount?employmentId=001"
+    val professionalSubscriptionsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/professional-fees-or-subscriptions?employmentId=001"
+    val professionalSubscriptionsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/professional-fees-or-subscriptions-amount?employmentId=001"
+    val medicalChildcareEducationHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/medical-dental-childcare-education-loans?employmentId=001"
+    val medicalDentalHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/medical-dental?employmentId=001"
+    val childcareBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/childcare?employmentId=001"
+    val childcareBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/childcare-amount?employmentId=001"
+    val beneficialLoansBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/beneficial-loans?employmentId=001"
+    val medicalOrDentalBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/medical-dental-amount?employmentId=001"
+    val beneficialLoansAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/beneficial-loans-amount?employmentId=001"
+    val incomeTaxOrIncurredCostsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/employer-income-tax-or-incurred-costs?employmentId=001"
+    val incomeTaxBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/employer-income-tax?employmentId=001"
+    val incomeTaxBenefitsAmountHref:String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/employer-income-tax-amount?employmentId=001"
+    val educationServiceBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/educational-services?employmentId=001"
+    val incurredCostsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/incurred-costs?employmentId=001"
+    val incurredCostsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/incurred-costs-amount?employmentId=001"
+    val reimbursedCostsVouchersAndNonCashBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/reimbursed-costs-vouchers-non-cash-benefits?employmentId=001"
     val nonTaxableCostsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/non-taxable-costs?employmentId=001"
     val taxableCostsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/taxable-costs?employmentId=001"
     val taxableCostsReimbursedByEmployerAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/taxable-costs-amount?employmentId=001"
-    val nonTaxableCostsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/non-taxable-costs-amount?employmentId=001"
+    val nonTaxableCostsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/non-taxable-costs-amount?employmentId=001"
+    val vouchersBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/vouchers-or-credit-cards?employmentId=001"
+    val vouchersBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/vouchers-or-credit-cards-amount?employmentId=001"
+    val nonCashBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/non-cash-benefits-amount?employmentId=001"
+    val otherBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/other-benefits-amount?employmentId=001"
+    val assetsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/assets-available-for-use-amount?employmentId=001"
   }
 
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   ".show" when {
     import Hrefs._
     import Selectors._
-
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "return a fully populated page when all the fields are populated for in year" which {
-
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -892,7 +892,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(commonResults.incomeTaxHeader, fieldHeaderSelector(14))
           changeAmountRowCheck(commonResults.incomeTaxSubheading, commonResults.yes, 15, 1, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxSubheadingHiddenText}", incomeTaxOrIncurredCostsBenefitsHref)
           changeAmountRowCheck(commonResults.incomeTaxPaid, commonResults.yes, 15, 2, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxPaidHiddenText}", incomeTaxBenefitsHref)
-          changeAmountRowCheck(commonResults.incomeTaxPaidAmount, "£20", 15, 3, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxPaidAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.incomeTaxPaidAmount, "£20", 15, 3, s"${user.commonExpectedResults.changeText} ${specificResults.incomeTaxPaidAmountHiddenText}", incomeTaxBenefitsAmountHref)
           changeAmountRowCheck(commonResults.incurredCostsPaid, commonResults.yes, 15, 4, s"${user.commonExpectedResults.changeText} ${specificResults.incurredCostsPaidHiddenText}", incurredCostsBenefitsHref)
           changeAmountRowCheck(commonResults.incurredCostsPaidAmount, "£21", 15, 5, s"${user.commonExpectedResults.changeText} ${specificResults.incurredCostsPaidAmountHiddenText}", incurredCostsBenefitsAmountHref)
 
@@ -904,17 +904,17 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           changeAmountRowCheck(commonResults.taxableCosts, commonResults.yes, 17, 4, s"${user.commonExpectedResults.changeText} ${specificResults.taxableCostsHiddenText}", taxableCostsBenefitsHref)
           changeAmountRowCheck(commonResults.taxableCostsAmount, "£23", 17, 5, s"${user.commonExpectedResults.changeText} ${specificResults.taxableCostsAmountHiddenText}", taxableCostsReimbursedByEmployerAmountHref)
-          changeAmountRowCheck(commonResults.vouchers, commonResults.yes, 17, 6, s"${user.commonExpectedResults.changeText} ${specificResults.vouchersHiddenText}", dummyHref)
-          changeAmountRowCheck(commonResults.vouchersAmount, "£24", 17, 7, s"${user.commonExpectedResults.changeText} ${specificResults.vouchersAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.vouchers, commonResults.yes, 17, 6, s"${user.commonExpectedResults.changeText} ${specificResults.vouchersHiddenText}", vouchersBenefitsHref)
+          changeAmountRowCheck(commonResults.vouchersAmount, "£24", 17, 7, s"${user.commonExpectedResults.changeText} ${specificResults.vouchersAmountHiddenText}", vouchersBenefitsAmountHref)
           changeAmountRowCheck(commonResults.nonCash, commonResults.yes, 17, 8, s"${user.commonExpectedResults.changeText} ${specificResults.nonCashHiddenText}", dummyHref)
-          changeAmountRowCheck(commonResults.nonCashAmount, "£25", 17, 9, s"${user.commonExpectedResults.changeText} ${specificResults.nonCashAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.nonCashAmount, "£25", 17, 9, s"${user.commonExpectedResults.changeText} ${specificResults.nonCashAmountHiddenText}", nonCashBenefitsAmountHref)
           changeAmountRowCheck(commonResults.otherBenefits, commonResults.yes, 17, 10, s"${user.commonExpectedResults.changeText} ${specificResults.otherBenefitsHiddenText}", dummyHref)
-          changeAmountRowCheck(commonResults.otherBenefitsAmount, "£26", 17, 11, s"${user.commonExpectedResults.changeText} ${specificResults.otherBenefitsAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.otherBenefitsAmount, "£26", 17, 11, s"${user.commonExpectedResults.changeText} ${specificResults.otherBenefitsAmountHiddenText}", otherBenefitsAmountHref)
 
           textOnPageCheck(commonResults.assetsHeader, fieldHeaderSelector(18))
           changeAmountRowCheck(commonResults.assetsSubheading, commonResults.yes, 19, 1, s"${user.commonExpectedResults.changeText} ${specificResults.assetsSubheadingHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.assets, commonResults.yes, 19, 2, s"${user.commonExpectedResults.changeText} ${specificResults.assetsHiddenText}", dummyHref)
-          changeAmountRowCheck(commonResults.assetsAmount, "£27", 19, 3, s"${user.commonExpectedResults.changeText} ${specificResults.assetsAmountHiddenText}", dummyHref)
+          changeAmountRowCheck(commonResults.assetsAmount, "£27", 19, 3, s"${user.commonExpectedResults.changeText} ${specificResults.assetsAmountHiddenText}", assetsBenefitsAmountHref)
           changeAmountRowCheck(commonResults.assetTransfers, commonResults.yes, 19, 4, s"${user.commonExpectedResults.changeText} ${specificResults.assetTransfersHiddenText}", dummyHref)
           changeAmountRowCheck(commonResults.assetTransfersAmount, "£280000", 19, 5, s"${user.commonExpectedResults.changeText} ${specificResults.assetTransfersAmountHiddenText}", dummyHref)
 

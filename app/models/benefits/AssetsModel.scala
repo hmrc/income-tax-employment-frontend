@@ -17,6 +17,7 @@
 package models.benefits
 
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.assets.routes._
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue
@@ -42,7 +43,7 @@ case class AssetsModel(assetsAndAssetsTransferQuestion: Option[Boolean] = None,
 
   def assetsSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     assetsQuestion match {
-      case Some(true) => if (assets.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO assets amount page
+      case Some(true) => if (assets.isDefined) None else Some(AssetsBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO assets yes no page
     }

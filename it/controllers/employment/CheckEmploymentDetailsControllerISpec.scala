@@ -16,7 +16,7 @@
 
 package controllers.employment
 
-import controllers.employment.routes.EmploymentSummaryController
+import controllers.employment.routes.{CheckEmploymentDetailsController, EmploymentSummaryController, EmploymentTaxController, PayeRefController}
 import models.User
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
@@ -32,8 +32,8 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val url = s"$appUrl/$taxYear/check-employment-details?employmentId=001"
-  val employmentId = "001"
+  private val url = s"$appUrl/$taxYear/check-employment-details?employmentId=001"
+  private val employmentId = "001"
 
   object Selectors {
     val headingSelector = "#main-content > div > div > header > h1"
@@ -49,6 +49,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     def summaryListRowFieldAmountSelector(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dd.govuk-summary-list__value"
 
     def cyaChangeLink(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dd.govuk-summary-list__actions > a"
+
     def cyaHiddenChangeLink(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dd.govuk-summary-list__actions > a > span.govuk-visually-hidden"
   }
 
@@ -205,12 +206,12 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
   }
 
   object ChangeLinks {
-    val employerPayAmountControllerHref: Call = controllers.employment.routes.EmployerPayAmountController.show(taxYear-1, employmentId)
-    val employerNameHref: Call = controllers.employment.routes.EmployerNameController.show(taxYear-1, employmentId)
-    val payeRefHref: Call = controllers.employment.routes.PayeRefController.show(taxYear-1, employmentId)
-    val changeEmploymentStartDateHref: Call = controllers.employment.routes.EmployerStartDateController.show(taxYear-1, employmentId)
-    val changeEmploymentEndDateHref: Call = controllers.employment.routes.EmployerLeaveDateController.show(taxYear-1, employmentId)
-    val payrollIdHref: Call = controllers.employment.routes.EmployerPayrollIdController.show(taxYear-1, employmentId)
+    val employerPayAmountControllerHref: Call = controllers.employment.routes.EmployerPayAmountController.show(taxYear - 1, employmentId)
+    val employerNameHref: Call = controllers.employment.routes.EmployerNameController.show(taxYear - 1, employmentId)
+    val payeRefHref: Call = PayeRefController.show(taxYear - 1, employmentId)
+    val changeEmploymentStartDateHref: Call = controllers.employment.routes.EmployerStartDateController.show(taxYear - 1, employmentId)
+    val changeEmploymentEndDateHref: Call = controllers.employment.routes.EmployerLeaveDateController.show(taxYear - 1, employmentId)
+    val payrollIdHref: Call = controllers.employment.routes.EmployerPayrollIdController.show(taxYear - 1, employmentId)
     val changeStillWorkingForEmployerHref: Call = controllers.employment.routes.StillWorkingForEmployerController.show(taxYear - 1, employmentId)
   }
 
@@ -333,43 +334,9 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
   ".show" when {
     import ChangeLinks._
     import Selectors._
-
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
-        //noinspection ScalaStyle
-        "redirect to the overview page when prior data exists but not matching the id" which {
-
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel()), nino, 2021)
-            urlGet(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
-          }
-
-          "has an SEE OTHER status" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2021/view")
-          }
-        }
-        //noinspection ScalaStyle
-        "redirect to the overview page when no data exists" which {
-
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            noUserDataStub(nino, 2021)
-            urlGet(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
-          }
-
-          "has an SEE OTHER status" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2021/view")
-          }
-        }
-        //noinspection ScalaStyle
         "for end of year return a fully populated page when cya data exists" which {
-
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(EmploymentUserData(
@@ -381,7 +348,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               isPriorSubmission = true,
               hasPriorBenefits = true,
               EmploymentCYAModel(
-                fullEmploymentsModel().hmrcEmploymentData.head.toEmploymentDetails(false).copy(cessationDateQuestion = Some(false)),
+                fullEmploymentsModel().hmrcEmploymentData.head.toEmploymentDetails(isUsingCustomerData = false).copy(cessationDateQuestion = Some(false)),
                 None
               )
             ), User(mtditid, if (user.isAgent) Some("12345678") else None, nino, sessionId, if (user.isAgent) "Agent" else "Individual")(fakeRequest))
@@ -420,42 +387,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(8))
           textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(8))
         }
-        //noinspection ScalaStyle
-        "for end of year return a redirect when cya data exists but not finished when its a new employment" which {
 
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            insertCyaData(EmploymentUserData(
-              sessionId,
-              "1234567890",
-              "AA123456A",
-              2021,
-              "001",
-              isPriorSubmission = false,
-              hasPriorBenefits =  true,
-              EmploymentCYAModel(
-                fullEmploymentsModel().hmrcEmploymentData.head.toEmploymentDetails(false).copy(employerRef = None),
-                None
-              )
-            ), User(mtditid, if (user.isAgent) Some("12345678") else None, nino, sessionId, if (user.isAgent) "Agent" else "Individual")(fakeRequest))
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel()), nino, 2021)
-            urlGet(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
-          }
-
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-          "has an SEE OTHER status" in {
-            result.status shouldBe SEE_OTHER
-          }
-
-          "has a redirect url of employer reference page" in {
-            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=001")
-          }
-        }
-        //noinspection ScalaStyle
         "for in year return a fully populated page when all the fields are populated" which {
-
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -492,7 +425,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(8))
           textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(8))
         }
-        //noinspection ScalaStyle
+
         "for end of year return a fully populated page, with change links, when all the fields are populated" which {
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
@@ -506,8 +439,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           "has an OK status" in {
             result.status shouldBe OK
           }
-
-          val taxHref = "/update-and-submit-income-tax-return/employment-income/2021/uk-tax?employmentId=001"
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -545,11 +476,10 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(8))
           textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(8))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.taxTakenFromPayHiddenText}",
-            cyaChangeLink(8), taxHref, Some(cyaHiddenChangeLink(8)))
+            cyaChangeLink(8), EmploymentTaxController.show(taxYear - 1, employmentId).url, Some(cyaHiddenChangeLink(8)))
         }
 
         "for in year return a filtered list on page when minimum data is returned" which {
-
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -577,10 +507,9 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(4))
           textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(4))
         }
-        //noinspection ScalaStyle
+
         "for end of year return customer employment data if there is both HMRC and customer Employment Data " +
           "and correctly render a filtered list on page when minimum data is returned" when {
-
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -593,8 +522,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           "has an OK status" in {
             result.status shouldBe OK
           }
-
-          val taxHref = "/update-and-submit-income-tax-return/employment-income/2021/uk-tax?employmentId=001"
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -615,14 +542,13 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(4))
           textOnPageCheck(ContentValues.taxTakenFromPayB, summaryListRowFieldAmountSelector(4))
           linkCheck(s"${user.commonExpectedResults.changeLinkExpected} ${user.specificExpectedResults.get.taxTakenFromPayHiddenText}",
-            cyaChangeLink(4), taxHref, Some(cyaHiddenChangeLink(4)))
+            cyaChangeLink(4), EmploymentTaxController.show(taxYear - 1, employmentId).url, Some(cyaHiddenChangeLink(4)))
 
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           formPostLinkCheck(user.commonExpectedResults.continueButtonLink, continueButtonFormSelector)
         }
-        //noinspection ScalaStyle
-        "handle a model with an Invalid date format returned" when {
 
+        "handle a model with an Invalid date format returned" when {
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -650,270 +576,303 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(4))
           textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(4))
         }
-
-        "returns an action when auth call fails" which {
-          lazy val result: WSResponse = {
-            unauthorisedAgentOrIndividual(user.isAgent)
-            urlGet(url, welsh = user.isWelsh)
-          }
-          "has an UNAUTHORIZED(401) status" in {
-            result.status shouldBe UNAUTHORIZED
-          }
-        }
-
-        "redirect to overview page when theres no details" in {
-
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(
-              fullEmploymentsModel().copy(hmrcEmploymentData = Seq.empty)
-            ), nino, taxYear)
-            urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
-
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
-        }
       }
+    }
+
+    "redirect to the overview page when prior data exists but not matching the id" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(userData(fullEmploymentsModel()), nino, 2021)
+        urlGet(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+      }
+
+      "has an SEE OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(2021))
+      }
+    }
+
+    "redirect to the overview page when no data exists" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        noUserDataStub(nino, 2021)
+        urlGet(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+      }
+
+      "has an SEE OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(2021))
+      }
+    }
+
+    "for end of year return a redirect when cya data exists but not finished when its a new employment" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(EmploymentUserData(
+          sessionId,
+          "1234567890",
+          "AA123456A",
+          2021,
+          "001",
+          isPriorSubmission = false,
+          hasPriorBenefits = true,
+          EmploymentCYAModel(
+            fullEmploymentsModel().hmrcEmploymentData.head.toEmploymentDetails(false).copy(employerRef = None),
+            None
+          )
+        ), User(mtditid, None, nino, sessionId, "Individual")(fakeRequest))
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(userData(fullEmploymentsModel()), nino, 2021)
+        urlGet(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+      }
+
+      implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+      "has an SEE OTHER status" in {
+        result.status shouldBe SEE_OTHER
+      }
+
+      "has a redirect url of employer reference page" in {
+        result.header("location") shouldBe Some(PayeRefController.show(2021, employmentId).url)
+      }
+    }
+
+    "returns an action when auth call fails" which {
+      lazy val result: WSResponse = {
+        unauthorisedAgentOrIndividual(isAgent = false)
+        urlGet(url)
+      }
+      "has an UNAUTHORIZED(401) status" in {
+        result.status shouldBe UNAUTHORIZED
+      }
+    }
+
+    "redirect to overview page when theres no details" in {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(userData(
+          fullEmploymentsModel().copy(hmrcEmploymentData = Seq.empty)
+        ), nino, taxYear)
+        urlGet(url, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
+
+      result.status shouldBe SEE_OTHER
+      result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
     }
   }
 
-
   ".submit" when {
+    "redirect when in year" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(userData(fullEmploymentsModel()), nino, 2022)
+        urlPost(s"$appUrl/2022/check-employment-details?employmentId=employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
+      }
 
-    userScenarios.foreach { user =>
-      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+      "has an SEE OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      }
+    }
 
-        //noinspection ScalaStyle
-        "redirect when in year" which {
+    "redirect when at the end of the year when no cya data" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(false)
+        userDataStub(userData(fullEmploymentsModel()), nino, 2021)
+        urlPost(s"$appUrl/2021/check-employment-details?employmentId=$employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
+      }
 
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel()), nino, 2022)
-            urlPost(s"$appUrl/2022/check-employment-details?employmentId=employmentId", follow = false,
-              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
-          }
+      "has an SEE OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(CheckEmploymentDetailsController.show(2021, employmentId).url)
+      }
+    }
 
-          "has an SEE OTHER status" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
-          }
-        }
-        //noinspection ScalaStyle
-        "redirect when at the end of the year when no cya data" which {
+    "create the model to update the data and return the correct redirect" which {
+      val employmentData: EmploymentCYAModel = {
+        employmentUserData.employment.copy(employmentDetails = employmentUserData.employment.employmentDetails.copy(
+          employerRef = Some("123/12345"),
+          startDate = Some("2020-11-11"),
+          taxablePayToDate = Some(55.99),
+          totalTaxToDate = Some(3453453.00),
+          currentDataIsHmrcHeld = false
+        ))
+      }
 
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel()), nino, 2021)
-            urlPost(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false,
-              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
-          }
+      val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        insertCyaData(employmentUserData.copy(employment = employmentData).copy(employmentId = "001"), userRequest)
+        userDataStub(userData(fullEmploymentsModel().copy(customerEmploymentData = fullEmploymentsModel().hmrcEmploymentData)), nino, 2021)
 
-          "has an SEE OTHER status" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=employmentId")
-          }
-        }
-        //noinspection ScalaStyle
-        "create the model to update the data and return the correct redirect" which {
-
-          val employmentData: EmploymentCYAModel = {
-            employmentUserData.employment.copy(employmentDetails = employmentUserData.employment.employmentDetails.copy(
-              employerRef = Some(
-                "123/12345"
+        val model = CreateUpdateEmploymentRequest(
+          Some("001"),
+          Some(
+            CreateUpdateEmployment(
+              employmentData.employmentDetails.employerRef,
+              employmentData.employmentDetails.employerName,
+              employmentData.employmentDetails.startDate.get
+            )
+          ),
+          Some(
+            CreateUpdateEmploymentData(
+              pay = CreateUpdatePay(
+                employmentData.employmentDetails.taxablePayToDate.get,
+                employmentData.employmentDetails.totalTaxToDate.get,
               ),
-              startDate = Some("2020-11-11"),
-              taxablePayToDate = Some(55.99),
-              totalTaxToDate = Some(3453453.00),
-              currentDataIsHmrcHeld = false
-            ))
-          }
-
-          val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData.copy(employment = employmentData).copy(employmentId = "001"),userRequest)
-            userDataStub(userData(fullEmploymentsModel().copy(customerEmploymentData = fullEmploymentsModel().hmrcEmploymentData)), nino, 2021)
-
-            val model = CreateUpdateEmploymentRequest(
-              Some("001"),
-              Some(
-                CreateUpdateEmployment(
-                  employmentData.employmentDetails.employerRef,
-                  employmentData.employmentDetails.employerName,
-                  employmentData.employmentDetails.startDate.get
-                )
-              ),
-              Some(
-                CreateUpdateEmploymentData(
-                  pay = CreateUpdatePay(
-                    employmentData.employmentDetails.taxablePayToDate.get,
-                    employmentData.employmentDetails.totalTaxToDate.get,
-                  ),
-                  deductions = Some(
-                    Deductions(
-                      Some(StudentLoans(
-                        Some(100),
-                        Some(100)
-                      ))
-                    )
-                  )
+              deductions = Some(
+                Deductions(
+                  Some(StudentLoans(
+                    Some(100),
+                    Some(100)
+                  ))
                 )
               )
             )
+          )
+        )
 
-            stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
-              Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+        stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
+          Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-            urlPost(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false,
-              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)),body = "{}")
-          }
+        urlPost(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
+      }
 
-          "has an SEE OTHER status" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear-1).url)
-            findCyaData(taxYear,employmentId,userRequest) shouldBe None
-          }
-        }
-        //noinspection ScalaStyle
-        "create the model to update the data and return the correct redirect when there is a hmrc employment to ignore" which {
+      "has an SEE OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
+        findCyaData(taxYear, employmentId, userRequest) shouldBe None
+      }
+    }
 
-          val employmentData: EmploymentCYAModel = {
-            employmentUserData.employment.copy(employmentDetails = employmentUserData.employment.employmentDetails.copy(
-              employerRef = Some(
-                "123/12345"
-              ),
-              startDate = Some("2020-11-11"),
-              taxablePayToDate= Some(55.99),
-              totalTaxToDate= Some(3453453.00),
-              currentDataIsHmrcHeld = false
-            ))
-          }
+    "create the model to update the data and return the correct redirect when there is a hmrc employment to ignore" which {
+      val employmentData: EmploymentCYAModel = {
+        employmentUserData.employment.copy(employmentDetails = employmentUserData.employment.employmentDetails.copy(
+          employerRef = Some("123/12345"),
+          startDate = Some("2020-11-11"),
+          taxablePayToDate = Some(55.99),
+          totalTaxToDate = Some(3453453.00),
+          currentDataIsHmrcHeld = false
+        ))
+      }
 
-          val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData.copy(employment = employmentData).copy(employmentId = "001"),userRequest)
-            userDataStub(userData(fullEmploymentsModel()), nino, 2021)
+      val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        insertCyaData(employmentUserData.copy(employment = employmentData).copy(employmentId = "001"), userRequest)
+        userDataStub(userData(fullEmploymentsModel()), nino, 2021)
 
-            val model = CreateUpdateEmploymentRequest(
-              None,
-              Some(
-                CreateUpdateEmployment(
-                  employmentData.employmentDetails.employerRef,
-                  employmentData.employmentDetails.employerName,
-                  employmentData.employmentDetails.startDate.get
-                )
-              ),
-              Some(
-                CreateUpdateEmploymentData(
-                  pay = CreateUpdatePay(
-                    employmentData.employmentDetails.taxablePayToDate.get,
-                    employmentData.employmentDetails.totalTaxToDate.get,
-                  ),
-                  deductions = Some(
-                    Deductions(
-                      Some(StudentLoans(
-                        Some(100),
-                        Some(100)
-                      ))
-                    )
-                  )
-                )
-              ),
-              Some("001")
+        val model = CreateUpdateEmploymentRequest(
+          None,
+          Some(
+            CreateUpdateEmployment(
+              employmentData.employmentDetails.employerRef,
+              employmentData.employmentDetails.employerName,
+              employmentData.employmentDetails.startDate.get
             )
-
-            stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
-              Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
-
-            urlPost(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false,
-              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)),body = "{}")
-          }
-
-          "has an SEE OTHER status" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear-1).url)
-            findCyaData(taxYear,employmentId,userRequest) shouldBe None
-          }
-        }
-        //noinspection ScalaStyle
-        "create the model to create the data and return the correct redirect" which {
-
-          val employmentData: EmploymentCYAModel = {
-            employmentUserData.employment.copy(employmentDetails = employmentUserData.employment.employmentDetails.copy(
-              employerRef = Some(
-                "123/12345"
+          ),
+          Some(
+            CreateUpdateEmploymentData(
+              pay = CreateUpdatePay(
+                employmentData.employmentDetails.taxablePayToDate.get,
+                employmentData.employmentDetails.totalTaxToDate.get,
               ),
-              startDate = Some("2020-11-11"),
-              taxablePayToDate= Some(55.99),
-              totalTaxToDate= Some(3453453.00),
-              currentDataIsHmrcHeld = false
-            ))
-          }
-
-          val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData.copy(employment = employmentData),userRequest)
-            noUserDataStub(nino, 2021)
-
-            val model = CreateUpdateEmploymentRequest(
-              None,
-              Some(
-                CreateUpdateEmployment(
-                  employmentData.employmentDetails.employerRef,
-                  employmentData.employmentDetails.employerName,
-                  employmentData.employmentDetails.startDate.get
-                )
-              ),
-              Some(
-                CreateUpdateEmploymentData(
-                  pay = CreateUpdatePay(
-                    employmentData.employmentDetails.taxablePayToDate.get,
-                    employmentData.employmentDetails.totalTaxToDate.get,
-                  )
+              deductions = Some(
+                Deductions(
+                  Some(StudentLoans(
+                    Some(100),
+                    Some(100)
+                  ))
                 )
               )
             )
+          ),
+          Some("001")
+        )
 
-            stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
-              Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+        stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
+          Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-            urlPost(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false,
-              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
-          }
+        urlPost(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
+      }
 
-          "has an SEE OTHER status" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
-            findCyaData(taxYear, employmentId, userRequest) shouldBe None
-          }
-        }
-        //noinspection ScalaStyle
-        "create the model to update the data and return the correct redirect when not all data is present" which {
+      "has an SEE OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
+        findCyaData(taxYear, employmentId, userRequest) shouldBe None
+      }
+    }
 
-          val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
-          implicit lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData, userRequest)
-            userDataStub(userData(fullEmploymentsModel()), nino, 2021)
-            urlPost(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false,
-              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
-          }
+    "create the model to create the data and return the correct redirect" which {
+      val employmentData: EmploymentCYAModel = {
+        employmentUserData.employment.copy(employmentDetails = employmentUserData.employment.employmentDetails.copy(
+          employerRef = Some("123/12345"),
+          startDate = Some("2020-11-11"),
+          taxablePayToDate = Some(55.99),
+          totalTaxToDate = Some(3453453.00),
+          currentDataIsHmrcHeld = false
+        ))
+      }
 
-          "has an SEE OTHER status" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=employmentId")
-          }
-        }
+      val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(false)
+        insertCyaData(employmentUserData.copy(employment = employmentData), userRequest)
+        noUserDataStub(nino, 2021)
+
+        val model = CreateUpdateEmploymentRequest(
+          None,
+          Some(
+            CreateUpdateEmployment(
+              employmentData.employmentDetails.employerRef,
+              employmentData.employmentDetails.employerName,
+              employmentData.employmentDetails.startDate.get
+            )
+          ),
+          Some(
+            CreateUpdateEmploymentData(
+              pay = CreateUpdatePay(
+                employmentData.employmentDetails.taxablePayToDate.get,
+                employmentData.employmentDetails.totalTaxToDate.get,
+              )
+            )
+          )
+        )
+
+        stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
+          Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+
+        urlPost(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
+      }
+
+      "has an SEE OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
+        findCyaData(taxYear, employmentId, userRequest) shouldBe None
+      }
+    }
+
+    "create the model to update the data and return the correct redirect when not all data is present" which {
+      val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(false)
+        insertCyaData(employmentUserData, userRequest)
+        userDataStub(userData(fullEmploymentsModel()), nino, 2021)
+        urlPost(s"$appUrl/2021/check-employment-details?employmentId=$employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
+      }
+
+      "has an SEE OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(CheckEmploymentDetailsController.show(2021, employmentId).url)
       }
     }
   }

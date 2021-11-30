@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,16 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this()
+package builders.models.employment
 
-@(
-        link: String,
-        messageKey: String,
-        id: Option[String] = None,
-        isExternal: Boolean = false
-)(implicit messages: Messages)
+import builders.models.employment.PayBuilder.aPay
+import models.employment.EmploymentData
 
-<a href="@link" class="govuk-link" @id.map(x => s"id=$x") @if(isExternal) { target="_blank"  rel="noopener noreferrer" }>@messages(messageKey)@if(isExternal)(" " + messages("common.opensInNewWindowOrTab"))</a>
+object EmploymentDataBuilder {
 
+  def anEmploymentData: EmploymentData = EmploymentData(
+    submittedOn = "2021-01-01",
+    employmentSequenceNumber = None,
+    companyDirector = Some(true),
+    closeCompany = Some(true),
+    directorshipCeasedDate = None,
+    occPen = Some(false),
+    disguisedRemuneration = None,
+    pay = Some(aPay),
+    deductions = None
+  )
+}

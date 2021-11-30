@@ -963,10 +963,28 @@ benefits.incurredCostsAmount.error.noEntry.agent = Enter the amount of incurred 
 benefits.incurredCostsAmount.error.incorrectFormat.agent = Enter the amount of incurred costs paid by your client’s employer in the correct format
 benefits.incurredCostsAmount.error.overMaximum.agent = The incurred costs paid by your client’s employer must be less than £100,000,000,000
 
+benefits.incomeTaxBenefitsAmount.title.individual = How much of your Income Tax did your employer pay?
+benefits.incomeTaxBenefitsAmount.title.agent = How much of your client’s Income Tax did their employer pay?
+benefits.incomeTaxBenefitsAmount.error.noEntry.individual = Enter the amount of Income Tax paid by your employer
+benefits.incomeTaxBenefitsAmount.error.incorrectFormat.individual = Enter the amount of Income Tax paid by your employer in the correct format
+benefits.incomeTaxBenefitsAmount.error.overMaximum.individual = The Income Tax paid by your employer must be less than £100,000,000,000
+benefits.incomeTaxBenefitsAmount.error.noEntry.agent = Enter the amount of Income Tax paid by your client’s employer
+benefits.incomeTaxBenefitsAmount.error.incorrectFormat.agent = Enter the amount of Income Tax paid by your client’s employer in the correct format
+benefits.incomeTaxBenefitsAmount.error.overMaximum.agent = The Income Tax paid by your client’s employer must be less than £100,000,000,000
+
 benefits.reimbursedCostsVouchersAndNonCash.title.individual = Did you get any reimbursed costs, vouchers or non-cash benefits from your employer?
 benefits.reimbursedCostsVouchersAndNonCash.title.agent = Did your client get any reimbursed costs, vouchers or non-cash benefits from their employer?
 benefits.reimbursedCostsVouchersAndNonCash.error.individual = Select yes if you got reimbursed costs, vouchers or non-cash benefits from your employer
 benefits.reimbursedCostsVouchersAndNonCash.error.agent = Select yes if your client got reimbursed costs, vouchers or non-cash benefits from their employer
+
+benefits.vouchersBenefits.title.individual = Did you get vouchers or credit cards?
+benefits.vouchersBenefits.title.agent = Did your client get vouchers or credit cards?
+benefits.vouchersBenefits.paragraph.individual = We only need to know about vouchers you can exchange for:
+benefits.vouchersBenefits.paragraph.agent = We only need to know about vouchers your client can exchange for:
+benefits.vouchersBenefits.bullet1 = goods and services
+benefits.vouchersBenefits.bullet2 = a sum of money substantially less than the cost to provide them
+benefits.vouchersBenefits.error.individual = Select yes if you got vouchers or credit cards
+benefits.vouchersBenefits.error.agent = Select yes if your client got vouchers or credit cards
 
 benefits.nonTaxableCosts.title.individual = Were any of your non-taxable costs reimbursed by your employer?
 benefits.nonTaxableCosts.title.agent = Were any of your client’s non-taxable costs reimbursed by their employer?
@@ -998,6 +1016,39 @@ benefits.taxableCostsBenefitsAmount.error.overMaximum.individual = The taxable c
 benefits.taxableCostsBenefitsAmount.error.noEntry.agent = Enter the amount of taxable costs reimbursed by your client’s employer
 benefits.taxableCostsBenefitsAmount.error.incorrectFormat.agent = Enter the amount of taxable costs reimbursed by your client’s employer in the correct format
 benefits.taxableCostsBenefitsAmount.error.overMaximum.agent = The taxable costs reimbursed by your client’s employer must be less than £100,000,000,000
+
+benefits.vouchersBenefitsAmount.title = What is the total value of vouchers and credit card payments?
+benefits.vouchersBenefitsAmount.youCan.individual = You can find this information on your P11D form in section C, box 12.
+benefits.vouchersBenefitsAmount.youCan.agent = You can find this information on your client’s P11D form in section C, box 12.
+benefits.vouchersBenefitsAmount.error.noEntry = Enter the amount for vouchers or credit cards
+benefits.vouchersBenefitsAmount.error.incorrectFormat = Enter the amount for vouchers or credit cards in the correct format
+benefits.vouchersBenefitsAmount.error.overMaximum = The amount for vouchers or credit cards must be less than £100,000,000,000
+
+benefits.nonCashBenefitsAmount.title.individual = How much did you get in total for non-cash benefits?
+benefits.nonCashBenefitsAmount.title.agent = How much did your client get in total for non-cash benefits?
+benefits.nonCashBenefitsAmount.error.noEntry.individual = Enter the amount you got for non-cash benefits
+benefits.nonCashBenefitsAmount.error.noEntry.agent = Enter the amount your client got for non-cash benefits
+benefits.nonCashBenefitsAmount.error.incorrectFormat = Enter the amount for non-cash benefits in the correct format
+benefits.nonCashBenefitsAmount.error.overMaximum = The amount for non-cash benefits must be less than £100,000,000,000
+
+benefits.otherBenefitsAmount.title.individual = How much did you get in total for other benefits?
+benefits.otherBenefitsAmount.title.agent = How much did your client get in total for other benefits?
+benefits.otherBenefitsAmount.error.noEntry.individual = Enter the amount you got for other benefits
+benefits.otherBenefitsAmount.error.incorrectFormat.individual = Enter the amount you got for other benefits in the correct format
+benefits.otherBenefitsAmount.error.overMaximum = The amount for other benefits must be less than £100,000,000,000
+benefits.otherBenefitsAmount.error.noEntry.agent = Enter the amount your client got for other benefits
+benefits.otherBenefitsAmount.error.incorrectFormat.agent = Enter the amount your client got for other benefits in the correct format
+
+benefits.assetsAmount.title.individual = How much were the assets made available for your use?
+benefits.assetsAmount.title.agent = How much were the assets made available for your client’s use?
+benefits.assetsAmount.youCan.individual = You can find this information on your P11D form in section L, box 13.
+benefits.assetsAmount.youCan.agent = You can find this information on your client’s P11D form in section L, box 13.
+benefits.assetsAmount.error.noEntry.individual = Enter the amount for assets made available for your use
+benefits.assetsAmount.error.incorrectFormat.individual = Enter the amount for assets made available for your use in the correct format
+benefits.assetsAmount.error.overMaximum.individual = The amount for assets made available for your use must be less than £100,000,000,000
+benefits.assetsAmount.error.noEntry.agent = Enter the amount for assets made available for your client’s use
+benefits.assetsAmount.error.incorrectFormat.agent = Enter the amount for assets made available for your client’s use in the correct format
+benefits.assetsAmount.error.overMaximum.agent = The amount for assets made available for your client’s use must be less than £100,000,000,000
 
 #####Expenses Pages#######
 

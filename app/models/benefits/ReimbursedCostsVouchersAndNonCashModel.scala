@@ -53,7 +53,7 @@ case class ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonC
 
   def expensesSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     expensesQuestion match {
-      case Some(true) => if(expenses.isDefined) None else Some(NonTaxableCostsBenefitsAmountController.show(taxYear, employmentId))
+      case Some(true) => if (expenses.isDefined) None else Some(NonTaxableCostsBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(NonTaxableCostsBenefitsController.show(taxYear, employmentId))
     }
@@ -70,15 +70,15 @@ case class ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonC
   def vouchersAndCreditCardsSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     vouchersAndCreditCardsQuestion match {
       case Some(true) => if (vouchersAndCreditCards.isDefined) None else Some(
-        CheckYourBenefitsController.show(taxYear, employmentId)) //TODO vouchersAndCreditCards amount page
+        VouchersBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO vouchersAndCreditCards yes no page
+      case None => Some(VouchersBenefitsController.show(taxYear, employmentId))
     }
   }
 
   def nonCashSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     nonCashQuestion match {
-      case Some(true) => if (nonCash.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO nonCash amount page
+      case Some(true) => if (nonCash.isDefined) None else Some(NonCashBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO nonCash yes no page
     }
@@ -86,7 +86,7 @@ case class ReimbursedCostsVouchersAndNonCashModel(reimbursedCostsVouchersAndNonC
 
   def otherItemsSectionFinished(implicit taxYear: Int, employmentId: String): Option[Call] = {
     otherItemsQuestion match {
-      case Some(true) => if (otherItems.isDefined) None else Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO otherItems amount page
+      case Some(true) => if (otherItems.isDefined) None else Some(OtherBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
       case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO otherItems yes no page
     }

@@ -25,12 +25,18 @@
 @heading(messages("error.unauthorised-user.heading"), None, extraClasses = "govuk-!-margin-bottom-5", size = "xl")
 
 <div class="govuk-body">
- <p>@messages("error-template.paragraph.1.1a")</p>
+    <p>@messages("error-template.paragraph.1.1a")</p>
 </div>
 
 <ul class="govuk-list govuk-list--bullet">
- <li>@messages("error-template.paragraph.1.2") <a href="https://www.gov.uk/income-tax" class="govuk-link" id= "govuk-income-tax-link" target="_blank" >@messages("error-template.paragraph.1.3")</a> @messages("error-template.paragraph.1.4")
- <li> @messages("common.use") <a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment" class="govuk-link" id= "govuk-self-assessment-link" target="_blank" >@messages("common.error.self-assessment.paragraph.1.2")</a> @messages("common.error.self-assessment.paragraph.1.3")
+    <li>@messages("error-template.paragraph.1.2")
+        <a href="https://www.gov.uk/income-tax" class="govuk-link" id="govuk-income-tax-link" target="_blank"
+           rel="noopener noreferrer">
+            @messages("error-template.paragraph.1.3")
+        </a> @messages("error-template.paragraph.1.4")
+    <li> @messages("common.use") <a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment"
+            class="govuk-link" id="govuk-self-assessment-link" target="_blank" rel="noopener noreferrer">@messages("common.error.self-assessment.paragraph.1.2")</a>
+        @messages("common.error.self-assessment.paragraph.1.3")
 </ul>
 
 }

@@ -233,7 +233,7 @@
                     incomeTaxPaidByDirectorQuestion => showQuestionRow("checkYourBenefits.incomeTaxPaid", incomeTaxPaidByDirectorQuestion, controllers.benefits.income.routes.IncomeTaxBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirector).map{
-                    incomeTaxPaidByDirector => showRows("checkYourBenefits.incomeTaxPaidAmount", incomeTaxPaidByDirector)
+                    incomeTaxPaidByDirector => showRows("checkYourBenefits.incomeTaxPaidAmount", incomeTaxPaidByDirector, controllers.benefits.income.routes.IncomeTaxBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalfQuestion).map{
                     paymentsOnEmployeesBehalfQuestion => showQuestionRow("checkYourBenefits.incurredCostsPaid", paymentsOnEmployeesBehalfQuestion, controllers.benefits.income.routes.IncurredCostsBenefitsController.show(taxYear, employmentId))
@@ -266,22 +266,22 @@
                     taxableExpenses => showRows("checkYourBenefits.taxableCostsAmount", taxableExpenses, controllers.benefits.reimbursed.routes.TaxableCostsBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCardsQuestion).map{
-                    vouchersAndCreditCardsQuestion => showQuestionRow("checkYourBenefits.vouchers", vouchersAndCreditCardsQuestion)
+                    vouchersAndCreditCardsQuestion => showQuestionRow("checkYourBenefits.vouchers", vouchersAndCreditCardsQuestion, controllers.benefits.reimbursed.routes.VouchersBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCards).map{
-                    vouchersAndCreditCards => showRows("checkYourBenefits.vouchersAmount", vouchersAndCreditCards)
+                    vouchersAndCreditCards => showRows("checkYourBenefits.vouchersAmount", vouchersAndCreditCards, controllers.benefits.reimbursed.routes.VouchersBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCashQuestion).map{
                     nonCashQuestion => showQuestionRow("checkYourBenefits.nonCash", nonCashQuestion)
                 },
                 benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash).map{
-                    nonCash => showRows("checkYourBenefits.nonCashAmount", nonCash)
+                    nonCash => showRows("checkYourBenefits.nonCashAmount", nonCash, controllers.benefits.reimbursed.routes.NonCashBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItemsQuestion).map{
                     otherItemsQuestion => showQuestionRow("checkYourBenefits.otherBenefits", otherItemsQuestion)
                 },
                 benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItems).map{
-                    otherItems => showRows("checkYourBenefits.otherBenefitsAmount", otherItems)
+                    otherItems => showRows("checkYourBenefits.otherBenefitsAmount", otherItems, controllers.benefits.reimbursed.routes.OtherBenefitsAmountController.show(taxYear, employmentId))
                 }
             ).flatten
         } else { Seq() }
@@ -299,7 +299,7 @@
                     assetsQuestion => showQuestionRow("checkYourBenefits.assets", assetsQuestion)
                 },
                 benefits.assetsModel.flatMap(_.assets).map{
-                    assets => showRows("checkYourBenefits.assetsAmount", assets)
+                    assets => showRows("checkYourBenefits.assetsAmount", assets, controllers.benefits.assets.routes.AssetsBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.assetsModel.flatMap(_.assetTransferQuestion).map{
                     assetTransferQuestion => showQuestionRow("checkYourBenefits.assetTransfers", assetTransferQuestion)

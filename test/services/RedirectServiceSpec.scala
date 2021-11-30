@@ -21,6 +21,7 @@ import controllers.benefits.fuel.routes._
 import controllers.benefits.income.routes._
 import controllers.benefits.medical.routes._
 import controllers.benefits.reimbursed.routes._
+import controllers.benefits.assets.routes._
 import controllers.benefits.routes.ReceiveAnyBenefitsController
 import controllers.benefits.travel.routes._
 import controllers.benefits.utilities.routes._
@@ -1192,7 +1193,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => incurredCostsPaidByEmployerRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe IncomeTaxBenefitsAmountController.show(taxYear, employmentId).url
       }
 
       "it's a new submission and attempted to view the 'Incurred costs paid by employer amount' page " +
@@ -1380,7 +1381,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => taxableExpensesAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe VouchersBenefitsController.show(taxYear, employmentId).url
       }
       "it's a prior submission and attempted to view 'taxable expenses amount' page" +
         "but the taxable expenses question is false" in {
@@ -1410,7 +1411,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => vouchersAndCreditCardsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe VouchersBenefitsController.show(taxYear, employmentId).url
       }
       "it's a new submission and attempted to view 'vouchers And Credit Cards amount' page" +
         "but the vouchers And Credit Cards question is false" in {
@@ -1440,7 +1441,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => nonCashRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe VouchersBenefitsAmountController.show(taxYear, employmentId).url
       }
       "it's a new submission and attempted to view 'non cash amount' page" +
         "but the non cash question is empty" in {
@@ -1481,7 +1482,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => otherItemsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe NonCashBenefitsAmountController.show(taxYear, employmentId).url
       }
 
       "it's a prior submission and attempted to view 'other items amount' page" +
@@ -1649,7 +1650,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => assetTransferRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe AssetsBenefitsAmountController.show(taxYear, employmentId).url
       }
       "it's a new submission and attempted to view the 'Assets transfer amount' page" +
         "but the Assets transfer question is empty" in {

@@ -33,7 +33,7 @@ class IncomeTaxAndCostsModelSpec extends UnitTest {
 
     "return call to 'Income tax paid by director amount' page when incomeTaxPaidByDirectorQuestion is true and incomeTaxPaidByDirector amount not defined" in {
       val underTest = IncomeTaxAndCostsModel(incomeTaxPaidByDirectorQuestion = Some(true), incomeTaxPaidByDirector = None)
-      underTest.incomeTaxPaidByDirectorSectionFinished(taxYear, employmentId) shouldBe Some(CheckYourBenefitsController.show(taxYear, employmentId))
+      underTest.incomeTaxPaidByDirectorSectionFinished(taxYear, employmentId) shouldBe Some(IncomeTaxBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return None when incomeTaxPaidByDirectorQuestion is false" in {
