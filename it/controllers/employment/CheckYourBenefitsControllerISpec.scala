@@ -715,7 +715,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val beneficialLoansAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/beneficial-loans-amount?employmentId=$employmentId"
     val incomeTaxOrIncurredCostsBenefitsHref: String =
       s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/employer-income-tax-or-incurred-costs?employmentId=$employmentId"
-    val incomeTaxBenefitsAmountHref:String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/employer-income-tax-amount?employmentId=001"
+    val incomeTaxBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/employer-income-tax-amount?employmentId=001"
     val incomeTaxBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/employer-income-tax?employmentId=$employmentId"
     val educationServiceBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/educational-services?employmentId=$employmentId"
     val incurredCostsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/incurred-costs?employmentId=$employmentId"
@@ -733,7 +733,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val otherBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/other-benefits-amount?employmentId=001"
     val assetsOrAssetTransfersBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/assets?employmentId=$employmentId"
     val assetsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/assets-available-for-use?employmentId=001"
-    val assetsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/assets-available-for-use-amount?employmentId=001"
+    val assetsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/assets-available-for-use-amount?employmentId=001"
+    val assetTransfersBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/assets-to-keep?employmentId=001"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -931,7 +932,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(common.assetsSubheading, common.yes, 19, 1, s"${common.changeText} ${specific.assetsSubheadingHiddenText}", assetsOrAssetTransfersBenefitsHref)
           changeAmountRowCheck(common.assets, common.yes, 19, 2, s"${common.changeText} ${specific.assetsHiddenText}", assetsBenefitsHref)
           changeAmountRowCheck(common.assetsAmount, "£27", 19, 3, s"${common.changeText} ${specific.assetsAmountHiddenText}", assetsBenefitsAmountHref)
-          changeAmountRowCheck(common.assetTransfers, common.yes, 19, 4, s"${common.changeText} ${specific.assetTransfersHiddenText}", dummyHref)
+          changeAmountRowCheck(common.assetTransfers, common.yes, 19, 4, s"${common.changeText} ${specific.assetTransfersHiddenText}", assetTransfersBenefitsAmountHref)
           changeAmountRowCheck(common.assetTransfersAmount, "£280000", 19, 5, s"${common.changeText} ${specific.assetTransfersAmountHiddenText}", dummyHref)
 
           buttonCheck(common.saveAndContinue)

@@ -1073,6 +1073,13 @@ benefits.assetsAmount.error.noEntry.agent = Enter the amount for assets made ava
 benefits.assetsAmount.error.incorrectFormat.agent = Enter the amount for assets made available for your client’s use in the correct format
 benefits.assetsAmount.error.overMaximum.agent = The amount for assets made available for your client’s use must be less than £100,000,000,000
 
+benefits.assetTransfers.title.individual = Did your employer give you any assets to keep?
+benefits.assetTransfers.title.agent = Did your client’s employer give them any assets to keep?
+benefits.assetTransfers.paragraph.individual = You became the owner of these assets.
+benefits.assetTransfers.paragraph.agent = Your client became the owner of these assets.
+benefits.assetTransfers.error.individual = Select yes if your employer gave you assets to keep
+benefits.assetTransfers.error.agent = Select yes if your client’s employer gave them assets to keep
+
 #####Expenses Pages#######
 expenses.caption = Employment expenses for 6 April {0} to 5 April {1}
 

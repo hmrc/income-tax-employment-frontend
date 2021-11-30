@@ -313,7 +313,7 @@
                     assets => showRows("checkYourBenefits.assetsAmount", assets, AssetsBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.assetsModel.flatMap(_.assetTransferQuestion).map{
-                    assetTransferQuestion => showQuestionRow("checkYourBenefits.assetTransfers", assetTransferQuestion)
+                    assetTransferQuestion => showQuestionRow("checkYourBenefits.assetTransfers", assetTransferQuestion, AssetTransfersBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.assetsModel.flatMap(_.assetTransfer).map{
                     assetTransfer => showRows("checkYourBenefits.assetTransfersAmount", assetTransfer)
