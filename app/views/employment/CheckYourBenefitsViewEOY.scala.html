@@ -296,7 +296,7 @@
         if(benefits.assetsDetailsPopulated){
             Seq(
                 benefits.assetsModel.flatMap(_.assetsQuestion).map{
-                    assetsQuestion => showQuestionRow("checkYourBenefits.assets", assetsQuestion)
+                    assetsQuestion => showQuestionRow("checkYourBenefits.assets", assetsQuestion, controllers.benefits.assets.routes.AssetsBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.assetsModel.flatMap(_.assets).map{
                     assets => showRows("checkYourBenefits.assetsAmount", assets, controllers.benefits.assets.routes.AssetsBenefitsAmountController.show(taxYear, employmentId))
