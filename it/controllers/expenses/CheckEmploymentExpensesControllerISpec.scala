@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package controllers.employment
+package controllers.expenses
 
+import controllers.expenses.routes._
 import models.employment.AllEmploymentData
 import models.expenses.Expenses
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
@@ -30,7 +31,7 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper {
 
-  private def url(taxYearToUse: Int = taxYear): String = s"$appUrl/$taxYearToUse/check-employment-expenses"
+  private def url(taxYearToUse: Int = taxYear): String = s"$appUrl/$taxYearToUse/expenses/check-employment-expenses"
 
   object Selectors {
     val headingSelector = "#main-content > div > div > header > h1"
@@ -230,13 +231,13 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   private val partExpenses: Expenses = Expenses(Some(1), Some(2))
 
   object Hrefs {
-    val dummyHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/check-employment-expenses"
+    val dummyHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/check-employment-expenses"
     val claimExpensesHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/claim-employment-expenses"
     val businessTravelOvernightExpensesHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/business-travel-and-overnight-expenses"
     val uniformsOrToolsExpensesHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/uniforms-work-clothes-or-tools"
     val uniformsOrToolsExpensesAmountHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/amount-for-uniforms-work-clothes-or-tools"
     val professionalFeesAndSubscriptionsHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/professional-fees-and-subscriptions"
-    val travelAndOvernightAmountHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear-1}/expenses/travel-amount"
+    val travelAndOvernightAmountHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/travel-amount"
     val professionalFeesSubscriptionsAmountHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/amount-for-professional-fees-and-subscriptions"
     val otherEquipmentHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/other-equipment"
     val otherEquipmentAmountHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/expenses/amount-for-other-equipment"
@@ -510,7 +511,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
+      result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
     }
 
     "returns an action when auth call fails" which {
@@ -538,7 +539,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
+        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
 
@@ -574,7 +575,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "has a url of expenses show method" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYear - 1).url)
+        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYear - 1).url)
       }
     }
   }

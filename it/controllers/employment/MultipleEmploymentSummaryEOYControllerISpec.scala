@@ -263,8 +263,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             textOnPageCheck(thisIsATotal, thisIsATotalSelector(5))
             "has an expenses section" should {
               textOnPageCheck(expensesText, expensesSelector(6))
-              linkCheck(specific.changeExpenses, changeExpensesSelector(6), "/update-and-submit-income-tax-return/employment-income/2021/check-employment-expenses")
-              linkCheck(specific.removeExpenses, removeExpensesSelector(6), "/update-and-submit-income-tax-return/employment-income/2021/check-employment-expenses")
+              linkCheck(specific.changeExpenses, changeExpensesSelector(6), "/update-and-submit-income-tax-return/employment-income/2021/expenses/check-employment-expenses")
+              linkCheck(specific.removeExpenses, removeExpensesSelector(6), "/update-and-submit-income-tax-return/employment-income/2021/expenses/check-employment-expenses")
             }
             textOnPageCheck(doYouNeedAnother, doYouNeedAnotherSelector)
             textOnPageCheck(specific.youMustTell, youMustTellSelector)
@@ -306,8 +306,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             textOnPageCheck(thisIsATotal, thisIsATotalSelector(5))
             "has an expenses section" should {
               textOnPageCheck(expensesText, expensesSelector(6))
-              linkCheck(specific.changeExpenses, changeExpensesSelector(6), "/update-and-submit-income-tax-return/employment-income/2021/check-employment-expenses")
-              linkCheck(specific.removeExpenses, removeExpensesSelector(6), "/update-and-submit-income-tax-return/employment-income/2021/check-employment-expenses")
+              linkCheck(specific.changeExpenses, changeExpensesSelector(6), "/update-and-submit-income-tax-return/employment-income/2021/expenses/check-employment-expenses")
+              linkCheck(specific.removeExpenses, removeExpensesSelector(6), "/update-and-submit-income-tax-return/employment-income/2021/expenses/check-employment-expenses")
             }
             textOnPageCheck(doYouNeedAnother, doYouNeedAnotherSelector)
             textOnPageCheck(specific.youMustTell, youMustTellSelector)
@@ -407,8 +407,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             textOnPageCheck(thisIsATotal, thisIsATotalSelector(6))
             "has an expenses section" should {
               textOnPageCheck(expensesText, expensesSelector(7))
-              linkCheck(specific.changeExpenses, changeExpensesSelector(7), "/update-and-submit-income-tax-return/employment-income/2021/check-employment-expenses")
-              linkCheck(specific.removeExpenses, removeExpensesSelector(7), "/update-and-submit-income-tax-return/employment-income/2021/check-employment-expenses")
+              linkCheck(specific.changeExpenses, changeExpensesSelector(7), "/update-and-submit-income-tax-return/employment-income/2021/expenses/check-employment-expenses")
+              linkCheck(specific.removeExpenses, removeExpensesSelector(7), "/update-and-submit-income-tax-return/employment-income/2021/expenses/check-employment-expenses")
             }
             textOnPageCheck(doYouNeedAnother, doYouNeedAnotherSelector)
             textOnPageCheck(specific.youMustTell, youMustTellSelector)

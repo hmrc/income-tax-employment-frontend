@@ -16,6 +16,7 @@
 
 package controllers.expenses
 
+import controllers.expenses.routes.CheckEmploymentExpensesController
 import forms.YesNoForm
 import models.User
 import models.expenses.Expenses
@@ -362,7 +363,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe false
@@ -396,7 +397,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
 
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
@@ -447,7 +448,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(controllers.employment.routes.CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
         }
       }
 

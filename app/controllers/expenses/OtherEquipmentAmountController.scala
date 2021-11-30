@@ -17,7 +17,7 @@
 package controllers.expenses
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckEmploymentExpensesController
+import controllers.expenses.routes.CheckEmploymentExpensesController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import models.mongo.ExpensesUserData

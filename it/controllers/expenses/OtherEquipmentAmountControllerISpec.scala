@@ -16,7 +16,7 @@
 
 package controllers.expenses
 
-import controllers.employment.routes._
+import controllers.expenses.routes._
 import forms.AmountForm
 import models.User
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
