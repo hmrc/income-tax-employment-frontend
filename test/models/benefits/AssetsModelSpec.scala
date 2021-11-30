@@ -17,6 +17,7 @@
 package models.benefits
 
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.assets.routes._
 import utils.UnitTest
 
 class AssetsModelSpec extends UnitTest {
@@ -49,7 +50,7 @@ class AssetsModelSpec extends UnitTest {
 
     "return assets amount page when assetsQuestion is true and no amount" in {
       model.copy(assetsQuestion = Some(true), assets = None).assetsSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(AssetsBenefitsAmountController.show(taxYear, employmentId))
     }
 
     "return None when assetsQuestion is false" in {

@@ -1039,6 +1039,17 @@ benefits.otherBenefitsAmount.error.overMaximum = The amount for other benefits m
 benefits.otherBenefitsAmount.error.noEntry.agent = Enter the amount your client got for other benefits
 benefits.otherBenefitsAmount.error.incorrectFormat.agent = Enter the amount your client got for other benefits in the correct format
 
+benefits.assetsAmount.title.individual = How much were the assets made available for your use?
+benefits.assetsAmount.title.agent = How much were the assets made available for your client’s use?
+benefits.assetsAmount.youCan.individual = You can find this information on your P11D form in section L, box 13.
+benefits.assetsAmount.youCan.agent = You can find this information on your client’s P11D form in section L, box 13.
+benefits.assetsAmount.error.noEntry.individual = Enter the amount for assets made available for your use
+benefits.assetsAmount.error.incorrectFormat.individual = Enter the amount for assets made available for your use in the correct format
+benefits.assetsAmount.error.overMaximum.individual = The amount for assets made available for your use must be less than £100,000,000,000
+benefits.assetsAmount.error.noEntry.agent = Enter the amount for assets made available for your client’s use
+benefits.assetsAmount.error.incorrectFormat.agent = Enter the amount for assets made available for your client’s use in the correct format
+benefits.assetsAmount.error.overMaximum.agent = The amount for assets made available for your client’s use must be less than £100,000,000,000
+
 #####Expenses Pages#######
 
 expenses.caption = Employment expenses for 6 April {0} to 5 April {1}
