@@ -16,8 +16,8 @@
 
 package models.benefits
 
-import controllers.employment.routes.CheckYourBenefitsController
 import controllers.benefits.assets.routes._
+import controllers.employment.routes.CheckYourBenefitsController
 import utils.UnitTest
 
 class AssetsModelSpec extends UnitTest {
@@ -79,7 +79,7 @@ class AssetsModelSpec extends UnitTest {
 
     "return assetTransfer yes no page" in {
       model.copy(assetTransferQuestion = None).assetTransferSectionFinished(taxYear, employmentId) shouldBe
-        Some(CheckYourBenefitsController.show(taxYear, employmentId))
+        Some(AssetTransfersBenefitsController.show(taxYear, employmentId))
     }
   }
 

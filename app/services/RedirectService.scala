@@ -17,12 +17,11 @@
 package services
 
 import controllers.benefits.accommodation.routes._
-import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsController
+import controllers.benefits.assets.routes._
 import controllers.benefits.fuel.routes._
 import controllers.benefits.income.routes._
 import controllers.benefits.medical.routes._
 import controllers.benefits.reimbursed.routes._
-import controllers.benefits.assets.routes._
 import controllers.benefits.routes._
 import controllers.benefits.travel.routes._
 import controllers.benefits.utilities.routes._
@@ -685,8 +684,7 @@ object RedirectService extends Logging {
     commonAssetsModelRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(assetsQuestion.isEmpty, AssetsBenefitsController.show(taxYear, employmentId)),
-        //TODO go to assetTransfer yes/no page
-        ConditionalRedirect(assetsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(assetsQuestion.contains(false), AssetTransfersBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(assetsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
@@ -703,8 +701,7 @@ object RedirectService extends Logging {
 
     assetTransferRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to assetTransfer yes/no page
-        ConditionalRedirect(assetTransferQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(assetTransferQuestion.isEmpty, AssetTransfersBenefitsController.show(taxYear, employmentId)),
         ConditionalRedirect(assetTransferQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId))
       )
   }

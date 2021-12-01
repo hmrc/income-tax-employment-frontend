@@ -231,6 +231,9 @@ POST       /:taxYear/expenses/claim-employment-expenses                     cont
 GET        /:taxYear/benefits/assets                                        controllers.benefits.assets.AssetsOrAssetTransfersBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/assets                                        controllers.benefits.assets.AssetsOrAssetTransfersBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/assets-to-keep                                controllers.benefits.assets.AssetTransfersBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/assets-to-keep                                controllers.benefits.assets.AssetTransfersBenefitsController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/expenses/business-travel-and-overnight-expenses        controllers.expenses.BusinessTravelOvernightExpensesController.show(taxYear: Int)
 POST       /:taxYear/expenses/business-travel-and-overnight-expenses        controllers.expenses.BusinessTravelOvernightExpensesController.submit(taxYear: Int)
 
