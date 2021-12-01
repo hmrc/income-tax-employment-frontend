@@ -275,6 +275,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
       }
     }
+
     "redirect to the check your benefits page when the income tax benefits question is set to false" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
@@ -449,7 +450,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
       authoriseAgentOrIndividual(isAgent = false)
       dropEmploymentDB()
       userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-      insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(fullIncomeTaxOrIncurredCostsModel)))), userRequest)
+      insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(fullBenefitsModel))), userRequest)
       urlPost(pageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -534,6 +535,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
       }
     }
+
     "redirect to the check your benefits page when the income tax benefits question is set to false" which {
       val newAmount: BigDecimal = 123.45
       val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())

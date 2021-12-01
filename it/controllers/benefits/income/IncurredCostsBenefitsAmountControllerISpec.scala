@@ -17,6 +17,7 @@
 package controllers.benefits.income
 
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.reimbursed.routes.ReimbursedCostsVouchersAndNonCashBenefitsController
 import forms.AmountForm
 import models.User
 import models.benefits.{BenefitsViewModel, IncomeTaxAndCostsModel}
@@ -444,7 +445,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(fullIncomeTaxOrIncurredCostsModel)))), userRequest)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(fullBenefitsModel))), userRequest)
         urlPost(pageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -467,14 +468,13 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(fullIncomeTaxOrIncurredCostsModel)))), userRequest)
+        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel(Some(benefits(fullIncomeTaxOrIncurredCostsModel)))), userRequest)
         urlPost(pageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to the reimbursed costs section page" in {
         result.status shouldBe SEE_OTHER
-//        TODO: This will update to the reimbursed costs section page when created
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
       "update the paymentsOnEmployeesBehalf value to the new amount" in {

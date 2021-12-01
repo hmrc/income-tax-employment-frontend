@@ -17,6 +17,7 @@
 package controllers.benefits.income
 
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.income.routes.{IncurredCostsBenefitsController, IncomeTaxBenefitsAmountController}
 import forms.YesNoForm
 import models.User
 import models.benefits.{BenefitsViewModel, IncomeTaxAndCostsModel}
@@ -230,8 +231,6 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       }
     }
 
-      val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
-
       "redirect the user to the check employment benefits page when the benefitsReceived question is false" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
@@ -250,12 +249,9 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       "redirect the user to the check employment benefits page when incomeTaxOrIncurredCosts is set to false" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
-          insertCyaData(employmentUserData(isPrior = true, cyaModel(
-            benefits = Some(benefits(emptyIncomeTaxOrIncurredCostsModel)))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          authoriseAgentOrIndividual(isAgent = false)
+          insertCyaData(employmentUserData(isPrior = true, cyaModel(benefits = Some(benefits(emptyIncomeTaxOrIncurredCostsModel)))), userRequest)
+          urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -267,9 +263,8 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       "redirect the user to the check employment benefits page when theres no session data for that user" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -281,10 +276,10 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       "redirect the user to the overview page when the request is in year" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(employmentUserData(isPrior = true, cyaModel(
             benefits = Some(BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true)))), userRequest)
-          urlGet(pageUrl(taxYear), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -299,8 +294,8 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, cyaModel()), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -352,7 +347,6 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       }
     }
 
-      val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
 
       "Update the incomeTaxPaidByDirectorQuestion to no, and incomeTaxPaidByDirector to none when the user chooses no," +
         "redirects to CYA if prior submission" which {
@@ -361,11 +355,9 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel(
-            Some(benefits(fullIncomeTaxOrIncurredCostsModel)))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(fullBenefitsModel))), userRequest)
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
@@ -374,9 +366,9 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "updates incomeTaxPaidByDirectorQuestion to no and incomeTaxPaidByDirector to none" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirectorQuestion)) shouldBe Some(false)
-          cyamodel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirector)) shouldBe None
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirectorQuestion)) shouldBe Some(false)
+          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirector)) shouldBe None
         }
 
       }
@@ -390,21 +382,19 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = false, cyaModel(
             Some(benefits(fullIncomeTaxOrIncurredCostsModel)))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the incurred costs page" in {
           result.status shouldBe SEE_OTHER
-//          TODO: This will go to the incurred costs page when its created
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(IncurredCostsBenefitsController.show(taxYearEOY, employmentId).url)
         }
 
         "updates incomeTaxPaidByDirectorQuestion to no and incomeTaxPaidByDirector to none" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirectorQuestion)) shouldBe Some(false)
-          cyamodel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirector)) shouldBe None
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirectorQuestion)) shouldBe Some(false)
+          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirector)) shouldBe None
         }
 
       }
@@ -417,29 +407,26 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, cyaModel(
             Some(benefits(fullIncomeTaxOrIncurredCostsModel.copy(incomeTaxPaidByDirectorQuestion = Some(false)))))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the income tax amount page" in {
           result.status shouldBe SEE_OTHER
-//          TODO: This will be updated to the income tax amount page when its created
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(IncomeTaxBenefitsAmountController.show(taxYearEOY, employmentId).url)
         }
 
         "updates incomeTaxPaidByDirectorQuestion to yes" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirectorQuestion)) shouldBe Some(true)
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirectorQuestion)) shouldBe Some(true)
         }
 
       }
 
       "redirect the user to the overview page when it is in year" which {
         lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(pageUrl(taxYear), body = "", user.isWelsh, follow = false,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(pageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -455,9 +442,8 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, cyaModel()), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
@@ -475,8 +461,8 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(employmentUserData(isPrior = false, cyaModel(
             benefits = Some(BenefitsViewModel(isUsingCustomerData = true)))), userRequest)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))          }
+          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
@@ -490,12 +476,9 @@ class IncomeTaxBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
-          insertCyaData(employmentUserData(isPrior = true, cyaModel(
-            benefits = Some(benefits(emptyIncomeTaxOrIncurredCostsModel)))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          authoriseAgentOrIndividual(isAgent = false)
+          insertCyaData(employmentUserData(isPrior = true, cyaModel(benefits = Some(benefits(emptyIncomeTaxOrIncurredCostsModel)))), userRequest)
+          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
