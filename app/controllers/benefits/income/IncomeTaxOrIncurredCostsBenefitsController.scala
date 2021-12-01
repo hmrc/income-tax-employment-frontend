@@ -17,7 +17,8 @@
 package controllers.benefits.income
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.income.routes.IncomeTaxBenefitsController
+import controllers.benefits.reimbursed.routes.ReimbursedCostsVouchersAndNonCashBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
@@ -100,8 +101,15 @@ class IncomeTaxOrIncurredCostsBenefitsController @Inject()(implicit val cc: Mess
 
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-              }
+                val nextPage = {
+                  if (yesNo) {
+                    IncomeTaxBenefitsController.show(taxYear, employmentId)
+                  } else {
+                    ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId)
+                  }
+                }
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)              }
             }
           )
         }

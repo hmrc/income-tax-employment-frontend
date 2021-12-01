@@ -17,6 +17,8 @@
 package controllers.benefits.income
 
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.income.routes.IncomeTaxBenefitsController
+import controllers.benefits.reimbursed.routes.ReimbursedCostsVouchersAndNonCashBenefitsController
 import forms.YesNoForm
 import models.User
 import models.benefits.{BenefitsViewModel, IncomeTaxAndCostsModel}
@@ -257,127 +259,152 @@ class IncomeTaxOrIncurredCostsControllerISpec extends IntegrationTest with ViewH
   }
 
 
-    ".submit" should {
-      userScenarios.foreach { user =>
-        s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+  ".submit" should {
+    userScenarios.foreach { user =>
+      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-          "Render the Income Tax or Incurred Costs Benefits Question page with an error when no value is submitted" which {
-            lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
+        "Render the Income Tax or Incurred Costs Benefits Question page with an error when no value is submitted" which {
+          lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
 
-            lazy val result: WSResponse = {
-              dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(Some(fullIncomeTaxOrIncurredCostsModel))))), userRequest)
-              authoriseAgentOrIndividual(user.isAgent)
-              urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
-
-            "returns a bad request" in {
-              result.status shouldBe BAD_REQUEST
-            }
-
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-            import Selectors._
-            import user.commonExpectedResults._
-
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
-            h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption, captionSelector)
-            radioButtonCheck(yesText, 1, Some(false))
-            radioButtonCheck(noText, 2, Some(false))
-            buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
-            welshToggleCheck(user.isWelsh)
-            errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
+          lazy val result: WSResponse = {
+            dropEmploymentDB()
+            insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(Some(fullIncomeTaxOrIncurredCostsModel))))), userRequest)
+            authoriseAgentOrIndividual(user.isAgent)
+            urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
-        }
-      }
 
-      val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
+          "returns a bad request" in {
+            result.status shouldBe BAD_REQUEST
+          }
 
-      "Redirect to overview page if it is not EOY" which {
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(url(taxYear), body = "", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
-        }
-        "has an SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
-        }
-      }
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-      "Update the Income Tax Or Costs Question to 'Yes' when user selects yes and there is previous cya data" which {
-        lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
+          import Selectors._
+          import user.commonExpectedResults._
 
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(Some(emptyIncomeTaxOrIncurredCostsModel))))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        "redirects to the check your benefits page" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
-        }
-
-        "update the income tax or incurred costs question to true" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.sectionQuestion) shouldBe Some(true)
-        }
-      }
-
-      "Update the Income Tax Or Costs Question to 'No' and remove accommodation/relocation data when user selects no" which {
-        lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
-
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(Some(fullIncomeTaxOrIncurredCostsModel))))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        "redirects to the check your benefits page" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
-        }
-
-        "updates the Income tax or costs question to false and wipes the other values" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.sectionQuestion) shouldBe Some(false)
-          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.incomeTaxPaidByDirectorQuestion) shouldBe None
-          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.incomeTaxPaidByDirector) shouldBe None
-          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.paymentsOnEmployeesBehalfQuestion) shouldBe None
-          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.paymentsOnEmployeesBehalf) shouldBe None
-        }
-
-      }
-
-      "Create a new IncomeTaxAndCostsModel and redirect to Check Employment Benefits page when user selects 'yes' and no prior benefits" which {
-        lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
-
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(None)))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        "redirects to the check your benefits page" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
-        }
-
-        "creates a new incomeTaxAndCostsModel with the incomeTaxOrCostsQuestion as true" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.sectionQuestion) shouldBe Some(true)
-          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.incomeTaxPaidByDirectorQuestion) shouldBe None
-          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.incomeTaxPaidByDirector) shouldBe None
-          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.paymentsOnEmployeesBehalfQuestion) shouldBe None
-          cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.paymentsOnEmployeesBehalf) shouldBe None
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          textOnPageCheck(expectedCaption, captionSelector)
+          radioButtonCheck(yesText, 1, Some(false))
+          radioButtonCheck(noText, 2, Some(false))
+          buttonCheck(expectedButtonText, continueButtonSelector)
+          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          welshToggleCheck(user.isWelsh)
+          errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
+          errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
         }
       }
     }
+
+    "Redirect to overview page if it is not EOY" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(url(taxYear), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
+      }
+      "has an SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
+      }
+    }
+
+    "Update the Income Tax Or Costs Question to 'Yes' when user selects yes and there is previous cya data, redirects to income tax question" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
+
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(Some(emptyIncomeTaxOrIncurredCostsModel))))), userRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "redirects to the income tax question page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(IncomeTaxBenefitsController.show(taxYearEOY, employmentId).url)
+      }
+
+      "update the income tax or incurred costs question to true" in {
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.sectionQuestion) shouldBe Some(true)
+      }
+    }
+
+    "Create a new IncomeTaxAndCostsModel and redirect to income tax question page when user selects 'yes' and no prior benefits" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
+
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(employmentUserData(isPrior = false, cyaModel(Some(benefits(None)))), userRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "redirects to the income tax question page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(IncomeTaxBenefitsController.show(taxYearEOY, employmentId).url)
+      }
+
+      "creates a new incomeTaxAndCostsModel with the sectionQuestion as true" in {
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.sectionQuestion) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.incomeTaxPaidByDirectorQuestion) shouldBe None
+        cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.incomeTaxPaidByDirector) shouldBe None
+        cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.paymentsOnEmployeesBehalfQuestion) shouldBe None
+        cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.paymentsOnEmployeesBehalf) shouldBe None
+      }
+    }
+
+    "Update the Income Tax Or Costs Question to 'No' and remove income tax data when user selects no, redirects to cya if prior benefits" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
+
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(fullBenefitsModel))), userRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "redirects to the check your benefits page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+      }
+
+      "updates the Income tax or costs question to false and wipes the other values" in {
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.sectionQuestion) shouldBe Some(false)
+        cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.incomeTaxPaidByDirectorQuestion) shouldBe None
+        cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.incomeTaxPaidByDirector) shouldBe None
+        cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.paymentsOnEmployeesBehalfQuestion) shouldBe None
+        cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.paymentsOnEmployeesBehalf) shouldBe None
+      }
+
+    }
+
+    "Update the Income Tax Or Costs Question to 'No' and remove income tax data when user selects no, redirects to reimbursed section if no prior benefits" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
+
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(employmentUserData(isPrior = false, cyaModel(Some(benefits(Some(fullIncomeTaxOrIncurredCostsModel))))), userRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "redirects to the reimbursed section page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYearEOY, employmentId).url)
+      }
+
+      "updates the Income tax or costs question to false and wipes the other values" in {
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.sectionQuestion) shouldBe Some(false)
+        cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.incomeTaxPaidByDirectorQuestion) shouldBe None
+        cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.incomeTaxPaidByDirector) shouldBe None
+        cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.paymentsOnEmployeesBehalfQuestion) shouldBe None
+        cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).flatMap(_.paymentsOnEmployeesBehalf) shouldBe None
+      }
+
+    }
+
+  }
 }
