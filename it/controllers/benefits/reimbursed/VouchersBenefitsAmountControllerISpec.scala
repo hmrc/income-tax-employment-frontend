@@ -18,6 +18,7 @@ package controllers.benefits.reimbursed
 
 import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.reimbursed.routes.NonCashBenefitsController
 import models.User
 import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -251,7 +252,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
     }
 
-    "redirect to the CYA page when vouchersAndCreditCardsQuestion is set to false" in {
+    "redirect to the Non cash benefits page when vouchersAndCreditCardsQuestion is set to false" in {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
@@ -261,7 +262,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+      result.header("location") shouldBe Some(NonCashBenefitsController.show(taxYearEOY, employmentId).url)
     }
 
     "redirect to the Assets section question page when reimbursedCostsVouchersAndNonCashQuestion is set to false" in {
@@ -426,8 +427,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        //        TODO: Should go to Non cash benefits question page
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(NonCashBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
       "updates the CYA model with the new value" in {
@@ -465,7 +465,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       }
     }
 
-    "redirect to the CYA page when vouchersAndCreditCardsQuestion is set to false" in {
+    "redirect to the Non cash benefits page when vouchersAndCreditCardsQuestion is set to false" in {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
@@ -475,7 +475,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+      result.header("location") shouldBe Some(NonCashBenefitsController.show(taxYearEOY, employmentId).url)
     }
 
     "redirect to the Assets section question page when reimbursedCostsVouchersAndNonCashQuestion is set to false" in {
