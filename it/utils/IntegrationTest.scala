@@ -482,6 +482,21 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
   def emptyAssetsModel: AssetsModel =
     AssetsModel(sectionQuestion = Some(false))
 
+  def fullBenefitsModel: BenefitsViewModel =
+    BenefitsViewModel(
+      carVanFuelModel = Some(fullCarVanFuelModel),
+      accommodationRelocationModel = Some(fullAccommodationRelocationModel),
+      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel),
+      utilitiesAndServicesModel = Some(fullUtilitiesAndServicesModel),
+      medicalChildcareEducationModel = Some(fullMedicalChildcareEducationModel),
+      incomeTaxAndCostsModel = Some(fullIncomeTaxOrIncurredCostsModel),
+      reimbursedCostsVouchersAndNonCashModel = Some(fullReimbursedCostsVouchersAndNonCashModel),
+      assetsModel = Some(fullAssetsModel),
+      submittedOn = None,
+      isUsingCustomerData = true,
+      isBenefitsReceived = true
+    )
+
   def fullExpensesCYAModel: ExpensesCYAModel =
     ExpensesCYAModel(ExpensesViewModel(
       claimingEmploymentExpenses = true,
