@@ -1024,6 +1024,12 @@ benefits.vouchersBenefitsAmount.error.noEntry = Enter the amount for vouchers or
 benefits.vouchersBenefitsAmount.error.incorrectFormat = Enter the amount for vouchers or credit cards in the correct format
 benefits.vouchersBenefitsAmount.error.overMaximum = The amount for vouchers or credit cards must be less than £100,000,000,000
 
+benefits.nonCashBenefits.title.individual = Did you get any non-cash benefits?
+benefits.nonCashBenefits.title.agent = Did your client get any non-cash benefits?
+benefits.nonCashBenefits.paragraph = This is the value of anything that cannot be used or exchanged as cash.
+benefits.nonCashBenefits.error.noEntry.individual = Select yes if you got any non-cash benefits
+benefits.nonCashBenefits.error.noEntry.agent = Select yes if your client got any non-cash benefits
+
 benefits.nonCashBenefitsAmount.title.individual = How much did you get in total for non-cash benefits?
 benefits.nonCashBenefitsAmount.title.agent = How much did your client get in total for non-cash benefits?
 benefits.nonCashBenefitsAmount.error.noEntry.individual = Enter the amount you got for non-cash benefits

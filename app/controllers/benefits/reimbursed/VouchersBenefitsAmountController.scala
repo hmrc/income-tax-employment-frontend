@@ -18,6 +18,7 @@ package controllers.benefits.reimbursed
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.reimbursed.routes.NonCashBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import models.employment.EmploymentBenefitsType
@@ -83,8 +84,7 @@ class VouchersBenefitsAmountController @Inject()(implicit val cc: MessagesContro
                 if (cya.isPriorSubmission) {
                   Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
                 } else {
-                  // TODO: Point to the 'No cash benefits' page
-                  Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                  Redirect(NonCashBenefitsController.show(taxYear, employmentId))
                 }
               }
           })

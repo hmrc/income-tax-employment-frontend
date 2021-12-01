@@ -80,7 +80,7 @@ case class ReimbursedCostsVouchersAndNonCashModel(sectionQuestion: Option[Boolea
     nonCashQuestion match {
       case Some(true) => if (nonCash.isDefined) None else Some(NonCashBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO nonCash yes no page
+      case None => Some(NonCashBenefitsController.show(taxYear, employmentId))
     }
   }
 
