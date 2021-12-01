@@ -207,6 +207,9 @@ POST       /:taxYear/benefits/vouchers-or-credit-cards-amount               cont
 GET        /:taxYear/expenses/check-employment-expenses                     controllers.expenses.CheckEmploymentExpensesController.show(taxYear: Int)
 POST       /:taxYear/expenses/check-employment-expenses                     controllers.expenses.CheckEmploymentExpensesController.submit(taxYear: Int)
 
+GET        /:taxYear/benefits/non-cash-benefits                             controllers.benefits.reimbursed.NonCashBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/non-cash-benefits                             controllers.benefits.reimbursed.NonCashBenefitsController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/benefits/non-cash-benefits-amount                      controllers.benefits.reimbursed.NonCashBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/non-cash-benefits-amount                      controllers.benefits.reimbursed.NonCashBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 

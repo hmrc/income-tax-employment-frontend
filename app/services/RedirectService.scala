@@ -599,8 +599,7 @@ object RedirectService extends Logging {
     vouchersAndCreditCardsRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(vouchersAndCreditCardsQuestion.isEmpty, VouchersBenefitsController.show(taxYear, employmentId)),
-        //TODO go to nonCash yes/no page
-        ConditionalRedirect(vouchersAndCreditCardsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(vouchersAndCreditCardsQuestion.contains(false), NonCashBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(vouchersAndCreditCardsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
@@ -623,8 +622,7 @@ object RedirectService extends Logging {
 
     nonCashRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to nonCash yes/no page
-        ConditionalRedirect(nonCashQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(nonCashQuestion.isEmpty, NonCashBenefitsController.show(taxYear, employmentId)),
         //TODO go to otherItems yes/no page
         ConditionalRedirect(nonCashQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(nonCashQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))

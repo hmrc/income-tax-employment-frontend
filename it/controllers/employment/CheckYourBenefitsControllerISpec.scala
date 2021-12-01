@@ -728,6 +728,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val nonTaxableCostsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/non-taxable-costs-amount?employmentId=$employmentId"
     val vouchersBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/vouchers-or-credit-cards?employmentId=$employmentId"
     val vouchersBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/vouchers-or-credit-cards-amount?employmentId=$employmentId"
+    val nonCashBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/non-cash-benefits?employmentId=001"
     val nonCashBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/non-cash-benefits-amount?employmentId=$employmentId"
     val otherBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/other-benefits-amount?employmentId=001"
     val assetsOrAssetTransfersBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/assets?employmentId=$employmentId"
@@ -921,7 +922,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(common.taxableCostsAmount, "£23", 17, 5, s"${common.changeText} ${specific.taxableCostsAmountHiddenText}", taxableCostsReimbursedByEmployerAmountHref)
           changeAmountRowCheck(common.vouchers, common.yes, 17, 6, s"${common.changeText} ${specific.vouchersHiddenText}", vouchersBenefitsHref)
           changeAmountRowCheck(common.vouchersAmount, "£24", 17, 7, s"${common.changeText} ${specific.vouchersAmountHiddenText}", vouchersBenefitsAmountHref)
-          changeAmountRowCheck(common.nonCash, common.yes, 17, 8, s"${common.changeText} ${specific.nonCashHiddenText}", dummyHref)
+          changeAmountRowCheck(common.nonCash, common.yes, 17, 8, s"${common.changeText} ${specific.nonCashHiddenText}", nonCashBenefitsHref)
           changeAmountRowCheck(common.nonCashAmount, "£25", 17, 9, s"${common.changeText} ${specific.nonCashAmountHiddenText}", nonCashBenefitsAmountHref)
           changeAmountRowCheck(common.otherBenefits, common.yes, 17, 10, s"${common.changeText} ${specific.otherBenefitsHiddenText}", dummyHref)
           changeAmountRowCheck(common.otherBenefitsAmount, "£26", 17, 11, s"${common.changeText} ${specific.otherBenefitsAmountHiddenText}", otherBenefitsAmountHref)
@@ -934,7 +935,6 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(common.assetTransfersAmount, "£280000", 19, 5, s"${common.changeText} ${specific.assetTransfersAmountHiddenText}", dummyHref)
 
           buttonCheck(common.saveAndContinue)
-
           welshToggleCheck(user.isWelsh)
         }
 
