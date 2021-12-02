@@ -152,8 +152,8 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
           h1Check(user.specificExpectedResults.get.expectedH1)
           textOnPageCheck(expectedCaption, captionSelector)
           textOnPageCheck(thisIncludes, thisIncludesSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -181,8 +181,8 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
           h1Check(user.specificExpectedResults.get.expectedH1)
           textOnPageCheck(expectedCaption, captionSelector)
           textOnPageCheck(thisIncludes, thisIncludesSelector)
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -296,8 +296,8 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
         }
 
         "doesn't create any benefits data" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits shouldBe None
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits shouldBe None
         }
       }
 
@@ -336,8 +336,8 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
             h1Check(user.specificExpectedResults.get.expectedH1)
             textOnPageCheck(expectedCaption, captionSelector)
             textOnPageCheck(thisIncludes, thisIncludesSelector)
-            radioButtonCheck(yesText, 1, Some(false))
-            radioButtonCheck(noText, 2, Some(false))
+            radioButtonCheck(yesText, 1, checked = false)
+            radioButtonCheck(noText, 2, checked = false)
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
@@ -369,14 +369,14 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
             Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/utility-general-service?employmentId=$employmentId")
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.sectionQuestion)) shouldBe Some(false)
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistence)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertainingQuestion)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining)) shouldBe None
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.sectionQuestion)) shouldBe Some(false)
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe None
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistence)) shouldBe None
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe None
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe None
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertainingQuestion)) shouldBe None
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining)) shouldBe None
         }
 
       }
@@ -397,14 +397,14 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
             Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/travel-subsistence?employmentId=$employmentId")
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistence)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertainingQuestion)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining)) shouldBe None
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe None
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistence)) shouldBe None
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe None
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe None
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertainingQuestion)) shouldBe None
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining)) shouldBe None
         }
 
       }
@@ -431,14 +431,14 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
         }
 
         "update only the travelEntertainmentQuestion to true" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistence)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertainingQuestion)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining)) shouldBe None
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe None
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistence)) shouldBe None
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe None
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe None
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertainingQuestion)) shouldBe None
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining)) shouldBe None
         }
       }
 
@@ -473,8 +473,8 @@ class TravelOrEntertainmentControllerISpec extends IntegrationTest with ViewHelp
         }
 
         "doesn't create any benefits data" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits shouldBe None
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits shouldBe None
         }
       }
     }

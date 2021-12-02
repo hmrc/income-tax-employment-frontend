@@ -34,7 +34,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
   val taxYearEOY: Int = taxYear - 1
   val employmentId: String = "001"
   val amount: BigDecimal = 200
-  val amountFieldName = "amount"
+  val amountInputName = "amount"
   val expectedErrorHref = "#amount"
 
   def pageUrl(taxYear: Int): String =
@@ -63,7 +63,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
     def paragraphSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
     val hintTextSelector = "#amount-hint"
     val currencyPrefixSelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
-    val amountFieldSelector = "#amount"
+    val inputSelector = "#amount"
     val continueButtonSelector = "#continue"
     val formSelector = "#main-content > div > div > form"
   }
@@ -175,8 +175,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
           captionCheck(expectedCaption, captionSelector)
           textOnPageCheck(enterTotalText, paragraphSelector(2))
           textOnPageCheck(expectedHintText, hintTextSelector)
-          inputFieldCheck(amountFieldName, amountFieldSelector)
-          inputFieldValueCheck("", amountFieldSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(formLink, formSelector)
 
@@ -205,8 +204,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
           textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
           textOnPageCheck(enterTotalText, paragraphSelector(3))
           textOnPageCheck(expectedHintText, hintTextSelector)
-          inputFieldCheck(amountFieldName, amountFieldSelector)
-          inputFieldValueCheck(amount.toString(), amountFieldSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(formLink, formSelector)
 
@@ -234,8 +232,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
           textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
           textOnPageCheck(enterTotalText, paragraphSelector(3))
           textOnPageCheck(expectedHintText, hintTextSelector)
-          inputFieldCheck(amountFieldName, amountFieldSelector)
-          inputFieldValueCheck(amount.toString(), amountFieldSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(formLink, formSelector)
 
@@ -352,11 +349,10 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
             textOnPageCheck(enterTotalText, paragraphSelector(3))
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck("", amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorNoEntry, expectedErrorHref)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Some(amountFieldName))
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Some(amountInputName))
             formPostLinkCheck(formLink, formSelector)
 
             welshToggleCheck(user.isWelsh)
@@ -388,11 +384,10 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
             textOnPageCheck(enterTotalText, paragraphSelector(3))
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck(incorrectFormatAmount, amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, incorrectFormatAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, expectedErrorHref)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, Some(amountFieldName))
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, Some(amountInputName))
             formPostLinkCheck(formLink, formSelector)
 
             welshToggleCheck(user.isWelsh)
@@ -424,11 +419,10 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
             textOnPageCheck(enterTotalText, paragraphSelector(3))
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck(overMaximumAmount, amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, overMaximumAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, expectedErrorHref)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, Some(amountFieldName))
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, Some(amountInputName))
             formPostLinkCheck(formLink, formSelector)
 
             welshToggleCheck(user.isWelsh)

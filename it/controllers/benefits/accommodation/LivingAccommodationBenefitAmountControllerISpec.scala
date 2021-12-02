@@ -182,8 +182,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           textOnPageCheck(get.expectedContent, paragraphTextSelector(2))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("", inputAmountField)
+          inputFieldValueCheck(amountInputName, inputAmountField, "")
 
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
@@ -214,8 +213,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           textOnPageCheck(get.expectedContent, paragraphTextSelector(3))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("123.45", inputAmountField)
+          inputFieldValueCheck(amountInputName, inputAmountField, "123.45")
 
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
@@ -246,8 +244,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           textOnPageCheck(get.expectedContent, paragraphTextSelector(3))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck(livingAccommodationBenefitAmount.get.toString(), inputAmountField)
+          inputFieldValueCheck(amountInputName, inputAmountField, livingAccommodationBenefitAmount.get.toString())
 
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
@@ -392,9 +389,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           textOnPageCheck(get.expectedContent, paragraphTextSelector(2))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck(errorAmount, inputAmountField)
-
+          inputFieldValueCheck(amountInputName, inputAmountField, errorAmount)
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -428,9 +423,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           textOnPageCheck(get.expectedContent, paragraphTextSelector(2))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck(errorAmount, inputAmountField)
-
+          inputFieldValueCheck(amountInputName, inputAmountField, errorAmount)
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -464,9 +457,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           textOnPageCheck(get.expectedContent, paragraphTextSelector(2))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck(errorAmount, inputAmountField)
-
+          inputFieldValueCheck(amountInputName, inputAmountField, errorAmount)
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -495,8 +486,8 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           }
 
           "updates the CYA model with the new value" in {
-            lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-            val livingAccommodationAmount: Option[BigDecimal] = cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodation))
+            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+            val livingAccommodationAmount: Option[BigDecimal] = cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodation))
             livingAccommodationAmount shouldBe Some(newAmount)
           }
         }

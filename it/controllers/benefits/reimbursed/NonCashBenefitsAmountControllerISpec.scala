@@ -39,7 +39,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
   val formPostLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/non-cash-benefits-amount?employmentId=$employmentId"
 
   val amountInModel: BigDecimal = 400
-  val amountFieldName = "amount"
+  val amountInputName = "amount"
   val amountFieldHref = "#amount"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
@@ -63,7 +63,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
     val ifItWasNotTextSelector = "#previous-amount-text"
     val hintTextSelector = "#amount-hint"
     val prefixedCurrencySelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
-    val amountFieldSelector = "#amount"
+    val inputSelector = "#amount"
     val continueButtonSelector = "#continue"
     val formSelector = "#main-content > div > div > form"
   }
@@ -179,8 +179,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
             captionCheck(expectedCaption, captionSelector)
             textOnPageCheck(ifItWasNotText(amount), ifItWasNotTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck("", amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
@@ -210,8 +209,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
             captionCheck(expectedCaption, captionSelector)
             elementNotOnPageCheck(ifItWasNotTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck("", amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
@@ -243,8 +241,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
             captionCheck(expectedCaption, captionSelector)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck(amountInModel.toString(), amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, amountInModel.toString())
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
@@ -273,8 +270,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
             captionCheck(expectedCaption, captionSelector)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck(amountInModel.toString(), amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, amountInModel.toString())
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
@@ -378,12 +374,11 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
             captionCheck(expectedCaption, captionSelector)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck("", amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Some(amountFieldName))
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Some(amountInputName))
             errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, amountFieldHref)
 
             welshToggleCheck(user.isWelsh)
@@ -411,12 +406,11 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
             captionCheck(expectedCaption, captionSelector)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck(incorrectFormatAmount, amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, incorrectFormatAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
-            errorAboveElementCheck(expectedIncorrectFormatErrorMessage, Some(amountFieldName))
+            errorAboveElementCheck(expectedIncorrectFormatErrorMessage, Some(amountInputName))
             errorSummaryCheck(expectedIncorrectFormatErrorMessage, amountFieldHref)
 
             welshToggleCheck(user.isWelsh)
@@ -443,12 +437,11 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
             captionCheck(expectedCaption, captionSelector)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck(overMaximumAmount, amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, overMaximumAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
-            errorAboveElementCheck(expectedOverMaximumErrorMessage, Some(amountFieldName))
+            errorAboveElementCheck(expectedOverMaximumErrorMessage, Some(amountInputName))
             errorSummaryCheck(expectedOverMaximumErrorMessage, amountFieldHref)
 
             welshToggleCheck(user.isWelsh)

@@ -44,13 +44,13 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
     val paragraphTextSelector2 = "#main-content > div > div > form > div > label > p:nth-child(3)"
     val hintTextSelector = "#amount-hint"
     val prefixedCurrencySelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
-    val amountFieldSelector = "#amount"
+    val inputSelector = "#amount"
     val continueButtonSelector = "#continue"
     val formSelector = "#main-content > div > div > form"
   }
 
   val amountInModel: BigDecimal = 400
-  val amountFieldName = "amount"
+  val amountInputName = "amount"
   val amountFieldHref = "#amount"
 
   trait CommonExpectedResults {
@@ -182,8 +182,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             textOnPageCheck(ifItWasNotText(amount), paragraphTextSelector)
             textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector2)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck("", amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
@@ -214,8 +213,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector)
             elementNotOnPageCheck(paragraphTextSelector2)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck("", amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
@@ -248,8 +246,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
             textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector2)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck(amountInModel.toString(), amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, amountInModel.toString())
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
@@ -279,8 +276,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
             textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector2)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck(amountInModel.toString(), amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, amountInModel.toString())
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
@@ -352,12 +348,11 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
             textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector2)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck("", amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Some(amountFieldName))
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Some(amountInputName))
             errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, amountFieldHref)
 
             welshToggleCheck(user.isWelsh)
@@ -386,12 +381,11 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
             textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector2)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck(incorrectFormatAmount, amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, incorrectFormatAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedIncorrectFormatErrorMessage, Some(amountFieldName))
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedIncorrectFormatErrorMessage, Some(amountInputName))
             errorSummaryCheck(user.specificExpectedResults.get.expectedIncorrectFormatErrorMessage, amountFieldHref)
 
             welshToggleCheck(user.isWelsh)
@@ -419,12 +413,11 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
             textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector2)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck(overMaximumAmount, amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, overMaximumAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedOverMaximumErrorMessage, Some(amountFieldName))
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedOverMaximumErrorMessage, Some(amountInputName))
             errorSummaryCheck(user.specificExpectedResults.get.expectedOverMaximumErrorMessage, amountFieldHref)
 
             welshToggleCheck(user.isWelsh)
@@ -451,10 +444,10 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
       s"update medicalChildcareEducationModel and redirect to income tax section" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(IncomeTaxOrIncurredCostsBenefitsController.show(taxYearEOY, employmentId).url)
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoanQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoan)) shouldBe Some(newAmount)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoanQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoan)) shouldBe Some(newAmount)
       }
     }
 
@@ -474,10 +467,10 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
       s"update medicalChildcareEducationModel and redirect to income tax and costs yes no page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(IncomeTaxOrIncurredCostsBenefitsController.show(taxYearEOY, employmentId).url)
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoanQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoan)) shouldBe Some(newAmount)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoanQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoan)) shouldBe Some(newAmount)
       }
     }
 
@@ -509,7 +502,5 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
         result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
       }
     }
-
   }
-
 }

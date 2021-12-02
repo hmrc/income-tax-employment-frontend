@@ -32,6 +32,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
   val taxYearEOY: Int = taxYear - 1
   val newAmount = 25
+  val amountInputName = "amount"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -175,9 +176,8 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           captionCheck(expectedCaption(taxYearEOY), captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(2))
           hintTextCheck(hintText)
-          inputFieldValueCheck("", Selectors.amountSelector)
+          inputFieldValueCheck(amountInputName, Selectors.amountSelector, "")
           buttonCheck(buttonText, continueButtonSelector)
-
           formPostLinkCheck(continueLink, formSelector)
           welshToggleCheck(user.isWelsh)
         }
@@ -204,9 +204,8 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           textOnPageCheck(user.specificExpectedResults.get.expectedReplay(newAmount), paragraphSelector(2))
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(3))
           hintTextCheck(hintText)
-          inputFieldValueCheck(s"$newAmount", Selectors.amountSelector)
+          inputFieldValueCheck(amountInputName, Selectors.amountSelector, newAmount.toString)
           buttonCheck(buttonText, continueButtonSelector)
-
           formPostLinkCheck(continueLink, formSelector)
           welshToggleCheck(user.isWelsh)
         }
@@ -294,7 +293,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           captionCheck(expectedCaption(taxYearEOY), captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(2))
           hintTextCheck(hintText)
-          inputFieldValueCheck("badThings", Selectors.amountSelector)
+          inputFieldValueCheck(amountInputName, Selectors.amountSelector, "badThings")
           buttonCheck(buttonText, continueButtonSelector)
 
           errorAboveElementCheck(user.specificExpectedResults.get.expectedFormatError, Some("amount"))
@@ -326,7 +325,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           captionCheck(expectedCaption(taxYearEOY), captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(2))
           hintTextCheck(hintText)
-          inputFieldValueCheck("", Selectors.amountSelector)
+          inputFieldValueCheck(amountInputName, Selectors.amountSelector, "")
           buttonCheck(buttonText, continueButtonSelector)
 
           errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryError, Some("amount"))
@@ -358,7 +357,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           captionCheck(expectedCaption(taxYearEOY), captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(2))
           hintTextCheck(hintText)
-          inputFieldValueCheck("100000000000", Selectors.amountSelector)
+          inputFieldValueCheck(amountInputName, Selectors.amountSelector, "100000000000")
           buttonCheck(buttonText, continueButtonSelector)
 
           errorAboveElementCheck(user.specificExpectedResults.get.expectedOverMaxError, Some("amount"))

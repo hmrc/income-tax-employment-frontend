@@ -159,8 +159,8 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
           textOnPageCheck(expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.costInformation, costInformationSelector)
           textOnPageCheck(allowanceInformation, allowanceInformationSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -189,8 +189,8 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
           textOnPageCheck(expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.costInformation, costInformationSelector)
           textOnPageCheck(allowanceInformation, allowanceInformationSelector)
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -322,8 +322,8 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
         }
 
         "doesn't create any benefits data" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits shouldBe None
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits shouldBe None
         }
       }
 
@@ -365,8 +365,8 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
             textOnPageCheck(expectedCaption, captionSelector)
             textOnPageCheck(user.specificExpectedResults.get.costInformation, costInformationSelector)
             textOnPageCheck(allowanceInformation, allowanceInformationSelector)
-            radioButtonCheck(yesText, 1, Some(false))
-            radioButtonCheck(noText, 2, Some(false))
+            radioButtonCheck(yesText, 1, checked = false)
+            radioButtonCheck(noText, 2, checked = false)
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
@@ -399,14 +399,14 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
             Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/entertainment-expenses?employmentId=$employmentId")
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe Some(true)
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistence)) shouldBe Some(100)
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe Some(false)
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe None
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertainingQuestion)) shouldBe Some(true)
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining)) shouldBe Some(300)
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe Some(true)
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistence)) shouldBe Some(100)
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe Some(false)
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe None
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertainingQuestion)) shouldBe Some(true)
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining)) shouldBe Some(300)
         }
 
       }
@@ -428,12 +428,12 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
             Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs-amount?employmentId=$employmentId")
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe Some (true)
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistence)) shouldBe Some(100)
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe Some(true)
-          cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe Some(200)
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe Some (true)
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistence)) shouldBe Some(100)
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe Some(true)
+          cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses)) shouldBe Some(200)
         }
 
       }
@@ -469,8 +469,8 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
         }
 
         "doesn't create any benefits data" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits shouldBe None
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits shouldBe None
         }
       }
 

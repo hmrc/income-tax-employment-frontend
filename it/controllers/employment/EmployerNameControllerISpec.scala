@@ -34,8 +34,9 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
   val employerName: String = "HMRC"
   val updatedEmployerName: String = "Microsoft"
   val employmentId: String = "001"
+  val amountInputName = "name"
 
-  val charLimit: String = "ukHzoBYHkKGGk2V5iuYgS137gN7EB7LRw3uDjvujYg00ZtHwo3sokyOOCEoAK9vuPiP374QKOelo"
+  val charLimit: String = "ukHzoBYHkKGGk2V5iuYgS137gN7EB7LRw3uD3vujYg00ZtHwo3s0kyOOCEoAK9vuPiP374QKOe9o"
 
   private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
@@ -51,14 +52,13 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > label > header > p"
-    val inputFieldSelector: String = "#name"
+    val inputSelector: String = "#name"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val paragraphTextSelector: String = "#main-content > div > div > form > div > label > p"
     val formatListSelector1: String = "#main-content > div > div > form > div > label > ul > li:nth-child(1)"
     val formatListSelector2: String = "#main-content > div > div > form > div > label > ul > li:nth-child(2)"
     val formatListSelector3: String = "#main-content > div > div > form > div > label > ul > li:nth-child(3)"
-
   }
 
   trait SpecificExpectedResults {
@@ -71,7 +71,6 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
   trait CommonExpectedResults {
     val expectedCaption: Int => String
-    val expectedInputName: String
     val expectedButtonText: String
     val expectedErrorCharLimit: String
     val expectedErrorDuplicateName: String
@@ -115,7 +114,6 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedInputName = "name"
     val expectedButtonText = "Continue"
     val expectedErrorCharLimit = "The employer name must be 74 characters or fewer"
     val expectedErrorDuplicateName = "You cannot add 2 employers with the same name"
@@ -127,7 +125,6 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val expectedInputName = "name"
     val expectedButtonText = "Continue"
     val expectedErrorCharLimit = "The employer name must be 74 characters or fewer"
     val expectedErrorDuplicateName = "You cannot add 2 employers with the same name"
@@ -168,8 +165,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-          inputFieldCheck(expectedInputName, inputFieldSelector)
-          inputFieldValueCheck("", inputFieldSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -199,8 +195,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-          inputFieldCheck(expectedInputName, inputFieldSelector)
-          inputFieldValueCheck(employerName, inputFieldSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, employerName)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -257,8 +252,8 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           "redirects to the next question page (PAYE reference)" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=001")
-            lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-            cyamodel.employment.employmentDetails.employerName shouldBe employerName
+            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+            cyaModel.employment.employmentDetails.employerName shouldBe employerName
           }
 
         }
@@ -277,8 +272,8 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           "redirects to the next question page (PAYE reference)" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=001")
-            lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-            cyamodel.employment.employmentDetails.employerName shouldBe employerName
+            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+            cyaModel.employment.employmentDetails.employerName shouldBe employerName
           }
 
         }
@@ -296,8 +291,8 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           "redirects to employment details CYA page" in {
             result.status shouldBe SEE_OTHER
             result.header(HeaderNames.LOCATION) shouldBe Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId).url)
-            lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-            cyamodel.employment.employmentDetails.employerName shouldBe updatedEmployerName
+            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+            cyaModel.employment.employmentDetails.employerName shouldBe updatedEmployerName
 
           }
 
@@ -326,11 +321,11 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
             textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-            inputFieldCheck(expectedInputName, inputFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(expectedButtonText, continueButtonSelector)
             welshToggleCheck(user.isWelsh)
 
-            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Selectors.inputFieldSelector)
+            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Selectors.inputSelector)
             errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry)
           }
 
@@ -355,11 +350,11 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
             textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-            inputFieldCheck(expectedInputName, inputFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, charLimit)
             buttonCheck(expectedButtonText, continueButtonSelector)
             welshToggleCheck(user.isWelsh)
 
-            errorSummaryCheck(expectedErrorCharLimit, Selectors.inputFieldSelector)
+            errorSummaryCheck(expectedErrorCharLimit, Selectors.inputSelector)
             errorAboveElementCheck(expectedErrorCharLimit)
           }
         }

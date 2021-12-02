@@ -28,7 +28,6 @@ import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.benefits.routes.ReceiveAnyBenefitsController
-import controllers.benefits.income.routes._
 import controllers.benefits.medical.routes._
 
 class EducationalServicesBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -160,8 +159,8 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
           h1Check(user.specificExpectedResults.get.expectedHeading)
           textOnPageCheck(expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -191,8 +190,8 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
           h1Check(user.specificExpectedResults.get.expectedHeading)
           textOnPageCheck(expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphSelector)
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -330,8 +329,8 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
             h1Check(user.specificExpectedResults.get.expectedHeading)
             textOnPageCheck(expectedCaption, captionSelector)
             textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphSelector)
-            radioButtonCheck(yesText, 1, Some(false))
-            radioButtonCheck(noText, 2, Some(false))
+            radioButtonCheck(yesText, 1, checked = false)
+            radioButtonCheck(noText, 2, checked = false)
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)

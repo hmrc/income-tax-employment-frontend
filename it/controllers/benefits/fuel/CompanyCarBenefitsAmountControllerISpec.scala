@@ -38,6 +38,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
   val carAmount: BigDecimal = 100
   val newAmount: BigDecimal = 250
   val maxLimit: String = "100,000,000,000"
+  val amountInputName = "amount"
 
   def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/company-car-amount?employmentId=$employmentId"
 
@@ -78,7 +79,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
     val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
     def paragraphTextSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
     val hintTextSelector = "#amount-hint"
-    val amountFieldSelector = "#amount"
+    val inputSelector = "#amount"
     val formSelector = "#main-content > div > div > form"
     val continueButtonSelector = "#continue"
   }
@@ -86,7 +87,6 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
   trait CommonExpectedResults {
     def expectedCaption(taxYear: Int): String
     val hintText: String
-    val amount: String
     val continueButtonText: String
     val optionalText: String
   }
@@ -104,7 +104,6 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
   object CommonExpectedEN extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val hintText = "For example, £600 or £193.54"
-    val amount = "amount"
     val continueButtonText = "Continue"
     val optionalText = s"If it was not £$carAmount, tell us the correct amount."
   }
@@ -112,7 +111,6 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val hintText = "For example, £600 or £193.54"
-    val amount = "amount"
     val continueButtonText = "Continue"
     val optionalText = s"If it was not £$carAmount, tell us the correct amount."
   }
@@ -188,8 +186,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(2))
           textOnPageCheck(user.commonExpectedResults.hintText, hintTextSelector)
-          inputFieldCheck(user.commonExpectedResults.amount, amountFieldSelector)
-          inputFieldValueCheck("", amountFieldSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, formSelector)
           welshToggleCheck(user.isWelsh)
@@ -215,8 +212,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           textOnPageCheck(user.commonExpectedResults.optionalText, paragraphTextSelector(2))
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(3))
           textOnPageCheck(user.commonExpectedResults.hintText, hintTextSelector)
-          inputFieldCheck(user.commonExpectedResults.amount, amountFieldSelector)
-          inputFieldValueCheck(carAmount.toString(), amountFieldSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, carAmount.toString())
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, formSelector)
           welshToggleCheck(user.isWelsh)
@@ -241,8 +237,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           textOnPageCheck(user.commonExpectedResults.optionalText, paragraphTextSelector(2))
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector(3))
           textOnPageCheck(user.commonExpectedResults.hintText, hintTextSelector)
-          inputFieldCheck(user.commonExpectedResults.amount, amountFieldSelector)
-          inputFieldValueCheck(carAmount.toString(), amountFieldSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, carAmount.toString())
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, formSelector)
           welshToggleCheck(user.isWelsh)
@@ -392,8 +387,8 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, amountFieldSelector)
-            inputFieldValueCheck("", amountFieldSelector)
+            errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, inputSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "")
 
             welshToggleCheck(user.isWelsh)
           }
@@ -419,8 +414,8 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            errorSummaryCheck(user.specificExpectedResults.get.expectedInvalidFormatErrorMessage, amountFieldSelector)
-            inputFieldValueCheck("abc", amountFieldSelector)
+            errorSummaryCheck(user.specificExpectedResults.get.expectedInvalidFormatErrorMessage, inputSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "abc")
 
             welshToggleCheck(user.isWelsh)
           }
@@ -446,8 +441,8 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            errorSummaryCheck(user.specificExpectedResults.get.expectedMaxLengthErrorMessage, amountFieldSelector)
-            inputFieldValueCheck(maxLimit, amountFieldSelector)
+            errorSummaryCheck(user.specificExpectedResults.get.expectedMaxLengthErrorMessage, inputSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, maxLimit)
 
             welshToggleCheck(user.isWelsh)
           }
@@ -473,10 +468,10 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(CompanyCarFuelBenefitsController.show(taxYearEOY, employmentId).url)
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car)) shouldBe Some(newAmount)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car)) shouldBe Some(newAmount)
       }
 
     }
@@ -495,10 +490,10 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
       "redirect to check your benefits page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(CompanyCarFuelBenefitsController.show(taxYearEOY, employmentId).url)
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car)) shouldBe Some(carAmount)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car)) shouldBe Some(carAmount)
       }
     }
 
@@ -516,10 +511,10 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
       "redirect to check your benefits page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(CompanyCarFuelBenefitsController.show(taxYearEOY, employmentId).url)
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car)) shouldBe Some(carAmount)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car)) shouldBe Some(carAmount)
       }
     }
 

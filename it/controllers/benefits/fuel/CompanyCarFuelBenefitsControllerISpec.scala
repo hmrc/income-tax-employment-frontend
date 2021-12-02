@@ -127,7 +127,8 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
         "Render the 'Did you receive car fuel benefits' page with the correct content with no benefits data so no pre-filling" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(carFuelQuestion = None)).copy(isBenefitsReceived = true)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
+              Some(benefits(fullCarVanFuelModel.copy(carFuelQuestion = None)).copy(isBenefitsReceived = true)))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(carFuelBenefitsPage(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -144,8 +145,8 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -171,8 +172,8 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -227,7 +228,8 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(carFuelQuestion = None)).copy(isBenefitsReceived = true)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName",
+              hmrc = true, Some(benefits(fullCarVanFuelModel.copy(carFuelQuestion = None)).copy(isBenefitsReceived = true)))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(carFuelBenefitsPage(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -282,10 +284,10 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       }
 
       "updates the carFuelQuestion to false and carFuel to None" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) shouldBe Some(false)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuel)) shouldBe None
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) shouldBe Some(false)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuel)) shouldBe None
       }
 
     }
@@ -309,10 +311,10 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       }
 
       "updates the carFuelQuestion to false and carFuel to None" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) shouldBe Some(false)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuel)) shouldBe None
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) shouldBe Some(false)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuel)) shouldBe None
       }
 
     }
@@ -337,9 +339,9 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       }
 
       "updates the car fuel question to be true" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) shouldBe Some(true)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) shouldBe Some(true)
       }
 
     }
@@ -364,9 +366,9 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       }
 
       "updates the car fuel question to be true" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) shouldBe Some(true)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) shouldBe Some(true)
       }
 
     }
