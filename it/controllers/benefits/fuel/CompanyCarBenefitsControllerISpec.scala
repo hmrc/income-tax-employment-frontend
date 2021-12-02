@@ -123,9 +123,8 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
             captionCheck(user.commonExpectedResults.expectedCaption)
-            radioButtonCheck(user.commonExpectedResults.radioTextYes, 1)
-
-          radioButtonCheck(user.commonExpectedResults.radioTextNo, 2)
+            radioButtonCheck(user.commonExpectedResults.radioTextYes, 1, checked = false)
+            radioButtonCheck(user.commonExpectedResults.radioTextNo, 2, checked = false)
         }
       }
     }
@@ -154,8 +153,8 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           captionCheck(user.commonExpectedResults.expectedCaption)
           errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
-          radioButtonCheck(user.commonExpectedResults.radioTextYes, 1)
-          radioButtonCheck(user.commonExpectedResults.radioTextNo, 2)
+          radioButtonCheck(user.commonExpectedResults.radioTextYes, 1, checked = false)
+          radioButtonCheck(user.commonExpectedResults.radioTextNo, 2, checked = false)
         }
       }
     }

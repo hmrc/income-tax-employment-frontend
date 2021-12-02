@@ -39,12 +39,12 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
   val maxLimit: String = "100,000,000,000"
   val poundPrefixText = "£"
   val amountField = "#amount"
-  val amountFieldName = "amount"
-
+  val amountInputName = "amount"
 
   def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/medical-dental-amount?employmentId=$employmentId"
 
-  def continueLink(taxYear: Int) = s"/update-and-submit-income-tax-return/employment-income/$taxYear/benefits/medical-dental-amount?employmentId=$employmentId"
+  def continueLink(taxYear: Int): String =
+    s"/update-and-submit-income-tax-return/employment-income/$taxYear/benefits/medical-dental-amount?employmentId=$employmentId"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId,
@@ -64,7 +64,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
     val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
     def paragraphTextSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
     val hintTextSelector = "#amount-hint"
-    val amountFieldSelector = "#amount"
+    val inputSelector = "#amount"
     val formSelector = "#main-content > div > div > form"
     val continueButtonSelector = "#continue"
     val poundPrefixSelector = ".govuk-input__prefix"
@@ -82,7 +82,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
     val expectedHeading: String
     def expectedPreAmountParagraph(amount: BigDecimal): String
     val expectedParagraph: String
-    val expectedParagraphforForm: String
+    val expectedParagraphForForm: String
     val expectedErrorTitle: String
     val expectedNoEntryErrorMessage: String
     val expectedWrongFormatErrorMessage: String
@@ -104,7 +104,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
     val expectedHeading = "How much was your medical or dental benefit in total?"
     def expectedPreAmountParagraph(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
     val expectedParagraph = "This is the total sum of medical or dental insurance your employer paid for."
-    val expectedParagraphforForm = "You can find this information on your P11D form in section I, box 11."
+    val expectedParagraphForForm = "You can find this information on your P11D form in section I, box 11."
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter your medical or dental benefit amount"
     val expectedWrongFormatErrorMessage = "Enter your medical or dental benefit amount in the correct format"
@@ -115,7 +115,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
     val expectedHeading = "How much was your medical or dental benefit in total?"
     def expectedPreAmountParagraph(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
     val expectedParagraph = "This is the total sum of medical or dental insurance your employer paid for."
-    val expectedParagraphforForm = "You can find this information on your P11D form in section I, box 11."
+    val expectedParagraphForForm = "You can find this information on your P11D form in section I, box 11."
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter your medical or dental benefit amount"
     val expectedWrongFormatErrorMessage = "Enter your medical or dental benefit amount in the correct format"
@@ -126,7 +126,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
     val expectedHeading = "How much was your client’s medical or dental benefit in total?"
     def expectedPreAmountParagraph(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
     val expectedParagraph = "This is the total sum of medical or dental insurance your client’s employer paid for."
-    val expectedParagraphforForm = "You can find this information on your client’s P11D form in section I, box 11."
+    val expectedParagraphForForm = "You can find this information on your client’s P11D form in section I, box 11."
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter your client’s medical or dental benefit amount"
     val expectedWrongFormatErrorMessage = "Enter your client’s medical or dental benefit amount in the correct format"
@@ -137,7 +137,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
     val expectedHeading = "How much was your client’s medical or dental benefit in total?"
     def expectedPreAmountParagraph(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
     val expectedParagraph = "This is the total sum of medical or dental insurance your client’s employer paid for."
-    val expectedParagraphforForm = "You can find this information on your client’s P11D form in section I, box 11."
+    val expectedParagraphForForm = "You can find this information on your client’s P11D form in section I, box 11."
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter your client’s medical or dental benefit amount"
     val expectedWrongFormatErrorMessage = "Enter your client’s medical or dental benefit amount in the correct format"
@@ -181,10 +181,10 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(2))
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphforForm, paragraphTextSelector(3))
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(3))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("", amountField)
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           formPostLinkCheck(continueLink(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
 
@@ -211,10 +211,10 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(insuranceAmount), paragraphTextSelector(2))
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(3))
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphforForm, paragraphTextSelector(4))
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(4))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("100", amountField)
+          inputFieldValueCheck(amountInputName, inputSelector, "100")
           formPostLinkCheck(continueLink(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
 
@@ -241,10 +241,10 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedPreAmountParagraph(insuranceAmount), paragraphTextSelector(2))
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(3))
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphforForm, paragraphTextSelector(4))
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(4))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("100", amountField)
+          inputFieldValueCheck(amountInputName, inputSelector, "100")
           formPostLinkCheck(continueLink(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
 
@@ -368,12 +368,12 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(2))
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphforForm, paragraphTextSelector(3))
-          errorAboveElementCheck(user.specificExpectedResults.get.expectedMaxErrorMessage, Some(amountFieldName))
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(3))
+          errorAboveElementCheck(user.specificExpectedResults.get.expectedMaxErrorMessage, Some(amountInputName))
           errorSummaryCheck(user.specificExpectedResults.get.expectedMaxErrorMessage, amountField)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("2353453425345234", amountField)
+          inputFieldValueCheck(amountInputName, inputSelector, "2353453425345234")
           formPostLinkCheck(continueLink(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
 
@@ -381,7 +381,7 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
 
         "return an error when the medical or dental benefits amount is in the wrong format" which {
 
-          lazy val form: Map[String, String] = Map(AmountForm.amount -> "AAAA")
+          lazy val form: Map[String, String] = Map(AmountForm.amount -> "abc")
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
@@ -404,12 +404,12 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(2))
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphforForm, paragraphTextSelector(3))
-          errorAboveElementCheck(user.specificExpectedResults.get.expectedWrongFormatErrorMessage, Some(amountFieldName))
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(3))
+          errorAboveElementCheck(user.specificExpectedResults.get.expectedWrongFormatErrorMessage, Some(amountInputName))
           errorSummaryCheck(user.specificExpectedResults.get.expectedWrongFormatErrorMessage, amountField)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("AAAA", amountField)
+          inputFieldValueCheck(amountInputName, inputSelector, "abc")
           formPostLinkCheck(continueLink(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
 
@@ -440,12 +440,12 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, paragraphTextSelector(2))
-          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphforForm, paragraphTextSelector(3))
-          errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Some(amountFieldName))
+          textOnPageCheck(user.specificExpectedResults.get.expectedParagraphForForm, paragraphTextSelector(3))
+          errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Some(amountInputName))
           errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, amountField)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("", amountField)
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           formPostLinkCheck(continueLink(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
 
@@ -472,10 +472,10 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(ChildcareBenefitsController.show(taxYearEOY, employmentId).url)
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-          cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion)) shouldBe Some(true)
-          cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsurance)) shouldBe Some(newAmount)
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+          cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion)) shouldBe Some(true)
+          cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsurance)) shouldBe Some(newAmount)
         }
 
       }
@@ -493,10 +493,10 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(ChildcareBenefitsController.show(taxYearEOY, employmentId).url)
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-          cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion)) shouldBe Some(true)
-          cyamodel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsurance)) shouldBe Some(newAmount)
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+          cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion)) shouldBe Some(true)
+          cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsurance)) shouldBe Some(newAmount)
         }
 
       }

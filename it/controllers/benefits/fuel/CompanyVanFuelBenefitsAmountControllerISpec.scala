@@ -149,7 +149,8 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits.map(_.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(mileage = None))))))))), nino, taxYearEOY)
+            userDataStub(userData(fullEmploymentsModel(hmrcEmployment =
+              Seq(employmentDetailsAndBenefits(fullBenefits.map(_.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(mileage = None))))))))), nino, taxYearEOY)
             insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(vanFuel = None))))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -166,9 +167,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
           textOnPageCheck(get.expectedContent, contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -178,7 +177,8 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits.map(_.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(mileage = None))))))))), nino, taxYearEOY)
+            userDataStub(userData(fullEmploymentsModel(hmrcEmployment =
+              Seq(employmentDetailsAndBenefits(fullBenefits.map(_.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(mileage = None))))))))), nino, taxYearEOY)
             insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel)))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -199,8 +199,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
           textOnPageCheck(previousExpectedContent + " " + get.expectedContent, contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("400", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "400")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -226,7 +225,8 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
     "Redirect user to the tax overview page when in year" which {
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits.map(_.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(mileage = None))))))))), nino, taxYearEOY)
+        userDataStub(userData(fullEmploymentsModel(hmrcEmployment =
+          Seq(employmentDetailsAndBenefits(fullBenefits.map(_.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(mileage = None))))))))), nino, taxYearEOY)
         insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(van = None))))), userRequest)
         authoriseAgentOrIndividual(user.isAgent)
         urlGet(url(taxYear), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -363,8 +363,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
             textOnPageCheck(user.commonExpectedResults.previousExpectedContent + " " + get.expectedContent, contentSelector)
             textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
             textOnPageCheck(poundPrefixText, poundPrefixSelector)
-            inputFieldValueCheck("", inputSelector)
-
+            inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
@@ -394,8 +393,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
             textOnPageCheck(user.commonExpectedResults.previousExpectedContent + " " + get.expectedContent, contentSelector)
             textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
             textOnPageCheck(poundPrefixText, poundPrefixSelector)
-            inputFieldValueCheck("abc", inputSelector)
-
+            inputFieldValueCheck(amountInputName, inputSelector, "abc")
             buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
@@ -426,8 +424,7 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
             textOnPageCheck(user.commonExpectedResults.previousExpectedContent + " " + get.expectedContent, contentSelector)
             textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
             textOnPageCheck(poundPrefixText, poundPrefixSelector)
-            inputFieldValueCheck("9999999999999999999999999999", inputSelector)
-
+            inputFieldValueCheck(amountInputName, inputSelector, "9999999999999999999999999999")
             buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
@@ -455,8 +452,8 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
       }
 
       "updates the CYA model with the new value" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        val vanFuelAmount: Option[BigDecimal] = cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuel))
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        val vanFuelAmount: Option[BigDecimal] = cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuel))
         vanFuelAmount shouldBe Some(100)
       }
     }
@@ -476,8 +473,8 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
       }
 
       "updates the CYA model with the new value" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        val vanFuelAmount: Option[BigDecimal] = cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuel))
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        val vanFuelAmount: Option[BigDecimal] = cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuel))
         vanFuelAmount shouldBe Some(100)
       }
     }
@@ -498,7 +495,8 @@ class CompanyVanFuelBenefitsAmountControllerISpec  extends IntegrationTest with 
     "redirect user to the tax overview page when in year" which {
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits.map(_.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(mileage = None))))))))), nino, taxYearEOY)
+        userDataStub(userData(fullEmploymentsModel(hmrcEmployment =
+          Seq(employmentDetailsAndBenefits(fullBenefits.map(_.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(mileage = None))))))))), nino, taxYearEOY)
         insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(van = None))))), userRequest)
         authoriseAgentOrIndividual(user.isAgent)
         urlPost(url(taxYear), follow=false,

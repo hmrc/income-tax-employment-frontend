@@ -144,8 +144,8 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -172,8 +172,8 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(true))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = true)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -200,8 +200,8 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -227,8 +227,8 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -255,8 +255,8 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(true))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = true)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -313,9 +313,9 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
               Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/how-much-pay?employmentId=$employmentId")
-            lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-            cyamodel.employment.employmentDetails.cessationDate shouldBe None
-            cyamodel.employment.employmentDetails.cessationDateQuestion shouldBe Some(true)
+            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+            cyaModel.employment.employmentDetails.cessationDate shouldBe None
+            cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(true)
 
           }
 
@@ -340,9 +340,9 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
               Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/how-much-pay?employmentId=$employmentId")
-            lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-            cyamodel.employment.employmentDetails.cessationDate shouldBe cessationDate
-            cyamodel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)
+            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+            cyaModel.employment.employmentDetails.cessationDate shouldBe cessationDate
+            cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)
 
           }
 
@@ -366,9 +366,9 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe
               Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employment-start-date?employmentId=$employmentId")
-            lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-            cyamodel.employment.employmentDetails.cessationDate shouldBe cessationDate
-            cyamodel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)
+            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+            cyaModel.employment.employmentDetails.cessationDate shouldBe cessationDate
+            cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)
 
           }
 
@@ -398,8 +398,8 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            radioButtonCheck(yesText, 1)
-            radioButtonCheck(noText, 2)
+            radioButtonCheck(yesText, 1, checked = false)
+            radioButtonCheck(noText, 2, checked = false)
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)

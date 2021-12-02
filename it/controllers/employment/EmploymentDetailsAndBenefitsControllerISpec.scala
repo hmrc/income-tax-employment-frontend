@@ -25,8 +25,8 @@ import utils.{IntegrationTest, ViewHelpers}
 
 
 class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with ViewHelpers {
-val taxYearEOY=taxYear -1
-  def url(taxYear: Int) = s"$appUrl/$taxYear/employer-details-and-benefits?employmentId=001"
+  val taxYearEOY: Int = taxYear - 1
+  def url(taxYear: Int): String = s"$appUrl/$taxYear/employer-details-and-benefits?employmentId=001"
 
   object Selectors {
     val headingSelector = "#main-content > div > div > header > h1"
@@ -36,22 +36,27 @@ val taxYearEOY=taxYear -1
     val employmentDetailsLinkSelector = "#employment-details_link"
     val employmentBenefitsLinkSelector = "#employment-benefits_link"
     val employmentExpensesLinkSelector = "#employment-expenses_link"
-    def taskListRowFieldNameSelector(i: Int) = s"#main-content > div > div > ul > li:nth-child($i) > span.app-task-list__task-name"
-    def taskListRowFieldAmountSelector(i: Int) = s"#main-content > div > div > ul > li:nth-child($i) > span.hmrc-status-tag"
+    def taskListRowFieldNameSelector(i: Int): String =
+      s"#main-content > div > div > ul > li:nth-child($i) > span.app-task-list__task-name"
+    def taskListRowFieldAmountSelector(i: Int): String =
+      s"#main-content > div > div > ul > li:nth-child($i) > span.hmrc-status-tag"
   }
 
-  def employmentDetailsUrl(taxYear: Int) = s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-details?employmentId=001"
-  def employmentBenefitsUrl(taxYear: Int) = s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-benefits?employmentId=001"
-  def employmentExpensesUrl(taxYear: Int) = s"/update-and-submit-income-tax-return/employment-income/$taxYear/expenses/check-employment-expenses"
+  def employmentDetailsUrl(taxYear: Int): String =
+    s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-details?employmentId=001"
+  def employmentBenefitsUrl(taxYear: Int): String =
+    s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-benefits?employmentId=001"
+  def employmentExpensesUrl(taxYear: Int): String =
+    s"/update-and-submit-income-tax-return/employment-income/$taxYear/expenses/check-employment-expenses"
 
   object ExpectedResults {
 
     object ContentEN {
       val h1Expected = "maggie"
       val titleExpected = "Employment details and benefits"
-      def captionExpected(taxYear: Int) = s"Employment for 6 April $taxYearEOY to 5 April $taxYear"
-      def p1ExpectedAgent(taxYear: Int) = s"You cannot update your client’s employment information until 6 April $taxYear."
-      def p1ExpectedIndividual(taxYear: Int) = s"You cannot update your employment information until 6 April $taxYear."
+      def captionExpected(taxYear: Int): String = s"Employment for 6 April $taxYearEOY to 5 April $taxYear"
+      def p1ExpectedAgent(taxYear: Int): String = s"You cannot update your client’s employment information until 6 April $taxYear."
+      def p1ExpectedIndividual(taxYear: Int): String = s"You cannot update your employment information until 6 April $taxYear."
       val fieldNames = List("Employment details", "Benefits", "Expenses")
       val buttonText = "Return to employment summary"
     }
@@ -59,9 +64,9 @@ val taxYearEOY=taxYear -1
     object ContentCY {
       val h1Expected = "maggie"
       val titleExpected = "Employment details and benefits"
-      def captionExpected(taxYear: Int) = s"Employment for 6 April $taxYearEOY to 5 April $taxYear"
-      def p1ExpectedAgent(taxYear: Int) = s"You cannot update your client’s employment information until 6 April $taxYear."
-      def p1ExpectedIndividual(taxYear: Int) = s"You cannot update your employment information until 6 April $taxYear."
+      def captionExpected(taxYear: Int): String = s"Employment for 6 April $taxYearEOY to 5 April $taxYear"
+      def p1ExpectedAgent(taxYear: Int): String = s"You cannot update your client’s employment information until 6 April $taxYear."
+      def p1ExpectedIndividual(taxYear: Int): String = s"You cannot update your employment information until 6 April $taxYear."
       val fieldNames = List("Employment details", "Benefits", "Expenses")
       val buttonText = "Return to employment summary"
     }
@@ -83,7 +88,7 @@ val taxYearEOY=taxYear -1
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    def expectedCaption(taxYear: Int) = s"Employment for 6 April ${taxYear-1} to 5 April $taxYear"
+    def expectedCaption(taxYear: Int): String = s"Employment for 6 April ${taxYear-1} to 5 April $taxYear"
     val fieldNames = Seq("Employment details", "Benefits", "Expenses")
     val buttonText = "Return to employment summary"
     val updated = "Updated"
@@ -92,7 +97,7 @@ val taxYearEOY=taxYear -1
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    def expectedCaption(taxYear: Int) = s"Employment for 6 April ${taxYear-1} to 5 April $taxYear"
+    def expectedCaption(taxYear: Int): String = s"Employment for 6 April ${taxYear-1} to 5 April $taxYear"
     val fieldNames = Seq("Employment details", "Benefits", "Expenses")
     val buttonText = "Return to employment summary"
     val updated = "Updated"
@@ -167,7 +172,7 @@ val taxYearEOY=taxYear -1
           welshToggleCheck(user.isWelsh)
         }
 
-        "render the page with unignored employments " which {
+        "render the page with not ignored employments " which {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             val otherEmployment=employmentDetailsAndBenefits(employmentId = "004", employerName = "rosa")

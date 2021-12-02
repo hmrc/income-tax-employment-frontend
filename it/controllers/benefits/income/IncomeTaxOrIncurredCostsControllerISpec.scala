@@ -151,8 +151,8 @@ class IncomeTaxOrIncurredCostsControllerISpec extends IntegrationTest with ViewH
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -180,8 +180,8 @@ class IncomeTaxOrIncurredCostsControllerISpec extends IntegrationTest with ViewH
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -208,8 +208,8 @@ class IncomeTaxOrIncurredCostsControllerISpec extends IntegrationTest with ViewH
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(expectedCaption)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(true))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = true)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -282,19 +282,19 @@ class IncomeTaxOrIncurredCostsControllerISpec extends IntegrationTest with ViewH
           import Selectors._
           import user.commonExpectedResults._
 
-          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
-          h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption, captionSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(false))
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-          errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
-          errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            h1Check(user.specificExpectedResults.get.expectedH1)
+            textOnPageCheck(expectedCaption, captionSelector)
+            radioButtonCheck(yesText, 1, checked = false)
+            radioButtonCheck(noText, 2, checked = false)
+            buttonCheck(expectedButtonText, continueButtonSelector)
+            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            welshToggleCheck(user.isWelsh)
+            errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
+          }
         }
       }
-    }
 
     "Redirect to overview page if it is not EOY" which {
       lazy val result: WSResponse = {

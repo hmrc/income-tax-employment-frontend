@@ -44,7 +44,6 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
   def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
 
-
   def benefits(accModel: AccommodationRelocationModel): BenefitsViewModel =
     BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(accModel),
       isBenefitsReceived = true, isUsingCustomerData = true)
@@ -170,8 +169,8 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
           formPostLinkCheck(continueLink, formSelector)
           welshToggleCheck(user.isWelsh)
 
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
         }
 
         "render the non-qualifying relocation benefits question page with cya data and 'yes' radio selected" which {
@@ -198,8 +197,8 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
           formPostLinkCheck(continueLink, formSelector)
           welshToggleCheck(user.isWelsh)
 
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
         }
       }
     }
@@ -286,8 +285,8 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(continueLink, formSelector)
 
-            radioButtonCheck(yesText, 1, Some(false))
-            radioButtonCheck(noText, 2, Some(false))
+            radioButtonCheck(yesText, 1, checked = false)
+            radioButtonCheck(noText, 2, checked = false)
             errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
             errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
           }

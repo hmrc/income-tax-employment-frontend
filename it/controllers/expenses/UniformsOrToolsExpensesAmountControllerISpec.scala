@@ -183,7 +183,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("", amountField)
+          inputFieldValueCheck(amountFieldName, amountField, "")
           formPostLinkCheck(continueLink, formSelector)
           welshToggleCheck(user.isWelsh)
         }
@@ -215,7 +215,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(s"$newAmount", amountField)
+          inputFieldValueCheck(amountFieldName, amountField, newAmount.toString())
           formPostLinkCheck(continueLink, formSelector)
           welshToggleCheck(user.isWelsh)
         }
@@ -247,7 +247,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("", amountField)
+          inputFieldValueCheck(amountFieldName, amountField, "")
           formPostLinkCheck(continueLink, formSelector)
           welshToggleCheck(user.isWelsh)
         }
@@ -325,7 +325,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
 
         "return an error when the flatRateJobExpenses amount is in the wrong format" which {
 
-          lazy val form: Map[String, String] = Map(AmountForm.amount -> "AAAA")
+          lazy val form: Map[String, String] = Map(AmountForm.amount -> "abc")
 
           lazy val result: WSResponse = {
             dropExpensesDB()
@@ -350,7 +350,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("AAAA", amountField)
+          inputFieldValueCheck(amountFieldName, amountField, "abc")
           formPostLinkCheck(continueLink, formSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedInvalidFormatErrorMessage, Some(amountFieldName))
           errorSummaryCheck(user.specificExpectedResults.get.expectedInvalidFormatErrorMessage, amountField)
@@ -384,7 +384,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("", amountField)
+          inputFieldValueCheck(amountFieldName, amountField, "")
           formPostLinkCheck(continueLink, formSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Some(amountFieldName))
           errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, amountField)
@@ -418,16 +418,13 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           textOnPageCheck(user.commonExpectedResults.expectedCannotClaim, cannotClaimParagraphSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(maxLimit, amountField)
+          inputFieldValueCheck(amountFieldName, amountField, maxLimit)
           formPostLinkCheck(continueLink, formSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedOverMaximumErrorMessage, Some(amountFieldName))
           errorSummaryCheck(user.specificExpectedResults.get.expectedOverMaximumErrorMessage, amountField)
           welshToggleCheck(user.isWelsh)
-
         }
-
       }
-
     }
 
     "redirect to another page when valid request is made and then" should {

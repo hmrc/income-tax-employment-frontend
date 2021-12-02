@@ -52,16 +52,22 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
   trait CommonExpectedResults {
     val continueButton: String
     val expectedCaption: String
+    val yesText: String
+    val noText: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
     val continueButton: String = "Continue"
     val expectedCaption = s"Employment for 6 April ${validTaxYear2021 - 1} to 5 April $validTaxYear2021"
+    val yesText = "Yes"
+    val noText = "No"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val continueButton: String = "Continue"
     val expectedCaption = s"Employment for 6 April ${validTaxYear2021 - 1} to 5 April $validTaxYear2021"
+    val yesText = "Yes"
+    val noText = "No"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -150,7 +156,8 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           h1Check(specific.expectedH1)
           textOnPageCheck(expectedCaption, captionSelector)
           buttonCheck(continueButton)
-          formRadioValueCheckPreFilled(isChecked = false, yesRadioButton)
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           formPostLinkCheck("/update-and-submit-income-tax-return/employment-income/2021/add-employment", formSelector)
         }
 
@@ -177,7 +184,8 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           textOnPageCheck(expectedCaption, captionSelector)
           buttonCheck(continueButton)
           formPostLinkCheck("/update-and-submit-income-tax-return/employment-income/2021/add-employment", formSelector)
-          formRadioValueCheckPreFilled(isChecked = true, yesRadioButton)
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
         }
 
         "redirect to Employment Summary page when there is prior data" when {

@@ -36,7 +36,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
   val employmentId = "001"
 
   val poundPrefixText = "£"
-  val amountField = "#amount"
+  val amountInputName = "amount"
 
   def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/mileage-amount?employmentId=$employmentId"
 
@@ -78,6 +78,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
     val contentSelector = "#main-content > div > div > form > div > label > p"
     val hintTextSelector = "#amount-hint"
     val poundPrefixSelector = ".govuk-input__prefix"
+    val inputSelector = "#amount"
   }
 
   trait CommonExpectedResults {
@@ -167,7 +168,8 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
         "render the mileage amount page with no pre-filled amount" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits.map(_.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(mileage = None))))))))), nino, taxYearEOY)
+            userDataStub(userData(fullEmploymentsModel(hmrcEmployment =
+              Seq(employmentDetailsAndBenefits(fullBenefits.map(_.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(mileage = None))))))))), nino, taxYearEOY)
             insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(mileage = None))))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -185,7 +187,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraph, contentSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("", amountField)
+          inputFieldValueCheck(amountInputName, Selectors.inputSelector, "")
           formPostLinkCheck(continueLink, formSelector)
           welshToggleCheck(user.isWelsh)
 
@@ -217,7 +219,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphWithPrefill, contentSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("400", amountField)
+          inputFieldValueCheck(amountInputName, Selectors.inputSelector, "400")
           formPostLinkCheck(continueLink, formSelector)
           welshToggleCheck(user.isWelsh)
 
@@ -362,15 +364,15 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, amountField)
-          inputFieldValueCheck("", amountField)
+          errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Selectors.inputSelector)
+          inputFieldValueCheck(amountInputName, Selectors.inputSelector, "")
           errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage)
           welshToggleCheck(user.isWelsh)
         }
 
         "return an error when it is the wrong format" which {
 
-          lazy val form: Map[String, String] = Map(AmountForm.amount -> "fgfggffg")
+          lazy val form: Map[String, String] = Map(AmountForm.amount -> "abc")
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
@@ -387,8 +389,8 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          errorSummaryCheck(user.specificExpectedResults.get.expectedWrongFormatErrorMessage, amountField)
-          inputFieldValueCheck("fgfggffg", amountField)
+          errorSummaryCheck(user.specificExpectedResults.get.expectedWrongFormatErrorMessage, Selectors.inputSelector)
+          inputFieldValueCheck(amountInputName, Selectors.inputSelector, "abc")
           errorAboveElementCheck(user.specificExpectedResults.get.expectedWrongFormatErrorMessage)
 
           welshToggleCheck(user.isWelsh)
@@ -413,8 +415,8 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          errorSummaryCheck(user.specificExpectedResults.get.expectedMaxErrorMessage, amountField)
-          inputFieldValueCheck("2353453425345234", amountField)
+          errorSummaryCheck(user.specificExpectedResults.get.expectedMaxErrorMessage, Selectors.inputSelector)
+          inputFieldValueCheck(amountInputName, Selectors.inputSelector, "2353453425345234")
           errorAboveElementCheck(user.specificExpectedResults.get.expectedMaxErrorMessage)
 
           welshToggleCheck(user.isWelsh)
@@ -440,8 +442,8 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
         s"has a SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel) shouldBe None
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel) shouldBe None
         }
       }
       "redirect to accommodation relocation page when the mileage question is no" which {
@@ -495,9 +497,9 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
       }
 
       "updates the mileage benefit to be 200" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)) shouldBe Some(200.00)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)) shouldBe Some(200.00)
       }
 
     }
@@ -519,9 +521,9 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
       }
 
       "updates the mileage benefit to be 200" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)) shouldBe Some(200.00)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)) shouldBe Some(200.00)
       }
 
     }
