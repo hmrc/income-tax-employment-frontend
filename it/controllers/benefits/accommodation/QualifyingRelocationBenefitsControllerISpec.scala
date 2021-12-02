@@ -69,7 +69,6 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
     val expectedError: String
     val expectedContent: String
     val expectedExample1: String
-
   }
 
   trait CommonExpectedResults {
@@ -173,8 +172,8 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
 
           textOnPageCheck(user.specificExpectedResults.get.expectedContent + user.specificExpectedResults.get.expectedExample1, contentSelector)
 
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
         }
 
         "render the 'Did you get qualifying relocation benefits?' page with correct content and yes button selected when there cya data" +
@@ -198,8 +197,8 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
 
           textOnPageCheck(user.specificExpectedResults.get.expectedContent + user.specificExpectedResults.get.expectedExample1, contentSelector)
 
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
 
@@ -229,8 +228,8 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
             textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-            radioButtonCheck(yesText, 1, Some(true))
-            radioButtonCheck(noText, 2, Some(false))
+            radioButtonCheck(yesText, 1, checked = true)
+            radioButtonCheck(noText, 2, checked = false)
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
@@ -259,8 +258,8 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
             textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-            radioButtonCheck(yesText, 1, Some(false))
-            radioButtonCheck(noText, 2, Some(true))
+            radioButtonCheck(yesText, 1, checked = false)
+            radioButtonCheck(noText, 2, checked = true)
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
@@ -390,10 +389,10 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(QualifyingRelocationBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpensesQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses)) shouldBe Some(200.00)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpensesQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses)) shouldBe Some(200.00)
       }
 
     }
@@ -414,10 +413,10 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(NonQualifyingRelocationBenefitsController.show(taxYearEOY, employmentId).url)
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpensesQuestion)) shouldBe Some(false)
-        cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses)) shouldBe None
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpensesQuestion)) shouldBe Some(false)
+        cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses)) shouldBe None
       }
     }
 

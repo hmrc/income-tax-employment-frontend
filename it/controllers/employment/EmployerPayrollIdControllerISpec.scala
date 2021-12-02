@@ -50,7 +50,8 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     val continueButtonFormSelector = "#main-content > div > div > form"
     val expectedErrorHref = "#payrollId"
     val inputAmountField = "#payrollId"
-    def bulletSelector(bulletNumber: Int) = s"#main-content > div > div > form > div > label > ul > li:nth-child($bulletNumber)"
+    def bulletSelector(bulletNumber: Int): String =
+      s"#main-content > div > div > form > div > label > ul > li:nth-child($bulletNumber)"
   }
 
   val inputName: String = "payrollId"
@@ -200,9 +201,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(bullet3, bulletSelector(3))
           textOnPageCheck(get.paragraph2, paragraph3Selector)
           textOnPageCheck(hintText, hintTextSelector)
-          inputFieldCheck(inputName, inputSelector)
-          inputFieldValueCheck("", inputAmountField)
-
+          inputFieldValueCheck(inputName, inputSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -234,9 +233,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(bullet3, bulletSelector(3))
           textOnPageCheck(get.paragraph2, paragraph4Selector)
           textOnPageCheck(hintText, hintTextSelector)
-          inputFieldCheck(inputName, inputSelector)
-          inputFieldValueCheck("123456", inputAmountField)
-
+          inputFieldValueCheck(inputName, inputSelector, "123456")
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -312,9 +309,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(bullet3, bulletSelector(3))
           textOnPageCheck(get.paragraph2, paragraph3Selector)
           textOnPageCheck(hintText, hintTextSelector)
-          inputFieldCheck(inputName, inputSelector)
-          inputFieldValueCheck(payrollId, inputAmountField)
-
+          inputFieldValueCheck(inputName, inputSelector, payrollId)
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -351,9 +346,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(bullet3, bulletSelector(3))
           textOnPageCheck(get.paragraph2, paragraph3Selector)
           textOnPageCheck(hintText, hintTextSelector)
-          inputFieldCheck(inputName, inputSelector)
-          inputFieldValueCheck(payrollId, inputAmountField)
-
+          inputFieldValueCheck(inputName, inputSelector, payrollId)
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -390,9 +383,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(bullet3, bulletSelector(3))
           textOnPageCheck(get.paragraph2, paragraph3Selector)
           textOnPageCheck(hintText, hintTextSelector)
-          inputFieldCheck(inputName, inputSelector)
-          inputFieldValueCheck(payrollId, inputAmountField)
-
+          inputFieldValueCheck(inputName, inputSelector, payrollId)
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)

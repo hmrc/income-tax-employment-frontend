@@ -682,7 +682,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     "redirect when at the end of the year when no cya data" which {
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         userDataStub(userData(fullEmploymentsModel()), nino, 2021)
         urlPost(s"$appUrl/2021/check-employment-details?employmentId=$employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
       }
@@ -824,7 +824,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(employmentUserData.copy(employment = employmentData), userRequest)
         noUserDataStub(nino, 2021)
 
@@ -864,7 +864,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(employmentUserData, userRequest)
         userDataStub(userData(fullEmploymentsModel()), nino, 2021)
         urlPost(s"$appUrl/2021/check-employment-details?employmentId=$employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")

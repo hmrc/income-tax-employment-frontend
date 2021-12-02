@@ -33,7 +33,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
   val taxYearEOY: Int = taxYear - 1
   val employmentId: String = "001"
   val amount: BigDecimal = 100
-  val amountFieldName = "amount"
+  val amountInputName = "amount"
   val expectedErrorHref = "#amount"
 
   def pageUrl(taxYear: Int): String =
@@ -62,7 +62,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
     val captionSelector = "#main-content > div > div > form > div > label > header > p"
     val hintTextSelector = "#amount-hint"
     val currencyPrefixSelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
-    val amountFieldSelector = "#amount"
+    val inputSelector = "#amount"
     val continueButtonSelector = "#continue"
     val formSelector = "#main-content > div > div > form"
     val youCanSelector = "#you-can-text"
@@ -183,8 +183,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
           textOnPageCheck(enterTotalText, enterTotalSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
-          inputFieldCheck(amountFieldName, amountFieldSelector)
-          inputFieldValueCheck("", amountFieldSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(formLink, formSelector)
 
@@ -213,8 +212,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
           textOnPageCheck(enterTotalText, enterTotalSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
-          inputFieldCheck(amountFieldName, amountFieldSelector)
-          inputFieldValueCheck(amount.toString(), amountFieldSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(formLink, formSelector)
 
@@ -242,8 +240,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
           textOnPageCheck(enterTotalText, enterTotalSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
-          inputFieldCheck(amountFieldName, amountFieldSelector)
-          inputFieldValueCheck(amount.toString(), amountFieldSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(formLink, formSelector)
 
@@ -356,13 +353,12 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck("", amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formLink, formSelector)
 
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorNoEntry, expectedErrorHref)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Some(amountFieldName))
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Some(amountInputName))
 
             welshToggleCheck(user.isWelsh)
           }
@@ -392,13 +388,12 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck(incorrectFormatAmount, amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, incorrectFormatAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formLink, formSelector)
 
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, expectedErrorHref)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, Some(amountFieldName))
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, Some(amountInputName))
 
             welshToggleCheck(user.isWelsh)
           }
@@ -428,13 +423,12 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck(overMaximumAmount, amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, overMaximumAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formLink, formSelector)
 
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, expectedErrorHref)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, Some(amountFieldName))
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, Some(amountInputName))
 
             welshToggleCheck(user.isWelsh)
           }

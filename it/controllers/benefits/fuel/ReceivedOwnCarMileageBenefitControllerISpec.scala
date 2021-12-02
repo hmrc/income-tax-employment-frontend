@@ -96,7 +96,8 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedTitle = "Did your client get a mileage benefit for using their own car for work?"
     val expectedH1 = "Did your client get a mileage benefit for using their own car for work?"
-    val expectedP1 = "We only need to know about payments made above our ‘approved amount‘. If your client has payments above the ‘approved amount‘, they should be recorded in section E of their P11D form."
+    val expectedP1: String = "We only need to know about payments made above our ‘approved amount‘. " +
+      "If your client has payments above the ‘approved amount‘, they should be recorded in section E of their P11D form."
     val expectedP2 = "Check with your client’s employer if you are unsure."
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedError = "Select yes if your client got a mileage benefit for using their own car for work"
@@ -114,7 +115,8 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get a mileage benefit for using their own car for work?"
     val expectedH1 = "Did your client get a mileage benefit for using their own car for work?"
-    val expectedP1 = "We only need to know about payments made above our ‘approved amount‘. If your client has payments above the ‘approved amount‘, they should be recorded in section E of their P11D form."
+    val expectedP1: String = "We only need to know about payments made above our ‘approved amount‘. " +
+      "If your client has payments above the ‘approved amount‘, they should be recorded in section E of their P11D form."
     val expectedP2 = "Check with your client’s employer if you are unsure."
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedError = "Select yes if your client got a mileage benefit for using their own car for work"
@@ -215,8 +217,8 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
           textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedP1, p1Selector)
           textOnPageCheck(user.specificExpectedResults.get.expectedP2, p2Selector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -243,8 +245,8 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
           textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedP1, p1Selector)
           textOnPageCheck(user.specificExpectedResults.get.expectedP2, p2Selector)
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -272,8 +274,8 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
           textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedP1, p1Selector)
           textOnPageCheck(user.specificExpectedResults.get.expectedP2, p2Selector)
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -300,8 +302,8 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
           textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedP1, p1Selector)
           textOnPageCheck(user.specificExpectedResults.get.expectedP2, p2Selector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(true))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = true)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -386,9 +388,9 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       }
 
       "update the mileageQuestion to false and mileage to none" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(false)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)) shouldBe None
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(false)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)) shouldBe None
       }
 
     }
@@ -413,9 +415,9 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       }
 
       "update the mileageQuestion to false and mileage to none" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(false)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)) shouldBe None
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(false)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileage)) shouldBe None
       }
 
     }
@@ -439,8 +441,8 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       }
 
       "update the mileageQuestion to true" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(true)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(true)
       }
 
     }
@@ -464,8 +466,8 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       }
 
       "update the mileageQuestion to true" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(true)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion)) shouldBe Some(true)
       }
 
     }

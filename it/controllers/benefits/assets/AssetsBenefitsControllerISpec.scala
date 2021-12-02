@@ -161,8 +161,8 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.youCanUseText, youCanUseTextSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(continueText, continueButtonSelector)
           formPostLinkCheck(formPostLink, formSelector)
 
@@ -189,8 +189,8 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.youCanUseText, youCanUseTextSelector)
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(continueText, continueButtonSelector)
           formPostLinkCheck(formPostLink, formSelector)
 
@@ -217,8 +217,8 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.youCanUseText, youCanUseTextSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(true))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = true)
           buttonCheck(continueText, continueButtonSelector)
           formPostLinkCheck(formPostLink, formSelector)
 
@@ -299,8 +299,8 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.youCanUseText, youCanUseTextSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(continueText, continueButtonSelector)
           formPostLinkCheck(formPostLink, formSelector)
 

@@ -172,9 +172,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
           textOnPageCheck(get.expectedContent, contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -206,8 +204,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
           textOnPageCheck(previousExpectedContent + " " + get.expectedContent, contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("300", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "300")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -238,8 +235,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
           textOnPageCheck(previousExpectedContent + " " + get.expectedContent, contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("300", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "300")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -365,8 +361,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent + " " + get.expectedContent, contentSelector)
           textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -397,8 +392,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent + " " + get.expectedContent, contentSelector)
           textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("abc", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "abc")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -430,8 +424,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent + " " + get.expectedContent, contentSelector)
           textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("9999999999999999999999999999", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "9999999999999999999999999999")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -463,9 +456,9 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
         }
 
         "updates the CYA model with the new value" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
           val entertainmentAmount: Option[BigDecimal] =
-            cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining))
+            cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining))
           entertainmentAmount shouldBe Some(100.23)
         }
       }
@@ -488,9 +481,9 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
         }
 
         "updates the CYA model with the new value" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
           val entertainmentAmount: Option[BigDecimal] =
-            cyamodel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining))
+            cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining))
           entertainmentAmount shouldBe Some(100.11)
         }
       }
@@ -527,7 +520,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
         }
       }
 
-      "redirect to the cpage when entertaining has an amount but the entertainment question has not been answered" +
+      "redirect to the page when entertaining has an amount but the entertainment question has not been answered" +
         " but entertainment benefit question empty" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)

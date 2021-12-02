@@ -60,7 +60,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
     val optionalParagraphSelector = "#main-content > div > div > form > div > label > p"
     val hintTextSelector = "#amount-hint"
     val currencyPrefixSelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
-    val amountInputSelector = "#amount"
+    val inputSelector = "#amount"
     val continueButtonSelector = "#continue"
     val formSelector = "#main-content > div > div > form"
   }
@@ -177,8 +177,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
           elementNotOnPageCheck(optionalParagraphSelector)
           hintTextCheck(expectedHintText, hintTextSelector)
           textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-          inputFieldCheck(amountInputName, amountInputSelector)
-          inputFieldValueCheck("", amountInputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, formSelector)
 
@@ -208,8 +207,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
           textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
           hintTextCheck(expectedHintText, hintTextSelector)
           textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-          inputFieldCheck(amountInputName, amountInputSelector)
-          inputFieldValueCheck(prefilledAmount.toString(), amountInputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, prefilledAmount.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, formSelector)
 
@@ -239,8 +237,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
           textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
           hintTextCheck(expectedHintText, hintTextSelector)
           textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-          inputFieldCheck(amountInputName, amountInputSelector)
-          inputFieldValueCheck(prefilledAmount.toString(), amountInputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, prefilledAmount.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueLink, formSelector)
 
@@ -350,10 +347,9 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
             textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-            inputFieldCheck(amountInputName, amountInputSelector)
-            inputFieldValueCheck("", amountInputSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
-            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorNoEntry, amountInputSelector)
+            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorNoEntry, inputSelector)
             errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Some(amountInputName))
             formPostLinkCheck(continueLink, formSelector)
 
@@ -386,10 +382,9 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
             textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-            inputFieldCheck(amountInputName, amountInputSelector)
-            inputFieldValueCheck(incorrectAmount, amountInputSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, incorrectAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
-            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, amountInputSelector)
+            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, inputSelector)
             errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, Some(amountInputName))
             formPostLinkCheck(continueLink, formSelector)
 
@@ -422,10 +417,9 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
             textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
-            inputFieldCheck(amountInputName, amountInputSelector)
-            inputFieldValueCheck(overMaxAmount, amountInputSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, overMaxAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
-            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, amountInputSelector)
+            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, inputSelector)
             errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, Some(amountInputName))
             formPostLinkCheck(continueLink, formSelector)
 

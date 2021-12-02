@@ -150,7 +150,8 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits.map(_.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(mileage = None))))))))), nino, taxYearEOY)
+            userDataStub(userData(fullEmploymentsModel(hmrcEmployment =
+              Seq(employmentDetailsAndBenefits(fullBenefits.map(_.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(mileage = None))))))))), nino, taxYearEOY)
             insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(van = None))))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -167,8 +168,7 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
           textOnPageCheck(get.expectedContent, contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -178,7 +178,8 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits.map(_.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(mileage = None))))))))), nino, taxYearEOY)
+            userDataStub(userData(fullEmploymentsModel(hmrcEmployment =
+              Seq(employmentDetailsAndBenefits(fullBenefits.map(_.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(mileage = None))))))))), nino, taxYearEOY)
             insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel)))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -199,8 +200,7 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
           textOnPageCheck(previousExpectedContent + get.expectedContent, contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("300", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "300")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -226,7 +226,8 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
     "Redirect user to the tax overview page when in year" which {
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits.map(_.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(mileage = None))))))))), nino, taxYearEOY)
+        userDataStub(userData(fullEmploymentsModel(hmrcEmployment =
+          Seq(employmentDetailsAndBenefits(fullBenefits.map(_.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(mileage = None))))))))), nino, taxYearEOY)
         insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullCarVanFuelModel.copy(van = None))))), userRequest)
         authoriseAgentOrIndividual(user.isAgent)
         urlGet(url(taxYear), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -310,7 +311,7 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
             }
 
             titleCheck(get.expectedErrorTitle)
-            inputFieldValueCheck("", inputSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "")
             errorSummaryCheck(get.emptyErrorText, expectedErrorHref)
           }
 
@@ -330,7 +331,7 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
             }
 
             titleCheck(get.expectedErrorTitle)
-            inputFieldValueCheck("|", inputSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "|")
             errorSummaryCheck(get.wrongFormatErrorText, expectedErrorHref)
           }
 
@@ -351,7 +352,7 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
             }
 
             titleCheck(get.expectedErrorTitle)
-            inputFieldValueCheck("9999999999999999999999999999", inputSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "9999999999999999999999999999")
             errorSummaryCheck(get.maxAmountErrorText, expectedErrorHref)
           }
         }
@@ -374,10 +375,10 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
       }
 
       "updates the company van amount to be 100" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.van)) shouldBe Some(100)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.van)) shouldBe Some(100)
       }
     }
 
@@ -396,10 +397,10 @@ class CompanyVanBenefitsAmountControllerISpec  extends IntegrationTest with View
       }
 
       "updates the company van amount to be 100" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.van)) shouldBe Some(100)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.van)) shouldBe Some(100)
       }
     }
 

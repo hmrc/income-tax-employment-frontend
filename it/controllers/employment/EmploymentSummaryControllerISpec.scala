@@ -60,13 +60,13 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
     def employmentExpensesRowLinkSelector: String = s"$employmentExpensesRowSelector > a"
 
-    def employerSummaryListRowFieldNameSelector(i: Int) =
+    def employerSummaryListRowFieldNameSelector(i: Int): String =
       s"#main-content > div > div > ol:nth-child(4) > li:nth-child($i) > span.app-task-list__task-name > a"
 
-    def employerSummaryListRowFieldActionSelector(i: Int) =
+    def employerSummaryListRowFieldActionSelector(i: Int): String =
       s"#main-content > div > div > ol:nth-child(4) > li:nth-child($i) > span.hmrc-status-tag"
 
-    def expensesSummaryListRowFieldNameLinkSelector = s"$expensesSummaryListRowFieldNameSelector > a"
+    def expensesSummaryListRowFieldNameLinkSelector: String = s"$expensesSummaryListRowFieldNameSelector > a"
   }
 
   trait SpecificExpectedResults {
@@ -330,7 +330,6 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
     val yesNoFormYes: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
     val yesNoFormNo: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
-    val yesNoFormEmpty: Map[String, String] = Map[String, String]()
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
@@ -392,7 +391,7 @@ object EmploymentSummaryControllerISpec {
     val employerName3 = "Tesco"
     val employmentId3 = "003"
 
-    val employmentBenefits = EmploymentBenefits(
+    val employmentBenefits: EmploymentBenefits = EmploymentBenefits(
       "2020-04-04T01:01:01Z",
       Some(
         Benefits(
@@ -402,14 +401,14 @@ object EmploymentSummaryControllerISpec {
       )
     )
 
-    val employmentExpenses = EmploymentExpenses(
+    val employmentExpenses: EmploymentExpenses = EmploymentExpenses(
       Some("2020-04-04T01:01:01Z"),
       Some("2020-04-04T01:01:01Z"),
       totalExpenses = Some(100.00),
       Some(Expenses(businessTravelCosts = Some(100.00), None, None, None, None, None, None, None))
     )
 
-    val employmentSource = EmploymentSource(
+    val employmentSource: EmploymentSource = EmploymentSource(
       employmentId = employmentId1,
       employerName = employerName1,
       employerRef = Some("223/AB12399"),
@@ -419,7 +418,7 @@ object EmploymentSummaryControllerISpec {
       dateIgnored = Some("2020-04-04T01:01:01Z"),
       submittedOn = Some("2020-01-04T05:01:01Z"),
       employmentData = Some(EmploymentData(
-        submittedOn = ("2020-02-12"),
+        submittedOn = "2020-02-12",
         employmentSequenceNumber = Some("123456789999"),
         companyDirector = Some(true),
         closeCompany = Some(false),
@@ -437,7 +436,7 @@ object EmploymentSummaryControllerISpec {
       None
     )
 
-    val employmentSourceWithoutBenefits = EmploymentSource(
+    val employmentSourceWithoutBenefits: EmploymentSource = EmploymentSource(
       employmentId = employmentId2,
       employerName = employerName2,
       employerRef = Some("223/AB12399"),
@@ -447,7 +446,7 @@ object EmploymentSummaryControllerISpec {
       dateIgnored = Some("2020-04-04T01:01:01Z"),
       submittedOn = Some("2020-01-04T05:01:01Z"),
       employmentData = Some(EmploymentData(
-        submittedOn = ("2020-02-12"),
+        submittedOn = "2020-02-12",
         employmentSequenceNumber = Some("123456789999"),
         companyDirector = Some(true),
         closeCompany = Some(false),
@@ -465,7 +464,7 @@ object EmploymentSummaryControllerISpec {
       None
     )
 
-    val employmentSourceWithBenefits = EmploymentSource(
+    val employmentSourceWithBenefits: EmploymentSource = EmploymentSource(
       employmentId = employmentId3,
       employerName = employerName3,
       employerRef = Some("223/AB12399"),
@@ -475,7 +474,7 @@ object EmploymentSummaryControllerISpec {
       dateIgnored = Some("2020-04-04T01:01:01Z"),
       submittedOn = Some("2020-01-04T05:01:01Z"),
       employmentData = Some(EmploymentData(
-        submittedOn = ("2020-02-12"),
+        submittedOn = "2020-02-12",
         employmentSequenceNumber = Some("123456789999"),
         companyDirector = Some(true),
         closeCompany = Some(false),

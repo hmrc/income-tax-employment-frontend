@@ -200,9 +200,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
           textOnPageCheck(get.expectedContent, paragraphTextSelector(2))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("", inputAmountField)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -234,9 +232,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
           textOnPageCheck(get.expectedContent, paragraphTextSelector(3))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("", inputAmountField)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -265,9 +261,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
           textOnPageCheck(get.expectedContent, paragraphTextSelector(3))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck(carFuelAmount.get.toString(), inputAmountField)
-
+          inputFieldValueCheck(amountInputName, inputSelector, carFuelAmount.get.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -423,9 +417,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
           textOnPageCheck(get.expectedContent, paragraphTextSelector(2))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck(errorAmount, inputAmountField)
-
+          inputFieldValueCheck(amountInputName, inputSelector, errorAmount)
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -458,9 +450,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
           textOnPageCheck(get.expectedContent, paragraphTextSelector(2))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck(errorAmount, inputAmountField)
-
+          inputFieldValueCheck(amountInputName, inputSelector, errorAmount)
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -493,9 +483,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
           textOnPageCheck(get.expectedContent, paragraphTextSelector(2))
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck(errorAmount, inputAmountField)
-
+          inputFieldValueCheck(amountInputName, inputSelector, errorAmount)
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -528,8 +516,8 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
       }
 
       "updates the CYA model with the new value" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        val carFuelAmount: Option[BigDecimal] = cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuel))
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        val carFuelAmount: Option[BigDecimal] = cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuel))
         carFuelAmount shouldBe Some(newAmount)
       }
     }
@@ -553,8 +541,8 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
       }
 
       "updates the CYA model with the new value" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        val carFuelAmount: Option[BigDecimal] = cyamodel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuel))
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        val carFuelAmount: Option[BigDecimal] = cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuel))
         carFuelAmount shouldBe Some(newAmount)
       }
     }

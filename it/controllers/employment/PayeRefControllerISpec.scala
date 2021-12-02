@@ -17,24 +17,26 @@
 package controllers.employment
 
 import models.User
+import models.employment.AllEmploymentData
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper  {
 
-  val taxYearEOY = taxYear - 1
+  val taxYearEOY: Int = taxYear - 1
   val payeRef: String = "123/AA12345"
   def url (taxYear:Int): String = s"$appUrl/${taxYear.toString}/employer-paye-reference?employmentId=001"
 
   val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=001"
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   private val userRequest: User[_]=  User(mtditid, None, nino, sessionId, affinityGroup)
 
   object Selectors {
@@ -58,7 +60,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
   }
 
   trait CommonExpectedResults {
-    val expectedCaption: Int => String
+    val expectedCaption: String
     val expectedH1: String
     val expectedContent: String
     val continueButtonText: String
@@ -69,7 +71,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = (taxYear: Int) => s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedH1: String = "What’s the PAYE reference of maggie?"
     val continueButtonText = "Continue"
     val hintText = "For example, 123/AB456"
@@ -80,7 +82,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = (taxYear: Int) => s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedH1: String = "What’s the PAYE reference of maggie?"
     val continueButtonText = "Continue"
     val hintText = "For example, 123/AB456"
@@ -132,7 +134,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
 
-  val multipleEmployments = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"),
+  val multipleEmployments: AllEmploymentData = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"),
     employmentDetailsAndBenefits(employerRef=Some(payeRef))
     ))
 
@@ -144,7 +146,6 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
       import user.specificExpectedResults._
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
 
         "should render What's the PAYE reference of xxx? page with cya payeRef in paragraph text when there is cya data" which {
 
@@ -164,11 +165,10 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
           titleCheck(get.expectedTitle)
           h1Check(expectedH1)
-          captionCheck(expectedCaption(taxYear))
+          captionCheck(expectedCaption)
           textOnPageCheck(expectedContent, contentSelector)
           textOnPageCheck(hintText, hintTestSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "123/AA12345")
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -192,11 +192,10 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
           titleCheck(get.expectedTitle)
           h1Check(expectedH1)
-          captionCheck(expectedCaption(taxYearEOY))
+          captionCheck(expectedCaption)
           textOnPageCheck(hintText, hintTestSelector)
           textOnPageCheck(get.expectedContentNewAccount, contentSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -206,7 +205,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
         "The input field" should {
 
           "be empty" when {
-            "there is cya data with PAYEref field empty but no prior(i.e. user is adding a new employment)" when {
+            "there is cya data with PAYE ref field empty but no prior(i.e. user is adding a new employment)" when {
               implicit lazy val result: WSResponse = {
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
@@ -217,8 +216,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-              inputFieldValueCheck("", inputAmountField)
-
+              inputFieldValueCheck(amountInputName, inputSelector, "")
             }
 
 
@@ -233,8 +231,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-              inputFieldValueCheck("", inputAmountField)
-
+              inputFieldValueCheck(amountInputName, inputSelector, "")
             }
           }
 
@@ -250,7 +247,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-              inputFieldValueCheck("123/BB124", inputAmountField)
+              inputFieldValueCheck(amountInputName, inputSelector, "123/BB124")
             }
 
             "cya amount field is filled and prior data is none (i.e user has added a new employment and updated their payeRef but now want to change it)" when {
@@ -264,39 +261,39 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-              inputFieldValueCheck("123/BB124", inputAmountField)
+              inputFieldValueCheck(amountInputName, inputSelector, "123/BB124")
             }
           }
         }
-        "redirect  to check employment details page when there is no cya data in session" when {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            urlGet(url(taxYearEOY), follow = false, welsh=user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
+      }
+    }
+
+    "redirect  to check employment details page when there is no cya data in session" when {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        urlGet(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
 
 
-          "has an SEE_OTHER status" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001")
-          }
-        }
+      "has an SEE_OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001")
+      }
+    }
 
-        "redirect  to overview page if the user tries to hit this page with current taxYear" when {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            insertCyaData(cya(), userRequest)
-            urlGet(url(taxYear), welsh=user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
+    "redirect  to overview page if the user tries to hit this page with current taxYear" when {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        insertCyaData(cya(), userRequest)
+        urlGet(url(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
 
 
-          "has an SEE_OTHER status" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
-          }
-        }
-
+      "has an SEE_OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
       }
     }
   }
@@ -326,7 +323,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
           }
 
           titleCheck(get.expectedErrorTitle)
-          inputFieldValueCheck("", inputAmountField)
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           errorSummaryCheck(emptyErrorText, expectedErrorHref)
         }
 
@@ -349,24 +346,24 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
           }
 
           titleCheck(get.expectedErrorTitle)
-          inputFieldValueCheck(invalidPaye, inputAmountField)
+          inputFieldValueCheck(amountInputName, inputSelector, invalidPaye)
           errorSummaryCheck(wrongFormatErrorText, expectedErrorHref)
         }
 
-        "redirect to Overview page when a valid form is submitted" when {
-          implicit lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            insertCyaData(cya(), userRequest)
-            urlPost(url(taxYearEOY), follow=false,
-              welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("payeRef" -> payeRef))
-          }
+      }
+    }
 
-          "has an SEE_OTHER status" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001")
-          }
-        }
+    "redirect to Overview page when a valid form is submitted" when {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        insertCyaData(cya(), userRequest)
+        urlPost(url(taxYearEOY), follow=false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("payeRef" -> payeRef))
+      }
+
+      "has an SEE_OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001")
       }
     }
   }

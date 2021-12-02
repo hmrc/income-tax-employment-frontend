@@ -169,8 +169,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("", amountField)
-          inputFieldCheck(amountFieldName, amountField)
+          inputFieldValueCheck(amountFieldName, amountField, "")
           formPostLinkCheck(continueLink, formSelector)
           welshToggleCheck(user.isWelsh)
         }
@@ -201,8 +200,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(s"$newAmount", amountField)
-          inputFieldCheck(amountFieldName, amountField)
+          inputFieldValueCheck(amountFieldName, amountField, newAmount.toString())
           formPostLinkCheck(continueLink, formSelector)
           welshToggleCheck(user.isWelsh)
         }
@@ -233,8 +231,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("", amountField)
-          inputFieldCheck(amountFieldName, amountField)
+          inputFieldValueCheck(amountFieldName, amountField, "")
           formPostLinkCheck(continueLink, formSelector)
           welshToggleCheck(user.isWelsh)
         }
@@ -312,7 +309,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         "return an error when the otherAndCapitalAllowances amount is in the wrong format" which {
 
-          lazy val form: Map[String, String] = Map(AmountForm.amount -> "AAAA")
+          lazy val form: Map[String, String] = Map(AmountForm.amount -> "abc")
 
           lazy val result: WSResponse = {
             dropExpensesDB()
@@ -336,8 +333,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("AAAA", amountField)
-          inputFieldCheck(amountFieldName, amountField)
+          inputFieldValueCheck(amountFieldName, amountField, "abc")
           formPostLinkCheck(continueLink, formSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedInvalidFormatErrorMessage, Some(amountFieldName))
           errorSummaryCheck(user.specificExpectedResults.get.expectedInvalidFormatErrorMessage, amountField)
@@ -370,8 +366,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("", amountField)
-          inputFieldCheck(amountFieldName, amountField)
+          inputFieldValueCheck(amountFieldName, amountField, "")
           formPostLinkCheck(continueLink, formSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Some(amountFieldName))
           errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, amountField)
@@ -404,17 +399,13 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck(maxLimit, amountField)
-          inputFieldCheck(amountFieldName, amountField)
+          inputFieldValueCheck(amountFieldName, amountField, maxLimit)
           formPostLinkCheck(continueLink, formSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedOverMaximumErrorMessage, Some(amountFieldName))
           errorSummaryCheck(user.specificExpectedResults.get.expectedOverMaximumErrorMessage, amountField)
           welshToggleCheck(user.isWelsh)
-
         }
-
       }
-
     }
 
     "redirect to another page when valid request is made and then" should {
