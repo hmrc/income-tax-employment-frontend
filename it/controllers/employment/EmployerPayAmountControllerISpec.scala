@@ -17,24 +17,26 @@
 package controllers.employment
 
 import models.User
+import models.employment.AllEmploymentData
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper  {
 
-  val taxYearEOY = taxYear - 1
+  val taxYearEOY: Int = taxYear - 1
   val amount: BigDecimal = 34234.15
   val urlEOY = s"$appUrl/2021/how-much-pay?employmentId=001"
 
   val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/how-much-pay?employmentId=001"
 
-  implicit val request = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   private val userRequest: User[_]=  User(mtditid, None, nino, sessionId, affinityGroup)
 
 
@@ -48,7 +50,6 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
     val continueButtonSelector = "#continue"
     val continueButtonFormSelector = "#main-content > div > div > form"
     val expectedErrorHref = "#amount"
-    val inputAmountField = "#amount"
   }
 
   val poundPrefixText = "£"
@@ -64,7 +65,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   trait CommonExpectedResults {
-    val expectedCaption: Int => String
+    val expectedCaption: String
     val continueButtonText: String
     val hintText: String
     val wrongFormatErrorText: String
@@ -72,7 +73,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = (taxYear: Int) => s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
     val hintText = "For example, £600 or £193.54"
     val wrongFormatErrorText: String = "Enter the amount paid in the correct format"
@@ -80,7 +81,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = (taxYear: Int) => s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
     val hintText = "For example, £600 or £193.54"
     val wrongFormatErrorText: String = "Enter the amount paid in the correct format"
@@ -140,7 +141,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
 
-  val multipleEmployments = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"), employmentDetailsAndBenefits()))
+  val multipleEmployments: AllEmploymentData = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"), employmentDetailsAndBenefits()))
 
   ".show" when {
 
@@ -169,12 +170,11 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
           titleCheck(get.expectedTitle)
           h1Check(get.expectedH1)
-          captionCheck(expectedCaption(taxYear))
+          captionCheck(expectedCaption)
           textOnPageCheck(get.expectedContent, contentSelector)
           textOnPageCheck(hintText, hintTestSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -198,12 +198,11 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
           titleCheck(get.expectedTitle)
           h1Check(get.expectedH1)
-          captionCheck(expectedCaption(taxYearEOY))
+          captionCheck(expectedCaption)
           textOnPageCheck(hintText, hintTestSelector)
           textOnPageCheck(get.expectedContentNewAccount, contentSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -224,8 +223,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-              inputFieldValueCheck("", inputAmountField)
-
+              inputFieldValueCheck(amountInputName, inputSelector, "")
             }
 
 
@@ -240,8 +238,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-              inputFieldValueCheck("", inputAmountField)
-
+              inputFieldValueCheck(amountInputName, inputSelector, "")
             }
           }
 
@@ -257,8 +254,9 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-              inputFieldValueCheck("100", inputAmountField)
+              inputFieldValueCheck(amountInputName, inputSelector, "100")
             }
+
             "cya amount field is filled and prior data is none (i.e user has added a new employment and updated their pay but now want to change it)" when {
               implicit lazy val result: WSResponse = {
                 authoriseAgentOrIndividual(user.isAgent)
@@ -270,8 +268,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-              inputFieldValueCheck("100", inputAmountField)
-            }
+              inputFieldValueCheck(amountInputName, inputSelector, "100")            }
           }
         }
         "redirect  to check employment details page when there is no cya data in session" when {
@@ -333,7 +330,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           titleCheck(get.expectedErrorTitle)
-          inputFieldValueCheck("", inputAmountField)
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           errorSummaryCheck(get.emptyErrorText, expectedErrorHref)
         }
 
@@ -353,7 +350,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           titleCheck(get.expectedErrorTitle)
-          inputFieldValueCheck("|", inputAmountField)
+          inputFieldValueCheck(amountInputName, inputSelector, "|")
           errorSummaryCheck(wrongFormatErrorText, expectedErrorHref)
         }
 
@@ -374,7 +371,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           titleCheck(get.expectedErrorTitle)
-          inputFieldValueCheck("9999999999999999999999999999", inputAmountField)
+          inputFieldValueCheck(amountInputName, inputSelector, "9999999999999999999999999999")
           errorSummaryCheck(maxAmountErrorText, expectedErrorHref)
         }
 

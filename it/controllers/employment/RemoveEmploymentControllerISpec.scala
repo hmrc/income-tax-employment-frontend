@@ -162,8 +162,8 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           h1Check(specific.expectedHeading)
           captionCheck(common.expectedCaption)
           textOnPageCheck(common.expectedRemoveAccountText, paragraphTextSelector)
-          radioButtonCheck("Yes", 1)
-          radioButtonCheck("No", 2)
+          radioButtonCheck("Yes", 1, checked = false)
+          radioButtonCheck("No", 2, checked = false)
           buttonCheck(common.continueButton, continueButtonSelector)
         }
 
@@ -188,8 +188,8 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           h1Check(specific.expectedHeading)
           captionCheck(common.expectedCaption)
           textOnPageCheck(common.expectedLastAccountText, paragraphTextSelector)
-          radioButtonCheck("Yes", 1)
-          radioButtonCheck("No", 2)
+          radioButtonCheck("Yes", 1, checked = false)
+          radioButtonCheck("No", 2, checked = false)
           buttonCheck(common.continueButton, continueButtonSelector)
         }
 

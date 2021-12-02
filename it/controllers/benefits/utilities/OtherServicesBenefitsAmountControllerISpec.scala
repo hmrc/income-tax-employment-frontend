@@ -170,8 +170,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
           elementNotOnPageCheck(contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -204,8 +203,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
           textOnPageCheck(previousExpectedContent, contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("400", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "400")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -236,8 +234,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
           textOnPageCheck(previousExpectedContent, contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("400", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "400")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -365,8 +362,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
           textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -397,8 +393,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
           textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("abc", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "abc")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -430,8 +425,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
           textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("9999999999999999999999999999", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "9999999999999999999999999999")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -462,10 +456,10 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
         }
 
         "updates the CYA model with the new value" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
 
           val otherServicesAmount: Option[BigDecimal] =
-            cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.service))
+            cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.service))
 
           otherServicesAmount shouldBe Some(100.23)
         }
@@ -489,10 +483,10 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
         }
 
         "updates the CYA model with the new value" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
 
           val otherServicesAmount: Option[BigDecimal] =
-            cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.service))
+            cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.service))
 
           otherServicesAmount shouldBe Some(100.11)
         }

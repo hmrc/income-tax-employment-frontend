@@ -165,8 +165,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec  extends IntegrationT
           elementNotOnPageCheck(contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "")
 
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
@@ -199,8 +198,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec  extends IntegrationT
           textOnPageCheck(previousExpectedContent, contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("300", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "300")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -208,7 +206,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec  extends IntegrationT
 
         }
 
-        "render the non-qualifying relocation benefits amount page with the amount field pre-filled with prior benfits data" which {
+        "render the non-qualifying relocation benefits amount page with the amount field pre-filled with prior benefits data" which {
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
@@ -232,8 +230,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec  extends IntegrationT
           textOnPageCheck(previousExpectedContent, contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("300", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "300")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -360,8 +357,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec  extends IntegrationT
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
           textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -392,8 +388,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec  extends IntegrationT
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
           textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("abc", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "abc")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -425,8 +420,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec  extends IntegrationT
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
           textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("9999999999999999999999999999", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "9999999999999999999999999999")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -457,14 +451,14 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec  extends IntegrationT
         }
 
         "updates the CYA model with the new value" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
           val nonQualifyingAmount: Option[BigDecimal] =
-            cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses))
+            cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses))
           nonQualifyingAmount shouldBe Some(100.23)
         }
       }
 
-      "redirect to the travel or entertainment next question page when a vakid form is submitted when no prior benefits" when {
+      "redirect to the travel or entertainment next question page when a valid form is submitted when no prior benefits" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
@@ -482,9 +476,9 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec  extends IntegrationT
         }
 
         "updates the CYA model with the new value" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
           val nonQualifyingRelocationAmount: Option[BigDecimal] =
-            cyamodel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses))
+            cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses))
           nonQualifyingRelocationAmount shouldBe Some(100.11)
         }
       }

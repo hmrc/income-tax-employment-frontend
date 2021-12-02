@@ -166,8 +166,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
           textOnPageCheck("", contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -197,8 +196,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
           textOnPageCheck(previousExpectedContent, contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("200", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "200")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -209,7 +207,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
     "redirect user to the check your benefits page when there is no cya data" which {
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
         urlGet(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -222,7 +220,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
 
     "redirect to overview page if the user tries to hit this page with current taxYear" when {
       implicit lazy val result: WSResponse = {
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
         val utilitiesAndServicesModel = fullUtilitiesAndServicesModel.copy(employerProvidedServices = None)
@@ -264,8 +262,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
           textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -295,8 +292,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
           textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("abc", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "abc")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -326,8 +322,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
           textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("9999999999999999999999999999", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "9999999999999999999999999999")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -341,7 +336,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
     "redirect to professional fees or subscriptions benefits page when a valid form is submitted and prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
         urlPost(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
       }
@@ -352,8 +347,8 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
       }
 
       "updates the CYA model with the new value" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        val employerProvidedServicesAmount = cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServices))
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        val employerProvidedServicesAmount = cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServices))
         employerProvidedServicesAmount shouldBe Some(100.0)
       }
     }
@@ -361,7 +356,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
     "redirect to professional fees and subscriptions benefits page when a valid form is submitted and no prior benefits exist" when {
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
-        authoriseAgentOrIndividual(false)
+        authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(employmentUserData(isPrior = false, cyaModel(Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
         urlPost(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
       }

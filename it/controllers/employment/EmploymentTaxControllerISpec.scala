@@ -18,6 +18,7 @@ package controllers.employment
 
 import controllers.employment.routes.CheckEmploymentDetailsController
 import models.User
+import models.employment.AllEmploymentData
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -30,6 +31,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
 
   override val taxYear = 2021
   val url = s"$appUrl/$taxYear/uk-tax?employmentId=001"
+  val amountInputName = "amount"
 
   trait CommonExpectedResults {
     val hint: String
@@ -113,7 +115,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
     )
 
 
-  val multipleEmployments = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"), employmentDetailsAndBenefits()))
+  val multipleEmployments: AllEmploymentData = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"), employmentDetailsAndBenefits()))
 
   ".show" when {
 
@@ -144,7 +146,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           textOnPageCheck(user.specificExpectedResults.get.expectedPTextWithData, pText)
           buttonCheck(user.commonExpectedResults.continue, continueButton)
           textOnPageCheck(user.commonExpectedResults.hint, hintText)
-          inputFieldCheck(user.commonExpectedResults.amount, currencyBox)
+          inputFieldValueCheck(amountInputName, inputAmountField, "")
         }
 
         //noinspection ScalaStyle
@@ -169,7 +171,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           textOnPageCheck(user.specificExpectedResults.get.expectedPTextNoData, pText)
           buttonCheck(user.commonExpectedResults.continue, continueButton)
           textOnPageCheck(user.commonExpectedResults.hint, hintText)
-          inputFieldCheck(user.commonExpectedResults.amount, currencyBox)
+          inputFieldValueCheck(amountInputName, inputAmountField, "")
         }
 
 
@@ -187,7 +189,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-              inputFieldValueCheck("", inputAmountField)
+              inputFieldValueCheck(amountInputName, inputAmountField, "")
 
             }
 
@@ -203,8 +205,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-              inputFieldValueCheck("", inputAmountField)
-
+              inputFieldValueCheck(amountInputName, inputAmountField, "")
             }
           }
 
@@ -220,7 +221,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-              inputFieldValueCheck("100", inputAmountField)
+              inputFieldValueCheck(amountInputName, inputAmountField, "100")
             }
 
             "cya amount field is filled and prior data is none (i.e user has added a new employment and updated their tax but now want to change it)" when {
@@ -233,7 +234,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
               }
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-              inputFieldValueCheck("100", inputAmountField)
+              inputFieldValueCheck(amountInputName, inputAmountField, "100")
             }
           }
         }

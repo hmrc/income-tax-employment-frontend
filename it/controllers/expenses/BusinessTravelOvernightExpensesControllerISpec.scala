@@ -230,8 +230,8 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           textOnPageCheck(expectedExample5, bulletListSelector(5))
           textOnPageCheck(expectedExample6, bulletListSelector(6))
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotInclude, paragraphSelector(4))
-          radioButtonCheck(yesText, 1, None)
-          radioButtonCheck(noText, 2, None)
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
 
           textOnPageCheck(expectedDetailsTitle, detailsSelector)
@@ -280,8 +280,8 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           textOnPageCheck(expectedExample5, bulletListSelector(5))
           textOnPageCheck(expectedExample6, bulletListSelector(6))
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotInclude, paragraphSelector(4))
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
 
           textOnPageCheck(expectedDetailsTitle, detailsSelector)
@@ -330,8 +330,8 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           textOnPageCheck(expectedExample5, bulletListSelector(5))
           textOnPageCheck(expectedExample6, bulletListSelector(6))
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotInclude, paragraphSelector(4))
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(true))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = true)
           buttonCheck(buttonText, continueButtonSelector)
 
           textOnPageCheck(expectedDetailsTitle, detailsSelector)
@@ -415,8 +415,8 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           textOnPageCheck(expectedExample5, bulletListSelector(5))
           textOnPageCheck(expectedExample6, bulletListSelector(6))
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotInclude, paragraphSelector(4))
-          radioButtonCheck(yesText, 1, None)
-          radioButtonCheck(noText, 2, None)
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
 
           textOnPageCheck(expectedDetailsTitle, detailsSelector)

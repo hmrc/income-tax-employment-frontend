@@ -42,8 +42,8 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
-  private def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
-    EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
+  private def cyaModel(benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
+    EmploymentCYAModel(EmploymentDetails("name", currentDataIsHmrcHeld = true), benefits)
 
   object Selectors {
     val contentSelector = "#main-content > div > div > form > div > label > p"
@@ -148,7 +148,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
           lazy val result: WSResponse = {
             dropEmploymentDB()
             userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
+            insertCyaData(employmentUserData(isPrior = true, cyaModel(
               Some(benefits(fullUtilitiesAndServicesModel.copy(employerProvidedProfessionalSubscriptions = None))))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(url(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -166,8 +166,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
           textOnPageCheck("", contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -177,7 +176,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
           lazy val result: WSResponse = {
             dropEmploymentDB()
             userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(url(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -194,8 +193,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
           textOnPageCheck(previousExpectedContent, contentSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("300", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "300")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -221,7 +219,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
+        insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
         urlGet(url(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -243,7 +241,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
             urlPost(url(taxYearEOY), follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> ""))
           }
@@ -260,7 +258,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
           textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -272,7 +270,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
             urlPost(url(taxYearEOY), follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "abc"))
           }
@@ -289,7 +287,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
           textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("abc", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "abc")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -301,7 +299,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
             urlPost(url(taxYearEOY), follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "9999999999999999999999999999"))
           }
@@ -318,7 +316,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
           textOnPageCheck(user.commonExpectedResults.previousExpectedContent, contentSelector)
           textOnPageCheck(user.commonExpectedResults.amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldValueCheck("9999999999999999999999999999", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "9999999999999999999999999999")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -334,7 +332,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
+          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
           urlPost(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
         }
 
@@ -343,8 +341,8 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
           result.header("location") shouldBe Some(OtherServicesBenefitsController.show(taxYearEOY, employmentId).url)
         }
         "updates employerProvidedProfessionalSubscriptions to the new value" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions)) shouldBe Some(100.0)
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions)) shouldBe Some(100.0)
         }
       }
 
@@ -366,9 +364,8 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(employmentUserData(isPrior = false, cyaModel("employerName", hmrc = true, Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
+        insertCyaData(employmentUserData(isPrior = false, cyaModel(Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
         urlPost(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
-
       }
       "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
@@ -376,10 +373,9 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
       }
 
       "updates employerProvidedProfessionalSubscriptions to the new value" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions)) shouldBe Some(100.0)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions)) shouldBe Some(100.0)
       }
-
     }
 
     "redirect to tax overview page when it's not EOY" which {

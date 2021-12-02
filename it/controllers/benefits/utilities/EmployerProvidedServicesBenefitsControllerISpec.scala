@@ -101,7 +101,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
     val expectedHeading = "Did you get a benefit for services provided by your employer?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorMessage = "Select yes if you got a benefit for services provided by your employer"
-    val expectedParagraphText = "These are services you used that are not related to your job. " +
+    val expectedParagraphText: String = "These are services you used that are not related to your job. " +
       "Your employer pays for them. For example, subscriptions or laundry services."
   }
 
@@ -110,7 +110,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
     val expectedHeading = "Did you get a benefit for services provided by your employer?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorMessage = "Select yes if you got a benefit for services provided by your employer"
-    val expectedParagraphText = "These are services you used that are not related to your job. " +
+    val expectedParagraphText: String = "These are services you used that are not related to your job. " +
       "Your employer pays for them. For example, subscriptions or laundry services."
   }
 
@@ -119,7 +119,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
     val expectedHeading = "Did your client get a benefit for services provided by their employer?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorMessage = "Select yes if your client got a benefit for services provided by their employer"
-    val expectedParagraphText = "These are services they used that are not related to their job. " +
+    val expectedParagraphText: String = "These are services they used that are not related to their job. " +
       "Their employer pays for them. For example, subscriptions or laundry services."
   }
 
@@ -128,7 +128,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
     val expectedHeading = "Did your client get a benefit for services provided by their employer?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorMessage = "Select yes if your client got a benefit for services provided by their employer"
-    val expectedParagraphText = "These are services they used that are not related to their job. " +
+    val expectedParagraphText: String = "These are services they used that are not related to their job. " +
       "Their employer pays for them. For example, subscriptions or laundry services."
   }
 
@@ -169,8 +169,8 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, formSelector)
           welshToggleCheck(user.isWelsh)
@@ -198,8 +198,8 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, formSelector)
           welshToggleCheck(user.isWelsh)
@@ -227,8 +227,8 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(true))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = true)
           buttonCheck(buttonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, formSelector)
           welshToggleCheck(user.isWelsh)
@@ -341,8 +341,8 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
           h1Check(user.specificExpectedResults.get.expectedHeading)
           captionCheck(expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
           formPostLinkCheck(continueButtonLink, formSelector)
 
@@ -446,10 +446,10 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
       }
 
       s"updates the cyaModel to have the employerProvidedServicesQuestion to be true" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServices)) shouldBe Some(200.00)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServices)) shouldBe Some(200.00)
       }
 
     }
@@ -474,10 +474,10 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
       }
 
       s"updates the cyaModel to have the employerProvidedServicesQuestion to be false and the value to be None" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion)) shouldBe Some(false)
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServices)) shouldBe None
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion)) shouldBe Some(false)
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServices)) shouldBe None
       }
 
     }
@@ -501,10 +501,10 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
       }
 
       s"updates the cyaModel to have the employerProvidedServicesQuestion to be false and the value to be None" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion)) shouldBe Some(false)
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServices)) shouldBe None
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion)) shouldBe Some(false)
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServices)) shouldBe None
       }
 
     }
@@ -528,14 +528,11 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
       }
 
       s"updates the cyaModel to have the employerProvidedServicesQuestion to be false and the value to be None" in {
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion)) shouldBe Some(false)
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServices)) shouldBe None
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion)) shouldBe Some(false)
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServices)) shouldBe None
       }
-
     }
-
   }
-
 }

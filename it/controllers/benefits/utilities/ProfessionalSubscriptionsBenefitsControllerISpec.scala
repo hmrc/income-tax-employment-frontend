@@ -173,8 +173,8 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
           captionCheck(expectedCaption(taxYearEOY), captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
           textOnPageCheck(user.specificExpectedResults.get.checkWithEmployerText, checkWithEmployerSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(formLink, formSelector)
 
@@ -204,8 +204,8 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
           captionCheck(expectedCaption(taxYearEOY), captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
           textOnPageCheck(user.specificExpectedResults.get.checkWithEmployerText, checkWithEmployerSelector)
-          radioButtonCheck(yesText, 1, Some(true))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = true)
+          radioButtonCheck(noText, 2, checked = false)
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(formLink, formSelector)
 
@@ -234,8 +234,8 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
           captionCheck(expectedCaption(taxYearEOY), captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
           textOnPageCheck(user.specificExpectedResults.get.checkWithEmployerText, checkWithEmployerSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(true))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = true)
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(formLink, formSelector)
 
@@ -310,8 +310,8 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
           captionCheck(expectedCaption(taxYearEOY), captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphTextSelector)
           textOnPageCheck(user.specificExpectedResults.get.checkWithEmployerText, checkWithEmployerSelector)
-          radioButtonCheck(yesText, 1, Some(false))
-          radioButtonCheck(noText, 2, Some(false))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
           errorSummaryCheck(user.specificExpectedResults.get.expectedErrorMessage, yesRadioSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorMessage, Some("value"))
           formPostLinkCheck(formLink, formSelector)
@@ -336,10 +336,10 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
       s"update the utilitiesAndServicesModel model and redirect to other services benefits page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(OtherServicesBenefitsController.show(taxYearEOY, employmentId).url)
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptionsQuestion)) shouldBe Some(false)
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions)) shouldBe None
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptionsQuestion)) shouldBe Some(false)
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions)) shouldBe None
 
       }
 
@@ -361,9 +361,9 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
       s"update the utilitiesAndServicesModel model and redirect to the professional subscriptions amount page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(ProfessionalSubscriptionsBenefitsAmountController.show(taxYearEOY, employmentId).url)
-        lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        cyamodel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptionsQuestion)) shouldBe Some(true)
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptionsQuestion)) shouldBe Some(true)
       }
 
     }

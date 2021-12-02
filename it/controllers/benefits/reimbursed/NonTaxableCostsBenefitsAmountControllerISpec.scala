@@ -40,7 +40,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   val formPostLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/non-taxable-costs-amount?employmentId=$employmentId"
 
   val amountInModel: BigDecimal = 100
-  val amountFieldName = "amount"
+  val amountInputName = "amount"
   val amountFieldHref = "#amount"
 
   object Selectors {
@@ -49,7 +49,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
     val enterTotalSelector = "#enter-total-text"
     val hintTextSelector = "#amount-hint"
     val prefixedCurrencySelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
-    val amountFieldSelector = "#amount"
+    val inputSelector = "#amount"
     val continueButtonSelector = "#continue"
     val formSelector = "#main-content > div > div > form"
   }
@@ -189,8 +189,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
             textOnPageCheck(ifItWasNotText(amount), ifItWasNotTextSelector)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck("", amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
@@ -221,8 +220,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
             textOnPageCheck(enterTotalText, enterTotalSelector)
             elementNotOnPageCheck(ifItWasNotTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck("", amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
@@ -255,8 +253,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck(amountInModel.toString(), amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, amountInModel.toString())
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
@@ -286,8 +283,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck(amountInModel.toString(), amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, amountInModel.toString())
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
@@ -392,12 +388,11 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck("", amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Some(amountFieldName))
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Some(amountInputName))
             errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, amountFieldHref)
 
             welshToggleCheck(user.isWelsh)
@@ -426,12 +421,11 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck(incorrectFormatAmount, amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, incorrectFormatAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedIncorrectFormatErrorMessage, Some(amountFieldName))
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedIncorrectFormatErrorMessage, Some(amountInputName))
             errorSummaryCheck(user.specificExpectedResults.get.expectedIncorrectFormatErrorMessage, amountFieldHref)
 
             welshToggleCheck(user.isWelsh)
@@ -459,12 +453,11 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
-            inputFieldCheck(amountFieldName, amountFieldSelector)
-            inputFieldValueCheck(overMaximumAmount, amountFieldSelector)
+            inputFieldValueCheck(amountInputName, inputSelector, overMaximumAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(formPostLink, formSelector)
 
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedOverMaximumErrorMessage, Some(amountFieldName))
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedOverMaximumErrorMessage, Some(amountInputName))
             errorSummaryCheck(user.specificExpectedResults.get.expectedOverMaximumErrorMessage, amountFieldHref)
 
             welshToggleCheck(user.isWelsh)

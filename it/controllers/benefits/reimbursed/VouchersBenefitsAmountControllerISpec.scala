@@ -41,7 +41,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel) =
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
-  private def cyaModel(benefits: Option[BenefitsViewModel] = None) =
+  private def cyaModel(benefits: Option[BenefitsViewModel]) =
     EmploymentCYAModel(EmploymentDetails("some-name", currentDataIsHmrcHeld = true), benefits)
 
   object Selectors {
@@ -160,8 +160,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.specificExpectedResults.get.youCanText, youCanTextSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -189,8 +188,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.specificExpectedResults.get.youCanText, youCanTextSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("300", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "300")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -218,8 +216,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.specificExpectedResults.get.youCanText, youCanTextSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("300", inputSelector)
+          inputFieldValueCheck(amountInputName, inputSelector, "300")
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -319,9 +316,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.specificExpectedResults.get.youCanText, youCanTextSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -351,9 +346,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.specificExpectedResults.get.youCanText, youCanTextSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("abc", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "abc")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
@@ -384,9 +377,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(user.specificExpectedResults.get.youCanText, youCanTextSelector)
           textOnPageCheck(amountHint, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
-          inputFieldCheck(amountInputName, inputSelector)
-          inputFieldValueCheck("100,000,000,000", inputSelector)
-
+          inputFieldValueCheck(amountInputName, inputSelector, "100,000,000,000")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
