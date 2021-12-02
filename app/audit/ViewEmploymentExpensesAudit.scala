@@ -23,11 +23,14 @@ case class ViewEmploymentExpensesAudit(taxYear: Int, userType: String, nino: Str
 
   private def name = "ViewEmploymentExpenses"
 
-  def toAuditModel: AuditModel[ViewEmploymentExpensesAudit] = AuditModel(name, name, this)
-
+  def toAuditModel: AuditModel[ViewEmploymentExpensesAudit] = AuditModel(name, name, this.copy(
+    expenses = expenses.copy(
+      businessTravelCosts = None,
+      hotelAndMealExpenses = None,
+      vehicleExpenses = None,
+      mileageAllowanceRelief = None)))
 }
 
 object ViewEmploymentExpensesAudit {
   implicit def writes: OWrites[ViewEmploymentExpensesAudit] = Json.writes[ViewEmploymentExpensesAudit]
-
 }

@@ -28,7 +28,6 @@ case class Expenses(businessTravelCosts: Option[BigDecimal] = None,
                     vehicleExpenses: Option[BigDecimal] = None,
                     mileageAllowanceRelief: Option[BigDecimal] = None) {
 
-
   def expensesPopulated(cyaExpenses: Option[ExpensesViewModel] = None): Boolean = {
     val hasExpenses: Boolean = cyaExpenses.exists(_.claimingEmploymentExpenses)
     hasExpenses || businessTravelCosts.isDefined || jobExpenses.isDefined || flatRateJobExpenses.isDefined ||
