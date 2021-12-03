@@ -731,6 +731,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val nonCashBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/non-cash-benefits?employmentId=001"
     val nonCashBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/non-cash-benefits-amount?employmentId=$employmentId"
     val otherBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/other-benefits-amount?employmentId=001"
+    val otherBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/other-benefits?employmentId=001"
     val assetsOrAssetTransfersBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/assets?employmentId=$employmentId"
     val assetsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/assets-available-for-use?employmentId=001"
     val assetsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/assets-available-for-use-amount?employmentId=001"
@@ -925,7 +926,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(common.vouchersAmount, "£24", 17, 7, s"${common.changeText} ${specific.vouchersAmountHiddenText}", vouchersBenefitsAmountHref)
           changeAmountRowCheck(common.nonCash, common.yes, 17, 8, s"${common.changeText} ${specific.nonCashHiddenText}", nonCashBenefitsHref)
           changeAmountRowCheck(common.nonCashAmount, "£25", 17, 9, s"${common.changeText} ${specific.nonCashAmountHiddenText}", nonCashBenefitsAmountHref)
-          changeAmountRowCheck(common.otherBenefits, common.yes, 17, 10, s"${common.changeText} ${specific.otherBenefitsHiddenText}", dummyHref)
+          changeAmountRowCheck(common.otherBenefits, common.yes, 17, 10, s"${common.changeText} ${specific.otherBenefitsHiddenText}", otherBenefitsHref)
           changeAmountRowCheck(common.otherBenefitsAmount, "£26", 17, 11, s"${common.changeText} ${specific.otherBenefitsAmountHiddenText}", otherBenefitsAmountHref)
 
           textOnPageCheck(common.assetsHeader, fieldHeaderSelector(18))
@@ -1328,6 +1329,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
     }
   }
+
 
   ".submit" when {
     "return a redirect when in year" which {

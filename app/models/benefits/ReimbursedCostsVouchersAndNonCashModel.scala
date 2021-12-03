@@ -17,7 +17,6 @@
 package models.benefits
 
 import controllers.benefits.reimbursed.routes._
-import controllers.employment.routes.CheckYourBenefitsController
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.Call
 import utils.EncryptedValue
@@ -88,7 +87,7 @@ case class ReimbursedCostsVouchersAndNonCashModel(sectionQuestion: Option[Boolea
     otherItemsQuestion match {
       case Some(true) => if (otherItems.isDefined) None else Some(OtherBenefitsAmountController.show(taxYear, employmentId))
       case Some(false) => None
-      case None => Some(CheckYourBenefitsController.show(taxYear, employmentId)) //TODO otherItems yes no page
+      case None => Some(OtherBenefitsController.show(taxYear, employmentId))
     }
   }
 }

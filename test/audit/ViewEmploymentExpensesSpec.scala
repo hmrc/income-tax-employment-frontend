@@ -60,7 +60,6 @@ class ViewEmploymentExpensesSpec extends UnitTestWithApp {
 
         Json.toJson(auditModel) shouldBe auditJson
       }
-
     }
   }
 }
