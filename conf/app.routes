@@ -213,6 +213,9 @@ POST       /:taxYear/benefits/non-cash-benefits                             cont
 GET        /:taxYear/benefits/non-cash-benefits-amount                      controllers.benefits.reimbursed.NonCashBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/non-cash-benefits-amount                      controllers.benefits.reimbursed.NonCashBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/other-benefits                                controllers.benefits.reimbursed.OtherBenefitsController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/other-benefits                                controllers.benefits.reimbursed.OtherBenefitsController.submit(taxYear: Int, employmentId: String)
+
 GET        /:taxYear/benefits/other-benefits-amount                         controllers.benefits.reimbursed.OtherBenefitsAmountController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/other-benefits-amount                         controllers.benefits.reimbursed.OtherBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 

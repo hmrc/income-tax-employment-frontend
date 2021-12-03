@@ -1037,6 +1037,11 @@ benefits.nonCashBenefitsAmount.error.noEntry.agent = Enter the amount your clien
 benefits.nonCashBenefitsAmount.error.incorrectFormat = Enter the amount for non-cash benefits in the correct format
 benefits.nonCashBenefitsAmount.error.overMaximum = The amount for non-cash benefits must be less than £100,000,000,000
 
+benefits.otherBenefits.title.individual = Did you get any other benefits?
+benefits.otherBenefits.title.agent = Did your client get any other benefits?
+benefits.otherBenefits.error.individual = Select yes if you got any other benefits
+benefits.otherBenefits.error.agent = Select yes if your client got any other benefits
+
 benefits.otherBenefitsAmount.title.individual = How much did you get in total for other benefits?
 benefits.otherBenefitsAmount.title.agent = How much did your client get in total for other benefits?
 benefits.otherBenefitsAmount.error.noEntry.individual = Enter the amount you got for other benefits
