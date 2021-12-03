@@ -17,6 +17,7 @@
 package controllers.expenses
 
 import controllers.expenses.routes.CheckEmploymentExpensesController
+import controllers.expenses.routes.BusinessTravelOvernightExpensesController
 import forms.YesNoForm
 import models.User
 import models.expenses.Expenses
@@ -382,36 +383,36 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
       }
 
-      "redirect to 'check your expenses', update claimingEmploymentExpenses to yes and preserve the expenses amounts when the user chooses yes" which {
+      "redirect to 'business travel and overnight stays' page and update claimingEmploymentExpenses to yes when the user chooses yes" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
         lazy val result: WSResponse = {
           dropExpensesDB()
-          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-            fullExpensesCYAModel), userRequest)
           authoriseAgentOrIndividual(user.isAgent)
+          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
+            emptyExpensesCYAModel), userRequest)
           urlPost(employmentExpensesQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        "redirects to the check your details page" in {
+        "redirects to the 'business travel and overnight stays' page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe Some(BusinessTravelOvernightExpensesController.show(taxYearEOY).url)
 
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
-          cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(true)
-          cyaModel.expensesCya.expenses.flatRateJobExpensesQuestion shouldBe Some(true)
-          cyaModel.expensesCya.expenses.otherAndCapitalAllowancesQuestion shouldBe Some(true)
-          cyaModel.expensesCya.expenses.businessTravelCosts shouldBe Some(100.00)
-          cyaModel.expensesCya.expenses.jobExpenses shouldBe Some(200.00)
-          cyaModel.expensesCya.expenses.flatRateJobExpenses shouldBe Some(300.00)
-          cyaModel.expensesCya.expenses.professionalSubscriptions shouldBe Some(400.00)
-          cyaModel.expensesCya.expenses.hotelAndMealExpenses shouldBe Some(500.00)
-          cyaModel.expensesCya.expenses.otherAndCapitalAllowances shouldBe Some(600.00)
-          cyaModel.expensesCya.expenses.vehicleExpenses shouldBe Some(700.00)
-          cyaModel.expensesCya.expenses.mileageAllowanceRelief shouldBe Some(800.00)
+          cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe None
+          cyaModel.expensesCya.expenses.flatRateJobExpensesQuestion shouldBe None
+          cyaModel.expensesCya.expenses.otherAndCapitalAllowancesQuestion shouldBe None
+          cyaModel.expensesCya.expenses.businessTravelCosts shouldBe None
+          cyaModel.expensesCya.expenses.jobExpenses shouldBe None
+          cyaModel.expensesCya.expenses.flatRateJobExpenses shouldBe None
+          cyaModel.expensesCya.expenses.professionalSubscriptions shouldBe None
+          cyaModel.expensesCya.expenses.hotelAndMealExpenses shouldBe None
+          cyaModel.expensesCya.expenses.otherAndCapitalAllowances shouldBe None
+          cyaModel.expensesCya.expenses.vehicleExpenses shouldBe None
+          cyaModel.expensesCya.expenses.mileageAllowanceRelief shouldBe None
         }
       }
 
@@ -420,9 +421,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
         implicit lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
-
           userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
-
           urlPost(employmentExpensesQuestionPageUrl(taxYear), body = "", user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
@@ -434,25 +433,6 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
         }
       }
-
-      "redirect the user to the check employment expenses page when theres no session data for that user" which {
-
-        lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
-
-        lazy val result: WSResponse = {
-          dropExpensesDB()
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(employmentExpensesQuestionPageUrl(taxYearEOY), body = form, welsh = user.isWelsh, follow = false,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        "has an SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
-        }
-      }
-
     }
   }
-
 }

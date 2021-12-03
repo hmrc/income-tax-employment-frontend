@@ -16,6 +16,7 @@
 
 package controllers.expenses
 
+import controllers.expenses.routes.OtherEquipmentAmountController
 import controllers.expenses.routes.CheckEmploymentExpensesController
 import forms.YesNoForm
 import models.User
@@ -39,7 +40,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
     ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
 
   def expensesViewModel(otherAndCapitalAllowancesQuestion: Option[Boolean] = None): ExpensesViewModel =
-    ExpensesViewModel(isUsingCustomerData = true, claimingEmploymentExpenses = true, otherAndCapitalAllowancesQuestion = otherAndCapitalAllowancesQuestion)
+    fullExpensesViewModel.copy(otherAndCapitalAllowancesQuestion = otherAndCapitalAllowancesQuestion, otherAndCapitalAllowances = None)
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/other-equipment"
 
@@ -296,10 +297,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
 
       }
     }
-
-    "redirect to Check Employment Expenses page" when {
-
-      "user selects 'yes' and not a prior submission" which {
+    "redirect to Other Equipment amount page when user selects 'yes' and not a prior submission" which {
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
         lazy val result: WSResponse = {
@@ -313,7 +311,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
 
         "has a SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe Some(OtherEquipmentAmountController.show(taxYearEOY).url)
         }
 
         "updates otherAndCapitalAllowancesQuestion to Some(true)" in {
@@ -321,9 +319,9 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
           cyaModel.expensesCya.expenses.otherAndCapitalAllowancesQuestion shouldBe Some(true)
         }
-
       }
 
+    "redirect to Check Employment Expenses page" when {
       "user selects no and it's a prior submission" which {
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 

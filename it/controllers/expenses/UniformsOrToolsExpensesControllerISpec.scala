@@ -19,6 +19,7 @@ package controllers.expenses
 import controllers.expenses.routes.CheckEmploymentExpensesController
 import forms.YesNoForm
 import models.User
+import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -147,7 +148,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, emptyExpensesCYAModel), userRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(fullExpensesViewModel.copy(flatRateJobExpensesQuestion = None))), userRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }

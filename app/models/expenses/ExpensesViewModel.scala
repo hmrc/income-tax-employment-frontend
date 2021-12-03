@@ -18,7 +18,9 @@ package models.expenses
 
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.{OFormat, __}
+import play.api.mvc.Call
 import utils.EncryptedValue
+import controllers.expenses.routes._
 
 case class ExpensesViewModel(claimingEmploymentExpenses: Boolean = false,
                              jobExpensesQuestion: Option[Boolean] = None,
@@ -42,6 +44,55 @@ case class ExpensesViewModel(claimingEmploymentExpenses: Boolean = false,
       otherAndCapitalAllowances, vehicleExpenses, mileageAllowanceRelief
     )
   }
+
+  def expensesIsFinished(implicit taxYear: Int): Option[Call] = {
+    if (claimingEmploymentExpenses) {
+      (jobExpensesSectionFinished, flatRateSectionFinished, professionalSubscriptionsSectionFinished, otherAndCapitalAllowancesSectionFinished) match {
+        case (call@Some(_), _, _, _) => call
+        case (_, call@Some(_), _, _) => call
+        case (_, _, call@Some(_), _) => call
+        case (_, _, _, call@Some(_)) => call
+        case _ => None
+      }
+    } else {
+      None
+    }
+  }
+
+  def jobExpensesSectionFinished(implicit taxYear: Int): Option[Call] = {
+    jobExpensesQuestion match {
+      case Some(true) => if(jobExpenses.isDefined) None else Some(TravelAndOvernightAmountController.show(taxYear))
+      case Some(false) => None
+      case None => Some(BusinessTravelOvernightExpensesController.show(taxYear))
+    }
+  }
+
+  def flatRateSectionFinished(implicit taxYear: Int): Option[Call] = {
+    flatRateJobExpensesQuestion match {
+      case Some(true) => if(flatRateJobExpenses.isDefined) None else Some(UniformsOrToolsExpensesAmountController.show(taxYear))
+      case Some(false) => None
+      case None => Some(UniformsOrToolsExpensesController.show(taxYear))
+    }
+  }
+
+  def professionalSubscriptionsSectionFinished(implicit taxYear: Int): Option[Call] = {
+    professionalSubscriptionsQuestion match {
+      case Some(true) => if(professionalSubscriptions.isDefined) None else Some(ProfFeesAndSubscriptionsExpensesAmountController.show(taxYear))
+      case Some(false) => None
+      case None => Some(ProfessionalFeesAndSubscriptionsExpensesController.show(taxYear))
+    }
+  }
+
+  def otherAndCapitalAllowancesSectionFinished(implicit taxYear: Int): Option[Call] = {
+    otherAndCapitalAllowancesQuestion match {
+      case Some(true) => if(otherAndCapitalAllowances.isDefined) None else Some(OtherEquipmentAmountController.show(taxYear))
+      case Some(false) => None
+      case None => Some(OtherEquipmentController.show(taxYear))
+    }
+  }
+
+
+
 }
 
 object ExpensesViewModel {

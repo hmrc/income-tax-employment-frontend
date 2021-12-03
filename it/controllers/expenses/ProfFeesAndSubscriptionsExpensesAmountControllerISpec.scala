@@ -16,6 +16,7 @@
 
 package controllers.expenses
 import controllers.expenses.routes.CheckEmploymentExpensesController
+import controllers.expenses.routes.{OtherEquipmentController, ProfessionalFeesAndSubscriptionsExpensesController}
 import forms.AmountForm
 import models.User
 import models.expenses.ExpensesViewModel
@@ -43,7 +44,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
     ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
 
   def expensesViewModel(profFeesAndSubscriptions: Option[BigDecimal] = None): ExpensesViewModel =
-    ExpensesViewModel(isUsingCustomerData = true, claimingEmploymentExpenses = true, professionalSubscriptions = profFeesAndSubscriptions)
+    fullExpensesViewModel.copy(professionalSubscriptions = profFeesAndSubscriptions, otherAndCapitalAllowancesQuestion = None, otherAndCapitalAllowances = None)
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/amount-for-professional-fees-and-subscriptions"
 
@@ -401,48 +402,57 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
       }
     }
 
-    "redirect to Check Employment Expenses page" when {
+    "redirect to Check Employment Expenses page when there is no cya data" which {
+      lazy val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
 
-      "valid form is submitted" which {
-        val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString)
-
-        implicit lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(isAgent = false)
-          dropExpensesDB()
-          userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-            fullExpensesCYAModel.copy(expensesViewModel(Some(newAmount)))), userRequest)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        "has a SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
-        }
-
-        "updates professionalSubscriptions to the new value" in {
-          lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
-          cyaModel.expensesCya.expenses.professionalSubscriptions shouldBe Some(newAmount)
-        }
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropExpensesDB()
+        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "there is no cya data" which {
-        lazy val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
+      "has a SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+      }
+    }
 
-        implicit lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(isAgent = false)
-          dropExpensesDB()
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
+    "redirect to Professional Subscriptions Question page if professionalSubscriptionsQuestion is None" which {
+      val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString)
 
-        "has a SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
-        }
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropExpensesDB()
+        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
+          fullExpensesCYAModel.copy(expenses = fullExpensesCYAModel.expenses.copy(professionalSubscriptionsQuestion = None))), userRequest)
+        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has a SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(ProfessionalFeesAndSubscriptionsExpensesController.show(taxYearEOY).url)
+      }
+    }
+
+    "redirect to next page when valid form is submitted" which {
+      val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString)
+
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropExpensesDB()
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, ExpensesCYAModel(expensesViewModel())), userRequest)
+        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has a SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(OtherEquipmentController.show(taxYearEOY).url)
+      }
+
+      "updates professionalSubscriptions to the new value" in {
+        lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
+        cyaModel.expensesCya.expenses.professionalSubscriptions shouldBe Some(newAmount)
       }
     }
   }
-
-
-
 }

@@ -18,11 +18,11 @@ package models.redirects
 
 import play.api.mvc.Call
 
-case class ConditionalRedirect(condition: Boolean, redirect: Call, hasPriorBenefits: Option[Boolean] = None)
+case class ConditionalRedirect(condition: Boolean, redirect: Call, hasPrior: Option[Boolean] = None)
 
 object ConditionalRedirect {
 
   def apply(call: Call): ConditionalRedirect = {
-    ConditionalRedirect(true, call)
+    ConditionalRedirect(condition = true, call)
   }
 }
