@@ -16,7 +16,7 @@
 
 package controllers.expenses
 
-import controllers.expenses.routes.CheckEmploymentExpensesController
+import controllers.expenses.routes.{BusinessTravelOvernightExpensesController, CheckEmploymentExpensesController, ProfFeesAndSubscriptionsExpensesAmountController}
 import forms.YesNoForm
 import models.User
 import models.expenses.ExpensesViewModel
@@ -39,7 +39,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
     ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
 
   def expensesViewModel(professionalSubscriptionsQuestion: Option[Boolean] = None): ExpensesViewModel =
-    ExpensesViewModel(isUsingCustomerData = true, claimingEmploymentExpenses = true, professionalSubscriptionsQuestion = professionalSubscriptionsQuestion)
+    fullExpensesViewModel.copy(professionalSubscriptionsQuestion = professionalSubscriptionsQuestion, professionalSubscriptions = None)
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/professional-fees-and-subscriptions"
 
@@ -275,6 +275,22 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
         result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
       }
     }
+
+    "redirect to jobExpenses Question page if jobExpenses is None and it's a new submission" which {
+      lazy val result: WSResponse = {
+        dropExpensesDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
+          emptyExpensesCYAModel.copy(ExpensesViewModel(claimingEmploymentExpenses = true, isUsingCustomerData = true))), userRequest)
+        urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(BusinessTravelOvernightExpensesController.show(taxYearEOY).url)
+      }
+
+    }
   }
 
   ".submit" should {
@@ -319,33 +335,31 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
       }
     }
 
-    "redirect to Check Employment Expenses page" when {
+    "redirect to Professional Subscriptions amount page when user selects 'yes' and not a prior submission" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
-      "user selects 'yes' and not a prior submission" which {
-        lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
-
-        lazy val result: WSResponse = {
-          dropExpensesDB()
-          authoriseAgentOrIndividual(isAgent = false)
-          userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
-          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-            emptyExpensesCYAModel.copy(expensesViewModel(Some(false)))), userRequest)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        "has a SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
-        }
-
-        "updates professionalSubscriptionQuestion to Some(true)" in {
-          lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
-          cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
-          cyaModel.expensesCya.expenses.professionalSubscriptionsQuestion shouldBe Some(true)
-        }
-
+      lazy val result: WSResponse = {
+        dropExpensesDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
+        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
+          emptyExpensesCYAModel.copy(expensesViewModel(Some(false)))), userRequest)
+        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
+      "has a SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(ProfFeesAndSubscriptionsExpensesAmountController.show(taxYearEOY).url)
+      }
+
+      "updates professionalSubscriptionQuestion to Some(true)" in {
+        lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
+        cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
+        cyaModel.expensesCya.expenses.professionalSubscriptionsQuestion shouldBe Some(true)
+      }
+    }
+
+    "redirect to Check Employment Expenses page" when {
       "user selects no and it's a prior submission" which {
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 

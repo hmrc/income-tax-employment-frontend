@@ -497,24 +497,26 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
       isBenefitsReceived = true
     )
 
+  lazy val fullExpensesViewModel: ExpensesViewModel = ExpensesViewModel(
+    claimingEmploymentExpenses = true,
+    jobExpensesQuestion = Some(true),
+    jobExpenses = Some(200.00),
+    flatRateJobExpensesQuestion = Some(true),
+    flatRateJobExpenses = Some(300.00),
+    professionalSubscriptionsQuestion = Some(true),
+    professionalSubscriptions = Some(400.00),
+    otherAndCapitalAllowancesQuestion = Some(true),
+    otherAndCapitalAllowances = Some(600.00),
+    businessTravelCosts = Some(100.00),
+    hotelAndMealExpenses = Some(500.00),
+    vehicleExpenses = Some(700.00),
+    mileageAllowanceRelief = Some(800.00),
+    submittedOn = None,
+    isUsingCustomerData = true
+  )
+
   def fullExpensesCYAModel: ExpensesCYAModel =
-    ExpensesCYAModel(ExpensesViewModel(
-      claimingEmploymentExpenses = true,
-      jobExpensesQuestion = Some(true),
-      jobExpenses = Some(200.00),
-      flatRateJobExpensesQuestion = Some(true),
-      flatRateJobExpenses = Some(300.00),
-      professionalSubscriptionsQuestion = Some(true),
-      professionalSubscriptions = Some(400.00),
-      otherAndCapitalAllowancesQuestion = Some(true),
-      otherAndCapitalAllowances = Some(600.00),
-      businessTravelCosts = Some(100.00),
-      hotelAndMealExpenses = Some(500.00),
-      vehicleExpenses = Some(700.00),
-      mileageAllowanceRelief = Some(800.00),
-      submittedOn = None,
-      isUsingCustomerData = true
-    ))
+    ExpensesCYAModel(fullExpensesViewModel)
 
   def emptyExpensesCYAModel: ExpensesCYAModel =
     ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = true))

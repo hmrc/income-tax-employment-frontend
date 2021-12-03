@@ -15,16 +15,19 @@
  */
 
 package controllers.expenses
+
 import config.{AppConfig, ErrorHandler}
-import controllers.expenses.routes.CheckEmploymentExpensesController
+import controllers.expenses.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
 import models.mongo.ExpensesCYAModel
+import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
+import services.ExpensesRedirectService.redirectBasedOnCurrentAnswers
+import services.{EmploymentSessionService, ExpensesRedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.expenses.ProfessionalFeesAndSubscriptionsExpensesView
@@ -47,28 +50,30 @@ class ProfessionalFeesAndSubscriptionsExpensesController @Inject() (implicit val
     missingInputError = s"expenses.professionalFeesAndSubscriptions.error.${if (user.isAgent) "agent" else "individual"}"
   )
 
+  private def redirects(cya: ExpensesCYAModel, taxYear: Int): Seq[ConditionalRedirect] = {
+    ExpensesRedirectService.professionalSubscriptionsRedirects(cya, taxYear)
+  }
 
- def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
-   inYearAction.notInYear(taxYear) {
-     employmentSessionService.getExpensesSessionDataResult(taxYear) {
-       case Some(data) =>
-           data.expensesCya.expenses.professionalSubscriptionsQuestion match {
-           case Some(cya) => Future.successful(Ok(professionalFeesAndSubscriptionsExpensesView(yesNoForm.fill(cya), taxYear)))
-           case None => Future.successful(Ok(professionalFeesAndSubscriptionsExpensesView(yesNoForm, taxYear)))
-         }
-       case None =>
-         Future.successful(Redirect(CheckEmploymentExpensesController.show(taxYear)))
-     }
-   }
+  def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
+    inYearAction.notInYear(taxYear) {
+      employmentSessionService.getExpensesSessionDataResult(taxYear) { optCya =>
+        redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { data =>
 
- }
+          data.expensesCya.expenses.professionalSubscriptionsQuestion match {
+            case Some(cya) => Future.successful(Ok(professionalFeesAndSubscriptionsExpensesView(yesNoForm.fill(cya), taxYear)))
+            case None => Future.successful(Ok(professionalFeesAndSubscriptionsExpensesView(yesNoForm, taxYear)))
+          }
+        }
+      }
+    }
+  }
 
 
   def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
 
-      employmentSessionService.getExpensesSessionDataResult(taxYear) {
-        case Some(data) =>
+      employmentSessionService.getExpensesSessionDataResult(taxYear) { optCya =>
+        redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { data =>
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(professionalFeesAndSubscriptionsExpensesView(formWithErrors, taxYear))),
             yesNo => {
@@ -83,18 +88,21 @@ class ProfessionalFeesAndSubscriptionsExpensesController @Inject() (implicit val
                 }
               }
 
-               employmentSessionService.createOrUpdateExpensesSessionData(
+              employmentSessionService.createOrUpdateExpensesSessionData(
                 updatedCyaModel, taxYear, data.isPriorSubmission, data.isPriorSubmission)(errorHandler.internalServerError()) {
-                Redirect(CheckEmploymentExpensesController.show(taxYear))
+
+                val nextPage = if (yesNo) {
+                  ProfFeesAndSubscriptionsExpensesAmountController.show(taxYear)
+                } else {
+                  OtherEquipmentController.show(taxYear)
+                }
+                ExpensesRedirectService.expensesSubmitRedirect(updatedCyaModel, nextPage)(taxYear)
               }
             }
           )
-        case None =>
-          Future.successful(Redirect(CheckEmploymentExpensesController.show(taxYear)))
+        }
       }
     }
-
   }
-
 }
 
