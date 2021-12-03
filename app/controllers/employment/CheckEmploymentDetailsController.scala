@@ -19,16 +19,17 @@ package controllers.employment
 import audit._
 import common.SessionValues
 import config.{AppConfig, ErrorHandler}
+import connectors.httpParsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import controllers.employment.routes.CheckEmploymentDetailsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.User
 import models.employment.createUpdate.CreateUpdateEmploymentRequest
-import models.employment.{AllEmploymentData, EmploymentDetailsViewModel}
+import models.employment.{AllEmploymentData, DecodedAmendEmploymentDetailsPayload, DecodedCreateNewEmploymentDetailsPayload, DecodedPriorEmploymentInfo, EmploymentDetailsViewModel}
 import models.mongo.EmploymentCYAModel
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{EmploymentSessionService, RedirectService}
+import services.{EmploymentSessionService, NrsService, RedirectService}
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
@@ -43,6 +44,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
                                                  inYearAction: InYearAction,
                                                  appConfig: AppConfig,
                                                  employmentSessionService: EmploymentSessionService,
+                                                 nrsService: NrsService,
                                                  auditService: AuditService,
                                                  ec: ExecutionContext,
                                                  errorHandler: ErrorHandler,
@@ -122,6 +124,11 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
                     Future.successful(result)
                   case Right(result) =>
                     performSubmitAudits(model, employmentId, taxYear, prior)
+
+                    if (appConfig.nrsEnabled) {
+                      performSubmitNrsPayload(model, employmentId, prior)
+                    }
+
                     employmentSessionService.clear(taxYear, employmentId)(
                       result.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)
                     )
@@ -156,6 +163,31 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     audit match {
       case Left(amend) => auditService.sendAudit(amend)
       case Right(create) => auditService.sendAudit(create)
+    }
+  }
+
+  def performSubmitNrsPayload(model: CreateUpdateEmploymentRequest, employmentId: String, prior: Option[AllEmploymentData])(implicit user: User[_]): Future[NrsSubmissionResponse] = {
+
+    val nrsPayload: Either[DecodedAmendEmploymentDetailsPayload, DecodedCreateNewEmploymentDetailsPayload] = prior.flatMap {
+      prior =>
+        val priorData = employmentSessionService.employmentSourceToUse(prior, employmentId, isInYear = false)
+        priorData.map(prior => model.toAmendDecodedPayloadModel(employmentId, prior._1))
+    }.map(Left(_)).getOrElse {
+
+      val existingEmployments = prior.map {
+        prior =>
+          employmentSessionService.getLatestEmploymentData(prior, isInYear = false).map {
+            employment =>
+              DecodedPriorEmploymentInfo(employment.employerName, employment.employerRef)
+          }
+      }.getOrElse(Seq.empty)
+
+      Right(model.toCreateDecodedPayloadModel(existingEmployments))
+    }
+
+    nrsPayload match {
+      case Left(amend) => nrsService.submit(user.nino, amend, user.mtditid)
+      case Right(create) => nrsService.submit(user.nino, create, user.mtditid)
     }
   }
 }
