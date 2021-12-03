@@ -18,6 +18,7 @@ package controllers.benefits.reimbursed
 
 import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.reimbursed.routes.OtherBenefitsController
 import forms.AmountForm
 import models.User
 import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
@@ -322,7 +323,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(OtherBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
     }
@@ -549,7 +550,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(OtherBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
     }

@@ -1459,7 +1459,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => nonCashAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe OtherBenefitsController.show(taxYear, employmentId).url
       }
       "it's a prior submission and attempted to view 'non cash amount' page" +
         "but the non cash question is false" in {
@@ -1511,7 +1511,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => otherItemsAmountRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe OtherBenefitsController.show(taxYear, employmentId).url
       }
     }
 
@@ -1524,7 +1524,7 @@ class RedirectServiceSpec extends UnitTest {
           EmploymentBenefitsType)(cya => assetsRedirects(cya, taxYear, employmentId)) { _ => result }
 
         status(response) shouldBe SEE_OTHER
-        redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear, employmentId).url
+        redirectUrl(response) shouldBe OtherBenefitsController.show(taxYear, employmentId).url
       }
       "it's a new submission and attempted to view the 'Assets and assets transfer' page " +
         "but the income tax section is not finished" in {

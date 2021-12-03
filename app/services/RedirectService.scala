@@ -622,8 +622,7 @@ object RedirectService extends Logging {
     nonCashRedirects(cya, taxYear, employmentId) ++
       Seq(
         ConditionalRedirect(nonCashQuestion.isEmpty, NonCashBenefitsController.show(taxYear, employmentId)),
-        //TODO go to otherItems yes/no page
-        ConditionalRedirect(nonCashQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
+        ConditionalRedirect(nonCashQuestion.contains(false), OtherBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(nonCashQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
   }
@@ -648,8 +647,7 @@ object RedirectService extends Logging {
 
     otherItemsRedirects(cya, taxYear, employmentId) ++
       Seq(
-        //TODO go to otherItems yes/no page
-        ConditionalRedirect(otherItemsQuestion.isEmpty, CheckYourBenefitsController.show(taxYear, employmentId)),
+        ConditionalRedirect(otherItemsQuestion.isEmpty, OtherBenefitsController.show(taxYear, employmentId)),
         ConditionalRedirect(otherItemsQuestion.contains(false), AssetsOrAssetTransfersBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
         ConditionalRedirect(otherItemsQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
       )
