@@ -19,6 +19,7 @@ package controllers.expenses
 import controllers.expenses.routes.{CheckEmploymentExpensesController, ProfessionalFeesAndSubscriptionsExpensesController}
 import forms.AmountForm
 import models.User
+import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -439,31 +440,42 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           dropExpensesDB()
           userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-            fullExpensesCYAModel), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
+            ExpensesCYAModel(ExpensesViewModel(claimingEmploymentExpenses = true, jobExpensesQuestion = Some(false),
+              flatRateJobExpensesQuestion = Some(true), isUsingCustomerData = true))), userRequest)
           urlPost(employmentExpensesAmountPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        "redirects to the check your details page" in {
+        "redirects to professional fees and subscriptions question page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(ProfessionalFeesAndSubscriptionsExpensesController.show(taxYearEOY).url)
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
-          cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(true)
+          cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(false)
           cyaModel.expensesCya.expenses.flatRateJobExpensesQuestion shouldBe Some(true)
-          cyaModel.expensesCya.expenses.otherAndCapitalAllowancesQuestion shouldBe Some(true)
-          cyaModel.expensesCya.expenses.businessTravelCosts shouldBe Some(100.00)
-          cyaModel.expensesCya.expenses.jobExpenses shouldBe Some(200.00)
           cyaModel.expensesCya.expenses.flatRateJobExpenses shouldBe Some(newAmount)
-          cyaModel.expensesCya.expenses.professionalSubscriptions shouldBe Some(400.00)
-          cyaModel.expensesCya.expenses.hotelAndMealExpenses shouldBe Some(500.00)
-          cyaModel.expensesCya.expenses.otherAndCapitalAllowances shouldBe Some(600.00)
-          cyaModel.expensesCya.expenses.vehicleExpenses shouldBe Some(700.00)
-          cyaModel.expensesCya.expenses.mileageAllowanceRelief shouldBe Some(800.00)
         }
 
+      }
+
+      "redirect to flatRate Question page when flatRateJobExpensesQuestion is None" which {
+        lazy val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
+
+        lazy val result: WSResponse = {
+          dropExpensesDB()
+          userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
+          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
+            ExpensesCYAModel(ExpensesViewModel(claimingEmploymentExpenses = true, jobExpensesQuestion = Some(false),
+              flatRateJobExpensesQuestion = None, isUsingCustomerData = true))), userRequest)
+          urlPost(employmentExpensesAmountPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
+
+        "redirects to flatRate Question page" in {
+          result.status shouldBe SEE_OTHER
+          result.header("location") shouldBe Some(controllers.expenses.routes.UniformsOrToolsExpensesController.show(taxYearEOY).url)
+        }
       }
 
       "redirect to 'check your expenses' page when a prior submission and update flatRateJobExpenses to the new amount" which {

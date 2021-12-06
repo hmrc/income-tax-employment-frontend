@@ -16,9 +16,9 @@
 
 package controllers.expenses
 
-import controllers.expenses.routes.CheckEmploymentExpensesController
 import audit.{AuditService, ViewEmploymentExpensesAudit}
 import config.{AppConfig, ErrorHandler}
+import controllers.expenses.routes.CheckEmploymentExpensesController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.User
 import models.employment.{AllEmploymentData, EmploymentExpenses}

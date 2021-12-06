@@ -52,8 +52,8 @@ class CarFuelBenefitsAmountController @Inject()(implicit val cc: MessagesControl
 
     commonCarVanFuelBenefitsRedirects(cya, taxYear, employmentId) ++ Seq(
       ConditionalRedirect(cyaCarFuelQuestion.isEmpty, CompanyCarFuelBenefitsController.show(taxYear, employmentId)),
-      ConditionalRedirect(cyaCarFuelQuestion.contains(false), CompanyVanBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(false)),
-      ConditionalRedirect(cyaCarFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPriorBenefits = Some(true))
+      ConditionalRedirect(cyaCarFuelQuestion.contains(false), CompanyVanBenefitsController.show(taxYear, employmentId), hasPrior = Some(false)),
+      ConditionalRedirect(cyaCarFuelQuestion.contains(false), CheckYourBenefitsController.show(taxYear, employmentId), hasPrior = Some(true))
     )
   }
 

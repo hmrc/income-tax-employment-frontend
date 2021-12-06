@@ -275,16 +275,13 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
 
       "redirect to the check your expenses page when there is a otherAndCapitalAllowances amount but the otherAndCapitalAllowancesQuestion is false" when {
         implicit lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(user.isAgent)
           dropExpensesDB()
-          authoriseAgentOrIndividual(user.isAgent)
           userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
             fullExpensesCYAModel.copy(expenses = fullExpensesCYAModel.expenses.copy(otherAndCapitalAllowancesQuestion = Some(false)))), userRequest)
           authoriseAgentOrIndividual(user.isAgent)
           urlGet(employmentExpensesAmountPageUrl(taxYearEOY), user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          urlGet(employmentExpensesAmountPageUrl(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER status" in {
@@ -294,8 +291,6 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
       }
 
     }
-
-
   }
 
   ".submit" should {
@@ -428,7 +423,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe  Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
@@ -444,7 +439,25 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           cyaModel.expensesCya.expenses.vehicleExpenses shouldBe Some(700.00)
           cyaModel.expensesCya.expenses.mileageAllowanceRelief shouldBe Some(800.00)
         }
+      }
 
+      "redirect to otherAndCapitalAllowances question page if otherAndCapitalAllowancesQuestion is empty" when {
+        lazy val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
+
+        implicit lazy val result: WSResponse = {
+          dropExpensesDB()
+          userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
+          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
+            fullExpensesCYAModel.copy(expenses = fullExpensesCYAModel.expenses.copy(otherAndCapitalAllowancesQuestion = None))), userRequest)
+          authoriseAgentOrIndividual(user.isAgent)
+          urlPost(employmentExpensesAmountPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
+            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
+
+        "has an SEE_OTHER status" in {
+          result.status shouldBe SEE_OTHER
+          result.header("location") shouldBe Some(OtherEquipmentController.show(taxYearEOY).url)
+        }
       }
 
       "redirect to 'check your expenses' page when a prior submission and update otherAndCapitalAllowances to the new amount" which {
@@ -502,7 +515,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
         }
       }
 
-      "Redirect user to the check your benefits page with no cya data in session" which {
+      "Redirect user to the check your expenses page with no cya data in session" which {
 
         lazy val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
         lazy val result: WSResponse = {
