@@ -26,6 +26,8 @@ class MockAppConfig extends MockFactory {
     override lazy val signInContinueUrl: String = "/continue"
     override lazy val signInUrl: String = "/signIn"
 
+    override lazy val nrsProxyBaseUrl: String = "/nrsProxyBaseUrl"
+
     override lazy val defaultTaxYear: Int = 2022
 
     override def incomeTaxSubmissionOverviewUrl(taxYear: Int): String = "/overview"
