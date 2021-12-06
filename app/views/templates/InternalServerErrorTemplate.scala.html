@@ -15,9 +15,10 @@
  *@
 
 @import views.html.templates.Layout
+@import views.html.templates.helpers.Link
 @import views.html.templates.helpers.Heading
 
-@this(layout: Layout, heading: Heading)
+@this(layout: Layout, heading: Heading, link: Link)
 
 @()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
@@ -33,17 +34,10 @@
 
     <ul class="govuk-list govuk-list--bullet">
         <li>
-            @messages("error-template.paragraph.1.2")
-                <a target="_blank" id= "govuk-income-tax-link" href="https://www.gov.uk/income-tax"
-                   class="govuk-link" rel="noopener noreferrer">@messages("error-template.paragraph.1.3")</a>
-                @messages("error-template.paragraph.1.4")
+            @messages("error-template.paragraph.1.2") @link("https://www.gov.uk/income-tax","error-template.paragraph.1.3",Some("govuk-income-tax-link"),true) @messages("error-template.paragraph.1.4")
         </li>
         <li>
-            @messages("common.use")
-                <a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment"
-                   target="_blank" id=govuk-self-assessment-link class="govuk-link" rel="noopener noreferrer">
-                    @messages("common.error.self-assessment.paragraph.1.2")</a>
-                    @messages("common.error.self-assessment.paragraph.1.3")
+            @messages("common.use") @link("https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment","common.error.self-assessment.paragraph.1.2",Some("govuk-self-assessment-link"),true) @messages("common.error.self-assessment.paragraph.1.3")
         </li>
     </ul>
 }

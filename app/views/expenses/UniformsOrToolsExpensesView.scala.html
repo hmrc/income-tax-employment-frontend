@@ -17,6 +17,7 @@
 @import views.html.templates.Layout
 @import views.html.templates.helpers.ErrorSummary
 @import views.html.templates.helpers.Button
+@import views.html.templates.helpers.Link
 @import views.html.templates.helpers.InputRadio
 
 @this(
@@ -24,7 +25,8 @@
         inputRadio: InputRadio,
         formWithCsrf: FormWithCSRF,
         errorSummary: ErrorSummary,
-        button: Button
+        button: Button,
+        link: Link
 )
 
 @(form: Form[Boolean], taxYear: Int)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
@@ -44,10 +46,7 @@
     <p class="govuk-body">@{messages("expenses.uniformsWorkClothesTools.flatRateExpense")}</p>
 
      <p class="govuk-body">
-         <a href="https://www.gov.uk/guidance/job-expenses-for-uniforms-work-clothing-and-tools"
-            target="_blank" id="uniforms-and-tools-link" class="govuk-link"  rel="noopener noreferrer">
-             @messages(s"expenses.uniformsWorkClothesTools.checkIfYouCanClaimLink.${if(user.isAgent) "agent" else "individual"}")
-         </a>
+         @link("https://www.gov.uk/guidance/job-expenses-for-uniforms-work-clothing-and-tools",s"expenses.uniformsWorkClothesTools.checkIfYouCanClaimLink.${if(user.isAgent) "agent" else "individual"}",Some("uniforms-and-tools-link"),true,fullStop=true)
      </p>
 }
 
