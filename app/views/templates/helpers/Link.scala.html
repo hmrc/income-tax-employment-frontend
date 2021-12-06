@@ -20,8 +20,9 @@
         link: String,
         messageKey: String,
         id: Option[String] = None,
-        isExternal: Boolean = false
+        isExternal: Boolean = false,
+        fullStop: Boolean = false
 )(implicit messages: Messages)
 
-<a href="@link" class="govuk-link" @id.map(x => s"id=$x") @if(isExternal) { target="_blank"  rel="noopener noreferrer" }>@messages(messageKey)@if(isExternal)(" " + messages("common.opensInNewWindowOrTab"))</a>
+<a href="@link" class="govuk-link" @id.map(x => s"id=$x") @if(isExternal) { target="_blank"  rel="noopener noreferrer" }>@messages(messageKey)@if(isExternal)(" " + messages("common.opensInNewTab"))</a>@{if(fullStop)messages("common.fullStop")}
 

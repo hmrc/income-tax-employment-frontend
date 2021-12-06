@@ -33,7 +33,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
   private val defaultTaxYear = 2022
   private val employmentId = "001"
-  private val dummyHref = s"/update-and-submit-income-tax-return/employment-income${CheckYourBenefitsController.show(defaultTaxYear - 1, employmentId).url}"
+  private val dummyHref = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/check-employment-benefits?employmentId=$employmentId"
 
   def url(taxYear: Int = defaultTaxYear): String = s"$appUrl/$taxYear/check-employment-benefits?employmentId=$employmentId"
 
