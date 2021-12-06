@@ -17,15 +17,17 @@
 package controllers.expenses
 
 import config.{AppConfig, ErrorHandler}
-import controllers.expenses.routes.CheckEmploymentExpensesController
+import controllers.expenses.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
-import models.mongo.ExpensesUserData
+import models.mongo.ExpensesCYAModel
+import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
+import services.ExpensesRedirectService.redirectBasedOnCurrentAnswers
+import services.{EmploymentSessionService, ExpensesRedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.expenses.UniformsOrToolsExpensesView
@@ -47,42 +49,58 @@ class UniformsOrToolsExpensesController @Inject()(implicit val cc: MessagesContr
     missingInputError = s"expenses.uniformsWorkClothesTools.error.noEntry.${if (user.isAgent) "agent" else "individual"}"
   )
 
+  private def redirects(cya: ExpensesCYAModel, taxYear: Int): Seq[ConditionalRedirect] = {
+    ExpensesRedirectService.flatRateRedirects(cya, taxYear)
+  }
+
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getExpensesSessionDataResult(taxYear) {
-        case Some(data) => data.expensesCya.expenses.flatRateJobExpensesQuestion match {
-          case Some(questionResult) => Future.successful(Ok(pageView(yesNoForm.fill(questionResult), taxYear)))
-          case None => Future.successful(Ok(pageView(yesNoForm, taxYear)))
+
+      employmentSessionService.getExpensesSessionDataResult(taxYear) { optCya =>
+        redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { data =>
+
+          data.expensesCya.expenses.flatRateJobExpensesQuestion match {
+            case Some(questionResult) => Future.successful(Ok(pageView(yesNoForm.fill(questionResult), taxYear)))
+            case None => Future.successful(Ok(pageView(yesNoForm, taxYear)))
+          }
         }
-        case None => Future.successful(Redirect(CheckEmploymentExpensesController.show(taxYear)))
       }
     }
   }
 
   def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getExpensesSessionDataResult(taxYear) {
-        case Some(expensesUserData: ExpensesUserData) => yesNoForm.bindFromRequest().fold(
-          formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear))),
-          yesNo => {
-            val expensesCYAModel = expensesUserData.expensesCya
-            val expensesViewModel = expensesCYAModel.expenses
+      employmentSessionService.getExpensesSessionDataResult(taxYear) { optCya =>
+        redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { data =>
 
-            val updatedCyaModel = if (yesNo) {
-              expensesCYAModel.copy(expenses = expensesViewModel.copy(flatRateJobExpensesQuestion = Some(true)))
-            } else {
-              expensesCYAModel.copy(expenses = expensesViewModel.copy(flatRateJobExpensesQuestion = Some(false), flatRateJobExpenses = None))
-            }
+          yesNoForm.bindFromRequest().fold(
+            formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear))),
+            yesNo => {
+              val expensesCYAModel = data.expensesCya
+              val expensesViewModel = expensesCYAModel.expenses
 
-            employmentSessionService.createOrUpdateExpensesSessionData(updatedCyaModel,
-              taxYear,
-              expensesUserData.isPriorSubmission,
-              expensesUserData.isPriorSubmission)(errorHandler.internalServerError()) {
-              Redirect(CheckEmploymentExpensesController.show(taxYear))
+              val updatedCyaModel = if (yesNo) {
+                expensesCYAModel.copy(expenses = expensesViewModel.copy(flatRateJobExpensesQuestion = Some(true)))
+              } else {
+                expensesCYAModel.copy(expenses = expensesViewModel.copy(flatRateJobExpensesQuestion = Some(false), flatRateJobExpenses = None))
+              }
+
+              employmentSessionService.createOrUpdateExpensesSessionData(updatedCyaModel,
+                taxYear,
+                data.isPriorSubmission,
+                data.isPriorSubmission)(errorHandler.internalServerError()) {
+
+                val nextPage = if (yesNo) {
+                  UniformsOrToolsExpensesAmountController.show(taxYear)
+                } else {
+                  ProfessionalFeesAndSubscriptionsExpensesController.show(taxYear)
+                }
+
+                ExpensesRedirectService.expensesSubmitRedirect(updatedCyaModel, nextPage)(taxYear)
+              }
             }
-          }
-        )
-        case None => Future.successful(Redirect(CheckEmploymentExpensesController.show(taxYear)))
+          )
+        }
       }
     }
   }

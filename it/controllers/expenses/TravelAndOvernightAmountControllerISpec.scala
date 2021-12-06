@@ -16,7 +16,7 @@
 
 package controllers.expenses
 
-import controllers.expenses.routes.CheckEmploymentExpensesController
+import controllers.expenses.routes._
 import forms.AmountForm
 import models.User
 import models.expenses.{Expenses, ExpensesViewModel}
@@ -79,14 +79,12 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
     val hintText = "Total amount for the year For example, £600 or £193.54"
     val buttonText = "Continue"
-
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
     val hintText = "Total amount for the year For example, £600 or £193.54"
     val buttonText = "Continue"
-
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -416,18 +414,36 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
         dropExpensesDB()
         userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-          fullExpensesCYAModel), userRequest)
+          ExpensesCYAModel(expensesViewModel(Some(true)))), userRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "redirect to the CYA page" in {
+      "redirect to Uniforms Work Clothes or Tools question page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+        result.header("location") shouldBe Some(UniformsOrToolsExpensesController.show(taxYearEOY).url)
       }
 
       "update the CYA model" in {
         findExpensesCyaData(taxYearEOY, userRequest).get.expensesCya.expenses.jobExpenses shouldBe Some(newAmount)
+      }
+    }
+
+    "jobExpensesQuestion is empty" should {
+      lazy val form: Map[String, String] = Map(AmountForm.amount -> s"$newAmount")
+
+      lazy val result: WSResponse = {
+        dropExpensesDB()
+        userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
+        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
+          ExpensesCYAModel(expensesViewModel(None))), userRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "redirect to Business Travel and Overnight question page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(BusinessTravelOvernightExpensesController.show(taxYearEOY).url)
       }
     }
   }
