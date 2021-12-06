@@ -17,6 +17,7 @@
 package builders.models.benefits
 
 import builders.models.benefits.AccommodationRelocationModelBuilder.aAccommodationRelocationModel
+import builders.models.benefits.AssetsModelBuilder.anAssetsModel
 import builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
 import builders.models.benefits.IncomeTaxAndCostsModelBuilder.aIncomeTaxAndCostsModel
 import builders.models.benefits.MedicalChildcareEducationModelBuilder.aMedicalChildcareEducationModel
@@ -36,5 +37,6 @@ object BenefitsViewModelBuilder {
     isBenefitsReceived = true,
     medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel),
     incomeTaxAndCostsModel = Some(aIncomeTaxAndCostsModel),
-    reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel))
+    reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel),
+    assetsModel = Some(anAssetsModel))
 }
