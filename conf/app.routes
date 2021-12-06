@@ -308,6 +308,8 @@ POST       /:taxYear/expenses/other-equipment                                   
 GET        /:taxYear/expenses/amount-for-other-equipment                            controllers.expenses.OtherEquipmentAmountController.show(taxYear: Int)
 POST       /:taxYear/expenses/amount-for-other-equipment                            controllers.expenses.OtherEquipmentAmountController.submit(taxYear: Int)
 
+GET        /:taxYear/employment/expenses/start-employment-expenses                  controllers.expenses.ExpensesInterruptPageController.show(taxYear: Int)
+
 ###########################     Error pages     ####################################
 
 GET        /error/you-need-to-sign-up                                               controllers.errors.IndividualAuthErrorController.show

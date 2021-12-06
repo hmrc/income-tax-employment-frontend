@@ -1156,6 +1156,15 @@ expenses.claimEmploymentExpenses.thisIncludes = Employment expenses include thin
 expenses.claimEmploymentExpenses.title.agent = Do you want to claim employment expenses for your client?
 expenses.claimEmploymentExpenses.title.individual = Do you want to claim employment expenses?
 
+#################       Expenses  Interrupt Messages        ########################################
+
+expenses.startEmploymentExpenses.details1.individual = Use this section to update your employment expenses.
+expenses.startEmploymentExpenses.details1.agent = Use this section to update your client’s employment expenses.
+expenses.startEmploymentExpenses.details2.individual = You can claim expenses you did not claim through your employer.
+expenses.startEmploymentExpenses.details2.agent = You can claim expenses your client did not claim through their employer.
+expenses.startEmploymentExpenses.details3.individual = There is one expenses section. This section is for all your employment in the tax year.
+expenses.startEmploymentExpenses.details3.agent = There is one expenses section. This section is for all your client’s employment in the tax year.
+
 #################       Business travel messages        ########################################
 
 expenses.businessTravelAndOvernightAmount.doNotClaim.agent = Do not claim any amount your client’s employer has paid them for.
