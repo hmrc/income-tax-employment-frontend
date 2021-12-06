@@ -126,9 +126,9 @@ class AssetsTransfersBenefitsAmountControllerISpec extends IntegrationTest with 
     val expectedHeading = "How much were the assets your client’s employer gave them to keep?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedYouCanText: String = "You can find this information on your client’s P11D form in section A, box 13."
-    val expectedErrorNoEntry = "Enter the amount for assets your client’s employer gave your client to keep"
-    val expectedErrorIncorrectFormat = "Enter the amount for assets your client’s employer gave your client to keep in the correct format"
-    val expectedErrorOverMaximum = "The total amount for assets your client’s employer gave your client to keep must be less than £100,000,000,000"
+    val expectedErrorNoEntry = "Enter the amount for assets your client’s employer gave them to keep"
+    val expectedErrorIncorrectFormat = "Enter the amount for assets your client’s employer gave them to keep in the correct format"
+    val expectedErrorOverMaximum = "The total amount for assets your client’s employer gave them to keep must be less than £100,000,000,000"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -136,9 +136,9 @@ class AssetsTransfersBenefitsAmountControllerISpec extends IntegrationTest with 
     val expectedHeading = "How much were the assets your client’s employer gave them to keep?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedYouCanText: String = "You can find this information on your client’s P11D form in section A, box 13."
-    val expectedErrorNoEntry = "Enter the amount for assets your client’s employer gave your client to keep"
-    val expectedErrorIncorrectFormat = "Enter the amount for assets your client’s employer gave your client to keep in the correct format"
-    val expectedErrorOverMaximum = "The total amount for assets your client’s employer gave your client to keep must be less than £100,000,000,000"
+    val expectedErrorNoEntry = "Enter the amount for assets your client’s employer gave them to keep"
+    val expectedErrorIncorrectFormat = "Enter the amount for assets your client’s employer gave them to keep in the correct format"
+    val expectedErrorOverMaximum = "The total amount for assets your client’s employer gave them to keep must be less than £100,000,000,000"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
