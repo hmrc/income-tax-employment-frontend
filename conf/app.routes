@@ -274,6 +274,9 @@ POST       /:taxYear/benefits/assets-available-for-use-amount                   
 GET        /:taxYear/benefits/assets-to-keep                                        controllers.benefits.assets.AssetTransfersBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/assets-to-keep                                        controllers.benefits.assets.AssetTransfersBenefitsController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/benefits/assets-to-keep-amount                         controllers.benefits.assets.AssetsTransfersBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/assets-to-keep-amount                         controllers.benefits.assets.AssetsTransfersBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+
 #################       Employment expenses pages      #############################
 
 GET        /:taxYear/expenses/claim-employment-expenses                             controllers.expenses.EmploymentExpensesController.show(taxYear: Int)
