@@ -18,7 +18,6 @@
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Heading
 @import utils.ViewUtils.summaryListRow
-@import views.html.templates.helpers.Link
 @import models.expenses.Expenses
 @import utils.ViewUtils.bigDecimalCurrency
 
@@ -27,8 +26,7 @@
         button: Button,
         heading: Heading,
         govukSummaryList: GovukSummaryList,
-        govukInsetText: GovukInsetText,
-        link: Link,
+        govukInsetText: GovukInsetText
 )
 
 @(taxYear: Int, expenses: Expenses, isInYear: Boolean, isMultipleEmployments: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)

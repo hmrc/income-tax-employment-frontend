@@ -15,8 +15,10 @@
  *@
 
 @import views.html.templates.Layout
+@import views.html.templates.Layout
 @import views.html.templates.helpers.ErrorSummary
 @import views.html.templates.helpers.Button
+@import views.html.templates.helpers.Link
 @import views.html.templates.helpers.InputRadio
 
 @this(
@@ -24,7 +26,8 @@
     inputRadio: InputRadio,
     formWithCsrf: FormWithCSRF,
     errorSummary: ErrorSummary,
-    button: Button
+    button: Button,
+    link: Link
 )
 
 @(form: Form[Boolean], taxYear: Int, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
@@ -37,9 +40,7 @@
 @contentHtml = {
     <p class="govuk-body">@{messages(s"benefits.childcare.theseAre.${if(user.isAgent) "agent" else "individual"}")}</p>
     <p class="govuk-body">
-        @messages("benefits.childcare.onlyNeed")
-        <a target="_blank" id=exempt-link href="https://www.gov.uk/expenses-and-benefits-childcare/whats-exempt"
-           class="govuk-link" rel="noopener noreferrer">@messages("benefits.childcare.onlyNeedLink")</a>@messages("common.fullStop")
+        @messages("benefits.childcare.onlyNeed") @link("https://www.gov.uk/expenses-and-benefits-childcare/whats-exempt","benefits.childcare.onlyNeedLink",Some("exempt-link"),true,fullStop=true)
     </p>
     <p class="govuk-body">@{messages(s"common.checkWithEmployer.${if(user.isAgent) "agent" else "individual"}")}</p>
 }

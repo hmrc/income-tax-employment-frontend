@@ -15,18 +15,17 @@
  *@
 
 @import views.html.templates.Layout
+@import views.html.templates.helpers.Link
 @import views.html.templates.helpers.Heading
 
-@this(layout: Layout, heading: Heading, govUkButton: GovukButton)
+@this(layout: Layout, heading: Heading, govUkButton: GovukButton, link: Link)
 
 @()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 @layout(messages("error.agent.title")) {
 @heading(messages("error.agent.title"), None, extraClasses = "govuk-!-margin-bottom-5", size = "xl")
 
-<p class="govuk-body">@{messages("error.agent.paragraph1")}
-    <a class="govuk-link" id="client_auth_link" href="https://www.gov.uk/guidance/client-authorisation-an-overview" target="_blank" rel="noopener noreferrer">
-        @{messages("error.agent.paragraph2")}</a>
-    @{messages("error.agent.paragraph3")}
+<p class="govuk-body">
+    @messages("error.agent.paragraph1") @link("https://www.gov.uk/guidance/client-authorisation-an-overview","error.agent.paragraph2",Some("client_auth_link"),true) @messages("error.agent.paragraph3")
 </p>
 @govUkButton(Button(
  attributes = Map(),
