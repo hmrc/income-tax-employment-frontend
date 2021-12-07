@@ -16,20 +16,22 @@
 
 package builders.models.employment
 
+import builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
+import builders.models.employment.EmploymentDataBuilder.anEmploymentData
 import models.employment.EmploymentSource
 
 object EmploymentSourceBuilder {
 
   val anEmploymentSource: EmploymentSource = EmploymentSource(
-    employmentId = "default-employment-id",
-    employerName = "default -employer-name",
-    employerRef = Some("default-employer-ref"),
-    payrollId = Some("default-payroll-id"),
-    startDate = None,
-    cessationDate = None,
+    employmentId = "001",
+    employerName = "maggie",
+    employerRef = Some("223/AB12399"),
+    payrollId = Some("12345678"),
+    startDate = Some("2019-04-21"),
+    cessationDate = Some("2020-03-11"),
     dateIgnored = None,
-    submittedOn = None,
-    employmentData = None,
-    employmentBenefits = None
+    submittedOn = Some("2020-01-04T05:01:01Z"),
+    employmentData = Some(anEmploymentData),
+    employmentBenefits = Some(anEmploymentBenefits)
   )
 }

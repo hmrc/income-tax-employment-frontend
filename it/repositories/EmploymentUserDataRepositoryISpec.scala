@@ -88,8 +88,8 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     Some(UtilitiesAndServicesModel(Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))),
     Some(MedicalChildcareEducationModel(Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))),
     Some(IncomeTaxAndCostsModel(Some(true), Some(true), Some(amount), Some(true), Some(amount))),
-    Some(ReimbursedCostsVouchersAndNonCashModel(Some(true),Some(true),Some(amount), Some(true),Some(amount), Some(true),Some(amount), Some(true),Some(amount))),
-    Some(AssetsModel(Some(true),Some(true),Some(amount), Some(true),Some(amount))),
+    Some(ReimbursedCostsVouchersAndNonCashModel(Some(true), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount), Some(true), Some(amount))),
+    Some(AssetsModel(Some(true), Some(true), Some(amount), Some(true), Some(amount))),
     Some("2020-10-10"), isUsingCustomerData = true, isBenefitsReceived = true)
 
   val employmentUserDataFull: EmploymentUserData = EmploymentUserData(
@@ -137,7 +137,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     lastUpdated = now
   )
 
-  implicit val request: FakeRequest[AnyContent] = fakeRequest
+  implicit val request: FakeRequest[AnyContent] = FakeRequest()
 
   private val userOne = User(employmentUserDataOne.mtdItId, None, employmentUserDataOne.nino, employmentUserDataOne.sessionId, Individual.toString)
   private val userTwo = User(employmentUserDataTwo.mtdItId, None, employmentUserDataTwo.nino, employmentUserDataTwo.sessionId, Individual.toString)

@@ -16,8 +16,10 @@
 
 package controllers.employment
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import models.User
-import models.employment.AllEmploymentData
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -28,16 +30,16 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
-class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper  {
+class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear - 1
-  val amount: BigDecimal = 34234.15
-  val urlEOY = s"$appUrl/2021/how-much-pay?employmentId=001"
+  private val taxYearEOY: Int = taxYear - 1
+  private val amount: BigDecimal = 100
+  private val urlEOY = s"$appUrl/2021/how-much-pay?employmentId=001"
 
   val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/how-much-pay?employmentId=001"
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  private val userRequest: User[_]=  User(mtditid, None, nino, sessionId, affinityGroup)
+  private val userRequest: User[_] = User(mtditid, None, nino, sessionId, affinityGroup)
 
 
   object Selectors {
@@ -101,7 +103,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedH1: String = "How much did maggie pay your client?"
     val expectedTitle: String = "How much did your client’s employer pay them?"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val expectedContent: String = "If your client was not paid £34234.15, tell us the correct amount."
+    val expectedContent: String = "If your client was not paid £100, tell us the correct amount."
     val expectedContentNewAccount: String = "Enter the gross amount. This can usually be found on your client’s P60."
     val emptyErrorText: String = "Enter the amount your client was paid"
   }
@@ -119,45 +121,50 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedH1: String = "How much did maggie pay your client?"
     val expectedTitle: String = "How much did your client’s employer pay them?"
     val expectedErrorTitle: String = s"Error: $expectedTitle"
-    val expectedContent: String = "If your client was not paid £34234.15, tell us the correct amount."
+    val expectedContent: String = "If your client was not paid £100, tell us the correct amount."
     val expectedContentNewAccount: String = "Enter the gross amount. This can usually be found on your client’s P60."
     val emptyErrorText: String = "Enter the amount your client was paid"
   }
 
-
-    def cya(payToDate:Option[BigDecimal]=Some(34234.15), isPriorSubmission:Boolean=true):
-    EmploymentUserData = EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, "001", isPriorSubmission, hasPriorBenefits = isPriorSubmission,
+  def cya(payToDate: Option[BigDecimal] = Some(100), isPriorSubmission: Boolean = true): EmploymentUserData =
+    EmploymentUserData(
+      sessionId,
+      mtditid,
+      nino,
+      taxYearEOY,
+      "001",
+      isPriorSubmission,
+      hasPriorBenefits = isPriorSubmission,
       EmploymentCYAModel(
-        EmploymentDetails("maggie", taxablePayToDate =payToDate, currentDataIsHmrcHeld = false),
+        EmploymentDetails("maggie", taxablePayToDate = payToDate, currentDataIsHmrcHeld = false),
         None
       )
     )
 
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
-
-  val multipleEmployments: AllEmploymentData = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"), employmentDetailsAndBenefits()))
+  private val multipleEmployments = anAllEmploymentData.copy(hmrcEmploymentData = Seq(
+    anEmploymentSource.copy(employmentBenefits = None),
+    anEmploymentSource.copy(employmentId = "002", employmentBenefits = None)
+  ))
 
   ".show" when {
-
     userScenarios.foreach { user =>
       import Selectors._
       import user.commonExpectedResults._
       import user.specificExpectedResults._
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "should render How much did xxx pay you? page with cya amount in paragraph text when there is cya data" which {
-
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(cya(), User(mtditid, None, nino, sessionId, "agent"))
             urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
@@ -185,7 +192,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(cya(None), User(mtditid, None, nino, sessionId, "agent"))
             urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
@@ -231,7 +238,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
               implicit lazy val result: WSResponse = {
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
-                userDataStub(userData(multipleEmployments), nino, taxYearEOY)
+                userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYearEOY)
                 insertCyaData(cya(), User(mtditid, None, nino, sessionId, "agent"))
                 urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
@@ -247,14 +254,14 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
               implicit lazy val result: WSResponse = {
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
-                userDataStub(userData(multipleEmployments), nino, taxYearEOY)
-                insertCyaData(cya(Some(100.00)), User(mtditid, None, nino, sessionId, "agent"))
+                userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYearEOY)
+                insertCyaData(cya(Some(110.00)), User(mtditid, None, nino, sessionId, "agent"))
                 urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-              inputFieldValueCheck(amountInputName, inputSelector, "100")
+              inputFieldValueCheck(amountInputName, inputSelector, "110")
             }
 
             "cya amount field is filled and prior data is none (i.e user has added a new employment and updated their pay but now want to change it)" when {
@@ -268,14 +275,15 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
 
-              inputFieldValueCheck(amountInputName, inputSelector, "100")            }
+              inputFieldValueCheck(amountInputName, inputSelector, "100")
+            }
           }
         }
         "redirect  to check employment details page when there is no cya data in session" when {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            urlGet(urlEOY, follow = false, welsh=user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(urlEOY, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
 
@@ -290,8 +298,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(cya(), User(mtditid, None, nino, sessionId, "agent"))
-            val inYearUrl =s"$appUrl/$taxYear/how-much-pay?employmentId=001"
-            urlGet(inYearUrl, welsh=user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            val inYearUrl = s"$appUrl/$taxYear/how-much-pay?employmentId=001"
+            urlGet(inYearUrl, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
 
@@ -380,7 +388,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(cya(), userRequest)
-            urlPost(urlEOY, follow=false,
+            urlPost(urlEOY, follow = false,
               welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
           }
 

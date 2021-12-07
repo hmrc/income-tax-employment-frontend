@@ -18,10 +18,8 @@ package connectors
 
 import com.github.tomakehurst.wiremock.http.HttpHeader
 import connectors.httpParsers.CreateOrAmendExpensesHttpParser.CreateOrAmendExpensesResponse
-import models.expenses.CreateExpensesRequestModel
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status._
-import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.IntegrationTest
 
@@ -35,11 +33,9 @@ class DeleteOrIgnoreExpensesConnectorSpec extends IntegrationTest {
 
   implicit override val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
 
-  val createExpensesRequestModel = CreateExpensesRequestModel(Some(false), expenses)
+  private val validToRemove = "HMRC-HELD"
 
-  val validToRemove = "HMRC-HELD"
-
-  val url: String = s"/income-tax-expenses/income-tax/nino/$nino/sources/$validToRemove\\?taxYear=$taxYear"
+  private val url: String = s"/income-tax-expenses/income-tax/nino/$nino/sources/$validToRemove\\?taxYear=$taxYear"
 
   "DeleteOrIgnoreExpensesConnector - deleteOrIgnoreExpenses" should {
     val headers = Seq(new HttpHeader("X-Session-ID", sessionId), new HttpHeader("mtditid", mtditid))

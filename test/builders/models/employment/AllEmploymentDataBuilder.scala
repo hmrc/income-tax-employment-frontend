@@ -16,14 +16,16 @@
 
 package builders.models.employment
 
+import builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
+import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import models.employment.AllEmploymentData
 
 object AllEmploymentDataBuilder {
 
   val anAllEmploymentData: AllEmploymentData = AllEmploymentData(
-    hmrcEmploymentData = Seq.empty,
-    hmrcExpenses = None,
-    customerEmploymentData = Seq.empty,
+    hmrcEmploymentData = Seq(anEmploymentSource),
+    hmrcExpenses = Some(anEmploymentExpenses),
+    customerEmploymentData = Seq(),
     customerExpenses = None
   )
 }

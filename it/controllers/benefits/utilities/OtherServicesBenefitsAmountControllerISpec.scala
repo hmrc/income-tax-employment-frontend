@@ -16,10 +16,15 @@
 
 package controllers.benefits.utilities
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import builders.models.benefits.UtilitiesAndServicesModelBuilder.aUtilitiesAndServicesModel
+import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import controllers.employment.routes.CheckYourBenefitsController
-import models.User
-import models.benefits.{BenefitsViewModel, UtilitiesAndServicesModel}
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.benefits.BenefitsViewModel
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -29,21 +34,16 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear - 1
-  val employmentId = "001"
+  private val poundPrefixText = "£"
+  private val amountInputName = "amount"
+  private val taxYearEOY: Int = taxYear - 1
+  private val employmentId = "employmentId"
+  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/other-services-amount?employmentId=$employmentId"
 
   private def pageUrl(taxYear: Int): String = s"$appUrl/$taxYear/benefits/other-services-amount?employmentId=$employmentId"
 
-  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/other-services-amount?employmentId=$employmentId"
-
-  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
-
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId,
-      isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
-
-  def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
-    EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
+    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employment = employmentCyaModel)
 
   object Selectors {
     val contentSelector = "#main-content > div > div > form > div > label > p"
@@ -56,9 +56,6 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
     val expectedErrorHref = "#amount"
   }
 
-
-  val poundPrefixText = "£"
-  val amountInputName = "amount"
 
   trait CommonExpectedResults {
     val expectedCaption: String
@@ -126,33 +123,25 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
     val maxAmountErrorText: String = "The amount your client got for other services must be less than £100,000,000,000"
   }
 
-  def benefits(utilitiesModel: UtilitiesAndServicesModel): BenefitsViewModel =
-    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
-      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel),isUsingCustomerData = true,
-      isBenefitsReceived = true, utilitiesAndServicesModel = Some(utilitiesModel))
+  private val benefitsWithNoBenefitsReceived: Option[BenefitsViewModel] = Some(BenefitsViewModel(isUsingCustomerData = true))
 
-  val benefitsWithNoBenefitsReceived: Option[BenefitsViewModel] = Some(BenefitsViewModel(isUsingCustomerData = true))
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   ".show" should {
     userScenarios.foreach { user =>
 
-
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
         "render the other services amount page without pre-filled form and without replay text" which {
-
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits.map(_.copy(
-              benefits = fullBenefits.flatMap(_.benefits.map(_.copy(entertaining = None))))))))), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
-              Some(benefits(fullUtilitiesAndServicesModel.copy(service = None))))), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(service = None)))
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -177,13 +166,10 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
         }
 
         "render the other services amount page with pre-filled cy data" which {
-
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits.map(
-              _.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(telephone = None))))))))), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-              Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -207,14 +193,12 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
-
         }
 
         "render the other services amount page with the amount field pre-filled with prior submitted data" which {
-
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true, Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -238,16 +222,12 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
           buttonCheck(continue, continueButtonSelector)
           formPostLinkCheck(continueLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
-
         }
-
       }
     }
 
     "redirect to another page when the request is valid but they aren't allowed to view the page and" should {
-
       val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
-
       "Redirect user to the check your benefits page with no cya data in session" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
@@ -264,10 +244,8 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
       "Redirect user to the tax overview page when in year" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(
-            fullBenefits.map(_.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(telephone = None))))))))), nino, taxYearEOY)
-          insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true,
-            benefitsWithNoBenefitsReceived)), userRequest)
+          userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = benefitsWithNoBenefitsReceived)), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
           urlGet(pageUrl(taxYear), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -283,8 +261,8 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true,
-            Some(benefits(fullUtilitiesAndServicesModel.copy(serviceQuestion = None))))), userRequest)
+          val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(serviceQuestion = None)))
+          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
           urlGet(pageUrl(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -299,8 +277,8 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
-            Some(benefits(fullUtilitiesAndServicesModel.copy(serviceQuestion = Some(false)))))), userRequest)
+          val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(serviceQuestion = Some(false))))
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
           urlGet(pageUrl(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -315,9 +293,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true,
-            benefitsWithNoBenefitsReceived)), userRequest)
-
+          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = benefitsWithNoBenefitsReceived)), aUserRequest)
           urlGet(pageUrl(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -327,26 +303,19 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
             Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
       }
-
     }
-
-
   }
 
   ".submit" should {
     userScenarios.foreach { user =>
       import Selectors._
       import user.specificExpectedResults._
-
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "should render the other services amount amount page with empty error text when there no input" which {
-
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-              Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             urlPost(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
           }
 
@@ -372,12 +341,10 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
         }
 
         "should render the entertainment benefit question amount page with invalid format text when input is in incorrect format" which {
-
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-              Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             urlPost(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "abc"))
           }
 
@@ -407,8 +374,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-              Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             urlPost(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)),
               body = Map("amount" -> "9999999999999999999999999999"))
           }
@@ -433,34 +399,29 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
           errorSummaryCheck(get.maxAmountErrorText, expectedErrorHref)
           errorAboveElementCheck(get.maxAmountErrorText)
         }
-
       }
     }
 
     "redirect to another page when a valid request is made and then" should {
       val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedAgentEN))
-
       "redirect to medical dental childcare benefits page when a valid form is submitted and a prior submission" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-            Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
-          urlPost(pageUrl(taxYearEOY), follow = false,
-            welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.23"))
+          val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          urlPost(pageUrl(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.23"))
         }
 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/benefits/medical-dental-childcare-education-loans?employmentId=001")
+          result.header("location") shouldBe
+            Some(s"/update-and-submit-income-tax-return/employment-income/2021/benefits/medical-dental-childcare-education-loans?employmentId=$employmentId")
         }
 
         "updates the CYA model with the new value" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-
-          val otherServicesAmount: Option[BigDecimal] =
-            cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.service))
-
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+          val otherServicesAmount = cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.service))
           otherServicesAmount shouldBe Some(100.23)
         }
       }
@@ -469,11 +430,9 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true,
-            Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
-
-          urlPost(pageUrl(taxYearEOY), follow = false,
-            welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.11"))
+          val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
+          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          urlPost(pageUrl(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.11"))
         }
 
         "has an SEE_OTHER status" in {
@@ -483,11 +442,8 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
         }
 
         "updates the CYA model with the new value" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
-
-          val otherServicesAmount: Option[BigDecimal] =
-            cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.service))
-
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+          val otherServicesAmount = cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.service))
           otherServicesAmount shouldBe Some(100.11)
         }
       }
@@ -496,8 +452,7 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
-          urlPost(pageUrl(taxYearEOY), follow = false,
-            welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+          urlPost(pageUrl(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -509,10 +464,8 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
       "redirect user to the tax overview page when in year" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits.map(
-            _.copy(benefits = fullBenefits.flatMap(_.benefits.map(_.copy(mileage = None))))))))), nino, taxYearEOY)
-          insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
-            Some(benefits(fullUtilitiesAndServicesModel)))), userRequest)
+          userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(pageUrl(taxYear), follow = false,
             welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.22"))
@@ -524,14 +477,13 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
         }
       }
 
-
       "redirect to the other services question page when there is a service amount but the other serviceQuestion has not been answered" +
         " but entertainment benefit question empty" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true,
-            Some(benefits(fullUtilitiesAndServicesModel.copy(serviceQuestion = None))))), userRequest)
+          val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(serviceQuestion = None)))
+          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
           urlPost(pageUrl(taxYearEOY), follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
         }
@@ -547,8 +499,8 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
-            Some(benefits(fullUtilitiesAndServicesModel.copy(serviceQuestion = Some(false)))))), userRequest)
+          val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(serviceQuestion = Some(false))))
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
           urlPost(pageUrl(taxYearEOY), follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
         }
@@ -564,11 +516,8 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true,
-            benefitsWithNoBenefitsReceived)), userRequest)
-
-          urlPost(pageUrl(taxYearEOY), follow = false, welsh = user.isWelsh,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = benefitsWithNoBenefitsReceived)), aUserRequest)
+          urlPost(pageUrl(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
         }
 
         "has an SEE_OTHER status" in {
@@ -577,7 +526,6 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
             Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
         }
       }
-
     }
   }
 }

@@ -16,12 +16,17 @@
 
 package controllers.benefits.travel
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import builders.models.benefits.TravelEntertainmentModelBuilder.aTravelEntertainmentModel
+import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import controllers.benefits.travel.routes.{EntertainmentBenefitsAmountController, TravelOrEntertainmentBenefitsController}
 import controllers.benefits.utilities.routes.UtilitiesOrGeneralServicesBenefitsController
 import forms.YesNoForm
-import models.User
-import models.benefits.{BenefitsViewModel, TravelEntertainmentModel}
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.benefits.TravelEntertainmentModel
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -31,25 +36,14 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = 2021
-  val employmentId: String = "001"
+  private val taxYearEOY: Int = 2021
+  private val employmentId: String = "employmentId"
+  private val continueLink: String = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/entertainment-expenses?employmentId=$employmentId"
 
-  def entertainingQuestionUrl(taxYear: Int): String = s"$appUrl/$taxYear/benefits/entertainment-expenses?employmentId=$employmentId"
-
-  val continueLink: String = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/entertainment-expenses?employmentId=$employmentId"
-
-  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+  private def entertainingQuestionUrl(taxYear: Int): String = s"$appUrl/$taxYear/benefits/entertainment-expenses?employmentId=$employmentId"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
-
-  def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
-    EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
-
-
-  def benefits(travelEntertainmentModel: TravelEntertainmentModel): BenefitsViewModel =
-    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
-      travelEntertainmentModel = Some(travelEntertainmentModel), isUsingCustomerData = true, isBenefitsReceived = true)
+    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employment = employmentCyaModel)
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -121,29 +115,27 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
     val expectedContent = "These are entertainment costs that their employer has paid for, or reimbursed them for. For example, eating, drinking and other hospitality."
   }
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   ".show" should {
     userScenarios.foreach { user =>
-
       import Selectors._
       import user.commonExpectedResults._
-
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "render the 'Did you get any entertainment benefits?' page with no pre-filled radio buttons" which {
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("employerName", hmrc = true,
-              Some(benefits(fullTravelOrEntertainmentModel.copy(entertainingQuestion = None))))), userRequest)
+            val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(entertainingQuestion = None)))
+            insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
             urlGet(entertainingQuestionUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
+
           s"has an OK($OK) status" in {
             result.status shouldBe OK
           }
@@ -165,10 +157,10 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-              Some(benefits(fullTravelOrEntertainmentModel)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             urlGet(entertainingQuestionUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
+
           s"has an OK($OK) status" in {
             result.status shouldBe OK
           }
@@ -193,7 +185,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
-          insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true)), userRequest)
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
           urlGet(entertainingQuestionUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -208,8 +200,8 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
-          insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true, benefits =
-            Some(benefits(travelEntertainmentModel = emptyTravelOrEntertainmentModel)))), userRequest)
+          val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(TravelEntertainmentModel(sectionQuestion = Some(false))))
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
           urlGet(entertainingQuestionUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -225,14 +217,13 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(emptyTravelOrEntertainmentModel.copy(sectionQuestion = None))))), userRequest)
+        val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(TravelEntertainmentModel(sectionQuestion = None)))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         urlGet(entertainingQuestionUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId).url)
-
       }
     }
 
@@ -252,21 +243,16 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
   ".submit" should {
     userScenarios.foreach { user =>
-
       import Selectors._
       import user.commonExpectedResults._
-
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
         "return an error if no value is submitted" which {
           lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
-
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-              Some(benefits(fullTravelOrEntertainmentModel)))), userRequest)
-            urlPost(entertainingQuestionUrl(taxYearEOY), body = form, welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            urlPost(entertainingQuestionUrl(taxYearEOY), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has an BAD REQUEST($BAD_REQUEST) status" in {
@@ -293,11 +279,12 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
     "redirect to entertaining amount page when user selects Yes and it's a prior submission" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(fullTravelOrEntertainmentModel.copy(entertainingQuestion = Some(false)))))), userRequest)
+        val model = aBenefitsViewModel
+          .copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(entertainingQuestion = Some(false))))
+          .copy(utilitiesAndServicesModel = None)
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(model))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(entertainingQuestionUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -308,18 +295,17 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
       }
 
       "updates entertainingQuestion to Yes" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertainingQuestion)) shouldBe Some(true)
       }
     }
 
     "redirect to utilities or general services benefits page when user selects No and wipe entertaining amount" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(fullTravelOrEntertainmentModel)))), userRequest)
+        val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = None)
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(entertainingQuestionUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -330,7 +316,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
       }
 
       "updates entertainingQuestion to No and removes entertaining expenses amount" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertainingQuestion)) shouldBe Some(false)
         cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining)) shouldBe None
       }
@@ -338,11 +324,12 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
     "redirect to entertainment amount page if valid form is submitted and not a prior submission" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = false, cyaModel("employerName", hmrc = true,
-          Some(benefits(fullTravelOrEntertainmentModel.copy(entertainingQuestion = Some(false)))))), userRequest)
+        val benefitsViewModel = aBenefitsViewModel
+          .copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(entertainingQuestion = Some(false))))
+          .copy(utilitiesAndServicesModel = None)
+        insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(entertainingQuestionUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -353,7 +340,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
       }
 
       "updates entertainingQuestion to Yes" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertainingQuestion)) shouldBe Some(true)
       }
     }
@@ -364,7 +351,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         urlPost(entertainingQuestionUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
       "has a SEE_OTHER status" in {
@@ -375,7 +362,6 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
     }
 
     "redirect to tax overview page if it's not EOY" which {
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -389,5 +375,3 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
     }
   }
 }
-
-

@@ -16,10 +16,17 @@
 
 package controllers.employment
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
+import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import controllers.benefits.routes.ReceiveAnyBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
-import models.User
-import models.benefits.{AccommodationRelocationModel, BenefitsViewModel}
+import models.benefits.{AccommodationRelocationModel, Benefits, BenefitsViewModel}
+import models.employment.EmploymentBenefits
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -33,9 +40,18 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
   private val defaultTaxYear = 2022
   private val employmentId = "001"
-  private val dummyHref = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/check-employment-benefits?employmentId=$employmentId"
+  private val dummyHref = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/check-employment-benefits?employmentId=$employmentId"
 
   def url(taxYear: Int = defaultTaxYear): String = s"$appUrl/$taxYear/check-employment-benefits?employmentId=$employmentId"
+
+  lazy val filteredBenefits: Some[EmploymentBenefits] = Some(EmploymentBenefits(
+    submittedOn = "2020-02-12",
+    benefits = Some(Benefits(
+      van = Some(3.00),
+      vanFuel = Some(4.00),
+      mileage = Some(5.00),
+    ))
+  ))
 
   object Selectors {
     val p1 = "#main-content > div > div > p.govuk-body"
@@ -728,7 +744,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val nonTaxableCostsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/non-taxable-costs-amount?employmentId=$employmentId"
     val vouchersBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/vouchers-or-credit-cards?employmentId=$employmentId"
     val vouchersBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/vouchers-or-credit-cards-amount?employmentId=$employmentId"
-    val nonCashBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear-1}/benefits/non-cash-benefits?employmentId=001"
+    val nonCashBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/non-cash-benefits?employmentId=001"
     val nonCashBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/non-cash-benefits-amount?employmentId=$employmentId"
     val otherBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/other-benefits-amount?employmentId=001"
     val otherBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/other-benefits?employmentId=001"
@@ -757,7 +773,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear)
+            userDataStub(anIncomeTaxUserData, nino, taxYear)
             urlGet(url(), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -839,7 +855,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear - 1)
+            userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
             urlGet(url(defaultTaxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
@@ -945,7 +961,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(filteredBenefits)))), nino, defaultTaxYear - 1)
+            val employmentSources = Seq(anEmploymentSource.copy(employmentBenefits = filteredBenefits))
+            userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = employmentSources))), nino, defaultTaxYear - 1)
             urlGet(url(defaultTaxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear - 1)))
           }
 
@@ -1027,8 +1044,6 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "return only the relevant data on the page when other certain data items are in CYA for EOY, customerData = true " +
           "to check help text isn't shown" which {
-          val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
-
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
             EmploymentUserData(sessionId, mtditid, nino, defaultTaxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
@@ -1049,7 +1064,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
             urlGet(url(defaultTaxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(defaultTaxYear - 1)))
           }
 
@@ -1157,12 +1172,11 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
               Some(BenefitsViewModel(isUsingCustomerData = false))
             )
 
-          val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYear - 1)
+            userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
             urlGet(url(defaultTaxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
@@ -1195,7 +1209,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(filteredBenefits)))), nino, defaultTaxYear)
+            val employmentSources = Seq(anEmploymentSource.copy(employmentBenefits = filteredBenefits))
+            userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = employmentSources))), nino, defaultTaxYear)
             urlGet(url(), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -1265,11 +1280,10 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYear - 1)
+        val employmentSources = Seq(anEmploymentSource.copy(employmentBenefits = Some(anEmploymentBenefits)))
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = employmentSources))), nino, defaultTaxYear)
         urlGet(s"$appUrl/${taxYear - 1}/check-employment-benefits?employmentId=0022", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
-
-      implicit def document: () => Document = () => Jsoup.parse(result.body)
 
       result.status shouldBe SEE_OTHER
       result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear - 1))
@@ -1285,13 +1299,12 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           None
         )
 
-      val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
-
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
+        insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYear - 1)
+        val employmentData = anAllEmploymentData.copy(hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None)))
+        userDataStub(anIncomeTaxUserData.copy(Some(employmentData)), nino, taxYear - 1)
         urlGet(url(defaultTaxYear - 1), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
@@ -1303,7 +1316,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(None)))), nino, defaultTaxYear)
+        val employmentData = anAllEmploymentData.copy(hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None)))
+        userDataStub(anIncomeTaxUserData.copy(Some(employmentData)), nino, defaultTaxYear)
         urlGet(url(defaultTaxYear - 1), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
@@ -1315,7 +1329,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel()), nino, defaultTaxYear)
+        val hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = hmrcEmploymentData))), nino, defaultTaxYear)
         urlGet(url(), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -1330,11 +1345,9 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = true)
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
+        userDataStub(anIncomeTaxUserData, nino, taxYear)
         urlPost(url(), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
-
-      implicit def document: () => Document = () => Jsoup.parse(result.body)
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
@@ -1343,26 +1356,14 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     }
 
     "return internal server error page whilst not implemented" in {
-      val employmentData: EmploymentCYAModel = {
-        employmentUserData.employment.copy(employmentDetails = employmentUserData.employment.employmentDetails.copy(
-          employerRef = Some("123/12345"),
-          startDate = Some("2020-11-11"),
-          taxablePayToDate = Some(55.99),
-          totalTaxToDate = Some(3453453.00),
-          currentDataIsHmrcHeld = false
-        ))
-      }
-      val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
-
+      val employmentData = anEmploymentCYAModel.copy(employmentBenefits = None)
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(employmentUserData.copy(employment = employmentData).copy(employmentId = employmentId), userRequest)
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYear - 1)
+        insertCyaData(anEmploymentUserData.copy(employment = employmentData).copy(employmentId = employmentId), aUserRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
         urlPost(url(taxYear - 1), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
-
-      implicit def document: () => Document = () => Jsoup.parse(result.body)
 
       result.status shouldBe INTERNAL_SERVER_ERROR
     }
@@ -1371,11 +1372,9 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYear - 1)
+        userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
         urlPost(url(taxYear - 1), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
-
-      implicit def document: () => Document = () => Jsoup.parse(result.body)
 
       "has a url of benefits show method" in {
         result.status shouldBe SEE_OTHER
