@@ -17,6 +17,7 @@
 package controllers.benefits.reimbursed
 
 import config.{AppConfig, ErrorHandler}
+import controllers.benefits.reimbursed.routes.OtherBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
@@ -100,12 +101,9 @@ class NonCashBenefitsAmountController @Inject()(implicit val cc: MessagesControl
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
                   isPriorSubmission = cya.isPriorSubmission, hasPriorBenefits = cya.hasPriorBenefits)(errorHandler.internalServerError()) {
 
-                  if (cya.hasPriorBenefits) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    //TODO - redirect to other items yes no question page
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  }
+                  val nextPage = OtherBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
                 }
             }
           )

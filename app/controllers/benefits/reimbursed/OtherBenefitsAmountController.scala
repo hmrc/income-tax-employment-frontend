@@ -17,6 +17,7 @@
 package controllers.benefits.reimbursed
 
 import config.{AppConfig, ErrorHandler}
+import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
@@ -25,7 +26,7 @@ import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
+import services.{EmploymentSessionService, RedirectService}
 import services.RedirectService.{otherItemsAmountRedirects, redirectBasedOnCurrentAnswers}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
@@ -80,12 +81,9 @@ class OtherBenefitsAmountController @Inject()(implicit val cc: MessagesControlle
 
               employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission,
                 cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                if (cya.isPriorSubmission) {
-                  Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                } else {
-                  // TODO: Point to the assets section question page
-                  Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                }
+                val nextPage = AssetsOrAssetTransfersBenefitsController.show(taxYear, employmentId)
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
           })
         }

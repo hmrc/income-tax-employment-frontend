@@ -17,7 +17,7 @@
 package controllers.benefits.reimbursed
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.reimbursed.routes.{NonCashBenefitsAmountController, OtherBenefitsController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
@@ -26,7 +26,7 @@ import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
+import services.{EmploymentSessionService, RedirectService}
 import services.RedirectService.{nonCashRedirects, redirectBasedOnCurrentAnswers}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
@@ -92,7 +92,15 @@ class NonCashBenefitsController @Inject()(implicit val cc: MessagesControllerCom
 
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                val nextPage = {
+                  if (yesNo) {
+                    NonCashBenefitsAmountController.show(taxYear, employmentId)
+                  } else {
+                    OtherBenefitsController.show(taxYear, employmentId)
+                  }
+                }
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
             }
           )
@@ -100,6 +108,5 @@ class NonCashBenefitsController @Inject()(implicit val cc: MessagesControllerCom
       }
     }
   }
-
 }
 

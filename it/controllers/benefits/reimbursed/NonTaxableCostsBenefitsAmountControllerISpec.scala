@@ -42,6 +42,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   val amountInModel: BigDecimal = 100
   val amountInputName = "amount"
   val amountFieldHref = "#amount"
+  val newAmount: BigDecimal = 500.55
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > label > header > p"
@@ -56,9 +57,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
   trait CommonExpectedResults {
     val expectedCaption: String
-
     def ifItWasNotText(amount: BigDecimal): String
-
     val enterTotalText: String
     val expectedHintText: String
     val currencyPrefix: String
@@ -76,9 +75,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-
     def ifItWasNotText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
-
     val enterTotalText = "Enter the total."
     val expectedHintText = "For example, £600 or £193.54"
     val currencyPrefix = "£"
@@ -87,9 +84,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-
     def ifItWasNotText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
-
     val enterTotalText = "Enter the total."
     val expectedHintText = "For example, £600 or £193.54"
     val currencyPrefix = "£"
@@ -467,9 +462,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
       }
     }
 
-    val newAmount: BigDecimal = 500.55
-
-    "update cya when a user submits a valid form and has prior benefits" which {
+    "update cya when a user submits a valid form and has prior benefits, redirects to the CYA page" which {
 
       val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
 
@@ -477,8 +470,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
-          Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(fullBenefitsModel))), userRequest)
         urlPost(nonTaxableCostsBenefitsAmountPageUrl(taxYearEOY), follow = false, body = form,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -497,7 +489,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
     }
 
-    "update cya when a user submits a valid form and doesn't have prior benefits" which {
+    "update cya when a user submits a valid form and doesn't have prior benefits, redirects to the taxable costs page" which {
 
       val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
 
@@ -510,7 +502,7 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      s"redirect to taxable expenses yes/no question page" in {
+      "redirects to the taxable costs page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(TaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
       }

@@ -757,6 +757,7 @@ object RedirectService extends Logging {
     val medicalChildcareEducationSection: MedicalChildcareEducationModel = cya.employmentBenefits.flatMap(_.medicalChildcareEducationModel).getOrElse(MedicalChildcareEducationModel())
     val incomeTaxAndCostsSection: IncomeTaxAndCostsModel = cya.employmentBenefits.flatMap(_.incomeTaxAndCostsModel).getOrElse(IncomeTaxAndCostsModel())
     val reimbursedCostsVouchersAndNonCashSection: ReimbursedCostsVouchersAndNonCashModel = cya.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).getOrElse(ReimbursedCostsVouchersAndNonCashModel())
+    val assetsSection: AssetsModel = cya.employmentBenefits.flatMap(_.assetsModel).getOrElse(AssetsModel())
 
     val carVanFuelSectionFinished = carVanFuelSection.isFinished
     val accommodationRelocationSectionFinished = accommodationRelocationSection.isFinished
@@ -765,10 +766,11 @@ object RedirectService extends Logging {
     val medicalChildcareEducationSectionFinished = medicalChildcareEducationSection.isFinished
     val incomeTaxAndCostsSectionFinished = incomeTaxAndCostsSection.isFinished
     val reimbursedCostsVouchersAndNonCashSectionFinished = reimbursedCostsVouchersAndNonCashSection.isFinished
+    val assetsSectionFinished = assetsSection.isFinished
 
     val unfinishedRedirects: Seq[Call] = Seq(carVanFuelSectionFinished, accommodationRelocationSectionFinished,
       travelOrEntertainmentSectionFinished, utilitiesAndServicesSectionFinished, medicalChildcareEducationSectionFinished,
-      incomeTaxAndCostsSectionFinished, reimbursedCostsVouchersAndNonCashSectionFinished).flatten
+      incomeTaxAndCostsSectionFinished, reimbursedCostsVouchersAndNonCashSectionFinished, assetsSectionFinished).flatten
 
     unfinishedRedirects match {
       case calls if calls.isEmpty =>

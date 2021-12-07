@@ -17,7 +17,7 @@
 package controllers.benefits.reimbursed
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.reimbursed.routes.{TaxableCostsBenefitsAmountController, VouchersBenefitsController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
@@ -94,8 +94,15 @@ class TaxableCostsBenefitsController @Inject()(implicit val cc: MessagesControll
                 data.isPriorSubmission,
                 data.hasPriorBenefits
               )(errorHandler.internalServerError()) {
-//                TODO: This will be updated to the Taxable Costs amount page
-                  Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                val nextPage = {
+                  if (yesNo) {
+                    TaxableCostsBenefitsAmountController.show(taxYear, employmentId)
+                  } else {
+                    VouchersBenefitsController.show(taxYear, employmentId)
+                  }
+                }
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
             }
           )

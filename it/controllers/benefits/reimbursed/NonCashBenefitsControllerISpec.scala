@@ -17,6 +17,7 @@
 package controllers.benefits.reimbursed
 
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.reimbursed.routes.{NonCashBenefitsAmountController, OtherBenefitsController}
 import forms.YesNoForm
 import models.User
 import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
@@ -228,10 +229,6 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
       }
     }
 
-    "redirect to another page when the request is valid but they aren't allowed to view the page and" should {
-
-      val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
-
       "redirect the user to the check employment benefits page when the benefitsReceived question is false" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
@@ -250,12 +247,10 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
       "redirect the user to the check employment benefits page when ReimbursedCostsVouchersAndNonCashQuestion is set to false" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
             benefits = Some(benefits(emptyReimbursedCostsVouchersAndNonCashModel)))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -267,9 +262,8 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
       "redirect the user to the check employment benefits page when theres no session data for that user" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -281,10 +275,10 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
       "redirect the user to the overview page when the request is in year" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
             benefits = Some(BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true)))), userRequest)
-          urlGet(pageUrl(taxYear), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -299,8 +293,8 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true)), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
@@ -309,12 +303,10 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
         }
 
         "doesn't create any benefits data" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits shouldBe None
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits shouldBe None
         }
       }
-
-    }
 
   }
 
@@ -366,10 +358,6 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
       }
     }
 
-    "redirect to another page when a valid request is made and then" should {
-
-      val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
-
       "Update the non cash benefits question to no, and non cash benefits to none when the user chooses no, redirects to CYA if prior submission" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
@@ -377,10 +365,9 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-            Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            Some(fullBenefitsModel))), userRequest)
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
@@ -389,15 +376,15 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
         }
 
         "updates non taxable costs question to no and non taxable costs to none" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCashQuestion)) shouldBe Some(false)
-          cyamodel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash)) shouldBe None
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCashQuestion)) shouldBe Some(false)
+          cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash)) shouldBe None
         }
 
       }
 
       "Update the non cash benefits question to no, and non cash benefits to none when the user chooses no," +
-        "redirects to next question if not prior submission" which {
+        "redirects to other benefits question if not prior submission" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
@@ -405,21 +392,19 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = false, cyaModel("employerName", hmrc = true,
             Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
-
-        //          TODO: This will need updating to the next page in the flow when the navigation is hooked up
-        "redirects to the check your details page" in {
+        
+        "redirects to the other benefits page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY,employmentId).url)
+          result.header("location") shouldBe Some(OtherBenefitsController.show(taxYearEOY,employmentId).url)
         }
 
         "updates non taxable costs question to no and non taxable costs to none" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCashQuestion)) shouldBe Some(false)
-          cyamodel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash)) shouldBe None
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCashQuestion)) shouldBe Some(false)
+          cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash)) shouldBe None
         }
 
       }
@@ -432,28 +417,26 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
             Some(benefits(fullReimbursedCostsVouchersAndNonCashModel.copy(expensesQuestion = Some(false)))))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        "redirects to the non taxable costs amount page" in {
+        "redirects to the non cash benefits amount page" in {
           result.status shouldBe SEE_OTHER
-          //          TODO: This will be updated to the non cash benefits amount page when its created
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY,employmentId).url)
+          result.header("location") shouldBe Some(NonCashBenefitsAmountController.show(taxYearEOY,employmentId).url)
         }
 
         "updates non taxable costs question to yes" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCashQuestion)) shouldBe Some(true)
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCashQuestion)) shouldBe Some(true)
         }
 
       }
 
       "redirect the user to the overview page when it is in year" which {
         lazy val result: WSResponse = {
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(pageUrl(taxYear), body = "", user.isWelsh, follow = false,
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(pageUrl(taxYear), body = "", follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
@@ -470,9 +453,8 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true)), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          authoriseAgentOrIndividual(isAgent = false)
+          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
@@ -481,8 +463,8 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
         }
 
         "doesn't create any benefits data" in {
-          lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
-          cyamodel.employment.employmentBenefits shouldBe None
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+          cyaModel.employment.employmentBenefits shouldBe None
         }
       }
 
@@ -495,8 +477,8 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
             benefits = Some(BenefitsViewModel(isUsingCustomerData = true)))), userRequest)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))          }
+          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        }
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
@@ -510,12 +492,10 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          authoriseAgentOrIndividual(user.isAgent)
+          authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
             benefits = Some(benefits(emptyReimbursedCostsVouchersAndNonCashModel)))), userRequest)
-          authoriseAgentOrIndividual(user.isAgent)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -524,8 +504,6 @@ class NonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers wi
         }
       }
 
-    }
   }
-
 }
 

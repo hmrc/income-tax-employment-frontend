@@ -17,6 +17,8 @@
 package controllers.benefits.reimbursed
 
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsController
+import controllers.benefits.reimbursed.routes.NonTaxableCostsBenefitsController
 import forms.YesNoForm
 import models.User
 import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
@@ -256,7 +258,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
   }
 
 
-    ".submit" should {
+  ".submit" should {
       userScenarios.foreach { user =>
         s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
@@ -305,7 +307,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
         }
       }
 
-      "Update the reimbursedCostsVouchersAndNonCashQuestion to true when user selects yes and there is previous cya data" which {
+      "Update the reimbursedCostsVouchersAndNonCashQuestion to true when user selects yes and there is previous cya data, redirects to non taxable costs page" which {
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
         lazy val result: WSResponse = {
@@ -315,9 +317,9 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
           urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        "redirects to the check your benefits page" in {
+        "redirects to the non taxable costs question page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(NonTaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
         }
 
         "update the reimbursedCostsVouchersAndNonCashQuestion to true" in {
@@ -326,19 +328,19 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
         }
       }
 
-      "Update the reimbursedCostsVouchersAndNonCashQuestion to false and remove reimbursed section data when user selects no" which {
+      "Update the reimbursedCostsVouchersAndNonCashQuestion to false and remove reimbursed section data when user selects no, redirects to assets section if no prior benefits" which {
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
+          insertCyaData(employmentUserData(isPrior = false, cyaModel(Some(benefits(Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
           authoriseAgentOrIndividual(isAgent = false)
           urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        "redirects to the check your benefits page" in {
+        "redirects to the assets section question page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(AssetsOrAssetTransfersBenefitsController.show(taxYearEOY, employmentId).url)
         }
 
         "updates the reimbursedCostsVouchersAndNonCashQuestion to false and wipes the other values" in {
@@ -358,7 +360,39 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
 
       }
 
-      "Create a new ReimbursedCostsVouchersAndNonCashModel and redirect to Check Employment Benefits page when user selects 'yes' and no prior benefits" which {
+      "Update the reimbursedCostsVouchersAndNonCashQuestion to false and remove reimbursed section data when user selects no, redirects to CYA if prior benefits" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
+
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(fullBenefitsModel))), userRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "redirects to the check your benefits page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+      }
+
+      "updates the reimbursedCostsVouchersAndNonCashQuestion to false and wipes the other values" in {
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.sectionQuestion) shouldBe Some(false)
+        cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.expensesQuestion) shouldBe None
+        cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.expenses) shouldBe None
+        cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.taxableExpensesQuestion) shouldBe None
+        cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.taxableExpenses) shouldBe None
+        cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.vouchersAndCreditCardsQuestion) shouldBe None
+        cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.vouchersAndCreditCards) shouldBe None
+        cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.nonCashQuestion) shouldBe None
+        cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.nonCash) shouldBe None
+        cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.otherItemsQuestion) shouldBe None
+        cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.otherItems) shouldBe None
+      }
+
+    }
+
+      "Create a new ReimbursedCostsVouchersAndNonCashModel and redirect to non taxable costs page when user selects 'yes' and no prior benefits" which {
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
         lazy val result: WSResponse = {
@@ -368,9 +402,9 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
           urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        "redirects to the check your benefits page" in {
+        "redirects to the non taxable costs page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(NonTaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
         }
 
         "creates the ReimbursedCostsVouchersAndNonCashModel with reimbursedCostsVouchersAndNonCashQuestion set to true" in {
