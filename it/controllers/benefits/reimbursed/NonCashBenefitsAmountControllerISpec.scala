@@ -34,6 +34,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
   val taxYearEOY: Int = 2021
   val employmentId: String = "001"
+  val newAmount: BigDecimal = 19.99
 
   def nonCashBenefitsAmountPageUrl(taxYear: Int): String = s"$appUrl/$taxYear/benefits/non-cash-benefits-amount?employmentId=$employmentId"
 
@@ -71,9 +72,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
   trait CommonExpectedResults {
     val expectedCaption: String
-
     def ifItWasNotText(amount: BigDecimal): String
-
     val expectedHintText: String
     val currencyPrefix: String
     val continueButtonText: String
@@ -90,9 +89,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-
     def ifItWasNotText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
-
     val expectedHintText = "For example, £600 or £193.54"
     val currencyPrefix = "£"
     val continueButtonText = "Continue"
@@ -102,9 +99,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-
     def ifItWasNotText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
-
     val expectedHintText = "For example, £600 or £193.54"
     val currencyPrefix = "£"
     val continueButtonText = "Continue"
@@ -452,9 +447,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
       }
     }
 
-    val newAmount: BigDecimal = 19.99
-
-    "update cya when a user submits a valid form and has prior benefits" which {
+    "update cya when a user submits a valid form and has prior benefits, redirects to CYA page" which {
 
       val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
 
@@ -462,10 +455,8 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
-          Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
-        urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), follow = false, body = form,
-          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(fullBenefitsModel))), userRequest)
+        urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"redirect to check your benefits page" in {
@@ -482,7 +473,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
     }
 
-    "update cya when a user submits a valid form and doesn't have prior benefits" which {
+    "update cya when a user submits a valid form and doesn't have prior benefits, redirects to the other benefits question page" which {
 
       val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
 
@@ -495,9 +486,9 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      s"redirect to other items yes/no question page" in {
+      s"redirect to other benefits question page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(OtherBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
       s"update expenses in reimbursedCostsVouchersAndNonCash model" in {

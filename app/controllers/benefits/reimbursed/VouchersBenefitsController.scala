@@ -17,8 +17,7 @@
 package controllers.benefits.reimbursed
 
 import config.{AppConfig, ErrorHandler}
-import controllers.benefits.reimbursed.routes.VouchersBenefitsAmountController
-import controllers.employment.routes._
+import controllers.benefits.reimbursed.routes.{VouchersBenefitsAmountController, NonCashBenefitsController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
@@ -99,8 +98,7 @@ class VouchersBenefitsController @Inject()(implicit val cc: MessagesControllerCo
                   if (yesNo) {
                     VouchersBenefitsAmountController.show(taxYear, employmentId)
                   } else {
-                    //TODO next section
-                    CheckYourBenefitsController.show(taxYear, employmentId)
+                    NonCashBenefitsController.show(taxYear, employmentId)
                   }
                 }
 

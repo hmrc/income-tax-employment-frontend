@@ -26,7 +26,7 @@ import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
+import services.{EmploymentSessionService, RedirectService}
 import services.RedirectService.{redirectBasedOnCurrentAnswers, vouchersAndCreditCardsAmountRedirects}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
@@ -81,11 +81,9 @@ class VouchersBenefitsAmountController @Inject()(implicit val cc: MessagesContro
 
               employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission,
                 cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                if (cya.isPriorSubmission) {
-                  Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                } else {
-                  Redirect(NonCashBenefitsController.show(taxYear, employmentId))
-                }
+                val nextPage = NonCashBenefitsController.show(taxYear, employmentId)
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
           })
         }

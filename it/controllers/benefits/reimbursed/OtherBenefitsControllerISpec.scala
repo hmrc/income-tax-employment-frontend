@@ -18,6 +18,7 @@ package controllers.benefits.reimbursed
 
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.benefits.reimbursed.routes.OtherBenefitsAmountController
+import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsController
 import forms.YesNoForm
 import models.User
 import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
@@ -134,7 +135,7 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
       import user.commonExpectedResults._
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "render 'other benefits' page with the correct content with no pre-filling" which {
+        "render the 'other benefits' page with the correct content with no pre-filling" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
@@ -161,7 +162,7 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
           welshToggleCheck(user.isWelsh)
         }
 
-        "render 'other benefits' page with the correct content with yes pre-filled" which {
+        "render the 'other benefits' page with the correct content with yes pre-filled" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
@@ -187,7 +188,7 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
           welshToggleCheck(user.isWelsh)
         }
 
-        "render 'other benefits' page with the correct content with no pre-filled" which {
+        "render the 'other benefits' page with the correct content with no pre-filled" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
             userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
@@ -216,7 +217,6 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
       }
     }
 
-    "redirect to another page when the request is valid but they aren't allowed to view the page and" should {
       "redirect the user to the check employment benefits page when the benefitsReceived question is false" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
@@ -290,7 +290,6 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
           cyaModel.employment.employmentBenefits shouldBe None
         }
       }
-    }
   }
 
   ".submit" should {
@@ -336,13 +335,12 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
       }
     }
 
-    "redirect to another page when a valid request is made and then" should {
       "Update the other items question to no, and other benefits to none when the user chooses no, redirects to CYA if prior submission" which {
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
+          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(fullBenefitsModel))), userRequest)
           authoriseAgentOrIndividual(isAgent = false)
           urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -360,7 +358,7 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
       }
 
       "Update the other items question to no, and other benefits to none when the user chooses no," +
-        "redirects to next question if not prior submission" which {
+        "redirects to assets section if not prior submission" which {
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
         lazy val result: WSResponse = {
           dropEmploymentDB()
@@ -369,10 +367,9 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
           urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        //          TODO: This will need updating to the next page in the flow when the navigation is hooked up
-        "redirects to the check your details page" in {
+        "redirects to the the first assets section page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(AssetsOrAssetTransfersBenefitsController.show(taxYearEOY, employmentId).url)
         }
 
         "updates other items question to other benefits to none" in {
@@ -463,6 +460,5 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
           result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
         }
       }
-    }
   }
 }
