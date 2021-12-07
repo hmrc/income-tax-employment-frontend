@@ -16,9 +16,9 @@
 
 package controllers.employment
 
+import builders.models.UserBuilder.aUserRequest
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.employment.EmployerNameForm
-import models.User
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -29,7 +29,7 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear-1
+  val taxYearEOY: Int = taxYear - 1
 
   val employerName: String = "HMRC"
   val updatedEmployerName: String = "Microsoft"
@@ -37,8 +37,6 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
   val amountInputName = "name"
 
   val charLimit: String = "ukHzoBYHkKGGk2V5iuYgS137gN7EB7LRw3uD3vujYg00ZtHwo3s0kyOOCEoAK9vuPiP374QKOe9o"
-
-  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
@@ -179,7 +177,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
             urlGet(employerNamePageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -252,7 +250,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           "redirects to the next question page (PAYE reference)" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=001")
-            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
             cyaModel.employment.employmentDetails.employerName shouldBe employerName
           }
 
@@ -265,14 +263,14 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, hmrc = false)), userRequest)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, hmrc = false)), aUserRequest)
             urlPost(employerNamePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "redirects to the next question page (PAYE reference)" in {
             result.status shouldBe SEE_OTHER
             result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=001")
-            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
             cyaModel.employment.employmentDetails.employerName shouldBe employerName
           }
 
@@ -284,14 +282,14 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
             urlPost(employerNamePageUrl(taxYearEOY), body = form, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "redirects to employment details CYA page" in {
             result.status shouldBe SEE_OTHER
             result.header(HeaderNames.LOCATION) shouldBe Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId).url)
-            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
             cyaModel.employment.employmentDetails.employerName shouldBe updatedEmployerName
 
           }

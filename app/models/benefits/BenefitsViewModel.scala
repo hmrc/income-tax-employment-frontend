@@ -19,18 +19,17 @@ package models.benefits
 import play.api.libs.json.{Json, OFormat}
 import utils.EncryptedValue
 
-case class BenefitsViewModel(
-                              carVanFuelModel: Option[CarVanFuelModel] = None,
-                              accommodationRelocationModel: Option[AccommodationRelocationModel] = None,
-                              travelEntertainmentModel: Option[TravelEntertainmentModel] = None,
-                              utilitiesAndServicesModel: Option[UtilitiesAndServicesModel] = None,
-                              medicalChildcareEducationModel: Option[MedicalChildcareEducationModel] = None,
-                              incomeTaxAndCostsModel: Option[IncomeTaxAndCostsModel] = None,
-                              reimbursedCostsVouchersAndNonCashModel: Option[ReimbursedCostsVouchersAndNonCashModel] = None,
-                              assetsModel: Option[AssetsModel] = None,
-                              submittedOn: Option[String] = None,
-                              isUsingCustomerData: Boolean,
-                              isBenefitsReceived: Boolean = false
+case class BenefitsViewModel(carVanFuelModel: Option[CarVanFuelModel] = None,
+                             accommodationRelocationModel: Option[AccommodationRelocationModel] = None,
+                             travelEntertainmentModel: Option[TravelEntertainmentModel] = None,
+                             utilitiesAndServicesModel: Option[UtilitiesAndServicesModel] = None,
+                             medicalChildcareEducationModel: Option[MedicalChildcareEducationModel] = None,
+                             incomeTaxAndCostsModel: Option[IncomeTaxAndCostsModel] = None,
+                             reimbursedCostsVouchersAndNonCashModel: Option[ReimbursedCostsVouchersAndNonCashModel] = None,
+                             assetsModel: Option[AssetsModel] = None,
+                             submittedOn: Option[String] = None,
+                             isUsingCustomerData: Boolean,
+                             isBenefitsReceived: Boolean = false
                             ) {
 
   val vehicleDetailsPopulated: Boolean =

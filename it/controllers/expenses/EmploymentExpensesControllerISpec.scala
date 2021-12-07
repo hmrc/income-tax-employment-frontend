@@ -16,10 +16,13 @@
 
 package controllers.expenses
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
+import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import controllers.expenses.routes.{CheckEmploymentExpensesController, ExpensesInterruptPageController}
 import forms.YesNoForm
-import models.User
-import models.expenses.Expenses
+import models.expenses.{Expenses, ExpensesViewModel}
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -30,9 +33,7 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear - 1
-
-  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+  private val taxYearEOY: Int = taxYear - 1
 
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
     ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
@@ -42,7 +43,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
   private def employmentExpensesQuestionPageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/claim-employment-expenses"
 
-  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/claim-employment-expenses"
+  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/claim-employment-expenses"
   private val expensesLink = "https://www.gov.uk/tax-relief-for-employees"
 
   object Selectors {
@@ -157,7 +158,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              emptyExpensesCYAModel), userRequest)
+              ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = false))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(employmentExpensesQuestionPageUrl(taxYearEOY), user.isWelsh, follow = false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -193,12 +194,10 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
           lazy val result: WSResponse = {
             dropExpensesDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYear - 1)
-            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-              fullExpensesCYAModel), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
+            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(employmentExpensesQuestionPageUrl(taxYearEOY), welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(employmentExpensesQuestionPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -231,9 +230,9 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
           lazy val result: WSResponse = {
             dropExpensesDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-              fullExpensesCYAModel.copy(expenses = fullExpensesCYAModel.expenses.copy(claimingEmploymentExpenses = false))), userRequest)
+              anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(claimingEmploymentExpenses = false))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(employmentExpensesQuestionPageUrl(taxYearEOY), welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -277,9 +276,8 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
 
-          userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
-          urlGet(employmentExpensesQuestionPageUrl(taxYear), welsh = user.isWelsh, follow = false,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          userDataStub(anIncomeTaxUserData, nino, taxYear)
+          urlGet(employmentExpensesQuestionPageUrl(taxYear), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -304,9 +302,8 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
             lazy val result: WSResponse = {
               dropExpensesDB()
-              userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
-              insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-                fullExpensesCYAModel), userRequest)
+              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+              insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(employmentExpensesQuestionPageUrl(taxYearEOY), body = form, welsh = user.isWelsh, follow = false,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -354,8 +351,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
         lazy val result: WSResponse = {
           dropExpensesDB()
-          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-            fullExpensesCYAModel), userRequest)
+          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(employmentExpensesQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -364,7 +360,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
-          lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
+          lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe false
           cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe None
@@ -390,7 +386,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           dropExpensesDB()
           authoriseAgentOrIndividual(user.isAgent)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-            emptyExpensesCYAModel), userRequest)
+            ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = false))), aUserRequest)
           urlPost(employmentExpensesQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -399,7 +395,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(ExpensesInterruptPageController.show(taxYearEOY).url)
 
-          lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
+          lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
           cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe None
           cyaModel.expensesCya.expenses.flatRateJobExpensesQuestion shouldBe None
@@ -420,7 +416,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
         implicit lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
-          userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
+          userDataStub(anIncomeTaxUserData, nino, taxYear)
           urlPost(employmentExpensesQuestionPageUrl(taxYear), body = "", user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }

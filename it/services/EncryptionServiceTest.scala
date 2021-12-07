@@ -16,6 +16,7 @@
 
 package services
 
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import models.mongo.EncryptedEmploymentUserData
 import utils.IntegrationTest
 
@@ -24,10 +25,10 @@ class EncryptionServiceTest extends IntegrationTest {
   private val underTest: EncryptionService = app.injector.instanceOf[EncryptionService]
 
   "encryptUserData" should {
-    val data = employmentUserData.copy()
+    val data = anEmploymentUserData
 
     "encrypt relevant employment user data" in {
-      val result = underTest.encryptUserData(employmentUserData)
+      val result = underTest.encryptUserData(anEmploymentUserData)
 
       result shouldBe EncryptedEmploymentUserData(
         sessionId = data.sessionId,

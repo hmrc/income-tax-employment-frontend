@@ -16,10 +16,8 @@
 
 package controllers.employment
 
-import java.time.LocalDate
-
+import builders.models.UserBuilder.aUserRequest
 import forms.employment.EmploymentDateForm
-import models.User
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -28,10 +26,12 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
+import java.time.LocalDate
+
 //scalastyle:off
 class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear-1
+  val taxYearEOY: Int = taxYear - 1
 
   val employerName: String = "HMRC"
   val employmentLeaveDate: String = "2021-01-01"
@@ -41,15 +41,13 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
   val monthInputName = "amount-month"
   val yearInputName = "amount-year"
 
-  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
-
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
   def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName,
     employerRef = Some("12345678"),
     payrollId = Some("12345"),
-    startDate= Some("2021-01-01"),
+    startDate = Some("2021-01-01"),
     cessationDateQuestion = Some(false),
     currentDataIsHmrcHeld = hmrc))
 
@@ -108,7 +106,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
     val invalidDateError = "The date you left your employment must be a real date"
     val tooRecentDateError = s"The date you left your employment must be before 6 April $taxYearEOY"
     val futureDateError = "The date you left your employment must be in the past"
-    val tooLongAgoDateError = s"The date you left your employment must be after 5 April ${taxYearEOY-1}"
+    val tooLongAgoDateError = s"The date you left your employment must be after 5 April ${taxYearEOY - 1}"
     val beforeStartDateError = s"The date you left your employment cannot be before 1 January 2021"
   }
 
@@ -126,7 +124,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
     val invalidDateError = "The date you left your employment must be a real date"
     val tooRecentDateError = s"The date you left your employment must be before 6 April $taxYearEOY"
     val futureDateError = "The date you left your employment must be in the past"
-    val tooLongAgoDateError = s"The date you left your employment must be after 5 April ${taxYearEOY-1}"
+    val tooLongAgoDateError = s"The date you left your employment must be after 5 April ${taxYearEOY - 1}"
     val beforeStartDateError = s"The date you left your employment cannot be before 1 January 2021"
   }
 
@@ -144,7 +142,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
     val invalidDateError = "The date your client left their employment must be a real date"
     val tooRecentDateError = s"The date your client left their employment must be before 6 April $taxYearEOY"
     val futureDateError = "The date your client left their employment must be in the past"
-    val tooLongAgoDateError = s"The date your client left their employment must be after 5 April ${taxYearEOY-1}"
+    val tooLongAgoDateError = s"The date your client left their employment must be after 5 April ${taxYearEOY - 1}"
     val beforeStartDateError = s"The date your client left their employment cannot be before 1 January 2021"
   }
 
@@ -162,7 +160,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
     val invalidDateError = "The date your client left their employment must be a real date"
     val tooRecentDateError = s"The date your client left their employment must be before 6 April $taxYearEOY"
     val futureDateError = "The date your client left their employment must be in the past"
-    val tooLongAgoDateError = s"The date your client left their employment must be after 5 April ${taxYearEOY-1}"
+    val tooLongAgoDateError = s"The date your client left their employment must be after 5 April ${taxYearEOY - 1}"
     val beforeStartDateError = s"The date your client left their employment cannot be before 1 January 2021"
   }
 
@@ -198,7 +196,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
         "render the 'leave date' page with the correct content" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(employerEndDatePageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -231,7 +229,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cya.copy(employmentDetails = cya.employmentDetails.copy(cessationDate=Some(employmentLeaveDate),cessationDateQuestion = Some(false)))), userRequest)
+            insertCyaData(employmentUserData(isPrior = true, cya.copy(employmentDetails = cya.employmentDetails.copy(cessationDate = Some(employmentLeaveDate), cessationDateQuestion = Some(false)))), aUserRequest)
             urlGet(employerEndDatePageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -264,12 +262,10 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = false, cya.copy(employmentDetails = cya.employmentDetails.copy(cessationDateQuestion = None))), userRequest)
+        insertCyaData(employmentUserData(isPrior = false, cya.copy(employmentDetails = cya.employmentDetails.copy(cessationDateQuestion = None))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(employerEndDatePageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
-
-      implicit def document: () => Document = () => Jsoup.parse(result.body)
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
@@ -282,12 +278,10 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = true, cya.copy(employmentDetails = cya.employmentDetails.copy(cessationDateQuestion = Some(true)))), userRequest)
+        insertCyaData(employmentUserData(isPrior = true, cya.copy(employmentDetails = cya.employmentDetails.copy(cessationDateQuestion = Some(true)))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(employerEndDatePageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
-
-      implicit def document: () => Document = () => Jsoup.parse(result.body)
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
@@ -305,25 +299,21 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
       }
-
     }
   }
 
-
   ".submit" should {
-
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
         s"return a BAD_REQUEST($BAD_REQUEST) status" when {
-
           "the day is empty" which {
             lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> "2020", EmploymentDateForm.month -> "01",
               EmploymentDateForm.day -> "")
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(employerEndDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -358,7 +348,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(employerEndDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -393,7 +383,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(employerEndDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -428,7 +418,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(employerEndDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -463,7 +453,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(employerEndDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -498,7 +488,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(employerEndDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -533,7 +523,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(employerEndDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -568,7 +558,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(employerEndDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -603,7 +593,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(employerEndDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -638,7 +628,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(employerEndDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -673,7 +663,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(employerEndDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -708,7 +698,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(employerEndDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -738,12 +728,12 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           "the date is a too long ago i.e. before 6thApril 2020" which {
-            lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> (taxYearEOY-1).toString, EmploymentDateForm.month -> "04",
+            lazy val form: Map[String, String] = Map(EmploymentDateForm.year -> (taxYearEOY - 1).toString, EmploymentDateForm.month -> "04",
               EmploymentDateForm.day -> "05")
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(employerEndDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -763,7 +753,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "05")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "04")
-            inputFieldValueCheck(yearInputName, Selectors.yearSelector, (taxYearEOY-1).toString)
+            inputFieldValueCheck(yearInputName, Selectors.yearSelector, (taxYearEOY - 1).toString)
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
@@ -781,7 +771,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(employerEndDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -811,13 +801,13 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
           }
           "the date is before the start date" which {
             lazy val form: Map[String, String] = Map(
-              EmploymentDateForm.year -> (taxYearEOY-1).toString,
+              EmploymentDateForm.year -> (taxYearEOY - 1).toString,
               EmploymentDateForm.month -> "12",
               EmploymentDateForm.day -> "31")
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(employerEndDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -837,7 +827,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "31")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "12")
-            inputFieldValueCheck(yearInputName, Selectors.yearSelector, (taxYearEOY-1).toString)
+            inputFieldValueCheck(yearInputName, Selectors.yearSelector, (taxYearEOY - 1).toString)
             buttonCheck(expectedButtonText, continueButtonSelector)
             formPostLinkCheck(continueLink, continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
@@ -867,12 +857,10 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = true, cya.copy(employmentDetails = cya.employmentDetails.copy(cessationDateQuestion = None))), userRequest)
+        insertCyaData(employmentUserData(isPrior = true, cya.copy(employmentDetails = cya.employmentDetails.copy(cessationDateQuestion = None))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(employerEndDatePageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
-
-      implicit def document: () => Document = () => Jsoup.parse(result.body)
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
@@ -885,12 +873,10 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = true, cya.copy(employmentDetails = cya.employmentDetails.copy(cessationDateQuestion = Some(true)))), userRequest)
+        insertCyaData(employmentUserData(isPrior = true, cya.copy(employmentDetails = cya.employmentDetails.copy(cessationDateQuestion = Some(true)))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(employerEndDatePageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
-
-      implicit def document: () => Document = () => Jsoup.parse(result.body)
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
@@ -905,7 +891,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), userRequest)
+        insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(employerEndDatePageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -913,7 +899,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-details?employmentId=$employmentId")
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentDetails.cessationDate shouldBe Some(employmentLeaveDate)
       }
     }

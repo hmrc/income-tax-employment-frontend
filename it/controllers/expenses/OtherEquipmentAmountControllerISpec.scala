@@ -16,9 +16,15 @@
 
 package controllers.expenses
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
+import builders.models.expenses.ExpensesBuilder.anExpenses
+import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
+import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import controllers.expenses.routes._
 import forms.AmountForm
-import models.User
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -29,21 +35,18 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear - 1
-  val poundPrefixText = "£"
-  val newAmount: BigDecimal = 250
-  val maxLimit: String = "100000000000"
-  val amountField = "#amount"
-  val amountFieldName = "amount"
-
-  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+  private val taxYearEOY: Int = taxYear - 1
+  private val poundPrefixText = "£"
+  private val newAmount: BigDecimal = 250
+  private val maxLimit: String = "100000000000"
+  private val amountField = "#amount"
+  private val amountFieldName = "amount"
+  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/amount-for-other-equipment"
 
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
-    ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
+    anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
 
   private def employmentExpensesAmountPageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/amount-for-other-equipment"
-
-  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/amount-for-other-equipment"
 
   object Selectors {
     val formSelector = "#main-content > div > div > form"
@@ -77,7 +80,9 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedTitle = "How much do you want to claim for buying other equipment?"
     val expectedHeading = "How much do you want to claim for buying other equipment?"
+
     def expectedPreAmountParagraph(amount: BigDecimal): String = s"You told us you want to claim £$amount for buying other equipment. Tell us if this has changed."
+
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount you want to claim for buying other equipment"
     val expectedInvalidFormatErrorMessage = "Enter the amount you want to claim for buying other equipment in the correct format"
@@ -87,7 +92,9 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "How much do you want to claim for buying other equipment?"
     val expectedHeading = "How much do you want to claim for buying other equipment?"
+
     def expectedPreAmountParagraph(amount: BigDecimal): String = s"You told us you want to claim £$amount for buying other equipment. Tell us if this has changed."
+
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount you want to claim for buying other equipment"
     val expectedInvalidFormatErrorMessage = "Enter the amount you want to claim for buying other equipment in the correct format"
@@ -97,7 +104,9 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedTitle = "How much do you want to claim for buying other equipment for your client?"
     val expectedHeading = "How much do you want to claim for buying other equipment for your client?"
+
     def expectedPreAmountParagraph(amount: BigDecimal): String = s"You told us you want to claim £$amount for buying other equipment for your client. Tell us if this has changed."
+
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount you want to claim for your client buying other equipment"
     val expectedInvalidFormatErrorMessage = "Enter the amount you want to claim for your client buying other equipment in the correct format"
@@ -107,7 +116,9 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "How much do you want to claim for buying other equipment for your client?"
     val expectedHeading = "How much do you want to claim for buying other equipment for your client?"
+
     def expectedPreAmountParagraph(amount: BigDecimal): String = s"You told us you want to claim £$amount for buying other equipment for your client. Tell us if this has changed."
+
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedNoEntryErrorMessage = "Enter the amount you want to claim for your client buying other equipment"
     val expectedInvalidFormatErrorMessage = "Enter the amount you want to claim for your client buying other equipment in the correct format"
@@ -136,21 +147,19 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
   ".show" should {
 
     userScenarios.foreach { user =>
-
       import Selectors._
       import user.commonExpectedResults._
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "render 'How much do you want to claim for buying other equipment?' page with the correct content and" +
           " no pre-filled amount when no user data" which {
-
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses.copy(otherAndCapitalAllowances = None))))), nino, taxYearEOY)
-            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-              fullExpensesCYAModel.copy(expenses = fullExpensesCYAModel.expenses.copy(otherAndCapitalAllowances = None))), userRequest)
+            val employmentData = anAllEmploymentData.copy(hmrcExpenses = Some(anEmploymentExpenses.copy(expenses = Some(anExpenses.copy(otherAndCapitalAllowances = None)))))
+            userDataStub(anIncomeTaxUserData.copy(Some(employmentData)), nino, taxYearEOY)
+            val expensesCYAModel = anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(otherAndCapitalAllowances = None))
+            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, expensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(employmentExpensesAmountPageUrl(taxYearEOY), user.isWelsh, follow = false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -175,16 +184,14 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
         }
 
         "render 'How much do you want to claim for buying other equipment?' page with  pre-filled amount if it has changed" which {
-
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              fullExpensesCYAModel.copy(expenses = fullExpensesCYAModel.expenses.copy(otherAndCapitalAllowances = Some(newAmount)))), userRequest)
+              anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(otherAndCapitalAllowances = Some(newAmount)))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(employmentExpensesAmountPageUrl(taxYearEOY), user.isWelsh, follow = false,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(employmentExpensesAmountPageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -206,16 +213,13 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
         }
 
         "render 'How much do you want to claim for buying other equipment?' page with with no pre-filled amount if the amount value has not changed" which {
-
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              fullExpensesCYAModel), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(employmentExpensesAmountPageUrl(taxYearEOY), user.isWelsh, follow = false,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(employmentExpensesAmountPageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -245,9 +249,8 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         lazy val result: WSResponse = {
           dropExpensesDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYear)
-          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-            fullExpensesCYAModel), userRequest)
+          userDataStub(anIncomeTaxUserData, nino, taxYear)
+          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
           urlGet(employmentExpensesAmountPageUrl(taxYear), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
@@ -276,12 +279,12 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
       "redirect to the check your expenses page when there is a otherAndCapitalAllowances amount but the otherAndCapitalAllowancesQuestion is false" when {
         implicit lazy val result: WSResponse = {
           dropExpensesDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
-          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-            fullExpensesCYAModel.copy(expenses = fullExpensesCYAModel.expenses.copy(otherAndCapitalAllowancesQuestion = Some(false)))), userRequest)
           authoriseAgentOrIndividual(user.isAgent)
-          urlGet(employmentExpensesAmountPageUrl(taxYearEOY), user.isWelsh, follow = false,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
+            anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(otherAndCapitalAllowancesQuestion = Some(false)))), aUserRequest)
+          authoriseAgentOrIndividual(user.isAgent)
+          urlGet(employmentExpensesAmountPageUrl(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER status" in {
@@ -308,9 +311,8 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           lazy val result: WSResponse = {
             dropExpensesDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYear)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              fullExpensesCYAModel), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYear)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(employmentExpensesAmountPageUrl(taxYearEOY), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
 
@@ -337,14 +339,11 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
         }
 
         "return an error when no otherAndCapitalAllowances amount is submitted" which {
-
           lazy val form: Map[String, String] = Map(AmountForm.amount -> "")
-
           lazy val result: WSResponse = {
             dropExpensesDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYear)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              fullExpensesCYAModel), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYear)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(employmentExpensesAmountPageUrl(taxYearEOY), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -366,18 +365,14 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Some(amountFieldName))
           errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, amountField)
           welshToggleCheck(user.isWelsh)
-
         }
 
         "return an error when no otherAndCapitalAllowances amount larger than maximum is submitted" which {
-
           lazy val form: Map[String, String] = Map(AmountForm.amount -> maxLimit)
-
           lazy val result: WSResponse = {
             dropExpensesDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYear)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              fullExpensesCYAModel), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYear)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(employmentExpensesAmountPageUrl(taxYearEOY), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -404,27 +399,22 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
     }
 
     "redirect to another page when valid request is made and then" should {
-
       val user = UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN))
 
       "redirect to next page and update otherAndCapitalAllowances to the new amount when not in year and not a prior submission" which {
-
         lazy val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
-
         lazy val result: WSResponse = {
           dropExpensesDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
-          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-            fullExpensesCYAModel), userRequest)
+          userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
-          urlPost(employmentExpensesAmountPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(employmentExpensesAmountPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
-          lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
+          lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
           cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(true)
@@ -446,9 +436,9 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         implicit lazy val result: WSResponse = {
           dropExpensesDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
+          userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-            fullExpensesCYAModel.copy(expenses = fullExpensesCYAModel.expenses.copy(otherAndCapitalAllowancesQuestion = None))), userRequest)
+            anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(otherAndCapitalAllowancesQuestion = None))), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(employmentExpensesAmountPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -461,14 +451,11 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
       }
 
       "redirect to 'check your expenses' page when a prior submission and update otherAndCapitalAllowances to the new amount" which {
-
         lazy val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
-
         lazy val result: WSResponse = {
           dropExpensesDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
-          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-            fullExpensesCYAModel), userRequest)
+          userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(employmentExpensesAmountPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -478,7 +465,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           result.status shouldBe SEE_OTHER
 
           result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
-          lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
+          lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
           cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(true)
@@ -493,20 +480,16 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           cyaModel.expensesCya.expenses.vehicleExpenses shouldBe Some(700.00)
           cyaModel.expensesCya.expenses.mileageAllowanceRelief shouldBe Some(800.00)
         }
-
       }
 
       "Redirect user to the tax overview page when in year" which {
         lazy val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
-
         lazy val result: WSResponse = {
           dropExpensesDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYear)
-          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-            fullExpensesCYAModel), userRequest)
+          userDataStub(anIncomeTaxUserData, nino, taxYear)
+          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
-          urlPost(employmentExpensesAmountPageUrl(taxYear), body = form, follow = false, welsh = user.isWelsh,
-            headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(employmentExpensesAmountPageUrl(taxYear), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         "has an SEE_OTHER(303) status" in {
@@ -532,9 +515,5 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
         }
       }
     }
-
-
   }
-
-
 }

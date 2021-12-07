@@ -16,37 +16,40 @@
 
 package controllers.benefits.accommodation
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.benefits.AccommodationRelocationModelBuilder.anAccommodationRelocationModel
+import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import controllers.benefits.accommodation.routes.{AccommodationRelocationBenefitsController, LivingAccommodationBenefitsController, QualifyingRelocationBenefitsController}
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.AmountForm
-import models.User
-import models.benefits.{AccommodationRelocationModel, BenefitsViewModel}
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.benefits.AccommodationRelocationModel
+import models.mongo.EmploymentCYAModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import play.api.mvc.AnyContentAsEmpty
-import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
-class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper  {
+class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val employmentId = "001"
-  val taxYearEOY: Int = taxYear - 1
-  val urlEOY = s"$appUrl/$taxYearEOY/benefits/living-accommodation-amount?employmentId=$employmentId"
-  val urlInYear = s"$appUrl/$taxYear/benefits/living-accommodation-amount?employmentId=$employmentId"
-
-  val continueButtonLink: String = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/living-accommodation-amount?employmentId=$employmentId"
-
-  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  private val userRequest: User[_]=  User(mtditid, None, nino, sessionId, affinityGroup)
-
+  private val poundPrefixText = "£"
+  private val amountInputName = "amount"
+  private val employmentId = "employmentId"
+  private val taxYearEOY = taxYear - 1
+  private val urlEOY = s"$appUrl/$taxYearEOY/benefits/living-accommodation-amount?employmentId=$employmentId"
+  private val urlInYear = s"$appUrl/$taxYear/benefits/living-accommodation-amount?employmentId=$employmentId"
+  private val continueButtonLink: String = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/living-accommodation-amount?employmentId=$employmentId"
+  private val livingAccommodationBenefitAmount: Option[BigDecimal] = Some(123.45)
 
   object Selectors {
     val headingSelector = "#main-content > div > div > header > h1"
+
     def paragraphTextSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
+
     val hintTextSelector = "#amount-hint"
     val poundPrefixSelector = ".govuk-input__prefix"
     val inputSelector = "#amount"
@@ -55,9 +58,6 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     val expectedErrorHref = "#amount"
     val inputAmountField = "#amount"
   }
-
-  val poundPrefixText = "£"
-  val amountInputName = "amount"
 
   trait SpecificExpectedResults {
     val expectedH1: String
@@ -130,43 +130,30 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     val maxAmountErrorText: String = "Your client’s living accommodation benefit amount must be less than £100,000,000,000"
   }
 
-  val livingAccommodationBenefitAmount: Option[BigDecimal] = Some(123.45)
+  private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel) =
+    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employment = employmentCyaModel)
 
-  private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
-
-  def cyaModel(employerName: String, hmrc: Boolean, benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
-    EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc), benefits)
-
-  def benefits(accommodationModel: AccommodationRelocationModel): BenefitsViewModel =
-    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), isUsingCustomerData = true,
-      isBenefitsReceived = true, accommodationRelocationModel = Some(accommodationModel))
-
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   ".show" when {
-
     userScenarios.foreach { user =>
       import Selectors._
       import user.commonExpectedResults._
       import user.specificExpectedResults._
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "should render How much was your total living accommodation benefit? page with no value when theres no cya data" which {
-
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
-              Some(benefits(fullAccommodationRelocationModel.copy(accommodation = None))))), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None)))
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
             urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -190,13 +177,12 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
         }
 
         "should render How much was your total living accommodation benefit? page with prefilling when there is cya data" which {
-
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
-              Some(benefits(fullAccommodationRelocationModel.copy(accommodation = livingAccommodationBenefitAmount))))), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = livingAccommodationBenefitAmount)))
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
             urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -221,13 +207,12 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
         }
 
         "should render How much was your How much was your total living accommodation benefit? page with prefilling when there is cya data and no prior benefits" which {
-
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("name", hmrc = true,
-              Some(benefits(fullAccommodationRelocationModel.copy(accommodation = livingAccommodationBenefitAmount))))), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = livingAccommodationBenefitAmount)))
+            insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
             urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -250,15 +235,13 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
-
       }
     }
 
     "redirect to the overview page when the tax year isn't valid for EOY" which {
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true)), userRequest)
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlInYear, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
       }
@@ -270,12 +253,11 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     }
 
     "redirect to the accommodation or relocation page when accommodationRelocationQuestion is None" which {
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(emptyAccommodationRelocationModel.copy(sectionQuestion = None))))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = None)))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlEOY, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -287,12 +269,11 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     }
 
     "redirect to the check your benefits page when accommodationRelocationQuestion is Some(false) and prior benefits exist" which {
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(emptyAccommodationRelocationModel)))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = Some(false))))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlEOY, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -304,12 +285,11 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     }
 
     "redirect to the living accommodation page when accommodationQuestion is None and prior benefits exist" which {
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(fullAccommodationRelocationModel.copy(accommodation = None, accommodationQuestion = None))))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None, accommodationQuestion = None)))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlEOY, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -321,12 +301,11 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     }
 
     "redirect to the check your benefits page when accommodationQuestion is Some(false) and prior benefits exist" which {
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(fullAccommodationRelocationModel.copy(accommodation = None, accommodationQuestion = Some(false)))))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None, accommodationQuestion = Some(false))))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlEOY, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -338,12 +317,11 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     }
 
     "redirect to the qualifying relocation page when accommodationQuestion is Some(false) and no prior benefits exist" which {
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = false, cyaModel("employerName", hmrc = true,
-          Some(benefits(fullAccommodationRelocationModel.copy(accommodation = None, accommodationQuestion = Some(false)))))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None, accommodationQuestion = Some(false))))
+        insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlEOY, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -356,24 +334,19 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
   }
 
   ".submit" when {
-
     userScenarios.foreach { user =>
       import Selectors._
       import user.commonExpectedResults._
       import user.specificExpectedResults._
-
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "should render the How much was your Living accommodation benefit? page with an error when theres no input" which {
-
           val errorAmount = ""
-          val errorForm: Map[String, String] = Map(AmountForm.amount -> errorAmount)
-
+          val errorForm = Map(AmountForm.amount -> errorAmount)
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
-              Some(benefits(fullAccommodationRelocationModel.copy(accommodation = None))))), userRequest)
+            val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None)))
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
             urlPost(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = errorForm)
           }
 
@@ -399,15 +372,13 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
         }
 
         "should render the How much was your total living accommodation benefit? page with an error when the amount is invalid" which {
-
           val errorAmount = "abc"
           val errorForm: Map[String, String] = Map(AmountForm.amount -> errorAmount)
-
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
-              Some(benefits(fullAccommodationRelocationModel.copy(accommodation = None))))), userRequest)
+            val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None)))
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
             urlPost(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = errorForm)
           }
 
@@ -433,15 +404,13 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
         }
 
         "should render the How much was your total living accommodation benefit? page with an error when the amount is too big" which {
-
           val errorAmount = "100,000,000,000"
           val errorForm: Map[String, String] = Map(AmountForm.amount -> errorAmount)
-
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
-              Some(benefits(fullAccommodationRelocationModel.copy(accommodation = None))))), userRequest)
+            val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None)))
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
             urlPost(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = errorForm)
           }
 
@@ -467,15 +436,15 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
         }
 
         "redirect to qualifying relocation page and update the living accommodation amount when a valid form is submitted and prior benefits exist" when {
-
           val newAmount = 100
-
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true,
-              Some(benefits(fullAccommodationRelocationModel.copy(accommodation = None))))), userRequest)
-            urlPost(urlEOY, follow=false,
+            val benefitsViewModel = aBenefitsViewModel
+              .copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None)))
+              .copy(travelEntertainmentModel = None)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+            urlPost(urlEOY, follow = false,
               welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> newAmount.toString))
           }
 
@@ -486,7 +455,7 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
           }
 
           "updates the CYA model with the new value" in {
-            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
             val livingAccommodationAmount: Option[BigDecimal] = cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodation))
             livingAccommodationAmount shouldBe Some(newAmount)
           }
@@ -495,10 +464,9 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     }
 
     "redirect to the overview page when the tax year isn't valid for EOY" which {
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("name", hmrc = true)), userRequest)
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlInYear, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
       }
@@ -510,12 +478,11 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     }
 
     "redirect to the accommodation or relocation page when accommodationRelocationQuestion is None" which {
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(emptyAccommodationRelocationModel.copy(sectionQuestion = None))))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = None)))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlEOY, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -527,12 +494,11 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     }
 
     "redirect to the check your benefits page when accommodationRelocationQuestion is Some(false) and prior benefits exist" which {
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(emptyAccommodationRelocationModel)))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = Some(false))))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlEOY, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -544,12 +510,11 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     }
 
     "redirect to the living accommodation benefits page when accommodationQuestion is None and prior benefits exist" which {
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(fullAccommodationRelocationModel.copy(accommodation = None, accommodationQuestion = None))))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None, accommodationQuestion = None)))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlEOY, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -561,12 +526,11 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     }
 
     "redirect to the check your benefits page when accommodationQuestion is Some(false) and prior benefits exist" which {
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel("employerName", hmrc = true,
-          Some(benefits(fullAccommodationRelocationModel.copy(accommodation = None, accommodationQuestion = Some(false)))))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None, accommodationQuestion = Some(false))))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlEOY, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -578,12 +542,11 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
     }
 
     "redirect to the qualifying relocation page when accommodationQuestion is Some(false) and no prior benefits exist" which {
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(isPrior = false, cyaModel("employerName", hmrc = true,
-          Some(benefits(fullAccommodationRelocationModel.copy(accommodation = None, accommodationQuestion = Some(false)))))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodation = None, accommodationQuestion = Some(false))))
+        insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(urlEOY, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }

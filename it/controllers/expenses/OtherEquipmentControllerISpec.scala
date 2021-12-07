@@ -16,10 +16,13 @@
 
 package controllers.expenses
 
-import controllers.expenses.routes.OtherEquipmentAmountController
-import controllers.expenses.routes.CheckEmploymentExpensesController
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
+import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
+import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
+import controllers.expenses.routes.{CheckEmploymentExpensesController, OtherEquipmentAmountController}
 import forms.YesNoForm
-import models.User
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
@@ -32,15 +35,13 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear - 1
-
-  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+  private val taxYearEOY: Int = taxYear - 1
 
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
-    ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
+    anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
 
   def expensesViewModel(otherAndCapitalAllowancesQuestion: Option[Boolean] = None): ExpensesViewModel =
-    fullExpensesViewModel.copy(otherAndCapitalAllowancesQuestion = otherAndCapitalAllowancesQuestion, otherAndCapitalAllowances = None)
+    anExpensesViewModel.copy(otherAndCapitalAllowancesQuestion = otherAndCapitalAllowancesQuestion, otherAndCapitalAllowances = None)
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/other-equipment"
 
@@ -144,8 +145,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              emptyExpensesCYAModel.copy(expensesViewModel())), userRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(expensesViewModel())), aUserRequest)
             urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -172,8 +172,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              fullExpensesCYAModel), userRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -201,7 +200,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              emptyExpensesCYAModel.copy(expensesViewModel(Some(false)))), userRequest)
+              ExpensesCYAModel(expensesViewModel(Some(false)))), aUserRequest)
             urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -232,7 +231,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
       implicit lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
+        userDataStub(anIncomeTaxUserData, nino, taxYear)
         urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -268,8 +267,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
 
           lazy val result: WSResponse = {
             dropExpensesDB()
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              emptyExpensesCYAModel.copy(expensesViewModel())), userRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(expensesViewModel())), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(pageUrl(taxYearEOY), body = form, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -298,28 +296,27 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
       }
     }
     "redirect to Other Equipment amount page when user selects 'yes' and not a prior submission" which {
-        lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
-        lazy val result: WSResponse = {
-          dropExpensesDB()
-          authoriseAgentOrIndividual(isAgent = false)
-          userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
-          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-            emptyExpensesCYAModel.copy(expensesViewModel(Some(false)))), userRequest)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        "has a SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(OtherEquipmentAmountController.show(taxYearEOY).url)
-        }
-
-        "updates otherAndCapitalAllowancesQuestion to Some(true)" in {
-          lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
-          cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
-          cyaModel.expensesCya.expenses.otherAndCapitalAllowancesQuestion shouldBe Some(true)
-        }
+      lazy val result: WSResponse = {
+        dropExpensesDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYear)
+        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(expensesViewModel(Some(false)))), aUserRequest)
+        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
+
+      "has a SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(OtherEquipmentAmountController.show(taxYearEOY).url)
+      }
+
+      "updates otherAndCapitalAllowancesQuestion to Some(true)" in {
+        lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
+        cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
+        cyaModel.expensesCya.expenses.otherAndCapitalAllowancesQuestion shouldBe Some(true)
+      }
+    }
 
     "redirect to Check Employment Expenses page" when {
       "user selects no and it's a prior submission" which {
@@ -328,9 +325,8 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
         lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
-          userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
-          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-            fullExpensesCYAModel), userRequest)
+          userDataStub(anIncomeTaxUserData, nino, taxYear)
+          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
           urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -340,7 +336,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
         }
 
         "update otherAndCapitalAllowancesQuestion to Some(false) and wipes jobExpenses amount" in {
-          lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
+          lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
           cyaModel.expensesCya.expenses.otherAndCapitalAllowancesQuestion shouldBe Some(false)
@@ -368,7 +364,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
       implicit lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
+        userDataStub(anIncomeTaxUserData, nino, taxYear)
         urlPost(pageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 

@@ -16,13 +16,18 @@
 
 package controllers.benefits.reimbursed
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
+import builders.models.benefits.ReimbursedCostsVouchersAndNonCashModelBuilder.aReimbursedCostsVouchersAndNonCashModel
+import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsController
-import controllers.employment.routes.CheckYourBenefitsController
 import controllers.benefits.reimbursed.routes.OtherBenefitsController
+import controllers.employment.routes.CheckYourBenefitsController
 import forms.AmountForm
-import models.User
-import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.benefits.ReimbursedCostsVouchersAndNonCashModel
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -32,33 +37,18 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class NonCashBenefitsAmountControllerISpec extends IntegrationTest with EmploymentDatabaseHelper with ViewHelpers {
 
-  val taxYearEOY: Int = 2021
-  val employmentId: String = "001"
-  val newAmount: BigDecimal = 19.99
+  private val taxYearEOY: Int = 2021
+  private val employmentId: String = "001"
+  private val formPostLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/non-cash-benefits-amount?employmentId=$employmentId"
+  private val amountInModel: BigDecimal = 400
+  private val newAmount: BigDecimal = 19.99
+  private val amountInputName = "amount"
+  private val amountFieldHref = "#amount"
 
-  def nonCashBenefitsAmountPageUrl(taxYear: Int): String = s"$appUrl/$taxYear/benefits/non-cash-benefits-amount?employmentId=$employmentId"
-
-  val formPostLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/non-cash-benefits-amount?employmentId=$employmentId"
-
-  val amountInModel: BigDecimal = 400
-  val amountInputName = "amount"
-  val amountFieldHref = "#amount"
-
-  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+  private def nonCashBenefitsAmountPageUrl(taxYear: Int): String = s"$appUrl/$taxYear/benefits/non-cash-benefits-amount?employmentId=$employmentId"
 
   private def employmentUserData(hasPriorBenefits: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = true, hasPriorBenefits = hasPriorBenefits, employmentCyaModel)
-
-  def cyaModel(benefits: Option[BenefitsViewModel] = None): EmploymentCYAModel =
-    EmploymentCYAModel(EmploymentDetails(employerName = "employerName", currentDataIsHmrcHeld = true), benefits)
-
-  def benefits(reimbursedModel: Option[ReimbursedCostsVouchersAndNonCashModel]): BenefitsViewModel =
-    BenefitsViewModel(carVanFuelModel = Some(fullCarVanFuelModel), accommodationRelocationModel = Some(fullAccommodationRelocationModel),
-      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel), utilitiesAndServicesModel = Some(fullUtilitiesAndServicesModel),
-      medicalChildcareEducationModel = Some(fullMedicalChildcareEducationModel),
-      incomeTaxAndCostsModel = Some(fullIncomeTaxOrIncurredCostsModel),
-      reimbursedCostsVouchersAndNonCashModel = reimbursedModel,
-      isBenefitsReceived = true, isUsingCustomerData = true)
+    anEmploymentUserData.copy(employmentId = employmentId, isPriorSubmission = true, hasPriorBenefits = hasPriorBenefits, employment = employmentCyaModel)
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > label > header > p"
@@ -72,7 +62,9 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
   trait CommonExpectedResults {
     val expectedCaption: String
+
     def ifItWasNotText(amount: BigDecimal): String
+
     val expectedHintText: String
     val currencyPrefix: String
     val continueButtonText: String
@@ -89,7 +81,9 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+
     def ifItWasNotText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
+
     val expectedHintText = "For example, £600 or £193.54"
     val currencyPrefix = "£"
     val continueButtonText = "Continue"
@@ -99,7 +93,9 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+
     def ifItWasNotText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
+
     val expectedHintText = "For example, £600 or £193.54"
     val currencyPrefix = "£"
     val continueButtonText = "Continue"
@@ -135,13 +131,12 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
     val expectedNoEntryErrorMessage = "Enter the amount your client got for non-cash benefits"
   }
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-    )
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   ".show" should {
     userScenarios.foreach { user =>
@@ -149,18 +144,15 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
       import user.commonExpectedResults._
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "render the non-cash benefits amount page with an empty amount field" when {
           "the prior amount and cya amount are the same" which {
-
             lazy val amount: BigDecimal = 25
-
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
-              userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
-                Some(fullReimbursedCostsVouchersAndNonCashModel.copy(nonCash = Some(25.00))))))), userRequest)
+              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+              val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(nonCash = Some(25.00))))
+              insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
               urlGet(nonCashBenefitsAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -180,17 +172,15 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
             formPostLinkCheck(formPostLink, formSelector)
 
             welshToggleCheck(user.isWelsh)
-
           }
 
           "there is no prior value (nonCash is None)" which {
-
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
-              userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel(Some(benefits(
-                Some(fullReimbursedCostsVouchersAndNonCashModel.copy(nonCash = None)))))), userRequest)
+              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+              val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(nonCash = None)))
+              insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
               urlGet(nonCashBenefitsAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -210,19 +200,16 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
             formPostLinkCheck(formPostLink, formSelector)
 
             welshToggleCheck(user.isWelsh)
-
           }
         }
 
         "render the non-cash benefits amount page with a pre-filled amount field" when {
           "the cya amount and the prior data amount are different" which {
-
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
-              userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
-                Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
+              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+              insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
               urlGet(nonCashBenefitsAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -242,16 +229,14 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
             formPostLinkCheck(formPostLink, formSelector)
 
             welshToggleCheck(user.isWelsh)
-
           }
 
           "the user has cya data and no prior benefits" which {
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
-              userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel(Some(benefits(
-                Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
+              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+              insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
               urlGet(nonCashBenefitsAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -271,7 +256,6 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
             formPostLinkCheck(formPostLink, formSelector)
 
             welshToggleCheck(user.isWelsh)
-
           }
         }
       }
@@ -281,9 +265,8 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
-          Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
         urlGet(nonCashBenefitsAmountPageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -310,9 +293,9 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel(Some(benefits(
-          Some(fullReimbursedCostsVouchersAndNonCashModel.copy(nonCashQuestion = Some(false))))))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(nonCashQuestion = Some(false))))
+        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         urlGet(nonCashBenefitsAmountPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -320,16 +303,15 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(OtherBenefitsController.show(taxYearEOY, employmentId).url)
       }
-
     }
 
     "redirect to Assets section question page page when reimbursed costs, vouchers and non-cash question is false" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel(Some(benefits(
-          Some(emptyReimbursedCostsVouchersAndNonCashModel))))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(ReimbursedCostsVouchersAndNonCashModel(sectionQuestion = Some(false))))
+        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         urlGet(nonCashBenefitsAmountPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -341,22 +323,18 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
   }
 
   ".submit" should {
-
     userScenarios.foreach { user =>
       import Selectors._
       import user.commonExpectedResults._
-
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
         "return an error" when {
           "a form is submitted with an empty amount field" which {
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
-              userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
-                Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
-              urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), body = "", welsh = user.isWelsh,
-                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+              insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+              urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), body = "", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has an BAD REQUEST($BAD_REQUEST) status" in {
@@ -378,7 +356,6 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
             errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, amountFieldHref)
 
             welshToggleCheck(user.isWelsh)
-
           }
 
           "a form is submitted in the incorrect format" which {
@@ -388,11 +365,9 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
-              userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
-                Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
-              urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), body = form, welsh = user.isWelsh,
-                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+              insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+              urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -419,11 +394,9 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
-              userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
-                Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
-              urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), body = form, welsh = user.isWelsh,
-                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+              insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+              urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -441,21 +414,19 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
             errorSummaryCheck(expectedOverMaximumErrorMessage, amountFieldHref)
 
             welshToggleCheck(user.isWelsh)
-
           }
         }
       }
     }
 
     "update cya when a user submits a valid form and has prior benefits, redirects to CYA page" which {
-
       val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
-
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel(hmrcEmployment = Seq(employmentDetailsAndBenefits(fullBenefits)))), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(fullBenefitsModel))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
         urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -465,25 +436,21 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
       }
 
       s"update nonCash in reimbursedCostsVouchersAndNonCash model" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCashQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash)) shouldBe Some(newAmount)
       }
-
     }
 
     "update cya when a user submits a valid form and doesn't have prior benefits, redirects to the other benefits question page" which {
-
       val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
-
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel(Some(benefits(
-          Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
-        urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), follow = false, body = form,
-          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(otherItemsQuestion = None)))
+        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"redirect to other benefits question page" in {
@@ -492,21 +459,19 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
       }
 
       s"update expenses in reimbursedCostsVouchersAndNonCash model" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCashQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash)) shouldBe Some(newAmount)
       }
-
     }
 
     "redirect to the overview page when it's not EOY" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, cyaModel(Some(benefits(
-          Some(fullReimbursedCostsVouchersAndNonCashModel))))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
         urlPost(nonCashBenefitsAmountPageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -533,9 +498,9 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel(Some(benefits(
-          Some(fullReimbursedCostsVouchersAndNonCashModel.copy(nonCashQuestion = Some(false))))))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(nonCashQuestion = Some(false))))
+        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -543,16 +508,15 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(OtherBenefitsController.show(taxYearEOY, employmentId).url)
       }
-
     }
 
     "redirect to Assets section question page when reimbursed costs, vouchers and non-cash question is false" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = false, cyaModel(Some(benefits(
-          Some(emptyReimbursedCostsVouchersAndNonCashModel))))), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(ReimbursedCostsVouchersAndNonCashModel(sectionQuestion = Some(false))))
+        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 

@@ -16,8 +16,8 @@
 
 package controllers.employment
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import models.User
-import models.employment.AllEmploymentData
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -28,16 +28,17 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
-class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper  {
+class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   val taxYearEOY: Int = taxYear - 1
   val payrollId: String = "123456"
-  def url (taxYear:Int): String = s"$appUrl/${taxYear.toString}/payroll-id?employmentId=001"
+
+  def url(taxYear: Int): String = s"$appUrl/${taxYear.toString}/payroll-id?employmentId=001"
 
   val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/payroll-id?employmentId=001"
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  private val userRequest: User[_]=  User(mtditid, None, nino, sessionId, affinityGroup)
+  private val userRequest: User[_] = User(mtditid, None, nino, sessionId, affinityGroup)
 
   object Selectors {
     val paragraph1Selector = "#main-content > div > div > form > div > label > p:nth-child(2)"
@@ -50,6 +51,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     val continueButtonFormSelector = "#main-content > div > div > form"
     val expectedErrorHref = "#payrollId"
     val inputAmountField = "#payrollId"
+
     def bulletSelector(bulletNumber: Int): String =
       s"#main-content > div > div > form > div > label > ul > li:nth-child($bulletNumber)"
   }
@@ -106,7 +108,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     val tooLongErrorText: String = "Your payroll ID must be 38 characters or fewer"
     val paragraph1: String = "Your payroll ID must be 38 characters or fewer. It can include:"
     val paragraph2: String = "You can find this on your payslip or on your P60. It’s also known as a ‘payroll number’."
-    }
+  }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedTitle: String = "What’s your client’s payroll ID for this employment?"
@@ -141,48 +143,42 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     val paragraph2: String = "You can find this on your client’s payslip or on their P60. It’s also known as a ‘payroll number’."
   }
 
-    def cya(isPriorSubmission:Boolean=true): EmploymentUserData =
-      EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, "001", isPriorSubmission, hasPriorBenefits = isPriorSubmission,
+  def cya(isPriorSubmission: Boolean = true): EmploymentUserData =
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, "001", isPriorSubmission, hasPriorBenefits = isPriorSubmission,
       EmploymentCYAModel(
         EmploymentDetails("maggie", currentDataIsHmrcHeld = false),
         None
       )
     )
 
-  def cyaWithPayrollId(isPriorSubmission:Boolean=true): EmploymentUserData =
-    EmploymentUserData (sessionId, mtditid,nino, taxYearEOY, "001", isPriorSubmission, hasPriorBenefits = isPriorSubmission,
+  def cyaWithPayrollId(isPriorSubmission: Boolean = true): EmploymentUserData =
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, "001", isPriorSubmission, hasPriorBenefits = isPriorSubmission,
       EmploymentCYAModel(
         EmploymentDetails("maggie", payrollId = Some("123456"), currentDataIsHmrcHeld = false),
         None
       )
     )
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
-
-  val multipleEmployments: AllEmploymentData = fullEmploymentsModel(Seq(employmentDetailsAndBenefits(employmentId = "002"),
-    employmentDetailsAndBenefits()))
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   ".show" when {
-
     userScenarios.foreach { user =>
       import Selectors._
       import user.commonExpectedResults._
       import user.specificExpectedResults._
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "should render the What's your payrollId? page with the correct content when theres no payrollId in cya" which {
-
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(cya(false), userRequest)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -213,7 +209,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(cyaWithPayrollId(), userRequest)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -243,7 +239,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            urlGet(url(taxYearEOY), follow = false, welsh=user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(url(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
 
@@ -258,7 +254,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(cya(), userRequest)
-            urlGet(url(taxYear), welsh=user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(url(taxYear), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
 
@@ -290,7 +286,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(cya(), userRequest)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlPost(url(taxYearEOY), body, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -327,7 +323,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(cya(), userRequest)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlPost(url(taxYearEOY), body, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -364,7 +360,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(cya(), userRequest)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYearEOY)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlPost(url(taxYearEOY), body, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -400,7 +396,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(cya(), userRequest)
-            urlPost(url(taxYearEOY), body, follow=false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(url(taxYearEOY), body, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "status SEE_OTHER" in {

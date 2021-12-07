@@ -16,10 +16,17 @@
 
 package controllers.expenses
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
+import builders.models.expenses.ExpensesBuilder.anExpenses
+import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
+import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
+import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import controllers.expenses.routes._
 import forms.AmountForm
-import models.User
-import models.expenses.{Expenses, ExpensesViewModel}
+import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -30,32 +37,26 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear - 1
-  val newAmount = 25
-  val amountInputName = "amount"
-
-  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+  private val taxYearEOY: Int = taxYear - 1
+  private val newAmount = 25
+  private val amountInputName = "amount"
+  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/travel-amount"
 
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
-    ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
+    anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
 
-  def cyaModel(isUsingCustomerData: Boolean, expenses: Expenses): ExpensesCYAModel =
-    ExpensesCYAModel.makeModel(expenses, isUsingCustomerData, submittedOn = None)
-
-  def expensesViewModel(jobExpensesQuestion: Option[Boolean] = None): ExpensesViewModel =
+  private def expensesViewModel(jobExpensesQuestion: Option[Boolean] = None): ExpensesViewModel =
     ExpensesViewModel(isUsingCustomerData = true, claimingEmploymentExpenses = true, jobExpensesQuestion = jobExpensesQuestion)
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/travel-amount"
-
-  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/travel-amount"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > label > header > p"
     val continueButtonSelector: String = "#continue"
     val formSelector: String = "#main-content > div > div > form"
     val amountSelector = "#amount"
-    def paragraphSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
 
+    def paragraphSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
   }
 
   trait CommonExpectedResults {
@@ -153,13 +154,12 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
         import user.commonExpectedResults._
 
         "display the 'Business travel and Overnight stays Amount' page with correct content" which {
-
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses.copy(jobExpenses = None))))), nino, taxYearEOY)
-            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-              emptyExpensesCYAModel.copy(expensesViewModel(Some(true)))), userRequest)
+            val employmentData = anAllEmploymentData.copy(hmrcExpenses = Some(anEmploymentExpenses.copy(expenses = Some(anExpenses.copy(jobExpenses = None)))))
+            userDataStub(anIncomeTaxUserData.copy(Some(employmentData)), nino, taxYearEOY)
+            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel.copy(expensesViewModel(Some(true)))), aUserRequest)
             urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -184,9 +184,9 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-              emptyExpensesCYAModel.copy(expensesViewModel(Some(true)).copy(jobExpenses = Some(newAmount)))), userRequest)
+              ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = true)).copy(expensesViewModel(Some(true)).copy(jobExpenses = Some(newAmount)))), aUserRequest)
             urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -211,13 +211,12 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
     }
 
     "the user has not answered 'yes' to the 'Business travel and Overnight Stays' question" should {
-
       lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-          fullExpensesCYAModel.copy(expenses = fullExpensesCYAModel.expenses.copy(jobExpensesQuestion = Some(false)))), userRequest)
+          anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(jobExpensesQuestion = Some(false)))), aUserRequest)
         urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -242,12 +241,11 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
     }
 
     "the user is in year" should {
-
       lazy val result: WSResponse = {
         dropExpensesDB()
-        userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYear)
+        userDataStub(anIncomeTaxUserData, nino, taxYear)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-          fullExpensesCYAModel), userRequest)
+          anExpensesCYAModel), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
@@ -260,23 +258,17 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
   }
 
   ".submit" when {
-
     userScenarios.foreach { user =>
-
       import Selectors._
       import user.commonExpectedResults._
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "return an error when the flatRateJobExpenses amount is in the wrong format" which {
-
           lazy val form: Map[String, String] = Map(AmountForm.amount -> "badThings")
-
           lazy val result: WSResponse = {
             dropExpensesDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYear)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              fullExpensesCYAModel), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYear)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(pageUrl(taxYearEOY), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -306,9 +298,8 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
           lazy val result: WSResponse = {
             dropExpensesDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYear)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              fullExpensesCYAModel), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYear)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(pageUrl(taxYearEOY), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -338,9 +329,8 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
           lazy val result: WSResponse = {
             dropExpensesDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYear)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              fullExpensesCYAModel), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYear)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(pageUrl(taxYearEOY), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -368,12 +358,10 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
     "the user is in year" should {
       lazy val form: Map[String, String] = Map(AmountForm.amount -> s"$newAmount")
-
       lazy val result: WSResponse = {
         dropExpensesDB()
-        userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYear)
-        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-          fullExpensesCYAModel), userRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYear)
+        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(pageUrl(taxYear), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
@@ -384,13 +372,12 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
       }
 
       "not update the CYA model" in {
-        findExpensesCyaData(taxYearEOY, userRequest).get.expensesCya.expenses.jobExpenses shouldBe Some(BigDecimal(200))
+        findExpensesCyaData(taxYearEOY, aUserRequest).get.expensesCya.expenses.jobExpenses shouldBe Some(BigDecimal(200))
       }
     }
 
     "there is no CYA data" should {
       lazy val form: Map[String, String] = Map(AmountForm.amount -> s"$newAmount")
-
       lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -403,18 +390,19 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
       }
 
       "not update the CYA model" in {
-        findExpensesCyaData(taxYearEOY, userRequest) shouldBe None
+        findExpensesCyaData(taxYearEOY, aUserRequest) shouldBe None
       }
     }
 
     "the user successfully submits a valid amount" should {
       lazy val form: Map[String, String] = Map(AmountForm.amount -> s"$newAmount")
-
       lazy val result: WSResponse = {
         dropExpensesDB()
-        userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-          ExpensesCYAModel(expensesViewModel(Some(true)))), userRequest)
+          anExpensesCYAModel.copy(expensesViewModel(Some(true)))), aUserRequest)
+        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
+          anExpensesCYAModel.copy(anExpensesViewModel.copy(flatRateJobExpensesQuestion = None))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -425,7 +413,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
       }
 
       "update the CYA model" in {
-        findExpensesCyaData(taxYearEOY, userRequest).get.expensesCya.expenses.jobExpenses shouldBe Some(newAmount)
+        findExpensesCyaData(taxYearEOY, aUserRequest).get.expensesCya.expenses.jobExpenses shouldBe Some(newAmount)
       }
     }
 
@@ -434,9 +422,9 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
       lazy val result: WSResponse = {
         dropExpensesDB()
-        userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-          ExpensesCYAModel(expensesViewModel(None))), userRequest)
+          ExpensesCYAModel(expensesViewModel(None))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }

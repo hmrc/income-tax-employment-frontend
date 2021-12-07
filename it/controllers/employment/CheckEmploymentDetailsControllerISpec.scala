@@ -16,6 +16,14 @@
 
 package controllers.employment
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import builders.models.employment.PayBuilder.aPay
+import builders.models.employment.StudentLoansBuilder.aStudentLoans
+import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import controllers.employment.routes.{CheckEmploymentDetailsController, EmploymentSummaryController, EmploymentTaxController, PayeRefController}
 import models.User
 import models.employment._
@@ -28,6 +36,7 @@ import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Call
+import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -92,9 +101,9 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employmentStartDate = "21 April 2019"
     val employmentEndDate = "11 March 2020"
     val payeRef = "223/AB12399"
-    val payReceived = "£34234.15"
+    val payReceived = "£100"
     val payReceivedB = "£34234.50"
-    val taxTakenFromPay = "£6782.92"
+    val taxTakenFromPay = "£200"
     val taxTakenFromPayB = "£6782.90"
     val stillWorkingYes = "Yes"
     val stillWorkingNo = "No"
@@ -242,7 +251,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             directorshipCeasedDate = None,
             occPen = None,
             disguisedRemuneration = None,
-            pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None)),
+            pay = Some(aPay),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
                 uglDeductionAmount = Some(100.00),
@@ -314,7 +323,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             directorshipCeasedDate = Some("14/07/1990"),
             occPen = None,
             disguisedRemuneration = None,
-            pay = Some(Pay(Some(34234.15), Some(6782.92), None, None, None, None)),
+            pay = Some(Pay(Some(100), Some(200), None, None, None, None)),
             Some(Deductions(
               studentLoans = Some(StudentLoans(
                 uglDeductionAmount = Some(100.00),
@@ -348,12 +357,12 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               isPriorSubmission = true,
               hasPriorBenefits = true,
               EmploymentCYAModel(
-                fullEmploymentsModel().hmrcEmploymentData.head.toEmploymentDetails(isUsingCustomerData = false).copy(cessationDateQuestion = Some(false)),
+                anEmploymentSource.toEmploymentDetails(isUsingCustomerData = false).copy(cessationDateQuestion = Some(false)),
                 None
               )
-            ), User(mtditid, if (user.isAgent) Some("12345678") else None, nino, sessionId, if (user.isAgent) "Agent" else "Individual")(fakeRequest))
+            ), User(mtditid, if (user.isAgent) Some("12345678") else None, nino, sessionId, if (user.isAgent) "Agent" else "Individual")(FakeRequest()))
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel()), nino, 2021)
+            userDataStub(anIncomeTaxUserData, nino, 2021)
             urlGet(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
           }
 
@@ -392,7 +401,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
+            userDataStub(anIncomeTaxUserData, nino, taxYear)
             urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -430,7 +439,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYear - 1)
+            userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
             urlGet(s"$appUrl/${taxYear - 1}/check-employment-details?employmentId=$employmentId", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -483,7 +492,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(MinModel.miniData), nino, taxYear)
+            userDataStub(anIncomeTaxUserData.copy(Some(MinModel.miniData)), nino, taxYear)
             urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -513,7 +522,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(CustomerMinModel.miniData), nino, taxYear - 1)
+            userDataStub(anIncomeTaxUserData.copy(Some(CustomerMinModel.miniData)), nino, taxYear - 1)
             urlGet(s"$appUrl/${taxYear - 1}/check-employment-details?employmentId=$employmentId", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -552,7 +561,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(SomeModelWithInvalidDateFormat.invalidData), nino, taxYear)
+            userDataStub(anIncomeTaxUserData.copy(Some(SomeModelWithInvalidDateFormat.invalidData)), nino, taxYear)
             urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -583,7 +592,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel()), nino, 2021)
+        userDataStub(anIncomeTaxUserData, nino, 2021)
         urlGet(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
       }
 
@@ -619,16 +628,14 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           isPriorSubmission = false,
           hasPriorBenefits = true,
           EmploymentCYAModel(
-            fullEmploymentsModel().hmrcEmploymentData.head.toEmploymentDetails(false).copy(employerRef = None),
+            anEmploymentSource.toEmploymentDetails(false).copy(employerRef = None),
             None
           )
-        ), User(mtditid, None, nino, sessionId, "Individual")(fakeRequest))
+        ), User(mtditid, None, nino, sessionId, "Individual")(FakeRequest()))
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel()), nino, 2021)
+        userDataStub(anIncomeTaxUserData, nino, 2021)
         urlGet(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
       }
-
-      implicit def document: () => Document = () => Jsoup.parse(result.body)
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
@@ -653,9 +660,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(
-          fullEmploymentsModel().copy(hmrcEmploymentData = Seq.empty)
-        ), nino, taxYear)
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq.empty))), nino, taxYear)
         urlGet(url, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -669,7 +674,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel()), nino, 2022)
+        userDataStub(anIncomeTaxUserData, nino, 2022)
         urlPost(s"$appUrl/2022/check-employment-details?employmentId=employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
       }
 
@@ -683,7 +688,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel()), nino, 2021)
+        userDataStub(anIncomeTaxUserData, nino, 2021)
         urlPost(s"$appUrl/2021/check-employment-details?employmentId=$employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
       }
 
@@ -694,22 +699,13 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     }
 
     "create the model to update the data and return the correct redirect" which {
-      val employmentData: EmploymentCYAModel = {
-        employmentUserData.employment.copy(employmentDetails = employmentUserData.employment.employmentDetails.copy(
-          employerRef = Some("123/12345"),
-          startDate = Some("2020-11-11"),
-          taxablePayToDate = Some(55.99),
-          totalTaxToDate = Some(3453453.00),
-          currentDataIsHmrcHeld = false
-        ))
-      }
-
-      val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+      val employmentData = anEmploymentCYAModel.copy(employmentBenefits = None)
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(employmentUserData.copy(employment = employmentData).copy(employmentId = "001"), userRequest)
-        userDataStub(userData(fullEmploymentsModel().copy(customerEmploymentData = fullEmploymentsModel().hmrcEmploymentData)), nino, 2021)
+        insertCyaData(anEmploymentUserData.copy(employment = employmentData).copy(employmentId = "001"), aUserRequest)
+        val customerEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(customerEmploymentData = customerEmploymentData))), nino, 2021)
 
         val model = CreateUpdateEmploymentRequest(
           Some("001"),
@@ -726,14 +722,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
                 employmentData.employmentDetails.taxablePayToDate.get,
                 employmentData.employmentDetails.totalTaxToDate.get,
               ),
-              deductions = Some(
-                Deductions(
-                  Some(StudentLoans(
-                    Some(100),
-                    Some(100)
-                  ))
-                )
-              )
+              deductions = Some(Deductions(Some(aStudentLoans)))
             )
           )
         )
@@ -747,27 +736,18 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
-        findCyaData(taxYear, employmentId, userRequest) shouldBe None
+        findCyaData(taxYear, employmentId, aUserRequest) shouldBe None
       }
     }
 
     "create the model to update the data and return the correct redirect when there is a hmrc employment to ignore" which {
-      val employmentData: EmploymentCYAModel = {
-        employmentUserData.employment.copy(employmentDetails = employmentUserData.employment.employmentDetails.copy(
-          employerRef = Some("123/12345"),
-          startDate = Some("2020-11-11"),
-          taxablePayToDate = Some(55.99),
-          totalTaxToDate = Some(3453453.00),
-          currentDataIsHmrcHeld = false
-        ))
-      }
-
-      val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+      val employmentData: EmploymentCYAModel = anEmploymentCYAModel.copy(employmentBenefits = None)
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(employmentUserData.copy(employment = employmentData).copy(employmentId = "001"), userRequest)
-        userDataStub(userData(fullEmploymentsModel()), nino, 2021)
+        insertCyaData(anEmploymentUserData.copy(employment = employmentData).copy(employmentId = "001"), aUserRequest)
+        val hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = hmrcEmploymentData))), nino, 2021)
 
         val model = CreateUpdateEmploymentRequest(
           None,
@@ -784,14 +764,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
                 employmentData.employmentDetails.taxablePayToDate.get,
                 employmentData.employmentDetails.totalTaxToDate.get,
               ),
-              deductions = Some(
-                Deductions(
-                  Some(StudentLoans(
-                    Some(100),
-                    Some(100)
-                  ))
-                )
-              )
+              deductions = Some(Deductions(Some(aStudentLoans)))
             )
           ),
           Some("001")
@@ -806,45 +779,30 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
-        findCyaData(taxYear, employmentId, userRequest) shouldBe None
+        findCyaData(taxYear, employmentId, aUserRequest) shouldBe None
       }
     }
 
     "create the model to create the data and return the correct redirect" which {
-      val employmentData: EmploymentCYAModel = {
-        employmentUserData.employment.copy(employmentDetails = employmentUserData.employment.employmentDetails.copy(
-          employerRef = Some("123/12345"),
-          startDate = Some("2020-11-11"),
-          taxablePayToDate = Some(55.99),
-          totalTaxToDate = Some(3453453.00),
-          currentDataIsHmrcHeld = false
-        ))
-      }
-
-      val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(employmentUserData.copy(employment = employmentData), userRequest)
+        insertCyaData(anEmploymentUserData, aUserRequest)
         noUserDataStub(nino, 2021)
 
         val model = CreateUpdateEmploymentRequest(
           None,
-          Some(
-            CreateUpdateEmployment(
-              employmentData.employmentDetails.employerRef,
-              employmentData.employmentDetails.employerName,
-              employmentData.employmentDetails.startDate.get
+          Some(CreateUpdateEmployment(
+            anEmploymentCYAModel.employmentDetails.employerRef,
+            anEmploymentCYAModel.employmentDetails.employerName,
+            anEmploymentCYAModel.employmentDetails.startDate.get
+          )),
+          Some(CreateUpdateEmploymentData(
+            pay = CreateUpdatePay(
+              anEmploymentCYAModel.employmentDetails.taxablePayToDate.get,
+              anEmploymentCYAModel.employmentDetails.totalTaxToDate.get,
             )
-          ),
-          Some(
-            CreateUpdateEmploymentData(
-              pay = CreateUpdatePay(
-                employmentData.employmentDetails.taxablePayToDate.get,
-                employmentData.employmentDetails.totalTaxToDate.get,
-              )
-            )
-          )
+          ))
         )
 
         stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
@@ -856,17 +814,16 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
-        findCyaData(taxYear, employmentId, userRequest) shouldBe None
+        findCyaData(taxYear, employmentId, aUserRequest) shouldBe None
       }
     }
 
     "create the model to update the data and return the correct redirect when not all data is present" which {
-      val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(employmentUserData, userRequest)
-        userDataStub(userData(fullEmploymentsModel()), nino, 2021)
+        insertCyaData(anEmploymentUserData, aUserRequest)
+        userDataStub(anIncomeTaxUserData, nino, 2021)
         urlPost(s"$appUrl/2021/check-employment-details?employmentId=$employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
       }
 
