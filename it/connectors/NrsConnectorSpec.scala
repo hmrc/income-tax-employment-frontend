@@ -57,9 +57,9 @@ class NrsConnectorSpec extends IntegrationTest {
 
   ".NrsConnector" should {
 
-    "return an Accepted response when successful" in {
+    "return an OK response when successful" in {
 
-      stubPost(url, ACCEPTED, "{}")
+      stubPost(url, OK, "{}")
       val result = await(connector.postNrsConnector(nino, payloadModel))
 
       result shouldBe Right()
