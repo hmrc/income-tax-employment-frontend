@@ -17,6 +17,7 @@
 package controllers.benefits.reimbursed
 
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.reimbursed.routes.{TaxableCostsBenefitsAmountController, VouchersBenefitsController}
 import forms.YesNoForm
 import models.User
 import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
@@ -349,7 +350,7 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
+          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(fullBenefitsModel))), userRequest)
           authoriseAgentOrIndividual(isAgent = false)
           urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -381,8 +382,7 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
         "redirects to the vouchers question page" in {
           result.status shouldBe SEE_OTHER
-//          TODO: This will go to the vouchers question when its created
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(VouchersBenefitsController.show(taxYearEOY, employmentId).url)
         }
 
         "updates taxableExpensesQuestion to no and taxableExpenses to none" in {
@@ -399,15 +399,14 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel.copy(taxableExpensesQuestion = Some(false)))))), userRequest)
+          insertCyaData(employmentUserData(isPrior = false, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel.copy(taxableExpensesQuestion = Some(false)))))), userRequest)
           authoriseAgentOrIndividual(isAgent = false)
           urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the taxable costs amount page" in {
           result.status shouldBe SEE_OTHER
-//          TODO: This will be updated to the taxable costs amount page when its created
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(TaxableCostsBenefitsAmountController.show(taxYearEOY, employmentId).url)
         }
 
         "updates taxableExpensesQuestion to yes" in {

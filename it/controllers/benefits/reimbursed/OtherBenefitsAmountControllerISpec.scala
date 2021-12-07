@@ -388,7 +388,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
+        insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(fullBenefitsModel))), userRequest)
         urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "123.45"))
       }
 
@@ -414,8 +414,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        // TODO: Should go to the first assets section question page
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(AssetsOrAssetTransfersBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
       "updates the CYA model with the new value" in {

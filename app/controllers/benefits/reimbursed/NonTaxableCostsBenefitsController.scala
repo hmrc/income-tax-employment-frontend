@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package controllers.benefits.reimbursed;
+package controllers.benefits.reimbursed
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.reimbursed.routes.{NonTaxableCostsBenefitsAmountController, TaxableCostsBenefitsController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
@@ -26,7 +26,7 @@ import models.mongo.EmploymentCYAModel
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.EmploymentSessionService
+import services.{EmploymentSessionService, RedirectService}
 import services.RedirectService.{commonReimbursedCostsVouchersAndNonCashModelRedirects, redirectBasedOnCurrentAnswers}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
@@ -92,7 +92,15 @@ class NonTaxableCostsBenefitsController @Inject()(implicit val cc: MessagesContr
 
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                val nextPage = {
+                  if (yesNo) {
+                    NonTaxableCostsBenefitsAmountController.show(taxYear, employmentId)
+                  } else {
+                    TaxableCostsBenefitsController.show(taxYear, employmentId)
+                  }
+                }
+
+                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
             }
           )

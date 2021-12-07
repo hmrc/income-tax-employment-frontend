@@ -17,6 +17,7 @@
 package controllers.benefits.reimbursed
 
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.reimbursed.routes.{NonCashBenefitsController, VouchersBenefitsAmountController}
 import forms.YesNoForm
 import models.User
 import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
@@ -241,7 +242,6 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
       }
     }
 
-    "redirect to another page when the request is valid but they aren't allowed to view the page and" should {
       "redirect the user to the check employment benefits page when the benefitsReceived question is false" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
@@ -315,7 +315,6 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
           cyaModel.employment.employmentBenefits shouldBe None
         }
       }
-    }
   }
 
   ".submit" should {
@@ -364,13 +363,12 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
       }
     }
 
-    "redirect to another page when a valid request is made and then" should {
       "Update the vouchers or credit cards question to no, and vouchers or credit cards to none when the user chooses no, redirects to CYA if prior submission" which {
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
+          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(fullBenefitsModel))), userRequest)
           authoriseAgentOrIndividual(isAgent = false)
           urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -388,7 +386,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
       }
 
       "Update the vouchers or credit cards question to no, and vouchers or credit cards to none when the user chooses no," +
-        "redirects to next question if not prior submission" which {
+        "redirects to non cash benefits if not prior submission" which {
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
         lazy val result: WSResponse = {
           dropEmploymentDB()
@@ -397,10 +395,9 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
           urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        //          TODO: This will need updating to the next page in the flow when the navigation is hooked up
-        "redirects to the check your details page" in {
+        "redirects to the non cash benefits question page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(NonCashBenefitsController.show(taxYearEOY, employmentId).url)
         }
 
         "updates vouchers or credit cards question to no and vouchers or credit cards to none" in {
@@ -421,8 +418,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
 
         "redirects to the vouchers or credit cards amount page" in {
           result.status shouldBe SEE_OTHER
-          // TODO: This will be updated to the vouchers or credit cards amount page when its created. This should be updated when the navigation for the section is completed.
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(VouchersBenefitsAmountController.show(taxYearEOY, employmentId).url)
         }
 
         "updates vouchers or credit cards question to yes" in {
@@ -492,6 +488,5 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
           result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
         }
       }
-    }
   }
 }

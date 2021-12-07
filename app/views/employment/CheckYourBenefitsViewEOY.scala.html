@@ -238,7 +238,6 @@
     @{
         val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.incomeTaxSubheading", benefits.incomeTaxAndCostsModel.flatMap(_.sectionQuestion).getOrElse(false), IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
-        if(benefits.incomeTaxDetailsPopulated){
             Seq(
                 benefits.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirectorQuestion).map{
                     incomeTaxPaidByDirectorQuestion => showQuestionRow("checkYourBenefits.incomeTaxPaid", incomeTaxPaidByDirectorQuestion, IncomeTaxBenefitsController.show(taxYear, employmentId))
@@ -253,7 +252,6 @@
                     paymentsOnEmployeesBehalf => showRows("checkYourBenefits.incurredCostsPaidAmount", paymentsOnEmployeesBehalf, IncurredCostsBenefitsAmountController.show(taxYear, employmentId))
                 }
             ).flatten
-        } else { Seq() }
 
         govukSummaryList(SummaryList(header ++ rows))
     }
@@ -262,7 +260,6 @@
     @{
         val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.reimbursedSubheading", benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.sectionQuestion).getOrElse(false), ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
-        if(benefits.reimbursedDetailsPopulated){
             Seq(
                 benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expensesQuestion).map{
                     expensesQuestion => showQuestionRow("checkYourBenefits.nonTaxable", expensesQuestion, NonTaxableCostsBenefitsController.show(taxYear,employmentId))
@@ -295,7 +292,6 @@
                     otherItems => showRows("checkYourBenefits.otherBenefitsAmount", otherItems, OtherBenefitsAmountController.show(taxYear, employmentId))
                 }
             ).flatten
-        } else { Seq() }
 
         govukSummaryList(SummaryList(header ++ rows))
     }

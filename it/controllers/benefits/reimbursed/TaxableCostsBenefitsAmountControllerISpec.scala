@@ -17,7 +17,7 @@
 package controllers.benefits.reimbursed
 
 import controllers.employment.routes.CheckYourBenefitsController
-import controllers.benefits.reimbursed.routes.TaxableCostsBenefitsController
+import controllers.benefits.reimbursed.routes.{TaxableCostsBenefitsController, VouchersBenefitsController}
 import models.User
 import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -233,7 +233,6 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
       }
     }
 
-    "redirect to another page when the request is valid but they aren't allowed to view the page and" should {
       "Redirect user to the check your benefits page with no cya data in session" in {
         lazy val result: WSResponse = {
           dropEmploymentDB()
@@ -271,7 +270,6 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(TaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
       }
-    }
   }
 
   ".submit" should {
@@ -373,12 +371,11 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
       }
     }
 
-    "redirect to another page when a valid request is made and then" should {
       "redirect to check employment benefits page when a valid form is submitted and a prior submission" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(benefits(fullReimbursedCostsVouchersAndNonCashModel)))), userRequest)
+          insertCyaData(employmentUserData(isPrior = true, cyaModel(Some(fullBenefitsModel))), userRequest)
           urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "123.45"))
         }
 
@@ -394,7 +391,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
         }
       }
 
-      "redirect to to Vouchers yes/no page when a valid form is submitted and not prior submission" when {
+      "redirect to the vouchers benefits question page when a valid form is submitted and not prior submission" when {
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
@@ -404,8 +401,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
-          // TODO: Should go to Vouchers question page
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe Some(VouchersBenefitsController.show(taxYearEOY, employmentId).url)
         }
 
         "updates the CYA model with the new value" in {
@@ -455,6 +451,5 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(TaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
       }
-    }
   }
 }
