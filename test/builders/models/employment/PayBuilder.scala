@@ -23,8 +23,8 @@ object PayBuilder {
   val aPay: Pay = Pay(
     taxablePayToDate = Some(100),
     totalTaxToDate = Some(200),
-    payFrequency = None,
-    paymentDate = None,
+    payFrequency = Some("CALENDAR MONTHLY"),
+    paymentDate = Some("2020-04-23"),
     taxWeekNo = Some(1),
     taxMonthNo = Some(1)
   )

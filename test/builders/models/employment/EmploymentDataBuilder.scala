@@ -16,20 +16,21 @@
 
 package builders.models.employment
 
+import builders.models.employment.DeductionsBuilder.aDeductions
 import builders.models.employment.PayBuilder.aPay
 import models.employment.EmploymentData
 
 object EmploymentDataBuilder {
 
   val anEmploymentData: EmploymentData = EmploymentData(
-    submittedOn = "2021-01-01",
-    employmentSequenceNumber = None,
+    submittedOn = "2020-02-12",
+    employmentSequenceNumber = Some("123456789999"),
     companyDirector = Some(true),
-    closeCompany = Some(true),
-    directorshipCeasedDate = None,
+    closeCompany = Some(false),
+    directorshipCeasedDate = Some("2020-02-12"),
     occPen = Some(false),
-    disguisedRemuneration = None,
+    disguisedRemuneration = Some(false),
     pay = Some(aPay),
-    deductions = None
+    deductions = Some(aDeductions)
   )
 }

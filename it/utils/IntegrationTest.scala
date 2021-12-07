@@ -17,16 +17,14 @@
 package utils
 
 import akka.actor.ActorSystem
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import common.SessionValues
 import config.AppConfig
 import controllers.predicates.AuthorisedAction
 import helpers.{PlaySessionCookieBaker, WireMockHelper, WiremockStubHelpers}
 import models.IncomeTaxUserData
-import models.benefits._
-import models.employment._
-import models.expenses.{Expenses, ExpensesViewModel}
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData, ExpensesCYAModel}
+import models.mongo.EmploymentUserData
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -35,8 +33,7 @@ import play.api.http.Status.NO_CONTENT
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
-import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
-import play.api.test.FakeRequest
+import play.api.mvc.{MessagesControllerComponents, Result}
 import play.api.test.Helpers.OK
 import play.api.{Application, Environment, Mode}
 import services.AuthService
@@ -49,20 +46,19 @@ import views.html.templates.AgentAuthErrorPageView
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable, ExecutionContext, Future}
 
-// scalastyle:off number.of.methods
-// scalastyle:off number.of.types
 trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSuite with WireMockHelper
   with WiremockStubHelpers with BeforeAndAfterAll {
-  val nino = "AA123456A"
-  val mtditid = "1234567890"
-  val sessionId = "sessionId-eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"
-  val affinityGroup = "affinityGroup"
-  val taxYear = 2022
 
-  val xSessionId: (String, String) = "X-Session-ID" -> sessionId
+  val nino: String = anEmploymentUserData.nino
+  val mtditid: String = anEmploymentUserData.mtdItId
+  val sessionId: String = anEmploymentUserData.sessionId
+  val affinityGroup: String = "affinityGroup"
+  val taxYear: Int = 2022
+  val defaultUser: EmploymentUserData = anEmploymentUserData
+  val xSessionId: (String, String) = "X-Session-ID" -> defaultUser.sessionId
 
   implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
-  implicit val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid)
+  implicit val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> defaultUser.mtdItId)
 
   implicit val actorSystem: ActorSystem = ActorSystem()
 
@@ -151,7 +147,6 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   lazy val mcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
-
   val defaultAcceptedConfidenceLevels = Seq(
     ConfidenceLevel.L200,
     ConfidenceLevel.L500
@@ -161,9 +156,8 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     new MockAuthConnector(stubbedRetrieval, acceptedConfidenceLevel)
   )
 
-  def authAction(
-                  stubbedRetrieval: Future[_],
-                  acceptedConfidenceLevel: Seq[ConfidenceLevel] = Seq.empty[ConfidenceLevel]
+  def authAction(stubbedRetrieval: Future[_],
+                 acceptedConfidenceLevel: Seq[ConfidenceLevel] = Seq.empty[ConfidenceLevel]
                 ): AuthorisedAction = new AuthorisedAction(
     appConfig
   )(
@@ -198,344 +192,35 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   def playSessionCookies(taxYear: Int, extraData: Map[String, String] = Map.empty): String = PlaySessionCookieBaker.bakeSessionCookie(Map(
     SessionValues.TAX_YEAR -> taxYear.toString,
-    SessionKeys.sessionId -> sessionId,
-    SessionValues.CLIENT_NINO -> nino,
-    SessionValues.CLIENT_MTDITID -> mtditid
+    SessionKeys.sessionId -> defaultUser.sessionId,
+    SessionValues.CLIENT_NINO -> defaultUser.nino,
+    SessionValues.CLIENT_MTDITID -> defaultUser.mtdItId
   ) ++ extraData)
 
-
-  def userData(allData: AllEmploymentData): IncomeTaxUserData = IncomeTaxUserData(Some(allData))
-
   def userDataStub(userData: IncomeTaxUserData, nino: String, taxYear: Int): StubMapping = {
-
     stubGetWithHeadersCheck(
-      s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,
-      Json.toJson(userData).toString(), "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+      url = s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", status = OK,
+      body = Json.toJson(userData).toString(),
+      sessionHeader = "X-Session-ID" -> defaultUser.sessionId,
+      mtdidHeader = "mtditid" -> defaultUser.mtdItId
+    )
   }
 
   def userDataStubDeleteOrIgnoreEmployment(userData: IncomeTaxUserData, nino: String, taxYear: Int, employmentId: String, sourceType: String): StubMapping = {
-
     stubDeleteWithHeadersCheck(
-      s"/income-tax-employment/income-tax/nino/$nino/sources/$employmentId/$sourceType\\?taxYear=$taxYear", NO_CONTENT,
-      Json.toJson(userData).toString(), "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+      url = s"/income-tax-employment/income-tax/nino/$nino/sources/$employmentId/$sourceType\\?taxYear=$taxYear", status = NO_CONTENT,
+      responseBody = Json.toJson(userData).toString(),
+      sessionHeader = "X-Session-ID" -> defaultUser.sessionId,
+      mtdidHeader = "mtditid" -> defaultUser.mtdItId
+    )
   }
 
   def noUserDataStub(nino: String, taxYear: Int): StubMapping = {
-
     stubGetWithHeadersCheck(
-      s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", NO_CONTENT,
-      "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
-  }
-
-  val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-
-  def fullEmploymentsModel(hmrcEmployment: Seq[EmploymentSource] = Seq(employmentDetailsAndBenefits()),
-                           hmrcExpenses: Option[EmploymentExpenses] = Some(employmentExpenses(expenses)),
-                           customerEmployment: Seq[EmploymentSource] = Seq(),
-                           customerExpenses: Option[EmploymentExpenses] = None): AllEmploymentData = AllEmploymentData(
-    hmrcEmploymentData = hmrcEmployment,
-    hmrcExpenses = hmrcExpenses,
-    customerEmploymentData = customerEmployment,
-    customerExpenses = customerExpenses)
-
-
-  //scalastyle:off parameter.number
-  def employmentDetailsAndBenefits(benefits: Option[EmploymentBenefits] = None,
-                                   employmentId: String = "001",
-                                   employerName: String = "maggie",
-                                   employerRef: Option[String] = Some("223/AB12399"),
-                                   startDate: Option[String] = Some("2019-04-21"),
-                                   dateIgnored: Option[String] = None,
-                                   submittedOn: Option[String] = Some("2020-01-04T05:01:01Z"),
-                                   taxablePayToDate: Option[BigDecimal] = Some(34234.15),
-                                   totalTaxToDate: Option[BigDecimal] = Some(6782.92)
-                                  ): EmploymentSource = {
-    EmploymentSource(
-      employmentId = employmentId,
-      employerName = employerName,
-      employerRef = employerRef,
-      payrollId = Some("12345678"),
-      startDate = startDate,
-      cessationDate = Some("2020-03-11"),
-      dateIgnored = dateIgnored,
-      submittedOn = submittedOn,
-      employmentData = Some(EmploymentData(
-        submittedOn = "2020-02-12",
-        employmentSequenceNumber = Some("123456789999"),
-        companyDirector = Some(true),
-        closeCompany = Some(false),
-        directorshipCeasedDate = Some("2020-02-12"),
-        occPen = Some(false),
-        disguisedRemuneration = Some(false),
-        pay = Some(Pay(taxablePayToDate, totalTaxToDate, Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
-        Some(Deductions(
-          studentLoans = Some(StudentLoans(
-            uglDeductionAmount = Some(100.00),
-            pglDeductionAmount = Some(100.00)
-          ))
-        ))
-      )),
-      employmentBenefits = benefits
+      url = s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", status = NO_CONTENT,
+      body = "{}",
+      sessionHeader = "X-Session-ID" -> defaultUser.sessionId,
+      mtdidHeader = "mtditid" -> defaultUser.mtdItId
     )
   }
-  //scalastyle:on parameter.number
-
-  lazy val expenses: Expenses = Expenses(
-    Some(1), Some(2), Some(3), Some(4), Some(5), Some(6), Some(7), Some(8)
-  )
-
-  def employmentExpenses(expenses: Expenses): EmploymentExpenses = EmploymentExpenses(
-    submittedOn = Some("2020-02-12"),
-    dateIgnored = None,
-    totalExpenses = None,
-    expenses = Some(expenses)
-  )
-
-  lazy val filteredBenefits: Some[EmploymentBenefits] = Some(EmploymentBenefits(
-    submittedOn = "2020-02-12",
-    benefits = Some(Benefits(
-      van = Some(3.00),
-      vanFuel = Some(4.00),
-      mileage = Some(5.00),
-    ))
-  )
-  )
-
-  lazy val fullBenefits: Some[EmploymentBenefits] = Some(EmploymentBenefits(
-    submittedOn = "2020-02-12",
-    benefits = Some(Benefits(
-      car = Some(1.23),
-      carFuel = Some(2.00),
-      van = Some(3.00),
-      vanFuel = Some(4.00),
-      mileage = Some(5.00),
-      accommodation = Some(6.00),
-      qualifyingRelocationExpenses = Some(7.00),
-      nonQualifyingRelocationExpenses = Some(8.00),
-      travelAndSubsistence = Some(9.00),
-      personalIncidentalExpenses = Some(10.00),
-      entertaining = Some(11.00),
-      telephone = Some(12.00),
-      employerProvidedServices = Some(13.00),
-      employerProvidedProfessionalSubscriptions = Some(14.00),
-      service = Some(15.00),
-      medicalInsurance = Some(16.00),
-      nurseryPlaces = Some(17.00),
-      beneficialLoan = Some(18.00),
-      educationalServices = Some(19.00),
-      incomeTaxPaidByDirector = Some(20.00),
-      paymentsOnEmployeesBehalf = Some(21.00),
-      expenses = Some(22.00),
-      taxableExpenses = Some(23.00),
-      vouchersAndCreditCards = Some(24.00),
-      nonCash = Some(25.00),
-      otherItems = Some(26.00),
-      assets = Some(27.00),
-      assetTransfer = Some(280000.00)
-    )
-    )
-  ))
-
-  def employmentUserData: EmploymentUserData = EmploymentUserData(
-    sessionId,
-    mtditid,
-    nino,
-    taxYear - 1,
-    "employmentId",
-    isPriorSubmission = true,
-    hasPriorBenefits = true,
-    EmploymentCYAModel(
-      EmploymentDetails("Employer Name", currentDataIsHmrcHeld = true),
-      None
-    )
-  )
-
-  def fullCarVanFuelModel: CarVanFuelModel =
-    CarVanFuelModel(
-      sectionQuestion = Some(true),
-      carQuestion = Some(true),
-      car = Some(100.00),
-      carFuelQuestion = Some(true),
-      carFuel = Some(200.00),
-      vanQuestion = Some(true),
-      van = Some(300.00),
-      vanFuelQuestion = Some(true),
-      vanFuel = Some(400.00),
-      mileageQuestion = Some(true),
-      mileage = Some(400.00)
-    )
-
-  def emptyCarVanFuelModel: CarVanFuelModel =
-    CarVanFuelModel(
-      sectionQuestion = Some(false)
-    )
-
-  def fullAccommodationRelocationModel: AccommodationRelocationModel =
-    AccommodationRelocationModel(
-      sectionQuestion = Some(true),
-      accommodationQuestion = Some(true),
-      accommodation = Some(100.00),
-      qualifyingRelocationExpensesQuestion = Some(true),
-      qualifyingRelocationExpenses = Some(200.00),
-      nonQualifyingRelocationExpensesQuestion = Some(true),
-      nonQualifyingRelocationExpenses = Some(300.00)
-    )
-
-  def emptyAccommodationRelocationModel: AccommodationRelocationModel =
-    AccommodationRelocationModel(
-      sectionQuestion = Some(false)
-    )
-
-  def fullTravelOrEntertainmentModel: TravelEntertainmentModel =
-    TravelEntertainmentModel(
-      sectionQuestion = Some(true),
-      travelAndSubsistenceQuestion = Some(true),
-      travelAndSubsistence = Some(100.00),
-      personalIncidentalExpensesQuestion = Some(true),
-      personalIncidentalExpenses = Some(200.00),
-      entertainingQuestion = Some(true),
-      entertaining = Some(300.00),
-    )
-
-  def emptyTravelOrEntertainmentModel: TravelEntertainmentModel =
-    TravelEntertainmentModel(
-      sectionQuestion = Some(false)
-    )
-
-  def fullUtilitiesAndServicesModel: UtilitiesAndServicesModel =
-    UtilitiesAndServicesModel(
-      sectionQuestion = Some(true),
-      telephoneQuestion = Some(true),
-      telephone = Some(100.00),
-      employerProvidedServicesQuestion = Some(true),
-      employerProvidedServices = Some(200.00),
-      employerProvidedProfessionalSubscriptionsQuestion = Some(true),
-      employerProvidedProfessionalSubscriptions = Some(300.00),
-      serviceQuestion = Some(true),
-      service = Some(400.00)
-    )
-
-  def emptyUtilitiesAndServicesModel: UtilitiesAndServicesModel =
-    UtilitiesAndServicesModel(sectionQuestion = Some(false))
-
-  def fullMedicalChildcareEducationModel: MedicalChildcareEducationModel =
-    MedicalChildcareEducationModel(
-      sectionQuestion = Some(true),
-      medicalInsuranceQuestion = Some(true),
-      medicalInsurance = Some(100.00),
-      nurseryPlacesQuestion = Some(true),
-      nurseryPlaces = Some(200.00),
-      educationalServicesQuestion = Some(true),
-      educationalServices = Some(300.00),
-      beneficialLoanQuestion = Some(true),
-      beneficialLoan = Some(400.00)
-    )
-
-  def fullIncomeTaxAndCostsModel: IncomeTaxAndCostsModel = IncomeTaxAndCostsModel(
-    sectionQuestion = Some(true),
-    incomeTaxPaidByDirectorQuestion = Some(true),
-    incomeTaxPaidByDirector = Some(255.00),
-    paymentsOnEmployeesBehalfQuestion = Some(true),
-    paymentsOnEmployeesBehalf = Some(255.00)
-  )
-
-  def emptyMedicalChildcareEducationModel: MedicalChildcareEducationModel =
-    MedicalChildcareEducationModel(sectionQuestion = Some(false))
-
-  def fullIncomeTaxOrIncurredCostsModel: IncomeTaxAndCostsModel =
-    IncomeTaxAndCostsModel(
-      sectionQuestion = Some(true),
-      incomeTaxPaidByDirectorQuestion = Some(true),
-      incomeTaxPaidByDirector = Some(100.00),
-      paymentsOnEmployeesBehalfQuestion = Some(true),
-      paymentsOnEmployeesBehalf = Some(200.00)
-    )
-
-  def emptyIncomeTaxOrIncurredCostsModel: IncomeTaxAndCostsModel =
-    IncomeTaxAndCostsModel(sectionQuestion = Some(false))
-
-  def fullReimbursedCostsVouchersAndNonCashModel: ReimbursedCostsVouchersAndNonCashModel =
-    ReimbursedCostsVouchersAndNonCashModel(
-      sectionQuestion = Some(true),
-      expensesQuestion = Some(true),
-      expenses = Some(100.00),
-      taxableExpensesQuestion = Some(true),
-      taxableExpenses = Some(200.00),
-      vouchersAndCreditCardsQuestion = Some(true),
-      vouchersAndCreditCards = Some(300.00),
-      nonCashQuestion = Some(true),
-      nonCash = Some(400.00),
-      otherItemsQuestion = Some(true),
-      otherItems = Some(500.00)
-    )
-
-  def emptyReimbursedCostsVouchersAndNonCashModel: ReimbursedCostsVouchersAndNonCashModel =
-    ReimbursedCostsVouchersAndNonCashModel(sectionQuestion = Some(false))
-
-  def fullAssetsModel: AssetsModel =
-    AssetsModel(
-      sectionQuestion = Some(true),
-      assetsQuestion = Some(true),
-      assets = Some(100.00),
-      assetTransferQuestion = Some(true),
-      assetTransfer = Some(200.00),
-    )
-
-  def emptyAssetsModel: AssetsModel =
-    AssetsModel(sectionQuestion = Some(false))
-
-  def fullBenefitsModel: BenefitsViewModel =
-    BenefitsViewModel(
-      carVanFuelModel = Some(fullCarVanFuelModel),
-      accommodationRelocationModel = Some(fullAccommodationRelocationModel),
-      travelEntertainmentModel = Some(fullTravelOrEntertainmentModel),
-      utilitiesAndServicesModel = Some(fullUtilitiesAndServicesModel),
-      medicalChildcareEducationModel = Some(fullMedicalChildcareEducationModel),
-      incomeTaxAndCostsModel = Some(fullIncomeTaxOrIncurredCostsModel),
-      reimbursedCostsVouchersAndNonCashModel = Some(fullReimbursedCostsVouchersAndNonCashModel),
-      assetsModel = Some(fullAssetsModel),
-      submittedOn = None,
-      isUsingCustomerData = true,
-      isBenefitsReceived = true
-    )
-
-  lazy val fullExpensesViewModel: ExpensesViewModel = ExpensesViewModel(
-    claimingEmploymentExpenses = true,
-    jobExpensesQuestion = Some(true),
-    jobExpenses = Some(200.00),
-    flatRateJobExpensesQuestion = Some(true),
-    flatRateJobExpenses = Some(300.00),
-    professionalSubscriptionsQuestion = Some(true),
-    professionalSubscriptions = Some(400.00),
-    otherAndCapitalAllowancesQuestion = Some(true),
-    otherAndCapitalAllowances = Some(600.00),
-    businessTravelCosts = Some(100.00),
-    hotelAndMealExpenses = Some(500.00),
-    vehicleExpenses = Some(700.00),
-    mileageAllowanceRelief = Some(800.00),
-    submittedOn = None,
-    isUsingCustomerData = true
-  )
-
-  def fullExpensesCYAModel: ExpensesCYAModel =
-    ExpensesCYAModel(fullExpensesViewModel)
-
-  def emptyExpensesCYAModel: ExpensesCYAModel =
-    ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = true))
-
-  def fullExpenses: Expenses =
-    Expenses(
-      businessTravelCosts = Some(100.00),
-      jobExpenses = Some(200.00),
-      flatRateJobExpenses = Some(300.00),
-      professionalSubscriptions = Some(400.00),
-      hotelAndMealExpenses = Some(500.00),
-      otherAndCapitalAllowances = Some(600.00),
-      vehicleExpenses = Some(700.00),
-      mileageAllowanceRelief = Some(800.00)
-    )
-
 }
-
-// scalastyle:off number.of.methods
-// scalastyle:off number.of.types

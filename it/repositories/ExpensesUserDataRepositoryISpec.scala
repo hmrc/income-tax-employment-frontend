@@ -94,7 +94,7 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
 
   private def countFromOtherDatabase = await(repo.collection.countDocuments().toFuture())
 
-  implicit val request: FakeRequest[AnyContent] = fakeRequest
+  implicit val request: FakeRequest[AnyContent] = FakeRequest()
 
   private val userOne = User(expensesUserDataOne.mtdItId, None, expensesUserDataOne.nino, expensesUserDataOne.sessionId, AffinityGroup.Individual.toString)
 

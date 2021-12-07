@@ -20,7 +20,7 @@ import models.benefits.AccommodationRelocationModel
 
 object AccommodationRelocationModelBuilder {
 
-  val aAccommodationRelocationModel: AccommodationRelocationModel = AccommodationRelocationModel(
+  val anAccommodationRelocationModel: AccommodationRelocationModel = AccommodationRelocationModel(
     sectionQuestion = Some(true),
     accommodationQuestion = Some(true),
     accommodation = Some(100.00),

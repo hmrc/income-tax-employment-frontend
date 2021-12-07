@@ -24,11 +24,8 @@ case class ExpensesCYAModel(expenses: ExpensesViewModel)
 object ExpensesCYAModel {
   implicit val format: OFormat[ExpensesCYAModel] = Json.format[ExpensesCYAModel]
 
-  def makeModel(expenses: Expenses, isUsingCustomerData: Boolean, submittedOn: Option[String]): ExpensesCYAModel = {
-    ExpensesCYAModel(
-      expenses = expenses.toExpensesViewModel(isUsingCustomerData, submittedOn)
-    )
-  }
+  def makeModel(expenses: Expenses, isUsingCustomerData: Boolean, submittedOn: Option[String]): ExpensesCYAModel =
+    ExpensesCYAModel(expenses = expenses.toExpensesViewModel(isUsingCustomerData, submittedOn))
 }
 
 case class EncryptedExpensesCYAModel(expenses: EncryptedExpensesViewModel)

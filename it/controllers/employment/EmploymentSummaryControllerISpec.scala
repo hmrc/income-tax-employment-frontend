@@ -16,16 +16,18 @@
 
 package controllers.employment
 
+import builders.models.UserBuilder.aUserRequest
+import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import common.{SessionValues, UUID}
-import controllers.expenses.routes.CheckEmploymentExpensesController
 import controllers.employment.EmploymentSummaryControllerISpec.FullModel._
 import controllers.employment.routes._
+import controllers.expenses.routes.CheckEmploymentExpensesController
 import forms.YesNoForm
+import models.IncomeTaxUserData
 import models.benefits.Benefits
 import models.employment._
 import models.expenses.Expenses
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
-import models.{IncomeTaxUserData, User}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -290,10 +292,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
         "redirect the user to the Add Employment page when no data is in session EOY" which {
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(IncomeTaxUserData(Some(fullEmploymentsModel(hmrcEmployment =
-              Seq(EmploymentSource(employmentId = "001", employerName = "maggie",
-                None, None, None, None, dateIgnored = Some("2020-03-11"), None, None, None))
-            ))), nino, taxYear - 1)
+            val employmentSources = Seq(EmploymentSource(employmentId = "001", employerName = "maggie", None, None, None, None, dateIgnored = Some("2020-03-11"), None, None, None))
+            userDataStub(IncomeTaxUserData(Some(anAllEmploymentData.copy(hmrcEmploymentData = employmentSources))), nino, taxYear - 1)
             urlGet(s"$appUrl/${taxYear - 1}/employment-summary", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
@@ -318,10 +318,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   ".submit" when {
-
     val employmentId = UUID.randomUUID
-
-    val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
 
     def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
       EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
@@ -338,13 +335,11 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
             userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear - 1)
             urlPost(s"$appUrl/${taxYear - 1}/employment-summary", follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
           }
-
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           "status SEE OTHER" in {
             result.status shouldBe SEE_OTHER
@@ -358,13 +353,11 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
             userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear - 1)
             urlPost(s"$appUrl/${taxYear - 1}/employment-summary", follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
           }
-
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
 
           "status SEE OTHER" in {
             result.status shouldBe SEE_OTHER

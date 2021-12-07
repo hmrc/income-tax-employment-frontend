@@ -16,6 +16,7 @@
 
 package connectors
 
+import builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
 import connectors.httpParsers.DeleteOrIgnoreEmploymentHttpParser.DeleteOrIgnoreEmploymentResponse
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.{APIErrorBodyModel, APIErrorModel}
@@ -53,7 +54,7 @@ class CreateUpdateEmploymentDataConnectorSpec extends IntegrationTest {
           34523523454.44
         ),
         None,
-        benefitsInKind = fullBenefits.head.benefits
+        benefitsInKind = anEmploymentBenefits.benefits
       )
     ),
     hmrcEmploymentIdToIgnore = None
@@ -75,15 +76,15 @@ class CreateUpdateEmploymentDataConnectorSpec extends IntegrationTest {
     "Return an error result" when {
       s"employment returns a $BAD_REQUEST" in {
         stubPostWithHeadersCheck(url, BAD_REQUEST, Json.toJson(model).toString(),
-          APIErrorBodyModel.parsingError.toString,"X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+          APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.createUpdateEmploymentData(nino, taxYear,  model), Duration.Inf)
+        val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.createUpdateEmploymentData(nino, taxYear, model), Duration.Inf)
         result shouldBe Left(APIErrorModel(BAD_REQUEST, APIErrorBodyModel.parsingError))
       }
 
       s"employment returns a $NOT_FOUND" in {
         stubPostWithHeadersCheck(url, NOT_FOUND, Json.toJson(model).toString(),
-          APIErrorBodyModel.parsingError.toString,"X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+          APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
         val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.createUpdateEmploymentData(nino, taxYear, model), Duration.Inf)
         result shouldBe Left(APIErrorModel(NOT_FOUND, APIErrorBodyModel.parsingError))
@@ -91,7 +92,7 @@ class CreateUpdateEmploymentDataConnectorSpec extends IntegrationTest {
 
       s"employment returns a $FORBIDDEN" in {
         stubPostWithHeadersCheck(url, FORBIDDEN, Json.toJson(model).toString(),
-          APIErrorBodyModel.parsingError.toString,"X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+          APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
         val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.createUpdateEmploymentData(nino, taxYear, model), Duration.Inf)
         result shouldBe Left(APIErrorModel(FORBIDDEN, APIErrorBodyModel.parsingError))
@@ -99,7 +100,7 @@ class CreateUpdateEmploymentDataConnectorSpec extends IntegrationTest {
 
       s"employment returns a $UNPROCESSABLE_ENTITY" in {
         stubPostWithHeadersCheck(url, UNPROCESSABLE_ENTITY, Json.toJson(model).toString(),
-          APIErrorBodyModel.parsingError.toString,"X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+          APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
         val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.createUpdateEmploymentData(nino, taxYear, model), Duration.Inf)
         result shouldBe Left(APIErrorModel(UNPROCESSABLE_ENTITY, APIErrorBodyModel.parsingError))
@@ -107,15 +108,15 @@ class CreateUpdateEmploymentDataConnectorSpec extends IntegrationTest {
 
       s"employment returns a $INTERNAL_SERVER_ERROR" in {
         stubPostWithHeadersCheck(url, INTERNAL_SERVER_ERROR, Json.toJson(model).toString(),
-          APIErrorBodyModel.parsingError.toString,"X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+          APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.createUpdateEmploymentData(nino, taxYear,model), Duration.Inf)
+        val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.createUpdateEmploymentData(nino, taxYear, model), Duration.Inf)
         result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))
       }
 
       s"employment returns a $SERVICE_UNAVAILABLE" in {
         stubPostWithHeadersCheck(url, SERVICE_UNAVAILABLE, Json.toJson(model).toString(),
-          APIErrorBodyModel.parsingError.toString,"X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+          APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
         val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.createUpdateEmploymentData(nino, taxYear, model), Duration.Inf)
         result shouldBe Left(APIErrorModel(SERVICE_UNAVAILABLE, APIErrorBodyModel.parsingError))
@@ -123,7 +124,7 @@ class CreateUpdateEmploymentDataConnectorSpec extends IntegrationTest {
 
       s"employment returns an unexpected result" in {
         stubPostWithHeadersCheck(url, TOO_MANY_REQUESTS, Json.toJson(model).toString(),
-          APIErrorBodyModel.parsingError.toString,"X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+          APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
         val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.createUpdateEmploymentData(nino, taxYear, model), Duration.Inf)
         result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))
