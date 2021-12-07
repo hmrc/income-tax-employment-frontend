@@ -1136,9 +1136,9 @@ benefits.assetTransfersAmount.youCan.agent = You can find this information on yo
 benefits.assetTransfersAmount.error.noEntry.individual = Enter the amount for assets your employer gave you to keep
 benefits.assetTransfersAmount.error.incorrectFormat.individual = Enter the amount for assets your employer gave you to keep in the correct format
 benefits.assetTransfersAmount.error.overMaximum.individual = The total amount for assets your employer gave you to keep must be less than £100,000,000,000
-benefits.assetTransfersAmount.error.noEntry.agent = Enter the amount for assets your client’s employer gave your client to keep
-benefits.assetTransfersAmount.error.incorrectFormat.agent = Enter the amount for assets your client’s employer gave your client to keep in the correct format
-benefits.assetTransfersAmount.error.overMaximum.agent = The total amount for assets your client’s employer gave your client to keep must be less than £100,000,000,000
+benefits.assetTransfersAmount.error.noEntry.agent = Enter the amount for assets your client’s employer gave them to keep
+benefits.assetTransfersAmount.error.incorrectFormat.agent = Enter the amount for assets your client’s employer gave them to keep in the correct format
+benefits.assetTransfersAmount.error.overMaximum.agent = The total amount for assets your client’s employer gave them to keep must be less than £100,000,000,000
 
 #################       Expenses  messages        ########################################
 
