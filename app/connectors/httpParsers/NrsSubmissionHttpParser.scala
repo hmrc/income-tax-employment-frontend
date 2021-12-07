@@ -30,7 +30,7 @@ object NrsSubmissionHttpParser extends APIParser {
   implicit object NrsSubmissionHttpReads extends HttpReads[NrsSubmissionResponse] {
     override def read(method: String, url: String, response: HttpResponse): NrsSubmissionResponse = {
       response.status match {
-        case ACCEPTED => Right()
+        case OK => Right()
         case NOT_FOUND | BAD_REQUEST | UNAUTHORIZED =>
           pagerDutyLog(FOURXX_RESPONSE_FROM_API, logMessage(response))
           handleAPIError(response)
