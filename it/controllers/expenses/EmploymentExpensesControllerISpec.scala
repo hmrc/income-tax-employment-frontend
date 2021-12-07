@@ -16,8 +16,7 @@
 
 package controllers.expenses
 
-import controllers.expenses.routes.CheckEmploymentExpensesController
-import controllers.expenses.routes.BusinessTravelOvernightExpensesController
+import controllers.expenses.routes.{CheckEmploymentExpensesController, ExpensesInterruptPageController}
 import forms.YesNoForm
 import models.User
 import models.expenses.Expenses
@@ -383,7 +382,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
       }
 
-      "redirect to 'business travel and overnight stays' page and update claimingEmploymentExpenses to yes when the user chooses yes" which {
+      "redirect to 'expenses interrupt' page and update claimingEmploymentExpenses to yes when the user chooses yes" which {
 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
@@ -396,9 +395,9 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
-        "redirects to the 'business travel and overnight stays' page" in {
+        "redirects to the 'expenses interrupt' page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(BusinessTravelOvernightExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe Some(ExpensesInterruptPageController.show(taxYearEOY).url)
 
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
