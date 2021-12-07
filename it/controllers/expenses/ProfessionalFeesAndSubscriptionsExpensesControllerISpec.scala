@@ -16,9 +16,13 @@
 
 package controllers.expenses
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
+import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
+import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import controllers.expenses.routes.{BusinessTravelOvernightExpensesController, CheckEmploymentExpensesController, ProfFeesAndSubscriptionsExpensesAmountController}
 import forms.YesNoForm
-import models.User
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
@@ -28,23 +32,16 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
-
 class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear - 1
-
-  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
-
-  private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
-    ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
-
-  def expensesViewModel(professionalSubscriptionsQuestion: Option[Boolean] = None): ExpensesViewModel =
-    fullExpensesViewModel.copy(professionalSubscriptionsQuestion = professionalSubscriptionsQuestion, professionalSubscriptions = None)
-
-  private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/professional-fees-and-subscriptions"
-
+  private val taxYearEOY: Int = taxYear - 1
   private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/professional-fees-and-subscriptions"
   private val professionalFeesLink = "https://www.gov.uk/tax-relief-for-employees/professional-fees-and-subscriptions"
+
+  private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
+    anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
+
+  private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/professional-fees-and-subscriptions"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -60,15 +57,12 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
     val professionFeesLinkSelector = "#professional-fees-link"
   }
 
-
   trait CommonExpectedResults {
     val expectedCaption: Int => String
     val expectedParagraphText: String
     val yesText: String
     val noText: String
     val buttonText: String
-
-
   }
 
   trait SpecificExpectedResults {
@@ -95,7 +89,6 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
     val yesText = "Yes"
     val noText = "No"
     val buttonText = "Continue"
-
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -138,23 +131,22 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
     val checkIfYouCanClaim = "Check if your client can claim for professional fees and subscriptions (opens in new tab)"
   }
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   ".show" should {
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "render professional fees and subscriptions expenses question page with no pre-filled radio buttons" which {
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              emptyExpensesCYAModel.copy(expensesViewModel())), userRequest)
+              anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))), aUserRequest)
             urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -173,7 +165,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample1, bulletListSelector(1))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample2, bulletListSelector(2))
-          linkCheck(user.specificExpectedResults.get.checkIfYouCanClaim,professionFeesLinkSelector,professionalFeesLink)
+          linkCheck(user.specificExpectedResults.get.checkIfYouCanClaim, professionFeesLinkSelector, professionalFeesLink)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
@@ -185,8 +177,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              fullExpensesCYAModel), userRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -205,7 +196,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample1, bulletListSelector(1))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample2, bulletListSelector(2))
-          linkCheck(user.specificExpectedResults.get.checkIfYouCanClaim,professionFeesLinkSelector,professionalFeesLink)
+          linkCheck(user.specificExpectedResults.get.checkIfYouCanClaim, professionFeesLinkSelector, professionalFeesLink)
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
@@ -218,7 +209,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              emptyExpensesCYAModel.copy(expensesViewModel(Some(false)))), userRequest)
+              anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = Some(false)))), aUserRequest)
             urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -237,7 +228,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample1, bulletListSelector(1))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample2, bulletListSelector(2))
-          linkCheck(user.specificExpectedResults.get.checkIfYouCanClaim,professionFeesLinkSelector,professionalFeesLink)
+          linkCheck(user.specificExpectedResults.get.checkIfYouCanClaim, professionFeesLinkSelector, professionalFeesLink)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
           buttonCheck(buttonText, continueButtonSelector)
@@ -248,12 +239,11 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
       }
     }
 
-
     "redirect to tax overview page with it's not EOY" which {
       implicit lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
+        userDataStub(anIncomeTaxUserData, nino, taxYear)
         urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -281,7 +271,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-          emptyExpensesCYAModel.copy(ExpensesViewModel(claimingEmploymentExpenses = true, isUsingCustomerData = true))), userRequest)
+          anExpensesCYAModel.copy(ExpensesViewModel(claimingEmploymentExpenses = true, isUsingCustomerData = true))), aUserRequest)
         urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -303,7 +293,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           lazy val result: WSResponse = {
             dropExpensesDB()
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              emptyExpensesCYAModel.copy(expensesViewModel())), userRequest)
+              anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(pageUrl(taxYearEOY), body = form, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -322,7 +312,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample1, bulletListSelector(1))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample2, bulletListSelector(2))
-          linkCheck(user.specificExpectedResults.get.checkIfYouCanClaim,professionFeesLinkSelector,professionalFeesLink)
+          linkCheck(user.specificExpectedResults.get.checkIfYouCanClaim, professionFeesLinkSelector, professionalFeesLink)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
@@ -341,9 +331,9 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
       lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
+        userDataStub(anIncomeTaxUserData, nino, taxYear)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-          emptyExpensesCYAModel.copy(expensesViewModel(Some(false)))), userRequest)
+          anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptions = None))), aUserRequest)
         urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -353,7 +343,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
       }
 
       "updates professionalSubscriptionQuestion to Some(true)" in {
-        lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
+        lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
         cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
         cyaModel.expensesCya.expenses.professionalSubscriptionsQuestion shouldBe Some(true)
       }
@@ -362,13 +352,11 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
     "redirect to Check Employment Expenses page" when {
       "user selects no and it's a prior submission" which {
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
-
         lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
-          userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
-          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-            fullExpensesCYAModel), userRequest)
+          userDataStub(anIncomeTaxUserData, nino, taxYear)
+          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
           urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -378,7 +366,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
         }
 
         "update professionalSubscriptionQuestion to Some(false) and wipes jobExpenses amount" in {
-          lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
+          lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
           cyaModel.expensesCya.expenses.professionalSubscriptionsQuestion shouldBe Some(false)
@@ -406,7 +394,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
       implicit lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
-        userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
+        userDataStub(anIncomeTaxUserData, nino, taxYear)
         urlPost(pageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -415,7 +403,5 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
         result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
-
   }
-
 }

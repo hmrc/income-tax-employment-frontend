@@ -20,7 +20,6 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.fuel.routes.{CompanyCarBenefitsAmountController, CompanyVanBenefitsController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
 import models.User
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
@@ -33,8 +32,10 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.fuel.CompanyCarBenefitsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
+// TODO: This controller does not have enough test coverage in CompanyCarBenefitsControllerISpec
 class CompanyCarBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
                                              authAction: AuthorisedAction,
                                              inYearAction: InYearAction,

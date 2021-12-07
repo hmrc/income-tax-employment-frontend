@@ -16,11 +16,13 @@
 
 package controllers.employment
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
 import common.{SessionValues, UUID}
 import controllers.employment.routes._
 import forms.YesNoForm
+import models.IncomeTaxUserData
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
-import models.{IncomeTaxUserData, User}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -31,7 +33,7 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val validTaxYear2021 = 2021
+  private val validTaxYear2021 = 2021
 
   object Selectors {
     val valueHref = "#value"
@@ -104,14 +106,6 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
 
   private def url(taxYear: Int) = s"$appUrl/$taxYear/add-employment"
 
-  val addEmploymentURl =
-    s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/add-employment"
-
-
-
-  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
-
-
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     EmploymentUserData(sessionId, mtditid, nino, validTaxYear2021, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
@@ -168,7 +162,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             userDataStub(IncomeTaxUserData(None), nino, taxYear)
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
             urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear, Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "fake-id"))))
           }
 
@@ -193,7 +187,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
+            userDataStub(anIncomeTaxUserData, nino, taxYear)
             urlGet(url(taxYear), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -211,7 +205,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
+            userDataStub(anIncomeTaxUserData, nino, taxYear)
             urlGet(url(taxYear), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -247,7 +241,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(None), nino, validTaxYear2021)
-            urlPost(url(validTaxYear2021),body=yesNoFormEmpty, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
+            urlPost(url(validTaxYear2021), body = yesNoFormEmpty, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
           }
 
           "status BAD_REQUEST" in {
@@ -270,7 +264,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(None), nino, taxYear)
-            urlPost(url(validTaxYear2021),follow=false, body=yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
+            urlPost(url(validTaxYear2021), follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
           }
 
           "status SEE_OTHER" in {
@@ -287,7 +281,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(None), nino, taxYear)
-            urlPost(url(validTaxYear2021),follow=false, body=yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
+            urlPost(url(validTaxYear2021), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
           }
 
           "status SEE_OTHER" in {
@@ -303,8 +297,8 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(IncomeTaxUserData(None), nino, taxYear-1)
-            urlPost(url(validTaxYear2021),follow=false, body=yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021,
+            userDataStub(IncomeTaxUserData(None), nino, taxYear - 1)
+            urlPost(url(validTaxYear2021), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
           }
 
@@ -321,9 +315,9 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
-            userDataStub(IncomeTaxUserData(None), nino, taxYear-1)
-            urlPost(url(validTaxYear2021),follow=false, body=yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021,
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
+            userDataStub(IncomeTaxUserData(None), nino, taxYear - 1)
+            urlPost(url(validTaxYear2021), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
           }
 
@@ -339,9 +333,9 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), userRequest)
-            userDataStub(IncomeTaxUserData(None), nino, taxYear-1)
-            urlPost(url(validTaxYear2021),follow=false, body=yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021,
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
+            userDataStub(IncomeTaxUserData(None), nino, taxYear - 1)
+            urlPost(url(validTaxYear2021), follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
           }
 
@@ -359,8 +353,8 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
-            urlPost(url(validTaxYear2021), follow=false, body=yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
+            userDataStub(anIncomeTaxUserData, nino, taxYear)
+            urlPost(url(validTaxYear2021), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
           }
 
           "status SEE_OTHER" in {
@@ -376,8 +370,8 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel()), nino, taxYear)
-            urlPost(url(taxYear), follow=false, body=yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            userDataStub(anIncomeTaxUserData, nino, taxYear)
+            urlPost(url(taxYear), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status SEE_OTHER" in {
@@ -388,12 +382,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             result.header(HeaderNames.LOCATION) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
           }
         }
-
       }
     }
-
-
   }
-
-
 }

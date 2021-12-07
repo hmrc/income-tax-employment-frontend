@@ -16,7 +16,7 @@
 
 package builders.models.benefits
 
-import builders.models.benefits.AccommodationRelocationModelBuilder.aAccommodationRelocationModel
+import builders.models.benefits.AccommodationRelocationModelBuilder.anAccommodationRelocationModel
 import builders.models.benefits.AssetsModelBuilder.anAssetsModel
 import builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
 import builders.models.benefits.IncomeTaxAndCostsModelBuilder.aIncomeTaxAndCostsModel
@@ -30,13 +30,15 @@ object BenefitsViewModelBuilder {
 
   val aBenefitsViewModel: BenefitsViewModel = BenefitsViewModel(
     carVanFuelModel = Some(aCarVanFuelModel),
-    accommodationRelocationModel = Some(aAccommodationRelocationModel),
+    accommodationRelocationModel = Some(anAccommodationRelocationModel),
     travelEntertainmentModel = Some(aTravelEntertainmentModel),
     utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel),
-    isUsingCustomerData = true,
-    isBenefitsReceived = true,
     medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel),
     incomeTaxAndCostsModel = Some(aIncomeTaxAndCostsModel),
     reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel),
-    assetsModel = Some(anAssetsModel))
+    assetsModel = Some(anAssetsModel),
+    submittedOn = None,
+    isUsingCustomerData = true,
+    isBenefitsReceived = true
+  )
 }

@@ -16,9 +16,13 @@
 
 package controllers.expenses
 
+import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.UserBuilder.aUserRequest
+import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
+import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
+import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import controllers.expenses.routes.{CheckEmploymentExpensesController, ProfessionalFeesAndSubscriptionsExpensesController}
 import forms.AmountForm
-import models.User
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
@@ -37,14 +41,12 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
   val amountField = "#amount"
   val amountFieldName = "amount"
 
-  private val userRequest = User(mtditid, None, nino, sessionId, affinityGroup)(fakeRequest)
+  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/amount-for-uniforms-work-clothes-or-tools"
 
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
-    ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
+    anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
 
   private def employmentExpensesAmountPageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/amount-for-uniforms-work-clothes-or-tools"
-
-  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/amount-for-uniforms-work-clothes-or-tools"
 
   object Selectors {
     val formSelector = "#main-content > div > div > form"
@@ -162,9 +164,9 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses.copy(flatRateJobExpenses = None))))), nino, taxYearEOY)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-              fullExpensesCYAModel.copy(expenses = fullExpensesCYAModel.expenses.copy(flatRateJobExpenses = None))), userRequest)
+              anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(flatRateJobExpenses = None))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(employmentExpensesAmountPageUrl(taxYearEOY), user.isWelsh, follow = false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -194,9 +196,9 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              fullExpensesCYAModel.copy(expenses = fullExpensesCYAModel.expenses.copy(flatRateJobExpenses = Some(newAmount)))), userRequest)
+              anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(employmentExpensesAmountPageUrl(taxYearEOY), user.isWelsh, follow = false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -226,9 +228,8 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              fullExpensesCYAModel), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(employmentExpensesAmountPageUrl(taxYearEOY), user.isWelsh, follow = false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -262,9 +263,8 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
 
         lazy val result: WSResponse = {
           dropExpensesDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYear)
-          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-            fullExpensesCYAModel), userRequest)
+          userDataStub(anIncomeTaxUserData, nino, taxYear)
+          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
           urlGet(employmentExpensesAmountPageUrl(taxYear), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
@@ -295,9 +295,9 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           authoriseAgentOrIndividual(user.isAgent)
           dropExpensesDB()
           authoriseAgentOrIndividual(user.isAgent)
-          userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
+          userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-            fullExpensesCYAModel.copy(expenses = fullExpensesCYAModel.expenses.copy(flatRateJobExpensesQuestion = Some(false)))), userRequest)
+            anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(flatRateJobExpensesQuestion = Some(false)))), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
           urlGet(employmentExpensesAmountPageUrl(taxYearEOY), user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -330,9 +330,8 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
 
           lazy val result: WSResponse = {
             dropExpensesDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYear)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              fullExpensesCYAModel), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYear)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(employmentExpensesAmountPageUrl(taxYearEOY), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
 
@@ -365,9 +364,8 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
 
           lazy val result: WSResponse = {
             dropExpensesDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYear)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              fullExpensesCYAModel), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYear)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(employmentExpensesAmountPageUrl(taxYearEOY), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -399,9 +397,8 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
 
           lazy val result: WSResponse = {
             dropExpensesDB()
-            userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYear)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              fullExpensesCYAModel), userRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYear)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(employmentExpensesAmountPageUrl(taxYearEOY), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -438,10 +435,10 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
 
         lazy val result: WSResponse = {
           dropExpensesDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
+          userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
             ExpensesCYAModel(ExpensesViewModel(claimingEmploymentExpenses = true, jobExpensesQuestion = Some(false),
-              flatRateJobExpensesQuestion = Some(true), isUsingCustomerData = true))), userRequest)
+              flatRateJobExpensesQuestion = Some(true), isUsingCustomerData = true))), aUserRequest)
           urlPost(employmentExpensesAmountPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -449,7 +446,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
         "redirects to professional fees and subscriptions question page" in {
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe Some(ProfessionalFeesAndSubscriptionsExpensesController.show(taxYearEOY).url)
-          lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
+          lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
           cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(false)
@@ -464,10 +461,10 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
 
         lazy val result: WSResponse = {
           dropExpensesDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
+          userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
             ExpensesCYAModel(ExpensesViewModel(claimingEmploymentExpenses = true, jobExpensesQuestion = Some(false),
-              flatRateJobExpensesQuestion = None, isUsingCustomerData = true))), userRequest)
+              flatRateJobExpensesQuestion = None, isUsingCustomerData = true))), aUserRequest)
           urlPost(employmentExpensesAmountPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -484,9 +481,8 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
 
         lazy val result: WSResponse = {
           dropExpensesDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYearEOY)
-          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-            fullExpensesCYAModel), userRequest)
+          userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(employmentExpensesAmountPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -496,7 +492,7 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
           result.status shouldBe SEE_OTHER
 
           result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
-          lazy val cyaModel = findExpensesCyaData(taxYearEOY, userRequest).get
+          lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
           cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(true)
@@ -519,9 +515,8 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
 
         lazy val result: WSResponse = {
           dropExpensesDB()
-          userDataStub(userData(fullEmploymentsModel(hmrcExpenses = Some(employmentExpenses(fullExpenses)))), nino, taxYear)
-          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-            fullExpensesCYAModel), userRequest)
+          userDataStub(anIncomeTaxUserData, nino, taxYear)
+          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(employmentExpensesAmountPageUrl(taxYear), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))

@@ -31,6 +31,6 @@ object CarVanFuelModelBuilder {
     vanFuelQuestion = Some(true),
     vanFuel = Some(400.00),
     mileageQuestion = Some(true),
-    mileage = Some(400.00)
+    mileage = Some(500.00)
   )
 }
