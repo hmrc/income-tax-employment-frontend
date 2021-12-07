@@ -17,7 +17,7 @@
 package controllers.expenses
 
 import config.{AppConfig, ErrorHandler}
-import controllers.expenses.routes.{BusinessTravelOvernightExpensesController, CheckEmploymentExpensesController}
+import controllers.expenses.routes.{CheckEmploymentExpensesController, ExpensesInterruptPageController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
@@ -82,11 +82,10 @@ class EmploymentExpensesController @Inject()(implicit val cc: MessagesController
               employmentSessionService.createOrUpdateExpensesSessionData(
                 updatedCyaModel, taxYear, data.exists(_.isPriorSubmission), data.exists(_.isPriorSubmission))(errorHandler.internalServerError()) {
                 val nextPage = if(yesNo) {
-                  BusinessTravelOvernightExpensesController.show(taxYear) //TODO expenses interrupt page
+                  ExpensesInterruptPageController.show(taxYear)
                 } else {
                   CheckEmploymentExpensesController.show(taxYear)
                 }
-
                 ExpensesRedirectService.expensesSubmitRedirect(updatedCyaModel, nextPage)(taxYear)
               }
             }
