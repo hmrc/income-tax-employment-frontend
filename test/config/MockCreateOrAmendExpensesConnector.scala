@@ -18,7 +18,7 @@ package config
 
 import connectors.CreateOrAmendExpensesConnector
 import connectors.httpParsers.CreateOrAmendExpensesHttpParser.CreateOrAmendExpensesResponse
-import models.expenses.CreateExpensesRequestModel
+import models.expenses.createUpdate.CreateUpdateExpensesRequest
 import models.{APIErrorBodyModel, APIErrorModel}
 import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
@@ -31,15 +31,19 @@ trait MockCreateOrAmendExpensesConnector extends MockFactory {
 
   val mockCreateOrAmendExpensesConnector: CreateOrAmendExpensesConnector = mock[CreateOrAmendExpensesConnector]
 
-  def mockCreateOrAmendExpensesSuccess(nino: String, taxYear: Int, createRequestModel: CreateExpensesRequestModel): CallHandler4[String, Int, CreateExpensesRequestModel, HeaderCarrier, Future[CreateOrAmendExpensesResponse]] = {
-    (mockCreateOrAmendExpensesConnector.createOrAmendExpenses(_: String, _:Int, _:CreateExpensesRequestModel)(_:HeaderCarrier))
+  def mockCreateOrAmendExpensesSuccess(nino: String, taxYear: Int,
+                                       createRequestModel: CreateUpdateExpensesRequest): CallHandler4[String, Int,
+    CreateUpdateExpensesRequest, HeaderCarrier, Future[CreateOrAmendExpensesResponse]] = {
+    (mockCreateOrAmendExpensesConnector.createOrAmendExpenses(_: String, _:Int, _:CreateUpdateExpensesRequest)(_:HeaderCarrier))
       .expects(nino, taxYear, createRequestModel, *)
       .returns(Future.successful(Right(())))
       .anyNumberOfTimes()
   }
 
-  def mockCreateOrAmendExpensesError(nino: String, taxYear: Int, createRequestModel: CreateExpensesRequestModel): CallHandler4[String, Int, CreateExpensesRequestModel, HeaderCarrier, Future[CreateOrAmendExpensesResponse]] = {
-    (mockCreateOrAmendExpensesConnector.createOrAmendExpenses(_: String, _: Int, _: CreateExpensesRequestModel)(_: HeaderCarrier))
+  def mockCreateOrAmendExpensesError(nino: String, taxYear: Int,
+                                     createRequestModel: CreateUpdateExpensesRequest): CallHandler4[String, Int,
+    CreateUpdateExpensesRequest, HeaderCarrier, Future[CreateOrAmendExpensesResponse]] = {
+    (mockCreateOrAmendExpensesConnector.createOrAmendExpenses(_: String, _: Int, _: CreateUpdateExpensesRequest)(_: HeaderCarrier))
       .expects(nino, taxYear, createRequestModel, *)
       .returns(Future.successful(Left(APIErrorModel(BAD_REQUEST, APIErrorBodyModel("CODE", "REASON")))))
       .anyNumberOfTimes()
