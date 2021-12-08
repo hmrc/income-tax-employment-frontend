@@ -16,15 +16,20 @@
 
 package services
 
+import controllers.employment.routes.EmploymentSummaryController
 import config.{AppConfig, ErrorHandler, MockCreateOrAmendExpensesConnector}
 import models.employment._
-import models.expenses.{CreateExpensesRequestModel, Expenses, ExpensesViewModel}
+import models.expenses.createUpdate.{CreateUpdateExpensesRequest, CreateUpdateExpensesRequestError, NothingToUpdate}
+import models.expenses.{Expenses, ExpensesViewModel}
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
-import play.api.http.Status.INTERNAL_SERVER_ERROR
+import play.api.http.Status.{INTERNAL_SERVER_ERROR, SEE_OTHER}
 import play.api.i18n.MessagesApi
-import play.api.mvc.Results.Ok
+import play.api.mvc.Result
+import play.api.mvc.Results.{Ok, Redirect}
 import utils.UnitTest
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
+
+import scala.concurrent.Future
 
 class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendExpensesConnector {
 
@@ -33,47 +38,64 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
   val internalServerErrorTemplate: InternalServerErrorTemplate = app.injector.instanceOf[InternalServerErrorTemplate]
   val mockMessagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   val mockFrontendAppConfig: AppConfig = app.injector.instanceOf[AppConfig]
-
   val errorHandler = new ErrorHandler(internalServerErrorTemplate, serviceUnavailableTemplate, mockMessagesApi, notFoundTemplate)(mockFrontendAppConfig)
-
   val service: CreateOrAmendExpensesService = new CreateOrAmendExpensesService(mockCreateOrAmendExpensesConnector, errorHandler, mockExecutionContext)
-
   val taxYear = 2022
+  val newAmount = BigDecimal("950.11")
 
-  private val hmrcExpensesWithoutDateIgnored =
-    EmploymentExpenses(
-      None,
-      None,
-      Some(8),
-      Some(Expenses(Some(1), Some(1), Some(1), Some(1), Some(1), Some(1), Some(1), Some(1)))
-    )
+  val expensesViewModel: ExpensesViewModel = ExpensesViewModel(jobExpensesQuestion = Some(true), jobExpenses = Some(100.11),
+    flatRateJobExpensesQuestion = Some(true), flatRateJobExpenses = Some(200.22), professionalSubscriptionsQuestion = Some(true),
+    professionalSubscriptions = Some(300.33), otherAndCapitalAllowancesQuestion = Some(true), otherAndCapitalAllowances = Some(400.44),
+    businessTravelCosts = Some(500.55), hotelAndMealExpenses = Some(600.66), vehicleExpenses = Some(700.77), mileageAllowanceRelief = Some(800.88),
+    isUsingCustomerData = false)
 
-  private val hmrcExpensesWithDateIgnored =
-    EmploymentExpenses(
-      None,
-      Some("2020-04-04T01:01:01Z"),
-      Some(8),
-      Some(expenses.copy(businessTravelCosts = None))
-    )
+  val expenseCyaModel: ExpensesCYAModel = ExpensesCYAModel(expensesViewModel)
+  private val expensesCyaData: ExpensesCYAModel = expenseCyaModel
+
 
   private val customerExpenses =
     EmploymentExpenses(
       None,
       None,
       Some(40),
-      Some(expenses)
+      Some(Expenses(jobExpenses = Some(100.11), flatRateJobExpenses = Some(200.22),
+        professionalSubscriptions = Some(300.33), otherAndCapitalAllowances = Some(400.44),
+        businessTravelCosts = Some(500.55), hotelAndMealExpenses = Some(600.66), vehicleExpenses = Some(700.77), mileageAllowanceRelief = Some(800.88)))
     )
 
-  private def priorData(hmrcExpenses: Option[EmploymentExpenses], customerExpenses: Option[EmploymentExpenses]): AllEmploymentData = AllEmploymentData(
-    hmrcEmploymentData = Seq(),
-    hmrcExpenses = hmrcExpenses,
-    customerEmploymentData = Seq(),
-    customerExpenses = customerExpenses
-  )
+  private val expensesCyaDataWithNoExpenses: ExpensesCYAModel = ExpensesCYAModel(ExpensesViewModel(jobExpensesQuestion = Some(false), jobExpenses = None,
+    flatRateJobExpensesQuestion = Some(false), flatRateJobExpenses = None, professionalSubscriptionsQuestion = Some(false),
+    professionalSubscriptions = None, otherAndCapitalAllowancesQuestion = Some(false), otherAndCapitalAllowances = None,
+    businessTravelCosts = None, hotelAndMealExpenses = None, vehicleExpenses = None, mileageAllowanceRelief = None,
+    isUsingCustomerData = false))
 
-  private val expensesCyaData = ExpensesCYAModel(ExpensesViewModel(jobExpensesQuestion = Some(true), jobExpenses = Some(2), flatRateJobExpensesQuestion = Some(true), flatRateJobExpenses = Some(2), professionalSubscriptionsQuestion = Some(true), professionalSubscriptions = Some(2), otherAndCapitalAllowancesQuestion = Some(true), otherAndCapitalAllowances = Some(2), businessTravelCosts = Some(1), hotelAndMealExpenses = Some(2), vehicleExpenses = Some(2), mileageAllowanceRelief = Some(2), isUsingCustomerData = false))
+  val fullCreateUpdateExpensesRequestWithIgnoreExpenses: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(None, expensesCyaData.expenses.toExpenses)
 
-  private val expensesUserData =
+  val AllEmpDataNoCustomerAndUnchangedHmrcExpenses: AllEmploymentData =
+    AllEmploymentData(
+      Seq.empty,
+      Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))),
+      Seq(),
+      None
+    )
+
+  val AllEmpDataHmrcExpensesCustomerAndUnchangedCustomerExpenses: AllEmploymentData =
+    AllEmploymentData(
+      Seq.empty,
+      Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))),
+      Seq(),
+      Some(customerExpenses)
+    )
+
+  val AllEmpDataNoHmrcExpensesAndUnchangedCustomerExpenses: AllEmploymentData =
+    AllEmploymentData(
+      Seq.empty,
+      Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))),
+      Seq(),
+      Some(customerExpenses)
+    )
+
+  private def expensesUserData(expensesCyaModel: ExpensesCYAModel = expensesCyaData) =
     ExpensesUserData(
       sessionId = sessionId,
       mtdItId = mtditid,
@@ -81,81 +103,250 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
       taxYear = taxYear,
       isPriorSubmission = true,
       hasPriorExpenses = true,
-      expensesCya = expensesCyaData
+      expensesCya = expensesCyaModel
     )
 
   val expensesModel: Expenses = expensesCyaData.expenses.toExpenses
+  val updatedExpensesModel: Expenses = expensesCyaData.expenses.copy(flatRateJobExpenses = Some(BigDecimal("1000.01"))).toExpenses
 
-  ".createOrAmendExpenses" should {
+  "createModelAndReturnResult" should {
 
-    "return a successful result" when {
+    "return to employment summary when there is nothing changed in relation to the hmrc expenses and customer expenses" in {
+      lazy val response = service.createExpensesModelAndReturnResult(
+        expensesUserData(), Some(
+          AllEmpDataHmrcExpensesCustomerAndUnchangedCustomerExpenses
+        ), taxYear
+      )(_ => Future.successful(Redirect("303")))
 
-      "there is both hmrc expenses and customer expenses" which {
-        "expense request model contains ignoreExpenses(true) and expensesCyaData" in {
-          mockCreateOrAmendExpensesSuccess(nino, taxYear, CreateExpensesRequestModel(Some(true), expensesModel))
-
-          val response = service.createOrAmendExpense(expensesUserData, priorData(Some(hmrcExpensesWithoutDateIgnored), Some(customerExpenses)), taxYear)(Ok)
-
-          await(response) shouldBe Ok
-        }
-      }
-
-      "there is both hmrc expenses and customer expenses but hmrc data has dateIgnored" which {
-
-        "expense request model only has expensesCyaData" in {
-          mockCreateOrAmendExpensesSuccess(nino, taxYear, CreateExpensesRequestModel(None, expensesCyaData.expenses.toExpenses))
-
-          val response = service.createOrAmendExpense(expensesUserData, priorData(Some(hmrcExpensesWithDateIgnored), Some(customerExpenses)), taxYear)(Ok)
-
-          await(response) shouldBe Ok
-        }
-      }
-
-      "there is hmrc data and no customer data" which {
-
-        "expense request model contains ignoreExpenses(true) and expensesCyaData" in {
-          mockCreateOrAmendExpensesSuccess(nino, taxYear, CreateExpensesRequestModel(Some(true), expensesCyaData.expenses.toExpenses))
-
-          val response = service.createOrAmendExpense(expensesUserData, priorData(Some(hmrcExpensesWithoutDateIgnored), None), taxYear)(Ok)
-
-          await(response) shouldBe Ok
-        }
-      }
-
-      "there is customer data and no hmrc data" which {
-
-        "expense request model only has expensesCyaData" in {
-          mockCreateOrAmendExpensesSuccess(nino, taxYear, CreateExpensesRequestModel(None, expensesCyaData.expenses.toExpenses))
-
-          val response = service.createOrAmendExpense(expensesUserData, priorData(None, Some(customerExpenses)), taxYear)(Ok)
-
-          await(response) shouldBe Ok
-        }
-      }
-
-      "there is no hmrc and no customer data but there is expensesCyaData" which {
-
-        "expense request model only has expensesCyaData" in {
-          mockCreateOrAmendExpensesSuccess(nino, taxYear, CreateExpensesRequestModel(None, expensesModel))
-
-          val response = service.createOrAmendExpense(expensesUserData, priorData(None, None), taxYear)(Ok)
-
-          await(response) shouldBe Ok
-        }
-
-      }
-
+      status(response) shouldBe SEE_OTHER
+      redirectUrl(response) shouldBe EmploymentSummaryController.show(taxYear).url
     }
 
-    "returns an unsuccessful result" when {
+    "return to employment summary when there is nothing changed in relation to the customer expenses when no hmrc expenses" in {
+      lazy val response = service.createExpensesModelAndReturnResult(
+        expensesUserData(), Some(
+          AllEmpDataNoHmrcExpensesAndUnchangedCustomerExpenses
+        ), taxYear
+      )(_ => Future.successful(Redirect("303")))
 
-      "the connector throws a Left" in {
-        mockCreateOrAmendExpensesError(nino, taxYear, CreateExpensesRequestModel(Some(true), expensesModel))
+      status(response) shouldBe SEE_OTHER
+      redirectUrl(response) shouldBe EmploymentSummaryController.show(taxYear).url
+    }
 
-        val response = service.createOrAmendExpense(expensesUserData, priorData(Some(hmrcExpensesWithoutDateIgnored), Some(customerExpenses)), taxYear)(Ok)
+    "return to employment summary when there is nothing changed in relation to the hmrc expenses when no customer expenses" in {
+      lazy val response = service.createExpensesModelAndReturnResult(
+        expensesUserData(), Some(
+          AllEmpDataNoCustomerAndUnchangedHmrcExpenses
+        ), taxYear
+      )(_ => Future.successful(Redirect("303")))
 
-        status(response) shouldBe INTERNAL_SERVER_ERROR
+      status(response) shouldBe SEE_OTHER
+      redirectUrl(response) shouldBe EmploymentSummaryController.show(taxYear).url
+    }
+
+    "redirect after successfully posting changed expensesUserData when there are no prior customer expenses or hmrc expenses" in {
+      lazy val response = service.createExpensesModelAndReturnResult(
+        expensesUserData(), Some(
+          AllEmploymentData(
+            Seq.empty,
+            None,
+            Seq(),
+            None
+          )
+        ), taxYear
+      )(_ => Future.successful(Redirect("303")))
+
+      status(response) shouldBe SEE_OTHER
+      redirectUrl(response) shouldBe "303"
+    }
+
+    "redirect after successfully posting expensesUserData with no expenses when there are no prior customer expenses or hmrc expenses" in {
+      lazy val response = service.createExpensesModelAndReturnResult(
+        expensesUserData().copy(expensesCya = expensesCyaDataWithNoExpenses), Some(
+          AllEmploymentData(
+            Seq.empty,
+            None,
+            Seq(),
+            None
+          )
+        ), taxYear
+      )(_ => Future.successful(Redirect("303")))
+
+      status(response) shouldBe SEE_OTHER
+      redirectUrl(response) shouldBe "303"
+    }
+
+    "redirect after successfully posting a minimal change to the expensesUserData data" when {
+      "there is no prior customer expenses but hmrc expenses exists with a date ignored" in {
+
+        lazy val response = service.createExpensesModelAndReturnResult(
+          expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))), Some(
+            AllEmploymentData(
+              Seq.empty,
+              Some(EmploymentExpenses(None, dateIgnored = Some("2021-01-01"), None, Some(expensesCyaData.expenses.toExpenses))),
+              Seq(),
+              None
+            )
+          ), taxYear
+        )(_ => Future.successful(Redirect("303")))
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "303"
       }
+    }
+
+    "redirect after successfully posting a minimal change to the expensesUserData data" when {
+      "there is no prior customer expenses  but prior hmrc expenses exists with date ignored is empty" in {
+
+        lazy val response = service.createExpensesModelAndReturnResult(
+          expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))), Some(
+            AllEmploymentData(
+              Seq.empty,
+              Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))),
+              Seq(),
+              None
+            )
+          ), taxYear
+        )(_ => Future.successful(Redirect("303")))
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "303"
+      }
+    }
+
+    "redirect after successfully posting a minimal change to the expensesUserData data" when {
+      "there are hmrc expenses with date ignored but no customer expenses" in {
+
+        val newAmount = BigDecimal("950.11")
+        lazy val response = service.createExpensesModelAndReturnResult(
+          expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))), Some(
+            AllEmploymentData(
+              Seq.empty,
+              Some(EmploymentExpenses(None, dateIgnored = Some("2021-01-01"), None, Some(expensesCyaData.expenses.toExpenses))),
+              Seq(),
+              None
+            )
+          ), taxYear
+        )(_ => Future.successful(Redirect("303")))
+
+        status(response) shouldBe SEE_OTHER
+        redirectUrl(response) shouldBe "303"
+      }
+    }
+  }
+
+  "createOrUpdateExpensesResult" should {
+    "return a successful result using the request model to make the api call and return the correct redirect" when {
+      "hmrc expenses data has ignoreExpenses(true)" in {
+
+        mockCreateOrAmendExpensesSuccess(nino, taxYear, CreateUpdateExpensesRequest(Some(true), expensesModel))
+
+        val response: Future[Either[Result, Result]] = service.createOrUpdateExpensesResult(
+          taxYear, fullCreateUpdateExpensesRequestWithIgnoreExpenses.copy(ignoreExpenses = Some(true)))
+        status(response.map(_.right.get)) shouldBe SEE_OTHER
+        redirectUrl(response.map(_.right.get)) shouldBe EmploymentSummaryController.show(taxYear).url
+      }
+    }
+
+    "return a successful result using the request model to make the api call and return the correct redirect" when {
+      "hmrc expenses data has dateIgnored" in {
+
+        mockCreateOrAmendExpensesSuccess(nino, taxYear, fullCreateUpdateExpensesRequestWithIgnoreExpenses)
+
+        val response: Future[Either[Result, Result]] = service.createOrUpdateExpensesResult(
+          taxYear, fullCreateUpdateExpensesRequestWithIgnoreExpenses)
+        status(response.map(_.right.get)) shouldBe SEE_OTHER
+        redirectUrl(response.map(_.right.get)) shouldBe EmploymentSummaryController.show(taxYear).url
+      }
+    }
+
+    "return a successful result using the request model to make the api call and return the correct redirect" when {
+      "the updated CYA expenses contains no expenses data" in {
+
+        mockCreateOrAmendExpensesSuccess(nino, taxYear, fullCreateUpdateExpensesRequestWithIgnoreExpenses.copy(expenses = Expenses()))
+
+        val response: Future[Either[Result, Result]] = service.createOrUpdateExpensesResult(
+          taxYear, fullCreateUpdateExpensesRequestWithIgnoreExpenses.copy(expenses = Expenses()))
+        status(response.map(_.right.get)) shouldBe SEE_OTHER
+        redirectUrl(response.map(_.right.get)) shouldBe EmploymentSummaryController.show(taxYear).url
+      }
+    }
+
+    "use the request model to make the api call and handle an error when the connector throws a Left" in {
+      mockCreateOrAmendExpensesError(nino, taxYear, CreateUpdateExpensesRequest(None, expensesModel))
+      lazy val response: Future[Either[Result, Result]] = service.createOrUpdateExpensesResult(taxYear, fullCreateUpdateExpensesRequestWithIgnoreExpenses)
+      status(response.map(_.left.get)) shouldBe INTERNAL_SERVER_ERROR
+    }
+  }
+
+  "cyaAndPriorToCreateUpdateExpensesRequest" should {
+    "return a Left(NothingToUpdate) if there are no customer expenses and cya data is unchanged in relation to hmrc expenses" in {
+      val result: Either[CreateUpdateExpensesRequestError, CreateUpdateExpensesRequest] = service.cyaAndPriorToCreateUpdateExpensesRequest(
+        expensesUserData(), Some(
+          AllEmpDataNoCustomerAndUnchangedHmrcExpenses
+        )
+      )
+      result shouldBe Left(NothingToUpdate)
+    }
+
+    "return a Left(NothingToUpdate) if cya data is unchanged in relation to customer expenses when hmrc expenses also present" in {
+      val result: Either[CreateUpdateExpensesRequestError, CreateUpdateExpensesRequest] = service.cyaAndPriorToCreateUpdateExpensesRequest(
+        expensesUserData(), Some(
+          AllEmpDataHmrcExpensesCustomerAndUnchangedCustomerExpenses
+        )
+      )
+      result shouldBe Left(NothingToUpdate)
+    }
+
+    "return a Left(NothingToUpdate) if cya data is unchanged in relation to customer expenses when no hmrc expenses" in {
+      val result: Either[CreateUpdateExpensesRequestError, CreateUpdateExpensesRequest] = service.cyaAndPriorToCreateUpdateExpensesRequest(
+        expensesUserData(), Some(
+          AllEmpDataNoHmrcExpensesAndUnchangedCustomerExpenses
+        )
+      )
+      result shouldBe Left(NothingToUpdate)
+    }
+
+    "return a Right when no customer expenses but there are cya data changes in relation to hmrc expenses" in {
+      val result: Either[CreateUpdateExpensesRequestError, CreateUpdateExpensesRequest] = service.cyaAndPriorToCreateUpdateExpensesRequest(
+        expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))), Some(
+          AllEmploymentData(
+            Seq.empty,
+            Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))),
+            Seq(),
+            None
+          )
+        )
+      )
+      result.isRight shouldBe true
+    }
+
+    "return a Right when no hmrc expenses but there are changes in relation to customer expenses" in {
+      val result: Either[CreateUpdateExpensesRequestError, CreateUpdateExpensesRequest] = service.cyaAndPriorToCreateUpdateExpensesRequest(
+        expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))), Some(
+          AllEmploymentData(
+            Seq.empty,
+            None,
+            Seq(),
+            Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))),
+          )
+        )
+      )
+      result.isRight shouldBe true
+    }
+
+    "return a Right when there are prior hmrc expenses or customer expenses but updated cya data" in {
+      val result: Either[CreateUpdateExpensesRequestError, CreateUpdateExpensesRequest] = service.cyaAndPriorToCreateUpdateExpensesRequest(
+        expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))), Some(
+          AllEmploymentData(
+            Seq.empty,
+            None,
+            Seq(),
+            None,
+          )
+        )
+      )
+      result.isRight shouldBe true
     }
 
   }
