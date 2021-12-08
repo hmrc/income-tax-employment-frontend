@@ -22,7 +22,6 @@ import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import forms.YesNoForm
 import models.benefits.UtilitiesAndServicesModel
-import models.mongo.EmploymentCYAModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -35,9 +34,6 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
   private val taxYearEOY: Int = taxYear - 1
   private val employmentId: String = "employmentId"
   private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/utility-general-service?employmentId=$employmentId"
-
-  private def employmentUserData(employmentCyaModel: EmploymentCYAModel) =
-    anEmploymentUserData.copy(isPriorSubmission = true, hasPriorBenefits = true, employment = employmentCyaModel)
 
   private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/utility-general-service?employmentId=$employmentId"
 
@@ -123,7 +119,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             val model = aBenefitsViewModel.copy(utilitiesAndServicesModel = None)
-            insertCyaData(employmentUserData(anEmploymentCYAModel.copy(employmentBenefits = Some(model))), aUserRequest)
+            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(model))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -151,7 +147,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
         "render the 'Did you get utility or general service employment benefits' page with the correct content with yes value pre-filled" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            insertCyaData(anEmploymentUserData, aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -195,7 +191,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
       "redirect to the check employment benefits page when theres no CYA data" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(employmentUserData(anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
           urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -216,7 +212,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
-          insertCyaData(employmentUserData(anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
           urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -238,10 +234,9 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
 
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            insertCyaData(anEmploymentUserData, aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "has the correct status" in {
@@ -275,7 +270,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(UtilitiesAndServicesModel(sectionQuestion = Some(false))))
-        insertCyaData(employmentUserData(anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -296,7 +291,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
-        insertCyaData(employmentUserData(anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -326,7 +321,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(employmentUserData(anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
