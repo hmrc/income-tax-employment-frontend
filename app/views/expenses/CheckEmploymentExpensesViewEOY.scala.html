@@ -100,7 +100,9 @@
 
         }
 
-        @button("common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))
+        @formWithCSRF(action = controllers.expenses.routes.CheckEmploymentExpensesController.submit(taxYear)) {
+            @button("common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))
+        }
     }
 
     @{

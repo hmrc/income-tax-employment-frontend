@@ -159,15 +159,13 @@ object ExpensesRedirectService extends Logging {
     val expensesViewModel: ExpensesViewModel = cya.expenses
     val expensesFinished = expensesViewModel.expensesIsFinished
 
-    val unfinishedRedirects: Seq[Call] = Seq(expensesFinished).flatten
-
-    unfinishedRedirects match {
-      case calls if calls.isEmpty =>
-        logger.info("[ExpensesRedirectService][expensesSubmitRedirect] User has completed all sections - Routing to expenses CYA page")
-        Redirect(CheckEmploymentExpensesController.show(taxYear))
-      case _ =>
-        logger.info(s"[ExpensesRedirectService][expensesSubmitRedirect] User has not yet completed all sections - Routing to next page: ${nextPage.url}")
-        Redirect(nextPage)
+    if(expensesFinished.isEmpty) {
+      logger.info("[ExpensesRedirectService][expensesSubmitRedirect] User has completed all sections - Routing to expenses CYA page")
+      Redirect(CheckEmploymentExpensesController.show(taxYear))
+    } else {
+      logger.info(s"[ExpensesRedirectService][expensesSubmitRedirect] User has not yet completed all sections - Routing to next page: ${nextPage.url}")
+      Redirect(nextPage)
     }
+
   }
 }

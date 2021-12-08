@@ -19,7 +19,7 @@ package models.employment.createUpdate
 import audit.{AmendEmploymentDetailsUpdateAudit, AuditEmploymentData, AuditNewEmploymentData, CreateNewEmploymentDetailsAudit, PriorEmploymentAuditInfo}
 import models.User
 import models.benefits.Benefits
-import models.employment.{DecodedAmendEmploymentDetailsPayload, DecodedCreateNewEmploymentDetailsPayload, DecodedEmploymentData, DecodedNewEmploymentData, DecodedPriorEmploymentInfo, Deductions, EmploymentSource}
+import models.employment._
 import play.api.libs.json.{Json, OFormat}
 
 case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,

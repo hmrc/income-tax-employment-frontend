@@ -24,7 +24,7 @@ import controllers.employment.routes.CheckEmploymentDetailsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.User
 import models.employment.createUpdate.CreateUpdateEmploymentRequest
-import models.employment.{AllEmploymentData, DecodedAmendEmploymentDetailsPayload, DecodedCreateNewEmploymentDetailsPayload, DecodedPriorEmploymentInfo, EmploymentDetailsViewModel}
+import models.employment._
 import models.mongo.EmploymentCYAModel
 import play.api.Logging
 import play.api.i18n.I18nSupport
@@ -166,7 +166,8 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     }
   }
 
-  def performSubmitNrsPayload(model: CreateUpdateEmploymentRequest, employmentId: String, prior: Option[AllEmploymentData])(implicit user: User[_]): Future[NrsSubmissionResponse] = {
+  def performSubmitNrsPayload(model: CreateUpdateEmploymentRequest, employmentId: String, prior: Option[AllEmploymentData])
+                             (implicit user: User[_]): Future[NrsSubmissionResponse] = {
 
     val nrsPayload: Either[DecodedAmendEmploymentDetailsPayload, DecodedCreateNewEmploymentDetailsPayload] = prior.flatMap {
       prior =>
