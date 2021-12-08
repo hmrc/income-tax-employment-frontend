@@ -14,25 +14,13 @@
  * limitations under the License.
  */
 
-package models.employment
+package models.expenses.createUpdate
 
 import models.expenses.Expenses
 import play.api.libs.json.{Json, OFormat}
 
-case class EmploymentExpenses(submittedOn: Option[String],
-                              dateIgnored: Option[String],
-                              totalExpenses: Option[BigDecimal],
-                              expenses: Option[Expenses]) {
+case class CreateUpdateExpensesRequest(ignoreExpenses: Option[Boolean], expenses: Expenses)
 
-  def dataHasNotChanged(createUpdateExpenses: Expenses): Boolean = {
-
-    expenses match {
-      case Some(data) => data == createUpdateExpenses
-      case None => if (createUpdateExpenses.isEmpty) true else false
-    }
-  }
-}
-
-object EmploymentExpenses {
-  implicit val format: OFormat[EmploymentExpenses] = Json.format[EmploymentExpenses]
+object CreateUpdateExpensesRequest {
+  implicit val format: OFormat[CreateUpdateExpensesRequest] = Json.format[CreateUpdateExpensesRequest]
 }

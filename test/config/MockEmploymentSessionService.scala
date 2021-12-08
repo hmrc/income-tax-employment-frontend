@@ -23,7 +23,7 @@ import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData, User}
 import org.scalamock.handlers.{CallHandler2, CallHandler3, CallHandler5, CallHandler6}
 import org.scalamock.scalatest.MockFactory
 import play.api.mvc.{Request, Result}
-import services.EmploymentSessionService
+import services.{CreateOrAmendExpensesService, EmploymentSessionService}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,6 +31,8 @@ import scala.concurrent.{ExecutionContext, Future}
 trait MockEmploymentSessionService extends MockFactory {
 
   val mockEmploymentSessionService: EmploymentSessionService = mock[EmploymentSessionService]
+
+  val createOrAmendExpensesService: CreateOrAmendExpensesService = mock[CreateOrAmendExpensesService]
 
   def mockFind(taxYear: Int, result: Result): CallHandler6[User[_], Int, Option[Result], AllEmploymentData => Result, Request[_], HeaderCarrier, Future[Result]] = {
     (mockEmploymentSessionService.findPreviousEmploymentUserData(_: User[_], _: Int, _: Option[Result])

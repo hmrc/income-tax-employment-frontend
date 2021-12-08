@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package models.expenses
+package models.expenses.createUpdate
 
-import play.api.libs.json.Json
+trait CreateUpdateExpensesRequestError
 
-case class CreateExpensesRequestModel(ignoreExpenses: Option[Boolean], expenses: Expenses)
-
-object CreateExpensesRequestModel {
-  implicit val format = Json.format[CreateExpensesRequestModel]
-}
+case object NothingToUpdate extends CreateUpdateExpensesRequestError

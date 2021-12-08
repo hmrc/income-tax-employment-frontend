@@ -16,15 +16,21 @@
 
 package services
 
+import controllers.employment.routes.EmploymentSummaryController
 import config.ErrorHandler
 import connectors.CreateOrAmendExpensesConnector
+import connectors.httpParsers.CreateOrAmendExpensesHttpParser.CreateOrAmendExpensesResponse
 import models.User
 import models.employment.{AllEmploymentData, EmploymentExpenses}
-import models.expenses.{CreateExpensesRequestModel, Expenses}
+import models.expenses.Expenses
+import models.expenses.createUpdate.CreateUpdateExpensesRequest
 import models.mongo.ExpensesUserData
 import play.api.Logging
+import models.expenses.createUpdate.{NothingToUpdate, _}
 import play.api.mvc.Result
+import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.EmploymentExpensesUtils.getLatestExpenses
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,25 +39,73 @@ class CreateOrAmendExpensesService @Inject()(createOrAmendExpensesConnector: Cre
                                              errorHandler: ErrorHandler,
                                              implicit val executionContext: ExecutionContext) extends Logging {
 
-  def createOrAmendExpense(expensesUserData: ExpensesUserData, priorData: AllEmploymentData, taxYear: Int)(result: Result)
-                          (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
-
-    val hmrcExpenses: Option[EmploymentExpenses] = priorData.hmrcExpenses.filter(_.dateIgnored.isEmpty)
-
-    hmrcExpenses match {
-      case Some(_) => handleConnectorCall(taxYear, Some(true), expensesUserData.expensesCya.expenses.toExpenses)(result)
-      case None => handleConnectorCall(taxYear, None, expensesUserData.expensesCya.expenses.toExpenses)(result)
+  def createOrUpdateExpensesResult(taxYear: Int, expensesRequest: CreateUpdateExpensesRequest)
+                                  (implicit user: User[_], hc: HeaderCarrier): Future[Either[Result, Result]] = {
+    createOrUpdateExpenses(taxYear, expensesRequest).map {
+      case Left(error) => Left(errorHandler.handleError(error.status))
+      case Right(_) => Right(Redirect(EmploymentSummaryController.show(taxYear)))
     }
   }
 
-  private def handleConnectorCall(taxYear: Int, ignoreExpenses: Option[Boolean], expenses: Expenses)(result: Result)
-                                 (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
+  private def createOrUpdateExpenses(taxYear: Int, expensesRequest: CreateUpdateExpensesRequest)
+                                    (implicit user: User[_], hc: HeaderCarrier): Future[CreateOrAmendExpensesResponse] = {
+    createOrAmendExpensesConnector.createOrAmendExpenses(user.nino, taxYear, expensesRequest)(hc.withExtraHeaders("mtditid" -> user.mtditid))
+  }
 
-    val headerCarrier = hc.withExtraHeaders("mtditid" -> user.mtditid)
+  def createExpensesModelAndReturnResult(cya: ExpensesUserData, prior: Option[AllEmploymentData], taxYear: Int)
+                                        (result: CreateUpdateExpensesRequest => Future[Result])(implicit user: User[_]): Future[Result] = {
+    cyaAndPriorToCreateUpdateExpensesRequest(cya, prior) match {
+      //TODO Route to: journey not finished page / show banner saying not finished / hide submit button when not complete?
+      case Left(NothingToUpdate) => Future.successful(Redirect(EmploymentSummaryController.show(taxYear)))
+      case Right(model) => result(model)
+    }
+  }
 
-    createOrAmendExpensesConnector.createOrAmendExpenses(user.nino, taxYear, CreateExpensesRequestModel(ignoreExpenses, expenses))(headerCarrier).map {
-      case Left(error) => errorHandler.handleError(error.status)(user)
-      case Right(_) => result
+  def cyaAndPriorToCreateUpdateExpensesRequest(
+                                                cya: ExpensesUserData,
+                                                prior: Option[AllEmploymentData])
+                                              (implicit user: User[_]): Either[CreateUpdateExpensesRequestError,CreateUpdateExpensesRequest] = {
+
+    val hmrcExpenses: Option[EmploymentExpenses] = prior.flatMap(res => res.hmrcExpenses.filter(_.dateIgnored.isEmpty))
+
+    val expensesData = formCreateUpdateExpenses(cya, prior)
+
+    if(expensesData.dataHasNotChanged) {
+      logger.info(s"[CreateOrAmendExpensesService][cyaAndPriorToCreateUpdateExpensesRequest] " +
+        s"Data to be submitted matched the prior data exactly. Nothing to update. SessionId: ${user.sessionId}")
+      Left(NothingToUpdate: CreateUpdateExpensesRequestError)
+    } else {
+      Right(CreateUpdateExpensesRequest(
+        ignoreExpenses = if(hmrcExpenses.isDefined) Some(true) else None,
+        expenses = expensesData.data))
+    }
+  }
+
+  private def formCreateUpdateExpenses(cya: ExpensesUserData, prior: Option[AllEmploymentData]): ExpensesDataRemainsUnchanged[Expenses] = {
+
+    lazy val newCreateUpdateExpenses = {
+      Expenses(
+        cya.expensesCya.expenses.businessTravelCosts,
+        cya.expensesCya.expenses.jobExpenses,
+        cya.expensesCya.expenses.flatRateJobExpenses,
+        cya.expensesCya.expenses.professionalSubscriptions,
+        cya.expensesCya.expenses.hotelAndMealExpenses,
+        cya.expensesCya.expenses.otherAndCapitalAllowances,
+        cya.expensesCya.expenses.vehicleExpenses,
+        cya.expensesCya.expenses.mileageAllowanceRelief
+      )
+    }
+
+    lazy val default = ExpensesDataRemainsUnchanged(newCreateUpdateExpenses, dataHasNotChanged = false)
+
+    prior.fold[ExpensesDataRemainsUnchanged[Expenses]](default) {
+      prior =>
+        val priorExpensesData: Option[EmploymentExpenses] = getLatestExpenses(prior, isInYear = false).map(_._1)
+
+        priorExpensesData.fold[ExpensesDataRemainsUnchanged[Expenses]](default) {
+          prior =>
+            ExpensesDataRemainsUnchanged(newCreateUpdateExpenses, prior.dataHasNotChanged(newCreateUpdateExpenses))
+        }
     }
   }
 

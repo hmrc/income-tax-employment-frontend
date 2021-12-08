@@ -39,6 +39,7 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
     authorisedAction,
     view,
     viewEOY,
+    createOrAmendExpensesService,
     mockEmploymentSessionService,
     mockAuditService,
     inYearAction,
