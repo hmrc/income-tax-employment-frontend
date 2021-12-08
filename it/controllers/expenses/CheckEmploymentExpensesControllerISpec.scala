@@ -16,24 +16,29 @@
 
 package controllers.expenses
 
+
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import controllers.employment.routes.EmploymentSummaryController
 import builders.models.UserBuilder.aUserRequest
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
 import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import builders.models.expenses.ExpensesBuilder.anExpenses
 import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
+import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import controllers.expenses.routes._
 import models.IncomeTaxUserData
 import models.employment.AllEmploymentData
 import models.expenses.Expenses
+import models.expenses.createUpdate.CreateUpdateExpensesRequest
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
 import play.api.http.HeaderNames
 import play.api.http.Status._
+import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -48,6 +53,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val insetEOYSelector = "#main-content > div > div > p.govuk-inset-text"
     val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
     val summaryListSelector = "#main-content > div > div > dl"
+    val continueButtonFormSelector = "#main-content > div > div > form"
+    val continueButtonSelector = "#continue"
 
     def summaryListRowFieldNameSelector(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dt"
 
@@ -91,6 +98,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val fieldNames: Seq[String]
     val yes: String
     val no: String
+    val continueButtonText: String
+    val continueButtonLink: String
 
     def expectedCaption(taxYear: Int = taxYear): String
   }
@@ -107,6 +116,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val otherAndCapitalAllowancesQuestionInYear = "Other expenses"
     val otherAndCapitalAllowancesQuestion = "Other equipment"
     val otherAndCapitalAllowancesAmount = "Amount for other equipment"
+    val continueButtonText = "Save and continue"
+    val continueButtonLink = "/update-and-submit-income-tax-return/employment-income/2021/expenses/check-employment-expenses"
     val fieldNames = Seq(
       "Business travel and overnight stays",
       "Uniforms, work clothes, or tools",
@@ -131,6 +142,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val otherAndCapitalAllowancesQuestionInYear = "Other expenses"
     val otherAndCapitalAllowancesQuestion = "Other equipment"
     val otherAndCapitalAllowancesAmount = "Amount for other equipment"
+    val continueButtonText = "Save and continue"
+    val continueButtonLink = "/update-and-submit-income-tax-return/employment-income/2021/expenses/check-employment-expenses"
 
     val fieldNames = Seq(
       "Business travel and overnight stays",
@@ -304,6 +317,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           captionCheck(commonResults.expectedCaption(taxYear - 1))
           textOnPageCheck(specificResults.expectedContentSingle, contentSelector)
           welshToggleCheck(user.isWelsh)
+          buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
+          formPostLinkCheck(user.commonExpectedResults.continueButtonLink, continueButtonFormSelector)
 
           changeAmountRowCheck(commonResults.employmentExpenses, commonResults.yes, summaryListRowFieldNameSelector(1), summaryListRowFieldAmountSelector(1),
             changeLinkSelector(1), s"${user.commonExpectedResults.changeText} ${specificResults.expensesHiddenText}", claimExpensesHref)
@@ -363,6 +378,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
           welshToggleCheck(user.isWelsh)
+          buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
+          formPostLinkCheck(user.commonExpectedResults.continueButtonLink, continueButtonFormSelector)
           changeAmountRowCheck(commonResults.employmentExpenses, commonResults.no, summaryListRowFieldNameSelector(1), summaryListRowFieldAmountSelector(1),
             changeLinkSelector(1), s"${user.commonExpectedResults.changeText} ${specificResults.expensesHiddenText}", claimExpensesHref)
 
@@ -391,6 +408,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
           textOnPageCheck(user.specificExpectedResults.get.expectedContentSingle, contentSelector)
           welshToggleCheck(user.isWelsh)
+          buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
+          formPostLinkCheck(user.commonExpectedResults.continueButtonLink, continueButtonFormSelector)
 
           changeAmountRowCheck(commonResults.employmentExpenses, commonResults.yes, summaryListRowFieldNameSelector(1), summaryListRowFieldAmountSelector(1),
             changeLinkSelector(1), s"${user.commonExpectedResults.changeText} ${specificResults.expensesHiddenText}", claimExpensesHref)
@@ -454,7 +473,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetMultiple, insetEOYSelector)
-
+          buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
+          formPostLinkCheck(user.commonExpectedResults.continueButtonLink, continueButtonFormSelector)
 
           changeAmountRowCheck(commonResults.employmentExpenses, commonResults.yes, summaryListRowFieldNameSelector(1), summaryListRowFieldAmountSelector(1),
             changeLinkSelector(1), s"${user.commonExpectedResults.changeText} ${specificResults.expensesHiddenText}", claimExpensesHref)
@@ -495,6 +515,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
           textOnPageCheck(user.specificExpectedResults.get.expectedContentSingle, contentSelector)
           welshToggleCheck(user.isWelsh)
+          buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
+          formPostLinkCheck(user.commonExpectedResults.continueButtonLink, continueButtonFormSelector)
 
           changeAmountRowCheck(commonResults.employmentExpenses, commonResults.yes, summaryListRowFieldNameSelector(1), summaryListRowFieldAmountSelector(1),
             changeLinkSelector(1), s"${user.commonExpectedResults.changeText} ${specificResults.expensesHiddenText}", claimExpensesHref)
@@ -537,6 +559,9 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   }
 
   ".submit" when {
+    def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
+      ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
+
     "return a redirect when in year" which {
       implicit lazy val result: WSResponse = {
         dropExpensesDB()
@@ -545,40 +570,146 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         urlPost(url(), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
+      implicit def document: () => Document = () => Jsoup.parse(result.body)
+
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }
 
-    "return internal server error page whilst not implemented" in {
-      def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
-        ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
-
-      implicit lazy val result: WSResponse = {
-        dropExpensesDB()
-        authoriseAgentOrIndividual(isAgent = false)
-        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))), aUserRequest)
-        userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
-        urlPost(url(taxYear - 1), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
-      }
-
-      result.status shouldBe INTERNAL_SERVER_ERROR
-    }
-
-    "return a redirect to show method when at end of year" which {
+    "redirect when at the end of the year when no cya data" which {
       implicit lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
         urlPost(url(taxYear - 1), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
+
+      implicit def document: () => Document = () => Jsoup.parse(result.body)
 
       "has a url of expenses show method" in {
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYear - 1).url)
       }
     }
+
+    "redirect to the missing section if the expense questions are incomplete when submitting CYA data at the end of the year" which {
+
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
+
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
+          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined).copy(professionalSubscriptionsQuestion = None))), aUserRequest)
+
+        urlPost(url(taxYear - 1), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+      }
+
+      implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+      "has a url of expenses show method" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(ProfessionalFeesAndSubscriptionsExpensesController.show(taxYear - 1).url)
+      }
+    }
+
+    "redirect to the first missing section if there are more than one incomplete expense questions when submitting CYA data at the end of the year" which {
+
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
+
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
+          ExpensesCYAModel(anExpensesViewModel.copy(
+            professionalSubscriptionsQuestion = None, otherAndCapitalAllowancesQuestion = None))), aUserRequest)
+
+        urlPost(url(taxYear - 1), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+      }
+
+      "has a url of expenses show method" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(ProfessionalFeesAndSubscriptionsExpensesController.show(taxYear - 1).url)
+      }
+    }
+
+    "create the model to update the data and return the correct redirect when no customer data and cya data submitted cya data is different from hmrc expense" which {
+
+      implicit lazy val result: WSResponse = {
+
+        val newAmount = BigDecimal(10000.99)
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
+
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
+          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined).copy(
+            professionalSubscriptions = Some(newAmount)))), aUserRequest)
+
+        val model = CreateUpdateExpensesRequest(
+          Some(true), anExpenses.copy(professionalSubscriptions = Some(newAmount))
+        )
+
+        stubPutWithHeadersCheck(s"/income-tax-expenses/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
+          Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+
+        urlPost(url(taxYear - 1), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+      }
+
+      "has an SEE OTHER status and cyaData cleared as data was submitted" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
+        findExpensesCyaData(taxYear - 1, aUserRequest) shouldBe None
+      }
+
+    }
+
+    "create the model to update the data and return redirect when there is no customer expenses and nothing has changed in relation to hmrc expenses" which {
+
+      implicit lazy val result: WSResponse = {
+
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
+
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
+          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))), aUserRequest)
+
+        urlPost(url(taxYear - 1), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+      }
+
+      "has an SEE OTHER status and cyaData not cleared as no changes were made" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
+        findExpensesCyaData(taxYear - 1, aUserRequest) shouldBe defined
+      }
+
+    }
+
+    "create the model to update the data and return redirect when there are no hmrc expenses and nothing has changed in relation to customer expenses" which {
+
+      implicit lazy val result: WSResponse = {
+
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcExpenses = None, customerExpenses = Some(anEmploymentExpenses)))), nino, taxYear - 1)
+
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
+          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))), aUserRequest)
+
+        urlPost(url(taxYear - 1), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+      }
+
+      "has an SEE OTHER status and cyaData not cleared as no changes were made" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
+        findExpensesCyaData(taxYear - 1, aUserRequest) shouldBe defined
+      }
+
+    }
+
   }
+
 }

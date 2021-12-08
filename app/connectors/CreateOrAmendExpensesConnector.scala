@@ -19,7 +19,7 @@ package connectors
 import config.AppConfig
 import connectors.httpParsers.CreateOrAmendExpensesHttpParser._
 import connectors.httpParsers.CreateOrAmendExpensesHttpParser.CreateOrAmendExpensesResponse
-import models.expenses.CreateExpensesRequestModel
+import models.expenses.createUpdate.CreateUpdateExpensesRequest
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import javax.inject.Inject
@@ -28,12 +28,12 @@ import scala.concurrent.{ExecutionContext, Future}
 class CreateOrAmendExpensesConnector @Inject()(val http: HttpClient,
                                                val config: AppConfig)(implicit ec: ExecutionContext) {
 
-  def createOrAmendExpenses(nino: String, taxYear: Int, expensesRequestModel: CreateExpensesRequestModel)
+  def createOrAmendExpenses(nino: String, taxYear: Int, createUpdateExpensesRequest: CreateUpdateExpensesRequest)
                               (implicit hc: HeaderCarrier): Future[CreateOrAmendExpensesResponse] = {
 
     val url: String = config.incomeTaxExpensesBEUrl + s"/income-tax/nino/$nino/sources?taxYear=$taxYear"
 
-    http.PUT[CreateExpensesRequestModel, CreateOrAmendExpensesResponse](url, expensesRequestModel)
+    http.PUT[CreateUpdateExpensesRequest, CreateOrAmendExpensesResponse](url, createUpdateExpensesRequest)
   }
 
 }

@@ -35,6 +35,17 @@ case class Expenses(businessTravelCosts: Option[BigDecimal] = None,
       vehicleExpenses.isDefined || mileageAllowanceRelief.isDefined
   }
 
+  def isEmpty: Boolean = {
+    businessTravelCosts.isEmpty &&
+      jobExpenses.isEmpty &&
+      flatRateJobExpenses.isEmpty &&
+      professionalSubscriptions.isEmpty &&
+      hotelAndMealExpenses.isEmpty &&
+      otherAndCapitalAllowances.isEmpty &&
+      vehicleExpenses.isEmpty &&
+      mileageAllowanceRelief.isEmpty
+  }
+
   def toExpensesViewModel(isUsingCustomerData: Boolean, submittedOn: Option[String] = None,
                           cyaExpenses: Option[ExpensesViewModel] = None): ExpensesViewModel = {
     cyaExpenses.fold(
