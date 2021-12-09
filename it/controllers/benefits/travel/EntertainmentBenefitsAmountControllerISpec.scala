@@ -91,7 +91,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedTitle: String = "How much did you get in total for entertainment?"
     val expectedHeading: String = "How much did you get in total for entertainment?"
-    val expectedContent: String = "You can find this figure under section N of your P11D form, in the ’entertainment’ box 16."
+    val expectedContent: String = "You can find this figure under section N of your P11D form, in the ‘entertainment’ box 16."
     val expectedErrorTitle: String = s"Error: $expectedTitle"
     val emptyErrorText: String = "Enter the amount you got for entertainment"
     val invalidFormatErrorText: String = "Enter the amount you got for entertainment in the correct format"
@@ -101,7 +101,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle: String = "How much did you get in total for entertainment?"
     val expectedHeading: String = "How much did you get in total for entertainment?"
-    val expectedContent: String = "You can find this figure under section N of your P11D form, in the ’entertainment’ box 16."
+    val expectedContent: String = "You can find this figure under section N of your P11D form, in the ‘entertainment’ box 16."
     val expectedErrorTitle: String = s"Error: $expectedTitle"
     val emptyErrorText: String = "Enter the amount you got for entertainment"
     val invalidFormatErrorText: String = "Enter the amount you got for entertainment in the correct format"
@@ -111,7 +111,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedTitle: String = "How much did your client get in total for entertainment?"
     val expectedHeading: String = "How much did your client get in total for entertainment?"
-    val expectedContent: String = "You can find this figure under section N of your client’s P11D form, in the ’entertainment’ box 16."
+    val expectedContent: String = "You can find this figure under section N of your client’s P11D form, in the ‘entertainment’ box 16."
     val expectedErrorTitle: String = s"Error: $expectedTitle"
     val emptyErrorText: String = "Enter the amount your client got for entertainment"
     val invalidFormatErrorText: String = "Enter the amount your client got for entertainment in the correct format"
@@ -121,7 +121,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle: String = "How much did your client get in total for entertainment?"
     val expectedHeading: String = "How much did your client get in total for entertainment?"
-    val expectedContent: String = "You can find this figure under section N of your client’s P11D form, in the ’entertainment’ box 16."
+    val expectedContent: String = "You can find this figure under section N of your client’s P11D form, in the ‘entertainment’ box 16."
     val expectedErrorTitle: String = s"Error: $expectedTitle"
     val emptyErrorText: String = "Enter the amount your client got for entertainment"
     val invalidFormatErrorText: String = "Enter the amount your client got for entertainment in the correct format"
