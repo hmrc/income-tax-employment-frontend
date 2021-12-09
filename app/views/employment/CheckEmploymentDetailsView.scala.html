@@ -62,14 +62,22 @@
             controllers.employment.routes.EmployerNameController.show(taxYear, employmentDetails.employmentId),
         messages(s"$msgKeyGeneric.hiddenText.employer"))
 
-        val employmentStartDate = EmploymentDataForView(messages(s"$msgKeyGeneric.startDate"), employmentDetails.startDate.flatMap(dateFormatter),
-            controllers.employment.routes.EmployerStartDateController.show(taxYear, employmentDetails.employmentId),
-        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", user.isAgent), employmentDetails.employerName))
-
         val stillWorkingForEmployer = EmploymentDataForView(messages(s"$msgKeyGeneric.stillWorkingForEmployer"),
         Some(if(employmentDetails.cessationDateQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}),
         controllers.employment.routes.StillWorkingForEmployerController.show(taxYear, employmentDetails.employmentId),
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.stillWorkingForEmployer", user.isAgent), employmentDetails.employerName))
+
+        val employmentStartDate = EmploymentDataForView(messages(s"$msgKeyGeneric.startDate"), employmentDetails.startDate.flatMap(dateFormatter),
+        controllers.employment.routes.EmployerStartDateController.show(taxYear, employmentDetails.employmentId),
+        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", user.isAgent), employmentDetails.employerName))
+
+        val employmentDates = EmploymentDataForView(messages(s"$msgKeyGeneric.employmentDates"),
+        employmentDatesFormatter(employmentDetails.startDate.flatMap(dateFormatter), employmentDetails.cessationDate.flatMap(dateFormatter)),
+        controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentDetails.employmentId),
+        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.employmentDates", user.isAgent)))
+        <!--TODO Update change link to go to new employer start/end date page when available-->
+
+        val datesLineItemToUse = if(employmentDetails.cessationDateQuestion.contains(false)) employmentDates else employmentStartDate
 
         val payeRef = EmploymentDataForView(messages(msgKeyGeneric + ".payeRef"), employmentDetails.employerRef,
         controllers.employment.routes.PayeRefController.show(taxYear, employmentDetails.employmentId),
@@ -88,11 +96,8 @@
         employmentDetails.totalTaxToDate.map(amount => bigDecimalCurrency(amount.toString)), employmentTaxCall,
         messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.totalTaxToDate", user.isAgent)))
 
-        val employmentLeaveDate = EmploymentDataForView(messages(s"$msgKeyGeneric.leaveDate"), employmentDetails.cessationDate.flatMap(dateFormatter), controllers.employment.routes.EmployerLeaveDateController.show(taxYear, employmentDetails.employmentId),
-        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.leaveDate", user.isAgent), employmentDetails.employerName))
-
         val employmentDataFields = {
-            List(employerName, payeRef, employmentStartDate, stillWorkingForEmployer, employmentLeaveDate, payrollId, payReceived, totalTaxToDate)
+            List(employerName, payeRef, stillWorkingForEmployer, datesLineItemToUse, payrollId, payReceived, totalTaxToDate)
         }
 
         govukSummaryList(

@@ -70,7 +70,7 @@ class EmployerNameFormSpec extends UnitTest {
         val testInput = Map(employerName -> testNameInvalidCharacters)
 
         val invalidLengthTest = form(isAgent = false).bind(testInput)
-        invalidLengthTest.errors should contain(FormError(employerName, "employment.employerName.error.name.wrongFormat"))
+        invalidLengthTest.errors should contain(FormError(employerName, "employment.employerName.error.name.wrongFormat.individual"))
 
       }
 
@@ -111,7 +111,7 @@ class EmployerNameFormSpec extends UnitTest {
         val testInput = Map(employerName -> testNameInvalidCharacters)
 
         val invalidLengthTest = form(isAgent = true).bind(testInput)
-        invalidLengthTest.errors should contain(FormError(employerName, "employment.employerName.error.name.wrongFormat"))
+        invalidLengthTest.errors should contain(FormError(employerName, "employment.employerName.error.name.wrongFormat.agent"))
 
       }
 
