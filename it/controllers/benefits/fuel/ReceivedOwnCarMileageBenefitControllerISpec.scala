@@ -86,7 +86,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedTitle = "Did you get a mileage benefit for using your own car for work?"
     val expectedH1 = "Did you get a mileage benefit for using your own car for work?"
-    val expectedP1 = "We only need to know about payments made above our ‘approved amount‘. If you have payments above the ‘approved amount‘, they should be recorded in section E of your P11D form."
+    val expectedP1 = "We only need to know about payments made above our ‘approved amount’. If you have payments above the ‘approved amount’, they should be recorded in section E of your P11D form."
     val expectedP2 = "Check with your employer if you are unsure."
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedError = "Select yes if you got a mileage benefit for using your own car for work"
@@ -95,8 +95,8 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedTitle = "Did your client get a mileage benefit for using their own car for work?"
     val expectedH1 = "Did your client get a mileage benefit for using their own car for work?"
-    val expectedP1: String = "We only need to know about payments made above our ‘approved amount‘. " +
-      "If your client has payments above the ‘approved amount‘, they should be recorded in section E of their P11D form."
+    val expectedP1: String = "We only need to know about payments made above our ‘approved amount’. " +
+      "If your client has payments above the ‘approved amount’, they should be recorded in section E of their P11D form."
     val expectedP2 = "Check with your client’s employer if you are unsure."
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedError = "Select yes if your client got a mileage benefit for using their own car for work"
@@ -105,7 +105,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedTitle = "Did you get a mileage benefit for using your own car for work?"
     val expectedH1 = "Did you get a mileage benefit for using your own car for work?"
-    val expectedP1 = "We only need to know about payments made above our ‘approved amount‘. If you have payments above the ‘approved amount‘, they should be recorded in section E of your P11D form."
+    val expectedP1 = "We only need to know about payments made above our ‘approved amount’. If you have payments above the ‘approved amount’, they should be recorded in section E of your P11D form."
     val expectedP2 = "Check with your employer if you are unsure."
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedError = "Select yes if you got a mileage benefit for using your own car for work"
@@ -114,8 +114,8 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedTitle = "Did your client get a mileage benefit for using their own car for work?"
     val expectedH1 = "Did your client get a mileage benefit for using their own car for work?"
-    val expectedP1: String = "We only need to know about payments made above our ‘approved amount‘. " +
-      "If your client has payments above the ‘approved amount‘, they should be recorded in section E of their P11D form."
+    val expectedP1: String = "We only need to know about payments made above our ‘approved amount’. " +
+      "If your client has payments above the ‘approved amount’, they should be recorded in section E of their P11D form."
     val expectedP2 = "Check with your client’s employer if you are unsure."
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedError = "Select yes if your client got a mileage benefit for using their own car for work"

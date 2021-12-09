@@ -666,8 +666,8 @@ benefits.mileageBenefitAmount.title.agent = How much mileage benefit did your cl
 benefits.mileageBenefitAmount.title.individual = How much mileage benefit did you get in total for using your own car?
 benefits.receiveOwnCarMileageBenefit.error.agent = Select yes if your client got a mileage benefit for using their own car for work
 benefits.receiveOwnCarMileageBenefit.error.individual = Select yes if you got a mileage benefit for using your own car for work
-benefits.receiveOwnCarMileageBenefit.needToKnow.agent = We only need to know about payments made above our ‘approved amount‘. If your client has payments above the ‘approved amount‘, they should be recorded in section E of their P11D form.
-benefits.receiveOwnCarMileageBenefit.needToKnow.individual = We only need to know about payments made above our ‘approved amount‘. If you have payments above the ‘approved amount‘, they should be recorded in section E of your P11D form.
+benefits.receiveOwnCarMileageBenefit.needToKnow.agent = We only need to know about payments made above our ‘approved amount’. If your client has payments above the ‘approved amount’, they should be recorded in section E of their P11D form.
+benefits.receiveOwnCarMileageBenefit.needToKnow.individual = We only need to know about payments made above our ‘approved amount’. If you have payments above the ‘approved amount’, they should be recorded in section E of your P11D form.
 benefits.receiveOwnCarMileageBenefit.title.agent = Did your client get a mileage benefit for using their own car for work?
 benefits.receiveOwnCarMileageBenefit.title.individual = Did you get a mileage benefit for using your own car for work?
 
@@ -801,8 +801,8 @@ benefits.entertainmentBenefitAmount.error.noEntry.agent = Enter the amount your 
 benefits.entertainmentBenefitAmount.error.noEntry.individual = Enter the amount you got for entertainment
 benefits.entertainmentBenefitAmount.error.overMaximum.agent = Your client’s entertainment benefit must be less than £100,000,000,000
 benefits.entertainmentBenefitAmount.error.overMaximum.individual = Your entertainment benefit must be less than £100,000,000,000
-benefits.entertainmentBenefitAmount.informationText.agent = You can find this figure under section N of your client’s P11D form, in the ’entertainment’ box 16.
-benefits.entertainmentBenefitAmount.informationText.individual = You can find this figure under section N of your P11D form, in the ’entertainment’ box 16.
+benefits.entertainmentBenefitAmount.informationText.agent = You can find this figure under section N of your client’s P11D form, in the ‘entertainment’ box 16.
+benefits.entertainmentBenefitAmount.informationText.individual = You can find this figure under section N of your P11D form, in the ‘entertainment’ box 16.
 benefits.entertainmentBenefitAmount.title.agent = How much did your client get in total for entertainment?
 benefits.entertainmentBenefitAmount.title.individual = How much did you get in total for entertainment?
 
