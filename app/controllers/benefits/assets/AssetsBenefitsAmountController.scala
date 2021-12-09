@@ -18,6 +18,7 @@ package controllers.benefits.assets
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.assets.routes.AssetTransfersBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import models.User
@@ -101,12 +102,9 @@ class AssetsBenefitsAmountController @Inject()(implicit val cc: MessagesControll
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
                   isPriorSubmission = cya.isPriorSubmission, hasPriorBenefits = cya.hasPriorBenefits)(errorHandler.internalServerError()) {
 
-                  if (cya.isPriorSubmission) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  } else {
-                    //TODO - redirect to the assets transfer question
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-                  }
+                  val nextPage = AssetTransfersBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
                 }
             }
           )

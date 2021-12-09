@@ -23,6 +23,7 @@ import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.assets.routes.AssetsBenefitsController
 import forms.YesNoForm
 import models.benefits.AssetsModel
 import models.mongo.EmploymentCYAModel
@@ -232,7 +233,6 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
       }
     }
 
-    "redirect to another page when the request is valid but they aren't allowed to view the page and" should {
       "redirect the user to the check employment benefits page when the benefitsReceived question is false" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
@@ -293,7 +293,6 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
           cyaModel.employment.employmentBenefits shouldBe None
         }
       }
-    }
   }
 
   ".submit" should {
@@ -339,84 +338,102 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
       }
     }
 
-    "redirect to another page when a valid request is made and then" should {
-      "Update the assets section question to no, clear assetModel when the user chooses no and redirects to CYA when prior submission" which {
-        val form = Map(YesNoForm.yesNo -> YesNoForm.no)
-        lazy val result = {
-          dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
-          authoriseAgentOrIndividual(isAgent = false)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        "redirects to the check your details page" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
-        }
-
-        "clears the assets model" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
-          cyaModel.employment.employmentBenefits.flatMap(_.assetsModel) shouldBe Some(AssetsModel(sectionQuestion = Some(false)))
-        }
+    "Update the assets section question to no, clear assetModel when the user chooses no and redirects to CYA when prior submission" which {
+      val form = Map(YesNoForm.yesNo -> YesNoForm.no)
+      lazy val result = {
+        dropEmploymentDB()
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "Update assets section question to yes, redirects to the assets question page when user chooses yes" which {
-        val form = Map(YesNoForm.yesNo -> YesNoForm.yes)
-        lazy val result = {
-          dropEmploymentDB()
-          val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(sectionQuestion = Some(false))))
-          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-          authoriseAgentOrIndividual(isAgent = false)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        "redirects to the vouchers or credit cards amount page" in {
-          result.status shouldBe SEE_OTHER
-          // TODO: This should go to the assets question page page when its created.
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
-        }
-
-        "updates vouchers or credit cards question to yes" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
-          cyaModel.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
-        }
+      "redirects to the check your details page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
-      "redirect the user to the overview page when it is in year" which {
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
-          authoriseAgentOrIndividual(isAgent = false)
-          urlPost(pageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-        }
+      "clears the assets model" in {
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.assetsModel) shouldBe Some(AssetsModel(sectionQuestion = Some(false)))
+      }
+    }
 
-        "has an SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-        }
+    "Update the assets section question to no, clear assetModel when the user chooses no and redirects to CYA when not prior submission" which {
+    val form = Map(YesNoForm.yesNo -> YesNoForm.no)
+    lazy val result = {
+      dropEmploymentDB()
+      insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+      authoriseAgentOrIndividual(isAgent = false)
+      urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+    }
+
+    "redirects to the check your details page" in {
+      result.status shouldBe SEE_OTHER
+      result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+    }
+
+    "clears the assets model" in {
+      lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+      cyaModel.employment.employmentBenefits.flatMap(_.assetsModel) shouldBe Some(AssetsModel(sectionQuestion = Some(false)))
+    }
+  }
+
+    "Update assets section question to yes, redirects to the assets question page when user chooses yes" which {
+      val form = Map(YesNoForm.yesNo -> YesNoForm.yes)
+      lazy val result = {
+        dropEmploymentDB()
+        val emptyAssets = Some(AssetsModel(sectionQuestion = Some(false)))
+        insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel.copy(assetsModel = emptyAssets)))), aUserRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      "redirect to the check employment benefits page when theres no CYA data" which {
-        val form = Map(YesNoForm.yesNo -> YesNoForm.yes)
-        lazy val result = {
-          dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
-          authoriseAgentOrIndividual(isAgent = false)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        "redirects to the check your details page" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
-        }
-
-        "doesn't create any benefits data" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
-          cyaModel.employment.employmentBenefits shouldBe None
-        }
+      "redirects to the assets question page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(AssetsBenefitsController.show(taxYearEOY, employmentId).url)
       }
 
-      "redirect the user to the check employment benefits page when the benefitsReceived question is false" which {
+      "updates vouchers or credit cards question to yes" in {
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+      }
+    }
+
+    "redirect the user to the overview page when it is in year" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(pageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
+
+      "has an SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      }
+    }
+
+    "redirect to the check employment benefits page when theres no CYA data" which {
+      val form = Map(YesNoForm.yesNo -> YesNoForm.yes)
+      lazy val result = {
+        dropEmploymentDB()
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "redirects to the check your details page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+      }
+
+      "doesn't create any benefits data" in {
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        cyaModel.employment.employmentBenefits shouldBe None
+      }
+    }
+
+    "redirect the user to the check employment benefits page when the benefitsReceived question is false" which {
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
         lazy val result: WSResponse = {
           dropEmploymentDB()
@@ -430,6 +447,5 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
           result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
         }
       }
-    }
   }
 }
