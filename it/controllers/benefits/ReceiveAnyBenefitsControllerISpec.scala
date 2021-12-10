@@ -83,7 +83,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedH1: String = "Did your client receive any benefits from this company?"
+    val expectedH1: String = "Did your client get any benefits from this company?"
     val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorText = "Select yes if your client got any benefits from this company"
@@ -97,7 +97,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedH1: String = "Did your client receive any benefits from this company?"
+    val expectedH1: String = "Did your client get any benefits from this company?"
     val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorText = "Select yes if your client got any benefits from this company"
