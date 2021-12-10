@@ -372,7 +372,7 @@ checkYourBenefits.assets.hiddenText.agent = Change if your client got assets to 
 checkYourBenefits.assets.hiddenText.individual = Change if you got assets to use as an employment benefit from this company
 checkYourBenefits.assets = Assets to use
 checkYourBenefits.assetsAmount.hiddenText.agent = Change the amount your client got for assets to use as an employment benefit from this company
-checkYourBenefits.assetsAmount.hiddenText.individual = Change the amount you got for assets as an employment benefit from this company
+checkYourBenefits.assetsAmount.hiddenText.individual = Change the amount you got for assets to use as an employment benefit from this company
 checkYourBenefits.assetsAmount =Amount for assets to use
 checkYourBenefits.assetsSubheading.hiddenText.agent = Change if your client got assets as an employment benefit from this company
 checkYourBenefits.assetsSubheading.hiddenText.individual = Change if you got assets as an employment benefit from this company
@@ -572,7 +572,7 @@ checkYourBenefits.vouchersAmount = Amount for vouchers or credit cards
 receiveAnyBenefits.errors.noRadioSelected.agent = Select yes if your client got any benefits from this company
 receiveAnyBenefits.errors.noRadioSelected.individual = Select yes if you got any benefits from this company
 receiveAnyBenefits.paragraph = Examples of benefits include company cars or vans, fuel allowance and medical insurance.
-receiveAnyBenefits.title.agent = Did your client receive any benefits from this company?
+receiveAnyBenefits.title.agent = Did your client get any benefits from this company?
 receiveAnyBenefits.title.individual = Did you get any benefits from this company?
 
 #################       Car van fuel messages        ########################################
@@ -580,7 +580,7 @@ receiveAnyBenefits.title.individual = Did you get any benefits from this company
 benefits.carVanFuel.error.agent = Select yes if your client got car, van or fuel benefits
 benefits.carVanFuel.error.individual = Select yes if you got car, van or fuel benefits
 benefits.carVanFuel.thisIncludes = This includes benefits such as company cars or vans, company car or van fuel, and privately owned vehicle mileage allowances.
-benefits.carVanFuel.title.agent = Did your client receive any car, van or fuel benefits from this company?
+benefits.carVanFuel.title.agent = Did your client get any car, van or fuel benefits from this company?
 benefits.carVanFuel.title.individual = Did you get any car, van or fuel benefits from this company?
 
 #################       Car messages        ########################################
