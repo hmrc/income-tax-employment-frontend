@@ -300,7 +300,6 @@
     @{
         val header: Seq[SummaryListRow] = Seq(showQuestionRow("checkYourBenefits.assetsSubheading", benefits.assetsModel.flatMap(_.sectionQuestion).getOrElse(false), AssetsOrAssetTransfersBenefitsController.show(taxYear, employmentId)))
         val rows: Seq[SummaryListRow] =
-        if(benefits.assetsDetailsPopulated){
             Seq(
                 benefits.assetsModel.flatMap(_.assetsQuestion).map{
                     assetsQuestion => showQuestionRow("checkYourBenefits.assets", assetsQuestion, AssetsBenefitsController.show(taxYear, employmentId))
@@ -315,7 +314,6 @@
                     assetTransfer => showRows("checkYourBenefits.assetTransfersAmount", assetTransfer, AssetsTransfersBenefitsAmountController.show(taxYear, employmentId))
                 }
             ).flatten
-        } else { Seq() }
 
         govukSummaryList(SummaryList(header ++ rows))
     }

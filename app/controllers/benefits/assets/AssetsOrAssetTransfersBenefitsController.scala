@@ -18,6 +18,7 @@ package controllers.benefits.assets
 
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes._
+import controllers.benefits.assets.routes.AssetsBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
@@ -84,10 +85,8 @@ class AssetsOrAssetTransfersBenefitsController @Inject()(implicit val cc: Messag
                 data.hasPriorBenefits
               )(errorHandler.internalServerError()) {
                 val nextPage = if (yesNo) {
-                  //TODO got to Assets question
-                  CheckYourBenefitsController.show(taxYear, employmentId)
+                  AssetsBenefitsController.show(taxYear, employmentId)
                 } else {
-                  //TODO next section
                   CheckYourBenefitsController.show(taxYear, employmentId)
                 }
 

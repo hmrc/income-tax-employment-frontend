@@ -17,7 +17,7 @@
 package controllers.benefits.assets
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
+import controllers.benefits.assets.routes.{AssetsBenefitsAmountController, AssetTransfersBenefitsController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
@@ -27,7 +27,7 @@ import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{EmploymentSessionService, RedirectService}
-import services.RedirectService.redirectBasedOnCurrentAnswers
+import services.RedirectService.{benefitsSubmitRedirect, redirectBasedOnCurrentAnswers}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.assets.AssetsBenefitsView
@@ -94,7 +94,12 @@ class AssetsBenefitsController @Inject()(implicit val cc: MessagesControllerComp
 
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                val nextPage = if (yesNo) {
+                  AssetsBenefitsAmountController.show(taxYear, employmentId)
+                } else {
+                  AssetTransfersBenefitsController.show(taxYear, employmentId)
+                }
+                benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
             }
           )

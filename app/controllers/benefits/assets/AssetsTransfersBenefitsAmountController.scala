@@ -98,7 +98,9 @@ class AssetsTransfersBenefitsAmountController  @Inject()(implicit val cc: Messag
 
                 employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
                   isPriorSubmission = cya.isPriorSubmission, hasPriorBenefits = cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                    Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+                  val nextPage = CheckYourBenefitsController.show(taxYear, employmentId)
+
+                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
                 }
             }
           )
@@ -106,5 +108,4 @@ class AssetsTransfersBenefitsAmountController  @Inject()(implicit val cc: Messag
       }
     }
   }
-
 }

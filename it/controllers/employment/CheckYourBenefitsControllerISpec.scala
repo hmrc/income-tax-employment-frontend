@@ -1012,7 +1012,6 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           welshToggleCheck(user.isWelsh)
 
           s"should not display the following values" in {
-            document().body().toString.contains(common.assetTransfers) shouldBe false
             document().body().toString.contains(common.companyCarAmount) shouldBe false
             document().body().toString.contains(common.fuelForCompanyCarAmount) shouldBe false
             document().body().toString.contains(common.accommodationAmount) shouldBe false
