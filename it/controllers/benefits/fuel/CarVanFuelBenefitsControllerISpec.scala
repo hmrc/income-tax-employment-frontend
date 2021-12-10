@@ -76,15 +76,15 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedTitle = "Did your client receive any car, van or fuel benefits from this company?"
-    val expectedH1 = "Did your client receive any car, van or fuel benefits from this company?"
+    val expectedTitle = "Did your client get any car, van or fuel benefits from this company?"
+    val expectedH1 = "Did your client get any car, van or fuel benefits from this company?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedError = "Select yes if your client got car, van or fuel benefits"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedTitle = "Did your client receive any car, van or fuel benefits from this company?"
-    val expectedH1 = "Did your client receive any car, van or fuel benefits from this company?"
+    val expectedTitle = "Did your client get any car, van or fuel benefits from this company?"
+    val expectedH1 = "Did your client get any car, van or fuel benefits from this company?"
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedError = "Select yes if your client got car, van or fuel benefits"
   }
