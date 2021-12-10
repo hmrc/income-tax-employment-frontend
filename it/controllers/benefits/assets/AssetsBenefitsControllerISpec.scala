@@ -22,10 +22,11 @@ import builders.models.benefits.AssetsModelBuilder.anAssetsModel
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
+import controllers.benefits.assets.routes.{AssetTransfersBenefitsController, AssetsBenefitsAmountController}
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.benefits.AssetsModel
-import models.mongo.{EmploymentCYAModel, EmploymentUserData}
+import models.mongo.EmploymentCYAModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -37,9 +38,10 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
   private val taxYearEOY: Int = 2021
   private val employmentId: String = "employmentId"
-  private val formPostLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/assets-available-for-use?employmentId=$employmentId"
 
-  private def assetsBenefitsPageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/assets-available-for-use?employmentId=$employmentId"
+  private def assetsBenefitsPageUrl(taxYear: Int): String = s"$appUrl/$taxYear/benefits/assets-available-for-use?employmentId=$employmentId"
+
+  private val formPostLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/assets-available-for-use?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -114,27 +116,34 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
     val expectedErrorText = "Select yes if your client’s employer made assets available for their use"
   }
 
-  private def employmentUserData(hasPriorBenefits: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    anEmploymentUserData.copy(hasPriorBenefits = hasPriorBenefits, employment = employmentCyaModel)
+  private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel) =
+    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employment = employmentCyaModel)
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
-    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
-  )
+  val assetsSoFar: AssetsModel = AssetsModel(sectionQuestion = Some(true), None, None, None, None)
+
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
+    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+    )
+  }
 
   ".show" should {
     userScenarios.foreach { user =>
       import Selectors._
       import user.commonExpectedResults._
+
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+
         "render the assets benefits page without pre-filled radio buttons and the user doesn't have prior benefits" which {
+
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assetsQuestion = None)))
-            insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
             urlGet(assetsBenefitsPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -157,11 +166,12 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
         }
 
         "render the assets benefits page with the 'yes' radio button prefilled and the user has prior benefits" which {
+
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel), aUserRequest)
             urlGet(assetsBenefitsPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -184,11 +194,13 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
         }
 
         "render the assets benefits page with the 'no' radio button prefilled and the user doesn't have prior benefits" which {
+
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assetsQuestion = Some(false))))
-            insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(sectionQuestion = Some(true), assetsQuestion = Some(false))))
+            insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
             urlGet(assetsBenefitsPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -210,12 +222,14 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
           welshToggleCheck(user.isWelsh)
         }
       }
+
     }
 
     "redirect to check your benefits page there is no cya data for found" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         urlGet(assetsBenefitsPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -229,8 +243,9 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(AssetsModel(sectionQuestion = Some(false))))
-        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(sectionQuestion = Some(false))))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         urlGet(assetsBenefitsPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -238,13 +253,15 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
         result.status shouldBe SEE_OTHER
         result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
       }
+
     }
 
     "redirect to the overview page when it's not end of year" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel), aUserRequest)
         urlGet(assetsBenefitsPageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -259,12 +276,16 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
     userScenarios.foreach { user =>
       import Selectors._
       import user.commonExpectedResults._
+
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
         "return an error when a user submits an empty form" which {
+
           lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
+
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(assetsBenefitsPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -290,20 +311,21 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
       }
     }
 
-    "update cya with 'yes' and a user chooses yes and doesn't have prior benefits" which {
+    "update cya with 'yes' when a user chooses yes and doesn't have prior benefits, redirects to assets amount page" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
+
       lazy val result: WSResponse = {
         dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         authoriseAgentOrIndividual(isAgent = false)
-        val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assetsQuestion = None)))
-        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(assetsSoFar))
+        insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         urlPost(assetsBenefitsPageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to the assets amount page" in {
         result.status shouldBe SEE_OTHER
-        //TODO - change to assets amount page when available
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe Some(AssetsBenefitsAmountController.show(taxYearEOY, employmentId).url)
       }
 
       "update assetsQuestion to Some(true) in assetsModel" in {
@@ -313,12 +335,14 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
       }
     }
 
-    "update cya with 'no' when a user choose no and has prior benefits" which {
+    "update cya with 'no' when a user choose no and has prior benefits, redirects to CYA" which {
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
+
       lazy val result: WSResponse = {
         dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel), aUserRequest)
         urlPost(assetsBenefitsPageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -335,10 +359,36 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
       }
     }
 
+    "update cya with 'no' when a user choose no and has no prior benefits, redirects to asset transfers question" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
+
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        authoriseAgentOrIndividual(isAgent = false)
+        val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(assetsSoFar))
+        insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        urlPost(assetsBenefitsPageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "redirect to the assets transfers page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(AssetTransfersBenefitsController.show(taxYearEOY, employmentId).url)
+      }
+
+      "update assetsQuestion to Some(false) and assets to None" in {
+        lazy val model = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        model.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
+        model.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assetsQuestion)) shouldBe Some(false)
+        model.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assets)) shouldBe None
+      }
+    }
+
     "redirect to check your benefits page there is no cya data for found" which {
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         urlPost(assetsBenefitsPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -352,8 +402,9 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(AssetsModel(sectionQuestion = Some(false))))
-        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(sectionQuestion = Some(false))))
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         urlPost(assetsBenefitsPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -367,7 +418,8 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel))))), aUserRequest)
+        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+        insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel), aUserRequest)
         urlPost(assetsBenefitsPageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 

@@ -17,7 +17,8 @@
 package controllers.benefits.assets
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes._
+import controllers.benefits.assets.routes.AssetsTransfersBenefitsAmountController
+import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
@@ -83,12 +84,10 @@ class AssetTransfersBenefitsController @Inject()(implicit val cc: MessagesContro
                 data.hasPriorBenefits
               )(errorHandler.internalServerError()) {
                 val nextPage = if (yesNo) {
-                  //TODO got to asset transfers amount page
-                  CheckYourBenefitsController.show(taxYear, employmentId)
+                  AssetsTransfersBenefitsAmountController.show(taxYear, employmentId)
                 } else {
                   CheckYourBenefitsController.show(taxYear, employmentId)
                 }
-
                 benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
               }
             }
