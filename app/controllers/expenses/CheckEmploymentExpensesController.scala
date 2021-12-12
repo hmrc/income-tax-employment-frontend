@@ -16,19 +16,21 @@
 
 package controllers.expenses
 
-import audit.{AuditService, ViewEmploymentExpensesAudit}
+import audit._
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes.CheckEmploymentExpensesController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.User
 import models.employment.{AllEmploymentData, EmploymentExpenses}
+import models.expenses.createUpdate.CreateUpdateExpensesRequest
 import models.expenses.{Expenses, ExpensesViewModel}
 import models.mongo.ExpensesCYAModel
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.{CreateOrAmendExpensesService, EmploymentSessionService}
+import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, EmploymentExpensesUtils, SessionHelper}
 import views.html.expenses.{CheckEmploymentExpensesView, CheckEmploymentExpensesViewEOY}
 
 import javax.inject.Inject
@@ -127,12 +129,11 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
               case _ =>
                 createOrAmendExpensesService.createExpensesModelAndReturnResult(cya, prior, taxYear) {
                   model =>
-
                     createOrAmendExpensesService.createOrUpdateExpensesResult(taxYear, model).flatMap {
                       case Left(result) =>
                         Future.successful(result)
                       case Right(result) =>
-                        //TODO: perform Submit audit
+                        performSubmitAudits(model, taxYear, prior)
                         employmentSessionService.clearExpenses(taxYear)(
                           result
                         )
@@ -145,4 +146,24 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
       }
     }
   }
+
+  def performSubmitAudits(model: CreateUpdateExpensesRequest, taxYear: Int, prior: Option[AllEmploymentData])
+                         (implicit user: User[_]): Future[AuditResult] = {
+
+    val audit: Either[AuditModel[AmendEmploymentExpensesUpdateAudit], AuditModel[CreateNewEmploymentExpensesAudit]] =
+      prior.flatMap {
+      prior =>
+        val priorData = EmploymentExpensesUtils.getLatestExpenses(prior, isInYear = false)
+        priorData.map(prior => model.toAmendAuditModel(taxYear, prior._1).toAuditModel)
+    }.map(Left(_)).getOrElse {
+      Right(model.toCreateAuditModel(taxYear).toAuditModel)
+    }
+    audit match {
+      case Left(amend) => auditService.sendAudit(amend)
+      case Right(create) => auditService.sendAudit(create)
+    }
+  }
 }
+
+
+
