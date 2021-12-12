@@ -16,15 +16,19 @@
 
 package controllers.employment
 
+import audit.{AuditNewEmploymentExpensesData, CreateNewEmploymentExpensesAudit}
 import common.SessionValues
 import config.{MockAuditService, MockEmploymentSessionService}
 import controllers.expenses.CheckEmploymentExpensesController
+import models.employment.AllEmploymentData
+import models.expenses.createUpdate.CreateUpdateExpensesRequest
 import play.api.http.HeaderNames.LOCATION
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Results.{Ok, Redirect}
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers.header
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
+import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.UnitTestWithApp
 import views.html.expenses.{CheckEmploymentExpensesView, CheckEmploymentExpensesViewEOY}
 
@@ -77,7 +81,7 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
           )
 
         val responseF: Future[Result] = {
-          mockFind(taxYear,Ok(view(taxYear, employmentsModel.hmrcExpenses.get.expenses.get,true, true)))
+          mockFind(taxYear,Ok(view(taxYear, employmentsModel.hmrcExpenses.get.expenses.get, isInYear = true, isMultipleEmployments = true)))
           controller.show(taxYear)(request)
         }
 
@@ -106,12 +110,55 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
         val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequestWithMtditidAndNino
 
         val responseF: Future[Result] = {
-          mockFind(taxYear,Ok(view(taxYear, employmentsModel.hmrcExpenses.get.expenses.get, true, true)))
+          mockFind(taxYear,Ok(view(taxYear, employmentsModel.hmrcExpenses.get.expenses.get, isInYear = true, isMultipleEmployments = true)))
           controller.show(taxYear)(request)
         }
 
         status(responseF) shouldBe OK
       }
+    }
+
+  }
+  "calling performSubmitAudit" should {
+    "send the audit events from the model when it's a create" in {
+
+      val model: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(
+        Some(true),
+        expenses)
+
+      val prior = None
+
+      verifyAuditEvent(CreateNewEmploymentExpensesAudit(
+        taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, AuditNewEmploymentExpensesData(
+          expenses.jobExpenses,
+          expenses.flatRateJobExpenses,
+          expenses.professionalSubscriptions,
+          expenses.otherAndCapitalAllowances
+        )
+      ).toAuditModel)
+      await(controller.performSubmitAudits(model, taxYear, prior)) shouldBe AuditResult.Success
+    }
+    "send the audit events from the model when it's a create and theres existing data" in {
+
+      val model: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(
+        Some(true),
+        expenses)
+
+      val prior: AllEmploymentData = employmentsModel.copy(
+        hmrcExpenses = None,
+        customerExpenses = None
+      )
+
+
+      verifyAuditEvent(CreateNewEmploymentExpensesAudit(
+        taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, AuditNewEmploymentExpensesData(
+          expenses.jobExpenses,
+          expenses.flatRateJobExpenses,
+          expenses.professionalSubscriptions,
+          expenses.otherAndCapitalAllowances
+        )
+      ).toAuditModel)
+      await(controller.performSubmitAudits(model, taxYear, Some(prior))) shouldBe AuditResult.Success
     }
 
   }
