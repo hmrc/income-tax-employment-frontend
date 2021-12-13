@@ -16,8 +16,8 @@
 
 package controllers.employment
 
-import audit.{AuditNewEmploymentExpensesData, CreateNewEmploymentExpensesAudit}
 import common.SessionValues
+import audit.{AmendEmploymentExpensesUpdateAudit, AuditEmploymentExpensesData, AuditNewEmploymentExpensesData, CreateNewEmploymentExpensesAudit}
 import config.{MockAuditService, MockEmploymentSessionService}
 import controllers.expenses.CheckEmploymentExpensesController
 import models.employment.AllEmploymentData
@@ -161,6 +161,45 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
       await(controller.performSubmitAudits(model, taxYear, Some(prior))) shouldBe AuditResult.Success
     }
 
+  }
+
+  "send the audit events from the model when it's a amend and there is existing data" in {
+
+    val model: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(Some(true),
+      expenses)
+
+    val priorCustomerEmploymentExpenses = employmentExpenses.copy(
+      expenses = Some ( this.expenses.copy(
+        jobExpenses = Some(0.0),
+        flatRateJobExpenses = Some(0.0),
+        professionalSubscriptions = Some(0.0),
+        otherAndCapitalAllowances = Some(0.0)
+      ) ))
+
+    val prior: AllEmploymentData = employmentsModel.copy(
+      hmrcExpenses = None,
+      customerExpenses = Some(
+        priorCustomerEmploymentExpenses
+      )
+    )
+
+    verifyAuditEvent(AmendEmploymentExpensesUpdateAudit(
+      taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid,
+      priorEmploymentExpensesData = AuditEmploymentExpensesData(
+        priorCustomerEmploymentExpenses.expenses.get.jobExpenses,
+        priorCustomerEmploymentExpenses.expenses.get.flatRateJobExpenses,
+        priorCustomerEmploymentExpenses.expenses.get.professionalSubscriptions,
+        priorCustomerEmploymentExpenses.expenses.get.otherAndCapitalAllowances
+      ),
+      employmentExpensesData = AuditEmploymentExpensesData
+      (
+        expenses.jobExpenses,
+        expenses.flatRateJobExpenses,
+        expenses.professionalSubscriptions,
+        expenses.otherAndCapitalAllowances
+      )
+    ).toAuditModel)
+    await(controller.performSubmitAudits(model, taxYear, Some(prior))) shouldBe AuditResult.Success
   }
 
 }
