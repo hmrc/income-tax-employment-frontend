@@ -50,6 +50,14 @@ object EmploymentDateForm {
   def sixthAprilDate(taxYear: Int): LocalDate = LocalDate.of(taxYear, april, startDay)
   def fifthAprilDate(taxYear: Int): LocalDate = LocalDate.of(taxYear, april, startDay-1)
 
+  object tooLongAgo {
+    val day = 1
+    val month = 1
+    val year = 1900
+  }
+
+  val tooLongAgoDate: LocalDate = LocalDate.of(tooLongAgo.year, tooLongAgo.month, tooLongAgo.day)
+
   def areDatesEmpty(date: EmploymentDate, isAgent: Boolean, key: String): Seq[FormError] = {
     val agentCheck: String = if (isAgent) "agent" else "individual"
     (date.amountDay.isEmpty, date.amountMonth.isEmpty, date.amountYear.isEmpty) match{
@@ -96,9 +104,10 @@ object EmploymentDateForm {
 
   def startDateValidation(date: LocalDate, taxYear: Int, agentCheck: String, s: DateValidationRequest): Seq[FormError] = {
 
-    (date.isAfter(LocalDate.now()), date.isBefore(sixthAprilDate(taxYear))) match {
-      case (true, _) => Seq(FormError("invalidFormat", s"employment.$startDate.error.notInPast.$agentCheck"))
-      case (_, false) => Seq(FormError("invalidFormat", s"employment.$startDate.error.tooRecent.$agentCheck", Seq(taxYear.toString)))
+    (date.isAfter(LocalDate.now()), date.isBefore(sixthAprilDate(taxYear)), date.isAfter(tooLongAgoDate)) match {
+      case (true, _, _) => Seq(FormError("invalidFormat", s"employment.$startDate.error.notInPast.$agentCheck"))
+      case (_, false, _) => Seq(FormError("invalidFormat", s"employment.$startDate.error.tooRecent.$agentCheck", Seq(taxYear.toString)))
+      case (_, _, false) => Seq(FormError("invalidFormat", s"employment.$startDate.error.tooLongAgo.$agentCheck"))
       case _ => Seq()
     }
   }

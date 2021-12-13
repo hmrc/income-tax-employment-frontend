@@ -19,6 +19,7 @@ package forms.employment
 import forms.validation.StringConstraints.{validateChar, validateSize}
 import forms.validation.mappings.MappingUtil.trimmedText
 import forms.validation.utils.ConstraintUtil.ConstraintUtil
+import models.User
 import play.api.data.Form
 import play.api.data.validation.Constraint
 import play.api.data.validation.Constraints.nonEmpty
@@ -30,15 +31,16 @@ object EmployerNameForm {
   val regex: String = "^[0-9a-zA-Z\\\\{À-˿’}\\- _&`():.'^,]{1,74}$"
 
   def notEmpty(isAgent: Boolean): Constraint[String] =
-    nonEmpty(if(isAgent) "employment.employerName.error.noEntry.agent" else "employment.employerName.error.noEntry.individual")
+    nonEmpty(s"employment.employerName.error.noEntry.${if(isAgent) "agent" else "individual"}")
 
   val NotCharLimit: Constraint[String] = validateSize(charLimit)("employment.employerName.error.name.limit")
 
-  val validateFormat: Constraint[String] = validateChar(regex)("employment.employerName.error.name.wrongFormat")
+  def validateFormat(isAgent: Boolean): Constraint[String] =
+    validateChar(regex)(s"employment.employerName.error.name.wrongFormat.${if(isAgent) "agent" else "individual"}")
 
   def employerNameForm(isAgent: Boolean): Form[String] = Form(
     employerName -> trimmedText.verifying(
-      notEmpty(isAgent) andThen NotCharLimit andThen validateFormat
+      notEmpty(isAgent) andThen NotCharLimit andThen validateFormat(isAgent)
     )
   )
 

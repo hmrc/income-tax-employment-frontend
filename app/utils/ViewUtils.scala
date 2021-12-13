@@ -18,7 +18,7 @@ package utils
 
 import play.api.i18n.Messages
 import play.api.mvc.Call
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 
 import java.time.LocalDate
@@ -49,6 +49,10 @@ object ViewUtils {
 
   def dateFormatter(date: LocalDate): String = {
     date.format(DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.UK))
+  }
+
+  def employmentDatesFormatter(startDate: Option[String], endDate: Option[String])(implicit messages: Messages): Option[String] = {
+    Some(messages("employment.employmentDetails.employmentDates.format", (startDate).getOrElse(""), endDate.getOrElse("")))
   }
 
   def getAgentDynamicContent(msgKey:String, isAgent:Boolean): String ={
