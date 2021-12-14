@@ -55,6 +55,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val summaryListSelector = "#main-content > div > div > dl"
     val continueButtonFormSelector = "#main-content > div > div > form"
     val continueButtonSelector = "#continue"
+    val returnToEmploymentSummarySelector = "#returnToEmploymentSummaryBtn"
 
     def summaryListRowFieldNameSelector(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dt"
 
@@ -100,6 +101,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val no: String
     val continueButtonText: String
     val continueButtonLink: String
+    val returnToEmploymentSummaryText: String
+    val returnToEmploymentSummaryLink: String
 
     def expectedCaption(taxYear: Int = taxYear): String
   }
@@ -118,6 +121,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val otherAndCapitalAllowancesAmount = "Amount for other equipment"
     val continueButtonText = "Save and continue"
     val continueButtonLink = "/update-and-submit-income-tax-return/employment-income/2021/expenses/check-employment-expenses"
+    val returnToEmploymentSummaryText: String = "Return to employment summary"
+    val returnToEmploymentSummaryLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employment-summary"
     val fieldNames = Seq(
       "Business travel and overnight stays",
       "Uniforms, work clothes, or tools",
@@ -144,6 +149,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val otherAndCapitalAllowancesAmount = "Amount for other equipment"
     val continueButtonText = "Save and continue"
     val continueButtonLink = "/update-and-submit-income-tax-return/employment-income/2021/expenses/check-employment-expenses"
+    val returnToEmploymentSummaryText: String = "Return to employment summary"
+    val returnToEmploymentSummaryLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employment-summary"
 
     val fieldNames = Seq(
       "Business travel and overnight stays",
@@ -298,6 +305,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           textOnPageCheck("£400", summaryListRowFieldAmountSelector(3))
           textOnPageCheck(user.commonExpectedResults.fieldNames(3), summaryListRowFieldNameSelector(4))
           textOnPageCheck("£600", summaryListRowFieldAmountSelector(4))
+          buttonCheck(user.commonExpectedResults.returnToEmploymentSummaryText, Selectors.returnToEmploymentSummarySelector)
         }
 
         "return a fully populated page when all the fields are populated at the end of the year" which {
@@ -455,6 +463,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           textOnPageCheck("£400", summaryListRowFieldAmountSelector(3))
           textOnPageCheck(user.commonExpectedResults.fieldNames(3), summaryListRowFieldNameSelector(4))
           textOnPageCheck("£600", summaryListRowFieldAmountSelector(4))
+          buttonCheck(user.commonExpectedResults.returnToEmploymentSummaryText, Selectors.returnToEmploymentSummarySelector)
         }
 
         "return a fully populated page with correct paragraph text when there are multiple employments and its end of year" which {

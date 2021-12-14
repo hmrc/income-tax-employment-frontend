@@ -28,13 +28,36 @@
     heading: Heading,
     govukSummaryList: GovukSummaryList,
     govukInsetText: GovukInsetText,
+    govUkButton: GovukButton
 )
 
-@(taxYear: Int, benefits: Benefits)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, benefits: Benefits, isSingleEmployment: Boolean, isInYear: Boolean, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @headingForUse = @{messages(s"checkYourBenefits.heading.${if(user.isAgent) "agent" else "individual"}")}
 
 @titleForUse = @{messages(s"checkYourBenefits.heading.${if(user.isAgent) "agent" else "individual"}")}
+
+@employmentSource = @{
+
+        if(isSingleEmployment) {
+            govUkButton(Button(
+                attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
+                preventDoubleClick = true,
+                content = Text(messages("employment.employmentInfo.buttonText")),
+                classes = "govuk-button",
+                href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url)
+            ))
+                } else {
+                    govUkButton(Button(
+                        attributes = Map("id" -> "returnToEmployerBtn"),
+                        preventDoubleClick = true,
+                        content = Text(messages("common.returnToEmployer")),
+                        classes = "govuk-button",
+                        href = Some(controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employmentId).url)
+                    ))
+                }
+}
+
 
 @showRows(item: String, value: Option[BigDecimal]) = @{
     summaryListRow(HtmlContent(messages(item)),HtmlContent(bigDecimalCurrency(value.getOrElse("0").toString)),actions = Seq(), keyClasses="govuk-!-width-two-thirds", valueClasses = "govuk-!-width-one-third right-align")
@@ -214,6 +237,10 @@
 
             govukSummaryList(SummaryList(rows))
         }
+    }
+
+    @if(isInYear) {
+        @employmentSource
     }
 }
 

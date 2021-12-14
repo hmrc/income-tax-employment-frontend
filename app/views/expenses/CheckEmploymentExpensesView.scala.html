@@ -26,7 +26,8 @@
         button: Button,
         heading: Heading,
         govukSummaryList: GovukSummaryList,
-        govukInsetText: GovukInsetText
+        govukInsetText: GovukInsetText,
+        govUkButton: GovukButton
 )
 
 @(taxYear: Int, expenses: Expenses, isInYear: Boolean, isMultipleEmployments: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
@@ -77,6 +78,17 @@
             )
         )
 
+    }
+
+    @if(isInYear) {
+
+        @govUkButton(Button(
+            attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
+            preventDoubleClick = true,
+            content = Text(messages("employment.employmentInfo.buttonText")),
+            classes = "govuk-button",
+            href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url)
+        ))
     }
 
 }

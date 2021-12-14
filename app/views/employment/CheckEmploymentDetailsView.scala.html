@@ -26,9 +26,10 @@
         button: Button,
         heading: Heading,
         govukSummaryList: GovukSummaryList,
-        govukInsetText: GovukInsetText
+        govukInsetText: GovukInsetText,
+        govUkButton: GovukButton
 )
-@(employmentDetails: EmploymentDetailsViewModel, taxYear: Int, isInYear:Boolean)(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
+@(employmentDetails: EmploymentDetailsViewModel, taxYear: Int, isInYear: Boolean, isSingleEmployment: Boolean)(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
 
 @headingForUse = @{
     messages(s"employment.employmentDetails.heading.${if(user.isAgent) "agent" else "individual"}")
@@ -36,6 +37,28 @@
 
 @margin = @{
     if(!employmentDetails.isUsingCustomerData) "govuk-!-margin-bottom-2" else "govuk-!-margin-bottom-4"
+}
+
+@employmentSource = @{
+
+        if(isSingleEmployment) {
+        govUkButton(Button(
+            attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
+            preventDoubleClick = true,
+            content = Text(messages("employment.employmentInfo.buttonText")),
+            classes = "govuk-button",
+            href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url)
+        ))
+            } else {
+                govUkButton(Button(
+                    attributes = Map("id" -> "returnToEmployerBtn"),
+                    preventDoubleClick = true,
+                    content = Text(messages("common.returnToEmployer")),
+                    classes = "govuk-button",
+                    href = Some(controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employmentDetails.employmentId).url)
+                ))
+            }
+
 }
 
 @layout(pageTitle = headingForUse, taxYear = Some(taxYear), isAgent = user.isAgent) {
@@ -144,6 +167,8 @@
         @formWithCSRF(action = controllers.employment.routes.CheckEmploymentDetailsController.submit(taxYear, employmentDetails.employmentId)) {
             @button("common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))
         }
+    } else {
+        @employmentSource
     }
 }
 

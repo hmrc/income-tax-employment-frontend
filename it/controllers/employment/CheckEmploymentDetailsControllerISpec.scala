@@ -19,7 +19,7 @@ package controllers.employment
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.UserBuilder.aUserRequest
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import builders.models.employment.EmploymentSourceBuilder.{anEmploymentSource, multipleEmploymentSources}
 import builders.models.employment.PayBuilder.aPay
 import builders.models.employment.StudentLoansBuilder.aStudentLoans
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
@@ -52,6 +52,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val summaryListSelector = "#main-content > div > div > dl"
     val continueButtonSelector = "#continue"
     val continueButtonFormSelector = "#main-content > div > div > form"
+    val returnToEmploymentSummarySelector = "#returnToEmploymentSummaryBtn"
+    val returnToEmployerSelector = "#returnToEmployerBtn"
 
     def summaryListRowFieldNameSelector(i: Int): String = s"#main-content > div > div > dl > div:nth-child($i) > dt"
 
@@ -94,6 +96,10 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payrollIdField: String
     val payrollIdHiddenText: String
     val changeEmployerNameHiddenText: String
+    val returnToEmploymentSummaryText: String
+    val returnToEmploymentSummaryLink: String
+    val returnToEmployerText: String
+    val returnToEmployerLink: String
   }
 
   object ContentValues {
@@ -127,6 +133,10 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val changeEmployerNameHiddenText: String = "Change the name of this employer"
     val payrollIdField: String = "Payroll ID"
     val payrollIdHiddenText: String = "Change the payroll ID for this employment"
+    val returnToEmploymentSummaryText: String = "Return to employment summary"
+    val returnToEmploymentSummaryLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employment-summary"
+    val returnToEmployerText: String = "Return to employer"
+    val returnToEmployerLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employer-details-and-benefits?employmentId=001"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -145,6 +155,10 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val changeEmployerNameHiddenText: String = "Change the name of this employer"
     val payrollIdField: String = "Payroll ID"
     val payrollIdHiddenText: String = "Change the payroll ID for this employment"
+    val returnToEmploymentSummaryText: String = "Return to employment summary"
+    val returnToEmploymentSummaryLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employment-summary"
+    val returnToEmployerText: String = "Return to employer"
+    val returnToEmployerLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employer-details-and-benefits?employmentId=001"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -432,6 +446,44 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(6))
           textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))
           textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(7))
+          buttonCheck(user.commonExpectedResults.returnToEmploymentSummaryText, Selectors.returnToEmploymentSummarySelector)
+        }
+
+        "for in year with multiple employment sources, return a fully populated page when all fields are populated" which {
+          implicit lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = multipleEmploymentSources))), nino, taxYear)
+            urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          "has an OK status" in {
+            result.status shouldBe OK
+          }
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          textOnPageCheck(user.commonExpectedResults.expectedCaption(taxYear), captionSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentTextSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedInsetText, insetTextSelector)
+          welshToggleCheck(user.isWelsh)
+          textOnPageCheck(user.commonExpectedResults.employerNameField1, summaryListRowFieldNameSelector(1))
+          textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
+          textOnPageCheck(user.commonExpectedResults.payeReferenceField2, summaryListRowFieldNameSelector(2))
+          textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
+          textOnPageCheck(user.commonExpectedResults.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(3))
+          textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(3))
+          textOnPageCheck(user.commonExpectedResults.employmentDatesField, summaryListRowFieldNameSelector(4))
+          textOnPageCheck(ContentValues.employmentDates, summaryListRowFieldAmountSelector(4))
+          textOnPageCheck(user.commonExpectedResults.payrollIdField, summaryListRowFieldNameSelector(5))
+          textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(5))
+          textOnPageCheck(user.commonExpectedResults.payReceivedField3, summaryListRowFieldNameSelector(6))
+          textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(6))
+          textOnPageCheck(user.commonExpectedResults.taxField4, summaryListRowFieldNameSelector(7))
+          textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(7))
+          buttonCheck(user.commonExpectedResults.returnToEmployerText, Selectors.returnToEmployerSelector)
         }
 
         "for end of year return a fully populated page, with change links, when all the fields are populated" which {
