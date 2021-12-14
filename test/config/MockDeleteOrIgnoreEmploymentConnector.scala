@@ -17,7 +17,7 @@
 package config
 
 import connectors.DeleteOrIgnoreEmploymentConnector
-import connectors.httpParsers.DeleteOrIgnoreEmploymentHttpParser.DeleteOrIgnoreEmploymentResponse
+import connectors.parsers.DeleteOrIgnoreEmploymentHttpParser.DeleteOrIgnoreEmploymentResponse
 import models.{APIErrorBodyModel, APIErrorModel}
 import org.scalamock.handlers.CallHandler5
 import org.scalamock.scalatest.MockFactory
@@ -31,7 +31,7 @@ trait MockDeleteOrIgnoreEmploymentConnector extends MockFactory {
   val mockDeleteOrIgnoreEmploymentConnector: DeleteOrIgnoreEmploymentConnector = mock[DeleteOrIgnoreEmploymentConnector]
 
   def mockDeleteOrIgnoreEmploymentRight(nino: String, taxYear: Int, employmentId: String, toRemove: String): CallHandler5[String, Int, String, String, HeaderCarrier, Future[DeleteOrIgnoreEmploymentResponse]] = {
-    (mockDeleteOrIgnoreEmploymentConnector.deleteOrIgnoreEmployment(_: String, _:Int, _: String, _:String)(_:HeaderCarrier))
+    (mockDeleteOrIgnoreEmploymentConnector.deleteOrIgnoreEmployment(_: String, _: Int, _: String, _: String)(_: HeaderCarrier))
       .expects(nino, taxYear, employmentId, toRemove, *)
       .returns(Future.successful(Right(())))
       .anyNumberOfTimes()

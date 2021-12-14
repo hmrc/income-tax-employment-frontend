@@ -17,8 +17,7 @@
 package config
 
 import connectors.CreateUpdateEmploymentDataConnector
-import connectors.httpParsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmploymentDataResponse
-import models.IncomeTaxUserData
+import connectors.parsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmploymentDataResponse
 import models.employment.createUpdate.CreateUpdateEmploymentRequest
 import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
@@ -33,7 +32,7 @@ trait MockCreateUpdateEmploymentDataConnector extends MockFactory {
   def mockCreateUpdateEmploymentData(nino: String, taxYear: Int, data: CreateUpdateEmploymentRequest)
                                     (response: CreateUpdateEmploymentDataResponse = Right(())): CallHandler4[String, Int,
     CreateUpdateEmploymentRequest, HeaderCarrier, Future[CreateUpdateEmploymentDataResponse]] = {
-    (mockCreateUpdateEmploymentDataConnector.createUpdateEmploymentData(_: String,_: Int,_:CreateUpdateEmploymentRequest)(_: HeaderCarrier))
+    (mockCreateUpdateEmploymentDataConnector.createUpdateEmploymentData(_: String, _: Int, _: CreateUpdateEmploymentRequest)(_: HeaderCarrier))
       .expects(nino, taxYear, data, *)
       .returns(Future.successful(response))
       .anyNumberOfTimes()

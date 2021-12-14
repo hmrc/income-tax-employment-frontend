@@ -17,7 +17,7 @@
 package connectors
 
 import builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
-import connectors.httpParsers.DeleteOrIgnoreEmploymentHttpParser.DeleteOrIgnoreEmploymentResponse
+import connectors.parsers.DeleteOrIgnoreEmploymentHttpParser.DeleteOrIgnoreEmploymentResponse
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status._

@@ -14,28 +14,29 @@
  * limitations under the License.
  */
 
-package connectors.httpParsers
+package connectors.parsers
 
-import models.APIErrorModel
+import models.IncomeTaxUserData.excludePensionIncome
+import models.{APIErrorModel, IncomeTaxUserData}
 import play.api.http.Status._
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import utils.PagerDutyHelper.PagerDutyKeys._
 import utils.PagerDutyHelper.pagerDutyLog
 
-object CreateOrAmendExpensesHttpParser extends APIParser {
-  type CreateOrAmendExpensesResponse = Either[APIErrorModel, Unit]
+object IncomeTaxUserDataHttpParser extends APIParser {
+  type IncomeTaxUserDataResponse = Either[APIErrorModel, IncomeTaxUserData]
 
-  override val parserName: String = "CreateOrAmendExpensesHttpParser"
-  override val service: String = "income-tax-expenses"
+  override val parserName: String = "IncomeTaxUserDataHttpParser"
+  override val service: String = "income-tax-submission"
 
-  implicit object CreateOrAmendExpensesReads extends HttpReads[CreateOrAmendExpensesResponse] {
-    override def read(method: String, url: String, response: HttpResponse): CreateOrAmendExpensesResponse = {
-
+  implicit object IncomeTaxUserDataHttpReads extends HttpReads[IncomeTaxUserDataResponse] {
+    override def read(method: String, url: String, response: HttpResponse): IncomeTaxUserDataResponse = {
       response.status match {
-        case NO_CONTENT => Right(())
-        case BAD_REQUEST | NOT_FOUND | FORBIDDEN | UNPROCESSABLE_ENTITY =>
-          pagerDutyLog(FOURXX_RESPONSE_FROM_API, logMessage(response))
-          handleAPIError(response)
+        case OK => response.json.validate[IncomeTaxUserData].fold[IncomeTaxUserDataResponse](
+          _ => badSuccessJsonFromAPI,
+          parsedModel => Right(excludePensionIncome(parsedModel))
+        )
+        case NO_CONTENT => Right(IncomeTaxUserData())
         case INTERNAL_SERVER_ERROR =>
           pagerDutyLog(INTERNAL_SERVER_ERROR_FROM_API, logMessage(response))
           handleAPIError(response)
