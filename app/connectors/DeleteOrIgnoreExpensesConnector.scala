@@ -17,8 +17,7 @@
 package connectors
 
 import config.AppConfig
-import connectors.httpParsers.DeleteOrIgnoreExpensesHttpParser._
-import connectors.httpParsers.DeleteOrIgnoreExpensesHttpParser.DeleteOrIgnoreExpensesResponse
+import connectors.parsers.DeleteOrIgnoreExpensesHttpParser.{DeleteOrIgnoreExpensesResponse, _}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import javax.inject.Inject

@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-package connectors.httpParsers
+package connectors.parsers
 
-import models.IncomeTaxUserData.excludePensionIncome
-import models.{APIErrorModel, IncomeTaxUserData}
+import models.APIErrorModel
 import play.api.http.Status._
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import utils.PagerDutyHelper.PagerDutyKeys._
 import utils.PagerDutyHelper.pagerDutyLog
 
-object IncomeTaxUserDataHttpParser extends APIParser {
-  type IncomeTaxUserDataResponse = Either[APIErrorModel, IncomeTaxUserData]
+object DeleteOrIgnoreEmploymentHttpParser extends APIParser {
+  type DeleteOrIgnoreEmploymentResponse = Either[APIErrorModel, Unit]
 
-  override val parserName: String = "IncomeTaxUserDataHttpParser"
-  override val service: String = "income-tax-submission"
+  override val parserName: String = "DeleteOrIgnoreEmploymentHttpParser"
+  override val service: String = "income-tax-employment"
 
-  implicit object IncomeTaxUserDataHttpReads extends HttpReads[IncomeTaxUserDataResponse] {
-    override def read(method: String, url: String, response: HttpResponse): IncomeTaxUserDataResponse = {
+  implicit object DeleteOrIgnoreEmploymentReads extends HttpReads[DeleteOrIgnoreEmploymentResponse] {
+    override def read(method: String, url: String, response: HttpResponse): DeleteOrIgnoreEmploymentResponse = {
+
       response.status match {
-        case OK => response.json.validate[IncomeTaxUserData].fold[IncomeTaxUserDataResponse](
-          _ => badSuccessJsonFromAPI,
-          parsedModel => Right(excludePensionIncome(parsedModel))
-        )
-        case NO_CONTENT => Right(IncomeTaxUserData())
+        case NO_CONTENT => Right(())
+        case BAD_REQUEST | NOT_FOUND | FORBIDDEN | UNPROCESSABLE_ENTITY =>
+          pagerDutyLog(FOURXX_RESPONSE_FROM_API, logMessage(response))
+          handleAPIError(response)
         case INTERNAL_SERVER_ERROR =>
           pagerDutyLog(INTERNAL_SERVER_ERROR_FROM_API, logMessage(response))
           handleAPIError(response)

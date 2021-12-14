@@ -4,7 +4,7 @@ import sbt._
 object AppDependencies {
 
   val compile = Seq(
-    "uk.gov.hmrc"             %% "bootstrap-frontend-play-28" % "5.17.0",
+    "uk.gov.hmrc"             %% "bootstrap-frontend-play-28" % "5.18.0",
     "uk.gov.hmrc"             %% "play-frontend-hmrc"         % "1.31.0-play-28",
     "uk.gov.hmrc"             %% "govuk-template"             % "5.72.0-play-28",
     "uk.gov.hmrc.mongo"       %% "hmrc-mongo-play-28"         % "0.58.0",
@@ -12,7 +12,7 @@ object AppDependencies {
   )
 
   val test = Seq(
-    "uk.gov.hmrc"             %% "bootstrap-test-play-28"   % "5.17.0"                 % Test,
+    "uk.gov.hmrc"             %% "bootstrap-test-play-28"   % "5.18.0"                % Test,
     "org.scalatest"           %% "scalatest"                % "3.2.9"                 % Test,
     "org.jsoup"               %  "jsoup"                    % "1.13.1"                % Test,
     "com.typesafe.play"       %% "play-test"                % current                 % Test,

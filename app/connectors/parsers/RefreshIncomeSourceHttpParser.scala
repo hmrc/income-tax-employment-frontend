@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package connectors.httpParsers
+package connectors.parsers
 
 import models.APIErrorModel
 import play.api.http.Status._
@@ -22,18 +22,18 @@ import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import utils.PagerDutyHelper.PagerDutyKeys._
 import utils.PagerDutyHelper.pagerDutyLog
 
-object DeleteOrIgnoreEmploymentHttpParser extends APIParser {
-  type DeleteOrIgnoreEmploymentResponse = Either[APIErrorModel, Unit]
+object RefreshIncomeSourceHttpParser extends APIParser {
+  type RefreshIncomeSourceResponse = Either[APIErrorModel, Unit]
 
-  override val parserName: String = "DeleteOrIgnoreEmploymentHttpParser"
-  override val service: String = "income-tax-employment"
+  override val parserName: String = "RefreshIncomeSourceHttpParser"
+  override val service: String = "income-tax-submission"
 
-  implicit object DeleteOrIgnoreEmploymentReads extends HttpReads[DeleteOrIgnoreEmploymentResponse] {
-    override def read(method: String, url: String, response: HttpResponse): DeleteOrIgnoreEmploymentResponse = {
+  implicit object RefreshIncomeSourceHttpReads extends HttpReads[RefreshIncomeSourceResponse] {
 
+    override def read(method: String, url: String, response: HttpResponse): RefreshIncomeSourceResponse = {
       response.status match {
-        case NO_CONTENT => Right(())
-        case BAD_REQUEST | NOT_FOUND | FORBIDDEN | UNPROCESSABLE_ENTITY =>
+        case NO_CONTENT | NOT_FOUND => Right(())
+        case BAD_REQUEST =>
           pagerDutyLog(FOURXX_RESPONSE_FROM_API, logMessage(response))
           handleAPIError(response)
         case INTERNAL_SERVER_ERROR =>

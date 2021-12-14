@@ -16,18 +16,14 @@
 
 package services
 
-import java.util.NoSuchElementException
-
 import config.{AppConfig, ErrorHandler}
-import connectors.httpParsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmploymentDataResponse
-import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
-import connectors.{CreateUpdateEmploymentDataConnector, IncomeTaxUserDataConnector}
+import connectors.parsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmploymentDataResponse
+import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
+import connectors.{CreateUpdateEmploymentDataConnector, IncomeSourceConnector, IncomeTaxUserDataConnector}
 import controllers.employment.routes.{CheckEmploymentDetailsController, EmploymentSummaryController}
-import javax.inject.{Inject, Singleton}
 import models.benefits.Benefits
 import models.employment._
 import models.employment.createUpdate._
-import utils.EmploymentExpensesUtils.{getLatestExpenses => utilsGetLatestExpenses}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData, ExpensesCYAModel, ExpensesUserData}
 import models.{IncomeTaxUserData, User}
 import org.joda.time.DateTimeZone
@@ -39,7 +35,10 @@ import play.api.mvc.{Request, Result}
 import repositories.{EmploymentUserDataRepository, ExpensesUserDataRepository}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Clock
+import utils.EmploymentExpensesUtils.{getLatestExpenses => utilsGetLatestExpenses}
 
+import java.util.NoSuchElementException
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
@@ -47,6 +46,7 @@ import scala.util.Try
 class EmploymentSessionService @Inject()(employmentUserDataRepository: EmploymentUserDataRepository,
                                          expensesUserDataRepository: ExpensesUserDataRepository,
                                          incomeTaxUserDataConnector: IncomeTaxUserDataConnector,
+                                         incomeSourceConnector: IncomeSourceConnector,
                                          implicit private val appConfig: AppConfig,
                                          val messagesApi: MessagesApi,
                                          errorHandler: ErrorHandler,
@@ -66,7 +66,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   def getPriorData(taxYear: Int)(implicit user: User[_], hc: HeaderCarrier): Future[IncomeTaxUserDataResponse] = {
-    incomeTaxUserDataConnector.getUserData(user.nino, taxYear)(hc.withExtraHeaders("mtditid" -> user.mtditid))
+    incomeTaxUserDataConnector.get(user.nino, taxYear)(hc.withExtraHeaders("mtditid" -> user.mtditid))
   }
 
   def getSessionDataResult(taxYear: Int, employmentId: String)(result: Option[EmploymentUserData] => Future[Result])
@@ -318,17 +318,23 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     result.flatten
   }
 
-  def clear(taxYear: Int, employmentId: String)(onSuccess: Result)(implicit user: User[_]): Future[Result] = {
-    employmentUserDataRepository.clear(taxYear, employmentId).map {
-      case true => onSuccess
-      case false => errorHandler.internalServerError()
+  def clear(taxYear: Int, employmentId: String)(onSuccess: Result)(implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
+    incomeSourceConnector.put(taxYear, user.nino, "employment")(hc.withExtraHeaders("mtditid" -> user.mtditid)).flatMap {
+      case Left(_) => Future.successful(errorHandler.internalServerError())
+      case _ => employmentUserDataRepository.clear(taxYear, employmentId).map {
+        case true => onSuccess
+        case false => errorHandler.internalServerError()
+      }
     }
   }
 
-  def clearExpenses(taxYear: Int)(onSuccess: Result)(implicit user: User[_]): Future[Result] = {
-    expensesUserDataRepository.clear(taxYear).map {
-      case true => onSuccess
-      case false => errorHandler.internalServerError()
+  def clearExpenses(taxYear: Int)(onSuccess: Result)(implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
+    incomeSourceConnector.put(taxYear, user.nino, "employment")(hc.withExtraHeaders("mtditid" -> user.mtditid)).flatMap {
+      case Left(_) => Future.successful(errorHandler.internalServerError())
+      case _ => expensesUserDataRepository.clear(taxYear).map {
+        case true => onSuccess
+        case false => errorHandler.internalServerError()
+      }
     }
   }
 

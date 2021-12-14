@@ -17,7 +17,7 @@
 package services
 
 import connectors.NrsConnector
-import connectors.httpParsers.NrsSubmissionHttpParser.NrsSubmissionResponse
+import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import play.api.http.HeaderNames
 import play.api.libs.json.Writes
 import play.api.mvc.Request
@@ -27,10 +27,9 @@ import utils.HMRCHeaderNames
 import javax.inject.Inject
 import scala.concurrent.Future
 
-class NrsService @Inject() (nrsConnector: NrsConnector) {
+class NrsService @Inject()(nrsConnector: NrsConnector) {
 
   def submit[A](nino: String, payload: A, mtditid: String)(implicit request: Request[_], hc: HeaderCarrier, writes: Writes[A]): Future[NrsSubmissionResponse] = {
-
     val extraHeaders = Seq(
       Some("mtditid" -> mtditid),
       Some(HeaderNames.USER_AGENT -> "income-tax-employment-frontend"),
@@ -41,5 +40,4 @@ class NrsService @Inject() (nrsConnector: NrsConnector) {
 
     nrsConnector.postNrsConnector(nino, payload)(hc.withExtraHeaders(extraHeaders: _*), writes)
   }
-
 }

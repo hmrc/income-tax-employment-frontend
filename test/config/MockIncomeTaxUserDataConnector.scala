@@ -17,7 +17,7 @@
 package config
 
 import connectors.IncomeTaxUserDataConnector
-import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
+import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData}
 import org.scalamock.handlers.CallHandler3
 import org.scalamock.scalatest.MockFactory
@@ -31,19 +31,21 @@ trait MockIncomeTaxUserDataConnector extends MockFactory {
   val mockUserDataConnector: IncomeTaxUserDataConnector = mock[IncomeTaxUserDataConnector]
 
   def mockFind(nino: String, taxYear: Int, userData: IncomeTaxUserData): CallHandler3[String, Int, HeaderCarrier, Future[IncomeTaxUserDataResponse]] = {
-    (mockUserDataConnector.getUserData(_: String,_: Int)(_: HeaderCarrier))
+    (mockUserDataConnector.get(_: String, _: Int)(_: HeaderCarrier))
       .expects(nino, taxYear, *)
       .returns(Future.successful(Right(userData)))
       .anyNumberOfTimes()
   }
+
   def mockFindNoContent(nino: String, taxYear: Int): CallHandler3[String, Int, HeaderCarrier, Future[IncomeTaxUserDataResponse]] = {
-    (mockUserDataConnector.getUserData(_: String,_: Int)(_: HeaderCarrier))
+    (mockUserDataConnector.get(_: String, _: Int)(_: HeaderCarrier))
       .expects(nino, taxYear, *)
       .returns(Future.successful(Right(IncomeTaxUserData())))
       .anyNumberOfTimes()
   }
+
   def mockFindFail(nino: String, taxYear: Int): CallHandler3[String, Int, HeaderCarrier, Future[IncomeTaxUserDataResponse]] = {
-    (mockUserDataConnector.getUserData(_: String,_: Int)(_: HeaderCarrier))
+    (mockUserDataConnector.get(_: String, _: Int)(_: HeaderCarrier))
       .expects(nino, taxYear, *)
       .returns(Future.successful(Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))))
       .anyNumberOfTimes()
