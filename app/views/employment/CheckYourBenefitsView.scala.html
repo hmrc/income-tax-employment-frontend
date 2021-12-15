@@ -31,30 +31,22 @@
     govUkButton: GovukButton
 )
 
-@(taxYear: Int, benefits: Benefits, isSingleEmployment: Boolean, isInYear: Boolean, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, benefits: Benefits, isSingleEmployment: Boolean, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @headingForUse = @{messages(s"checkYourBenefits.heading.${if(user.isAgent) "agent" else "individual"}")}
 
 @titleForUse = @{messages(s"checkYourBenefits.heading.${if(user.isAgent) "agent" else "individual"}")}
 
-@employmentSource = @{
+@employmentSource = {
 
-        if(isSingleEmployment) {
-            govUkButton(Button(
-                attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
-                preventDoubleClick = true,
-                content = Text(messages("employment.employmentInfo.buttonText")),
-                classes = "govuk-button",
-                href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url)
-            ))
-                } else {
-                    govUkButton(Button(
-                        attributes = Map("id" -> "returnToEmployerBtn"),
-                        preventDoubleClick = true,
-                        content = Text(messages("common.returnToEmployer")),
-                        classes = "govuk-button",
-                        href = Some(controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employmentId).url)
-                    ))
+        @if(isSingleEmployment) {
+                @formWithCSRF(action = controllers.employment.routes.EmploymentSummaryController.show(taxYear)) {
+                    @button("employment.employmentInfo.buttonText")
+                }
+                    } else {
+                        @formWithCSRF(action = controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employmentId)) {
+                            @button("common.returnToEmployer")
+                        }
                 }
 }
 
@@ -239,9 +231,7 @@
         }
     }
 
-    @if(isInYear) {
         @employmentSource
-    }
 }
 
 @{

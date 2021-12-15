@@ -20,6 +20,7 @@
 @import models.employment.EmploymentDetailsViewModel
 @import utils.ViewUtils._
 
+
 @this(
         layout: Layout,
         formWithCSRF: FormWithCSRF,
@@ -39,25 +40,19 @@
     if(!employmentDetails.isUsingCustomerData) "govuk-!-margin-bottom-2" else "govuk-!-margin-bottom-4"
 }
 
-@employmentSource = @{
+@employmentSource = {
 
-        if(isSingleEmployment) {
-        govUkButton(Button(
-            attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
-            preventDoubleClick = true,
-            content = Text(messages("employment.employmentInfo.buttonText")),
-            classes = "govuk-button",
-            href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url)
-        ))
+        @if(isSingleEmployment) {
+@formWithCSRF(action = controllers.employment.routes.EmploymentSummaryController.show(taxYear)) {
+@button("employment.employmentInfo.buttonText")
+
+        }
             } else {
-                govUkButton(Button(
-                    attributes = Map("id" -> "returnToEmployerBtn"),
-                    preventDoubleClick = true,
-                    content = Text(messages("common.returnToEmployer")),
-                    classes = "govuk-button",
-                    href = Some(controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employmentDetails.employmentId).url)
-                ))
+@formWithCSRF(action = controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employmentDetails.employmentId)) {
+@button("common.returnToEmployer")
             }
+
+        }
 
 }
 
