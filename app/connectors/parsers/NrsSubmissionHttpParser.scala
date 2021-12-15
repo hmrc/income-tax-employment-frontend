@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package connectors.httpParsers
+package connectors.parsers
 
 import models.APIErrorModel
 import play.api.http.Status._
@@ -22,29 +22,24 @@ import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import utils.PagerDutyHelper.PagerDutyKeys._
 import utils.PagerDutyHelper.pagerDutyLog
 
-object DeleteOrIgnoreExpensesHttpParser extends APIParser {
-  type DeleteOrIgnoreExpensesResponse = Either[APIErrorModel, Unit]
+object NrsSubmissionHttpParser extends APIParser {
+  type NrsSubmissionResponse = Either[APIErrorModel, Unit]
+  override val parserName: String = "NrsSubmissionHttpParser"
+  override val service: String = "income-tax-nrs-proxy"
 
-  override val parserName: String = "DeleteOrIgnoreExpensesHttpParser"
-  override val service: String = "income-tax-expenses"
-
-  implicit object DeleteOrIgnoreExpensesReads extends HttpReads[DeleteOrIgnoreExpensesResponse] {
-    override def read(method: String, url: String, response: HttpResponse): DeleteOrIgnoreExpensesResponse = {
-
+  implicit object NrsSubmissionHttpReads extends HttpReads[NrsSubmissionResponse] {
+    override def read(method: String, url: String, response: HttpResponse): NrsSubmissionResponse = {
       response.status match {
-        case NO_CONTENT => Right(())
-        case BAD_REQUEST | NOT_FOUND | FORBIDDEN | UNPROCESSABLE_ENTITY =>
+        case OK => Right()
+        case NOT_FOUND | BAD_REQUEST | UNAUTHORIZED =>
           pagerDutyLog(FOURXX_RESPONSE_FROM_API, logMessage(response))
           handleAPIError(response)
         case INTERNAL_SERVER_ERROR =>
           pagerDutyLog(INTERNAL_SERVER_ERROR_FROM_API, logMessage(response))
           handleAPIError(response)
-        case SERVICE_UNAVAILABLE =>
-          pagerDutyLog(SERVICE_UNAVAILABLE_FROM_API, logMessage(response))
-          handleAPIError(response)
         case _ =>
           pagerDutyLog(UNEXPECTED_RESPONSE_FROM_API, logMessage(response))
-          handleAPIError(response, Some(INTERNAL_SERVER_ERROR))
+          handleAPIError(response)
       }
     }
   }

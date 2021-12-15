@@ -16,16 +16,19 @@
 
 package services
 
-import config.{AppConfig, ErrorHandler, MockDeleteOrIgnoreEmploymentConnector, MockEmploymentUserDataRepository}
-import play.api.mvc.Results.{Ok, Redirect}
-import models.employment._
+import config._
 import controllers.employment.routes.EmploymentSummaryController
+import models.employment._
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.i18n.MessagesApi
+import play.api.mvc.Results.{Ok, Redirect}
 import utils.UnitTest
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 
-class DeleteOrIgnoreEmploymentServiceSpec extends UnitTest with MockDeleteOrIgnoreEmploymentConnector with MockEmploymentUserDataRepository {
+class DeleteOrIgnoreEmploymentServiceSpec extends UnitTest
+  with MockDeleteOrIgnoreEmploymentConnector
+  with MockIncomeSourceConnector
+  with MockEmploymentUserDataRepository {
 
   val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
   val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
@@ -37,8 +40,12 @@ class DeleteOrIgnoreEmploymentServiceSpec extends UnitTest with MockDeleteOrIgno
 
   val messages: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  val service: DeleteOrIgnoreEmploymentService =
-    new DeleteOrIgnoreEmploymentService(mockDeleteOrIgnoreEmploymentConnector, errorHandler, mockExecutionContext)
+  val service: DeleteOrIgnoreEmploymentService = new DeleteOrIgnoreEmploymentService(
+    mockDeleteOrIgnoreEmploymentConnector,
+    mockIncomeSourceConnector,
+    errorHandler,
+    mockExecutionContext
+  )
 
   val taxYear = 2022
   val employmentId: String = "001"
@@ -55,75 +62,71 @@ class DeleteOrIgnoreEmploymentServiceSpec extends UnitTest with MockDeleteOrIgno
     submittedOn = None,
     employmentData = None,
     employmentBenefits = None
-    )
+  )
 
-    val data:AllEmploymentData = AllEmploymentData(
-      hmrcEmploymentData = Seq(empSource),hmrcExpenses = None,customerEmploymentData = Seq(empSource.copy(employmentId = "002")), None
-    )
+  val data: AllEmploymentData = AllEmploymentData(
+    hmrcEmploymentData = Seq(empSource), hmrcExpenses = None, customerEmploymentData = Seq(empSource.copy(employmentId = "002")), None
+  )
 
   ".deleteOrIgnoreEmployment" should {
-
     "return a successful result" when {
-
       "there is hmrc data and no customer data" which {
-
         "toRemove is equal to 'HMRC-HELD'" in {
-
-          mockDeleteOrIgnoreEmploymentRight(nino, taxYear, employmentId, "HMRC-HELD" )
+          mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+          mockDeleteOrIgnoreEmploymentRight(nino, taxYear, employmentId, "HMRC-HELD")
 
           val response = service.deleteOrIgnoreEmployment(user, data.copy(customerEmploymentData = Seq()), taxYear, employmentId)(Ok)
 
           await(response) shouldBe Ok
-
         }
       }
 
       "there is customer data and no hmrc data" which {
-
         "toRemove is equal to 'CUSTOMER'" in {
-
-          mockDeleteOrIgnoreEmploymentRight(nino, taxYear, "002", "CUSTOMER" )
+          mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+          mockDeleteOrIgnoreEmploymentRight(nino, taxYear, "002", "CUSTOMER")
 
           val response = service.deleteOrIgnoreEmployment(user, data.copy(hmrcEmploymentData = Seq()), taxYear, "002")(Ok)
 
           await(response) shouldBe Ok
-
         }
       }
-
     }
 
     "returns an unsuccessful result" when {
-
       "there is no hmrc or customer data" in {
-
-        mockDeleteOrIgnoreEmploymentRight(nino, taxYear, "002", "CUSTOMER" )
+        mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+        mockDeleteOrIgnoreEmploymentRight(nino, taxYear, "002", "CUSTOMER")
 
         val response = service.deleteOrIgnoreEmployment(user, data.copy(hmrcEmploymentData = Seq(), customerEmploymentData = Seq()), taxYear, "002")(Ok)
 
         await(response) shouldBe Redirect(EmploymentSummaryController.show(taxYear).url)
-
       }
 
       "there is no employment data for that employment id" in {
-
+        mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
         val response = service.deleteOrIgnoreEmployment(user, data, taxYear, differentEmploymentId)(Ok)
 
         await(response) shouldBe Redirect(EmploymentSummaryController.show(taxYear).url)
-
       }
 
       "the connector throws a Left" in {
-
-        mockDeleteOrIgnoreEmploymentLeft(nino, taxYear, "002", "CUSTOMER" )
+        mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
+        mockDeleteOrIgnoreEmploymentLeft(nino, taxYear, "002", "CUSTOMER")
 
         val response = service.deleteOrIgnoreEmployment(user, data, taxYear, "002")(Ok)
 
         status(response) shouldBe INTERNAL_SERVER_ERROR
+      }
 
+      "incomeSourceConnector returns error" in {
+        mockRefreshIncomeSourceResponseError(taxYear, nino, "employment")
+        mockDeleteOrIgnoreEmploymentRight(nino, taxYear, "002", "CUSTOMER")
+
+        val response = service.deleteOrIgnoreEmployment(user, data.copy(hmrcEmploymentData = Seq()), taxYear, "002")(Ok)
+
+        status(response) shouldBe INTERNAL_SERVER_ERROR
       }
     }
-
   }
-
 }

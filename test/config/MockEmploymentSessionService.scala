@@ -16,7 +16,7 @@
 
 package config
 
-import connectors.httpParsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
+import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import models.employment.{AllEmploymentData, EmploymentSource}
 import models.mongo.EmploymentUserData
 import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData, User}
@@ -99,8 +99,9 @@ trait MockEmploymentSessionService extends MockFactory {
       .expects(taxYear, employmentId, *, *, *)
       .returns(Future(result))
   }
+
   def mockGetSessionDataAndReturnResult(taxYear: Int, employmentId: String, result: Result)
-                        (implicit executionContext: ExecutionContext): CallHandler5[Int, String, String, EmploymentUserData => Future[Result], User[_], Future[Result]] = {
+                                       (implicit executionContext: ExecutionContext): CallHandler5[Int, String, String, EmploymentUserData => Future[Result], User[_], Future[Result]] = {
     (mockEmploymentSessionService.getSessionDataAndReturnResult(_: Int, _: String)(_: String)(_: EmploymentUserData => Future[Result])(_: User[_]))
       .expects(taxYear, employmentId, *, *, *)
       .returns(Future(result))

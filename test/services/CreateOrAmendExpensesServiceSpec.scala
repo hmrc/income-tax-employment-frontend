@@ -16,16 +16,17 @@
 
 package services
 
-import controllers.employment.routes.EmploymentSummaryController
 import config.{AppConfig, ErrorHandler, MockCreateOrAmendExpensesConnector}
+import controllers.employment.routes.EmploymentSummaryController
 import models.employment._
-import models.expenses.createUpdate.{CreateUpdateExpensesRequest, CreateUpdateExpensesRequestError, NothingToUpdate}
 import models.expenses.{Expenses, ExpensesViewModel}
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
+import models.requests
+import models.requests.{CreateUpdateExpensesRequest, CreateUpdateExpensesRequestError, NothingToUpdate}
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, SEE_OTHER}
 import play.api.i18n.MessagesApi
 import play.api.mvc.Result
-import play.api.mvc.Results.{Ok, Redirect}
+import play.api.mvc.Results.Redirect
 import utils.UnitTest
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 
@@ -69,7 +70,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
     businessTravelCosts = None, hotelAndMealExpenses = None, vehicleExpenses = None, mileageAllowanceRelief = None,
     isUsingCustomerData = false))
 
-  val fullCreateUpdateExpensesRequestWithIgnoreExpenses: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(None, expensesCyaData.expenses.toExpenses)
+  val fullCreateUpdateExpensesRequestWithIgnoreExpenses: CreateUpdateExpensesRequest = requests.CreateUpdateExpensesRequest(None, expensesCyaData.expenses.toExpenses)
 
   val AllEmpDataNoCustomerAndUnchangedHmrcExpenses: AllEmploymentData =
     AllEmploymentData(
@@ -239,7 +240,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
     "return a successful result using the request model to make the api call and return the correct redirect" when {
       "hmrc expenses data has ignoreExpenses(true)" in {
 
-        mockCreateOrAmendExpensesSuccess(nino, taxYear, CreateUpdateExpensesRequest(Some(true), expensesModel))
+        mockCreateOrAmendExpensesSuccess(nino, taxYear, requests.CreateUpdateExpensesRequest(Some(true), expensesModel))
 
         val response: Future[Either[Result, Result]] = service.createOrUpdateExpensesResult(
           taxYear, fullCreateUpdateExpensesRequestWithIgnoreExpenses.copy(ignoreExpenses = Some(true)))
@@ -273,7 +274,7 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
     }
 
     "use the request model to make the api call and handle an error when the connector throws a Left" in {
-      mockCreateOrAmendExpensesError(nino, taxYear, CreateUpdateExpensesRequest(None, expensesModel))
+      mockCreateOrAmendExpensesError(nino, taxYear, requests.CreateUpdateExpensesRequest(None, expensesModel))
       lazy val response: Future[Either[Result, Result]] = service.createOrUpdateExpensesResult(taxYear, fullCreateUpdateExpensesRequestWithIgnoreExpenses)
       status(response.map(_.left.get)) shouldBe INTERNAL_SERVER_ERROR
     }

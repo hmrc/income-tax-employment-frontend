@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package models.expenses.createUpdate
+package models.requests
 
-trait CreateUpdateExpensesRequestError
+import play.api.libs.json.{Json, OFormat}
 
-case object NothingToUpdate extends CreateUpdateExpensesRequestError
+case class RefreshIncomeSourceRequest(incomeSource: String)
+
+object RefreshIncomeSourceRequest {
+  implicit val formats: OFormat[RefreshIncomeSourceRequest] = Json.format[RefreshIncomeSourceRequest]
+}

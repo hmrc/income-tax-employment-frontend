@@ -16,17 +16,16 @@
 
 package services
 
-import controllers.employment.routes.EmploymentSummaryController
 import config.ErrorHandler
 import connectors.CreateOrAmendExpensesConnector
-import connectors.httpParsers.CreateOrAmendExpensesHttpParser.CreateOrAmendExpensesResponse
+import connectors.parsers.CreateOrAmendExpensesHttpParser.CreateOrAmendExpensesResponse
+import controllers.employment.routes.EmploymentSummaryController
 import models.User
 import models.employment.{AllEmploymentData, EmploymentExpenses}
-import models.expenses.Expenses
-import models.expenses.createUpdate.CreateUpdateExpensesRequest
+import models.expenses.{Expenses, ExpensesDataRemainsUnchanged}
 import models.mongo.ExpensesUserData
+import models.requests.{CreateUpdateExpensesRequest, CreateUpdateExpensesRequestError, NothingToUpdate}
 import play.api.Logging
-import models.expenses.createUpdate.{NothingToUpdate, _}
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.http.HeaderCarrier
@@ -61,22 +60,21 @@ class CreateOrAmendExpensesService @Inject()(createOrAmendExpensesConnector: Cre
     }
   }
 
-  def cyaAndPriorToCreateUpdateExpensesRequest(
-                                                cya: ExpensesUserData,
-                                                prior: Option[AllEmploymentData])
-                                              (implicit user: User[_]): Either[CreateUpdateExpensesRequestError,CreateUpdateExpensesRequest] = {
+  def cyaAndPriorToCreateUpdateExpensesRequest(cya: ExpensesUserData,
+                                               prior: Option[AllEmploymentData])
+                                              (implicit user: User[_]): Either[CreateUpdateExpensesRequestError, CreateUpdateExpensesRequest] = {
 
     val hmrcExpenses: Option[EmploymentExpenses] = prior.flatMap(res => res.hmrcExpenses.filter(_.dateIgnored.isEmpty))
 
     val expensesData = formCreateUpdateExpenses(cya, prior)
 
-    if(expensesData.dataHasNotChanged) {
+    if (expensesData.dataHasNotChanged) {
       logger.info(s"[CreateOrAmendExpensesService][cyaAndPriorToCreateUpdateExpensesRequest] " +
         s"Data to be submitted matched the prior data exactly. Nothing to update. SessionId: ${user.sessionId}")
       Left(NothingToUpdate: CreateUpdateExpensesRequestError)
     } else {
       Right(CreateUpdateExpensesRequest(
-        ignoreExpenses = if(hmrcExpenses.isDefined) Some(true) else None,
+        ignoreExpenses = if (hmrcExpenses.isDefined) Some(true) else None,
         expenses = expensesData.data))
     }
   }
@@ -108,5 +106,4 @@ class CreateOrAmendExpensesService @Inject()(createOrAmendExpensesConnector: Cre
         }
     }
   }
-
 }

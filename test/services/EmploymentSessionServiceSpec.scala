@@ -33,8 +33,12 @@ import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, Serv
 
 import scala.concurrent.Future
 
-class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataConnector
-  with MockEmploymentUserDataRepository with MockCreateUpdateEmploymentDataConnector with MockExpensesUserDataRepository {
+class EmploymentSessionServiceSpec extends UnitTest
+  with MockIncomeTaxUserDataConnector
+  with MockEmploymentUserDataRepository
+  with MockCreateUpdateEmploymentDataConnector
+  with MockIncomeSourceConnector
+  with MockExpensesUserDataRepository {
 
   val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
   val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
@@ -47,7 +51,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
   val messages: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   val service: EmploymentSessionService =
-    new EmploymentSessionService(mockEmploymentUserDataRepository, mockExpensesUserDataRepository, mockUserDataConnector, mockAppConfig, messages,
+    new EmploymentSessionService(mockEmploymentUserDataRepository, mockExpensesUserDataRepository, mockUserDataConnector, mockIncomeSourceConnector, mockAppConfig, messages,
       errorHandler, mockCreateUpdateEmploymentDataConnector, mockExecutionContext)
 
   val taxYear = 2022
@@ -128,7 +132,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       ),
       employmentBenefits = Some(
         BenefitsViewModel(
-          assetsModel = Some(AssetsModel(Some(true),Some(true),Some(100.00),Some(true),Some(100.00))),
+          assetsModel = Some(AssetsModel(Some(true), Some(true), Some(100.00), Some(true), Some(100.00))),
           submittedOn = Some("2020-02-04T05:01:01Z"), isUsingCustomerData = true
         )
       ))
@@ -671,6 +675,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
   ".clear" should {
     "redirect when the record in the database has been removed" in {
+      mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
       mockClear(taxYear, "employmentId", response = true)
 
       val response = service.clear(taxYear, "employmentId")(Redirect("303"))
@@ -680,7 +685,17 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
     }
 
     "redirect to error when the record in the database has not been removed" in {
+      mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
       mockClear(taxYear, "employmentId", response = false)
+
+      val response = service.clear(taxYear, "employmentId")(Redirect("303"))
+
+      status(response) shouldBe INTERNAL_SERVER_ERROR
+    }
+
+    "error when incomeSourceConnector returns error" in {
+      mockRefreshIncomeSourceResponseError(taxYear, nino, "employment")
+      mockClear(taxYear, "employmentId", response = true)
 
       val response = service.clear(taxYear, "employmentId")(Redirect("303"))
 
@@ -749,6 +764,7 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
 
     ".clearExpenses" should {
       "redirect when the record in the database has been removed" in {
+        mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
         mockClear(taxYear, response = true)
 
         val response = service.clearExpenses(taxYear)(Redirect("303"))
@@ -758,9 +774,19 @@ class EmploymentSessionServiceSpec extends UnitTest with MockIncomeTaxUserDataCo
       }
 
       "redirect to error when the record in the database has not been removed" in {
+        mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
         mockClear(taxYear, response = false)
 
         val response = service.clearExpenses(taxYear)(Redirect("303"))
+
+        status(response) shouldBe INTERNAL_SERVER_ERROR
+      }
+
+      "error when incomeSourceConnector returns error" in {
+        mockRefreshIncomeSourceResponseError(taxYear, nino, "employment")
+        mockClear(taxYear, response = true)
+
+        val response = service.clearExpenses(taxYear)(Redirect("500"))
 
         status(response) shouldBe INTERNAL_SERVER_ERROR
       }

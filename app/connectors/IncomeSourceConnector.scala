@@ -17,21 +17,18 @@
 package connectors
 
 import config.AppConfig
-import connectors.parsers.CreateUpdateEmploymentDataHttpParser._
-import models.employment.createUpdate.CreateUpdateEmploymentRequest
+import connectors.parsers.RefreshIncomeSourceHttpParser.{RefreshIncomeSourceHttpReads, RefreshIncomeSourceResponse}
+import models.requests.RefreshIncomeSourceRequest
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CreateUpdateEmploymentDataConnector @Inject()(val http: HttpClient,
-                                                    val config: AppConfig)(implicit ec: ExecutionContext) {
+class IncomeSourceConnector @Inject()(val http: HttpClient,
+                                      val config: AppConfig)(implicit ec: ExecutionContext) {
 
-  def createUpdateEmploymentData(nino: String, taxYear: Int, data: CreateUpdateEmploymentRequest)
-                                (implicit hc: HeaderCarrier): Future[CreateUpdateEmploymentDataResponse] = {
-
-    val url: String = config.incomeTaxEmploymentBEUrl + s"/income-tax/nino/$nino/sources?taxYear=$taxYear"
-
-    http.POST[CreateUpdateEmploymentRequest, CreateUpdateEmploymentDataResponse](url, data)
+  def put(taxYear: Int, nino: String, incomeSource: String)(implicit hc: HeaderCarrier): Future[RefreshIncomeSourceResponse] = {
+    val targetUrl = config.incomeTaxSubmissionBEBaseUrl + s"/income-tax/nino/$nino/sources/session?taxYear=$taxYear"
+    http.PUT[RefreshIncomeSourceRequest, RefreshIncomeSourceResponse](targetUrl, RefreshIncomeSourceRequest(incomeSource))
   }
 }

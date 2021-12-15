@@ -18,7 +18,6 @@ package controllers.expenses
 
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import controllers.employment.routes.EmploymentSummaryController
 import builders.models.UserBuilder.aUserRequest
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
@@ -27,12 +26,13 @@ import builders.models.expenses.ExpensesBuilder.anExpenses
 import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
 import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
+import controllers.employment.routes.EmploymentSummaryController
 import controllers.expenses.routes._
 import models.IncomeTaxUserData
 import models.employment.AllEmploymentData
 import models.expenses.Expenses
-import models.expenses.createUpdate.CreateUpdateExpensesRequest
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
+import models.requests.CreateUpdateExpensesRequest
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach

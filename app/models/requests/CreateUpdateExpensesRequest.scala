@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.expenses.createUpdate
+package models.requests
 
 import models.expenses.Expenses
 import play.api.libs.json.{Json, OFormat}

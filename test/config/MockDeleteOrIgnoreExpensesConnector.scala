@@ -17,7 +17,7 @@
 package config
 
 import connectors.DeleteOrIgnoreExpensesConnector
-import connectors.httpParsers.DeleteOrIgnoreExpensesHttpParser.DeleteOrIgnoreExpensesResponse
+import connectors.parsers.DeleteOrIgnoreExpensesHttpParser.DeleteOrIgnoreExpensesResponse
 import models.{APIErrorBodyModel, APIErrorModel}
 import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
@@ -31,7 +31,7 @@ trait MockDeleteOrIgnoreExpensesConnector extends MockFactory {
   val mockDeleteOrIgnoreExpensesConnector: DeleteOrIgnoreExpensesConnector = mock[DeleteOrIgnoreExpensesConnector]
 
   def mockDeleteOrIgnoreExpensesSuccess(nino: String, taxYear: Int, toRemove: String): CallHandler4[String, Int, String, HeaderCarrier, Future[DeleteOrIgnoreExpensesResponse]] = {
-    (mockDeleteOrIgnoreExpensesConnector.deleteOrIgnoreExpenses(_: String, _:Int, _:String)(_:HeaderCarrier))
+    (mockDeleteOrIgnoreExpensesConnector.deleteOrIgnoreExpenses(_: String, _: Int, _: String)(_: HeaderCarrier))
       .expects(nino, taxYear, toRemove, *)
       .returns(Future.successful(Right(())))
       .anyNumberOfTimes()
@@ -43,5 +43,4 @@ trait MockDeleteOrIgnoreExpensesConnector extends MockFactory {
       .returns(Future.successful(Left(APIErrorModel(BAD_REQUEST, APIErrorBodyModel("CODE", "REASON")))))
       .anyNumberOfTimes()
   }
-
 }

@@ -17,9 +17,8 @@
 package connectors
 
 import config.AppConfig
-import connectors.httpParsers.CreateOrAmendExpensesHttpParser._
-import connectors.httpParsers.CreateOrAmendExpensesHttpParser.CreateOrAmendExpensesResponse
-import models.expenses.createUpdate.CreateUpdateExpensesRequest
+import connectors.parsers.CreateOrAmendExpensesHttpParser.{CreateOrAmendExpensesResponse, _}
+import models.requests.CreateUpdateExpensesRequest
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import javax.inject.Inject
@@ -29,7 +28,7 @@ class CreateOrAmendExpensesConnector @Inject()(val http: HttpClient,
                                                val config: AppConfig)(implicit ec: ExecutionContext) {
 
   def createOrAmendExpenses(nino: String, taxYear: Int, createUpdateExpensesRequest: CreateUpdateExpensesRequest)
-                              (implicit hc: HeaderCarrier): Future[CreateOrAmendExpensesResponse] = {
+                           (implicit hc: HeaderCarrier): Future[CreateOrAmendExpensesResponse] = {
 
     val url: String = config.incomeTaxExpensesBEUrl + s"/income-tax/nino/$nino/sources?taxYear=$taxYear"
 
