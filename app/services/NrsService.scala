@@ -18,18 +18,23 @@ package services
 
 import connectors.NrsConnector
 import connectors.httpParsers.NrsSubmissionHttpParser.NrsSubmissionResponse
+import play.api.http.HeaderNames
 import play.api.libs.json.Writes
+import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.HMRCHeaderNames
 
 import javax.inject.Inject
 import scala.concurrent.Future
 
 class NrsService @Inject() (nrsConnector: NrsConnector) {
 
-  def submit[A](nino: String, payload: A, mtditid: String)(implicit hc: HeaderCarrier, writes: Writes[A]): Future[NrsSubmissionResponse] = {
+  def submit[A](nino: String, payload: A, mtditid: String)(implicit request: Request[_], hc: HeaderCarrier, writes: Writes[A]): Future[NrsSubmissionResponse] = {
 
     val extraHeaders = Seq(
       Some("mtditid" -> mtditid),
+      Some(HeaderNames.USER_AGENT -> "income-tax-employment-frontend"),
+      Some(HMRCHeaderNames.TrueUserAgent -> request.headers.get(HeaderNames.USER_AGENT).getOrElse("No user agent provided")),
       hc.trueClientIp.map(ip => "clientIP" -> ip),
       hc.trueClientPort.map(port => "clientPort" -> port)
     ).flatten
