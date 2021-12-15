@@ -18,8 +18,8 @@ package connectors
 
 import builders.models.expenses.ExpensesBuilder.anExpenses
 import com.github.tomakehurst.wiremock.http.HttpHeader
-import connectors.httpParsers.CreateOrAmendExpensesHttpParser.CreateOrAmendExpensesResponse
-import models.expenses.createUpdate.CreateUpdateExpensesRequest
+import connectors.parsers.CreateOrAmendExpensesHttpParser.CreateOrAmendExpensesResponse
+import models.requests.CreateUpdateExpensesRequest
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status._
 import play.api.libs.json.Json
@@ -31,13 +31,11 @@ import scala.concurrent.duration.Duration
 
 class CreateOrAmendExpensesConnectorSpec extends IntegrationTest {
 
-  lazy val connector: CreateOrAmendExpensesConnector = app.injector.instanceOf[CreateOrAmendExpensesConnector]
-  lazy val externalConnector: CreateOrAmendExpensesConnector = appWithFakeExternalCall.injector.instanceOf[CreateOrAmendExpensesConnector]
+  private lazy val connector: CreateOrAmendExpensesConnector = app.injector.instanceOf[CreateOrAmendExpensesConnector]
 
   implicit override val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
 
-  val url: String = s"/income-tax-expenses/income-tax/nino/$nino/sources\\?taxYear=$taxYear"
-
+  private val url: String = s"/income-tax-expenses/income-tax/nino/$nino/sources\\?taxYear=$taxYear"
   private val createExpensesRequestModel = CreateUpdateExpensesRequest(Some(false), anExpenses)
 
   "CreateOrAmendExpensesConnector - createOrAmendExpenses" should {

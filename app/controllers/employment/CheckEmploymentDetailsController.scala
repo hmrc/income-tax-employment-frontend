@@ -19,12 +19,12 @@ package controllers.employment
 import audit._
 import common.SessionValues
 import config.{AppConfig, ErrorHandler}
-import connectors.httpParsers.NrsSubmissionHttpParser.NrsSubmissionResponse
+import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import controllers.employment.routes.CheckEmploymentDetailsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.User
-import models.employment.createUpdate.CreateUpdateEmploymentRequest
 import models.employment._
+import models.employment.createUpdate.CreateUpdateEmploymentRequest
 import models.mongo.EmploymentCYAModel
 import play.api.Logging
 import play.api.i18n.I18nSupport

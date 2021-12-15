@@ -18,9 +18,8 @@ package services
 
 import common.EmploymentToRemove._
 import config.ErrorHandler
-import connectors.DeleteOrIgnoreEmploymentConnector
+import connectors.{DeleteOrIgnoreEmploymentConnector, IncomeSourceConnector}
 import controllers.employment.routes.EmploymentSummaryController
-import javax.inject.Inject
 import models.User
 import models.employment.{AllEmploymentData, EmploymentSource}
 import play.api.Logging
@@ -28,26 +27,32 @@ import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-
-class DeleteOrIgnoreEmploymentService @Inject() (deleteOrIgnoreEmploymentConnector: DeleteOrIgnoreEmploymentConnector,
-                                                 errorHandler: ErrorHandler,
-                                                 implicit val executionContext: ExecutionContext) extends Logging {
-
+class DeleteOrIgnoreEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: DeleteOrIgnoreEmploymentConnector,
+                                                incomeSourceConnector: IncomeSourceConnector,
+                                                errorHandler: ErrorHandler,
+                                                implicit val executionContext: ExecutionContext) extends Logging {
 
   def deleteOrIgnoreEmployment(user: User[_], employmentData: AllEmploymentData, taxYear: Int, employmentId: String)(result: Result)
                               (implicit request: Request[_], hc: HeaderCarrier): Future[Result] = {
+    val eventualResult = (customerData(employmentData, employmentId), hmrcData(employmentData, employmentId)) match {
+      case (_, Some(_)) => handleConnectorCall(user, taxYear, employmentId, hmrcHeld)(result)
+      case (Some(_), _) => handleConnectorCall(user, taxYear, employmentId, customer)(result)
+      case (None, None) =>
+        logger.info(s"[DeleteOrIgnoreEmploymentService][deleteOrIgnoreEmployment]" +
+          s" No employment data found for user and employmentId. SessionId: ${user.sessionId}")
+        Future(Redirect(EmploymentSummaryController.show(taxYear)))
+    }
 
-      (customerData(employmentData, employmentId), hmrcData(employmentData, employmentId)) match {
-        case (_, Some(_)) => handleConnectorCall(user, taxYear, employmentId, hmrcHeld)(result)
-        case (Some(_), _) => handleConnectorCall(user, taxYear, employmentId, customer)(result)
-        case (None, None) =>
-          logger.info(s"[DeleteOrIgnoreEmploymentService][deleteOrIgnoreEmployment]" +
-            s" No employment data found for user and employmentId. SessionId: ${user.sessionId}")
-          Future(Redirect(EmploymentSummaryController.show(taxYear)))
+    eventualResult.flatMap { result =>
+      incomeSourceConnector.put(taxYear, user.nino, "employment")(hc.withExtraHeaders("mtditid" -> user.mtditid)).map {
+        case Left(error) => errorHandler.handleError(error.status)
+        case _ => result
       }
     }
+  }
 
   private def hmrcData(allEmploymentData: AllEmploymentData, employmentId: String): Option[EmploymentSource] =
     allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId))

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-package models.expenses.createUpdate
+package models.expenses
 
 case class ExpensesDataRemainsUnchanged[A](data: A, dataHasNotChanged: Boolean)

@@ -16,7 +16,7 @@
 
 package services
 
-import config.{AppConfig, ErrorHandler, MockDeleteOrIgnoreExpensesConnector}
+import config.{AppConfig, ErrorHandler, MockDeleteOrIgnoreExpensesConnector, MockIncomeSourceConnector}
 import controllers.employment.routes.EmploymentSummaryController
 import models.employment._
 import models.expenses.Expenses
@@ -26,7 +26,9 @@ import play.api.mvc.Results.{Ok, Redirect}
 import utils.UnitTest
 import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, ServiceUnavailableTemplate}
 
-class DeleteOrIgnoreExpensesServiceSpec extends UnitTest with MockDeleteOrIgnoreExpensesConnector {
+class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
+  with MockDeleteOrIgnoreExpensesConnector
+  with MockIncomeSourceConnector {
 
   val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
   val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
@@ -36,7 +38,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest with MockDeleteOrIgnore
 
   val errorHandler = new ErrorHandler(internalServerErrorTemplate, serviceUnavailableTemplate, mockMessagesApi, notFoundTemplate)(mockFrontendAppConfig)
 
-  val service: DeleteOrIgnoreExpensesService = new DeleteOrIgnoreExpensesService(mockDeleteOrIgnoreExpensesConnector, errorHandler, mockExecutionContext)
+  val service: DeleteOrIgnoreExpensesService = new DeleteOrIgnoreExpensesService(mockDeleteOrIgnoreExpensesConnector, mockIncomeSourceConnector, errorHandler, mockExecutionContext)
 
   val taxYear = 2022
 
@@ -72,12 +74,10 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest with MockDeleteOrIgnore
   )
 
   ".deleteOrIgnoreExpenses" should {
-
     "return a successful result" when {
-
       "there is both hmrc expenses and customer expenses" which {
-
         "toRemove is equal to 'ALL'" in {
+          mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
           mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "ALL")
 
           val response = service.deleteOrIgnoreExpenses(data(Some(hmrcExpensesWithoutDateIgnored), Some(customerExpenses)), taxYear)(Ok)
@@ -87,8 +87,8 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest with MockDeleteOrIgnore
       }
 
       "there is both hmrc expenses and customer expenses but hmrc data has dateIgnored" which {
-
         "toRemove is equal to 'CUSTOMER'" in {
+          mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
           mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "CUSTOMER")
 
           val response = service.deleteOrIgnoreExpenses(data(Some(hmrcExpensesWithDateIgnored), Some(customerExpenses)), taxYear)(Ok)
@@ -98,8 +98,8 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest with MockDeleteOrIgnore
       }
 
       "there is hmrc data and no customer data" which {
-
         "toRemove is equal to 'HMRC-HELD'" in {
+          mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
           mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "HMRC-HELD")
 
           val response = service.deleteOrIgnoreExpenses(data(Some(hmrcExpensesWithoutDateIgnored), None), taxYear)(Ok)
@@ -109,8 +109,8 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest with MockDeleteOrIgnore
       }
 
       "there is customer data and no hmrc data" which {
-
         "toRemove is equal to 'CUSTOMER'" in {
+          mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
           mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "CUSTOMER")
 
           val response = service.deleteOrIgnoreExpenses(data(None, Some(customerExpenses)), taxYear)(Ok)
@@ -118,27 +118,33 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest with MockDeleteOrIgnore
           await(response) shouldBe Ok
         }
       }
-
     }
 
     "returns an unsuccessful result" when {
-
       "there is no hmrc or customer data" in {
+        mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
         val response = service.deleteOrIgnoreExpenses(data(None, None), taxYear)(Ok)
 
         await(response) shouldBe Redirect(EmploymentSummaryController.show(taxYear).url)
-
       }
 
       "the connector throws a Left" in {
+        mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
         mockDeleteOrIgnoreExpensesError(nino, taxYear, "ALL")
 
         val response = service.deleteOrIgnoreExpenses(data(Some(hmrcExpensesWithoutDateIgnored), Some(customerExpenses)), taxYear)(Ok)
 
         status(response) shouldBe INTERNAL_SERVER_ERROR
       }
+
+      "incomeSourceConnector returns error" in {
+        mockRefreshIncomeSourceResponseError(taxYear, nino, "employment")
+        mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "CUSTOMER")
+
+        val response = service.deleteOrIgnoreExpenses(data(None, Some(customerExpenses)), taxYear)(Ok)
+
+        status(response) shouldBe INTERNAL_SERVER_ERROR
+      }
     }
-
   }
-
 }

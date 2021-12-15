@@ -17,7 +17,7 @@
 package services
 
 import connectors.NrsConnector
-import connectors.httpParsers.NrsSubmissionHttpParser.NrsSubmissionResponse
+import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import models.employment.{DecodedCreateNewEmploymentDetailsPayload, DecodedNewEmploymentData, DecodedPriorEmploymentInfo}
 import play.api.libs.json.{JsString, Writes}
 import play.api.mvc.Request
@@ -47,7 +47,7 @@ class NrsServiceSpec extends UnitTest {
     existingEmployments = Seq(
       DecodedPriorEmploymentInfo(
         "Wow Name", Some("123/12345")
-      ),DecodedPriorEmploymentInfo(
+      ), DecodedPriorEmploymentInfo(
         "Wow Name 2", Some("222/12345")
       )
     )

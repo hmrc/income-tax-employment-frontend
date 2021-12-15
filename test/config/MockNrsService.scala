@@ -16,7 +16,7 @@
 
 package config
 
-import connectors.httpParsers.NrsSubmissionHttpParser.NrsSubmissionResponse
+import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import play.api.libs.json.Writes

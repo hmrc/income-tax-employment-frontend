@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package connectors.httpParsers
+package connectors.parsers
 
 import models.{APIErrorBodyModel, APIErrorModel, APIErrorsBodyModel}
 import play.api.http.Status.INTERNAL_SERVER_ERROR
@@ -24,10 +24,10 @@ import utils.PagerDutyHelper.pagerDutyLog
 
 trait APIParser {
 
-  val parserName : String
-  val service : String
+  val parserName: String
+  val service: String
 
-  def logMessage(response:HttpResponse): String ={
+  def logMessage(response: HttpResponse): String = {
     s"[$parserName][read] Received ${response.status} from $service API. Body:${response.body}"
   }
 
