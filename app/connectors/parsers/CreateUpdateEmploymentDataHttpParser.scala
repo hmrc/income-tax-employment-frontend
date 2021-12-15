@@ -17,13 +17,14 @@
 package connectors.parsers
 
 import models.APIErrorModel
+import models.employment.CreatedEmployment
 import play.api.http.Status._
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import utils.PagerDutyHelper.PagerDutyKeys._
 import utils.PagerDutyHelper.pagerDutyLog
 
 object CreateUpdateEmploymentDataHttpParser extends APIParser {
-  type CreateUpdateEmploymentDataResponse = Either[APIErrorModel, Unit]
+  type CreateUpdateEmploymentDataResponse = Either[APIErrorModel, Option[String]]
 
   override val parserName: String = "CreateUpdateEmploymentDataHttpParser"
   override val service: String = "income-tax-employment"
@@ -32,7 +33,11 @@ object CreateUpdateEmploymentDataHttpParser extends APIParser {
     override def read(method: String, url: String, response: HttpResponse): CreateUpdateEmploymentDataResponse = {
 
       response.status match {
-        case NO_CONTENT => Right(())
+        case CREATED => response.json.validate[CreatedEmployment].fold[CreateUpdateEmploymentDataResponse](
+          _ => badSuccessJsonFromAPI,
+          parsedModel => Right(Some(parsedModel.employmentId))
+        )
+        case NO_CONTENT => Right(None)
         case BAD_REQUEST | NOT_FOUND | FORBIDDEN | UNPROCESSABLE_ENTITY =>
           pagerDutyLog(FOURXX_RESPONSE_FROM_API, logMessage(response))
           handleAPIError(response)

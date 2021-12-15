@@ -30,7 +30,7 @@ trait MockCreateUpdateEmploymentDataConnector extends MockFactory {
   val mockCreateUpdateEmploymentDataConnector: CreateUpdateEmploymentDataConnector = mock[CreateUpdateEmploymentDataConnector]
 
   def mockCreateUpdateEmploymentData(nino: String, taxYear: Int, data: CreateUpdateEmploymentRequest)
-                                    (response: CreateUpdateEmploymentDataResponse = Right(())): CallHandler4[String, Int,
+                                    (response: CreateUpdateEmploymentDataResponse = Right(None)): CallHandler4[String, Int,
     CreateUpdateEmploymentRequest, HeaderCarrier, Future[CreateUpdateEmploymentDataResponse]] = {
     (mockCreateUpdateEmploymentDataConnector.createUpdateEmploymentData(_: String, _: Int, _: CreateUpdateEmploymentRequest)(_: HeaderCarrier))
       .expects(nino, taxYear, data, *)
