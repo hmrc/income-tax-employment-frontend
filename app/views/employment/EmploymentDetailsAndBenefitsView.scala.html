@@ -85,7 +85,7 @@
 
 @formWithCSRF(action = EmploymentSummaryController.show(taxYear)) {
     @govUkButton(Button(
-            attributes = Map("id" -> "employmentSummaryBtn"),
+            attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
             preventDoubleClick = true,
             content = Text(messages("employment.employmentInfo.buttonText")),
             classes = "govuk-button"

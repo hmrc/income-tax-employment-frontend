@@ -20,7 +20,7 @@ import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.UserBuilder.aUserRequest
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
-import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import builders.models.employment.EmploymentSourceBuilder.{anEmploymentSource, multipleEmploymentSources}
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import controllers.benefits.routes.ReceiveAnyBenefitsController
@@ -55,6 +55,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   object Selectors {
     val p1 = "#main-content > div > div > p.govuk-body"
     val p2 = "#main-content > div > div > div.govuk-inset-text"
+    val returnToEmploymentSummarySelector = "#returnToEmploymentSummaryBtn"
+    val returnToEmployerSelector = "#returnToEmployerBtn"
 
     def fieldNameSelector(section: Int, row: Int): String = s"#main-content > div > div > dl:nth-child($section) > div:nth-child($row) > dt"
 
@@ -218,6 +220,10 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val no: String
     val benefitsReceived: String
     val saveAndContinue: String
+    val returnToEmployerText: String
+    val returnToEmployerLink: String
+    val returnToEmploymentSummaryText: String
+    val returnToEmploymentSummaryLink: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -300,6 +306,10 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val no: String = "No"
     val benefitsReceived = "Benefits received"
     val saveAndContinue: String = "Save and continue"
+    val returnToEmployerText: String = "Return to employer"
+    val returnToEmployerLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employer-details-and-benefits?employmentId=001"
+    val returnToEmploymentSummaryText: String = "Return to employment summary"
+    val returnToEmploymentSummaryLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employment-summary"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -382,6 +392,10 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val no: String = "No"
     val benefitsReceived = "Benefits received"
     val saveAndContinue: String = "Save and continue"
+    val returnToEmployerText: String = "Return to employer"
+    val returnToEmployerLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employer-details-and-benefits?employmentId=001"
+    val returnToEmploymentSummaryText: String = "Return to employment summary"
+    val returnToEmploymentSummaryLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employment-summary"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -847,7 +861,94 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck("£27", fieldAmountSelector(19, 1))
           textOnPageCheck(common.assetTransfers, fieldNameSelector(19, 2))
           textOnPageCheck("£280000", fieldAmountSelector(19, 2))
+          buttonCheck(common.returnToEmploymentSummaryText, Selectors.returnToEmploymentSummarySelector)
           welshToggleCheck(user.isWelsh)
+        }
+
+        "return a fully populated page when there are multiple employment sources and all fields are populated" +
+          "for in year" which {
+
+          implicit lazy val result: WSResponse = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(user.isAgent)
+            userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = multipleEmploymentSources))), nino, taxYear)
+            urlGet(url(), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(specific.expectedTitle)
+          h1Check(specific.expectedH1)
+          captionCheck(common.expectedCaption())
+          textOnPageCheck(specific.expectedP1, Selectors.p1)
+          textOnPageCheck(specific.expectedP2(), Selectors.p2)
+          textOnPageCheck(common.vehicleHeader, fieldHeaderSelector(4))
+          textOnPageCheck(common.companyCar, fieldNameSelector(5, 1))
+          textOnPageCheck("£1.23", fieldAmountSelector(5, 1))
+          textOnPageCheck(common.fuelForCompanyCar, fieldNameSelector(5, 2))
+          textOnPageCheck("£2", fieldAmountSelector(5, 2))
+          textOnPageCheck(common.companyVan, fieldNameSelector(5, 3))
+          textOnPageCheck("£3", fieldAmountSelector(5, 3))
+          textOnPageCheck(common.fuelForCompanyVan, fieldNameSelector(5, 4))
+          textOnPageCheck("£4", fieldAmountSelector(5, 4))
+          textOnPageCheck(common.mileageBenefit, fieldNameSelector(5, 5))
+          textOnPageCheck("£5", fieldAmountSelector(5, 5))
+          textOnPageCheck(common.accommodationHeader, fieldHeaderSelector(6))
+          textOnPageCheck(common.accommodation, fieldNameSelector(7, 1))
+          textOnPageCheck("£6", fieldAmountSelector(7, 1))
+          textOnPageCheck(common.qualifyingRelocationCosts, fieldNameSelector(7, 2))
+          textOnPageCheck("£7", fieldAmountSelector(7, 2))
+          textOnPageCheck(common.nonQualifyingRelocationCosts, fieldNameSelector(7, 3))
+          textOnPageCheck("£8", fieldAmountSelector(7, 3))
+          textOnPageCheck(common.travelHeader, fieldHeaderSelector(8))
+          textOnPageCheck(common.travelAndSubsistence, fieldNameSelector(9, 1))
+          textOnPageCheck("£9", fieldAmountSelector(9, 1))
+          textOnPageCheck(common.personalCosts, fieldNameSelector(9, 2))
+          textOnPageCheck("£10", fieldAmountSelector(9, 2))
+          textOnPageCheck(common.entertainment, fieldNameSelector(9, 3))
+          textOnPageCheck("£11", fieldAmountSelector(9, 3))
+          textOnPageCheck(common.utilitiesHeader, fieldHeaderSelector(10))
+          textOnPageCheck(common.telephone, fieldNameSelector(11, 1))
+          textOnPageCheck("£12", fieldAmountSelector(11, 1))
+          textOnPageCheck(common.servicesProvided, fieldNameSelector(11, 2))
+          textOnPageCheck("£13", fieldAmountSelector(11, 2))
+          textOnPageCheck(common.profSubscriptions, fieldNameSelector(11, 3))
+          textOnPageCheck("£14", fieldAmountSelector(11, 3))
+          textOnPageCheck(common.otherServices, fieldNameSelector(11, 4))
+          textOnPageCheck("£15", fieldAmountSelector(11, 4))
+          textOnPageCheck(common.medicalHeader, fieldHeaderSelector(12))
+          textOnPageCheck(common.medicalIns, fieldNameSelector(13, 1))
+          textOnPageCheck("£16", fieldAmountSelector(13, 1))
+          textOnPageCheck(common.nursery, fieldNameSelector(13, 2))
+          textOnPageCheck("£17", fieldAmountSelector(13, 2))
+          textOnPageCheck(common.educational, fieldNameSelector(13, 3))
+          textOnPageCheck("£19", fieldAmountSelector(13, 3))
+          textOnPageCheck(common.beneficialLoans, fieldNameSelector(13, 4))
+          textOnPageCheck("£18", fieldAmountSelector(13, 4))
+          textOnPageCheck(common.incomeTaxHeader, fieldHeaderSelector(14))
+          textOnPageCheck(common.incomeTaxPaid, fieldNameSelector(15, 1))
+          textOnPageCheck("£20", fieldAmountSelector(15, 1))
+          textOnPageCheck(common.incurredCostsPaid, fieldNameSelector(15, 2))
+          textOnPageCheck("£21", fieldAmountSelector(15, 2))
+          textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(16))
+          textOnPageCheck(common.nonTaxable, fieldNameSelector(17, 1))
+          textOnPageCheck("£22", fieldAmountSelector(17, 1))
+          textOnPageCheck(common.taxableCosts, fieldNameSelector(17, 2))
+          textOnPageCheck("£23", fieldAmountSelector(17, 2))
+          textOnPageCheck(common.vouchers, fieldNameSelector(17, 3))
+          textOnPageCheck("£24", fieldAmountSelector(17, 3))
+          textOnPageCheck(common.nonCash, fieldNameSelector(17, 4))
+          textOnPageCheck("£25", fieldAmountSelector(17, 4))
+          textOnPageCheck(common.otherBenefits, fieldNameSelector(17, 5))
+          textOnPageCheck("£26", fieldAmountSelector(17, 5))
+          textOnPageCheck(common.assetsHeader, fieldHeaderSelector(18), "for section")
+          textOnPageCheck(common.assets, fieldNameSelector(19, 1), "for question")
+          textOnPageCheck("£27", fieldAmountSelector(19, 1))
+          textOnPageCheck(common.assetTransfers, fieldNameSelector(19, 2))
+          textOnPageCheck("£280000", fieldAmountSelector(19, 2))
+          buttonCheck(common.returnToEmployerText, Selectors.returnToEmployerSelector)
+          welshToggleCheck(user.isWelsh)
+
         }
 
         "return a fully populated page when all the fields are populated when at the end of the year" which {
@@ -1227,6 +1328,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck("£4", fieldAmountSelector(5, 2))
           textOnPageCheck(common.mileageBenefit, fieldNameSelector(5, 3))
           textOnPageCheck("£5", fieldAmountSelector(5, 3))
+          buttonCheck(common.returnToEmploymentSummaryText, Selectors.returnToEmploymentSummarySelector)
 
           welshToggleCheck(user.isWelsh)
 

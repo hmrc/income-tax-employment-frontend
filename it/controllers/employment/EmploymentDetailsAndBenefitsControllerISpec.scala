@@ -36,7 +36,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
     val headingSelector = "#main-content > div > div > header > h1"
     val subHeadingSelector = "#main-content > div > div > header > p"
     val p1Selector = "#main-content > div > div > p"
-    val buttonSelector = "#employmentSummaryBtn"
+    val buttonSelector = "#returnToEmploymentSummaryBtn"
     val employmentDetailsLinkSelector = "#employment-details_link"
     val employmentBenefitsLinkSelector = "#employment-benefits_link"
     val employmentExpensesLinkSelector = "#employment-expenses_link"
