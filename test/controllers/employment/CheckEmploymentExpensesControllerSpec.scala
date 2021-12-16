@@ -21,7 +21,7 @@ import common.SessionValues
 import config.{MockAuditService, MockEmploymentSessionService}
 import controllers.expenses.CheckEmploymentExpensesController
 import models.employment.AllEmploymentData
-import models.expenses.createUpdate.CreateUpdateExpensesRequest
+import models.requests.CreateUpdateExpensesRequest
 import play.api.http.HeaderNames.LOCATION
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Results.{Ok, Redirect}

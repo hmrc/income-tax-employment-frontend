@@ -38,7 +38,7 @@ class CreateNewEmploymentExpensesAuditSpec extends UnitTestWithApp{
              |	}
              |}""".stripMargin)
 
-        //scalastyle:off
+        //scalastyle:off magic.number
         val auditModel = CreateNewEmploymentExpensesAudit(2020, "individual", "AA12343AA", "mtditid",
           employmentExpensesData = AuditNewEmploymentExpensesData(
             jobExpenses = Some(150.00),
@@ -47,6 +47,7 @@ class CreateNewEmploymentExpensesAuditSpec extends UnitTestWithApp{
             otherAndCapitalAllowances = Some(350.00),
           )
         )
+        //scalastyle:on magic.number
 
         Json.toJson(auditModel) shouldBe json
       }
