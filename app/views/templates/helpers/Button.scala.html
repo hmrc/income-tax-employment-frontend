@@ -18,11 +18,12 @@
 
 @this(govukButton : GovukButton)
 
-@(alternativeText: String = "common.continue", classes: Option[String] = None)(implicit messages: Messages)
+@(alternativeText: String = "common.continue", classes: Option[String] = None, attributes: Map[String, String] = Map("id" -> "continue"), href: Option[String] = None)(implicit messages: Messages)
 
 @govukButton(Button(
-    attributes = Map("id" -> "continue"),
+    attributes = attributes,
     preventDoubleClick = true,
     content = Text(messages(alternativeText)),
-    classes = classes.getOrElse("")
+    classes = classes.getOrElse(""),
+    href = href
 ))

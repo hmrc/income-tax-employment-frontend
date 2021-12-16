@@ -54,7 +54,7 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockEmploymen
 
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {
-          mockFind(taxYear, Ok(view(taxYear, employmentsModel.hmrcEmploymentData.head.employmentBenefits.get.benefits.get)))
+          mockFind(taxYear, Ok(view(taxYear, employmentsModel.hmrcEmploymentData.head.employmentBenefits.get.benefits.get, isSingleEmployment = true, employmentId)))
           controller.show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))

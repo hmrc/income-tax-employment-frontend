@@ -36,6 +36,7 @@ common.numbers = numbers
 common.opensInNewTab = (opens in new tab)
 common.remove = Remove
 common.return.overview.buttonText = Return to overview
+common.returnToEmployer = Return to employer
 common.saveAndContinue = Save and continue
 common.status.cannotUpdate = Cannot update
 common.status.notStarted = Not started
