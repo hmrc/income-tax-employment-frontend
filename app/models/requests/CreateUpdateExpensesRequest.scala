@@ -23,15 +23,8 @@ import models.expenses.Expenses
 import play.api.libs.json.{Json, OFormat}
 
 case class CreateUpdateExpensesRequest(ignoreExpenses: Option[Boolean], expenses: Expenses) {
-  def toAmendAuditModel(taxYear: Int, priorData: EmploymentExpenses)(implicit user: User[_]): AmendEmploymentExpensesUpdateAudit = {
 
-    def currentOrPrior[T](data: Option[T], priorData: Option[T]): Option[T] = {
-      (data, priorData) match {
-        case (data@Some(_), _) => data
-        case (_, priorData@Some(_)) => priorData
-        case _ => None
-      }
-    }
+  def toAmendAuditModel(taxYear: Int, priorData: EmploymentExpenses)(implicit user: User[_]): AmendEmploymentExpensesUpdateAudit = {
 
     AmendEmploymentExpensesUpdateAudit(
       taxYear = taxYear,
@@ -45,10 +38,10 @@ case class CreateUpdateExpensesRequest(ignoreExpenses: Option[Boolean], expenses
         otherAndCapitalAllowances = priorData.expenses.flatMap(_.otherAndCapitalAllowances)
       ),
       employmentExpensesData = AuditEmploymentExpensesData(
-        jobExpenses = currentOrPrior(expenses.jobExpenses, priorData.expenses.flatMap(_.jobExpenses)),
-        flatRateJobExpenses = currentOrPrior(expenses.flatRateJobExpenses, priorData.expenses.flatMap(_.flatRateJobExpenses)),
-        professionalSubscriptions = currentOrPrior(expenses.professionalSubscriptions, priorData.expenses.flatMap(_.professionalSubscriptions)),
-        otherAndCapitalAllowances = currentOrPrior(expenses.otherAndCapitalAllowances, priorData.expenses.flatMap(_.otherAndCapitalAllowances))
+        jobExpenses = expenses.jobExpenses,
+        flatRateJobExpenses = expenses.flatRateJobExpenses,
+        professionalSubscriptions = expenses.professionalSubscriptions,
+        otherAndCapitalAllowances = expenses.otherAndCapitalAllowances
       )
     )
   }

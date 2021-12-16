@@ -152,12 +152,12 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
 
     val audit: Either[AuditModel[AmendEmploymentExpensesUpdateAudit], AuditModel[CreateNewEmploymentExpensesAudit]] =
       prior.flatMap {
-      prior =>
-        val priorData = EmploymentExpensesUtils.getLatestExpenses(prior, isInYear = false)
-        priorData.map(prior => model.toAmendAuditModel(taxYear, prior._1).toAuditModel)
-    }.map(Left(_)).getOrElse {
-      Right(model.toCreateAuditModel(taxYear).toAuditModel)
-    }
+        prior =>
+          val priorData = EmploymentExpensesUtils.getLatestExpenses(prior, isInYear = false)
+          priorData.map(prior => model.toAmendAuditModel(taxYear, prior._1).toAuditModel)
+      }.map(Left(_)).getOrElse {
+        Right(model.toCreateAuditModel(taxYear).toAuditModel)
+      }
     audit match {
       case Left(amend) => auditService.sendAudit(amend)
       case Right(create) => auditService.sendAudit(create)
