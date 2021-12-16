@@ -58,58 +58,84 @@
 
         val msgKeyGeneric = "employment.employmentDetails"
 
-        val employerName = EmploymentDataForView(messages(msgKeyGeneric + ".employer"), Some(employmentDetails.employerName),
+        val employerName = EmploymentDataForView(
+            messages(msgKeyGeneric + ".employer"),
+            Some(employmentDetails.employerName),
             controllers.employment.routes.EmployerNameController.show(taxYear, employmentDetails.employmentId),
-        messages(s"$msgKeyGeneric.hiddenText.employer"))
+            messages(s"$msgKeyGeneric.hiddenText.employer")
+        )
 
-        val stillWorkingForEmployer = EmploymentDataForView(messages(s"$msgKeyGeneric.stillWorkingForEmployer"),
-        Some(if(employmentDetails.cessationDateQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}),
-        controllers.employment.routes.StillWorkingForEmployerController.show(taxYear, employmentDetails.employmentId),
-        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.stillWorkingForEmployer", user.isAgent), employmentDetails.employerName))
+        val stillWorkingForEmployer = EmploymentDataForView(
+            messages(s"$msgKeyGeneric.stillWorkingForEmployer"),
+            Some(if(employmentDetails.cessationDateQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}),
+            controllers.employment.routes.StillWorkingForEmployerController.show(taxYear, employmentDetails.employmentId),
+            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.stillWorkingForEmployer", user.isAgent), employmentDetails.employerName)
+        )
 
-        val employmentStartDate = EmploymentDataForView(messages(s"$msgKeyGeneric.startDate"), employmentDetails.startDate.flatMap(dateFormatter),
-        controllers.employment.routes.EmployerStartDateController.show(taxYear, employmentDetails.employmentId),
-        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", user.isAgent), employmentDetails.employerName))
+        val employmentStartDate = EmploymentDataForView(
+            messages(s"$msgKeyGeneric.startDate"),
+            employmentDetails.startDate.flatMap(dateFormatter),
+            controllers.employment.routes.EmployerStartDateController.show(taxYear, employmentDetails.employmentId),
+            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", user.isAgent), employmentDetails.employerName)
+        )
 
-        val employmentDates = EmploymentDataForView(messages(s"$msgKeyGeneric.employmentDates"),
-        employmentDatesFormatter(employmentDetails.startDate.flatMap(dateFormatter), employmentDetails.cessationDate.flatMap(dateFormatter)),
-        controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentDetails.employmentId),
-        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.employmentDates", user.isAgent)))
+        val employmentDates = EmploymentDataForView(
+            messages(s"$msgKeyGeneric.employmentDates"),
+            employmentDatesFormatter(employmentDetails.startDate.flatMap(dateFormatter), employmentDetails.cessationDate.flatMap(dateFormatter)),
+            controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentDetails.employmentId),
+            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.employmentDates", user.isAgent))
+        )
         <!--TODO Update change link to go to new employer start/end date page when available-->
 
         val datesLineItemToUse = if(employmentDetails.cessationDateQuestion.contains(false)) employmentDates else employmentStartDate
 
-        val payeRef = EmploymentDataForView(messages(msgKeyGeneric + ".payeRef"), employmentDetails.employerRef,
-        controllers.employment.routes.PayeRefController.show(taxYear, employmentDetails.employmentId),
-        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payeRef", user.isAgent)))
+        val payeRef = EmploymentDataForView(
+            messages(msgKeyGeneric + ".payeRef"),
+            employmentDetails.employerRef,
+            controllers.employment.routes.PayeRefController.show(taxYear, employmentDetails.employmentId),
+            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payeRef", user.isAgent))
+        )
 
-        val payrollId = EmploymentDataForView(messages(msgKeyGeneric + ".payrollId"), employmentDetails.payrollId,
-        controllers.employment.routes.EmployerPayrollIdController.show(taxYear, employmentDetails.employmentId),
-        messages(s"$msgKeyGeneric.hiddenText.payrollId"))
+        val payrollId = EmploymentDataForView(
+            messages(msgKeyGeneric + ".payrollId"),
+            employmentDetails.payrollId,
+            controllers.employment.routes.EmployerPayrollIdController.show(taxYear, employmentDetails.employmentId),
+            messages(s"$msgKeyGeneric.hiddenText.payrollId")
+        )
 
-        val payReceived = EmploymentDataForView(messages(msgKeyGeneric + ".payReceived"),
-        employmentDetails.taxablePayToDate.map(amount => bigDecimalCurrency(amount.toString)),
-        controllers.employment.routes.EmployerPayAmountController.show(taxYear, employmentDetails.employmentId),
-        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payReceived", user.isAgent), employmentDetails.employerName))
+        val payReceived = EmploymentDataForView(
+            messages(msgKeyGeneric + ".payReceived"),
+            employmentDetails.taxablePayToDate.map(amount => bigDecimalCurrency(amount.toString)),
+            controllers.employment.routes.EmployerPayAmountController.show(taxYear, employmentDetails.employmentId),
+            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payReceived", user.isAgent), employmentDetails.employerName)
+        )
 
-        val totalTaxToDate = EmploymentDataForView(messages(msgKeyGeneric + ".totalTaxToDate"),
-        employmentDetails.totalTaxToDate.map(amount => bigDecimalCurrency(amount.toString)), employmentTaxCall,
-        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.totalTaxToDate", user.isAgent)))
+        val totalTaxToDate = EmploymentDataForView(
+            messages(msgKeyGeneric + ".totalTaxToDate"),
+            employmentDetails.totalTaxToDate.map(amount => bigDecimalCurrency(amount.toString)),
+            employmentTaxCall,
+            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.totalTaxToDate", user.isAgent))
+        )
 
-        val employmentDataFields = {
-            List(employerName, payeRef, stillWorkingForEmployer, datesLineItemToUse, payrollId, payReceived, totalTaxToDate)
-        }
+        val employmentDataFields = List(
+            employerName,
+            payeRef,
+            stillWorkingForEmployer,
+            datesLineItemToUse,
+            payrollId,
+            payReceived,
+            totalTaxToDate)
 
         govukSummaryList(
             SummaryList(
-                // TODO - This will change so as not to filter out rows if the fieldValue is not present.
-                employmentDataFields.collect{ case EmploymentDataForView(fieldHeading, Some(fieldValue), changeLink, hiddenText) =>
-                    summaryListRow(
-                        key = HtmlContent(fieldHeading),
-                        value = HtmlContent(fieldValue),
-                        keyClasses = "govuk-!-width-two-thirds",
-                        actions = if(!isInYear) Seq((changeLink, messages("common.change"), Some(hiddenText))) else Seq.empty
-                    )
+                employmentDataFields.collect {
+                    case EmploymentDataForView(fieldHeading, mayBeFieldValue, changeLink, hiddenText) =>
+                        summaryListRow(
+                            key = HtmlContent(fieldHeading),
+                            value = mayBeFieldValue.fold(ariaVisuallyHiddenText(messages(msgKeyGeneric + ".notProvided")))(HtmlContent(_)),
+                            keyClasses = "govuk-!-width-two-thirds",
+                            actions = if(!isInYear) Seq((changeLink, messages("common.change"), Some(hiddenText))) else Seq.empty
+                        )
                 }
             )
         )

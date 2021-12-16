@@ -161,6 +161,7 @@ employment.employmentDetails.employmentDates.format = {0} to {1}
 employment.employmentDetails.tipsAndOtherPayments.agent =  Amount of payments not on your client’s P6
 employment.employmentDetails.tipsAndOtherPayments.individual =  Amount of payments not on your P60
 employment.employmentDetails.totalTaxToDate =  UK tax taken from pay
+employment.employmentDetails.notProvided =  Not provided
 
 #################       Employment name messages        ########################################
 

@@ -55,7 +55,7 @@ object ViewUtils {
     Some(messages("employment.employmentDetails.employmentDates.format", (startDate).getOrElse(""), endDate.getOrElse("")))
   }
 
-  def getAgentDynamicContent(msgKey:String, isAgent:Boolean): String ={
+  def getAgentDynamicContent(msgKey: String, isAgent: Boolean): String = {
     s"$msgKey.${if (isAgent) "agent" else "individual"}"
   }
 
@@ -66,15 +66,8 @@ object ViewUtils {
                      actionClasses: String = "govuk-!-width-one-third",
                      actions: Seq[(Call, String, Option[String])]): SummaryListRow = {
     SummaryListRow(
-
-      key = Key(
-        content = key,
-        classes = keyClasses
-      ),
-      value = Value(
-        content = value,
-        classes = valueClasses
-      ),
+      key = Key(content = key, classes = keyClasses),
+      value = Value(content = value, classes = valueClasses),
       actions = Some(Actions(
         items = actions.map { case (call, linkText, visuallyHiddenText) => ActionItem(
           href = call.url,
@@ -88,9 +81,11 @@ object ViewUtils {
   }
 
   def ariaHiddenChangeLink(linkText: String): HtmlContent = {
-    HtmlContent(
-      s"""<span aria-hidden="true">$linkText</span>"""
-    )
+    HtmlContent(s"""<span aria-hidden="true">$linkText</span>""")
+  }
+
+  def ariaVisuallyHiddenText(text: String): HtmlContent = {
+    HtmlContent(s"""<span class="govuk-visually-hidden">$text</span>""")
   }
 
   def bigDecimalCurrency(value: String, currencySymbol: String = "£"): String = {
