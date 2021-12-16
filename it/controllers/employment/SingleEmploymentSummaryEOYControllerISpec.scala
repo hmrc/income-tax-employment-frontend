@@ -125,7 +125,7 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
 
   private def url(taxYear: Int) = s"$appUrl/$taxYear/employment-summary"
   val employmentId = "001"
-  val changeLinkHref = s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employer-details-and-benefits?employmentId=$employmentId"
+  val changeLinkHref = s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employer-information?employmentId=$employmentId"
   val removeLinkHref = s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/remove-employment?employmentId=$employmentId"
 
   val employmentSource: EmploymentSource = EmploymentSource(

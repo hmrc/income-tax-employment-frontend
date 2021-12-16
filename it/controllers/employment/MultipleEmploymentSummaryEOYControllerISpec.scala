@@ -173,7 +173,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
   val employmentId1 = "001"
   val employmentId2 = "002"
 
-  def changeLinkHref(empId: String): String = s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employer-details-and-benefits?employmentId=$empId"
+  def changeLinkHref(empId: String): String = s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employer-information?employmentId=$empId"
 
   def removeLinkHref(empId: String): String = s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/remove-employment?employmentId=$empId"
 
