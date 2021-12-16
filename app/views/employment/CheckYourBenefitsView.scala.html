@@ -39,15 +39,13 @@
 
 @employmentSource = {
 
-        @if(isSingleEmployment) {
-                @formWithCSRF(action = controllers.employment.routes.EmploymentSummaryController.show(taxYear)) {
-                    @button("employment.employmentInfo.buttonText")
-                }
+            @if(isSingleEmployment) {
+                @button("employment.employmentInfo.buttonText", attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
+                    href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url))
                     } else {
-                        @formWithCSRF(action = controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employmentId)) {
-                            @button("common.returnToEmployer")
-                        }
-                }
+                        @button("common.returnToEmployer", attributes = Map("id" -> "returnToEmployerBtn"),
+                            href = Some(controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employmentId).url))
+            }
 }
 
 

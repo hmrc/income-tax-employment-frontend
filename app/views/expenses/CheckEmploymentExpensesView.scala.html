@@ -81,14 +81,8 @@
     }
 
     @if(isInYear) {
-
-        @govUkButton(Button(
-            attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
-            preventDoubleClick = true,
-            content = Text(messages("employment.employmentInfo.buttonText")),
-            classes = "govuk-button",
-            href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url)
-        ))
+        @button("employment.employmentInfo.buttonText", attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
+                    href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url))
     }
 
 }

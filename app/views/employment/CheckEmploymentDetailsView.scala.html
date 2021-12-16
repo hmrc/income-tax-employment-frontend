@@ -19,6 +19,7 @@
 @import views.html.templates.helpers.Heading
 @import models.employment.EmploymentDetailsViewModel
 @import utils.ViewUtils._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
 
 @this(
@@ -41,19 +42,13 @@
 }
 
 @employmentSource = {
-
         @if(isSingleEmployment) {
-@formWithCSRF(action = controllers.employment.routes.EmploymentSummaryController.show(taxYear)) {
-@button("employment.employmentInfo.buttonText")
-
+            @button("employment.employmentInfo.buttonText", attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
+                        href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url))
+                } else {
+                    @button("common.returnToEmployer", attributes = Map("id" -> "returnToEmployerBtn"),
+                        href = Some(controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employmentDetails.employmentId).url))
         }
-            } else {
-@formWithCSRF(action = controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employmentDetails.employmentId)) {
-@button("common.returnToEmployer")
-            }
-
-        }
-
 }
 
 @layout(pageTitle = headingForUse, taxYear = Some(taxYear), isAgent = user.isAgent) {
