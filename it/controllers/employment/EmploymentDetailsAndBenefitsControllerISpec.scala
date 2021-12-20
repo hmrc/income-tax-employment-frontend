@@ -30,7 +30,7 @@ import utils.{IntegrationTest, ViewHelpers}
 class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with ViewHelpers {
   private val taxYearEOY: Int = taxYear - 1
 
-  def url(taxYear: Int): String = s"$appUrl/$taxYear/employer-details-and-benefits?employmentId=001"
+  def url(taxYear: Int): String = s"$appUrl/$taxYear/employer-information?employmentId=001"
 
   object Selectors {
     val headingSelector = "#main-content > div > div > header > h1"
@@ -127,28 +127,28 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedH1: String = "maggie"
-    val expectedTitle: String = "Employment details and benefits"
+    val expectedTitle: String = "Employer information"
 
     def expectedContent(taxYear: Int): String = s"You cannot update your employment information until 6 April $taxYear."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedH1: String = "maggie"
-    val expectedTitle: String = "Employment details and benefits"
+    val expectedTitle: String = "Employer information"
 
     def expectedContent(taxYear: Int): String = s"You cannot update your client’s employment information until 6 April $taxYear."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedH1: String = "maggie"
-    val expectedTitle: String = "Employment details and benefits"
+    val expectedTitle: String = "Employer information"
 
     def expectedContent(taxYear: Int): String = s"You cannot update your employment information until 6 April $taxYear."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedH1: String = "maggie"
-    val expectedTitle: String = "Employment details and benefits"
+    val expectedTitle: String = "Employer information"
 
     def expectedContent(taxYear: Int): String = s"You cannot update your client’s employment information until 6 April $taxYear."
   }
