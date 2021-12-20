@@ -18,7 +18,7 @@
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Heading
 @import utils.ViewUtils.summaryListRow
-@import models.expenses.Expenses
+@import models.expenses.ExpensesViewModel
 @import utils.ViewUtils.bigDecimalCurrency
 
 @this(
@@ -30,7 +30,11 @@
         govUkButton: GovukButton
 )
 
-@(taxYear: Int, expenses: Expenses, isInYear: Boolean, isMultipleEmployments: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, expenses: ExpensesViewModel, isInYear: Boolean, isMultipleEmployments: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+
+@mapToYesNo(value: Boolean) = @{
+    if(value){messages("common.yes")} else {messages("common.no")}
+}
 
 @layout(pageTitle = messages(s"checkYourExpenses.heading.${if(user.isAgent) "agent" else "individual"}"), taxYear = Some(taxYear), isAgent = user.isAgent) {
     @heading(
@@ -44,8 +48,7 @@
             messages(s"checkYourExpenses.sub-heading.${if(user.isAgent) "agent" else "individual"}.multiple")
         } else {
             messages(s"checkYourExpenses.hmrcOnlyInfo.${if(user.isAgent) "agent" else "individual"}")
-        }
-        }
+        }}
     </p>
 
     @{
@@ -55,29 +58,47 @@
     }
 
     @{
-        def toSummaryListRow(key: String, amountOpt: Option[BigDecimal]): Option[SummaryListRow] = {
-            amountOpt.map { amount =>
-                summaryListRow(
-                    HtmlContent(key),
-                    HtmlContent(bigDecimalCurrency(amount.toString)),
-                    keyClasses = "govuk-!-width-two-thirds",
-                    valueClasses = "govuk-!-width-one-third right-align",
-                    actions = Seq()
-                )
-            }
+        def toSummaryListRow(key: String, value: String): SummaryListRow = {
+            summaryListRow(
+                HtmlContent(key),
+                HtmlContent(value),
+                keyClasses = "govuk-!-width-two-thirds",
+                valueClasses = "govuk-!-width-one-third right-align",
+                actions = Seq()
+            )
         }
 
         govukSummaryList(
             SummaryList(
                 Seq(
-                    toSummaryListRow(messages("checkYourExpenses.jobExpensesQuestion"), expenses.jobExpenses),
-                    toSummaryListRow(messages("checkYourExpenses.flatRateJobExpensesQuestion"), expenses.flatRateJobExpenses),
-                    toSummaryListRow(messages("checkYourExpenses.professionalSubscriptionsQuestion"), expenses.professionalSubscriptions),
-                    toSummaryListRow(messages("checkYourExpenses.otherAndCapitalAllowancesQuestionInYear"), expenses.otherAndCapitalAllowances),
+                    Some(toSummaryListRow(messages("checkYourExpenses.employmentExpenses"), if(expenses.claimingEmploymentExpenses){messages("common.yes")} else {messages("common.no")})),
+                    expenses.jobExpensesQuestion.map{
+                        question => toSummaryListRow(messages("checkYourExpenses.jobExpensesQuestion"), mapToYesNo(question))
+                    },
+                    expenses.jobExpenses.map{
+                        amount => toSummaryListRow(messages("checkYourExpenses.jobExpensesAmount"), bigDecimalCurrency(amount.toString))
+                    },
+                    expenses.flatRateJobExpensesQuestion.map{
+                        question => toSummaryListRow(messages("checkYourExpenses.flatRateJobExpensesQuestion"), mapToYesNo(question))
+                    },
+                    expenses.flatRateJobExpenses.map{
+                        amount => toSummaryListRow(messages("checkYourExpenses.flatRateJobExpensesAmount"), bigDecimalCurrency(amount.toString))
+                    },
+                    expenses.professionalSubscriptionsQuestion.map{
+                        question => toSummaryListRow(messages("checkYourExpenses.professionalSubscriptionsQuestion"), mapToYesNo(question))
+                    },
+                    expenses.professionalSubscriptions.map{
+                        amount => toSummaryListRow(messages("checkYourExpenses.professionalSubscriptionsAmount"), bigDecimalCurrency(amount.toString))
+                    },
+                    expenses.otherAndCapitalAllowancesQuestion.map{
+                        question => toSummaryListRow(messages("checkYourExpenses.otherAndCapitalAllowancesQuestion"), mapToYesNo(question))
+                    },
+                    expenses.otherAndCapitalAllowances.map{
+                        amount => toSummaryListRow(messages("checkYourExpenses.otherAndCapitalAllowancesAmount"), bigDecimalCurrency(amount.toString))
+                    }
                 ).collect { case Some(summaryListRow) => summaryListRow }
             )
         )
-
     }
 
     @if(isInYear) {

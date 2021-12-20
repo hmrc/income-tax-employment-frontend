@@ -16,9 +16,9 @@
 
 package controllers.benefits.fuel
 
+import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import config.MockEmploymentSessionService
 import controllers.employment.routes.CheckYourBenefitsController
-import models.employment.EmploymentSource
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.mvc.Result
@@ -34,8 +34,6 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
   private val taxYear = 2021
   private val employmentId = "223/AB12399"
   private lazy val view = app.injector.instanceOf[CompanyCarBenefitsView]
-  private lazy val employmentsCYAFill: EmploymentSource = employmentsModel.hmrcEmploymentData.head
-
   private lazy val employmentUserData = new EmploymentUserData(
     sessionId,
     mtditid,
@@ -44,7 +42,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
     employmentId,
     true,
     hasPriorBenefits = true,
-    EmploymentCYAModel(employmentsCYAFill, isUsingCustomerData = false)
+    EmploymentCYAModel(anEmploymentSource, isUsingCustomerData = false)
   )
 
   private lazy val employmentUserDataWithoutBenefits = new EmploymentUserData(
@@ -55,7 +53,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
     employmentId,
     false,
     hasPriorBenefits = false,
-    EmploymentCYAModel(employmentsCYAFill.copy(employmentBenefits = None), isUsingCustomerData = false)
+    EmploymentCYAModel(anEmploymentSource.copy(employmentBenefits = None), isUsingCustomerData = false)
   )
 
   private lazy val controller = new CompanyCarBenefitsController()(
