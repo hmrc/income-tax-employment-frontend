@@ -17,9 +17,11 @@
 package controllers.employment
 
 import builders.models.UserBuilder.aUserRequest
+import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.employment.EmployerNameForm
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.mongo.EmploymentDetails
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -33,15 +35,10 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
   private val employerName: String = "HMRC"
   private val updatedEmployerName: String = "Microsoft"
-  private val employmentId: String = "001"
+  private val employmentId = "employmentId"
   private val amountInputName = "name"
 
   private val charLimit: String = "ukHzoBYHkKGGk2V5iuYgS137gN7EB7LRw3uD3vujYg00ZtHwo3s0kyOOCEoAK9vuPiP374QKOe9o"
-
-  private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
-
-  private def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc))
 
   private def employerNamePageUrl(taxYear: Int) = s"$appUrl/$taxYear/employer-name?employmentId=$employmentId"
 
@@ -130,18 +127,16 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
     val formatList3 = "the special characters: & : ’ \\ , . ( ) -"
   }
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   ".show" should {
-
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "render the 'name of your employer' page with the correct content" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
@@ -175,7 +170,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
+            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(EmploymentDetails(employerName, currentDataIsHmrcHeld = true))), aUserRequest)
             urlGet(employerNamePageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -203,32 +198,25 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
       }
     }
 
-        "redirect the user to the overview page when it is not end of year" which {
-          lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(isAgent = false)
-            urlGet(employerNamePageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
+    "redirect the user to the overview page when it is not end of year" which {
+      lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(employerNamePageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
 
-          "has an SEE_OTHER(303) status" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
-          }
-
-        }
-
+      "has an SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+      }
+    }
   }
 
-
   ".submit" should {
-
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         s"return a BAD_REQUEST($BAD_REQUEST) status" when {
-
           "the submitted data is empty" which {
             lazy val form: Map[String, String] = Map(EmployerNameForm.employerName -> "")
-
             lazy val result: WSResponse = {
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
@@ -276,7 +264,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
             textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-            inputFieldValueCheck(amountInputName, inputSelector,"~name~")
+            inputFieldValueCheck(amountInputName, inputSelector, "~name~")
             buttonCheck(expectedButtonText, continueButtonSelector)
             welshToggleCheck(user.isWelsh)
 
@@ -286,7 +274,6 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
           "the submitted data is too long" which {
             lazy val form: Map[String, String] = Map(EmployerNameForm.employerName -> charLimit)
-
             lazy val result: WSResponse = {
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
@@ -329,9 +316,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
     }
 
     "create a new cya model with the employer name (not prior submission)" which {
-
       lazy val form: Map[String, String] = Map(EmployerNameForm.employerName -> employerName)
-
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
@@ -340,7 +325,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
       "redirects to the next question page (PAYE reference)" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=001")
+        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=" + employmentId)
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentDetails.employerName shouldBe employerName
       }
@@ -354,13 +339,16 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, hmrc = false)), aUserRequest)
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = false, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(EmploymentDetails(employerName, currentDataIsHmrcHeld = false)))
+        insertCyaData(employmentUserData, aUserRequest)
         urlPost(employerNamePageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the next question page (PAYE reference)" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=001")
+        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=" + employmentId)
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentDetails.employerName shouldBe employerName
       }
@@ -373,7 +361,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
+        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(EmploymentDetails(employerName, currentDataIsHmrcHeld = true))), aUserRequest)
         urlPost(employerNamePageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -382,11 +370,8 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
         result.header(HeaderNames.LOCATION) shouldBe Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId).url)
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentDetails.employerName shouldBe updatedEmployerName
-
       }
-
     }
   }
-
 }
 

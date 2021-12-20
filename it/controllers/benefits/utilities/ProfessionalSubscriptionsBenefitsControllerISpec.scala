@@ -25,7 +25,6 @@ import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import controllers.benefits.utilities.routes._
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
-import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -42,9 +41,6 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
 
   private def professionalSubscriptionsBenefitsPageUrl(taxYear: Int): String =
     s"$appUrl/$taxYear/benefits/professional-fees-or-subscriptions?employmentId=$employmentId"
-
-  private def employmentUserData(hasPriorBenefits: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    anEmploymentUserData.copy(isPriorSubmission = true, hasPriorBenefits = hasPriorBenefits, employment = employmentCyaModel)
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -144,7 +140,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(employerProvidedProfessionalSubscriptionsQuestion = None)))
-            insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
             urlGet(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -172,7 +168,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            insertCyaData(anEmploymentUserData, aUserRequest)
             urlGet(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -201,7 +197,10 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(employerProvidedProfessionalSubscriptionsQuestion = Some(false))))
-            insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+            val employmentUserData = anEmploymentUserData
+              .copy(isPriorSubmission = true, hasPriorBenefits = false)
+              .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel)))
+            insertCyaData(employmentUserData, aUserRequest)
             urlGet(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -232,7 +231,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+        insertCyaData(anEmploymentUserData, aUserRequest)
         urlGet(professionalSubscriptionsBenefitsPageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -267,7 +266,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            insertCyaData(anEmploymentUserData, aUserRequest)
             urlPost(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), body = "", welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -299,7 +298,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         urlPost(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -321,7 +320,10 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
         val benefitsViewModel = aBenefitsViewModel
           .copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(employerProvidedProfessionalSubscriptionsQuestion = None)))
           .copy(medicalChildcareEducationModel = None)
-        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = true, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel)))
+        insertCyaData(employmentUserData, aUserRequest)
         urlPost(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), body = form, follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -341,7 +343,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+        insertCyaData(anEmploymentUserData, aUserRequest)
         urlPost(professionalSubscriptionsBenefitsPageUrl(taxYear), body = "", follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }

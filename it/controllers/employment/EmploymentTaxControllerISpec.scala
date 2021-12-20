@@ -20,9 +20,11 @@ import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.UserBuilder.aUserRequest
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import controllers.employment.routes.CheckEmploymentDetailsController
 import models.employment.AllEmploymentData
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -33,8 +35,8 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   override val taxYear = 2021
-  val url = s"$appUrl/$taxYear/uk-tax?employmentId=001"
-  val amountInputName = "amount"
+  private val url = s"$appUrl/$taxYear/uk-tax?employmentId=employmentId"
+  private val amountInputName = "amount"
 
   trait CommonExpectedResults {
     val hint: String
@@ -89,12 +91,12 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
     val expectedPTextWithData: String = s"If £200 was not taken in UK tax, tell us the correct amount."
   }
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   object Selectors {
     val pText = "#main-content > div > div > form > div > label > p:nth-child(2)"
@@ -105,15 +107,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
     val inputAmountField = "#amount"
   }
 
-  private def cya(taxToDate: Option[BigDecimal] = Some(200), isPriorSubmission: Boolean = true): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYear, "001", isPriorSubmission, hasPriorBenefits = isPriorSubmission,
-      EmploymentCYAModel(
-        EmploymentDetails("maggie", totalTaxToDate = taxToDate, currentDataIsHmrcHeld = false),
-        None
-      )
-    )
-
-  val multipleEmployments: AllEmploymentData = anAllEmploymentData.copy(hmrcEmploymentData = Seq(
+  private val multipleEmployments: AllEmploymentData = anAllEmploymentData.copy(hmrcEmploymentData = Seq(
     anEmploymentSource.copy(employmentBenefits = None),
     anEmploymentSource.copy(employmentId = "002", employmentBenefits = None)
   ))
@@ -128,7 +122,8 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYear)
-            insertCyaData(cya(), aUserRequest)
+            val employmentDetails = anEmploymentDetails.copy("maggie", totalTaxToDate = Some(200))
+            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails)), aUserRequest)
             urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -152,7 +147,8 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(cya(None), aUserRequest)
+            val employmentDetails = anEmploymentDetails.copy("maggie", totalTaxToDate = None)
+            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails)), aUserRequest)
             urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -180,7 +176,10 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 noUserDataStub(nino, taxYear)
-                insertCyaData(cya(None, isPriorSubmission = false), aUserRequest)
+                val employmentUserData = anEmploymentUserData
+                  .copy(isPriorSubmission = false, hasPriorBenefits = false)
+                  .copy(employment = anEmploymentCYAModel.copy(anEmploymentDetails.copy("maggie", totalTaxToDate = None)))
+                insertCyaData(employmentUserData, aUserRequest)
                 urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
@@ -194,7 +193,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYear)
-                insertCyaData(cya(), aUserRequest)
+                insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(anEmploymentDetails.copy("maggie", totalTaxToDate = Some(200)))), aUserRequest)
                 urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
@@ -210,7 +209,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYear)
-                insertCyaData(cya(Some(100.00)), aUserRequest)
+                insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(anEmploymentDetails.copy("maggie", totalTaxToDate = Some(100.00)))), aUserRequest)
                 urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
@@ -224,7 +223,10 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 noUserDataStub(nino, taxYear)
-                insertCyaData(cya(Some(100.00), isPriorSubmission = false), aUserRequest)
+                val employmentUserData = anEmploymentUserData
+                  .copy(isPriorSubmission = false, hasPriorBenefits = false)
+                  .copy(employment = anEmploymentCYAModel.copy(anEmploymentDetails.copy("maggie", totalTaxToDate = Some(100.00))))
+                insertCyaData(employmentUserData, aUserRequest)
                 urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
@@ -246,7 +248,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to OtherPayments not on P60 page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some(CheckEmploymentDetailsController.show(taxYear, "001").url)
+            result.header(HeaderNames.LOCATION) shouldBe Some(CheckEmploymentDetailsController.show(taxYear, "employmentId").url)
           }
         }
       }

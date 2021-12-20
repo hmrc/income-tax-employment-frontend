@@ -37,7 +37,7 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val url = s"$appUrl/$taxYear/employment-summary"
+  private val url = s"$appUrl/$taxYear/employment-summary"
 
   object Selectors {
 
@@ -139,21 +139,18 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedInsetText: String = s"You cannot update your client’s employment information until 6 April $taxYear."
   }
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   ".show" when {
     import Selectors._
-
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "return single employment summary view when there is only one employment without Expenses and Benefits" which {
-
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)

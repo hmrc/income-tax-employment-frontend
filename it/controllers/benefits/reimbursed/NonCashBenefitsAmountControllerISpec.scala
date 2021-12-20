@@ -27,7 +27,6 @@ import controllers.benefits.reimbursed.routes.OtherBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.AmountForm
 import models.benefits.ReimbursedCostsVouchersAndNonCashModel
-import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -38,7 +37,7 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 class NonCashBenefitsAmountControllerISpec extends IntegrationTest with EmploymentDatabaseHelper with ViewHelpers {
 
   private val taxYearEOY: Int = 2021
-  private val employmentId: String = "001"
+  private val employmentId: String = "employmentId"
   private val formPostLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/non-cash-benefits-amount?employmentId=$employmentId"
   private val amountInModel: BigDecimal = 400
   private val newAmount: BigDecimal = 19.99
@@ -46,9 +45,6 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
   private val amountFieldHref = "#amount"
 
   private def nonCashBenefitsAmountPageUrl(taxYear: Int): String = s"$appUrl/$taxYear/benefits/non-cash-benefits-amount?employmentId=$employmentId"
-
-  private def employmentUserData(hasPriorBenefits: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    anEmploymentUserData.copy(employmentId = employmentId, isPriorSubmission = true, hasPriorBenefits = hasPriorBenefits, employment = employmentCyaModel)
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > label > header > p"
@@ -152,7 +148,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(nonCash = Some(25.00))))
-              insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+              insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
               urlGet(nonCashBenefitsAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -180,7 +176,10 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(nonCash = None)))
-              insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+              val employmentUserData = anEmploymentUserData
+                .copy(isPriorSubmission = false, hasPriorBenefits = false)
+                .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel)))
+              insertCyaData(employmentUserData, aUserRequest)
               urlGet(nonCashBenefitsAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -209,7 +208,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+              insertCyaData(anEmploymentUserData, aUserRequest)
               urlGet(nonCashBenefitsAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -236,7 +235,10 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+              val employmentUserData = anEmploymentUserData
+                .copy(isPriorSubmission = false, hasPriorBenefits = false)
+                .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel)))
+              insertCyaData(employmentUserData, aUserRequest)
               urlGet(nonCashBenefitsAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -266,7 +268,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+        insertCyaData(anEmploymentUserData, aUserRequest)
         urlGet(nonCashBenefitsAmountPageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -295,7 +297,10 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(nonCashQuestion = Some(false))))
-        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = false, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel)))
+        insertCyaData(employmentUserData, aUserRequest)
         urlGet(nonCashBenefitsAmountPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -311,7 +316,10 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(ReimbursedCostsVouchersAndNonCashModel(sectionQuestion = Some(false))))
-        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = false, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel)))
+        insertCyaData(employmentUserData, aUserRequest)
         urlGet(nonCashBenefitsAmountPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -333,7 +341,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+              insertCyaData(anEmploymentUserData, aUserRequest)
               urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), body = "", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -366,7 +374,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+              insertCyaData(anEmploymentUserData, aUserRequest)
               urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -395,7 +403,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+              insertCyaData(anEmploymentUserData, aUserRequest)
               urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -425,8 +433,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+        insertCyaData(anEmploymentUserData, aUserRequest)
         urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -449,7 +456,10 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(otherItemsQuestion = None)))
-        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = false, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel)))
+        insertCyaData(employmentUserData, aUserRequest)
         urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -471,7 +481,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+        insertCyaData(anEmploymentUserData, aUserRequest)
         urlPost(nonCashBenefitsAmountPageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -500,7 +510,10 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(nonCashQuestion = Some(false))))
-        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = false, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel)))
+        insertCyaData(employmentUserData, aUserRequest)
         urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -516,7 +529,10 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(ReimbursedCostsVouchersAndNonCashModel(sectionQuestion = Some(false))))
-        insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = false, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel)))
+        insertCyaData(employmentUserData, aUserRequest)
         urlPost(nonCashBenefitsAmountPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 

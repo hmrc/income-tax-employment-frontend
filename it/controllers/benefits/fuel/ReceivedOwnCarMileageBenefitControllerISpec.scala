@@ -172,11 +172,6 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
   private val benefitsWithMileageNo: Option[BenefitsViewModel] = Some(BenefitsViewModel(isBenefitsReceived = true,
     carVanFuelModel = Some(allSectionsFinishedCarVanFuelModel.copy(mileageQuestion = Some(false), mileage = None)), isUsingCustomerData = true))
 
-  private def cya(isPriorSubmission: Boolean = true, benefits: Option[BenefitsViewModel]) = anEmploymentUserData
-    .copy(isPriorSubmission = isPriorSubmission)
-    .copy(hasPriorBenefits = isPriorSubmission)
-    .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefits))
-
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
     UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
     UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
@@ -185,7 +180,6 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
   )
 
   ".show" when {
-
     userScenarios.foreach { user =>
       import Selectors._
       import user.commonExpectedResults._
@@ -196,7 +190,10 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(cya(isPriorSubmission = false, benefitsWithEmptyMileage), User(mtditid, None, nino, sessionId, affinityGroup))
+            val employmentUserData = anEmploymentUserData
+              .copy(isPriorSubmission = false, hasPriorBenefits = false)
+              .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsWithEmptyMileage))
+            insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, affinityGroup))
             urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -223,7 +220,10 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(cya(isPriorSubmission = false, benefitsWithMileageYes()), User(mtditid, None, nino, sessionId, affinityGroup))
+            val employmentUserData = anEmploymentUserData
+              .copy(isPriorSubmission = false, hasPriorBenefits = false)
+              .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsWithMileageYes()))
+            insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, affinityGroup))
             urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -251,7 +251,10 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(cya(isPriorSubmission = false, benefitsWithMileageYes(mileageAmount = None)), User(mtditid, None, nino, sessionId, affinityGroup))
+            val employmentUserData = anEmploymentUserData
+              .copy(isPriorSubmission = false, hasPriorBenefits = false)
+              .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsWithMileageYes(mileageAmount = None)))
+            insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, affinityGroup))
             urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -278,7 +281,10 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(cya(isPriorSubmission = false, benefitsWithMileageNo), User(mtditid, None, nino, sessionId, affinityGroup))
+            val employmentUserData = anEmploymentUserData
+              .copy(isPriorSubmission = false, hasPriorBenefits = false)
+              .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsWithMileageNo))
+            insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, affinityGroup))
             urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -308,7 +314,10 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
-        insertCyaData(cya(isPriorSubmission = false, benefitsWithMileageNo), User(mtditid, None, nino, sessionId, "agent"))
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = false, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsWithMileageNo))
+        insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, "agent"))
         val inYearUrl = s"$appUrl/$taxYear/how-much-pay?employmentId=$employmentId"
         urlGet(inYearUrl, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
@@ -330,7 +339,10 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
           lazy val form: Map[String, String] = Map[String, String]()
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(cya(isPriorSubmission = false, benefitsWithEmptyMileage), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
+            val employmentUserData = anEmploymentUserData
+              .copy(isPriorSubmission = false, hasPriorBenefits = false)
+              .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsWithEmptyMileage))
+            insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -358,7 +370,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(cya(isPriorSubmission = true, benefitsWithEmptyMileage), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
+        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsWithEmptyMileage)), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
         authoriseAgentOrIndividual(user.isAgent)
         urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -381,7 +393,10 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(cya(isPriorSubmission = false, benefitsWithEmptyMileage), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = false, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsWithEmptyMileage))
+        insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
         authoriseAgentOrIndividual(user.isAgent)
         urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -403,7 +418,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(cya(isPriorSubmission = true, benefitsWithEmptyMileage), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
+        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsWithEmptyMileage)), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
         authoriseAgentOrIndividual(user.isAgent)
         urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -424,7 +439,8 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(cya(isPriorSubmission = true, benefitsWithEmptyMileage), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
+        val employmentUserData = anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsWithEmptyMileage))
+        insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
         authoriseAgentOrIndividual(user.isAgent)
         urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -467,7 +483,10 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
-        insertCyaData(cya(isPriorSubmission = false, benefitsWithNoCarVanFuelQuestion()), User(mtditid, None, nino, sessionId, "agent"))
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = false, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsWithNoCarVanFuelQuestion()))
+        insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, "agent"))
         url
       }
 
@@ -482,7 +501,10 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
-        insertCyaData(cya(isPriorSubmission = false, benefitsWithNoCarVanFuelQuestion(None)), User(mtditid, None, nino, sessionId, "agent"))
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = false, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsWithNoCarVanFuelQuestion(None)))
+        insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, "agent"))
         url
       }
 
@@ -498,7 +520,10 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
-        insertCyaData(cya(isPriorSubmission = false, benefitsWithEmptyCarQuestion), User(mtditid, None, nino, sessionId, "agent"))
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = false, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsWithEmptyCarQuestion))
+        insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, "agent"))
         url
       }
 
@@ -514,7 +539,10 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
-        insertCyaData(cya(isPriorSubmission = false, benefitsWithEmptyCarFuelQuestion), User(mtditid, None, nino, sessionId, "agent"))
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = false, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsWithEmptyCarFuelQuestion))
+        insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, "agent"))
         url
       }
 
@@ -530,7 +558,10 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
-        insertCyaData(cya(isPriorSubmission = false, benefitsWithEmptyVanQuestion), User(mtditid, None, nino, sessionId, "agent"))
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = false, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsWithEmptyVanQuestion))
+        insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, "agent"))
         url
       }
 
@@ -546,7 +577,10 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
-        insertCyaData(cya(isPriorSubmission = false, benefitsCarQuestionYesNoAmount), User(mtditid, None, nino, sessionId, "agent"))
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = false, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsCarQuestionYesNoAmount))
+        insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, "agent"))
         url
       }
 
@@ -562,7 +596,10 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
-        insertCyaData(cya(isPriorSubmission = false, benefitsCarFuelQuestionYesNoAmount), User(mtditid, None, nino, sessionId, "agent"))
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = false, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsCarFuelQuestionYesNoAmount))
+        insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, "agent"))
         url
       }
 
@@ -578,7 +615,10 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
-        insertCyaData(cya(isPriorSubmission = false, benefitsVanFuelQuestionYesNoAmount), User(mtditid, None, nino, sessionId, "agent"))
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = false, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsVanFuelQuestionYesNoAmount))
+        insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, "agent"))
         url
       }
 
@@ -594,7 +634,10 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
-        insertCyaData(cya(isPriorSubmission = false, benefitsVanFuelQuestionYesNoAmount), User(mtditid, None, nino, sessionId, "agent"))
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = false, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsVanFuelQuestionYesNoAmount))
+        insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, "agent"))
         url
       }
 
@@ -610,7 +653,10 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
-        insertCyaData(cya(isPriorSubmission = false, benefitsWithNoBenefitsReceived), User(mtditid, None, nino, sessionId, "agent"))
+        val employmentUserData = anEmploymentUserData
+          .copy(isPriorSubmission = false, hasPriorBenefits = false)
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = benefitsWithNoBenefitsReceived))
+        insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, "agent"))
         url
       }
 

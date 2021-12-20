@@ -147,7 +147,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
         "Render the 'Did you receive car benefits' page with the correct content with cya data and the yes value pre-filled" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            insertCyaData(anEmploymentUserData, aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(carVanFuelBenefitsPage(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -211,7 +211,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+              insertCyaData(anEmploymentUserData, aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(carVanFuelBenefitsPage(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -267,11 +267,10 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
         val employmentUserData = anEmploymentUserData
           .copy(isPriorSubmission = false)
           .copy(hasPriorBenefits = false)
-          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel)))
+          .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel.copy(accommodationRelocationModel = None))))
         insertCyaData(employmentUserData, aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(carVanFuelBenefitsPage(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -363,7 +362,7 @@ class CarVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers
     "Redirect the user to the overview page when it is not end of year" which {
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+        insertCyaData(anEmploymentUserData, aUserRequest)
         urlPost(carVanFuelBenefitsPage(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 

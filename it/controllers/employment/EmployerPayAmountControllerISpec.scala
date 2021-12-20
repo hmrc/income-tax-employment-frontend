@@ -19,8 +19,10 @@ package controllers.employment
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import models.User
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -34,13 +36,13 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
   private val taxYearEOY: Int = taxYear - 1
   private val amount: BigDecimal = 100
-  private val urlEOY = s"$appUrl/2021/how-much-pay?employmentId=001"
+  private val employmentId = "employmentId"
+  private val urlEOY = s"$appUrl/2021/how-much-pay?$employmentId=$employmentId"
 
-  val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/how-much-pay?employmentId=001"
+  private val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/how-much-pay?employmentId=" + employmentId
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   private val userRequest: User[_] = User(mtditid, None, nino, sessionId, affinityGroup)
-
 
   object Selectors {
     val contentSelector = "#main-content > div > div > form > div > label > p"
@@ -54,8 +56,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedErrorHref = "#amount"
   }
 
-  val poundPrefixText = "£"
-  val amountInputName = "amount"
+  private val poundPrefixText = "£"
+  private val amountInputName = "amount"
 
   trait SpecificExpectedResults {
     val expectedH1: String
@@ -126,21 +128,6 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
     val emptyErrorText: String = "Enter the amount your client was paid"
   }
 
-  def cya(payToDate: Option[BigDecimal] = Some(100), isPriorSubmission: Boolean = true): EmploymentUserData =
-    EmploymentUserData(
-      sessionId,
-      mtditid,
-      nino,
-      taxYearEOY,
-      "001",
-      isPriorSubmission,
-      hasPriorBenefits = isPriorSubmission,
-      EmploymentCYAModel(
-        EmploymentDetails("maggie", taxablePayToDate = payToDate, currentDataIsHmrcHeld = false),
-        None
-      )
-    )
-
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
     UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
     UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
@@ -165,7 +152,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(cya(), User(mtditid, None, nino, sessionId, "agent"))
+            val employmentCYAModel = anEmploymentCYAModel.copy(anEmploymentDetails.copy("maggie", taxablePayToDate = Some(100)))
+            insertCyaData(anEmploymentUserData.copy(employment = employmentCYAModel), User(mtditid, None, nino, sessionId, "agent"))
             urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -193,7 +181,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(cya(None), User(mtditid, None, nino, sessionId, "agent"))
+            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(anEmploymentDetails.copy("maggie", taxablePayToDate = None))), User(mtditid, None, nino, sessionId, "agent"))
             urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -224,7 +212,10 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 noUserDataStub(nino, taxYearEOY)
-                insertCyaData(cya(payToDate = None, isPriorSubmission = false), User(mtditid, None, nino, sessionId, "agent"))
+                val employmentUserData = anEmploymentUserData
+                  .copy(isPriorSubmission = false, hasPriorBenefits = false)
+                  .copy(employment = anEmploymentCYAModel.copy(anEmploymentDetails.copy("maggie", taxablePayToDate = None)))
+                insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, "agent"))
                 urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
@@ -239,7 +230,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYearEOY)
-                insertCyaData(cya(), User(mtditid, None, nino, sessionId, "agent"))
+                val employmentCYAModel = anEmploymentCYAModel.copy(anEmploymentDetails.copy("maggie", taxablePayToDate = Some(100)))
+                insertCyaData(anEmploymentUserData.copy(employment = employmentCYAModel), User(mtditid, None, nino, sessionId, "agent"))
                 urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
@@ -255,7 +247,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYearEOY)
-                insertCyaData(cya(Some(110.00)), User(mtditid, None, nino, sessionId, "agent"))
+                val employmentCYAModel = anEmploymentCYAModel.copy(anEmploymentDetails.copy("maggie", taxablePayToDate = Some(110.00)))
+                insertCyaData(anEmploymentUserData.copy(employment = employmentCYAModel), User(mtditid, None, nino, sessionId, "agent"))
                 urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
@@ -269,7 +262,10 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 noUserDataStub(nino, taxYearEOY)
-                insertCyaData(cya(Some(100.00), isPriorSubmission = false), User(mtditid, None, nino, sessionId, "agent"))
+                val employmentUserData = anEmploymentUserData
+                  .copy(isPriorSubmission = false, hasPriorBenefits = false)
+                  .copy(employment = anEmploymentCYAModel.copy(anEmploymentDetails.copy("maggie", taxablePayToDate = Some(100.00))))
+                insertCyaData(employmentUserData, User(mtditid, None, nino, sessionId, "agent"))
                 urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
@@ -279,6 +275,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             }
           }
         }
+
         "redirect  to check employment details page when there is no cya data in session" when {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
@@ -286,10 +283,9 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             urlGet(urlEOY, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001")
+            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?" + employmentId + "=" + employmentId)
           }
         }
 
@@ -297,11 +293,11 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(cya(), User(mtditid, None, nino, sessionId, "agent"))
-            val inYearUrl = s"$appUrl/$taxYear/how-much-pay?employmentId=001"
+            val employmentDetails = anEmploymentDetails.copy("maggie", taxablePayToDate = Some(100))
+            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails)), User(mtditid, None, nino, sessionId, "agent"))
+            val inYearUrl = s"$appUrl/$taxYear/how-much-pay?$employmentId=$employmentId"
             urlGet(inYearUrl, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
-
 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
@@ -321,13 +317,12 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
       import user.specificExpectedResults._
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "should render How much did xxx pay you? page with empty error text when there no input" which {
-
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(cya(), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
+            val employmentCYAModel = anEmploymentCYAModel.copy(anEmploymentDetails.copy("maggie", taxablePayToDate = Some(100)))
+            insertCyaData(anEmploymentUserData.copy(employment = employmentCYAModel), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
             urlPost(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
           }
 
@@ -343,11 +338,11 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "should render How much did xxx pay you? page with wrong format text when input is in incorrect format" which {
-
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(cya(), User(mtditid, None, nino, sessionId, "agent"))
+            val employmentDetails = anEmploymentDetails.copy("maggie", taxablePayToDate = Some(100))
+            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails)), User(mtditid, None, nino, sessionId, "agent"))
             urlPost(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "|"))
           }
 
@@ -367,7 +362,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(cya(), User(mtditid, None, nino, sessionId, "agent"))
+            val employmentDetails = anEmploymentDetails.copy("maggie", taxablePayToDate = Some(100))
+            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails)), User(mtditid, None, nino, sessionId, "agent"))
             urlPost(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)),
               body = Map("amount" -> "9999999999999999999999999999"))
           }
@@ -387,14 +383,14 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(cya(), userRequest)
+            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(anEmploymentDetails.copy("maggie", taxablePayToDate = Some(100)))), userRequest)
             urlPost(urlEOY, follow = false,
               welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
           }
 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001")
+            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?" + employmentId + "=" + employmentId)
           }
         }
       }

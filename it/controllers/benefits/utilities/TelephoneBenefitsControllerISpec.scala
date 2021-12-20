@@ -23,7 +23,6 @@ import builders.models.benefits.UtilitiesAndServicesModelBuilder.aUtilitiesAndSe
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import forms.YesNoForm
-import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -36,9 +35,6 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   private val taxYearEOY: Int = taxYear - 1
   private val employmentId: String = "employmentId"
   private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/telephone?employmentId=$employmentId"
-
-  private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employment = employmentCyaModel)
 
   private def telephoneQuestionPageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/telephone?employmentId=$employmentId"
 
@@ -127,7 +123,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(telephoneQuestion = None)))
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(telephoneQuestionPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -155,7 +151,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         "render 'Did you get a benefit for using a telephone?' page with the correct content with cya data and the yes value pre-filled" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            insertCyaData(anEmploymentUserData, aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(telephoneQuestionPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -188,7 +184,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
           urlGet(telephoneQuestionPageUrl(taxYearEOY), user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -198,7 +194,6 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           result.status shouldBe SEE_OTHER
           result.header("location") shouldBe
             Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
-
         }
       }
 
@@ -206,7 +201,10 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
-          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          val employmentUserData = anEmploymentUserData
+            .copy(isPriorSubmission = false, hasPriorBenefits = false)
+            .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None))
+          insertCyaData(employmentUserData, aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
           urlGet(telephoneQuestionPageUrl(taxYearEOY), user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -238,7 +236,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
           val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(sectionQuestion = Some(false))))
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
           urlGet(telephoneQuestionPageUrl(taxYearEOY), user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -256,7 +254,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
           val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(sectionQuestion = None)))
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
           urlGet(telephoneQuestionPageUrl(taxYearEOY), user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -273,7 +271,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+          insertCyaData(anEmploymentUserData, aUserRequest)
           urlGet(telephoneQuestionPageUrl(taxYear), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -286,7 +284,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       "redirect to the check employment benefits page when theres no CYA data" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
           urlGet(telephoneQuestionPageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -316,7 +314,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+              insertCyaData(anEmploymentUserData, aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(telephoneQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -357,7 +355,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(telephoneQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -381,7 +379,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           val benefitsViewModel = aBenefitsViewModel
             .copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(telephoneQuestion = Some(false))))
             .copy(medicalChildcareEducationModel = None)
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(telephoneQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -417,7 +415,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(telephoneQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -443,7 +441,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
           val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(sectionQuestion = Some(false))))
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
           urlPost(telephoneQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -462,7 +460,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
           val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(sectionQuestion = None)))
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
           urlPost(telephoneQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }

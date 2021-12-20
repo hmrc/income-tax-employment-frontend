@@ -26,7 +26,6 @@ import controllers.benefits.income.routes._
 import controllers.benefits.medical.routes._
 import forms.YesNoForm
 import models.benefits.MedicalChildcareEducationModel
-import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -41,9 +40,6 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
   private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/medical-dental-childcare-education-loans?employmentId=$employmentId"
 
   private def medicalDentalChildcareQuestionPageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/medical-dental-childcare-education-loans?employmentId=$employmentId"
-
-  private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employment = employmentCyaModel)
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -126,7 +122,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(sectionQuestion = None)))
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(medicalDentalChildcareQuestionPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -154,7 +150,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
           "page with the correct content with cya data and the yes value pre-filled" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            insertCyaData(anEmploymentUserData, aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(medicalDentalChildcareQuestionPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -185,7 +181,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
           urlGet(medicalDentalChildcareQuestionPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -199,7 +195,10 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
-          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          val employmentUserData = anEmploymentUserData
+            .copy(isPriorSubmission = false, hasPriorBenefits = false)
+            .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None))
+          insertCyaData(employmentUserData, aUserRequest)
           urlGet(medicalDentalChildcareQuestionPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -228,7 +227,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+          insertCyaData(anEmploymentUserData, aUserRequest)
           urlGet(medicalDentalChildcareQuestionPageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -241,7 +240,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
       "redirect to the check employment benefits page when theres no CYA data" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
           urlGet(medicalDentalChildcareQuestionPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -261,16 +260,14 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
   }
 
   ".submit" should {
-
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
         s"return a BAD_REQUEST($BAD_REQUEST) status" when {
           "the value is empty" which {
             lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
-
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+              insertCyaData(anEmploymentUserData, aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(medicalDentalChildcareQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -307,7 +304,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
         lazy val result: WSResponse = {
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = None)
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
           urlPost(medicalDentalChildcareQuestionPageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -328,7 +325,10 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
           val benefitsViewModel = aBenefitsViewModel
             .copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(sectionQuestion = Some(false))))
             .copy(incomeTaxAndCostsModel = None)
-          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          val employmentUserData = anEmploymentUserData
+            .copy(isPriorSubmission = false, hasPriorBenefits = false)
+            .copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel)))
+          insertCyaData(employmentUserData, aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
           urlPost(medicalDentalChildcareQuestionPageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -366,7 +366,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
           urlPost(medicalDentalChildcareQuestionPageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }

@@ -39,7 +39,7 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper {
 
   private val defaultTaxYear = 2022
-  private val employmentId = "001"
+  private val employmentId = "employmentId"
 
   private def url(taxYear: Int = defaultTaxYear): String = s"$appUrl/$taxYear/check-employment-benefits?employmentId=$employmentId"
 
@@ -307,7 +307,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val benefitsReceived = "Benefits received"
     val saveAndContinue: String = "Save and continue"
     val returnToEmployerText: String = "Return to employer"
-    val returnToEmployerLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employer-details-and-benefits?employmentId=001"
+    val returnToEmployerLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employer-details-and-benefits?employmentId=employmentId"
     val returnToEmploymentSummaryText: String = "Return to employment summary"
     val returnToEmploymentSummaryLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employment-summary"
   }
@@ -393,7 +393,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val benefitsReceived = "Benefits received"
     val saveAndContinue: String = "Save and continue"
     val returnToEmployerText: String = "Return to employer"
-    val returnToEmployerLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employer-details-and-benefits?employmentId=001"
+    val returnToEmployerLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employer-details-and-benefits?employmentId=employmentId"
     val returnToEmploymentSummaryText: String = "Return to employment summary"
     val returnToEmploymentSummaryLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employment-summary"
   }
@@ -744,7 +744,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val beneficialLoansAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/beneficial-loans-amount?employmentId=$employmentId"
     val incomeTaxOrIncurredCostsBenefitsHref: String =
       s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/employer-income-tax-or-incurred-costs?employmentId=$employmentId"
-    val incomeTaxBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/employer-income-tax-amount?employmentId=001"
+    val incomeTaxBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/employer-income-tax-amount?employmentId=employmentId"
     val incomeTaxBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/employer-income-tax?employmentId=$employmentId"
     val educationServiceBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/educational-services?employmentId=$employmentId"
     val incurredCostsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/incurred-costs?employmentId=$employmentId"
@@ -757,15 +757,15 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val nonTaxableCostsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/non-taxable-costs-amount?employmentId=$employmentId"
     val vouchersBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/vouchers-or-credit-cards?employmentId=$employmentId"
     val vouchersBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/vouchers-or-credit-cards-amount?employmentId=$employmentId"
-    val nonCashBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/non-cash-benefits?employmentId=001"
+    val nonCashBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/non-cash-benefits?employmentId=employmentId"
     val nonCashBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/non-cash-benefits-amount?employmentId=$employmentId"
-    val otherBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/other-benefits-amount?employmentId=001"
-    val otherBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/other-benefits?employmentId=001"
+    val otherBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/other-benefits-amount?employmentId=employmentId"
+    val otherBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/other-benefits?employmentId=employmentId"
     val assetsOrAssetTransfersBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/assets?employmentId=$employmentId"
-    val assetsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/assets-available-for-use?employmentId=001"
-    val assetsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/assets-available-for-use-amount?employmentId=001"
-    val assetTransfersBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/assets-to-keep?employmentId=001"
-    val assetTransfersBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/assets-to-keep-amount?employmentId=001"
+    val assetsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/assets-available-for-use?employmentId=employmentId"
+    val assetsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/assets-available-for-use-amount?employmentId=employmentId"
+    val assetTransfersBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/assets-to-keep?employmentId=employmentId"
+    val assetTransfersBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${defaultTaxYear - 1}/benefits/assets-to-keep-amount?employmentId=employmentId"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

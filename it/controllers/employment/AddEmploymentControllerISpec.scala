@@ -18,11 +18,13 @@ package controllers.employment
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.UserBuilder.aUserRequest
-import common.{SessionValues, UUID}
+import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
+import common.SessionValues
 import controllers.employment.routes._
 import forms.YesNoForm
 import models.IncomeTaxUserData
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.mongo.EmploymentDetails
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -34,6 +36,7 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val validTaxYear2021 = 2021
+  private val employmentId = "employmentId"
 
   object Selectors {
     val valueHref = "#value"
@@ -102,35 +105,23 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
 
   }
 
-  private val employmentId = UUID.randomUUID
-
   private def url(taxYear: Int) = s"$appUrl/$taxYear/add-employment"
 
-  private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, validTaxYear2021, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
-
-  def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc))
-
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   ".show" when {
     import Selectors._
 
-
     userScenarios.foreach { user =>
       import user.commonExpectedResults._
-
       val specific = user.specificExpectedResults.get
-
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "return Add an employment page" when {
-
           val taxYear = validTaxYear2021
           lazy val result: WSResponse = {
             dropEmploymentDB()
@@ -156,13 +147,12 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
         }
 
         "return Add an employment page page with yes pre-filled when there is session value employment id is defined" when {
-
           val taxYear = validTaxYear2021
           lazy val result: WSResponse = {
             dropEmploymentDB()
             userDataStub(IncomeTaxUserData(None), nino, taxYear)
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
+            insertCyaData(anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
             urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear, Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "fake-id"))))
           }
 
@@ -222,20 +212,14 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
   }
 
   ".submit" should {
-
     import Selectors._
-
     val yesNoFormYes: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
     val yesNoFormNo: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
     val yesNoFormEmpty: Map[String, String] = Map[String, String]()
-
     userScenarios.foreach { user =>
       import user.commonExpectedResults._
-
       val specific = user.specificExpectedResults.get
-
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "return Add Employment Page with errors when no radio button is selected" when {
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
@@ -315,7 +299,10 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
+            val employmentUserData = anEmploymentUserData
+              .copy(isPriorSubmission = false, hasPriorBenefits = false)
+              .copy(employment = anEmploymentCYAModel.copy(EmploymentDetails("test", currentDataIsHmrcHeld = true)))
+            insertCyaData(employmentUserData, aUserRequest)
             userDataStub(IncomeTaxUserData(None), nino, taxYear - 1)
             urlPost(url(validTaxYear2021), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
@@ -333,7 +320,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
+            insertCyaData(anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
             userDataStub(IncomeTaxUserData(None), nino, taxYear - 1)
             urlPost(url(validTaxYear2021), follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))

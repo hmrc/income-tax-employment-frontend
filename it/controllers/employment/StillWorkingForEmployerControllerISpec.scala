@@ -28,11 +28,11 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear - 1
-  val employerName: String = "HMRC"
-  val employmentStartDate: String = "2020-01-01"
-  val employmentId: String = "001"
-  val cessationDate: Option[String] = Some("2021-01-01")
+  private val taxYearEOY: Int = taxYear - 1
+  private val employerName: String = "HMRC"
+  private val employmentStartDate: String = "2020-01-01"
+  private val employmentId: String = "001"
+  private val cessationDate: Option[String] = Some("2021-01-01")
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)

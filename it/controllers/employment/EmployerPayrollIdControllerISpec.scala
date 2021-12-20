@@ -17,8 +17,10 @@
 package controllers.employment
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
+import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import models.User
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -30,12 +32,11 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear - 1
-  val payrollId: String = "123456"
+  private val taxYearEOY: Int = taxYear - 1
+  private val employmentId = "employmentId"
+  private val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/payroll-id?employmentId=" + employmentId
 
-  def url(taxYear: Int): String = s"$appUrl/${taxYear.toString}/payroll-id?employmentId=001"
-
-  val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/payroll-id?employmentId=001"
+  private def url(taxYear: Int): String = s"$appUrl/${taxYear.toString}/payroll-id?employmentId=$employmentId"
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   private val userRequest: User[_] = User(mtditid, None, nino, sessionId, affinityGroup)
@@ -143,22 +144,6 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     val paragraph2: String = "You can find this on your client’s payslip or on their P60. It’s also known as a ‘payroll number’."
   }
 
-  def cya(isPriorSubmission: Boolean = true): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, "001", isPriorSubmission, hasPriorBenefits = isPriorSubmission,
-      EmploymentCYAModel(
-        EmploymentDetails("maggie", currentDataIsHmrcHeld = false),
-        None
-      )
-    )
-
-  def cyaWithPayrollId(isPriorSubmission: Boolean = true): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, "001", isPriorSubmission, hasPriorBenefits = isPriorSubmission,
-      EmploymentCYAModel(
-        EmploymentDetails("maggie", payrollId = Some("123456"), currentDataIsHmrcHeld = false),
-        None
-      )
-    )
-
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
     UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
     UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
@@ -177,7 +162,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(cya(false), userRequest)
+            insertCyaData(anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false), userRequest)
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -204,11 +189,11 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "should render the What's your payrollId? page with the id pre-filled when theres payrollId data in cya" which {
-
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(cyaWithPayrollId(), userRequest)
+            val employmentDetails = anEmploymentDetails.copy("maggie", payrollId = Some("123456"), currentDataIsHmrcHeld = false)
+            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentDetails)), userRequest)
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -242,10 +227,9 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
             urlGet(url(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001")
+            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=" + employmentId)
           }
         }
 
@@ -253,10 +237,9 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(cya(), userRequest)
+            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(anEmploymentDetails)), userRequest)
             urlGet(url(taxYear), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
-
 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
@@ -269,23 +252,19 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   ".submit" when {
-
     userScenarios.foreach { user =>
       import Selectors._
       import user.commonExpectedResults._
       import user.specificExpectedResults._
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "should render the What's your payrollId? page with an error when the payrollId is input as empty" which {
-
           val payrollId = ""
           val body = Map("payrollId" -> payrollId)
-
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(cya(), userRequest)
+            insertCyaData(anEmploymentUserData, userRequest)
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlPost(url(taxYearEOY), body, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
@@ -315,14 +294,12 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "should render the What's your payrollId? page with an error when the payrollId is input as too long" which {
-
           val payrollId = "123456789012345678901234567890123456789"
           val body = Map("payrollId" -> payrollId)
-
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(cya(), userRequest)
+            insertCyaData(anEmploymentUserData, userRequest)
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlPost(url(taxYearEOY), body, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
@@ -352,14 +329,12 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "should render the What's your payrollId? page with an error when the payrollId is input as the wrong format" which {
-
           val payrollId = "$11223"
           val body = Map("payrollId" -> payrollId)
-
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(cya(), userRequest)
+            insertCyaData(anEmploymentUserData, userRequest)
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlPost(url(taxYearEOY), body, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
@@ -395,7 +370,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(cya(), userRequest)
+            insertCyaData(anEmploymentUserData, userRequest)
             urlPost(url(taxYearEOY), body, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -404,12 +379,12 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           "redirect to the Check Employment Details page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001")
+            result.header(HeaderNames.LOCATION) shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=" + employmentId)
           }
 
           s"update the cya models payroll id to be $payrollId" in {
-            lazy val cyamodel = findCyaData(taxYearEOY, "001", userRequest).get
-            cyamodel.employment.employmentDetails.payrollId shouldBe Some(payrollId)
+            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, userRequest).get
+            cyaModel.employment.employmentDetails.payrollId shouldBe Some(payrollId)
           }
         }
       }

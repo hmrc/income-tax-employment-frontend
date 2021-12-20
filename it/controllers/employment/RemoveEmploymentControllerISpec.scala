@@ -29,9 +29,9 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear - 1
-  val employmentId: String = "001"
-  val employerName: String = "maggie"
+  private val taxYearEOY: Int = taxYear - 1
+  private val employmentId: String = "001"
+  private val employerName: String = "maggie"
 
   private def url(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/remove-employment?employmentId=$employmentId"
 

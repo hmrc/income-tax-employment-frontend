@@ -28,7 +28,7 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val validTaxYear2021 = 2021
+  private val validTaxYear2021 = 2021
 
   object Selectors {
     val valueHref = "#value"
@@ -124,9 +124,10 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
   }
 
   private def url(taxYear: Int) = s"$appUrl/$taxYear/employment-summary"
-  val employmentId = "001"
-  val changeLinkHref = s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employer-information?employmentId=$employmentId"
-  val removeLinkHref = s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/remove-employment?employmentId=$employmentId"
+
+  private val employmentId = "001"
+  private val changeLinkHref = s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employer-information?employmentId=$employmentId"
+  private val removeLinkHref = s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/remove-employment?employmentId=$employmentId"
 
   val employmentSource: EmploymentSource = EmploymentSource(
     employmentId = employmentId,
@@ -160,7 +161,7 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true,  CommonExpectedEN, Some(ExpectedAgentEN)),
+      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
       UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
       UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }

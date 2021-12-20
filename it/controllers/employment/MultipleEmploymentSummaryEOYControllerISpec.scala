@@ -28,7 +28,7 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val validTaxYear2021 = 2021
+  private val validTaxYear2021 = 2021
 
   object Selectors {
     val valueHref = "#value"
@@ -82,8 +82,11 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val doYouNeedAnother: String
     val yesText: String
     val noText: String
+
     def change(employerName: String): String
+
     def remove(employerName: String): String
+
     val employerName: String
     val employerName2: String
     val thisIsATotal: String
@@ -96,9 +99,12 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val doYouNeedAnother: String = "Do you need to add another employment?"
     val yesText: String = "Yes"
     val noText: String = "No"
+
     def change(employerName: String): String = s"Change Change employment information for $employerName"
+
     //change is included twice because selector is for the whole link. First change is the text/link, second change is part of hidden text
     def remove(employerName: String): String = s"Remove Remove employment information for $employerName"
+
     //remove is included twice because selector is for the whole link. First remove is the text/link, second remove is part of hidden text
     val changeExpenses: String = "Change"
     val removeExpenses: String = "Remove"
@@ -114,8 +120,11 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val doYouNeedAnother: String = "Do you need to add another employment?"
     val yesText: String = "Yes"
     val noText: String = "No"
+
     def change(employerName: String): String = s"Change Change employment information for $employerName" //First change is the text/link, second change is part of hidden text
+
     def remove(employerName: String): String = s"Remove Remove employment information for $employerName" //First remove is the text/link, second remove is part of hidden text
+
     val changeExpenses: String = "Change"
     val removeExpenses: String = "Remove"
     val employerName: String = "Maggie"
@@ -170,8 +179,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
 
   private def url(taxYear: Int) = s"$appUrl/$taxYear/employment-summary"
 
-  val employmentId1 = "001"
-  val employmentId2 = "002"
+  private val employmentId1 = "001"
+  private val employmentId2 = "002"
 
   def changeLinkHref(empId: String): String = s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employer-information?employmentId=$empId"
 
