@@ -18,7 +18,7 @@
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Heading
 @import utils.ViewUtils.summaryListRow
-@import models.benefits.Benefits
+@import models.benefits.BenefitsViewModel
 @import utils.ViewUtils.bigDecimalCurrency
 
 @this(
@@ -31,7 +31,7 @@
     govUkButton: GovukButton
 )
 
-@(taxYear: Int, benefits: Benefits, isSingleEmployment: Boolean, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, benefits: BenefitsViewModel, isSingleEmployment: Boolean, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @headingForUse = @{messages(s"checkYourBenefits.heading.${if(user.isAgent) "agent" else "individual"}")}
 
@@ -49,8 +49,17 @@
 }
 
 
-@showRows(item: String, value: Option[BigDecimal]) = @{
-    summaryListRow(HtmlContent(messages(item)),HtmlContent(bigDecimalCurrency(value.getOrElse("0").toString)),actions = Seq(), keyClasses="govuk-!-width-two-thirds", valueClasses = "govuk-!-width-one-third right-align")
+@showRow(key: String, value: String) = @{
+    summaryListRow(
+        HtmlContent(messages(key)),
+        HtmlContent(value),
+        actions = Seq(),
+        keyClasses="govuk-!-width-two-thirds",
+        valueClasses = "govuk-!-width-one-third right-align")
+}
+
+@mapToYesNo(value: Boolean) = @{
+    if(value){messages("common.yes")} else {messages("common.no")}
 }
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear)) {
@@ -65,24 +74,44 @@
         ))
     }
 
+    @govukSummaryList(SummaryList(Seq(showRow("checkYourBenefits.benefitsReceived", mapToYesNo(benefits.isBenefitsReceived)))))
+
     @if(benefits.vehicleDetailsPopulated){
         <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.vehicleHeader")</h2>
         @{
             val rows: Seq[SummaryListRow] = Seq(
-                benefits.car.map{
-                BigDecimal => showRows("checkYourBenefits.companyCar", benefits.car)
+                benefits.carVanFuelModel.flatMap(_.sectionQuestion).map{
+                    question => showRow("checkYourBenefits.carSubheading", mapToYesNo(question))
                 },
-                benefits.carFuel.map{
-                BigDecimal => showRows("checkYourBenefits.fuelForCompanyCar", benefits.carFuel)
+                benefits.carVanFuelModel.flatMap(_.carQuestion).map{
+                    question => showRow("checkYourBenefits.companyCar", mapToYesNo(question))
                 },
-                benefits.van.map{
-                BigDecimal => showRows("checkYourBenefits.companyVan", benefits.van)
+                benefits.carVanFuelModel.flatMap(_.car).map{
+                    amount => showRow("checkYourBenefits.companyCarAmount", bigDecimalCurrency(amount.toString))
                 },
-                benefits.vanFuel.map{
-                BigDecimal => showRows("checkYourBenefits.fuelForCompanyVan", benefits.vanFuel)
+                benefits.carVanFuelModel.flatMap(_.carFuelQuestion).map{
+                    question => showRow("checkYourBenefits.fuelForCompanyCar", mapToYesNo(question))
                 },
-                benefits.mileage.map{
-                BigDecimal => showRows("checkYourBenefits.mileageBenefit", benefits.mileage)
+                benefits.carVanFuelModel.flatMap(_.carFuel).map{
+                    amount => showRow("checkYourBenefits.fuelForCompanyCarAmount", bigDecimalCurrency(amount.toString))
+                },
+                benefits.carVanFuelModel.flatMap(_.vanQuestion).map{
+                    question => showRow("checkYourBenefits.companyVan", mapToYesNo(question))
+                },
+                benefits.carVanFuelModel.flatMap(_.van).map{
+                    amount => showRow("checkYourBenefits.companyVanAmount", bigDecimalCurrency(amount.toString))
+                },
+                benefits.carVanFuelModel.flatMap(_.vanFuelQuestion).map{
+                    question => showRow("checkYourBenefits.fuelForCompanyVan", mapToYesNo(question))
+                },
+                benefits.carVanFuelModel.flatMap(_.vanFuel).map{
+                    amount => showRow("checkYourBenefits.fuelForCompanyVanAmount", bigDecimalCurrency(amount.toString))
+                },
+                benefits.carVanFuelModel.flatMap(_.mileageQuestion).map{
+                    question => showRow("checkYourBenefits.mileageBenefit", mapToYesNo(question))
+                },
+                benefits.carVanFuelModel.flatMap(_.mileage).map{
+                    amount => showRow("checkYourBenefits.mileageBenefitAmount", bigDecimalCurrency(amount.toString))
                 }
             ).flatten
 
@@ -94,14 +123,26 @@
         <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.accommodationHeader")</h2>
         @{
             val rows: Seq[SummaryListRow] = Seq(
-                benefits.accommodation.map{
-                BigDecimal => showRows("checkYourBenefits.accommodation", benefits.accommodation)
+                benefits.accommodationRelocationModel.flatMap(_.sectionQuestion).map{
+                    question => showRow("checkYourBenefits.accommodationSubheading", mapToYesNo(question))
                 },
-                benefits.qualifyingRelocationExpenses.map{
-                BigDecimal => showRows("checkYourBenefits.qualifyingRelocationCosts", benefits.qualifyingRelocationExpenses)
+                benefits.accommodationRelocationModel.flatMap(_.accommodationQuestion).map{
+                    question => showRow("checkYourBenefits.accommodation", mapToYesNo(question))
                 },
-                benefits.nonQualifyingRelocationExpenses.map{
-                BigDecimal => showRows("checkYourBenefits.nonQualifyingRelocationCosts", benefits.nonQualifyingRelocationExpenses)
+                benefits.accommodationRelocationModel.flatMap(_.accommodation).map{
+                    amount => showRow("checkYourBenefits.accommodationAmount", bigDecimalCurrency(amount.toString))
+                },
+                benefits.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpensesQuestion).map{
+                    question => showRow("checkYourBenefits.qualifyingRelocationCosts", mapToYesNo(question))
+                },
+                benefits.accommodationRelocationModel.flatMap(_.qualifyingRelocationExpenses).map{
+                    amount => showRow("checkYourBenefits.qualifyingRelocationCostsAmount", bigDecimalCurrency(amount.toString))
+                },
+                benefits.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpensesQuestion).map{
+                    question => showRow("checkYourBenefits.nonQualifyingRelocationCosts", mapToYesNo(question))
+                },
+                benefits.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses).map{
+                    amount => showRow("checkYourBenefits.nonQualifyingRelocationCostsAmount", bigDecimalCurrency(amount.toString))
                 }
             ).flatten
 
@@ -113,14 +154,26 @@
         <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.travelHeader")</h2>
         @{
             val rows: Seq[SummaryListRow] = Seq(
-                benefits.travelAndSubsistence.map{
-                BigDecimal => showRows("checkYourBenefits.travelAndSubsistence", benefits.travelAndSubsistence)
+                benefits.travelEntertainmentModel.flatMap(_.sectionQuestion).map{
+                    question => showRow("checkYourBenefits.travelSubheading", mapToYesNo(question))
                 },
-                benefits.personalIncidentalExpenses.map{
-                BigDecimal => showRows("checkYourBenefits.personalCosts", benefits.personalIncidentalExpenses)
+                benefits.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion).map{
+                    question => showRow("checkYourBenefits.travelAndSubsistence", mapToYesNo(question))
                 },
-                benefits.entertaining.map{
-                BigDecimal => showRows("checkYourBenefits.entertainment", benefits.entertaining)
+                benefits.travelEntertainmentModel.flatMap(_.travelAndSubsistence).map{
+                    amount => showRow("checkYourBenefits.travelAndSubsistenceAmount", bigDecimalCurrency(amount.toString))
+                },
+                benefits.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion).map{
+                    question => showRow("checkYourBenefits.personalCosts", mapToYesNo(question))
+                },
+                benefits.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses).map{
+                    amount => showRow("checkYourBenefits.personalCostsAmount", bigDecimalCurrency(amount.toString))
+                },
+                benefits.travelEntertainmentModel.flatMap(_.entertainingQuestion).map{
+                    question => showRow("checkYourBenefits.entertainment", mapToYesNo(question))
+                },
+                benefits.travelEntertainmentModel.flatMap(_.entertaining).map{
+                    amount => showRow("checkYourBenefits.entertainmentAmount", bigDecimalCurrency(amount.toString))
                 }
             ).flatten
 
@@ -132,17 +185,32 @@
         <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.utilitiesHeader")</h2>
         @{
             val rows: Seq[SummaryListRow] = Seq(
-                benefits.telephone.map{
-                BigDecimal => showRows("checkYourBenefits.telephone", benefits.telephone)
+                benefits.utilitiesAndServicesModel.flatMap(_.sectionQuestion).map{
+                 question => showRow("checkYourBenefits.utilitiesSubheading", mapToYesNo(question))
                 },
-                benefits.employerProvidedServices.map{
-                BigDecimal => showRows("checkYourBenefits.servicesProvided", benefits.employerProvidedServices)
+                benefits.utilitiesAndServicesModel.flatMap(_.telephoneQuestion).map{
+                    question => showRow("checkYourBenefits.telephone", mapToYesNo(question))
                 },
-                benefits.employerProvidedProfessionalSubscriptions.map{
-                BigDecimal => showRows("checkYourBenefits.profSubscriptions", benefits.employerProvidedProfessionalSubscriptions)
+                benefits.utilitiesAndServicesModel.flatMap(_.telephone).map{
+                    amount => showRow("checkYourBenefits.telephoneAmount", bigDecimalCurrency(amount.toString))
                 },
-                benefits.service.map{
-                BigDecimal => showRows("checkYourBenefits.otherServices", benefits.service)
+                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion).map{
+                    question => showRow("checkYourBenefits.servicesProvided", mapToYesNo(question))
+                },
+                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedServices).map{
+                    amount => showRow("checkYourBenefits.servicesProvidedAmount", bigDecimalCurrency(amount.toString))
+                },
+                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptionsQuestion).map{
+                    question => showRow("checkYourBenefits.profSubscriptions", mapToYesNo(question))
+                },
+                benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptions).map{
+                    amount => showRow("checkYourBenefits.profSubscriptionsAmount", bigDecimalCurrency(amount.toString))
+                },
+                benefits.utilitiesAndServicesModel.flatMap(_.serviceQuestion).map{
+                    question => showRow("checkYourBenefits.otherServices", mapToYesNo(question))
+                },
+                benefits.utilitiesAndServicesModel.flatMap(_.service).map{
+                    amount => showRow("checkYourBenefits.otherServicesAmount", bigDecimalCurrency(amount.toString))
                 }
             ).flatten
 
@@ -154,17 +222,32 @@
         <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.medicalHeader")</h2>
         @{
             val rows: Seq[SummaryListRow] = Seq(
-                benefits.medicalInsurance.map{
-                BigDecimal => showRows("checkYourBenefits.medicalIns", benefits.medicalInsurance)
+                benefits.medicalChildcareEducationModel.flatMap(_.sectionQuestion).map{
+                    question => showRow("checkYourBenefits.medicalSubheading", mapToYesNo(question))
                 },
-                benefits.nurseryPlaces.map{
-                BigDecimal => showRows("checkYourBenefits.nursery", benefits.nurseryPlaces)
+                benefits.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion).map{
+                    question => showRow("checkYourBenefits.medicalIns", mapToYesNo(question))
                 },
-                benefits.educationalServices.map{
-                BigDecimal => showRows("checkYourBenefits.educational", benefits.educationalServices)
+                benefits.medicalChildcareEducationModel.flatMap(_.medicalInsurance).map{
+                    amount => showRow("checkYourBenefits.medicalInsAmount", bigDecimalCurrency(amount.toString))
                 },
-                benefits.beneficialLoan.map{
-                BigDecimal => showRows("checkYourBenefits.beneficialLoans", benefits.beneficialLoan)
+                benefits.medicalChildcareEducationModel.flatMap(_.nurseryPlacesQuestion).map{
+                    question => showRow("checkYourBenefits.nursery", mapToYesNo(question))
+                },
+                benefits.medicalChildcareEducationModel.flatMap(_.nurseryPlaces).map{
+                    amount => showRow("checkYourBenefits.nurseryAmount", bigDecimalCurrency(amount.toString))
+                },
+                benefits.medicalChildcareEducationModel.flatMap(_.educationalServicesQuestion).map{
+                    question => showRow("checkYourBenefits.educational", mapToYesNo(question))
+                },
+                benefits.medicalChildcareEducationModel.flatMap(_.educationalServices).map{
+                    amount => showRow("checkYourBenefits.educationalAmount", bigDecimalCurrency(amount.toString))
+                },
+                benefits.medicalChildcareEducationModel.flatMap(_.beneficialLoanQuestion).map{
+                    question => showRow("checkYourBenefits.beneficialLoans", mapToYesNo(question))
+                },
+                benefits.medicalChildcareEducationModel.flatMap(_.beneficialLoan).map{
+                    amount => showRow("checkYourBenefits.beneficialLoansAmount", bigDecimalCurrency(amount.toString))
                 }
             ).flatten
 
@@ -176,11 +259,20 @@
         <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.incomeTaxHeader")</h2>
         @{
             val rows: Seq[SummaryListRow] = Seq(
-                benefits.incomeTaxPaidByDirector.map{
-                BigDecimal => showRows("checkYourBenefits.incomeTaxPaid", benefits.incomeTaxPaidByDirector)
+                benefits.incomeTaxAndCostsModel.flatMap(_.sectionQuestion).map{
+                    question => showRow("checkYourBenefits.incomeTaxSubheading", mapToYesNo(question))
                 },
-                benefits.paymentsOnEmployeesBehalf.map{
-                BigDecimal => showRows("checkYourBenefits.incurredCostsPaid", benefits.paymentsOnEmployeesBehalf)
+                benefits.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirectorQuestion).map{
+                    question => showRow("checkYourBenefits.incomeTaxPaid", mapToYesNo(question))
+                },
+                benefits.incomeTaxAndCostsModel.flatMap(_.incomeTaxPaidByDirector).map{
+                    amount => showRow("checkYourBenefits.incomeTaxPaidAmount", bigDecimalCurrency(amount.toString))
+                },
+                benefits.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalfQuestion).map{
+                    question => showRow("checkYourBenefits.incurredCostsPaid", mapToYesNo(question))
+                },
+                benefits.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalf).map{
+                    amount => showRow("checkYourBenefits.incurredCostsPaidAmount", bigDecimalCurrency(amount.toString))
                 }
             ).flatten
 
@@ -192,20 +284,38 @@
         <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.reimbursedHeader")</h2>
         @{
             val rows: Seq[SummaryListRow] = Seq(
-                benefits.expenses.map{
-                BigDecimal => showRows("checkYourBenefits.nonTaxable", benefits.expenses)
+                benefits.incomeTaxAndCostsModel.flatMap(_.sectionQuestion).map{
+                    question => showRow("checkYourBenefits.reimbursedSubheading", mapToYesNo(question))
                 },
-                benefits.taxableExpenses.map{
-                BigDecimal => showRows("checkYourBenefits.taxableCosts", benefits.taxableExpenses)
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expensesQuestion).map{
+                    question => showRow("checkYourBenefits.nonTaxable", mapToYesNo(question))
                 },
-                benefits.vouchersAndCreditCards.map{
-                BigDecimal => showRows("checkYourBenefits.vouchers", benefits.vouchersAndCreditCards)
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.expenses).map{
+                    amount => showRow("checkYourBenefits.nonTaxableAmount", bigDecimalCurrency(amount.toString))
                 },
-                benefits.nonCash.map{
-                BigDecimal => showRows("checkYourBenefits.nonCash", benefits.nonCash)
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpensesQuestion).map{
+                    question => showRow("checkYourBenefits.taxableCosts", mapToYesNo(question))
                 },
-                benefits.otherItems.map{
-                BigDecimal => showRows("checkYourBenefits.otherBenefits", benefits.otherItems)
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.taxableExpenses).map{
+                    amount => showRow("checkYourBenefits.taxableCostsAmount", bigDecimalCurrency(amount.toString))
+                },
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCardsQuestion).map{
+                    question => showRow("checkYourBenefits.vouchers", mapToYesNo(question))
+                },
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.vouchersAndCreditCards).map{
+                    amount => showRow("checkYourBenefits.vouchersAmount", bigDecimalCurrency(amount.toString))
+                },
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCashQuestion).map{
+                    question => showRow("checkYourBenefits.nonCash", mapToYesNo(question))
+                },
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCash).map{
+                    amount => showRow("checkYourBenefits.nonCashAmount", bigDecimalCurrency(amount.toString))
+                },
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItemsQuestion).map{
+                    question => showRow("checkYourBenefits.otherBenefits", mapToYesNo(question))
+                },
+                benefits.reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItems).map{
+                    amount => showRow("checkYourBenefits.otherBenefitsAmount", bigDecimalCurrency(amount.toString))
                 }
             ).flatten
 
@@ -217,11 +327,20 @@
         <h2 class="govuk-label--m govuk-!-margin-top-9">@messages("checkYourBenefits.assetsSubheading")</h2>
         @{
             val rows: Seq[SummaryListRow] = Seq(
-                benefits.assets.map{
-                BigDecimal => showRows("checkYourBenefits.assets", benefits.assets)
+                benefits.incomeTaxAndCostsModel.flatMap(_.sectionQuestion).map{
+                    question => showRow("checkYourBenefits.assetsSubheading", mapToYesNo(question))
                 },
-                benefits.assetTransfer.map{
-                BigDecimal => showRows("checkYourBenefits.assetTransfers", benefits.assetTransfer)
+                benefits.assetsModel.flatMap(_.assetsQuestion).map{
+                    question => showRow("checkYourBenefits.assets", mapToYesNo(question))
+                },
+                benefits.assetsModel.flatMap(_.assets).map{
+                    amount => showRow("checkYourBenefits.assetsAmount", bigDecimalCurrency(amount.toString))
+                },
+                benefits.assetsModel.flatMap(_.assetTransferQuestion).map{
+                    question => showRow("checkYourBenefits.assetTransfers", mapToYesNo(question))
+                },
+                benefits.assetsModel.flatMap(_.assetTransfer).map{
+                    amount => showRow("checkYourBenefits.assetTransfersAmount", bigDecimalCurrency(amount.toString))
                 }
             ).flatten
 

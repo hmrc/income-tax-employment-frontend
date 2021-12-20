@@ -16,6 +16,7 @@
 
 package controllers.employment
 
+import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import common.SessionValues
 import config.MockEmploymentSessionService
 import play.api.http.Status._
@@ -40,21 +41,18 @@ class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp with Mo
     ec
   )
 
-  val taxYear:Int = mockAppConfig.defaultTaxYear
-  val employmentId:String = "223/AB12399"
+  private val taxYear: Int = mockAppConfig.defaultTaxYear
+  private val employmentId: String = "223/AB12399"
 
   ".show" should {
-
     "render Employment And Benefits page when GetEmploymentDataModel is in mongo" which {
-
       s"has an OK($OK) status" in new TestWithAuth {
-
-        val name: String = employmentsModel.hmrcEmploymentData.head.employerName
-        val employmentId: String = employmentsModel.hmrcEmploymentData.head.employmentId
-        val benefitsIsDefined: Boolean = employmentsModel.hmrcEmploymentData.head.employmentBenefits.isDefined
+        val name: String = anEmploymentSource.employerName
+        val employmentId: String = anEmploymentSource.employmentId
+        val benefitsIsDefined: Boolean = anEmploymentSource.employmentBenefits.isDefined
 
         val result: Future[Result] = {
-          mockFind(taxYear,Ok(view(name, employmentId, benefitsIsDefined, taxYear, isInYear = true,doExpensesExist=true,isSingleEmployment = true)))
+          mockFind(taxYear, Ok(view(name, employmentId, benefitsIsDefined, taxYear, isInYear = true, doExpensesExist = true, isSingleEmployment = true)))
           controller.show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))
@@ -66,7 +64,7 @@ class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp with Mo
 
     "redirect the User to the Overview page no data in mongo" which {
 
-      s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth{
+      s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
         val result: Future[Result] = {
           mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
           controller.show(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))

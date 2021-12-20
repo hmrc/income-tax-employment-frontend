@@ -124,10 +124,15 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val returnToEmploymentSummaryText: String = "Return to employment summary"
     val returnToEmploymentSummaryLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employment-summary"
     val fieldNames = Seq(
+      "Employment expenses",
       "Business travel and overnight stays",
+      "Amount for business travel and overnight stays",
       "Uniforms, work clothes, or tools",
+      "Amount for uniforms, work clothes, or tools",
       "Professional fees and subscriptions",
-      "Other expenses",
+      "Amount for professional fees and subscriptions",
+      "Other equipment",
+      "Amount for other equipment",
     )
     val yes: String = "Yes"
     val no: String = "No"
@@ -153,10 +158,15 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val returnToEmploymentSummaryLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employment-summary"
 
     val fieldNames = Seq(
+      "Employment expenses",
       "Business travel and overnight stays",
+      "Amount for business travel and overnight stays",
       "Uniforms, work clothes, or tools",
+      "Amount for uniforms, work clothes, or tools",
       "Professional fees and subscriptions",
-      "Other expenses",
+      "Amount for professional fees and subscriptions",
+      "Other equipment",
+      "Amount for other equipment",
     )
     val yes: String = "Yes"
     val no: String = "No"
@@ -284,7 +294,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           implicit lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData, nino, taxYear)
+            val employmentExpenses = anEmploymentExpenses.copy(expenses = Some(anExpenses.copy(professionalSubscriptions = None)))
+            userDataStub(IncomeTaxUserData(Some(anAllEmploymentData.copy(hmrcExpenses = Some(employmentExpenses)))), nino, taxYear)
             urlGet(url(), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -298,14 +309,22 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           welshToggleCheck(user.isWelsh)
 
           textOnPageCheck(user.commonExpectedResults.fieldNames.head, summaryListRowFieldNameSelector(1))
-          textOnPageCheck("£200", summaryListRowFieldAmountSelector(1))
+          textOnPageCheck("Yes", summaryListRowFieldAmountSelector(1), "for section question")
           textOnPageCheck(user.commonExpectedResults.fieldNames(1), summaryListRowFieldNameSelector(2))
-          textOnPageCheck("£300", summaryListRowFieldAmountSelector(2))
+          textOnPageCheck("Yes", summaryListRowFieldAmountSelector(2), "for jobExpensesQuestion")
           textOnPageCheck(user.commonExpectedResults.fieldNames(2), summaryListRowFieldNameSelector(3))
-          textOnPageCheck("£400", summaryListRowFieldAmountSelector(3))
+          textOnPageCheck("£200", summaryListRowFieldAmountSelector(3))
           textOnPageCheck(user.commonExpectedResults.fieldNames(3), summaryListRowFieldNameSelector(4))
-          textOnPageCheck("£600", summaryListRowFieldAmountSelector(4))
-          buttonCheck(user.commonExpectedResults.returnToEmploymentSummaryText, Selectors.returnToEmploymentSummarySelector)
+          textOnPageCheck("Yes", summaryListRowFieldAmountSelector(4), "for flatRateJobExpensesQuestion")
+          textOnPageCheck(user.commonExpectedResults.fieldNames(4), summaryListRowFieldNameSelector(5))
+          textOnPageCheck("£300", summaryListRowFieldAmountSelector(5))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(5), summaryListRowFieldNameSelector(6))
+          textOnPageCheck("No", summaryListRowFieldAmountSelector(6), "for professionalSubscriptionsQuestion")
+          textOnPageCheck(user.commonExpectedResults.fieldNames(7), summaryListRowFieldNameSelector(7))
+          textOnPageCheck("Yes", summaryListRowFieldAmountSelector(7), "otherAndCapitalAllowancesQuestion")
+          textOnPageCheck(user.commonExpectedResults.fieldNames(8), summaryListRowFieldNameSelector(8))
+          textOnPageCheck("£600", summaryListRowFieldAmountSelector(8))
+          buttonCheck(user.commonExpectedResults.returnToEmploymentSummaryText, returnToEmploymentSummarySelector)
         }
 
         "return a fully populated page when all the fields are populated at the end of the year" which {
@@ -455,15 +474,26 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           textOnPageCheck(user.specificExpectedResults.get.expectedContentMultiple, contentSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetText(taxYear), insetTextSelector)
           welshToggleCheck(user.isWelsh)
+
           textOnPageCheck(user.commonExpectedResults.fieldNames.head, summaryListRowFieldNameSelector(1))
-          textOnPageCheck("£200", summaryListRowFieldAmountSelector(1))
+          textOnPageCheck("Yes", summaryListRowFieldAmountSelector(1), "for section question")
           textOnPageCheck(user.commonExpectedResults.fieldNames(1), summaryListRowFieldNameSelector(2))
-          textOnPageCheck("£300", summaryListRowFieldAmountSelector(2))
+          textOnPageCheck("Yes", summaryListRowFieldAmountSelector(2), "for jobExpensesQuestion")
           textOnPageCheck(user.commonExpectedResults.fieldNames(2), summaryListRowFieldNameSelector(3))
-          textOnPageCheck("£400", summaryListRowFieldAmountSelector(3))
+          textOnPageCheck("£200", summaryListRowFieldAmountSelector(3))
           textOnPageCheck(user.commonExpectedResults.fieldNames(3), summaryListRowFieldNameSelector(4))
-          textOnPageCheck("£600", summaryListRowFieldAmountSelector(4))
-          buttonCheck(user.commonExpectedResults.returnToEmploymentSummaryText, Selectors.returnToEmploymentSummarySelector)
+          textOnPageCheck("Yes", summaryListRowFieldAmountSelector(4), "for flatRateJobExpensesQuestion")
+          textOnPageCheck(user.commonExpectedResults.fieldNames(4), summaryListRowFieldNameSelector(5))
+          textOnPageCheck("£300", summaryListRowFieldAmountSelector(5))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(5), summaryListRowFieldNameSelector(6))
+          textOnPageCheck("Yes", summaryListRowFieldAmountSelector(6), "for professionalSubscriptionsQuestion")
+          textOnPageCheck(user.commonExpectedResults.fieldNames(6), summaryListRowFieldNameSelector(7))
+          textOnPageCheck("£400", summaryListRowFieldAmountSelector(7))
+          textOnPageCheck(user.commonExpectedResults.fieldNames(7), summaryListRowFieldNameSelector(8))
+          textOnPageCheck("Yes", summaryListRowFieldAmountSelector(8), "otherAndCapitalAllowancesQuestion")
+          textOnPageCheck(user.commonExpectedResults.fieldNames(8), summaryListRowFieldNameSelector(9))
+          textOnPageCheck("£600", summaryListRowFieldAmountSelector(9))
+          buttonCheck(user.commonExpectedResults.returnToEmploymentSummaryText, returnToEmploymentSummarySelector)
         }
 
         "return a fully populated page with correct paragraph text when there are multiple employments and its end of year" which {

@@ -155,7 +155,6 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
     Some(employmentsModel)
   )
 
-
   lazy val employmentsModel: AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(
       EmploymentSource(

@@ -17,6 +17,8 @@
 package controllers.employment
 
 import audit.{AmendEmploymentExpensesUpdateAudit, AuditEmploymentExpensesData, AuditNewEmploymentExpensesData, CreateNewEmploymentExpensesAudit}
+import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import common.SessionValues
 import config.{MockAuditService, MockEmploymentSessionService}
 import controllers.expenses.CheckEmploymentExpensesController
@@ -57,11 +59,10 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
   val taxYear = 2022
 
   "calling show() as an individual" should {
-
     "return status code 303 with correct Location header" when {
       "there is no expenses data in the database" in new TestWithAuth {
         val responseF: Future[Result] = {
-          mockFind(taxYear,Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+          mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
           controller.show(taxYear)(fakeRequest)
         }
 
@@ -72,7 +73,6 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
 
     "return status code 200 with correct content" when {
       "there is expenses data in the database" in new TestWithAuth {
-
         val request: FakeRequest[AnyContentAsEmpty.type] =
           fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString,
@@ -81,22 +81,20 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
           )
 
         val responseF: Future[Result] = {
-          mockFind(taxYear,Ok(view(taxYear, employmentsModel.hmrcExpenses.get.expenses.get, isInYear = true, isMultipleEmployments = true)))
+          mockFind(taxYear, Ok(view(taxYear, anExpensesViewModel, isInYear = true, isMultipleEmployments = true)))
           controller.show(taxYear)(request)
         }
 
         status(responseF) shouldBe OK
       }
     }
-
   }
 
   "calling show() as an agent" should {
-
     "return status code 303 with correct Location header" when {
       "there is no expenses data in the database" in new TestWithAuth(isAgent = true) {
         val responseF: Future[Result] = {
-          mockFind(taxYear,Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+          mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
           controller.show(taxYear)(fakeRequestWithMtditidAndNino)
         }
 
@@ -108,24 +106,21 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
     "return status code 200 with correct content" when {
       "there is expenses data in the database" in new TestWithAuth(isAgent = true) {
         val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequestWithMtditidAndNino
-
         val responseF: Future[Result] = {
-          mockFind(taxYear,Ok(view(taxYear, employmentsModel.hmrcExpenses.get.expenses.get, isInYear = true, isMultipleEmployments = true)))
+          mockFind(taxYear, Ok(view(taxYear, anExpensesViewModel, isInYear = true, isMultipleEmployments = true)))
           controller.show(taxYear)(request)
         }
 
         status(responseF) shouldBe OK
       }
     }
-
   }
+
   "calling performSubmitAudit" should {
     "send the audit events from the model when it's a create" in {
-
       val model: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(
         Some(true),
         expenses)
-
       val prior = None
 
       verifyAuditEvent(CreateNewEmploymentExpensesAudit(
@@ -140,16 +135,14 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
     }
 
     "send the audit events from the model when it's a create and theres existing data" in {
-
       val model: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(
         Some(true),
         expenses)
 
-      val prior: AllEmploymentData = employmentsModel.copy(
+      val prior: AllEmploymentData = anAllEmploymentData.copy(
         hmrcExpenses = None,
         customerExpenses = None
       )
-
 
       verifyAuditEvent(CreateNewEmploymentExpensesAudit(
         taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, AuditNewEmploymentExpensesData(
@@ -161,23 +154,20 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
       ).toAuditModel)
       await(controller.performSubmitAudits(model, taxYear, Some(prior))) shouldBe AuditResult.Success
     }
-
   }
 
   "send the audit events from the model when it's a amend and there is existing data" in {
-
     val model: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(Some(true),
       expenses)
-
     val priorCustomerEmploymentExpenses = employmentExpenses.copy(
-      expenses = Some ( this.expenses.copy(
+      expenses = Some(this.expenses.copy(
         jobExpenses = Some(0.0),
         flatRateJobExpenses = Some(0.0),
         professionalSubscriptions = Some(0.0),
         otherAndCapitalAllowances = Some(0.0)
-      ) ))
+      )))
 
-    val prior: AllEmploymentData = employmentsModel.copy(
+    val prior: AllEmploymentData = anAllEmploymentData.copy(
       hmrcExpenses = None,
       customerExpenses = Some(
         priorCustomerEmploymentExpenses
@@ -202,5 +192,4 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
     ).toAuditModel)
     await(controller.performSubmitAudits(model, taxYear, Some(prior))) shouldBe AuditResult.Success
   }
-
 }

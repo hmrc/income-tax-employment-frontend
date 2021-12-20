@@ -119,7 +119,7 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
     val isSingleEmployment: Boolean = employmentSource.length == 1
 
     if (isInYear) {
-      Ok(checkYourBenefitsView(taxYear, benefits, isSingleEmployment, employmentId))
+      Ok(checkYourBenefitsView(taxYear, benefits.toBenefitsViewModel(isUsingCustomerData, cyaBenefits = cya), isSingleEmployment, employmentId))
     } else {
       Ok(checkYourBenefitsViewEOY(taxYear, benefits.toBenefitsViewModel(isUsingCustomerData, cyaBenefits = cya), employmentId, isUsingCustomerData))
     }
