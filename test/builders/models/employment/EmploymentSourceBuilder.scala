@@ -34,29 +34,4 @@ object EmploymentSourceBuilder {
     employmentData = Some(anEmploymentData),
     employmentBenefits = Some(anEmploymentBenefits)
   )
-
-  val multipleEmploymentSources: Seq[EmploymentSource] = Seq(EmploymentSource(
-    employmentId = "001",
-    employerName = "maggie",
-    employerRef = Some("223/AB12399"),
-    payrollId = Some("12345678"),
-    startDate = Some("2019-04-21"),
-    cessationDate = Some("2020-03-11"),
-    dateIgnored = None,
-    submittedOn = Some("2020-01-04T05:01:01Z"),
-    employmentData = Some(anEmploymentData),
-    employmentBenefits = Some(anEmploymentBenefits)
-  ),
-    EmploymentSource(
-      employmentId = "002",
-      employerName = "dave",
-      employerRef = Some("223/AB12399"),
-      payrollId = Some("12345693"),
-      startDate = Some("2018-04-18"),
-      cessationDate = Some("2020-03-11"),
-      dateIgnored = None,
-      submittedOn = Some("2020-01-04T05:01:01Z"),
-      employmentData = Some(anEmploymentData),
-      employmentBenefits = Some(anEmploymentBenefits)
-    ))
 }

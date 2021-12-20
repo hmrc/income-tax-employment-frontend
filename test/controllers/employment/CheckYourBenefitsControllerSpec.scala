@@ -16,6 +16,8 @@
 
 package controllers.employment
 
+import builders.models.benefits.BenefitsBuilder.aBenefits
+import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import common.SessionValues
 import config.{MockAuditService, MockEmploymentSessionService}
 import play.api.http.Status._
@@ -54,7 +56,7 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockEmploymen
 
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {
-          mockFind(taxYear, Ok(view(taxYear, employmentsModel.hmrcEmploymentData.head.employmentBenefits.get.benefits.get, isSingleEmployment = true, employmentId)))
+          mockFind(taxYear, Ok(view(taxYear, aBenefitsViewModel, isSingleEmployment = true, employmentId)))
           controller.show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))
@@ -68,7 +70,7 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockEmploymen
 
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {
-          mockFind(taxYear, Ok(viewEOY(taxYear, employmentsModel.hmrcEmploymentData.head.employmentBenefits.get.benefits.get.toBenefitsViewModel(true),
+          mockFind(taxYear, Ok(viewEOY(taxYear, aBenefits.toBenefitsViewModel(isUsingCustomerData = true),
             employmentId = employmentId, isUsingCustomerData = true)))
           controller.show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString

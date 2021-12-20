@@ -19,7 +19,7 @@ package controllers.employment
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.UserBuilder.aUserRequest
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.employment.EmploymentSourceBuilder.{anEmploymentSource, multipleEmploymentSources}
+import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import builders.models.employment.PayBuilder.aPay
 import builders.models.employment.StudentLoansBuilder.aStudentLoans
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
@@ -453,7 +453,15 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = multipleEmploymentSources))), nino, taxYear)
+            val multipleSources = Seq(
+              anEmploymentSource,
+              anEmploymentSource.copy(
+                employmentId = "002",
+                employerName = "dave",
+                payrollId = Some("12345693"),
+                startDate = Some("2018-04-18"),
+              ))
+            userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = multipleSources))), nino, taxYear)
             urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 

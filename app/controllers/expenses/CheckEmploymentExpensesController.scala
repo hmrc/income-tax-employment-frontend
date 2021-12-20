@@ -108,7 +108,7 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
     auditService.sendAudit[ViewEmploymentExpensesAudit](auditModel.toAuditModel)
 
     if (isInYear) {
-      Ok(checkEmploymentExpensesView(taxYear, expenses, isInYear, isMultipleEmployments))
+      Ok(checkEmploymentExpensesView(taxYear, expenses.toExpensesViewModel(isUsingCustomerData, cyaExpenses = cya), isInYear, isMultipleEmployments))
     } else {
       Ok(checkEmploymentExpensesViewEOY(taxYear, expenses.toExpensesViewModel(isUsingCustomerData, cyaExpenses = cya), isInYear, isMultipleEmployments))
 

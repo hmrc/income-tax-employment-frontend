@@ -206,7 +206,7 @@
         val rows: Seq[SummaryListRow] =
             Seq(
                 benefits.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion).map{
-                    medicalInsuranceQuestion => showQuestionRow("checkYourBenefits.medicalIns", benefits.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion).getOrElse(false), MedicalDentalBenefitsController.show(taxYear, employmentId))
+                    medicalInsuranceQuestion => showQuestionRow("checkYourBenefits.medicalIns", medicalInsuranceQuestion, MedicalDentalBenefitsController.show(taxYear, employmentId))
                 },
                 benefits.medicalChildcareEducationModel.flatMap(_.medicalInsurance).map{
                     medicalInsurance => showRows("checkYourBenefits.medicalInsAmount", medicalInsurance, MedicalOrDentalBenefitsAmountController.show(taxYear, employmentId))
