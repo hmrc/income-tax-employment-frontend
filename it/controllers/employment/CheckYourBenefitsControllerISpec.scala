@@ -935,7 +935,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(common.assetTransfers, fieldNameSelector(20, 4))
           textOnPageCheck("Yes", fieldAmountSelector(20, 4), "for assetTransferQuestion")
           textOnPageCheck(common.assetTransfersAmount, fieldNameSelector(20, 5))
-          textOnPageCheck("£280000", fieldAmountSelector(20, 5))
+          textOnPageCheck("£280,000", fieldAmountSelector(20, 5))
           buttonCheck(common.returnToEmploymentSummaryText, Selectors.returnToEmploymentSummarySelector)
           welshToggleCheck(user.isWelsh)
         }
@@ -1101,7 +1101,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(common.assetTransfers, fieldNameSelector(20, 4))
           textOnPageCheck("Yes", fieldAmountSelector(20, 4), "for assetTransferQuestion")
           textOnPageCheck(common.assetTransfersAmount, fieldNameSelector(20, 5))
-          textOnPageCheck("£280000", fieldAmountSelector(20, 5))
+          textOnPageCheck("£280,000", fieldAmountSelector(20, 5))
           buttonCheck(common.returnToEmployerText, Selectors.returnToEmployerSelector)
           welshToggleCheck(user.isWelsh)
         }
@@ -1206,7 +1206,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           changeAmountRowCheck(common.assets, common.yes, 19, 2, s"${common.changeText} ${specific.assetsHiddenText}", assetsBenefitsHref)
           changeAmountRowCheck(common.assetsAmount, "£27", 19, 3, s"${common.changeText} ${specific.assetsAmountHiddenText}", assetsBenefitsAmountHref)
           changeAmountRowCheck(common.assetTransfers, common.yes, 19, 4, s"${common.changeText} ${specific.assetTransfersHiddenText}", assetTransfersBenefitsHref)
-          changeAmountRowCheck(common.assetTransfersAmount, "£280000", 19, 5, s"${common.changeText} ${specific.assetTransfersAmountHiddenText}", assetTransfersBenefitsAmountHref)
+          changeAmountRowCheck(common.assetTransfersAmount, "£280,000", 19, 5, s"${common.changeText} ${specific.assetTransfersAmountHiddenText}", assetTransfersBenefitsAmountHref)
 
           buttonCheck(common.saveAndContinue)
           welshToggleCheck(user.isWelsh)
