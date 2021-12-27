@@ -18,7 +18,6 @@ package controllers.predicates
 
 import common.{EnrolmentIdentifiers, EnrolmentKeys, SessionValues}
 import config.AppConfig
-import javax.inject.Inject
 import models.User
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -31,12 +30,12 @@ import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthorisedAction @Inject()(appConfig: AppConfig)
-                                (implicit val authService: AuthService,
-                                 val mcc: MessagesControllerComponents
-                                ) extends ActionBuilder[User, AnyContent] with I18nSupport {
+                                (implicit val authService: AuthService, val mcc: MessagesControllerComponents)
+  extends ActionBuilder[User, AnyContent] with I18nSupport {
 
   implicit val executionContext: ExecutionContext = mcc.executionContext
   lazy val logger: Logger = Logger.apply(this.getClass)
@@ -49,7 +48,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
 
   override def invokeBlock[A](request: Request[A], block: User[A] => Future[Result]): Future[Result] = {
 
-    implicit lazy val headerCarrier: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request,request.session)
+    implicit lazy val headerCarrier: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     authService.authorised.retrieve(affinityGroup) {
       case Some(AffinityGroup.Agent) => agentAuthentication(block)(request, headerCarrier)

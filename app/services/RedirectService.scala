@@ -707,15 +707,13 @@ object RedirectService extends Logging {
   def redirectBasedOnCurrentAnswers(taxYear: Int, employmentId: String, data: Option[EmploymentUserData], employmentType: EmploymentType)
                                    (cyaConditions: EmploymentCYAModel => Seq[ConditionalRedirect])
                                    (block: EmploymentUserData => Future[Result]): Future[Result] = {
-    val redirect = calculateRedirect(taxYear, employmentId, data, employmentType, cyaConditions)
-
-    redirect match {
+    calculateRedirect(taxYear, employmentId, data, employmentType, cyaConditions) match {
       case Left(redirect) => Future.successful(redirect)
-      case Right(cya) => block(cya)
+      case Right(cya: EmploymentUserData) => block(cya)
     }
   }
 
-  private def calculateRedirect(taxYear: Int, employmentId: String, data: Option[EmploymentUserData], employmentType: EmploymentType,
+  def calculateRedirect(taxYear: Int, employmentId: String, data: Option[EmploymentUserData], employmentType: EmploymentType,
                                 cyaConditions: EmploymentCYAModel => Seq[ConditionalRedirect]): Either[Result, EmploymentUserData] = {
     data match {
       case Some(cya) =>

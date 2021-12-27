@@ -18,6 +18,7 @@
 @import views.html.templates.helpers.ErrorSummary
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.InputRadio
+@import models.EmploymentUserDataRequest
 
 @this(
      layout: Layout,
@@ -27,7 +28,7 @@
      button: Button
 )
 
-@(form: Form[Boolean], taxYear: Int, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[Boolean], taxYear: Int, employmentId: String, user: User[_])(implicit employmentUserDataRequest: EmploymentUserDataRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleForUse = @{messages(s"benefits.accommodationRelocation.title.${if(user.isAgent) "agent" else "individual"}")}
 @headingForUse = @{titleForUse}
