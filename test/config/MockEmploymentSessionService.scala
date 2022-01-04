@@ -18,13 +18,14 @@ package config
 
 import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import models.employment.{AllEmploymentData, EmploymentSource}
-import models.mongo.EmploymentUserData
+import models.mongo.{EmploymentCYAModel, EmploymentUserData, ExpensesCYAModel, ExpensesUserData}
 import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData, User}
-import org.scalamock.handlers.{CallHandler2, CallHandler3, CallHandler5, CallHandler6}
+import org.scalamock.handlers._
 import org.scalamock.scalatest.MockFactory
 import play.api.mvc.{Request, Result}
 import services.{CreateOrAmendExpensesService, EmploymentSessionService}
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.Clock
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -105,5 +106,31 @@ trait MockEmploymentSessionService extends MockFactory {
     (mockEmploymentSessionService.getSessionDataAndReturnResult(_: Int, _: String)(_: String)(_: EmploymentUserData => Future[Result])(_: User[_]))
       .expects(taxYear, employmentId, *, *, *)
       .returns(Future(result))
+  }
+
+  def mockCreateOrUpdateUserDataWith(taxYear: Int,
+                                     employmentId: String,
+                                     isPriorSubmission: Boolean,
+                                     hasPriorBenefits: Boolean,
+                                     employmentCYAModel: EmploymentCYAModel,
+                                     result: Either[Unit, EmploymentUserData])
+                                    (implicit executionContext: ExecutionContext): CallHandler7[Int, String, Boolean, Boolean, EmploymentCYAModel, User[_], Clock,
+    Future[Either[Unit, EmploymentUserData]]] = {
+    (mockEmploymentSessionService.createOrUpdateEmploymentUserDataWith(_: Int, _: String, _: Boolean, _: Boolean, _: EmploymentCYAModel)(_: User[_], _: Clock))
+      .expects(taxYear, employmentId, isPriorSubmission, hasPriorBenefits, employmentCYAModel, *, *)
+      .returns(Future(result))
+      .once()
+  }
+
+  def mockCreateOrUpdateUserDataWith(taxYear: Int,
+                                     isPriorSubmission: Boolean,
+                                     hasPriorExpenses: Boolean,
+                                     expensesCYAModel: ExpensesCYAModel,
+                                     result: Either[Unit, ExpensesUserData])
+                                    (implicit ec: ExecutionContext): CallHandler6[Int, Boolean, Boolean, ExpensesCYAModel, User[_], Clock, Future[Either[Unit, ExpensesUserData]]] = {
+    (mockEmploymentSessionService.createOrUpdateExpensesUserDataWith(_: Int, _: Boolean, _: Boolean, _: ExpensesCYAModel)(_: User[_], _: Clock))
+      .expects(taxYear, isPriorSubmission, hasPriorExpenses, expensesCYAModel, *, *)
+      .returns(Future(result))
+      .once()
   }
 }

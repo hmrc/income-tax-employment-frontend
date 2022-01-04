@@ -16,21 +16,19 @@
 
 package controllers.employment
 
-import audit._
 import common.SessionValues
 import config.{AppConfig, ErrorHandler}
-import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import controllers.employment.routes.CheckEmploymentDetailsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.User
 import models.employment._
-import models.employment.createUpdate.CreateUpdateEmploymentRequest
 import models.mongo.EmploymentCYAModel
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{EmploymentSessionService, NrsService, RedirectService}
-import uk.gov.hmrc.play.audit.http.connector.AuditResult
+import services.EmploymentSessionService
+import services.RedirectService.employmentDetailsRedirect
+import services.employment.CheckEmploymentDetailsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.CheckEmploymentDetailsView
@@ -44,162 +42,93 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
                                                  inYearAction: InYearAction,
                                                  appConfig: AppConfig,
                                                  employmentSessionService: EmploymentSessionService,
-                                                 nrsService: NrsService,
-                                                 auditService: AuditService,
+                                                 checkEmploymentDetailsService: CheckEmploymentDetailsService,
                                                  ec: ExecutionContext,
                                                  errorHandler: ErrorHandler,
-                                                 clock: Clock) extends FrontendController(cc)
-  with I18nSupport with SessionHelper with Logging {
+                                                 clock: Clock
+                                                ) extends FrontendController(cc) with I18nSupport with SessionHelper with Logging {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
-
-    val isInYear: Boolean = inYearAction.inYear(taxYear)
-
-    def inYearResult(allEmploymentData: AllEmploymentData): Result = {
-      employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear) match {
-        case Some((source, isUsingCustomerData)) =>
-          performAuditAndRenderView(source.toEmploymentDetailsViewModel(isUsingCustomerData), taxYear, isInYear, Some(allEmploymentData))
-        case None =>
-          logger.info(s"[CheckEmploymentDetailsController][inYearResult] No prior employment data exists with employmentId." +
-            s"Redirecting to overview page. SessionId: ${user.sessionId}")
-          Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+    if (inYearAction.inYear(taxYear)) {
+      employmentSessionService.findPreviousEmploymentUserData(user, taxYear) { employmentData =>
+        employmentSessionService.employmentSourceToUse(employmentData, employmentId, inYearAction.inYear(taxYear)) match {
+          case Some((source, isUsingCustomerData)) =>
+            val viewModel = source.toEmploymentDetailsViewModel(isUsingCustomerData)
+            val isSingleEmploymentValue = checkEmploymentDetailsService
+              .isSingleEmploymentAndAudit(viewModel, taxYear, inYearAction.inYear(taxYear), Some(employmentData))
+            Ok(employmentDetailsView(viewModel, taxYear, inYearAction.inYear(taxYear), isSingleEmploymentValue))
+          case None =>
+            logger.info(s"[CheckEmploymentDetailsController][inYearResult] No prior employment data exists with employmentId." +
+              s"Redirecting to overview page. SessionId: ${user.sessionId}")
+            Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        }
       }
-    }
-
-    def saveCYAAndReturnEndOfYearResult(allEmploymentData: AllEmploymentData): Future[Result] = {
-      employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear) match {
-        case Some((source, isUsingCustomerData)) =>
-          employmentSessionService.createOrUpdateSessionData(employmentId, EmploymentCYAModel.apply(source, isUsingCustomerData),
-            taxYear, isPriorSubmission = true, source.hasPriorBenefits
-          )(errorHandler.internalServerError()) {
-            performAuditAndRenderView(source.toEmploymentDetailsViewModel(isUsingCustomerData), taxYear, isInYear, Some(allEmploymentData))
-          }
-
-        case None =>
-          logger.info(s"[CheckEmploymentDetailsController][saveCYAAndReturnEndOfYearResult] No prior employment data exists with employmentId." +
-            s"Redirecting to overview page. SessionId: ${user.sessionId}")
-          Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-      }
-    }
-
-    if (isInYear) {
-      employmentSessionService.findPreviousEmploymentUserData(user, taxYear)(inYearResult)
     } else {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
-          case Some(cya) =>
-            if (!cya.isPriorSubmission && !cya.employment.employmentDetails.isFinished) {
-              Future.successful(RedirectService.employmentDetailsRedirect(cya.employment, taxYear, employmentId, cya.isPriorSubmission))
-            } else {
-              prior match {
-                case Some(employment) => Future.successful(performAuditAndRenderView(cya.employment.toEmploymentDetailsView(
-                  employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld), taxYear, isInYear, Some(employment)))
-                case None => Future.successful(performAuditAndRenderView(cya.employment.toEmploymentDetailsView(
-                  employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld), taxYear, isInYear, None))
+          case Some(cya) => if (!cya.isPriorSubmission && !cya.employment.employmentDetails.isFinished) {
+            Future.successful(employmentDetailsRedirect(cya.employment, taxYear, employmentId, cya.isPriorSubmission))
+          } else {
+            prior match {
+              case Some(employment) => Future.successful {
+                val viewModel = cya.employment.toEmploymentDetailsView(employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld)
+                val isSingleEmploymentValue = checkEmploymentDetailsService
+                  .isSingleEmploymentAndAudit(viewModel, taxYear, inYearAction.inYear(taxYear), Some(employment))
+                Ok(employmentDetailsView(viewModel, taxYear, inYearAction.inYear(taxYear), isSingleEmploymentValue))
+              }
+              case None => Future.successful {
+                val viewModel = cya.employment.toEmploymentDetailsView(employmentId, !cya.employment.employmentDetails.currentDataIsHmrcHeld)
+                val isSingleEmploymentValue = checkEmploymentDetailsService
+                  .isSingleEmploymentAndAudit(viewModel, taxYear, inYearAction.inYear(taxYear), None)
+                Ok(employmentDetailsView(viewModel, taxYear, inYearAction.inYear(taxYear), isSingleEmploymentValue))
               }
             }
-          case None =>
-            prior.fold(Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))) {
-              saveCYAAndReturnEndOfYearResult
-            }
+          }
+          case None => prior.fold(Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))) { employmentData =>
+            saveCYAAndReturnEndOfYearResult(taxYear, employmentId, employmentData)
+          }
         }
       }
     }
   }
 
-  def performAuditAndRenderView(employmentDetails: EmploymentDetailsViewModel, taxYear: Int, isInYear: Boolean, allEmploymentData: Option[AllEmploymentData])(implicit user: User[AnyContent]): Result = {
-    val auditModel = ViewEmploymentDetailsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, employmentDetails)
-    auditService.sendAudit[ViewEmploymentDetailsAudit](auditModel.toAuditModel)
-
-    val employmentSource: Seq[EmploymentSource] = allEmploymentData match {
-      case Some(allEmploymentData) => employmentSessionService.getLatestEmploymentData(allEmploymentData, isInYear)
-      case None => Seq[EmploymentSource]()
-    }
-
-    val isSingleEmployment: Boolean = employmentSource.length <= 1
-    Ok(employmentDetailsView(employmentDetails, taxYear, isInYear, isSingleEmployment))
-  }
-
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
-
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
-          case Some(cya) =>
-
-            employmentSessionService.createModelAndReturnResult(cya, prior, taxYear) {
-              model =>
-
-                employmentSessionService.createOrUpdateEmploymentResult(taxYear, model).flatMap {
-                  case Left(result) =>
-                    Future.successful(result)
-                  case Right(result) =>
-                    performSubmitAudits(model, employmentId, taxYear, prior)
-
-                    if (appConfig.nrsEnabled) {
-                      performSubmitNrsPayload(model, employmentId, prior)
-                    }
-
-                    employmentSessionService.clear(taxYear, employmentId)(
-                      result.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)
-                    )
+          case Some(cya) => employmentSessionService.createModelAndReturnResult(cya, prior, taxYear) { model =>
+            employmentSessionService.createOrUpdateEmploymentResult(taxYear, model).flatMap {
+              case Left(result) => Future.successful(result)
+              case Right(result) => checkEmploymentDetailsService.performSubmitAudits(model, employmentId, taxYear, prior)
+                if (appConfig.nrsEnabled) {
+                  checkEmploymentDetailsService.performSubmitNrsPayload(model, employmentId, prior)
                 }
+                employmentSessionService.clear(taxYear, employmentId)(result.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID))
             }
+          }
           case None => Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
         }
       }
     }
   }
 
-  def performSubmitAudits(model: CreateUpdateEmploymentRequest, employmentId: String, taxYear: Int,
-                          prior: Option[AllEmploymentData])(implicit user: User[_]): Future[AuditResult] = {
+  def saveCYAAndReturnEndOfYearResult(taxYear: Int, employmentId: String, allEmploymentData: AllEmploymentData)
+                                     (implicit user: User[AnyContent]): Future[Result] = {
+    employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, inYearAction.inYear(taxYear)) match {
+      case Some((source, isUsingCustomerData)) =>
+        employmentSessionService.createOrUpdateSessionData(employmentId, EmploymentCYAModel.apply(source, isUsingCustomerData),
+          taxYear, isPriorSubmission = true, source.hasPriorBenefits
+        )(errorHandler.internalServerError()) {
+          val viewModel = source.toEmploymentDetailsViewModel(isUsingCustomerData)
+          val isSingleEmploymentValue = checkEmploymentDetailsService
+            .isSingleEmploymentAndAudit(viewModel, taxYear, inYearAction.inYear(taxYear), Some(allEmploymentData))
+          Ok(employmentDetailsView(viewModel, taxYear, inYearAction.inYear(taxYear), isSingleEmploymentValue))
+        }
 
-    val audit: Either[AuditModel[AmendEmploymentDetailsUpdateAudit], AuditModel[CreateNewEmploymentDetailsAudit]] = prior.flatMap {
-      prior =>
-        val priorData = employmentSessionService.employmentSourceToUse(prior, employmentId, isInYear = false)
-        priorData.map(prior => model.toAmendAuditModel(employmentId, taxYear, prior._1).toAuditModel)
-    }.map(Left(_)).getOrElse {
-
-      val existingEmployments = prior.map {
-        prior =>
-          employmentSessionService.getLatestEmploymentData(prior, isInYear = false).map {
-            employment =>
-              PriorEmploymentAuditInfo(employment.employerName, employment.employerRef)
-          }
-      }.getOrElse(Seq.empty)
-
-      Right(model.toCreateAuditModel(taxYear, existingEmployments = existingEmployments).toAuditModel)
-    }
-
-    audit match {
-      case Left(amend) => auditService.sendAudit(amend)
-      case Right(create) => auditService.sendAudit(create)
-    }
-  }
-
-  def performSubmitNrsPayload(model: CreateUpdateEmploymentRequest, employmentId: String, prior: Option[AllEmploymentData])
-                             (implicit user: User[_]): Future[NrsSubmissionResponse] = {
-
-    val nrsPayload: Either[DecodedAmendEmploymentDetailsPayload, DecodedCreateNewEmploymentDetailsPayload] = prior.flatMap {
-      prior =>
-        val priorData = employmentSessionService.employmentSourceToUse(prior, employmentId, isInYear = false)
-        priorData.map(prior => model.toAmendDecodedPayloadModel(employmentId, prior._1))
-    }.map(Left(_)).getOrElse {
-
-      val existingEmployments = prior.map {
-        prior =>
-          employmentSessionService.getLatestEmploymentData(prior, isInYear = false).map {
-            employment =>
-              DecodedPriorEmploymentInfo(employment.employerName, employment.employerRef)
-          }
-      }.getOrElse(Seq.empty)
-
-      Right(model.toCreateDecodedPayloadModel(existingEmployments))
-    }
-
-    nrsPayload match {
-      case Left(amend) => nrsService.submit(user.nino, amend, user.mtditid)
-      case Right(create) => nrsService.submit(user.nino, create, user.mtditid)
+      case None =>
+        logger.info(s"[CheckEmploymentDetailsController][saveCYAAndReturnEndOfYearResult] No prior employment data exists with employmentId." +
+          s"Redirecting to overview page. SessionId: ${user.sessionId}")
+        Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     }
   }
 }

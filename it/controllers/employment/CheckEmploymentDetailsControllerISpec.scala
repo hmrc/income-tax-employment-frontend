@@ -41,8 +41,8 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val url = s"$appUrl/$taxYear/check-employment-details?employmentId=001"
-  private val employmentId = "001"
+  private val employmentId = "employmentId"
+  private val url = s"$appUrl/$taxYear/check-employment-details?employmentId=$employmentId"
 
   object Selectors {
     val headingSelector = "#main-content > div > div > header > h1"
@@ -109,9 +109,9 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employmentDates = s"$employmentStartDate to $employmentEndDate"
     val payeRef = "223/AB12399"
     val payReceived = "£100"
-    val payReceivedB = "£34,234.50"
+    val payReceivedB = "£34234.50"
     val taxTakenFromPay = "£200"
-    val taxTakenFromPayB = "£6,782.90"
+    val taxTakenFromPayB = "£6782.90"
     val stillWorkingYes = "Yes"
     val stillWorkingNo = "No"
     val payrollId = "12345678"
@@ -121,8 +121,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val changeLinkExpected = "Change"
     val continueButtonText = "Save and continue"
-    val continueButtonLink = "/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001"
-    val taxButtonLink = "/update-and-submit-income-tax-return/employment-income/2021/uk-tax?employmentId=001"
+    val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=" + employmentId
+    val taxButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/uk-tax?employmentId=" + employmentId
     val employerNameField1 = "Employer"
     val employmentStartDateField1 = "Employment start date"
     val stillWorkingForEmployerField1 = "Still working for your employer"
@@ -136,15 +136,15 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val returnToEmploymentSummaryText: String = "Return to employment summary"
     val returnToEmploymentSummaryLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employment-summary"
     val returnToEmployerText: String = "Return to employer"
-    val returnToEmployerLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employer-details-and-benefits?employmentId=001"
+    val returnToEmployerLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employer-details-and-benefits?employmentId=" + employmentId
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val changeLinkExpected = "Change"
     val continueButtonText = "Save and continue"
-    val continueButtonLink = "/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001"
-    val taxButtonLink = "/update-and-submit-income-tax-return/employment-income/2021/uk-tax?employmentId=001"
+    val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=" + employmentId
+    val taxButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/uk-tax?employmentId=" + employmentId
     val employerNameField1 = "Employer"
     val employmentStartDateField1 = "Employment start date"
     val stillWorkingForEmployerField1 = "Still working for your employer"
@@ -158,7 +158,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val returnToEmploymentSummaryText: String = "Return to employment summary"
     val returnToEmploymentSummaryLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employment-summary"
     val returnToEmployerText: String = "Return to employer"
-    val returnToEmployerLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employer-details-and-benefits?employmentId=001"
+    val returnToEmployerLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employer-details-and-benefits?employmentId=" + employmentId
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -250,7 +250,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val miniData: AllEmploymentData = AllEmploymentData(
       hmrcEmploymentData = Seq(
         EmploymentSource(
-          employmentId = "001",
+          employmentId = employmentId,
           employerName = "maggie",
           employerRef = None,
           payrollId = None,
@@ -287,7 +287,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val miniData: AllEmploymentData = AllEmploymentData(MinModel.miniData.hmrcEmploymentData, None,
       customerEmploymentData = Seq(
         EmploymentSource(
-          employmentId = "001",
+          employmentId = employmentId,
           employerName = "maggie",
           employerRef = None,
           payrollId = None,
@@ -322,7 +322,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val invalidData: AllEmploymentData = AllEmploymentData(
       hmrcEmploymentData = Seq(
         EmploymentSource(
-          employmentId = "001",
+          employmentId = employmentId,
           employerName = "maggie",
           employerRef = None,
           payrollId = None,
@@ -371,7 +371,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               "1234567890",
               "AA123456A",
               2021,
-              "001",
+              employmentId,
               isPriorSubmission = true,
               hasPriorBenefits = true,
               EmploymentCYAModel(
@@ -381,7 +381,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             ), User(mtditid, if (user.isAgent) Some("12345678") else None, nino, sessionId, if (user.isAgent) "Agent" else "Individual")(FakeRequest()))
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, 2021)
-            urlGet(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+            urlGet(s"$appUrl/2021/check-employment-details?employmentId=$employmentId", follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -658,7 +658,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, 2021)
-        urlGet(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+        urlGet(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
       }
 
       "has an SEE OTHER status" in {
@@ -689,7 +689,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           "1234567890",
           "AA123456A",
           2021,
-          "001",
+          employmentId,
           isPriorSubmission = false,
           hasPriorBenefits = true,
           EmploymentCYAModel(
@@ -699,7 +699,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         ), User(mtditid, None, nino, sessionId, "Individual")(FakeRequest()))
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, 2021)
-        urlGet(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+        urlGet(s"$appUrl/2021/check-employment-details?employmentId=$employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
       }
 
       "has an SEE OTHER status" in {
@@ -768,12 +768,12 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(anEmploymentUserData.copy(employment = employmentData).copy(employmentId = "001"), aUserRequest)
+        insertCyaData(anEmploymentUserData.copy(employment = employmentData).copy(employmentId = employmentId), aUserRequest)
         val customerEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(customerEmploymentData = customerEmploymentData))), nino, 2021)
 
         val model = CreateUpdateEmploymentRequest(
-          Some("001"),
+          Some(employmentId),
           Some(
             CreateUpdateEmployment(
               employmentData.employmentDetails.employerRef,
@@ -795,7 +795,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
           Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        urlPost(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
+        urlPost(s"$appUrl/2021/check-employment-details?employmentId=$employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
       }
 
       "has an SEE OTHER status" in {
@@ -810,7 +810,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(anEmploymentUserData.copy(employment = employmentData).copy(employmentId = "001"), aUserRequest)
+        insertCyaData(anEmploymentUserData.copy(employment = employmentData).copy(employmentId = employmentId), aUserRequest)
         val hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = hmrcEmploymentData))), nino, 2021)
 
@@ -832,13 +832,13 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               deductions = Some(Deductions(Some(aStudentLoans)))
             )
           ),
-          Some("001")
+          Some(employmentId)
         )
 
         stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
           Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        urlPost(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
+        urlPost(s"$appUrl/2021/check-employment-details?employmentId=$employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
       }
 
       "has an SEE OTHER status" in {
@@ -889,12 +889,12 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(anEmploymentUserData, aUserRequest)
         userDataStub(anIncomeTaxUserData, nino, 2021)
-        urlPost(s"$appUrl/2021/check-employment-details?employmentId=$employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
+        urlPost(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
       }
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckEmploymentDetailsController.show(2021, employmentId).url)
+        result.header("location") shouldBe Some(CheckEmploymentDetailsController.show(2021, "001").url)
       }
     }
   }

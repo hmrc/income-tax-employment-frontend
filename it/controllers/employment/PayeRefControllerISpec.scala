@@ -20,9 +20,11 @@ import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.UserBuilder.aUserRequest
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithDetails
 import models.User
 import models.employment.AllEmploymentData
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.mongo.EmploymentUserData
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -34,12 +36,13 @@ import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear - 1
-  val payeRef: String = "123/AA12345"
+  private val taxYearEOY: Int = taxYear - 1
+  private val payeRef: String = "123/AA12345"
+  private val employmentId = "employmentId"
 
-  def url(taxYear: Int): String = s"$appUrl/${taxYear.toString}/employer-paye-reference?employmentId=001"
+  def url(taxYear: Int): String = s"$appUrl/${taxYear.toString}/employer-paye-reference?employmentId=$employmentId"
 
-  val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=001"
+  private val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=" + employmentId
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   private val userRequest: User[_] = User(mtditid, None, nino, sessionId, affinityGroup)
@@ -121,15 +124,11 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
     val expectedContentNewAccount: String = "You can find this on P60 forms or on letters about PAYE. It may be called ‘Employer PAYE reference’ or ‘PAYE reference’."
   }
 
-
-  def cya(paye: Option[String] = Some(payeRef), isPriorSubmission: Boolean = true): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, "001", isPriorSubmission, hasPriorBenefits = isPriorSubmission,
-      EmploymentCYAModel(
-        EmploymentDetails("maggie", employerRef = paye, currentDataIsHmrcHeld = false),
-        None
-      )
-    )
-
+  private def cya(paye: Option[String] = Some(payeRef), isPriorSubmission: Boolean = true): EmploymentUserData = anEmploymentUserDataWithDetails(
+    employmentDetails = anEmploymentDetails.copy("maggie", employerRef = paye),
+    isPriorSubmission = isPriorSubmission,
+    hasPriorBenefits = isPriorSubmission
+  )
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
     Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
@@ -280,7 +279,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001")
+        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=" + employmentId)
       }
     }
 
@@ -331,7 +330,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
         "should render What's the PAYE reference of xxx? page with wrong format text when input is in incorrect format" which {
 
-          val invalidPaye = "123/abc 001<Q>"
+          val invalidPaye = "123/abc " + employmentId + "<Q>"
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
@@ -365,7 +364,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001")
+        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=" + employmentId)
       }
     }
   }

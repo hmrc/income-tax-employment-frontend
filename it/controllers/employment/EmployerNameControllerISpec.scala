@@ -203,18 +203,18 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
       }
     }
 
-        "redirect the user to the overview page when it is not end of year" which {
-          lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(isAgent = false)
-            urlGet(employerNamePageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
-          }
+    "redirect the user to the overview page when it is not end of year" which {
+      lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        urlGet(employerNamePageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
 
-          "has an SEE_OTHER(303) status" in {
-            result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
-          }
+      "has an SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+      }
 
-        }
+    }
 
   }
 
@@ -276,7 +276,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
             textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-            inputFieldValueCheck(amountInputName, inputSelector,"~name~")
+            inputFieldValueCheck(amountInputName, inputSelector, "~name~")
             buttonCheck(expectedButtonText, continueButtonSelector)
             welshToggleCheck(user.isWelsh)
 

@@ -21,12 +21,15 @@ import controllers.benefits.utilities.routes.UtilitiesOrGeneralServicesBenefitsC
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
+import models.User
 import models.employment.EmploymentBenefitsType
+import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.{entertainmentBenefitsAmountRedirects, redirectBasedOnCurrentAnswers}
-import services.{EmploymentSessionService, RedirectService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
+import services.RedirectService.{benefitsSubmitRedirect, entertainmentBenefitsAmountRedirects, redirectBasedOnCurrentAnswers}
+import services.benefits.TravelService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.travel.EntertainmentBenefitsAmountView
@@ -40,6 +43,7 @@ class EntertainmentBenefitsAmountController @Inject()(implicit val cc: MessagesC
                                                       appConfig: AppConfig,
                                                       entertainmentBenefitsAmountView: EntertainmentBenefitsAmountView,
                                                       val employmentSessionService: EmploymentSessionService,
+                                                      travelService: TravelService,
                                                       errorHandler: ErrorHandler,
                                                       ec: ExecutionContext,
                                                       clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
@@ -50,12 +54,9 @@ class EntertainmentBenefitsAmountController @Inject()(implicit val cc: MessagesC
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
           EmploymentBenefitsType)(entertainmentBenefitsAmountRedirects(_, taxYear, employmentId)) { cya =>
-          val cyaAmount: Option[BigDecimal] =
-            cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining))
-
+          val cyaAmount = cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining))
           val form = fillFormFromPriorAndCYA(buildForm(user.isAgent), prior, cyaAmount, employmentId)(
-            employment =>
-              employment.employmentBenefits.flatMap(_.benefits.flatMap(_.entertaining))
+            employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.entertaining))
           )
 
           Future.successful(Ok(entertainmentBenefitsAmountView(taxYear, form, cyaAmount, employmentId)))
@@ -72,39 +73,30 @@ class EntertainmentBenefitsAmountController @Inject()(implicit val cc: MessagesC
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya),
           EmploymentBenefitsType)(entertainmentBenefitsAmountRedirects(_, taxYear, employmentId)) { cya =>
           buildForm(user.isAgent).bindFromRequest().fold(
-            { formWithErrors =>
-
+            formWithErrors => {
               val fillValue = cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel).flatMap(_.entertaining)
               Future.successful(BadRequest(entertainmentBenefitsAmountView(taxYear, formWithErrors, fillValue, employmentId)))
-            }, {
-              newAmount: BigDecimal =>
-                val cyaModel = cya.employment
-                val benefits = cyaModel.employmentBenefits
-                val travelEntertainment = cyaModel.employmentBenefits.flatMap(_.travelEntertainmentModel)
-
-                val updatedCyaModel = cyaModel.copy(
-                  employmentBenefits = benefits.map(_.copy(
-                    travelEntertainmentModel = travelEntertainment.map(_.copy(entertaining = Some(newAmount)))))
-                )
-
-                employmentSessionService.createOrUpdateSessionData(
-                  employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-
-                  val nextPage = UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId)
-
-                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
-                }
-            }
+            },
+            amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )
         }
       }
     }
   }
 
-  private def buildForm(isAgent: Boolean): Form[BigDecimal] = {
-    AmountForm.amountForm(s"benefits.entertainmentBenefitAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-      s"benefits.entertainmentBenefitAmount.error.invalidFormat.${if (isAgent) "agent" else "individual"}"
-      , s"benefits.entertainmentBenefitAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}")
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
+                               (implicit user: User[_]): Future[Result] = {
+    travelService.updateEntertaining(taxYear, employmentId, employmentUserData, amount).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage = UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId)
+        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+    }
   }
 
+  private def buildForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
+    emptyFieldKey = s"benefits.entertainmentBenefitAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
+    wrongFormatKey = s"benefits.entertainmentBenefitAmount.error.invalidFormat.${if (isAgent) "agent" else "individual"}",
+    exceedsMaxAmountKey = s"benefits.entertainmentBenefitAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}"
+  )
 }

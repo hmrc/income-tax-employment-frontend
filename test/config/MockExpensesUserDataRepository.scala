@@ -29,19 +29,18 @@ trait MockExpensesUserDataRepository extends MockFactory {
   val mockExpensesUserDataRepository: ExpensesUserDataRepository = mock[ExpensesUserDataRepository]
 
   def mockFind(taxYear: Int,
-               response: Either[DatabaseError,Option[ExpensesUserData]]): CallHandler2[Int, User[_], Future[Either[DatabaseError, Option[ExpensesUserData]]]] = {
+               response: Either[DatabaseError, Option[ExpensesUserData]]): CallHandler2[Int, User[_], Future[Either[DatabaseError, Option[ExpensesUserData]]]] = {
     (mockExpensesUserDataRepository.find(_: Int)(_: User[_]))
       .expects(taxYear, *)
       .returns(Future.successful(response))
       .anyNumberOfTimes()
   }
 
-  def mockCreateOrUpdate(expenses: ExpensesUserData,
-                         response: Option[ExpensesUserData]
-                        ): CallHandler2[ExpensesUserData, User[_], Future[Either[DatabaseError, Unit]]] = {
+  def mockCreateOrUpdateExpenses(expenses: ExpensesUserData,
+                                 response: Either[DatabaseError, Unit]): CallHandler2[ExpensesUserData, User[_], Future[Either[DatabaseError, Unit]]] = {
     (mockExpensesUserDataRepository.createOrUpdate(_: ExpensesUserData)(_: User[_]))
       .expects(expenses, *)
-      .returns(Future.successful(Right(response)))
+      .returns(Future.successful(response))
       .anyNumberOfTimes()
   }
 

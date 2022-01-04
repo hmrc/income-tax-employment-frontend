@@ -28,7 +28,8 @@ trait MockEmploymentUserDataRepository extends MockFactory {
 
   val mockEmploymentUserDataRepository: EmploymentUserDataRepository = mock[EmploymentUserDataRepository]
 
-  def mockFind(taxYear: Int, id: String,
+  def mockFind(taxYear: Int,
+               id: String,
                repositoryResponse: Either[DatabaseError, Option[EmploymentUserData]]
               ): CallHandler3[Int, String, User[_], Future[Either[DatabaseError, Option[EmploymentUserData]]]] = {
     (mockEmploymentUserDataRepository.find(_: Int, _: String)(_: User[_]))
@@ -51,6 +52,4 @@ trait MockEmploymentUserDataRepository extends MockFactory {
       .returns(Future.successful(response))
       .anyNumberOfTimes()
   }
-
-
 }

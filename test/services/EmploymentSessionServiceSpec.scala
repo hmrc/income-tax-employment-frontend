@@ -16,6 +16,8 @@
 
 package services
 
+import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
+import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import config._
 import models.benefits.{AssetsModel, Benefits, BenefitsViewModel}
 import models.employment._
@@ -440,6 +442,88 @@ class EmploymentSessionServiceSpec extends UnitTest
 
       status(response) shouldBe SEE_OTHER
       redirectUrl(response) shouldBe "400"
+    }
+  }
+
+  ".createOrUpdateEmploymentUserDataWith" should {
+    "create EmploymentUserData in repository end return successful result" in {
+      val expected = EmploymentUserData(
+        user.sessionId,
+        user.mtditid,
+        user.nino,
+        taxYear,
+        "employmentId",
+        isPriorSubmission = true,
+        hasPriorBenefits = false,
+        employment = anEmploymentCYAModel,
+        testClock.now()
+      )
+
+      mockCreateOrUpdate(expected, Right())
+
+      val response = service.createOrUpdateEmploymentUserDataWith(taxYear, "employmentId", isPriorSubmission = true, hasPriorBenefits = false, anEmploymentCYAModel)
+
+      await(response) shouldBe Right(expected)
+    }
+
+    "return Left when repository createOrUpdate fails" in {
+      val expected = EmploymentUserData(
+        user.sessionId,
+        user.mtditid,
+        user.nino,
+        taxYear,
+        "employmentId",
+        isPriorSubmission = true,
+        hasPriorBenefits = false,
+        employment = anEmploymentCYAModel,
+        testClock.now()
+      )
+
+      mockCreateOrUpdate(expected, Left(DataNotUpdated))
+
+      val response = service.createOrUpdateEmploymentUserDataWith(taxYear, "employmentId", isPriorSubmission = true, hasPriorBenefits = false, anEmploymentCYAModel)
+
+      await(response) shouldBe Left()
+    }
+  }
+
+  ".createOrUpdateExpensesUserDataWith" should {
+    "create EmploymentUserData in repository end return successful result" in {
+      val expected = ExpensesUserData(
+        user.sessionId,
+        user.mtditid,
+        user.nino,
+        taxYear,
+        isPriorSubmission = true,
+        hasPriorExpenses = false,
+        expensesCya = anExpensesCYAModel,
+        testClock.now()
+      )
+
+      mockCreateOrUpdateExpenses(expected, Right())
+
+      val response = service.createOrUpdateExpensesUserDataWith(taxYear, isPriorSubmission = true, hasPriorExpenses = false, anExpensesCYAModel)
+
+      await(response) shouldBe Right(expected)
+    }
+
+    "return Left when repository createOrUpdate fails" in {
+      val expected = ExpensesUserData(
+        user.sessionId,
+        user.mtditid,
+        user.nino,
+        taxYear,
+        isPriorSubmission = true,
+        hasPriorExpenses = false,
+        expensesCya = anExpensesCYAModel,
+        testClock.now()
+      )
+
+      mockCreateOrUpdateExpenses(expected, Left(DataNotUpdated))
+
+      val response = service.createOrUpdateExpensesUserDataWith(taxYear, isPriorSubmission = true, hasPriorExpenses = false, anExpensesCYAModel)
+
+      await(response) shouldBe Left()
     }
   }
 

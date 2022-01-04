@@ -21,13 +21,14 @@ import controllers.expenses.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
-import models.mongo.ExpensesCYAModel
+import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.ExpensesRedirectService.{expensesSubmitRedirect, redirectBasedOnCurrentAnswers}
-import services.{EmploymentSessionService, ExpensesRedirectService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
+import services.ExpensesRedirectService.{expensesSubmitRedirect, otherAllowancesRedirects, redirectBasedOnCurrentAnswers}
+import services.expenses.ExpensesService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.expenses.OtherEquipmentView
@@ -41,17 +42,10 @@ class OtherEquipmentController @Inject()(implicit val cc: MessagesControllerComp
                                          otherEquipmentView: OtherEquipmentView,
                                          appConfig: AppConfig,
                                          employmentSessionService: EmploymentSessionService,
+                                         expensesService: ExpensesService,
                                          errorHandler: ErrorHandler,
                                          ec: ExecutionContext,
                                          clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
-
-  def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"expenses.otherEquipment.error.${if (user.isAgent) "agent" else "individual"}"
-  )
-
-  private def redirects(cya: ExpensesCYAModel, taxYear: Int): Seq[ConditionalRedirect] = {
-    ExpensesRedirectService.otherAllowancesRedirects(cya, taxYear)
-  }
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -75,33 +69,33 @@ class OtherEquipmentController @Inject()(implicit val cc: MessagesControllerComp
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { data =>
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(otherEquipmentView(formWithErrors, taxYear))),
-            yesNo => {
-              val expensesCYAModel = data.expensesCya
-              val expenses = expensesCYAModel.expenses
-
-              val updatedCyaModel: ExpensesCYAModel = {
-                if (yesNo) {
-                  expensesCYAModel.copy(expenses = expenses.copy(otherAndCapitalAllowancesQuestion = Some(true)))
-                } else {
-                  expensesCYAModel.copy(expenses = expenses.copy(otherAndCapitalAllowancesQuestion = Some(false), otherAndCapitalAllowances = None))
-                }
-              }
-
-              employmentSessionService.createOrUpdateExpensesSessionData(
-                updatedCyaModel, taxYear, data.isPriorSubmission, data.isPriorSubmission)(errorHandler.internalServerError()) {
-                val nextPage = if (yesNo) {
-                  OtherEquipmentAmountController.show(taxYear)
-                } else {
-                  CheckEmploymentExpensesController.show(taxYear)
-                }
-
-                expensesSubmitRedirect(updatedCyaModel, nextPage)(taxYear)
-              }
-            }
+            yesNo => handleSuccessForm(taxYear, data, yesNo)
           )
         }
       }
     }
+  }
+
+  private def handleSuccessForm(taxYear: Int, expensesUserData: ExpensesUserData, questionValue: Boolean)
+                               (implicit user: User[_]): Future[Result] = {
+    expensesService.updateOtherAndCapitalAllowancesQuestion(taxYear, expensesUserData, questionValue).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(expensesUserData) =>
+        val nextPage = if (questionValue) {
+          OtherEquipmentAmountController.show(taxYear)
+        } else {
+          CheckEmploymentExpensesController.show(taxYear)
+        }
+        expensesSubmitRedirect(expensesUserData.expensesCya, nextPage)(taxYear)
+    }
+  }
+
+  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"expenses.otherEquipment.error.${if (user.isAgent) "agent" else "individual"}"
+  )
+
+  private def redirects(cya: ExpensesCYAModel, taxYear: Int): Seq[ConditionalRedirect] = {
+    otherAllowancesRedirects(cya, taxYear)
   }
 }
 
