@@ -17,7 +17,8 @@
 package builders.models.expenses
 
 import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
-import models.mongo.ExpensesUserData
+import models.expenses.ExpensesViewModel
+import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 
 object ExpensesUserDataBuilder {
 
@@ -30,4 +31,13 @@ object ExpensesUserDataBuilder {
     hasPriorExpenses = true,
     expensesCya = anExpensesCYAModel
   )
+
+  def anExpensesUserDataWithBenefits(expensesViewModel: ExpensesViewModel,
+                                       isPriorSubmission: Boolean = true): ExpensesUserData = {
+    anExpensesUserData.copy(
+      isPriorSubmission = isPriorSubmission,
+      hasPriorExpenses = isPriorSubmission,
+      expensesCya = ExpensesCYAModel(expensesViewModel)
+    )
+  }
 }

@@ -99,7 +99,6 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
     val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorText = "Select yes if you want to add an employment"
-
   }
 
   private val employmentId = UUID.randomUUID
@@ -120,7 +119,6 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
 
   ".show" when {
     import Selectors._
-
 
     userScenarios.foreach { user =>
       import user.commonExpectedResults._

@@ -22,15 +22,15 @@ import controllers.benefits.reimbursed.routes.NonTaxableCostsBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
-import models.benefits.ReimbursedCostsVouchersAndNonCashModel
 import models.employment.EmploymentBenefitsType
-import models.mongo.EmploymentCYAModel
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
 import services.RedirectService._
-import services.{EmploymentSessionService, RedirectService}
+import services.benefits.ReimbursedService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.reimbursed.ReimbursedCostsVouchersAndNonCashBenefitsView
@@ -44,17 +44,10 @@ class ReimbursedCostsVouchersAndNonCashBenefitsController @Inject()(implicit val
                                                                     pageView: ReimbursedCostsVouchersAndNonCashBenefitsView,
                                                                     appConfig: AppConfig,
                                                                     employmentSessionService: EmploymentSessionService,
+                                                                    reimbursedService: ReimbursedService,
                                                                     errorHandler: ErrorHandler,
                                                                     ec: ExecutionContext,
                                                                     clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
-
-  def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.reimbursedCostsVouchersAndNonCash.error.${if (user.isAgent) "agent" else "individual"}"
-  )
-
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-    RedirectService.reimbursedCostsVouchersAndNonCashRedirects(cya, taxYear, employmentId)
-  }
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -71,7 +64,6 @@ class ReimbursedCostsVouchersAndNonCashBenefitsController @Inject()(implicit val
     }
   }
 
-
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
 
@@ -80,41 +72,32 @@ class ReimbursedCostsVouchersAndNonCashBenefitsController @Inject()(implicit val
 
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
-            yesNo => {
-              val cya = data.employment
-              val benefits = cya.employmentBenefits
-              val reimbursedCostsModel = cya.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel)
-
-              val updatedCyaModel: EmploymentCYAModel = {
-                reimbursedCostsModel match {
-                  case Some(reimbursedCosts) if yesNo =>
-                    cya.copy(employmentBenefits = benefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel =
-                      Some(reimbursedCosts.copy(sectionQuestion = Some(true))))))
-                  case Some(_) =>
-                    cya.copy(employmentBenefits = benefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel =
-                      Some(ReimbursedCostsVouchersAndNonCashModel.clear))))
-                  case _ =>
-                    cya.copy(employmentBenefits = benefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel =
-                      Some(ReimbursedCostsVouchersAndNonCashModel(sectionQuestion = Some(yesNo))))))
-                }
-              }
-
-              employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                val nextPage = {
-                  if (yesNo) {
-                    NonTaxableCostsBenefitsController.show(taxYear, employmentId)
-                  } else {
-                    AssetsOrAssetTransfersBenefitsController.show(taxYear, employmentId)
-                  }
-                }
-
-                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
-              }
-            }
+            yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
         }
       }
     }
+  }
+
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
+                               (implicit user: User[_]): Future[Result] = {
+    reimbursedService.updateSectionQuestion(taxYear, employmentId, employmentUserData, questionValue).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage = if (questionValue) {
+          NonTaxableCostsBenefitsController.show(taxYear, employmentId)
+        } else {
+          AssetsOrAssetTransfersBenefitsController.show(taxYear, employmentId)
+        }
+        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+    }
+  }
+
+  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"benefits.reimbursedCostsVouchersAndNonCash.error.${if (user.isAgent) "agent" else "individual"}"
+  )
+
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+    reimbursedCostsVouchersAndNonCashRedirects(cya, taxYear, employmentId)
   }
 }

@@ -17,9 +17,9 @@
 package controllers.employment
 
 import config.{AppConfig, ErrorHandler}
+import controllers.employment.routes.EmploymentSummaryController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
 import models.{IncomeTaxUserData, User}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -29,6 +29,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.employment.RemoveEmploymentView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -41,10 +42,6 @@ class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerCo
                                            errorHandler: ErrorHandler,
                                            ec: ExecutionContext
                                           ) extends FrontendController(cc) with I18nSupport with SessionHelper {
-
-  def form(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = "employment.removeEmployment.error.no-entry"
-  )
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -69,27 +66,27 @@ class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerCo
           val lastEmployment: Boolean = totalEmployments == 1
           val source = employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear = false)
           source match {
-            case Some((source, _)) => val employerName = source.employerName
+            case Some((source, _)) =>
+              val employerName = source.employerName
               form.bindFromRequest().fold(
-                { formWithErrors =>
-                  Future.successful(BadRequest(removeEmploymentView(formWithErrors, taxYear, employmentId, employerName, lastEmployment)))
-                },
+                formWithErrors => Future.successful(BadRequest(removeEmploymentView(formWithErrors, taxYear, employmentId, employerName, lastEmployment))),
                 {
                   case true =>
                     deleteOrIgnoreEmploymentService.deleteOrIgnoreEmployment(user, allEmploymentData, taxYear, employmentId) {
-                        Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear))
+                      Redirect(EmploymentSummaryController.show(taxYear))
                     }
-                  case false => Future.successful(Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear)))
+                  case false => Future.successful(Redirect(EmploymentSummaryController.show(taxYear)))
                 }
               )
             case None => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
           }
-        case Right(IncomeTaxUserData(None)) =>
-          Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+        case Right(IncomeTaxUserData(None)) => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
         case Left(error) => Future.successful(errorHandler.handleError(error.status))
       }
-
     }
   }
 
+  private def form(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = "employment.removeEmployment.error.no-entry"
+  )
 }
