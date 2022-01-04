@@ -21,13 +21,17 @@ import models.mongo.EmploymentDetails
 object EmploymentDetailsBuilder {
 
   val anEmploymentDetails: EmploymentDetails = EmploymentDetails(
-    "Employer Name",
+    employerName = "Employer Name",
     employerRef = Some("123/12345"),
     startDate = Some("2020-11-11"),
-    taxablePayToDate = Some(55.99),
-    totalTaxToDate = Some(3453453.00),
+    payrollId = None,
+    cessationDateQuestion = None,
+    cessationDate = None,
+    dateIgnored = None,
     employmentSubmittedOn = Some("2020-04-04T01:01:01Z"),
     employmentDetailsSubmittedOn = Some("2020-04-04T01:01:01Z"),
+    taxablePayToDate = Some(55.99),
+    totalTaxToDate = Some(3453453.00),
     currentDataIsHmrcHeld = false
   )
 }

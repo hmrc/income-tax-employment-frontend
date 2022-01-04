@@ -22,12 +22,13 @@ import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
 import models.employment.EmploymentBenefitsType
-import models.mongo.EmploymentCYAModel
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.redirectBasedOnCurrentAnswers
-import services.{EmploymentSessionService, RedirectService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
+import services.RedirectService.{benefitsSubmitRedirect, commonIncomeTaxAndCostsModelRedirects, redirectBasedOnCurrentAnswers}
+import services.benefits.IncomeService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.income.IncomeTaxBenefitsView
@@ -41,15 +42,12 @@ class IncomeTaxBenefitsController @Inject()(implicit val cc: MessagesControllerC
                                             incomeTaxBenefitsView: IncomeTaxBenefitsView,
                                             appConfig: AppConfig,
                                             employmentSessionService: EmploymentSessionService,
+                                            incomeService: IncomeService,
                                             errorHandler: ErrorHandler,
                                             clock: Clock
                                            ) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
-  implicit val ec: ExecutionContext = cc.executionContext
-
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
-    RedirectService.commonIncomeTaxAndCostsModelRedirects(cya, taxYear, employmentId)
-  }
+  private implicit val ec: ExecutionContext = cc.executionContext
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -64,7 +62,6 @@ class IncomeTaxBenefitsController @Inject()(implicit val cc: MessagesControllerC
         }
       }
     }
-
   }
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
@@ -75,41 +72,30 @@ class IncomeTaxBenefitsController @Inject()(implicit val cc: MessagesControllerC
 
           buildForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(incomeTaxBenefitsView(formWithErrors, taxYear, employmentId))),
-            yesNo => {
-
-              val cya = data.employment
-              val benefits = cya.employmentBenefits
-              val incomeTaxModel = cya.employmentBenefits.flatMap(_.incomeTaxAndCostsModel)
-
-              val updatedCyaModel: EmploymentCYAModel = {
-                if (yesNo) {
-                  cya.copy(employmentBenefits = benefits.map(_.copy(incomeTaxAndCostsModel =
-                    incomeTaxModel.map(_.copy(incomeTaxPaidByDirectorQuestion = Some(true))))))
-                } else {
-                  cya.copy(employmentBenefits = benefits.map(_.copy(
-                    incomeTaxAndCostsModel = incomeTaxModel.map(_.copy(incomeTaxPaidByDirectorQuestion = Some(false), incomeTaxPaidByDirector = None)))))
-                }
-              }
-
-              employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                val nextPage = {
-                  if (yesNo) {
-                    IncomeTaxBenefitsAmountController.show(taxYear, employmentId)
-                  } else {
-                    IncurredCostsBenefitsController.show(taxYear, employmentId)
-                  }
-                }
-
-                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)                }
-            }
+            yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
         }
       }
     }
   }
 
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
+                               (implicit user: User[_]): Future[Result] = {
+    incomeService.updateIncomeTaxPaidByDirectorQuestion(taxYear, employmentId, employmentUserData, questionValue).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage = {
+          if (questionValue) IncomeTaxBenefitsAmountController.show(taxYear, employmentId) else IncurredCostsBenefitsController.show(taxYear, employmentId)
+        }
+        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+    }
+  }
+
   private def buildForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
     missingInputError = s"benefits.incomeTax.error.${if (user.isAgent) "agent" else "individual"}"
   )
+
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
+    commonIncomeTaxAndCostsModelRedirects(cya, taxYear, employmentId)
+  }
 }

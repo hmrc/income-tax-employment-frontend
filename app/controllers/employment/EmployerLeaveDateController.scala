@@ -16,24 +16,26 @@
 
 package controllers.employment
 
-import java.time.LocalDate
-
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.employment.EmploymentDateForm
-import javax.inject.Inject
+import models.User
 import models.employment.EmploymentDate
+import models.mongo.EmploymentUserData
 import play.api.Logging
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import services.RedirectService.employmentDetailsRedirect
+import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.DateTimeUtil.localDateTimeFormat
 import utils.{Clock, SessionHelper}
 import views.html.employment.EmployerLeaveDateView
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EmployerLeaveDateController @Inject()(authorisedAction: AuthorisedAction,
@@ -43,16 +45,15 @@ class EmployerLeaveDateController @Inject()(authorisedAction: AuthorisedAction,
                                             inYearAction: InYearAction,
                                             errorHandler: ErrorHandler,
                                             employmentSessionService: EmploymentSessionService,
+                                            employmentService: EmploymentService,
                                             implicit val clock: Clock,
-                                            implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport
-  with SessionHelper with Logging {
+                                            implicit val ec: ExecutionContext
+                                           ) extends FrontendController(mcc) with I18nSupport with SessionHelper with Logging {
 
-  def form: Form[EmploymentDate] = EmploymentDateForm.employmentStartDateForm
+  private def form: Form[EmploymentDate] = EmploymentDateForm.employmentStartDateForm
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
-
     val log = "[EmployerLeaveDateController][show]"
-
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
 
@@ -61,19 +62,19 @@ class EmployerLeaveDateController @Inject()(authorisedAction: AuthorisedAction,
         val cessationDateQuestion = data.employment.employmentDetails.cessationDateQuestion
 
         (startDate, cessationDateQuestion, cessationDate) match {
-          case (startDate,cessationDateQuestion,_) if startDate.isEmpty || cessationDateQuestion.isEmpty =>
+          case (startDate, cessationDateQuestion, _) if startDate.isEmpty || cessationDateQuestion.isEmpty =>
             logger.info(s"$log Prior questions for page are not answered. " +
               s"Start date: ${startDate.getOrElse("None")}, Still working for employer: ${cessationDateQuestion.getOrElse("None")}")
             Future.successful(employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission))
-          case (_,Some(true),_) =>
+          case (_, Some(true), _) =>
             logger.info(s"$log Still working for employer answer is set to yes. Routing to correct employment redirect.")
             Future.successful(employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission))
-          case (_,_,Some(cessationDate)) =>
+          case (_, _, Some(cessationDate)) =>
             val parsedDate: LocalDate = LocalDate.parse(cessationDate, localDateTimeFormat)
             val filledForm: Form[EmploymentDate] = form.fill(
-              EmploymentDate(parsedDate.getDayOfMonth.toString,parsedDate.getMonthValue.toString, parsedDate.getYear.toString))
+              EmploymentDate(parsedDate.getDayOfMonth.toString, parsedDate.getMonthValue.toString, parsedDate.getYear.toString))
             Future.successful(Ok(employerLeaveDateView(filledForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
-          case (_,_,None) =>
+          case (_, _, None) =>
             Future.successful(Ok(employerLeaveDateView(form, taxYear, employmentId, data.employment.employmentDetails.employerName)))
         }
       }
@@ -81,16 +82,14 @@ class EmployerLeaveDateController @Inject()(authorisedAction: AuthorisedAction,
   }
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
-
     val log = "[EmployerLeaveDateController][submit]"
 
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
-
         val startDate = data.employment.employmentDetails.startDate
         val cessationDateQuestion = data.employment.employmentDetails.cessationDateQuestion
         (startDate, cessationDateQuestion) match {
-          case (startDate,cessationDateQuestion) if startDate.isEmpty || cessationDateQuestion.isEmpty =>
+          case (startDate, cessationDateQuestion) if startDate.isEmpty || cessationDateQuestion.isEmpty =>
             logger.info(s"$log Prior questions for page are not answered. " +
               s"Start date: ${startDate.getOrElse("None")}, Still working for employer: ${cessationDateQuestion.getOrElse("None")}")
             Future.successful(employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission))
@@ -98,23 +97,22 @@ class EmployerLeaveDateController @Inject()(authorisedAction: AuthorisedAction,
             logger.info(s"$log Still working for employer answer is set to yes. Routing to correct employment redirect.")
             Future.successful(employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission))
           case (Some(startDate), _) =>
-
             val newForm = form.bindFromRequest()
-            newForm.copy(errors = EmploymentDateForm.verifyLeaveDate(newForm.get, taxYear, user.isAgent, EmploymentDateForm.leaveDate,startDate)).fold(
-              { formWithErrors =>
-                Future.successful(BadRequest(employerLeaveDateView(formWithErrors, taxYear, employmentId, data.employment.employmentDetails.employerName)))
-              },
-              { submittedDate =>
-                val cya = data.employment
-                val updatedCya = cya.copy(cya.employmentDetails.copy(cessationDate = Some(submittedDate.toLocalDate.toString)))
-                employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission,data.hasPriorBenefits)(
-                  errorHandler.internalServerError()) {
-                  employmentDetailsRedirect(updatedCya, taxYear, employmentId, data.isPriorSubmission)
-                }
-              }
+            newForm.copy(errors = EmploymentDateForm.verifyLeaveDate(newForm.get, taxYear, user.isAgent, EmploymentDateForm.leaveDate, startDate)).fold(
+              formWithErrors =>
+                Future.successful(BadRequest(employerLeaveDateView(formWithErrors, taxYear, employmentId, data.employment.employmentDetails.employerName))),
+              submittedDate => handleSuccessForm(taxYear, employmentId, data, submittedDate.toLocalDate.toString)
             )
         }
       }
+    }
+  }
+
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, cessationDate: String)
+                               (implicit user: User[_]): Future[Result] = {
+    employmentService.updateCessationDate(taxYear, employmentId, employmentUserData, cessationDate).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) => employmentDetailsRedirect(employmentUserData.employment, taxYear, employmentId, employmentUserData.isPriorSubmission)
     }
   }
 }

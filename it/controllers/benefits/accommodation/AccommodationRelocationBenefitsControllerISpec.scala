@@ -20,7 +20,7 @@ import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.UserBuilder.aUserRequest
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
+import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
 import controllers.benefits.accommodation.routes._
 import controllers.benefits.travel.routes._
 import controllers.employment.routes.CheckYourBenefitsController
@@ -119,8 +119,8 @@ class AccommodationRelocationBenefitsControllerISpec extends IntegrationTest wit
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            val benefitsWithNoAccommodationModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
-            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsWithNoAccommodationModel))), aUserRequest)
+            val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -233,7 +233,7 @@ class AccommodationRelocationBenefitsControllerISpec extends IntegrationTest wit
             lazy val result: WSResponse = {
               dropEmploymentDB()
               val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = Some(false))))
-              insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+              insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -250,8 +250,8 @@ class AccommodationRelocationBenefitsControllerISpec extends IntegrationTest wit
             lazy val form = Map(YesNoForm.yesNo -> YesNoForm.no)
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              val employmentCYAModel = anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel.copy(travelEntertainmentModel = None)))
-              insertCyaData(anEmploymentUserData.copy(employment = employmentCYAModel), aUserRequest)
+              val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = None)
+              insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -269,8 +269,8 @@ class AccommodationRelocationBenefitsControllerISpec extends IntegrationTest wit
             lazy val form = Map(YesNoForm.yesNo -> YesNoForm.yes)
             lazy val result = {
               dropEmploymentDB()
-              val benefitsWithNoAccommodationModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
-              insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsWithNoAccommodationModel))), aUserRequest)
+              val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
+              insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -290,8 +290,8 @@ class AccommodationRelocationBenefitsControllerISpec extends IntegrationTest wit
             lazy val form = Map(YesNoForm.yesNo -> "")
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              val benefitsWithNoAccommodationModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
-              insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsWithNoAccommodationModel))), aUserRequest)
+              val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
+              insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }

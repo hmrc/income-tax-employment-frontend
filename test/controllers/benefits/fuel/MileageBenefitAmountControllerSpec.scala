@@ -17,7 +17,7 @@
 package controllers.benefits.fuel
 
 import common.SessionValues
-import config.{MockAuditService, MockEmploymentSessionService}
+import config.{MockAuditService, MockEmploymentSessionService, MockFuelService}
 import forms.AmountForm
 import play.api.data.Form
 import play.api.http.Status._
@@ -28,7 +28,10 @@ import views.html.benefits.fuel.MileageBenefitAmountView
 
 import scala.concurrent.Future
 
-class MileageBenefitAmountControllerSpec extends UnitTestWithApp with MockEmploymentSessionService with MockAuditService {
+class MileageBenefitAmountControllerSpec extends UnitTestWithApp
+  with MockEmploymentSessionService
+  with MockFuelService
+  with MockAuditService {
 
   lazy val view = app.injector.instanceOf[MileageBenefitAmountView]
   lazy val controller = new MileageBenefitAmountController()(
@@ -38,6 +41,7 @@ class MileageBenefitAmountControllerSpec extends UnitTestWithApp with MockEmploy
     inYearAction,
     mockAppConfig,
     mockEmploymentSessionService,
+    mockFuelService,
     mockErrorHandler,
     testClock
   )
@@ -50,11 +54,8 @@ class MileageBenefitAmountControllerSpec extends UnitTestWithApp with MockEmploy
     "return a result" which {
 
       s"has an OK($OK) status" in new TestWithAuth {
-
         val anyResult: Results.Status = Ok
-
         val result: Future[Result] = {
-
           mockGetAndHandle(taxYear, anyResult)
 
           controller.show(taxYear, employmentId)(fakeRequest.withSession(

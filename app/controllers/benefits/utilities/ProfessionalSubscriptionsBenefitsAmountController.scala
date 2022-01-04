@@ -20,19 +20,21 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.utilities.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
-import javax.inject.Inject
-import models.benefits.UtilitiesAndServicesModel
+import models.User
 import models.employment.EmploymentBenefitsType
-import models.mongo.EmploymentCYAModel
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
+import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.redirectBasedOnCurrentAnswers
-import services.{EmploymentSessionService, RedirectService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
+import services.RedirectService.{benefitsSubmitRedirect, employerProvidedSubscriptionsBenefitsAmountRedirects, redirectBasedOnCurrentAnswers}
+import services.benefits.UtilitiesService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.utilities.ProfessionalSubscriptionsBenefitsAmountView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 
@@ -42,20 +44,11 @@ class ProfessionalSubscriptionsBenefitsAmountController @Inject()(implicit val c
                                                                   appConfig: AppConfig,
                                                                   professionalSubscriptionBenefitsView: ProfessionalSubscriptionsBenefitsAmountView,
                                                                   val employmentSessionService: EmploymentSessionService,
+                                                                  utilitiesService: UtilitiesService,
                                                                   errorHandler: ErrorHandler,
                                                                   ec: ExecutionContext,
-                                                                  clock: Clock) extends FrontendController(cc)
-  with I18nSupport with SessionHelper with FormUtils {
-
-  private def buildForm(isAgent: Boolean): Form[BigDecimal] = {
-    AmountForm.amountForm(s"benefits.professionalSubscriptionsAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-      s"benefits.professionalSubscriptionsAmount.error.wrongFormat.${if (isAgent) "agent" else "individual"}",
-      s"benefits.professionalSubscriptionsAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}")
-  }
-
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
-    RedirectService.employerProvidedSubscriptionsBenefitsAmountRedirects(cya, taxYear, employmentId)
-  }
+                                                                  clock: Clock
+                                                                 ) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -80,28 +73,34 @@ class ProfessionalSubscriptionsBenefitsAmountController @Inject()(implicit val c
         redirectBasedOnCurrentAnswers(taxYear, employmentId, cya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           buildForm(user.isAgent).bindFromRequest().fold(
-            { formWithErrors =>
+            formWithErrors => {
               val fillValue = cya.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel).flatMap(_.employerProvidedProfessionalSubscriptions)
               Future.successful(BadRequest(professionalSubscriptionBenefitsView(taxYear, formWithErrors, fillValue, employmentId)))
-            }, {
-              newAmount =>
-                val cyaModel = cya.employment
-                val utilitiesAndServices: Option[UtilitiesAndServicesModel] = cyaModel.employmentBenefits.flatMap(_.utilitiesAndServicesModel)
-                val updatedCyaModel = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(utilitiesAndServicesModel =
-                  utilitiesAndServices.map(_.copy(employerProvidedProfessionalSubscriptions = Some(newAmount))))))
-
-                employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
-                  cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-
-                  val nextPage = OtherServicesBenefitsController.show(taxYear, employmentId)
-
-                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
-                }
-            }
+            },
+            amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )
         }
       }
     }
   }
 
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
+                               (implicit user: User[_]): Future[Result] = {
+    utilitiesService.updateEmployerProvidedProfessionalSubscriptions(taxYear, employmentId, employmentUserData, amount).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage = OtherServicesBenefitsController.show(taxYear, employmentId)
+        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+    }
+  }
+
+  private def buildForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
+    emptyFieldKey = s"benefits.professionalSubscriptionsAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
+    wrongFormatKey = s"benefits.professionalSubscriptionsAmount.error.wrongFormat.${if (isAgent) "agent" else "individual"}",
+    exceedsMaxAmountKey = s"benefits.professionalSubscriptionsAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}"
+  )
+
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+    employerProvidedSubscriptionsBenefitsAmountRedirects(cya, taxYear, employmentId)
+  }
 }

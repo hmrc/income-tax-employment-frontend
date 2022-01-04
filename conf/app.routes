@@ -158,8 +158,8 @@ POST       /:taxYear/benefits/utility-general-service                           
 GET        /:taxYear/benefits/telephone                                             controllers.benefits.utilities.TelephoneBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/telephone                                             controllers.benefits.utilities.TelephoneBenefitsController.submit(taxYear: Int, employmentId: String)
 
-GET        /:taxYear/benefits/telephone-amount                                      controllers.benefits.utilities.TelephoneEmploymentBenefitsAmountController.show(taxYear: Int, employmentId: String)
-POST       /:taxYear/benefits/telephone-amount                                      controllers.benefits.utilities.TelephoneEmploymentBenefitsAmountController.submit(taxYear: Int, employmentId: String)
+GET        /:taxYear/benefits/telephone-amount                                      controllers.benefits.utilities.TelephoneBenefitsAmountController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/benefits/telephone-amount                                      controllers.benefits.utilities.TelephoneBenefitsAmountController.submit(taxYear: Int, employmentId: String)
 
 GET        /:taxYear/benefits/employer-provided-services                            controllers.benefits.utilities.EmployerProvidedServicesBenefitsController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/benefits/employer-provided-services                            controllers.benefits.utilities.EmployerProvidedServicesBenefitsController.submit(taxYear: Int, employmentId: String)

@@ -21,17 +21,20 @@ import controllers.benefits.travel.routes.TravelOrEntertainmentBenefitsControlle
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
-import javax.inject.Inject
+import models.User
 import models.employment.EmploymentBenefitsType
+import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.{nonQualifyingRelocationBenefitsAmountRedirects, redirectBasedOnCurrentAnswers}
-import services.{EmploymentSessionService, RedirectService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
+import services.RedirectService.{benefitsSubmitRedirect, nonQualifyingRelocationBenefitsAmountRedirects, redirectBasedOnCurrentAnswers}
+import services.benefits.AccommodationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.accommodation.NonQualifyingRelocationBenefitsAmountView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class NonQualifyingRelocationBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -40,6 +43,7 @@ class NonQualifyingRelocationBenefitsAmountController @Inject()(implicit val cc:
                                                                 appConfig: AppConfig,
                                                                 nonQualifyingRelocationBenefitsView: NonQualifyingRelocationBenefitsAmountView,
                                                                 val employmentSessionService: EmploymentSessionService,
+                                                                accommodationService: AccommodationService,
                                                                 errorHandler: ErrorHandler,
                                                                 ec: ExecutionContext,
                                                                 clock: Clock) extends FrontendController(cc)
@@ -51,12 +55,10 @@ class NonQualifyingRelocationBenefitsAmountController @Inject()(implicit val cc:
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
           EmploymentBenefitsType)(nonQualifyingRelocationBenefitsAmountRedirects(_, taxYear, employmentId)) { cya =>
-          val cyaAmount: Option[BigDecimal] =
-            cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses))
+          val cyaAmount = cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses))
 
           val form = fillFormFromPriorAndCYA(buildForm(user.isAgent), prior, cyaAmount, employmentId)(
-            employment =>
-              employment.employmentBenefits.flatMap(_.benefits.flatMap(_.nonQualifyingRelocationExpenses))
+            employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.nonQualifyingRelocationExpenses))
           )
 
           Future.successful(Ok(nonQualifyingRelocationBenefitsView(taxYear, form, cyaAmount, employmentId)))
@@ -73,39 +75,30 @@ class NonQualifyingRelocationBenefitsAmountController @Inject()(implicit val cc:
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya),
           EmploymentBenefitsType)(nonQualifyingRelocationBenefitsAmountRedirects(_, taxYear, employmentId)) { cya =>
           buildForm(user.isAgent).bindFromRequest().fold(
-            { formWithErrors =>
-
+            formWithErrors => {
               val fillValue = cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.nonQualifyingRelocationExpenses)
               Future.successful(BadRequest(nonQualifyingRelocationBenefitsView(taxYear, formWithErrors, fillValue, employmentId)))
-            }, {
-              newAmount: BigDecimal =>
-                val cyaModel = cya.employment
-                val benefits = cyaModel.employmentBenefits
-                val accommodationRelocation = cyaModel.employmentBenefits.flatMap(_.accommodationRelocationModel)
-
-                val updatedCyaModel = cyaModel.copy(
-                  employmentBenefits = benefits.map(_.copy(
-                    accommodationRelocationModel = accommodationRelocation.map(_.copy(nonQualifyingRelocationExpenses = Some(newAmount)))))
-                )
-
-                employmentSessionService.createOrUpdateSessionData(
-                  employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-
-                  val nextPage = TravelOrEntertainmentBenefitsController.show(taxYear, employmentId)
-
-                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
-                }
-            }
+            },
+            amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )
         }
       }
     }
   }
 
-  private def buildForm(isAgent: Boolean): Form[BigDecimal] = {
-    AmountForm.amountForm(s"benefits.nonQualifyingRelocationBenefitAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-      s"benefits.nonQualifyingRelocationBenefitAmount.error.invalidFormat.${if (isAgent) "agent" else "individual"}"
-      , s"benefits.nonQualifyingRelocationBenefitAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}")
+  private def handleSuccessForm(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
+                               (implicit user: User[_]): Future[Result] = {
+    accommodationService.updateNonQualifyingExpenses(taxYear, employmentId, originalEmploymentUserData, amount).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage = TravelOrEntertainmentBenefitsController.show(taxYear, employmentId)
+        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+    }
   }
 
+  private def buildForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
+    emptyFieldKey = s"benefits.nonQualifyingRelocationBenefitAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
+    wrongFormatKey = s"benefits.nonQualifyingRelocationBenefitAmount.error.invalidFormat.${if (isAgent) "agent" else "individual"}",
+    exceedsMaxAmountKey = s"benefits.nonQualifyingRelocationBenefitAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}"
+  )
 }

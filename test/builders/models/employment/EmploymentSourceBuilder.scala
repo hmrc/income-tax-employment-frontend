@@ -23,7 +23,7 @@ import models.employment.EmploymentSource
 object EmploymentSourceBuilder {
 
   val anEmploymentSource: EmploymentSource = EmploymentSource(
-    employmentId = "001",
+    employmentId = "employmentId",
     employerName = "maggie",
     employerRef = Some("223/AB12399"),
     payrollId = Some("12345678"),

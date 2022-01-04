@@ -29,7 +29,7 @@ trait MockExpensesUserDataRepository extends MockFactory {
   val mockExpensesUserDataRepository: ExpensesUserDataRepository = mock[ExpensesUserDataRepository]
 
   def mockFind(taxYear: Int,
-               response: Either[DatabaseError,Option[ExpensesUserData]]): CallHandler2[Int, User[_], Future[Either[DatabaseError, Option[ExpensesUserData]]]] = {
+               response: Either[DatabaseError, Option[ExpensesUserData]]): CallHandler2[Int, User[_], Future[Either[DatabaseError, Option[ExpensesUserData]]]] = {
     (mockExpensesUserDataRepository.find(_: Int)(_: User[_]))
       .expects(taxYear, *)
       .returns(Future.successful(response))

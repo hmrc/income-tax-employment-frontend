@@ -92,7 +92,5 @@ object ViewUtils {
     Try(BigDecimal(value))
       .map(amount => currencySymbol + f"$amount%1.2f".replace(".00", ""))
       .getOrElse(value)
-      .replaceAll("\\B(?=(\\d{3})+(?!\\d))", ",")
   }
 }
-

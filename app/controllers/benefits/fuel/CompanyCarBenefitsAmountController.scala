@@ -21,18 +21,21 @@ import controllers.benefits.fuel.routes.CompanyCarFuelBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
-import javax.inject.Inject
+import models.User
 import models.employment.EmploymentBenefitsType
-import models.mongo.EmploymentCYAModel
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
+import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.redirectBasedOnCurrentAnswers
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.RedirectService.{carBenefitsAmountRedirects, redirectBasedOnCurrentAnswers}
+import services.benefits.FuelService
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.fuel.CompanyCarBenefitsAmountView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CompanyCarBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -41,34 +44,19 @@ class CompanyCarBenefitsAmountController @Inject()(implicit val cc: MessagesCont
                                                    inYearAction: InYearAction,
                                                    appConfig: AppConfig,
                                                    val employmentSessionService: EmploymentSessionService,
+                                                   fuelService: FuelService,
                                                    errorHandler: ErrorHandler,
                                                    ec: ExecutionContext,
                                                    clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
-  def amountForm(isAgent: Boolean): Form[BigDecimal] = {
-    AmountForm.amountForm(
-      s"benefits.companyCarBenefitsAmount.error.no-entry.${if (isAgent) "agent" else "individual"}",
-      s"benefits.companyCarBenefitsAmount.error.incorrect-format.${if (isAgent) "agent" else "individual"}",
-      s"benefits.companyCarBenefitsAmount.error.max-length.${if (isAgent) "agent" else "individual"}"
-    )
-  }
-
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
-    RedirectService.carBenefitsAmountRedirects(cya, taxYear, employmentId)
-  }
-
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-
           val cyaAmount: Option[BigDecimal] = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car))
-
           val form = fillFormFromPriorAndCYA(amountForm(user.isAgent), prior, cyaAmount, employmentId)(
-            employment =>
-              employment.employmentBenefits.flatMap(_.benefits.flatMap(_.car))
+            employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.car))
           )
 
           Future.successful(Ok(companyCarBenefitsAmountView(form, taxYear, employmentId, cyaAmount)))
@@ -79,39 +67,39 @@ class CompanyCarBenefitsAmountController @Inject()(implicit val cc: MessagesCont
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-
       val redirectUrl = CheckYourBenefitsController.show(taxYear, employmentId).url
 
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
-
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-
           amountForm(user.isAgent).bindFromRequest().fold(
-            { formWithErrors =>
+            formWithErrors => {
               val cyaCarAmount = cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.car))
               Future.successful(BadRequest(companyCarBenefitsAmountView(formWithErrors, taxYear, employmentId, cyaCarAmount)))
-            }, {
-              amount =>
-
-                val cyaModel = cya.employment
-                val benefits = cyaModel.employmentBenefits
-                val carVanFuel = benefits.flatMap(_.carVanFuelModel)
-
-                val updatedCyaModel = cyaModel.copy(
-                  employmentBenefits = benefits.map(_.copy(carVanFuelModel = carVanFuel.map(_.copy(car = Some(amount)))))
-                )
-
-                employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
-                  isPriorSubmission = cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-
-                  val nextPage = CompanyCarFuelBenefitsController.show(taxYear, employmentId)
-
-                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
-                }
-            }
+            },
+            amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )
         }
       }
     }
+  }
+
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
+                               (implicit user: User[_]): Future[Result] = {
+    fuelService.updateCar(taxYear, employmentId, employmentUserData, amount).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage = CompanyCarFuelBenefitsController.show(taxYear, employmentId)
+        RedirectService.benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+    }
+  }
+
+  private def amountForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
+    emptyFieldKey = s"benefits.companyCarBenefitsAmount.error.no-entry.${if (isAgent) "agent" else "individual"}",
+    wrongFormatKey = s"benefits.companyCarBenefitsAmount.error.incorrect-format.${if (isAgent) "agent" else "individual"}",
+    exceedsMaxAmountKey = s"benefits.companyCarBenefitsAmount.error.max-length.${if (isAgent) "agent" else "individual"}"
+  )
+
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+    carBenefitsAmountRedirects(cya, taxYear, employmentId)
   }
 }

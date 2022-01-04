@@ -19,7 +19,7 @@ package controllers.employment
 import builders.models.benefits.BenefitsBuilder.aBenefits
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import common.SessionValues
-import config.{MockAuditService, MockEmploymentSessionService}
+import config.{MockCheckYourBenefitsService, MockEmploymentSessionService}
 import play.api.http.Status._
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
@@ -28,7 +28,10 @@ import views.html.employment.{CheckYourBenefitsView, CheckYourBenefitsViewEOY}
 
 import scala.concurrent.Future
 
-class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockEmploymentSessionService with UnitTest with MockAuditService {
+class CheckYourBenefitsControllerSpec extends UnitTestWithApp
+  with MockEmploymentSessionService
+  with UnitTest
+  with MockCheckYourBenefitsService {
 
   lazy val view: CheckYourBenefitsView = app.injector.instanceOf[CheckYourBenefitsView]
   lazy val viewEOY: CheckYourBenefitsViewEOY = app.injector.instanceOf[CheckYourBenefitsViewEOY]
@@ -40,7 +43,7 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp with MockEmploymen
     view,
     viewEOY,
     mockEmploymentSessionService,
-    mockAuditService,
+    mockCheckYourBenefitsService,
     inYearAction,
     mockErrorHandler,
     testClock,

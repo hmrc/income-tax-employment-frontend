@@ -21,13 +21,16 @@ import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsControll
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
+import models.User
 import models.employment.EmploymentBenefitsType
-import models.mongo.EmploymentCYAModel
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
+import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{EmploymentSessionService, RedirectService}
-import services.RedirectService.{otherItemsAmountRedirects, redirectBasedOnCurrentAnswers}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
+import services.RedirectService.{benefitsSubmitRedirect, otherItemsAmountRedirects, redirectBasedOnCurrentAnswers}
+import services.benefits.ReimbursedService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.reimbursed.OtherBenefitsAmountView
@@ -41,6 +44,7 @@ class OtherBenefitsAmountController @Inject()(implicit val cc: MessagesControlle
                                               appConfig: AppConfig,
                                               pageView: OtherBenefitsAmountView,
                                               val employmentSessionService: EmploymentSessionService,
+                                              reimbursedService: ReimbursedService,
                                               errorHandler: ErrorHandler,
                                               ec: ExecutionContext,
                                               clock: Clock
@@ -65,41 +69,35 @@ class OtherBenefitsAmountController @Inject()(implicit val cc: MessagesControlle
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(CheckYourBenefitsController.show(taxYear, employmentId).url) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-          buildForm(user.isAgent).bindFromRequest().fold({
-            formWithErrors =>
+
+          buildForm(user.isAgent).bindFromRequest().fold(
+            formWithErrors => {
               val fillValue = cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.otherItems)
               Future.successful(BadRequest(pageView(taxYear, formWithErrors, fillValue, employmentId)))
-          }, {
-            newAmount =>
-              val cyaModel = cya.employment
-              val benefits = cyaModel.employmentBenefits
-              val reimbursedCostsVouchersAndNonCashModel = cyaModel.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel)
-
-              val updatedCyaModel = cyaModel.copy(employmentBenefits = benefits.map(_.copy(
-                reimbursedCostsVouchersAndNonCashModel = reimbursedCostsVouchersAndNonCashModel.map(_.copy(otherItems = Some(newAmount)))
-              )))
-
-              employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission,
-                cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                val nextPage = AssetsOrAssetTransfersBenefitsController.show(taxYear, employmentId)
-
-                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
-              }
-          })
+            },
+            amount => handleSuccessForm(taxYear, employmentId, cya, amount))
         }
       }
     }
   }
 
-  private def buildForm(isAgent: Boolean): Form[BigDecimal] = {
-    AmountForm.amountForm(
-      s"benefits.otherBenefitsAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-      s"benefits.otherBenefitsAmount.error.incorrectFormat.${if (isAgent) "agent" else "individual"}",
-      "benefits.otherBenefitsAmount.error.overMaximum"
-    )
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
+                               (implicit user: User[_]): Future[Result] = {
+    reimbursedService.updateOtherItems(taxYear, employmentId, employmentUserData, amount).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage = AssetsOrAssetTransfersBenefitsController.show(taxYear, employmentId)
+        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+    }
   }
 
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
+  private def buildForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
+    emptyFieldKey = s"benefits.otherBenefitsAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
+    wrongFormatKey = s"benefits.otherBenefitsAmount.error.incorrectFormat.${if (isAgent) "agent" else "individual"}",
+    exceedsMaxAmountKey = "benefits.otherBenefitsAmount.error.overMaximum"
+  )
+
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     otherItemsAmountRedirects(cya, taxYear, employmentId)
   }
 }

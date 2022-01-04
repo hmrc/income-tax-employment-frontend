@@ -17,19 +17,21 @@
 package controllers.benefits.fuel
 
 import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import config.MockEmploymentSessionService
+import config.{MockEmploymentSessionService, MockFuelService}
 import controllers.employment.routes.CheckYourBenefitsController
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
-import play.api.mvc.Result
 import play.api.mvc.Results.{BadRequest, InternalServerError, Ok, Redirect}
+import play.api.mvc.{Result, Results}
 import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout}
 import utils.UnitTestWithApp
 import views.html.benefits.fuel.CompanyCarBenefitsView
 
 import scala.concurrent.Future
 
-class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmploymentSessionService {
+class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
+  with MockEmploymentSessionService
+  with MockFuelService {
 
   private val taxYear = 2021
   private val employmentId = "223/AB12399"
@@ -51,9 +53,9 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
     nino,
     taxYear,
     employmentId,
-    false,
+    isPriorSubmission = false,
     hasPriorBenefits = false,
-    EmploymentCYAModel(anEmploymentSource.copy(employmentBenefits = None), isUsingCustomerData = false)
+    employment = EmploymentCYAModel(anEmploymentSource.copy(employmentBenefits = None), isUsingCustomerData = false)
   )
 
   private lazy val controller = new CompanyCarBenefitsController()(
@@ -63,12 +65,13 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp with MockEmployme
     view,
     mockAppConfig,
     mockEmploymentSessionService,
+    mockFuelService,
     mockErrorHandler,
     testClock)
 
   ".show" should {
     "get user session data and return the result from the given execution block" in new TestWithAuth {
-      val anyResult = Ok
+      val anyResult: Results.Status = Ok
       val result: Future[Result] = {
         mockGetSessionData(taxYear, employmentId, anyResult)
         controller.show(taxYear, employmentId)(fakeRequest)

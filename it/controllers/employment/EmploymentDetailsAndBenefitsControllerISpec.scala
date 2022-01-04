@@ -28,9 +28,11 @@ import utils.{IntegrationTest, ViewHelpers}
 
 
 class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with ViewHelpers {
-  private val taxYearEOY: Int = taxYear - 1
 
-  def url(taxYear: Int): String = s"$appUrl/$taxYear/employer-information?employmentId=001"
+  private val taxYearEOY: Int = taxYear - 1
+  private val employmentId = "employmentId"
+
+  private def url(taxYear: Int): String = s"$appUrl/$taxYear/employer-information?employmentId=$employmentId"
 
   object Selectors {
     val headingSelector = "#main-content > div > div > header > h1"
@@ -49,10 +51,10 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
   }
 
   def employmentDetailsUrl(taxYear: Int): String =
-    s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-details?employmentId=001"
+    s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-details?employmentId=$employmentId"
 
   def employmentBenefitsUrl(taxYear: Int): String =
-    s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-benefits?employmentId=001"
+    s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-benefits?employmentId=$employmentId"
 
   def employmentExpensesUrl(taxYear: Int): String =
     s"/update-and-submit-income-tax-return/employment-income/$taxYear/expenses/check-employment-expenses"

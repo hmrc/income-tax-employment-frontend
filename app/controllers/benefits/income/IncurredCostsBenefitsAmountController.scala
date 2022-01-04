@@ -23,12 +23,14 @@ import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import models.User
 import models.employment.EmploymentBenefitsType
-import models.mongo.EmploymentCYAModel
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
+import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.redirectBasedOnCurrentAnswers
-import services.{EmploymentSessionService, RedirectService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
+import services.RedirectService.{benefitsSubmitRedirect, incurredCostsPaidByEmployerAmountRedirects, redirectBasedOnCurrentAnswers}
+import services.benefits.IncomeService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.income.IncurredCostsBenefitsAmountView
@@ -42,19 +44,10 @@ class IncurredCostsBenefitsAmountController @Inject()(implicit val cc: MessagesC
                                                       incurredCostsBenefitsAmountView: IncurredCostsBenefitsAmountView,
                                                       appConfig: AppConfig,
                                                       val employmentSessionService: EmploymentSessionService,
+                                                      incomeService: IncomeService,
                                                       errorHandler: ErrorHandler,
                                                       ec: ExecutionContext,
                                                       clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
-
-  def amountForm(implicit user: User[_]): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"benefits.incurredCostsAmount.error.noEntry.${if (user.isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"benefits.incurredCostsAmount.error.incorrectFormat.${if (user.isAgent) "agent" else "individual"}",
-    exceedsMaxAmountKey = s"benefits.incurredCostsAmount.error.overMaximum.${if (user.isAgent) "agent" else "individual"}"
-  )
-
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
-    RedirectService.incurredCostsPaidByEmployerAmountRedirects(cya, taxYear, employmentId)
-  }
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -62,55 +55,51 @@ class IncurredCostsBenefitsAmountController @Inject()(implicit val cc: MessagesC
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalf))
-
           val form = fillFormFromPriorAndCYA(amountForm, prior, cyaAmount, employmentId)(
-            employment =>
-              employment.employmentBenefits.flatMap(_.benefits.flatMap(_.paymentsOnEmployeesBehalf))
+            employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.paymentsOnEmployeesBehalf))
           )
           Future.successful(Ok(incurredCostsBenefitsAmountView(taxYear, form, cyaAmount, employmentId)))
         }
       }
     }
-
   }
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-
       val redirectUrl = CheckYourBenefitsController.show(taxYear, employmentId).url
 
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
-
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           amountForm.bindFromRequest().fold(
-            { formWithErrors =>
+            formWithErrors => {
               val cyaAmount = cya.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalf))
               Future.successful(BadRequest(incurredCostsBenefitsAmountView(taxYear, formWithErrors, cyaAmount, employmentId)))
-            }, {
-              amount =>
-
-                val cyaModel = cya.employment
-                val benefits = cyaModel.employmentBenefits
-                val incomeTaxModel = benefits.flatMap(_.incomeTaxAndCostsModel)
-
-                val updatedCyaModel = cyaModel.copy(
-                  employmentBenefits = benefits.map(_.copy(incomeTaxAndCostsModel =
-                    incomeTaxModel.map(_.copy(paymentsOnEmployeesBehalf = Some(amount)))))
-                )
-
-                employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
-                  isPriorSubmission = cya.isPriorSubmission, hasPriorBenefits = cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-
-                  val nextPage = ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId)
-
-                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
-                }
-            }
+            },
+            amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )
         }
       }
     }
   }
 
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
+                               (implicit user: User[_]): Future[Result] = {
+    incomeService.updatePaymentsOnEmployeesBehalf(taxYear, employmentId, employmentUserData, amount).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage = ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYear, employmentId)
+        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+    }
+  }
+
+  private def amountForm(implicit user: User[_]): Form[BigDecimal] = AmountForm.amountForm(
+    emptyFieldKey = s"benefits.incurredCostsAmount.error.noEntry.${if (user.isAgent) "agent" else "individual"}",
+    wrongFormatKey = s"benefits.incurredCostsAmount.error.incorrectFormat.${if (user.isAgent) "agent" else "individual"}",
+    exceedsMaxAmountKey = s"benefits.incurredCostsAmount.error.overMaximum.${if (user.isAgent) "agent" else "individual"}"
+  )
+
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+    incurredCostsPaidByEmployerAmountRedirects(cya, taxYear, employmentId)
+  }
 }

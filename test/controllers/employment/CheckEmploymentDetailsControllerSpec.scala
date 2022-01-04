@@ -16,38 +16,38 @@
 
 package controllers.employment
 
-import audit.{AmendEmploymentDetailsUpdateAudit, AuditEmploymentData, AuditNewEmploymentData, CreateNewEmploymentDetailsAudit, PriorEmploymentAuditInfo}
 import common.SessionValues
-import config.{MockAuditService, MockEmploymentSessionService, MockNrsService}
-import models.employment.{AllEmploymentData, DecodedAmendEmploymentDetailsPayload, DecodedCreateNewEmploymentDetailsPayload, DecodedEmploymentData, DecodedNewEmploymentData, DecodedPriorEmploymentInfo, Deductions, EmploymentData, EmploymentDetailsViewModel, EmploymentSource, Pay, StudentLoans}
-import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
+import config.{MockAuditService, MockCheckEmploymentDetailsService, MockEmploymentSessionService, MockNrsService}
+import models.employment._
 import play.api.http.Status._
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
-import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.UnitTestWithApp
 import views.html.employment.CheckEmploymentDetailsView
 
 import scala.concurrent.Future
 
-class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockEmploymentSessionService with MockAuditService with MockNrsService {
+class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
+  with MockEmploymentSessionService
+  with MockAuditService
+  with MockCheckEmploymentDetailsService
+  with MockNrsService {
 
-  lazy val view = app.injector.instanceOf[CheckEmploymentDetailsView]
-  lazy val controller = new CheckEmploymentDetailsController()(
+  private lazy val view = app.injector.instanceOf[CheckEmploymentDetailsView]
+  private lazy val controller = new CheckEmploymentDetailsController()(
     mockMessagesControllerComponents,
     authorisedAction,
     view,
     inYearAction,
     mockAppConfig,
     mockEmploymentSessionService,
-    mockNrsService,
-    mockAuditService,
+    mockCheckEmploymentDetailsService,
     ec,
     mockErrorHandler,
     testClock
   )
-  val taxYear = mockAppConfig.defaultTaxYear
-  val employmentId = "223/AB12399"
+  private val taxYear = mockAppConfig.defaultTaxYear
+  private val employmentId = "223/AB12399"
 
 
   ".show" should {
@@ -83,412 +83,13 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp with MockEmpl
 
       s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
         val result: Future[Result] = {
-          mockFind(taxYear,Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+          mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
           controller.show(taxYear, employmentId)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
         }
 
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)
       }
-    }
-  }
-
-  //scalastyle:off
-  "performSubmitAudits" should {
-    "send the audit events from the model when it's a create" in {
-
-      val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
-        None,
-        Some(
-          CreateUpdateEmployment(
-            Some("employerRef"),
-            "name",
-            "2000-10-10"
-          )
-        ),
-        Some(
-          CreateUpdateEmploymentData(
-            pay = CreateUpdatePay(
-              4354,
-              564
-            ),
-            deductions = Some(
-              Deductions(
-                Some(StudentLoans(
-                  Some(100),
-                  Some(100)
-                ))
-              )
-            )
-          )
-        ),
-        Some("001")
-      )
-      val prior = None
-
-      verifyAuditEvent(CreateNewEmploymentDetailsAudit(
-        2021,user.affinityGroup.toLowerCase,user.nino,user.mtditid,AuditNewEmploymentData(
-          Some("name"),Some("employerRef"),Some("2000-10-10"), None, Some(4354), Some(564), None
-        ),Seq()
-      ).toAuditModel)
-
-      await(controller.performSubmitAudits(model, "001", 2021, prior)) shouldBe AuditResult.Success
-    }
-    "send the audit events from the model when it's a create and theres existing data" in {
-
-      val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
-        None,
-        Some(
-          CreateUpdateEmployment(
-            Some("employerRef"),
-            "name",
-            "2000-10-10"
-          )
-        ),
-        Some(
-          CreateUpdateEmploymentData(
-            pay = CreateUpdatePay(
-              4354,
-              564
-            ),
-            deductions = Some(
-              Deductions(
-                Some(StudentLoans(
-                  Some(100),
-                  Some(100)
-                ))
-              )
-            )
-          )
-        ),
-        Some("001")
-      )
-      val employmentSource1 = EmploymentSource(
-        employmentId = "002",
-        employerName = "Mishima Zaibatsu",
-        employerRef = Some("223/AB12399"),
-        payrollId = Some("123456789999"),
-        startDate = Some("2019-04-21"),
-        cessationDate = Some("2020-03-11"),
-        dateIgnored = None,
-        submittedOn = Some("2020-01-04T05:01:01Z"),
-        employmentData = Some(EmploymentData(
-          submittedOn = "2020-02-12",
-          employmentSequenceNumber = Some("123456789999"),
-          companyDirector = Some(true),
-          closeCompany = Some(false),
-          directorshipCeasedDate = Some("2020-02-12"),
-          occPen = Some(false),
-          disguisedRemuneration = Some(false),
-          pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
-          Some(Deductions(
-            studentLoans = Some(StudentLoans(
-              uglDeductionAmount = Some(100.00),
-              pglDeductionAmount = Some(100.00)
-            ))
-          ))
-        )),
-        None
-      )
-
-      val prior: AllEmploymentData = AllEmploymentData(
-        hmrcEmploymentData = Seq(employmentSource1),
-        hmrcExpenses = None,
-        customerEmploymentData = Seq(),
-        customerExpenses = None
-      )
-      mockGetLatestEmploymentDataEOY(prior,false)
-      mockEmploymentSourceToUseNone(prior,"001",false)
-
-      verifyAuditEvent(CreateNewEmploymentDetailsAudit(
-        2021,user.affinityGroup.toLowerCase,user.nino,user.mtditid,AuditNewEmploymentData(
-          Some("name"),Some("employerRef"),Some("2000-10-10"), None, Some(4354), Some(564), None
-        ),Seq(PriorEmploymentAuditInfo("Mishima Zaibatsu",Some("223/AB12399")))
-      ).toAuditModel)
-
-      await(controller.performSubmitAudits(model, "001", 2021, Some(prior))) shouldBe AuditResult.Success
-    }
-    "send the audit events from the model when it's an amend" in {
-
-      val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
-        Some("id"),
-        Some(
-          CreateUpdateEmployment(
-            Some("employerRef"),
-            "name",
-            "2000-10-10"
-          )
-        ),
-        Some(
-          CreateUpdateEmploymentData(
-            pay = CreateUpdatePay(
-              4354,
-              564
-            ),
-            deductions = Some(
-              Deductions(
-                Some(StudentLoans(
-                  Some(100),
-                  Some(100)
-                ))
-              )
-            )
-          )
-        ),
-        Some("001")
-      )
-
-      val employmentSource1 = EmploymentSource(
-        employmentId = "001",
-        employerName = "Mishima Zaibatsu",
-        employerRef = Some("223/AB12399"),
-        payrollId = Some("123456789999"),
-        startDate = Some("2019-04-21"),
-        cessationDate = Some("2020-03-11"),
-        dateIgnored = None,
-        submittedOn = Some("2020-01-04T05:01:01Z"),
-        employmentData = Some(EmploymentData(
-          submittedOn = "2020-02-12",
-          employmentSequenceNumber = Some("123456789999"),
-          companyDirector = Some(true),
-          closeCompany = Some(false),
-          directorshipCeasedDate = Some("2020-02-12"),
-          occPen = Some(false),
-          disguisedRemuneration = Some(false),
-          pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
-          Some(Deductions(
-            studentLoans = Some(StudentLoans(
-              uglDeductionAmount = Some(100.00),
-              pglDeductionAmount = Some(100.00)
-            ))
-          ))
-        )),
-        None
-      )
-
-      val prior: AllEmploymentData = AllEmploymentData(
-          hmrcEmploymentData = Seq(employmentSource1),
-          hmrcExpenses = None,
-          customerEmploymentData = Seq(),
-          customerExpenses = None
-        )
-
-      mockEmploymentSourceToUseHMRC(prior,"001",false)
-
-      verifyAuditEvent(AmendEmploymentDetailsUpdateAudit(
-        2021,user.affinityGroup.toLowerCase,user.nino,user.mtditid,AuditEmploymentData(
-          employerName = employmentSource1.employerName,
-          employerRef = employmentSource1.employerRef,
-          employmentId = employmentSource1.employmentId,
-          startDate = employmentSource1.startDate,
-          cessationDate = employmentSource1.cessationDate,
-          taxablePayToDate = employmentSource1.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
-          totalTaxToDate = employmentSource1.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
-          payrollId = employmentSource1.payrollId
-        ),AuditEmploymentData(
-          "name",Some("employerRef"),"001",Some("2000-10-10"), Some("2020-03-11"), Some(4354), Some(564), Some("123456789999")
-        )
-      ).toAuditModel)
-
-      await(controller.performSubmitAudits(model, "001", 2021, Some(prior))) shouldBe AuditResult.Success
-    }
-  }
-
-  //scalastyle:off
-  "performSubmitNrsPayload" should {
-    "send the event from the model when it's a create" in {
-
-      val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
-        None,
-        Some(
-          CreateUpdateEmployment(
-            Some("employerRef"),
-            "name",
-            "2000-10-10"
-          )
-        ),
-        Some(
-          CreateUpdateEmploymentData(
-            pay = CreateUpdatePay(
-              4354,
-              564
-            ),
-            deductions = Some(
-              Deductions(
-                Some(StudentLoans(
-                  Some(100),
-                  Some(100)
-                ))
-              )
-            )
-          )
-        ),
-        Some("001")
-      )
-      val prior = None
-
-      verifySubmitEvent(DecodedCreateNewEmploymentDetailsPayload(DecodedNewEmploymentData(
-          Some("name"),Some("employerRef"),Some("2000-10-10"), None, Some(4354), Some(564), None
-        ),Seq()
-      ))
-
-      await(controller.performSubmitNrsPayload(model, "001", prior)) shouldBe Right()
-    }
-    "send the events from the model when it's a create and theres existing data" in {
-
-      val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
-        None,
-        Some(
-          CreateUpdateEmployment(
-            Some("employerRef"),
-            "name",
-            "2000-10-10"
-          )
-        ),
-        Some(
-          CreateUpdateEmploymentData(
-            pay = CreateUpdatePay(
-              4354,
-              564
-            ),
-            deductions = Some(
-              Deductions(
-                Some(StudentLoans(
-                  Some(100),
-                  Some(100)
-                ))
-              )
-            )
-          )
-        ),
-        Some("001")
-      )
-      val employmentSource1 = EmploymentSource(
-        employmentId = "002",
-        employerName = "Mishima Zaibatsu",
-        employerRef = Some("223/AB12399"),
-        payrollId = Some("123456789999"),
-        startDate = Some("2019-04-21"),
-        cessationDate = Some("2020-03-11"),
-        dateIgnored = None,
-        submittedOn = Some("2020-01-04T05:01:01Z"),
-        employmentData = Some(EmploymentData(
-          submittedOn = "2020-02-12",
-          employmentSequenceNumber = Some("123456789999"),
-          companyDirector = Some(true),
-          closeCompany = Some(false),
-          directorshipCeasedDate = Some("2020-02-12"),
-          occPen = Some(false),
-          disguisedRemuneration = Some(false),
-          pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
-          Some(Deductions(
-            studentLoans = Some(StudentLoans(
-              uglDeductionAmount = Some(100.00),
-              pglDeductionAmount = Some(100.00)
-            ))
-          ))
-        )),
-        None
-      )
-
-      val prior: AllEmploymentData = AllEmploymentData(
-        hmrcEmploymentData = Seq(employmentSource1),
-        hmrcExpenses = None,
-        customerEmploymentData = Seq(),
-        customerExpenses = None
-      )
-      mockGetLatestEmploymentDataEOY(prior,false)
-      mockEmploymentSourceToUseNone(prior,"001",false)
-
-      verifySubmitEvent(DecodedCreateNewEmploymentDetailsPayload(DecodedNewEmploymentData(
-          Some("name"),Some("employerRef"),Some("2000-10-10"), None, Some(4354), Some(564), None
-        ),Seq(DecodedPriorEmploymentInfo("Mishima Zaibatsu",Some("223/AB12399")))
-      ))
-
-      await(controller.performSubmitNrsPayload(model, "001", Some(prior))) shouldBe Right()
-    }
-    "send the events from the model when it's an amend" in {
-
-      val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
-        Some("id"),
-        Some(
-          CreateUpdateEmployment(
-            Some("employerRef"),
-            "name",
-            "2000-10-10"
-          )
-        ),
-        Some(
-          CreateUpdateEmploymentData(
-            pay = CreateUpdatePay(
-              4354,
-              564
-            ),
-            deductions = Some(
-              Deductions(
-                Some(StudentLoans(
-                  Some(100),
-                  Some(100)
-                ))
-              )
-            )
-          )
-        ),
-        Some("001")
-      )
-
-      val employmentSource1 = EmploymentSource(
-        employmentId = "001",
-        employerName = "Mishima Zaibatsu",
-        employerRef = Some("223/AB12399"),
-        payrollId = Some("123456789999"),
-        startDate = Some("2019-04-21"),
-        cessationDate = Some("2020-03-11"),
-        dateIgnored = None,
-        submittedOn = Some("2020-01-04T05:01:01Z"),
-        employmentData = Some(EmploymentData(
-          submittedOn = "2020-02-12",
-          employmentSequenceNumber = Some("123456789999"),
-          companyDirector = Some(true),
-          closeCompany = Some(false),
-          directorshipCeasedDate = Some("2020-02-12"),
-          occPen = Some(false),
-          disguisedRemuneration = Some(false),
-          pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
-          Some(Deductions(
-            studentLoans = Some(StudentLoans(
-              uglDeductionAmount = Some(100.00),
-              pglDeductionAmount = Some(100.00)
-            ))
-          ))
-        )),
-        None
-      )
-
-      val prior: AllEmploymentData = AllEmploymentData(
-        hmrcEmploymentData = Seq(employmentSource1),
-        hmrcExpenses = None,
-        customerEmploymentData = Seq(),
-        customerExpenses = None
-      )
-
-      mockEmploymentSourceToUseHMRC(prior,"001",false)
-
-      verifySubmitEvent(DecodedAmendEmploymentDetailsPayload(DecodedEmploymentData(
-          employerName = employmentSource1.employerName,
-          employerRef = employmentSource1.employerRef,
-          employmentId = employmentSource1.employmentId,
-          startDate = employmentSource1.startDate,
-          cessationDate = employmentSource1.cessationDate,
-          taxablePayToDate = employmentSource1.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)),
-          totalTaxToDate = employmentSource1.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)),
-          payrollId = employmentSource1.payrollId
-        ),DecodedEmploymentData(
-          "name",Some("employerRef"),"001",Some("2000-10-10"), Some("2020-03-11"), Some(4354), Some(564), Some("123456789999")
-        )
-      ))
-
-      await(controller.performSubmitNrsPayload(model, "001", Some(prior))) shouldBe Right()
     }
   }
 }

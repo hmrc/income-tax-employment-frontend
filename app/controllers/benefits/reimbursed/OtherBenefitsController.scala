@@ -17,21 +17,22 @@
 package controllers.benefits.reimbursed
 
 import config.{AppConfig, ErrorHandler}
+import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsController
+import controllers.benefits.reimbursed.routes.OtherBenefitsAmountController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
 import models.employment.EmploymentBenefitsType
-import models.mongo.EmploymentCYAModel
+import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.{otherItemsRedirects, redirectBasedOnCurrentAnswers}
-import services.{EmploymentSessionService, RedirectService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
+import services.RedirectService.{benefitsSubmitRedirect, otherItemsRedirects, redirectBasedOnCurrentAnswers}
+import services.benefits.ReimbursedService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.reimbursed.OtherBenefitsView
-import controllers.benefits.reimbursed.routes.OtherBenefitsAmountController
-import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsController
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,13 +43,10 @@ class OtherBenefitsController @Inject()(implicit val cc: MessagesControllerCompo
                                         view: OtherBenefitsView,
                                         appConfig: AppConfig,
                                         employmentSessionService: EmploymentSessionService,
+                                        reimbursedService: ReimbursedService,
                                         errorHandler: ErrorHandler,
                                         ec: ExecutionContext,
                                         clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
-
-  def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.otherBenefits.error.${if (user.isAgent) "agent" else "individual"}"
-  )
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -65,7 +63,6 @@ class OtherBenefitsController @Inject()(implicit val cc: MessagesControllerCompo
         }
       }
     }
-
   }
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
@@ -77,38 +74,29 @@ class OtherBenefitsController @Inject()(implicit val cc: MessagesControllerCompo
 
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(view(formWithErrors, taxYear, employmentId))),
-            yesNo => {
-              val cya = data.employment
-              val benefits = cya.employmentBenefits
-              val reimbursedCostsVouchersAndNonCashModel = benefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel)
-
-              val updatedCyaModel: EmploymentCYAModel = {
-                if (yesNo) {
-                  cya.copy(employmentBenefits = benefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel =
-                    reimbursedCostsVouchersAndNonCashModel.map(_.copy(otherItemsQuestion = Some(true))))))
-                } else {
-                  cya.copy(employmentBenefits = benefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel =
-                    reimbursedCostsVouchersAndNonCashModel.map(_.copy(otherItemsQuestion = Some(false), otherItems = None)))))
-                }
-              }
-
-              employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-
-                val nextPage = {
-                  if (yesNo) {
-                    OtherBenefitsAmountController.show(taxYear, employmentId)
-                  } else {
-                    AssetsOrAssetTransfersBenefitsController.show(taxYear, employmentId)
-                  }
-                }
-
-                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
-              }
-            }
+            yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
         }
       }
     }
   }
+
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
+                               (implicit user: User[_]): Future[Result] = {
+    reimbursedService.updateOtherItemsQuestion(taxYear, employmentId, employmentUserData, questionValue).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage =
+          if (questionValue) {
+            OtherBenefitsAmountController.show(taxYear, employmentId)
+          } else {
+            AssetsOrAssetTransfersBenefitsController.show(taxYear, employmentId)
+          }
+        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+    }
+  }
+
+  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"benefits.otherBenefits.error.${if (user.isAgent) "agent" else "individual"}"
+  )
 }

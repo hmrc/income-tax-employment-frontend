@@ -21,17 +21,17 @@ import config.{MockAuditService, MockEmploymentSessionService}
 import forms.YesNoForm
 import models.employment.{AllEmploymentData, EmploymentSource}
 import play.api.http.Status._
-import play.api.mvc.{Request, Result}
 import play.api.mvc.Results.InternalServerError
+import play.api.mvc.{Request, Result}
 import utils.UnitTestWithApp
 import views.html.employment.AddEmploymentView
 
 import scala.concurrent.Future
 
-class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSessionService with MockAuditService{
+class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSessionService with MockAuditService {
 
   lazy val view = app.injector.instanceOf[AddEmploymentView]
-  lazy val controller  = new AddEmploymentController()(
+  lazy val controller = new AddEmploymentController()(
     mockMessagesControllerComponents,
     authorisedAction,
     inYearAction,
@@ -43,7 +43,7 @@ class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSes
   )
   val taxYear = 2021
   val employmentId = "223/AB12399"
-  val form =  YesNoForm.yesNoForm(
+  val form = YesNoForm.yesNoForm(
     missingInputError = "AddEmployment.error"
   )
 
@@ -67,7 +67,6 @@ class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSes
         val result: Future[Result] = {
           mockGetPriorRight(taxYear,
             Some(AllEmploymentData(Seq(EmploymentSource("ID-001", "Mishima Zaibatsu", None, None, None, None, None, None, None, None)), None, Seq(), None)))
-
 
 
           controller.show(taxYear)(fakeRequest.withSession(
@@ -113,7 +112,6 @@ class AddEmploymentControllerSpec extends UnitTestWithApp with MockEmploymentSes
         val result: Future[Result] = {
           mockGetPriorRight(taxYear,
             Some(AllEmploymentData(Seq(EmploymentSource("ID-001", "Mishima Zaibatsu", None, None, None, None, None, None, None, None)), None, Seq(), None)))
-
 
 
           controller.submit(taxYear)(fakeRequest.withFormUrlEncodedBody("value" -> "true").withSession(

@@ -21,21 +21,21 @@ import controllers.benefits.accommodation.routes._
 import controllers.benefits.travel.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
 import models.User
-import models.benefits.AccommodationRelocationModel
 import models.employment.EmploymentBenefitsType
-import models.mongo.EmploymentCYAModel
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
 import services.RedirectService._
-import services.{EmploymentSessionService, RedirectService}
+import services.benefits.AccommodationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.accommodation.AccommodationRelocationBenefitsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AccommodationRelocationBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -44,17 +44,10 @@ class AccommodationRelocationBenefitsController @Inject()(implicit val cc: Messa
                                                           accommodationRelocationBenefitsView: AccommodationRelocationBenefitsView,
                                                           appConfig: AppConfig,
                                                           employmentSessionService: EmploymentSessionService,
+                                                          accommodationService: AccommodationService,
                                                           errorHandler: ErrorHandler,
                                                           ec: ExecutionContext,
                                                           clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
-
-  def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.accommodationRelocation.error.${if (user.isAgent) "agent" else "individual"}"
-  )
-
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
-    RedirectService.accommodationRelocationBenefitsRedirects(cya, taxYear, employmentId)
-  }
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -71,7 +64,6 @@ class AccommodationRelocationBenefitsController @Inject()(implicit val cc: Messa
     }
   }
 
-
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
 
@@ -80,44 +72,33 @@ class AccommodationRelocationBenefitsController @Inject()(implicit val cc: Messa
 
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(accommodationRelocationBenefitsView(formWithErrors, taxYear, employmentId))),
-            yesNo => {
-              val cya = data.employment
-              val benefits = cya.employmentBenefits
-              val accommodationRelocation = cya.employmentBenefits.flatMap(_.accommodationRelocationModel)
-
-              val updatedCyaModel: EmploymentCYAModel = {
-                accommodationRelocation match {
-                  case Some(accommodationRelocationModel) if yesNo =>
-                    cya.copy(employmentBenefits = benefits.map(_.copy(accommodationRelocationModel =
-                      Some(accommodationRelocationModel.copy(sectionQuestion = Some(true))))))
-                  case Some(_) =>
-                    cya.copy(employmentBenefits = benefits.map(_.copy(accommodationRelocationModel =
-                      Some(AccommodationRelocationModel.clear))))
-                  case _ =>
-                    cya.copy(employmentBenefits = benefits.map(_.copy(accommodationRelocationModel =
-                      Some(AccommodationRelocationModel(sectionQuestion = Some(yesNo))))))
-                }
-              }
-
-              employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-
-                val nextPage = {
-                  if (yesNo) {
-                    LivingAccommodationBenefitsController.show(taxYear, employmentId)
-                  } else {
-                    TravelOrEntertainmentBenefitsController.show(taxYear, employmentId)
-                  }
-                }
-
-                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
-              }
-            }
+            yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
         }
       }
     }
   }
 
+  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"benefits.accommodationRelocation.error.${if (user.isAgent) "agent" else "individual"}"
+  )
 
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+    accommodationRelocationBenefitsRedirects(cya, taxYear, employmentId)
+  }
+
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, sectionQuestionValue: Boolean)
+                               (implicit user: User[_]): Future[Result] = {
+    accommodationService.updateSectionQuestion(taxYear, employmentId, employmentUserData, sectionQuestionValue).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage = if (sectionQuestionValue) {
+          LivingAccommodationBenefitsController.show(taxYear, employmentId)
+        }
+        else {
+          TravelOrEntertainmentBenefitsController.show(taxYear, employmentId)
+        }
+        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+    }
+  }
 }

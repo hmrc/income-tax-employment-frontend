@@ -16,6 +16,7 @@
 
 package services
 
+import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import config._
 import models.benefits.{AssetsModel, Benefits, BenefitsViewModel}
 import models.employment._
@@ -440,6 +441,48 @@ class EmploymentSessionServiceSpec extends UnitTest
 
       status(response) shouldBe SEE_OTHER
       redirectUrl(response) shouldBe "400"
+    }
+  }
+
+  ".createOrUpdateEmploymentUserDataWith" should {
+    "create EmploymentUserData in repository end return successful result" in {
+      val expected = EmploymentUserData(
+        user.sessionId,
+        user.mtditid,
+        user.nino,
+        taxYear,
+        "employmentId",
+        isPriorSubmission = true,
+        hasPriorBenefits = false,
+        employment = anEmploymentCYAModel,
+        testClock.now()
+      )
+
+      mockCreateOrUpdate(expected, Right())
+
+      val response = service.createOrUpdateEmploymentUserDataWith(taxYear, "employmentId", isPriorSubmission = true, hasPriorBenefits = false, anEmploymentCYAModel)
+
+      await(response) shouldBe Right(expected)
+    }
+
+    "return Left when repository createOrUpdate fails" in {
+      val expected = EmploymentUserData(
+        user.sessionId,
+        user.mtditid,
+        user.nino,
+        taxYear,
+        "employmentId",
+        isPriorSubmission = true,
+        hasPriorBenefits = false,
+        employment = anEmploymentCYAModel,
+        testClock.now()
+      )
+
+      mockCreateOrUpdate(expected, Left(DataNotUpdated))
+
+      val response = service.createOrUpdateEmploymentUserDataWith(taxYear, "employmentId", isPriorSubmission = true, hasPriorBenefits = false, anEmploymentCYAModel)
+
+      await(response) shouldBe Left()
     }
   }
 
