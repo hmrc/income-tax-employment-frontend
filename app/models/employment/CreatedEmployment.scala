@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package models.requests
+package models.employment
 
 import play.api.libs.json.{Json, OFormat}
 
-case class RefreshIncomeSourceRequest(incomeSource: String)
+case class CreatedEmployment(employmentId: String)
 
-object RefreshIncomeSourceRequest {
-  implicit val formats: OFormat[RefreshIncomeSourceRequest] = Json.format[RefreshIncomeSourceRequest]
+object CreatedEmployment {
+  implicit val formats: OFormat[CreatedEmployment] = Json.format[CreatedEmployment]
 }

@@ -232,6 +232,14 @@ class EmploymentSessionServiceSpec extends UnitTest
       status(response.map(_.right.get)) shouldBe SEE_OTHER
       redirectUrl(response.map(_.right.get)) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYear/employment-summary"
     }
+    "use the request model to make the api call and return the correct redirect when it is an add case" in {
+      mockCreateUpdateEmploymentData(nino, taxYear, model)(Right(Some("473474747")))
+
+      val response = service.createOrUpdateEmploymentResult(taxYear, model)
+
+      status(response.map(_.right.get)) shouldBe SEE_OTHER
+      redirectUrl(response.map(_.right.get)) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-benefits?employmentId=473474747"
+    }
 
     "use the request model to make the api call  and handle an error" in {
       mockCreateUpdateEmploymentData(nino, taxYear, model)(Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError)))
