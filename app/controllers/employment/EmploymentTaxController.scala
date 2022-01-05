@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,19 @@ import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.AmountForm
-import javax.inject.Inject
+import models.User
+import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import services.RedirectService.employmentDetailsRedirect
+import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.EmploymentTaxView
 
+import javax.inject.Inject
 import scala.concurrent.Future
 
 class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComponents,
@@ -37,23 +40,14 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
                                         appConfig: AppConfig,
                                         employmentTaxView: EmploymentTaxView,
                                         employmentSessionService: EmploymentSessionService,
+                                        employmentService: EmploymentService,
                                         inYearAction: InYearAction,
                                         errorHandler: ErrorHandler,
-                                        implicit val clock: Clock
-                                       )
-  extends FrontendController(mcc) with I18nSupport with SessionHelper {
+                                        implicit val clock: Clock) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
-  implicit val ec = mcc.executionContext
+  private implicit val ec = mcc.executionContext
 
-  def buildForm(isAgent: Boolean): Form[BigDecimal] = {
-    AmountForm.amountForm(
-      s"employment.employmentTax.error.noEntry.${if (isAgent) "agent" else "individual"}",
-      "employment.employmentTax.error.format",
-      "employment.employmentTax.error.max"
-    )
-  }
-
-  def show(taxYear: Int, employmentId: String):Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
@@ -65,15 +59,12 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
             val priorTax = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)))
             lazy val unfilledForm = buildForm(user.isAgent)
             val form: Form[BigDecimal] = cyaTax.fold(unfilledForm)(
-              cyaTaxed => if(priorTax.exists(_.equals(cyaTaxed))) unfilledForm else buildForm(user.isAgent).fill(cyaTaxed))
-
-            Future.successful(Ok(employmentTaxView(taxYear, employmentId, cya.employment.employmentDetails.employerName,form, cyaTax)))
-
+              cyaTaxed => if (priorTax.exists(_.equals(cyaTaxed))) unfilledForm else buildForm(user.isAgent).fill(cyaTaxed))
+            Future.successful(Ok(employmentTaxView(taxYear, employmentId, cya.employment.employmentDetails.employerName, form, cyaTax)))
 
           case None => Future.successful(
             Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId)))
         }
-
       }
     }
   }
@@ -81,23 +72,29 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-
       val redirectUrl = CheckEmploymentDetailsController.show(taxYear, employmentId).url
 
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
         buildForm(user.isAgent).bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(employmentTaxView(taxYear, employmentId, cya.employment.employmentDetails.employerName,
             formWithErrors, cya.employment.employmentDetails.totalTaxToDate))),
-          completeForm => {
-            val employmentCYAModel = cya.employment.copy(employmentDetails = cya.employment.employmentDetails.copy(totalTaxToDate = Some(completeForm)))
-            employmentSessionService.createOrUpdateSessionData(
-              employmentId, employmentCYAModel, taxYear, cya.isPriorSubmission,cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-              employmentDetailsRedirect(employmentCYAModel,taxYear,employmentId,cya.isPriorSubmission)
-            }
-          }
+          completeForm => handleSuccessForm(taxYear, employmentId, cya, completeForm)
         )
       }
     }
   }
 
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, totalTaxToDate: BigDecimal)
+                               (implicit user: User[_]): Future[Result] = {
+    employmentService.updateTotalTaxToDate(taxYear, employmentId, employmentUserData, totalTaxToDate).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) => employmentDetailsRedirect(employmentUserData.employment, taxYear, employmentId, employmentUserData.isPriorSubmission)
+    }
+  }
+
+  private def buildForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
+    emptyFieldKey = s"employment.employmentTax.error.noEntry.${if (isAgent) "agent" else "individual"}",
+    wrongFormatKey = "employment.employmentTax.error.format",
+    exceedsMaxAmountKey = "employment.employmentTax.error.max"
+  )
 }

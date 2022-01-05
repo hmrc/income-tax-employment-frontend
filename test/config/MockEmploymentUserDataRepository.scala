@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,8 @@ trait MockEmploymentUserDataRepository extends MockFactory {
 
   val mockEmploymentUserDataRepository: EmploymentUserDataRepository = mock[EmploymentUserDataRepository]
 
-  def mockFind(taxYear: Int, id: String,
+  def mockFind(taxYear: Int,
+               id: String,
                repositoryResponse: Either[DatabaseError, Option[EmploymentUserData]]
               ): CallHandler3[Int, String, User[_], Future[Either[DatabaseError, Option[EmploymentUserData]]]] = {
     (mockEmploymentUserDataRepository.find(_: Int, _: String)(_: User[_]))
@@ -51,6 +52,4 @@ trait MockEmploymentUserDataRepository extends MockFactory {
       .returns(Future.successful(response))
       .anyNumberOfTimes()
   }
-
-
 }

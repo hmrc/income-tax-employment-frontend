@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -800,7 +800,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData.copy(employment = cya.copy(employmentDetails = cya.employmentDetails.copy(
-                  cessationDateQuestion = Some(false), cessationDate = Some(s"${taxYearEOY - 1}-11-10")))), aUserRequest)
+          cessationDateQuestion = Some(false), cessationDate = Some(s"${taxYearEOY - 1}-11-10")))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }

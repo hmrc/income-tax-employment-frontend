@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,15 @@ import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes.ProfessionalFeesAndSubscriptionsExpensesController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
-import models.mongo.ExpensesCYAModel
+import models.User
+import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.ExpensesRedirectService.redirectBasedOnCurrentAnswers
-import services.{EmploymentSessionService, ExpensesRedirectService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
+import services.ExpensesRedirectService.{expensesSubmitRedirect, flatRateAmountRedirect, redirectBasedOnCurrentAnswers}
+import services.expenses.ExpensesService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.expenses.UniformsOrToolsExpensesAmountView
@@ -41,10 +43,10 @@ class UniformsOrToolsExpensesAmountController @Inject()(implicit val cc: Message
                                                         uniformsOrToolsExpensesAmountView: UniformsOrToolsExpensesAmountView,
                                                         appConfig: AppConfig,
                                                         val employmentSessionService: EmploymentSessionService,
+                                                        expensesService: ExpensesService,
                                                         errorHandler: ErrorHandler,
                                                         ec: ExecutionContext,
                                                         clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
-
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -66,39 +68,34 @@ class UniformsOrToolsExpensesAmountController @Inject()(implicit val cc: Message
         redirectBasedOnCurrentAnswers(taxYear, cya)(redirects(_, taxYear)) { data =>
 
           buildForm(user.isAgent).bindFromRequest().fold(
-            { formWithErrors =>
+            formWithErrors => {
               val fillValue = data.expensesCya.expenses.flatRateJobExpenses
               Future.successful(BadRequest(uniformsOrToolsExpensesAmountView(taxYear, formWithErrors, fillValue)))
-            }, {
-              newAmount =>
-
-                val expensesCYAModel = data.expensesCya
-                val expensesViewModel = expensesCYAModel.expenses
-                val updatedCyaModel = expensesCYAModel.copy(expenses = expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))
-
-                employmentSessionService.createOrUpdateExpensesSessionData(updatedCyaModel,
-                  taxYear,
-                  data.isPriorSubmission,
-                  data.isPriorSubmission)(errorHandler.internalServerError()) {
-
-                  val nextPage = ProfessionalFeesAndSubscriptionsExpensesController.show(taxYear)
-
-                  ExpensesRedirectService.expensesSubmitRedirect(updatedCyaModel, nextPage)(taxYear)
-                }
-            }
+            },
+            amount => handleSuccessForm(taxYear, data, amount)
           )
         }
       }
     }
   }
 
-  private def buildForm(isAgent: Boolean): Form[BigDecimal] = {
-    AmountForm.amountForm(s"expenses.uniformsWorkClothesToolsAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
-      s"expenses.uniformsWorkClothesToolsAmount.error.invalidFormat.${if (isAgent) "agent" else "individual"}",
-      s"expenses.uniformsWorkClothesToolsAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}")
+  private def handleSuccessForm(taxYear: Int, expensesUserData: ExpensesUserData, amount: BigDecimal)
+                               (implicit user: User[_]): Future[Result] = {
+    expensesService.updateFlatRateJobExpenses(taxYear, expensesUserData, amount).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(expensesUserData) =>
+        val nextPage = ProfessionalFeesAndSubscriptionsExpensesController.show(taxYear)
+        expensesSubmitRedirect(expensesUserData.expensesCya, nextPage)(taxYear)
+    }
   }
 
+  private def buildForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
+    emptyFieldKey = s"expenses.uniformsWorkClothesToolsAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
+    wrongFormatKey = s"expenses.uniformsWorkClothesToolsAmount.error.invalidFormat.${if (isAgent) "agent" else "individual"}",
+    exceedsMaxAmountKey = s"expenses.uniformsWorkClothesToolsAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}"
+  )
+
   private def redirects(cya: ExpensesCYAModel, taxYear: Int): Seq[ConditionalRedirect] = {
-    ExpensesRedirectService.flatRateAmountRedirect(cya, taxYear)
+    flatRateAmountRedirect(cya, taxYear)
   }
 }

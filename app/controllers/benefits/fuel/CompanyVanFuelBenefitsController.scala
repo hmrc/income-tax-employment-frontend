@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,20 +21,20 @@ import controllers.benefits.fuel.routes.{CompanyVanFuelBenefitsAmountController,
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
 import models.User
-import models.benefits.{BenefitsViewModel, CarVanFuelModel}
 import models.employment.EmploymentBenefitsType
-import models.mongo.EmploymentCYAModel
+import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.{redirectBasedOnCurrentAnswers, vanFuelBenefitsRedirects}
-import services.{EmploymentSessionService, RedirectService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
+import services.RedirectService.{benefitsSubmitRedirect, redirectBasedOnCurrentAnswers, vanFuelBenefitsRedirects}
+import services.benefits.FuelService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.fuel.CompanyVanFuelBenefitsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CompanyVanFuelBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -43,12 +43,10 @@ class CompanyVanFuelBenefitsController @Inject()(implicit val cc: MessagesContro
                                                  companyVanFuelBenefitsView: CompanyVanFuelBenefitsView,
                                                  appConfig: AppConfig,
                                                  employmentSessionService: EmploymentSessionService,
+                                                 fuelService: FuelService,
                                                  errorHandler: ErrorHandler,
                                                  ec: ExecutionContext,
                                                  clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
-  def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.companyVanFuelBenefits.error.${if (user.isAgent) "agent" else "individual"}"
-  )
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -63,7 +61,6 @@ class CompanyVanFuelBenefitsController @Inject()(implicit val cc: MessagesContro
             case Some(questionResult) => Future.successful(Ok(companyVanFuelBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
             case None => Future.successful(Ok(companyVanFuelBenefitsView(yesNoForm, taxYear, employmentId)))
           }
-
         }
       }
     }
@@ -80,42 +77,32 @@ class CompanyVanFuelBenefitsController @Inject()(implicit val cc: MessagesContro
 
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(companyVanFuelBenefitsView(formWithErrors, taxYear, employmentId))),
-            yesNo => {
-              val cyaModel: EmploymentCYAModel = cya.employment
-              val benefits: Option[BenefitsViewModel] = cyaModel.employmentBenefits
-              val carVanFuelModel: Option[CarVanFuelModel] = cyaModel.employmentBenefits.flatMap(_.carVanFuelModel)
-
-              val updatedCyaModel = cyaModel.copy(
-                employmentBenefits = benefits.map(_.copy(
-                  carVanFuelModel =
-                    if (yesNo) {
-                      carVanFuelModel.map(_.copy(
-                        vanFuelQuestion = Some(true)
-                      ))
-                    } else {
-                      carVanFuelModel.map(_.copy(
-                        vanFuelQuestion = Some(false), vanFuel = None
-                      ))
-                    }
-                )))
-
-              employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                val nextPage = {
-                  if (yesNo) {
-                    CompanyVanFuelBenefitsAmountController.show(taxYear, employmentId)
-                  } else {
-                    ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId)
-                  }
-                }
-                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
-              }
-            }
+            yesNo => handleSuccessForm(taxYear, employmentId, cya, yesNo)
           )
         }
       }
     }
   }
+
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
+                               (implicit user: User[_]): Future[Result] = {
+
+    fuelService.updateVanFuelQuestion(taxYear, employmentId, employmentUserData, questionValue).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage =
+          if (questionValue) {
+            CompanyVanFuelBenefitsAmountController.show(taxYear, employmentId)
+          } else {
+            ReceiveOwnCarMileageBenefitController.show(taxYear, employmentId)
+          }
+        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+    }
+  }
+
+  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"benefits.companyVanFuelBenefits.error.${if (user.isAgent) "agent" else "individual"}"
+  )
 }
 
 

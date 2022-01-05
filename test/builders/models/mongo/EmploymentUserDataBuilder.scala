@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 package builders.models.mongo
 
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
-import models.mongo.EmploymentUserData
+import models.benefits.BenefitsViewModel
+import models.mongo.{EmploymentDetails, EmploymentUserData}
 
 object EmploymentUserDataBuilder {
 
@@ -31,4 +32,24 @@ object EmploymentUserDataBuilder {
     hasPriorBenefits = true,
     employment = anEmploymentCYAModel
   )
+
+  def anEmploymentUserDataWithBenefits(benefits: BenefitsViewModel,
+                                       isPriorSubmission: Boolean = true,
+                                       hasPriorBenefits: Boolean = true): EmploymentUserData = {
+    anEmploymentUserData.copy(
+      isPriorSubmission = isPriorSubmission,
+      hasPriorBenefits = hasPriorBenefits,
+      employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefits))
+    )
+  }
+
+  def anEmploymentUserDataWithDetails(employmentDetails: EmploymentDetails,
+                                      isPriorSubmission: Boolean = true,
+                                      hasPriorBenefits: Boolean = true): EmploymentUserData = {
+    anEmploymentUserData.copy(
+      isPriorSubmission = isPriorSubmission,
+      hasPriorBenefits = hasPriorBenefits,
+      employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails)
+    )
+  }
 }

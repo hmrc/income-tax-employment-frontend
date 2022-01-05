@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,8 @@ import scala.concurrent.Future
 
 class NrsService @Inject()(nrsConnector: NrsConnector) {
 
-  def submit[A](nino: String, payload: A, mtditid: String)(implicit request: Request[_], hc: HeaderCarrier, writes: Writes[A]): Future[NrsSubmissionResponse] = {
+  def submit[A](nino: String, payload: A, mtditid: String)
+               (implicit request: Request[_], hc: HeaderCarrier, writes: Writes[A]): Future[NrsSubmissionResponse] = {
     val extraHeaders = Seq(
       Some("mtditid" -> mtditid),
       Some(HeaderNames.USER_AGENT -> "income-tax-employment-frontend"),

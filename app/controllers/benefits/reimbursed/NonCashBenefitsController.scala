@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,13 @@ import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
 import models.employment.EmploymentBenefitsType
-import models.mongo.EmploymentCYAModel
+import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{EmploymentSessionService, RedirectService}
-import services.RedirectService.{nonCashRedirects, redirectBasedOnCurrentAnswers}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
+import services.RedirectService.{benefitsSubmitRedirect, nonCashRedirects, redirectBasedOnCurrentAnswers}
+import services.benefits.ReimbursedService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.reimbursed.NonCashBenefitsView
@@ -41,13 +42,10 @@ class NonCashBenefitsController @Inject()(implicit val cc: MessagesControllerCom
                                           view: NonCashBenefitsView,
                                           appConfig: AppConfig,
                                           employmentSessionService: EmploymentSessionService,
+                                          reimbursedService: ReimbursedService,
                                           errorHandler: ErrorHandler,
                                           ec: ExecutionContext,
                                           clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
-
-  def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.nonCashBenefits.error.noEntry.${if (user.isAgent) "agent" else "individual"}"
-  )
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -57,8 +55,7 @@ class NonCashBenefitsController @Inject()(implicit val cc: MessagesControllerCom
           EmploymentBenefitsType)(nonCashRedirects(_, taxYear, employmentId)) { cya =>
 
           cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.nonCashQuestion)) match {
-            case Some(questionResult) =>
-              Future.successful(Ok(view(yesNoForm.fill(questionResult), taxYear, employmentId)))
+            case Some(questionResult) => Future.successful(Ok(view(yesNoForm.fill(questionResult), taxYear, employmentId)))
             case None => Future.successful(Ok(view(yesNoForm, taxYear, employmentId)))
           }
         }
@@ -75,38 +72,29 @@ class NonCashBenefitsController @Inject()(implicit val cc: MessagesControllerCom
 
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(view(formWithErrors, taxYear, employmentId))),
-            yesNo => {
-              val cya = data.employment
-              val benefits = cya.employmentBenefits
-              val reimbursedCostsVouchersAndNonCashModel = benefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel)
-
-              val updatedCyaModel: EmploymentCYAModel = {
-                if (yesNo) {
-                  cya.copy(employmentBenefits = benefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel =
-                    reimbursedCostsVouchersAndNonCashModel.map(_.copy(nonCashQuestion = Some(true))))))
-                } else {
-                  cya.copy(employmentBenefits = benefits.map(_.copy(reimbursedCostsVouchersAndNonCashModel =
-                    reimbursedCostsVouchersAndNonCashModel.map(_.copy(nonCashQuestion = Some(false), nonCash = None)))))
-                }
-              }
-
-              employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                val nextPage = {
-                  if (yesNo) {
-                    NonCashBenefitsAmountController.show(taxYear, employmentId)
-                  } else {
-                    OtherBenefitsController.show(taxYear, employmentId)
-                  }
-                }
-
-                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
-              }
-            }
+            yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
         }
       }
     }
   }
+
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
+                               (implicit user: User[_]): Future[Result] = {
+    reimbursedService.updateNonCashQuestion(taxYear, employmentId, employmentUserData, questionValue).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage = if (questionValue) {
+          NonCashBenefitsAmountController.show(taxYear, employmentId)
+        } else {
+          OtherBenefitsController.show(taxYear, employmentId)
+        }
+        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+    }
+  }
+
+  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"benefits.nonCashBenefits.error.noEntry.${if (user.isAgent) "agent" else "individual"}"
+  )
 }
 

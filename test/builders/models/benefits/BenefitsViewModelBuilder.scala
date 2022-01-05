@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package builders.models.benefits
 import builders.models.benefits.AccommodationRelocationModelBuilder.anAccommodationRelocationModel
 import builders.models.benefits.AssetsModelBuilder.anAssetsModel
 import builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
-import builders.models.benefits.IncomeTaxAndCostsModelBuilder.aIncomeTaxAndCostsModel
+import builders.models.benefits.IncomeTaxAndCostsModelBuilder.anIncomeTaxAndCostsModel
 import builders.models.benefits.MedicalChildcareEducationModelBuilder.aMedicalChildcareEducationModel
 import builders.models.benefits.ReimbursedCostsVouchersAndNonCashModelBuilder.aReimbursedCostsVouchersAndNonCashModel
 import builders.models.benefits.TravelEntertainmentModelBuilder.aTravelEntertainmentModel
@@ -34,7 +34,7 @@ object BenefitsViewModelBuilder {
     travelEntertainmentModel = Some(aTravelEntertainmentModel),
     utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel),
     medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel),
-    incomeTaxAndCostsModel = Some(aIncomeTaxAndCostsModel),
+    incomeTaxAndCostsModel = Some(anIncomeTaxAndCostsModel),
     reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel),
     assetsModel = Some(anAssetsModel),
     submittedOn = None,

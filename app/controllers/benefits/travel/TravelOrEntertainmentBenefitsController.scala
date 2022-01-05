@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,20 +21,21 @@ import controllers.benefits.travel.routes._
 import controllers.benefits.utilities.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
 import models.User
-import models.benefits.TravelEntertainmentModel
 import models.employment.EmploymentBenefitsType
-import models.mongo.EmploymentCYAModel
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
+import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.redirectBasedOnCurrentAnswers
-import services.{EmploymentSessionService, RedirectService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
+import services.RedirectService.{benefitsSubmitRedirect, redirectBasedOnCurrentAnswers, travelEntertainmentBenefitsRedirects}
+import services.benefits.TravelService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.travel.TravelOrEntertainmentBenefitsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TravelOrEntertainmentBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -43,17 +44,10 @@ class TravelOrEntertainmentBenefitsController @Inject()(implicit val cc: Message
                                                         travelOrEntertainmentBenefitsView: TravelOrEntertainmentBenefitsView,
                                                         appConfig: AppConfig,
                                                         employmentSessionService: EmploymentSessionService,
+                                                        travelService: TravelService,
                                                         errorHandler: ErrorHandler,
                                                         ec: ExecutionContext,
                                                         clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
-
-  def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.travelOrEntertainment.error.${if (user.isAgent) "agent" else "individual"}"
-  )
-
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
-    RedirectService.travelEntertainmentBenefitsRedirects(cya, taxYear, employmentId)
-  }
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -78,41 +72,32 @@ class TravelOrEntertainmentBenefitsController @Inject()(implicit val cc: Message
 
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(travelOrEntertainmentBenefitsView(formWithErrors, taxYear, employmentId))),
-            yesNo => {
-              val cya = data.employment
-              val benefits = cya.employmentBenefits
-              val travelOrEntertainment = cya.employmentBenefits.flatMap(_.travelEntertainmentModel)
-
-              val updatedCyaModel: EmploymentCYAModel = {
-                travelOrEntertainment match {
-                  case Some(_) if !yesNo =>
-                    cya.copy(employmentBenefits = benefits.map(_.copy(travelEntertainmentModel = Some(TravelEntertainmentModel.clear))))
-
-                  case travelOrEntertainment =>
-                    cya.copy(employmentBenefits = benefits.map(_.copy(travelEntertainmentModel = Some(
-                      travelOrEntertainment.map(_.copy(sectionQuestion = Some(yesNo))).getOrElse
-                      (TravelEntertainmentModel(sectionQuestion = Some(yesNo)))
-                    ))))
-                }
-              }
-
-              employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-
-                val nextPage = {
-                  if (yesNo) {
-                    TravelAndSubsistenceBenefitsController.show(taxYear, employmentId)
-                  } else {
-                    UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId)
-                  }
-                }
-
-                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
-              }
-            }
+            yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
         }
       }
     }
+  }
+
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
+                               (implicit user: User[_]): Future[Result] = {
+    travelService.updateSectionQuestion(taxYear, employmentId, employmentUserData, questionValue).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage = if (questionValue) {
+          TravelAndSubsistenceBenefitsController.show(taxYear, employmentId)
+        } else {
+          UtilitiesOrGeneralServicesBenefitsController.show(taxYear, employmentId)
+        }
+        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+    }
+  }
+
+  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"benefits.travelOrEntertainment.error.${if (user.isAgent) "agent" else "individual"}"
+  )
+
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+    travelEntertainmentBenefitsRedirects(cya, taxYear, employmentId)
   }
 }

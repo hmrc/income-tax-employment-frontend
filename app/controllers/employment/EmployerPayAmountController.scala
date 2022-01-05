@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,19 @@ package controllers.employment
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.AmountForm
-import javax.inject.Inject
+import models.User
+import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import services.RedirectService.employmentDetailsRedirect
+import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.EmployerPayAmountView
 
+import javax.inject.Inject
 import scala.concurrent.Future
 
 class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -37,12 +40,12 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
                                             inYearAction: InYearAction,
                                             appConfig: AppConfig,
                                             employmentSessionService: EmploymentSessionService,
+                                            employmentService: EmploymentService,
                                             errorHandler: ErrorHandler,
                                             clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
-
+  private implicit val executionContext = cc.executionContext
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
-
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
@@ -54,7 +57,7 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
             val priorAmount = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)))
             lazy val unfilledForm = buildForm(user.isAgent)
             val form: Form[BigDecimal] = cyaAmount.fold(unfilledForm)(
-              cyaPay => if(priorAmount.exists(_.equals(cyaPay))) unfilledForm else buildForm(user.isAgent).fill(cyaPay))
+              cyaPay => if (priorAmount.exists(_.equals(cyaPay))) unfilledForm else buildForm(user.isAgent).fill(cyaPay))
 
             Future.successful(Ok(employerPayAmountView(taxYear, form,
               cyaAmount, cya.employment.employmentDetails.employerName, employmentId)))
@@ -62,40 +65,34 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
           case None => Future.successful(
             Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId)))
         }
-
       }
     }
   }
 
-
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
-
     inYearAction.notInYear(taxYear) {
       val redirectUrl = controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId).url
 
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { data =>
         buildForm(user.isAgent).bindFromRequest().fold(
-          { formWithErrors =>
-            Future.successful(BadRequest(employerPayAmountView(taxYear, formWithErrors,
-              data.employment.employmentDetails.taxablePayToDate, data.employment.employmentDetails.employerName, employmentId)))
-          },
-          {
-            amount =>
-              val cya = data.employment
-              val updatedCyaModel = cya.copy(employmentDetails = cya.employmentDetails.copy(taxablePayToDate = Some(amount)))
-              employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
-                isPriorSubmission = data.isPriorSubmission,data.hasPriorBenefits)(errorHandler.internalServerError()) {
-                employmentDetailsRedirect(updatedCyaModel,taxYear,employmentId,data.isPriorSubmission)
-              }
-          }
+          formWithErrors => Future.successful(BadRequest(employerPayAmountView(taxYear, formWithErrors,
+            data.employment.employmentDetails.taxablePayToDate, data.employment.employmentDetails.employerName, employmentId))),
+          amount => handleSuccessForm(taxYear, employmentId, data, amount)
         )
       }
     }
   }
 
-
-    private def buildForm(isAgent: Boolean): Form[BigDecimal] = {
-      AmountForm.amountForm(s"employerPayAmount.error.empty.${if (isAgent) "agent" else "individual"}",
-        "employerPayAmount.error.wrongFormat", "employerPayAmount.error.amountMaxLimit")
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
+                               (implicit user: User[_]): Future[Result] = {
+    employmentService.updateTaxablePayToDate(taxYear, employmentId, employmentUserData, amount).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) => employmentDetailsRedirect(employmentUserData.employment, taxYear, employmentId, employmentUserData.isPriorSubmission)
     }
   }
+
+  private def buildForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
+    emptyFieldKey = s"employerPayAmount.error.empty.${if (isAgent) "agent" else "individual"}",
+    wrongFormatKey = "employerPayAmount.error.wrongFormat", exceedsMaxAmountKey = "employerPayAmount.error.amountMaxLimit"
+  )
+}

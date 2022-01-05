@@ -1,5 +1,5 @@
 @*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -175,7 +175,7 @@
                     telephoneQuestion => showQuestionRow("checkYourBenefits.telephone", telephoneQuestion, TelephoneBenefitsController.show(taxYear: Int, employmentId: String))
                 },
                 benefits.utilitiesAndServicesModel.flatMap(_.telephone).map{
-                    telephone => showRows("checkYourBenefits.telephoneAmount", telephone, TelephoneEmploymentBenefitsAmountController.show(taxYear, employmentId))
+                    telephone => showRows("checkYourBenefits.telephoneAmount", telephone, TelephoneBenefitsAmountController.show(taxYear, employmentId))
                 },
                 benefits.utilitiesAndServicesModel.flatMap(_.employerProvidedServicesQuestion).map{
                     employerProvidedServicesQuestion => showQuestionRow("checkYourBenefits.servicesProvided", employerProvidedServicesQuestion, EmployerProvidedServicesBenefitsController.show(taxYear: Int, employmentId: String))
