@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,19 +20,20 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.medical.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
 import models.User
 import models.employment.EmploymentBenefitsType
-import models.mongo.EmploymentCYAModel
+import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.{educationalServicesRedirects, redirectBasedOnCurrentAnswers}
-import services.{EmploymentSessionService, RedirectService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
+import services.RedirectService.{benefitsSubmitRedirect, educationalServicesRedirects, redirectBasedOnCurrentAnswers}
+import services.benefits.MedicalService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.medical.EducationalServicesBenefitsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EducationalServicesBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -41,13 +42,10 @@ class EducationalServicesBenefitsController @Inject()(implicit val cc: MessagesC
                                                       educationalServicesBenefitsView: EducationalServicesBenefitsView,
                                                       appConfig: AppConfig,
                                                       employmentSessionService: EmploymentSessionService,
+                                                      medicalService: MedicalService,
                                                       errorHandler: ErrorHandler,
                                                       ec: ExecutionContext,
                                                       clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
-
-  def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.educationalServices.error.${if (user.isAgent) "agent" else "individual"}"
-  )
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -57,14 +55,12 @@ class EducationalServicesBenefitsController @Inject()(implicit val cc: MessagesC
           EmploymentBenefitsType)(educationalServicesRedirects(_, taxYear, employmentId)) { cya =>
 
           cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.educationalServicesQuestion)) match {
-            case Some(questionResult) =>
-              Future.successful(Ok(educationalServicesBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
+            case Some(questionResult) => Future.successful(Ok(educationalServicesBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
             case None => Future.successful(Ok(educationalServicesBenefitsView(yesNoForm, taxYear, employmentId)))
           }
         }
       }
     }
-
   }
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
@@ -76,39 +72,28 @@ class EducationalServicesBenefitsController @Inject()(implicit val cc: MessagesC
 
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(educationalServicesBenefitsView(formWithErrors, taxYear, employmentId))),
-            yesNo => {
-              val cya = data.employment
-              val benefits = cya.employmentBenefits
-              val medicalChildcareEducationModel = benefits.flatMap(_.medicalChildcareEducationModel)
-
-              val updatedCyaModel: EmploymentCYAModel = {
-                if (yesNo) {
-                  cya.copy(employmentBenefits = benefits.map(_.copy(medicalChildcareEducationModel =
-                    medicalChildcareEducationModel.map(_.copy(educationalServicesQuestion = Some(true))))))
-                } else {
-                  cya.copy(employmentBenefits = benefits.map(_.copy(medicalChildcareEducationModel =
-                    medicalChildcareEducationModel.map(_.copy(educationalServicesQuestion = Some(false), educationalServices = None)))))
-                }
-              }
-
-              employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-
-                val nextPage = {
-                  if (yesNo){
-                    EducationalServicesBenefitsAmountController.show(taxYear, employmentId)
-                  } else {
-                    BeneficialLoansBenefitsController.show(taxYear, employmentId)
-                  }
-                }
-
-                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
-              }
-            }
+            yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
         }
       }
     }
   }
 
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
+                               (implicit user: User[_]): Future[Result] = {
+    medicalService.updateEducationalServicesQuestion(taxYear, employmentId, employmentUserData, questionValue).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage = if (questionValue) {
+          EducationalServicesBenefitsAmountController.show(taxYear, employmentId)
+        } else {
+          BeneficialLoansBenefitsController.show(taxYear, employmentId)
+        }
+        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+    }
+  }
+
+  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"benefits.educationalServices.error.${if (user.isAgent) "agent" else "individual"}"
+  )
 }

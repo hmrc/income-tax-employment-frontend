@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,10 @@ package controllers.employment
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
+import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithDetails
 import models.User
-import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
+import models.mongo.EmploymentUserData
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -34,13 +36,12 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
   private val taxYearEOY: Int = taxYear - 1
   private val amount: BigDecimal = 100
-  private val urlEOY = s"$appUrl/2021/how-much-pay?employmentId=001"
-
-  val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/how-much-pay?employmentId=001"
+  private val employmentId = "employmentId"
+  private val urlEOY = s"$appUrl/2021/how-much-pay?employmentId=$employmentId"
+  private val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/how-much-pay?employmentId=" + employmentId
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   private val userRequest: User[_] = User(mtditid, None, nino, sessionId, affinityGroup)
-
 
   object Selectors {
     val contentSelector = "#main-content > div > div > form > div > label > p"
@@ -54,8 +55,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedErrorHref = "#amount"
   }
 
-  val poundPrefixText = "£"
-  val amountInputName = "amount"
+  private val poundPrefixText = "£"
+  private val amountInputName = "amount"
 
   trait SpecificExpectedResults {
     val expectedH1: String
@@ -127,18 +128,10 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   def cya(payToDate: Option[BigDecimal] = Some(100), isPriorSubmission: Boolean = true): EmploymentUserData =
-    EmploymentUserData(
-      sessionId,
-      mtditid,
-      nino,
-      taxYearEOY,
-      "001",
-      isPriorSubmission,
-      hasPriorBenefits = isPriorSubmission,
-      EmploymentCYAModel(
-        EmploymentDetails("maggie", taxablePayToDate = payToDate, currentDataIsHmrcHeld = false),
-        None
-      )
+    anEmploymentUserDataWithDetails(
+      anEmploymentDetails.copy("maggie", taxablePayToDate = payToDate),
+      isPriorSubmission = isPriorSubmission,
+      hasPriorBenefits = isPriorSubmission
     )
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -289,7 +282,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001")
+            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=" + employmentId)
           }
         }
 
@@ -298,7 +291,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(cya(), User(mtditid, None, nino, sessionId, "agent"))
-            val inYearUrl = s"$appUrl/$taxYear/how-much-pay?employmentId=001"
+            val inYearUrl = s"$appUrl/$taxYear/how-much-pay?employmentId=$employmentId"
             urlGet(inYearUrl, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -394,7 +387,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001")
+            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=" + employmentId)
           }
         }
       }

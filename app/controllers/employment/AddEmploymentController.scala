@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.EmployerNameController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
 import models.{IncomeTaxUserData, User}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -32,6 +31,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.employment.AddEmploymentView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AddEmploymentController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -43,7 +43,6 @@ class AddEmploymentController @Inject()(implicit val cc: MessagesControllerCompo
                                         errorHandler: ErrorHandler,
                                         ec: ExecutionContext
                                        ) extends FrontendController(cc) with I18nSupport with SessionHelper {
-
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
     redirectOrRenderView(taxYear) {
@@ -59,23 +58,19 @@ class AddEmploymentController @Inject()(implicit val cc: MessagesControllerCompo
   }
 
   private def submitForm(taxYear: Int)(implicit user: User[_]): Future[Result] = {
-
     val idInSession: Option[String] = getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)
 
     buildForm.bindFromRequest().fold(
-      { formWithErrors =>
-        Future.successful(BadRequest(addEmploymentView(formWithErrors, taxYear)))
-      },
+      formWithErrors => Future.successful(BadRequest(addEmploymentView(formWithErrors, taxYear))),
       {
         case true => idInSession.fold {
           val id = UUID.randomUUID
           Future.successful(Redirect(EmployerNameController.show(taxYear, id)).addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> id))
-        } {
-          id =>
-            employmentSessionService.getSessionDataResult(taxYear, id){
-              _.fold(Future.successful(Redirect(EmployerNameController.show(taxYear, id))))( cya => Future.successful(
-                employmentDetailsRedirect(cya.employment, taxYear, id, cya.isPriorSubmission)))
-            }
+        } { id =>
+          employmentSessionService.getSessionDataResult(taxYear, id) {
+            _.fold(Future.successful(Redirect(EmployerNameController.show(taxYear, id))))(cya => Future.successful(
+              employmentDetailsRedirect(cya.employment, taxYear, id, cya.isPriorSubmission)))
+          }
         }
         case _ =>
           val redirect = Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))

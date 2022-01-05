@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,14 @@ import controllers.expenses.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
-import models.mongo.ExpensesCYAModel
+import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.ExpensesRedirectService.redirectBasedOnCurrentAnswers
-import services.{EmploymentSessionService, ExpensesRedirectService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
+import services.ExpensesRedirectService.{expensesSubmitRedirect, professionalSubscriptionsRedirects, redirectBasedOnCurrentAnswers}
+import services.expenses.ExpensesService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.expenses.ProfessionalFeesAndSubscriptionsExpensesView
@@ -35,24 +36,17 @@ import views.html.expenses.ProfessionalFeesAndSubscriptionsExpensesView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ProfessionalFeesAndSubscriptionsExpensesController @Inject() (implicit val cc: MessagesControllerComponents,
-                                                                    authAction: AuthorisedAction,
-                                                                    inYearAction: InYearAction,
-                                                                    professionalFeesAndSubscriptionsExpensesView:  ProfessionalFeesAndSubscriptionsExpensesView,
-                                                                    appConfig: AppConfig,
-                                                                    employmentSessionService: EmploymentSessionService,
-                                                                    errorHandler: ErrorHandler,
-                                                                    ec: ExecutionContext,
-                                                                    clock: Clock
-                                                                   ) extends FrontendController(cc) with I18nSupport with SessionHelper {
-
-  def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"expenses.professionalFeesAndSubscriptions.error.${if (user.isAgent) "agent" else "individual"}"
-  )
-
-  private def redirects(cya: ExpensesCYAModel, taxYear: Int): Seq[ConditionalRedirect] = {
-    ExpensesRedirectService.professionalSubscriptionsRedirects(cya, taxYear)
-  }
+class ProfessionalFeesAndSubscriptionsExpensesController @Inject()(implicit val cc: MessagesControllerComponents,
+                                                                   authAction: AuthorisedAction,
+                                                                   inYearAction: InYearAction,
+                                                                   professionalFeesAndSubscriptionsExpensesView: ProfessionalFeesAndSubscriptionsExpensesView,
+                                                                   appConfig: AppConfig,
+                                                                   employmentSessionService: EmploymentSessionService,
+                                                                   expensesService: ExpensesService,
+                                                                   errorHandler: ErrorHandler,
+                                                                   ec: ExecutionContext,
+                                                                   clock: Clock
+                                                                  ) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -76,33 +70,33 @@ class ProfessionalFeesAndSubscriptionsExpensesController @Inject() (implicit val
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { data =>
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(professionalFeesAndSubscriptionsExpensesView(formWithErrors, taxYear))),
-            yesNo => {
-              val expensesUserData = data.expensesCya
-              val expensesCyaModel = expensesUserData.expenses
-
-              val updatedCyaModel: ExpensesCYAModel = {
-                if (yesNo) {
-                  expensesUserData.copy(expenses = expensesCyaModel.copy(professionalSubscriptionsQuestion = Some(true)))
-                } else {
-                  expensesUserData.copy(expenses = expensesCyaModel.copy(professionalSubscriptionsQuestion = Some(false), professionalSubscriptions = None))
-                }
-              }
-
-              employmentSessionService.createOrUpdateExpensesSessionData(
-                updatedCyaModel, taxYear, data.isPriorSubmission, data.isPriorSubmission)(errorHandler.internalServerError()) {
-
-                val nextPage = if (yesNo) {
-                  ProfFeesAndSubscriptionsExpensesAmountController.show(taxYear)
-                } else {
-                  OtherEquipmentController.show(taxYear)
-                }
-                ExpensesRedirectService.expensesSubmitRedirect(updatedCyaModel, nextPage)(taxYear)
-              }
-            }
+            yesNo => handleSuccessForm(taxYear, data, yesNo)
           )
         }
       }
     }
+  }
+
+  private def handleSuccessForm(taxYear: Int, expensesUserData: ExpensesUserData, questionValue: Boolean)
+                               (implicit user: User[_]): Future[Result] = {
+    expensesService.updateProfessionalSubscriptionsQuestion(taxYear, expensesUserData, questionValue).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(expensesUserData) =>
+        val nextPage = if (questionValue) {
+          ProfFeesAndSubscriptionsExpensesAmountController.show(taxYear)
+        } else {
+          OtherEquipmentController.show(taxYear)
+        }
+        expensesSubmitRedirect(expensesUserData.expensesCya, nextPage)(taxYear)
+    }
+  }
+
+  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"expenses.professionalFeesAndSubscriptions.error.${if (user.isAgent) "agent" else "individual"}"
+  )
+
+  private def redirects(cya: ExpensesCYAModel, taxYear: Int): Seq[ConditionalRedirect] = {
+    professionalSubscriptionsRedirects(cya, taxYear)
   }
 }
 

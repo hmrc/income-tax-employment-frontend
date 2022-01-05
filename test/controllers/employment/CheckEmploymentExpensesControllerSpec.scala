@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,26 @@
 
 package controllers.employment
 
-import audit.{AmendEmploymentExpensesUpdateAudit, AuditEmploymentExpensesData, AuditNewEmploymentExpensesData, CreateNewEmploymentExpensesAudit}
-import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import common.SessionValues
-import config.{MockAuditService, MockEmploymentSessionService}
+import config.{MockAuditService, MockCheckEmploymentExpensesService, MockEmploymentSessionService}
 import controllers.expenses.CheckEmploymentExpensesController
-import models.employment.AllEmploymentData
-import models.requests.CreateUpdateExpensesRequest
 import play.api.http.HeaderNames.LOCATION
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Results.{Ok, Redirect}
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers.header
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
-import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.UnitTestWithApp
 import views.html.expenses.{CheckEmploymentExpensesView, CheckEmploymentExpensesViewEOY}
 
 import scala.concurrent.Future
 
-class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with DefaultAwaitTimeout with MockEmploymentSessionService with MockAuditService {
+class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp
+  with DefaultAwaitTimeout
+  with MockEmploymentSessionService
+  with MockCheckEmploymentExpensesService
+  with MockAuditService {
 
   lazy val view: CheckEmploymentExpensesView = app.injector.instanceOf[CheckEmploymentExpensesView]
   lazy val viewEOY: CheckEmploymentExpensesViewEOY = app.injector.instanceOf[CheckEmploymentExpensesViewEOY]
@@ -47,7 +46,7 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
     viewEOY,
     createOrAmendExpensesService,
     mockEmploymentSessionService,
-    mockAuditService,
+    mockCheckEmploymentExpensesService,
     inYearAction,
     mockErrorHandler,
     testClock,
@@ -114,82 +113,5 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp with Default
         status(responseF) shouldBe OK
       }
     }
-  }
-
-  "calling performSubmitAudit" should {
-    "send the audit events from the model when it's a create" in {
-      val model: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(
-        Some(true),
-        expenses)
-      val prior = None
-
-      verifyAuditEvent(CreateNewEmploymentExpensesAudit(
-        taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, AuditNewEmploymentExpensesData(
-          expenses.jobExpenses,
-          expenses.flatRateJobExpenses,
-          expenses.professionalSubscriptions,
-          expenses.otherAndCapitalAllowances
-        )
-      ).toAuditModel)
-      await(controller.performSubmitAudits(model, taxYear, prior)) shouldBe AuditResult.Success
-    }
-
-    "send the audit events from the model when it's a create and theres existing data" in {
-      val model: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(
-        Some(true),
-        expenses)
-
-      val prior: AllEmploymentData = anAllEmploymentData.copy(
-        hmrcExpenses = None,
-        customerExpenses = None
-      )
-
-      verifyAuditEvent(CreateNewEmploymentExpensesAudit(
-        taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, AuditNewEmploymentExpensesData(
-          expenses.jobExpenses,
-          expenses.flatRateJobExpenses,
-          expenses.professionalSubscriptions,
-          expenses.otherAndCapitalAllowances
-        )
-      ).toAuditModel)
-      await(controller.performSubmitAudits(model, taxYear, Some(prior))) shouldBe AuditResult.Success
-    }
-  }
-
-  "send the audit events from the model when it's a amend and there is existing data" in {
-    val model: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(Some(true),
-      expenses)
-    val priorCustomerEmploymentExpenses = employmentExpenses.copy(
-      expenses = Some(this.expenses.copy(
-        jobExpenses = Some(0.0),
-        flatRateJobExpenses = Some(0.0),
-        professionalSubscriptions = Some(0.0),
-        otherAndCapitalAllowances = Some(0.0)
-      )))
-
-    val prior: AllEmploymentData = anAllEmploymentData.copy(
-      hmrcExpenses = None,
-      customerExpenses = Some(
-        priorCustomerEmploymentExpenses
-      )
-    )
-
-    verifyAuditEvent(AmendEmploymentExpensesUpdateAudit(
-      taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid,
-      priorEmploymentExpensesData = AuditEmploymentExpensesData(
-        priorCustomerEmploymentExpenses.expenses.get.jobExpenses,
-        priorCustomerEmploymentExpenses.expenses.get.flatRateJobExpenses,
-        priorCustomerEmploymentExpenses.expenses.get.professionalSubscriptions,
-        priorCustomerEmploymentExpenses.expenses.get.otherAndCapitalAllowances
-      ),
-      employmentExpensesData = AuditEmploymentExpensesData
-      (
-        expenses.jobExpenses,
-        expenses.flatRateJobExpenses,
-        expenses.professionalSubscriptions,
-        expenses.otherAndCapitalAllowances
-      )
-    ).toAuditModel)
-    await(controller.performSubmitAudits(model, taxYear, Some(prior))) shouldBe AuditResult.Success
   }
 }

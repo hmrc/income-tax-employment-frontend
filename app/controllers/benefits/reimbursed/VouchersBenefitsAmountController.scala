@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,20 @@
 package controllers.benefits.reimbursed
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckYourBenefitsController
 import controllers.benefits.reimbursed.routes.NonCashBenefitsController
+import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
+import models.User
 import models.employment.EmploymentBenefitsType
-import models.mongo.EmploymentCYAModel
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
+import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{EmploymentSessionService, RedirectService}
-import services.RedirectService.{redirectBasedOnCurrentAnswers, vouchersAndCreditCardsAmountRedirects}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
+import services.RedirectService.{benefitsSubmitRedirect, redirectBasedOnCurrentAnswers, vouchersAndCreditCardsAmountRedirects}
+import services.benefits.ReimbursedService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.reimbursed.VouchersBenefitsAmountView
@@ -41,10 +44,11 @@ class VouchersBenefitsAmountController @Inject()(implicit val cc: MessagesContro
                                                  appConfig: AppConfig,
                                                  pageView: VouchersBenefitsAmountView,
                                                  val employmentSessionService: EmploymentSessionService,
+                                                 reimbursedService: ReimbursedService,
                                                  errorHandler: ErrorHandler,
                                                  ec: ExecutionContext,
                                                  clock: Clock
-                                                    ) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+                                                ) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -65,41 +69,34 @@ class VouchersBenefitsAmountController @Inject()(implicit val cc: MessagesContro
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(CheckYourBenefitsController.show(taxYear, employmentId).url) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-          buildForm.bindFromRequest().fold({
-            formWithErrors =>
+          buildForm.bindFromRequest().fold(
+            formWithErrors => {
               val fillValue = cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.vouchersAndCreditCards)
               Future.successful(BadRequest(pageView(taxYear, formWithErrors, fillValue, employmentId)))
-          }, {
-            newAmount =>
-              val cyaModel = cya.employment
-              val benefits = cyaModel.employmentBenefits
-              val reimbursedCostsVouchersAndNonCashModel = cyaModel.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel)
-
-              val updatedCyaModel = cyaModel.copy(employmentBenefits = benefits.map(_.copy(
-                reimbursedCostsVouchersAndNonCashModel = reimbursedCostsVouchersAndNonCashModel.map(_.copy(vouchersAndCreditCards = Some(newAmount)))
-              )))
-
-              employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission,
-                cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                val nextPage = NonCashBenefitsController.show(taxYear, employmentId)
-
-                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
-              }
-          })
+            },
+            amount => handleSuccessForm(taxYear, employmentId, cya, amount))
         }
       }
     }
   }
 
-  private def buildForm: Form[BigDecimal] = {
-    AmountForm.amountForm(
-      "benefits.vouchersBenefitsAmount.error.noEntry",
-      "benefits.vouchersBenefitsAmount.error.incorrectFormat",
-      "benefits.vouchersBenefitsAmount.error.overMaximum"
-    )
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
+                               (implicit user: User[_]): Future[Result] = {
+    reimbursedService.updateVouchersAndCreditCards(taxYear, employmentId, employmentUserData, amount).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage = NonCashBenefitsController.show(taxYear, employmentId)
+        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+    }
   }
 
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
+  private def buildForm: Form[BigDecimal] = AmountForm.amountForm(
+    emptyFieldKey = "benefits.vouchersBenefitsAmount.error.noEntry",
+    wrongFormatKey = "benefits.vouchersBenefitsAmount.error.incorrectFormat",
+    exceedsMaxAmountKey = "benefits.vouchersBenefitsAmount.error.overMaximum"
+  )
+
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     vouchersAndCreditCardsAmountRedirects(cya, taxYear, employmentId)
   }
 }

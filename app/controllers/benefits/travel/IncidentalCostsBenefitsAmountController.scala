@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,14 @@ import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import models.User
 import models.employment.EmploymentBenefitsType
-import models.mongo.EmploymentCYAModel
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
+import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.redirectBasedOnCurrentAnswers
-import services.{EmploymentSessionService, RedirectService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
+import services.RedirectService.{benefitsSubmitRedirect, incidentalCostsBenefitsAmountRedirects, redirectBasedOnCurrentAnswers}
+import services.benefits.TravelService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.travel.IncidentalCostsBenefitsAmountView
@@ -43,19 +45,10 @@ class IncidentalCostsBenefitsAmountController @Inject()(implicit val cc: Message
                                                         incidentalCostsBenefitsAmountView: IncidentalCostsBenefitsAmountView,
                                                         appConfig: AppConfig,
                                                         val employmentSessionService: EmploymentSessionService,
+                                                        travelService: TravelService,
                                                         errorHandler: ErrorHandler,
                                                         ec: ExecutionContext,
                                                         clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
-
-  def amountForm(implicit user: User[_]): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"benefits.incidentalCostsBenefitsAmount.error.noEntry.${if (user.isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"benefits.incidentalCostsBenefitsAmount.error.incorrectFormat.${if (user.isAgent) "agent" else "individual"}",
-    exceedsMaxAmountKey = s"benefits.incidentalCostsBenefitsAmount.error.overMaximum.${if (user.isAgent) "agent" else "individual"}"
-  )
-
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
-    RedirectService.incidentalCostsBenefitsAmountRedirects(cya, taxYear, employmentId)
-  }
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -63,55 +56,50 @@ class IncidentalCostsBenefitsAmountController @Inject()(implicit val cc: Message
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses))
-
           val form = fillFormFromPriorAndCYA(amountForm, prior, cyaAmount, employmentId)(
-            employment =>
-              employment.employmentBenefits.flatMap(_.benefits.flatMap(_.personalIncidentalExpenses))
+            employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.personalIncidentalExpenses))
           )
           Future.successful(Ok(incidentalCostsBenefitsAmountView(taxYear, form, cyaAmount, employmentId)))
         }
       }
     }
-
   }
 
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-
       val redirectUrl = CheckYourBenefitsController.show(taxYear, employmentId).url
-
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-
           amountForm.bindFromRequest().fold(
-            { formWithErrors =>
+            formWithErrors => {
               val cyaAmount = cya.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpenses))
               Future.successful(BadRequest(incidentalCostsBenefitsAmountView(taxYear, formWithErrors, cyaAmount, employmentId)))
-            }, {
-              amount =>
-
-                val cyaModel = cya.employment
-                val benefits = cyaModel.employmentBenefits
-                val travelEntertainment = benefits.flatMap(_.travelEntertainmentModel)
-
-                val updatedCyaModel = cyaModel.copy(
-                  employmentBenefits = benefits.map(_.copy(travelEntertainmentModel =
-                    travelEntertainment.map(_.copy(personalIncidentalExpenses = Some(amount)))))
-                )
-
-                employmentSessionService.createOrUpdateSessionData(employmentId, updatedCyaModel, taxYear,
-                  isPriorSubmission = cya.isPriorSubmission, hasPriorBenefits = cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-
-                  val nextPage = EntertainingBenefitsController.show(taxYear, employmentId)
-
-                  RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
-                }
-            }
+            },
+            amount => handleSuccessForm(taxYear, employmentId, cya, amount)
           )
         }
       }
     }
   }
 
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
+                               (implicit user: User[_]): Future[Result] = {
+    travelService.updatePersonalIncidentalExpenses(taxYear, employmentId, employmentUserData, amount).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage = EntertainingBenefitsController.show(taxYear, employmentId)
+        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+    }
+  }
+
+  private def amountForm(implicit user: User[_]): Form[BigDecimal] = AmountForm.amountForm(
+    emptyFieldKey = s"benefits.incidentalCostsBenefitsAmount.error.noEntry.${if (user.isAgent) "agent" else "individual"}",
+    wrongFormatKey = s"benefits.incidentalCostsBenefitsAmount.error.incorrectFormat.${if (user.isAgent) "agent" else "individual"}",
+    exceedsMaxAmountKey = s"benefits.incidentalCostsBenefitsAmount.error.overMaximum.${if (user.isAgent) "agent" else "individual"}"
+  )
+
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+    incidentalCostsBenefitsAmountRedirects(cya, taxYear, employmentId)
+  }
 }

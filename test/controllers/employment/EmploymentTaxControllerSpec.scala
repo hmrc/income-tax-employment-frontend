@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,22 @@
 package controllers.employment
 
 import common.SessionValues
-import config.MockEmploymentSessionService
+import config.{MockEmploymentService, MockEmploymentSessionService}
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.AmountForm
 import models.User
-import models.employment.EmploymentDetailsViewModel
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
-import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
+import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Result
-import play.api.mvc.Results.{InternalServerError, Ok, Redirect, SeeOther}
-import utils.{Clock, UnitTestWithApp}
+import play.api.mvc.Results.{Ok, Redirect}
+import utils.UnitTestWithApp
 import views.html.employment.EmploymentTaxView
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class EmploymentTaxControllerSpec extends UnitTestWithApp with MockEmploymentSessionService {
+class EmploymentTaxControllerSpec extends UnitTestWithApp
+  with MockEmploymentSessionService
+  with MockEmploymentService {
 
   object Model {
 
@@ -43,7 +44,7 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp with MockEmploymentSes
     )
     val employmentCyaModel = EmploymentCYAModel(employmentSource1)
     val employmentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, employmentId, false,
-      hasPriorBenefits =  true, employmentCyaModel)
+      hasPriorBenefits = true, employmentCyaModel)
   }
 
   val taxYear = 2021
@@ -57,6 +58,7 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp with MockEmploymentSes
     mockAppConfig,
     view,
     mockEmploymentSessionService,
+    mockEmploymentService,
     inYearAction,
     mockErrorHandler,
     testClock
@@ -68,7 +70,7 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp with MockEmploymentSes
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {
           mockGetAndHandle(taxYear, Ok(view(
-             taxYear, "001", "Dave", AmountForm.amountForm(""), None)
+            taxYear, "001", "Dave", AmountForm.amountForm(""), None)
           ))
 
           controller.show(taxYear, employmentId = employmentId)(fakeRequest.withSession(
@@ -90,7 +92,7 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp with MockEmploymentSes
           val redirect = CheckEmploymentDetailsController.show(taxYear, employmentId).url
 
           (mockEmploymentSessionService.getSessionDataAndReturnResult(_: Int, _: String)(_: String)(
-            _:EmploymentUserData => Future[Result])(_: User[_])).expects(taxYear, employmentId, redirect, *, *).returns(Future(Redirect(redirect)))
+            _: EmploymentUserData => Future[Result])(_: User[_])).expects(taxYear, employmentId, redirect, *, *).returns(Future(Redirect(redirect)))
 
           controller.submit(taxYear, employmentId = employmentId)(fakeRequest.withFormUrlEncodedBody("amount" -> "32").withSession(
             SessionValues.TAX_YEAR -> taxYear.toString

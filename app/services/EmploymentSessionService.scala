@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,7 +133,30 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
   }
 
-  //scalastyle:off
+  def createOrUpdateEmploymentUserDataWith(taxYear: Int,
+                                           employmentId: String,
+                                           isPriorSubmission: Boolean,
+                                           hasPriorBenefits: Boolean,
+                                           employment: EmploymentCYAModel)(implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+
+    val employmentUserData = EmploymentUserData(
+      user.sessionId,
+      user.mtditid,
+      user.nino,
+      taxYear,
+      employmentId,
+      isPriorSubmission = isPriorSubmission,
+      hasPriorBenefits = hasPriorBenefits,
+      employment = employment,
+      clock.now(DateTimeZone.UTC)
+    )
+
+    employmentUserDataRepository.createOrUpdate(employmentUserData).map {
+      case Right(_) => Right(employmentUserData)
+      case Left(_) => Left()
+    }
+  }
+
   def createOrUpdateExpensesSessionData[A](cyaModel: ExpensesCYAModel, taxYear: Int, isPriorSubmission: Boolean, hasPriorExpenses: Boolean)
                                           (onFail: A)(onSuccess: A)(implicit user: User[_], clock: Clock): Future[A] = {
     val userData = ExpensesUserData(
@@ -150,6 +173,28 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     expensesUserDataRepository.createOrUpdate(userData).map {
       case Right(_) => onSuccess
       case Left(_) => onFail
+    }
+  }
+
+  def createOrUpdateExpensesUserDataWith(taxYear: Int,
+                                         isPriorSubmission: Boolean,
+                                         hasPriorExpenses: Boolean,
+                                         expensesCYAModel: ExpensesCYAModel)
+                                        (implicit user: User[_], clock: Clock): Future[Either[Unit, ExpensesUserData]] = {
+    val expensesUserData = ExpensesUserData(
+      user.sessionId,
+      user.mtditid,
+      user.nino,
+      taxYear,
+      isPriorSubmission,
+      hasPriorExpenses,
+      expensesCYAModel,
+      clock.now(DateTimeZone.UTC)
+    )
+
+    expensesUserDataRepository.createOrUpdate(expensesUserData).map {
+      case Right(_) => Right(expensesUserData)
+      case Left(_) => Left()
     }
   }
 

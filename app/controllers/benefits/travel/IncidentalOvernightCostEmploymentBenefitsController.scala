@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,14 @@ import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
 import models.employment.EmploymentBenefitsType
-import models.mongo.EmploymentCYAModel
+import models.mongo.{EmploymentCYAModel, EmploymentUserData}
+import models.redirects.ConditionalRedirect
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.RedirectService.redirectBasedOnCurrentAnswers
-import services.{EmploymentSessionService, RedirectService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
+import services.RedirectService.{benefitsSubmitRedirect, incidentalCostsBenefitsRedirects, redirectBasedOnCurrentAnswers}
+import services.benefits.TravelService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.travel.IncidentalOvernightCostEmploymentBenefitsView
@@ -41,19 +43,11 @@ class IncidentalOvernightCostEmploymentBenefitsController @Inject()(implicit val
                                                                     pageView: IncidentalOvernightCostEmploymentBenefitsView,
                                                                     appConfig: AppConfig,
                                                                     employmentSessionService: EmploymentSessionService,
+                                                                    travelService: TravelService,
                                                                     errorHandler: ErrorHandler,
                                                                     ec: ExecutionContext,
                                                                     clock: Clock
                                                                    ) extends FrontendController(cc) with I18nSupport with SessionHelper {
-
-
-  def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.incidentalOvernightCostEmploymentBenefits.error.${if (user.isAgent) "agent" else "individual"}"
-  )
-
-  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {
-    RedirectService.incidentalCostsBenefitsRedirects(cya, taxYear, employmentId)
-  }
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -78,42 +72,32 @@ class IncidentalOvernightCostEmploymentBenefitsController @Inject()(implicit val
 
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
-            yesNo => {
-
-              val cya = data.employment
-              val benefits = cya.employmentBenefits
-              val travelEntertainmentModel = cya.employmentBenefits.flatMap(_.travelEntertainmentModel)
-
-              val updatedCyaModel: EmploymentCYAModel = {
-                if (yesNo) {
-                  cya.copy(employmentBenefits = benefits.map(_.copy(
-                    travelEntertainmentModel = travelEntertainmentModel.map(_.copy(personalIncidentalExpensesQuestion = Some(true))))))
-                } else {
-                  cya.copy(employmentBenefits =
-                    benefits.map(_.copy(
-                      travelEntertainmentModel = travelEntertainmentModel.map(_.copy(
-                        personalIncidentalExpensesQuestion = Some(false), personalIncidentalExpenses = None)))))
-                }
-              }
-
-              employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, data.isPriorSubmission, data.hasPriorBenefits)(errorHandler.internalServerError()) {
-
-                val nextPage = {
-                  if (yesNo) {
-                    IncidentalCostsBenefitsAmountController.show(taxYear, employmentId)
-                  } else {
-                    EntertainingBenefitsController.show(taxYear, employmentId)
-                  }
-                }
-
-                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
-              }
-            }
+            yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
         }
       }
     }
   }
 
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
+                               (implicit user: User[_]): Future[Result] = {
+    travelService.updatePersonalIncidentalExpensesQuestion(taxYear, employmentId, employmentUserData, questionValue).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage = if (questionValue) {
+          IncidentalCostsBenefitsAmountController.show(taxYear, employmentId)
+        } else {
+          EntertainingBenefitsController.show(taxYear, employmentId)
+        }
+        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+    }
+  }
+
+  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"benefits.incidentalOvernightCostEmploymentBenefits.error.${if (user.isAgent) "agent" else "individual"}"
+  )
+
+  private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
+    incidentalCostsBenefitsRedirects(cya, taxYear, employmentId)
+  }
 }

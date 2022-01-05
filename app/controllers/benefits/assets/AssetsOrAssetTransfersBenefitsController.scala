@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,19 @@
 package controllers.benefits.assets
 
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes._
 import controllers.benefits.assets.routes.AssetsBenefitsController
+import controllers.employment.routes._
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
-import models.benefits.AssetsModel
 import models.employment.EmploymentBenefitsType
+import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import services.RedirectService.{assetsRedirects, benefitsSubmitRedirect, redirectBasedOnCurrentAnswers}
+import services.benefits.AssetsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.assets.AssetsOrAssetTransfersBenefitsView
@@ -42,6 +43,7 @@ class AssetsOrAssetTransfersBenefitsController @Inject()(implicit val cc: Messag
                                                          view: AssetsOrAssetTransfersBenefitsView,
                                                          appConfig: AppConfig,
                                                          employmentSessionService: EmploymentSessionService,
+                                                         assetsService: AssetsService,
                                                          errorHandler: ErrorHandler,
                                                          ec: ExecutionContext,
                                                          clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
@@ -65,37 +67,24 @@ class AssetsOrAssetTransfersBenefitsController @Inject()(implicit val cc: Messag
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(assetsRedirects(_, taxYear, employmentId)) { data =>
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(view(formWithErrors, taxYear, employmentId))),
-            yesNo => {
-              val cya = data.employment
-              val benefits = cya.employmentBenefits
-              val assetsModel = benefits.flatMap(_.assetsModel)
-
-              val updatedCyaModel = assetsModel match {
-                case Some(assetsModel) if yesNo =>
-                  cya.copy(employmentBenefits = benefits.map(_.copy(assetsModel = Some(assetsModel.copy(sectionQuestion = Some(true))))))
-                case Some(_) => cya.copy(employmentBenefits = benefits.map(_.copy(assetsModel = Some(AssetsModel.clear))))
-                case _ => cya.copy(employmentBenefits = benefits.map(_.copy(assetsModel = Some(AssetsModel(sectionQuestion = Some(yesNo))))))
-              }
-
-              employmentSessionService.createOrUpdateSessionData(
-                employmentId,
-                updatedCyaModel,
-                taxYear,
-                data.isPriorSubmission,
-                data.hasPriorBenefits
-              )(errorHandler.internalServerError()) {
-                val nextPage = if (yesNo) {
-                  AssetsBenefitsController.show(taxYear, employmentId)
-                } else {
-                  CheckYourBenefitsController.show(taxYear, employmentId)
-                }
-
-                benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
-              }
-            }
+            yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
         }
       }
+    }
+  }
+
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
+                               (implicit user: User[_]): Future[Result] = {
+    assetsService.updateSectionQuestion(taxYear, employmentId, employmentUserData, questionValue).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage = if (questionValue) {
+          AssetsBenefitsController.show(taxYear, employmentId)
+        } else {
+          CheckYourBenefitsController.show(taxYear, employmentId)
+        }
+        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
     }
   }
 

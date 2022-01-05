@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,14 @@ import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
-import models.benefits.{BenefitsViewModel, CarVanFuelModel}
 import models.employment.EmploymentBenefitsType
-import models.mongo.EmploymentCYAModel
+import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
 import services.RedirectService._
-import services.{EmploymentSessionService, RedirectService}
+import services.benefits.FuelService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.fuel.ReceiveOwnCarMileageBenefitView
@@ -44,23 +44,17 @@ class ReceiveOwnCarMileageBenefitController @Inject()(implicit val cc: MessagesC
                                                       receiveOwnCarMileageBenefitView: ReceiveOwnCarMileageBenefitView,
                                                       appConfig: AppConfig,
                                                       employmentSessionService: EmploymentSessionService,
+                                                      fuelService: FuelService,
                                                       errorHandler: ErrorHandler,
                                                       ec: ExecutionContext,
                                                       clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
-
-  def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.receiveOwnCarMileageBenefit.error.${if (user.isAgent) "agent" else "individual"}"
-  )
-
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
           EmploymentBenefitsType)(mileageBenefitsRedirects(_, taxYear, employmentId)) { cya =>
-
           val mileageBenefitQuestion: Option[Boolean] =
             cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion))
 
@@ -85,40 +79,30 @@ class ReceiveOwnCarMileageBenefitController @Inject()(implicit val cc: MessagesC
 
           yesNoForm.bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(receiveOwnCarMileageBenefitView(formWithErrors, taxYear, employmentId))),
-            yesNo => {
-              val cyaModel: EmploymentCYAModel = cya.employment
-              val benefits: Option[BenefitsViewModel] = cyaModel.employmentBenefits
-              val carVanFuelModel: Option[CarVanFuelModel] = cyaModel.employmentBenefits.flatMap(_.carVanFuelModel)
-
-              val updatedCyaModel = cyaModel.copy(
-                employmentBenefits = benefits.map(_.copy(
-                  carVanFuelModel =
-                    if (yesNo) {
-                      carVanFuelModel.map(_.copy(
-                        mileageQuestion = Some(true)
-                      ))
-                    } else {
-                      carVanFuelModel.map(_.copy(
-                        mileageQuestion = Some(false), mileage = None
-                      ))
-                    }
-                )))
-
-              employmentSessionService.createOrUpdateSessionData(
-                employmentId, updatedCyaModel, taxYear, cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                val nextPage = {
-                  if (yesNo) {
-                    MileageBenefitAmountController.show(taxYear, employmentId)
-                  } else {
-                    AccommodationRelocationBenefitsController.show(taxYear, employmentId)
-                  }
-                }
-                RedirectService.benefitsSubmitRedirect(updatedCyaModel, nextPage)(taxYear, employmentId)
-              }
-            }
+            yesNo => handleSuccessForm(taxYear, employmentId, cya, yesNo)
           )
         }
       }
     }
   }
+
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
+                               (implicit user: User[_]): Future[Result] = {
+    fuelService.updateMileageQuestion(taxYear, employmentId, employmentUserData, questionValue).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) =>
+        val nextPage = {
+          if (questionValue) {
+            MileageBenefitAmountController.show(taxYear, employmentId)
+          } else {
+            AccommodationRelocationBenefitsController.show(taxYear, employmentId)
+          }
+        }
+        benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)
+    }
+  }
+
+  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"benefits.receiveOwnCarMileageBenefit.error.${if (user.isAgent) "agent" else "individual"}"
+  )
 }

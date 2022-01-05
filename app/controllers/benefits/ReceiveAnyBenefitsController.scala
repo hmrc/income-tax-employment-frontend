@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,17 +21,19 @@ import controllers.benefits.fuel.routes.CarVanFuelBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import javax.inject.Inject
 import models.User
-import models.benefits.BenefitsViewModel
+import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{EmploymentSessionService, RedirectService}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.EmploymentSessionService
+import services.RedirectService.benefitsSubmitRedirect
+import services.benefits.BenefitsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.benefits.ReceiveAnyBenefitsView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -40,13 +42,10 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
                                              receiveAnyBenefitsView: ReceiveAnyBenefitsView,
                                              appConfig: AppConfig,
                                              employmentSessionService: EmploymentSessionService,
+                                             benefitsService: BenefitsService,
                                              errorHandler: ErrorHandler,
                                              ec: ExecutionContext,
                                              clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
-
-  def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"receiveAnyBenefits.errors.noRadioSelected.${if (user.isAgent) "agent" else "individual"}"
-  )
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -65,33 +64,28 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataResult(taxYear, employmentId) {
         case Some(cya) =>
-          yesNoForm.bindFromRequest().fold({
-            formWithErrors => Future.successful(BadRequest(receiveAnyBenefitsView(formWithErrors, taxYear, employmentId)))
-          }, { yesNo =>
-            if (yesNo) {
-              val newBenefits = cya.employment.employmentBenefits match {
-                case Some(benefits) => benefits.copy(isBenefitsReceived = true)
-                case None => BenefitsViewModel(isUsingCustomerData = true, isBenefitsReceived = true)
-              }
-              val newCya = cya.employment.copy(employmentBenefits = Some(newBenefits))
-              employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear,
-                cya.isPriorSubmission, cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-
-                RedirectService.benefitsSubmitRedirect(newCya, CarVanFuelBenefitsController.show(taxYear, employmentId))(taxYear, employmentId)
-
-              }
-            } else {
-              val customerData = cya.employment.employmentBenefits.map(_.isUsingCustomerData).getOrElse(true)
-              val newBenefits = BenefitsViewModel.clear(customerData)
-              val newCya = cya.employment.copy(employmentBenefits = Some(newBenefits))
-              employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear, cya.isPriorSubmission,
-                cya.hasPriorBenefits)(errorHandler.internalServerError()) {
-                Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
-              }
-            }
-          })
+          yesNoForm.bindFromRequest().fold(
+            formWithErrors => Future.successful(BadRequest(receiveAnyBenefitsView(formWithErrors, taxYear, employmentId))),
+            yesNo => handleSuccessForm(taxYear, employmentId, cya, yesNo)
+          )
         case None => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
       }
     }
   }
+
+  private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
+                               (implicit user: User[_]): Future[Result] = {
+    benefitsService.updateIsBenefitsReceived(taxYear, employmentId, employmentUserData, questionValue).map {
+      case Left(_) => errorHandler.internalServerError()
+      case Right(employmentUserData) => if (questionValue) {
+        benefitsSubmitRedirect(employmentUserData.employment, CarVanFuelBenefitsController.show(taxYear, employmentId))(taxYear, employmentId)
+      } else {
+        Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+      }
+    }
+  }
+
+  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"receiveAnyBenefits.errors.noRadioSelected.${if (user.isAgent) "agent" else "individual"}"
+  )
 }
