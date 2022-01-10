@@ -21,8 +21,6 @@ import builders.models.UserBuilder.aUserRequest
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.MedicalChildcareEducationModelBuilder.aMedicalChildcareEducationModel
 import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import controllers.benefits.medical.routes.BeneficialLoansBenefitsController
-import controllers.employment.routes.CheckYourBenefitsController
 import models.benefits.BenefitsViewModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -30,6 +28,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{beneficialLoansBenefitsUrl, checkYourBenefitsUrl, overviewUrl}
 
 class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -230,7 +229,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
         }
 
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "Redirect user to the tax overview page when in year" in {
@@ -244,7 +243,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
         }
 
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
 
       "Redirect to educational services question page when there is educational services amount but has no educationalServicesQuestion" in {
@@ -259,7 +258,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
 
         result.status shouldBe SEE_OTHER
         // TODO: Should go to educational services question page
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }
@@ -372,7 +371,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
 
-          result.header("location") shouldBe Some(BeneficialLoansBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe beneficialLoansBenefitsUrl(taxYearEOY, employmentId)
         }
 
         "updates the CYA model with the new value" in {
@@ -393,7 +392,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(BeneficialLoansBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe beneficialLoansBenefitsUrl(taxYearEOY, employmentId)
         }
 
         "updates the CYA model with the new value" in {
@@ -412,7 +411,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -427,7 +426,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
       }
 
@@ -443,7 +442,7 @@ class EducationalServicesBenefitsAmountControllerISpec extends IntegrationTest w
 
         result.status shouldBe SEE_OTHER
         // TODO: Should go to educational services question page
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }

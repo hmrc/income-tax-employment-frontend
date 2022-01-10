@@ -22,8 +22,6 @@ import builders.models.benefits.AssetsModelBuilder.anAssetsModel
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import controllers.benefits.assets.routes.AssetsTransfersBenefitsAmountController
-import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.benefits.AssetsModel
 import org.jsoup.Jsoup
@@ -32,6 +30,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{assetsToKeepBenefitsAmountUrl, checkYourBenefitsUrl, overviewUrl}
 
 class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -220,7 +219,7 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -233,7 +232,7 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -247,7 +246,7 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -261,7 +260,7 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "doesn't create any benefits data" in {
@@ -322,7 +321,7 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates asset transfers question to no and asset transfers amount to none" in {
@@ -343,7 +342,7 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates asset transfers question to no and asset transfers amount to none" in {
@@ -365,7 +364,7 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "redirects to the asset transfers amount page page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(AssetsTransfersBenefitsAmountController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe assetsToKeepBenefitsAmountUrl(taxYearEOY, employmentId)
       }
 
       "updates asset transfers question to yes" in {
@@ -384,7 +383,7 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -399,7 +398,7 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "doesn't create any benefits data" in {
@@ -420,7 +419,7 @@ class AssetTransfersBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }

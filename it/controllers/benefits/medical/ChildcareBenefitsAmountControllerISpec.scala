@@ -21,8 +21,6 @@ import builders.models.UserBuilder.aUserRequest
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.MedicalChildcareEducationModelBuilder.aMedicalChildcareEducationModel
 import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import controllers.benefits.medical.routes._
-import controllers.employment.routes.CheckYourBenefitsController
 import forms.AmountForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -30,6 +28,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourBenefitsUrl, educationalServicesBenefitsUrl, overviewUrl}
 
 class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -234,7 +233,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -247,7 +246,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }
@@ -369,7 +368,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       s"update medicalChildcareEducationModel and redirect to educational services page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(EducationalServicesBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe educationalServicesBenefitsUrl(taxYearEOY, employmentId)
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.nurseryPlacesQuestion)) shouldBe Some(true)
@@ -391,7 +390,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       s"update medicalChildcareEducationModel and redirect to educational services yes no page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(EducationalServicesBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe educationalServicesBenefitsUrl(taxYearEOY, employmentId)
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.nurseryPlacesQuestion)) shouldBe Some(true)
@@ -410,7 +409,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -423,7 +422,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }

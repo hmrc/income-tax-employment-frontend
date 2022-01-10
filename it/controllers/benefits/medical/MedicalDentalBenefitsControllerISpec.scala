@@ -22,9 +22,6 @@ import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.MedicalChildcareEducationModelBuilder.aMedicalChildcareEducationModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import controllers.benefits.medical.routes._
-import controllers.benefits.routes._
-import controllers.employment.routes._
 import forms.YesNoForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -32,6 +29,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourBenefitsUrl, childcareBenefitsUrl, companyBenefitsUrl, medicalDentalBenefitsAmountUrl, medicalDentalChildcareLoansBenefitsUrl, overviewUrl}
 
 class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -193,7 +191,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -207,7 +205,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(ReceiveAnyBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe companyBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -220,7 +218,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -235,7 +233,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -250,7 +248,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(MedicalDentalChildcareBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -264,7 +262,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
       }
 
@@ -278,7 +276,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
 
         "doesn't create any benefits data" in {
@@ -342,7 +340,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
         "redirects to the child care page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(ChildcareBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe childcareBenefitsUrl(taxYearEOY, employmentId)
           lazy val cyModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
           cyModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
           cyModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion)) shouldBe Some(false)
@@ -364,7 +362,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
         "redirects to the medical dental amount page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(MedicalOrDentalBenefitsAmountController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe medicalDentalBenefitsAmountUrl(taxYearEOY, employmentId)
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
           cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
           cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsuranceQuestion)) shouldBe Some(true)
@@ -380,7 +378,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
       }
 
@@ -395,7 +393,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
 
         "doesn't create any benefits data" in {
@@ -416,7 +414,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -432,7 +430,7 @@ class MedicalDentalBenefitsControllerISpec extends IntegrationTest with ViewHelp
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(MedicalDentalChildcareBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId)
         }
       }
     }

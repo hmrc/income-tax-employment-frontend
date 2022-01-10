@@ -30,6 +30,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourBenefitsUrl, companyBenefitsUrl, employerProvidedServicesBenefitsUrl, overviewUrl, telephoneBenefitsAmountUrl, utilitiesOrGeneralServicesBenefitsUrl}
 
 class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -196,8 +197,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
 
         }
       }
@@ -214,8 +214,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe companyBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -228,8 +227,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -245,8 +243,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
 
         }
       }
@@ -263,8 +260,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/utility-general-service?employmentId=$employmentId")
+          result.header("location") shouldBe utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId)
 
         }
       }
@@ -279,7 +275,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
       }
 
@@ -293,8 +289,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
 
         "doesn't create any benefits data" in {
@@ -365,8 +360,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "redirects to the employer services page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/employer-provided-services?employmentId=$employmentId")
+          result.header("location") shouldBe employerProvidedServicesBenefitsUrl(taxYearEOY, employmentId)
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
           cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
           cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.telephoneQuestion)) shouldBe Some(false)
@@ -388,8 +382,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "redirects to the telephone amount page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/telephone-amount?employmentId=$employmentId")
+          result.header("location") shouldBe telephoneBenefitsAmountUrl(taxYearEOY, employmentId)
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
           cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
           cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.telephoneQuestion)) shouldBe Some(true)
@@ -407,7 +400,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
       }
 
@@ -425,8 +418,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
 
         "doesn't create any benefits data" in {
@@ -450,8 +442,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
 
         }
       }
@@ -469,8 +460,7 @@ class TelephoneBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/utility-general-service?employmentId=$employmentId")
+          result.header("location") shouldBe utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId)
         }
       }
     }

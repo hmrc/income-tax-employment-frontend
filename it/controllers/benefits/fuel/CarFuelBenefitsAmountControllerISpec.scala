@@ -35,6 +35,7 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{accommodationRelocationBenefitsUrl, carFuelBenefitsUrl, checkYourBenefitsUrl, overviewUrl, vanBenefitsUrl}
 
 class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -82,7 +83,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
     val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
     val hintText = "For example, £600 or £193.54"
-    val optionalText = s"If it was not £${carFuelAmount}, tell us the correct amount."
+    val optionalText = s"If it was not £$carFuelAmount, tell us the correct amount."
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -268,8 +269,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -283,8 +283,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/car-fuel?employmentId=$employmentId")
+        result.header("location") shouldBe carFuelBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -298,8 +297,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
+        result.header("location") shouldBe vanBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -313,8 +311,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -328,8 +325,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/accommodation-relocation?employmentId=$employmentId")
+        result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -343,8 +339,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -359,7 +354,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
   }
@@ -478,15 +473,14 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(user.isAgent)
         dropEmploymentDB()
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoCarFuel, isPriorSubmission = true), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoCarFuel), aUserRequest)
         urlPost(urlEOY, follow = false,
           welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> newAmount.toString))
       }
 
       "redirects to the check your benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
+        result.header("location") shouldBe vanBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates the CYA model with the new value" in {
@@ -510,8 +504,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
       "redirects to the check your benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
+        result.header("location") shouldBe vanBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates the CYA model with the new value" in {
@@ -532,8 +525,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
+        result.header("location") shouldBe vanBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -548,8 +540,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/car-fuel?employmentId=$employmentId")
+        result.header("location") shouldBe carFuelBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -564,8 +555,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -580,8 +570,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/accommodation-relocation?employmentId=$employmentId")
+        result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -596,8 +585,7 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }

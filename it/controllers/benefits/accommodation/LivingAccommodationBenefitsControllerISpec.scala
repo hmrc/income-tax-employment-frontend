@@ -22,9 +22,6 @@ import builders.models.benefits.AccommodationRelocationModelBuilder.anAccommodat
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import controllers.benefits.accommodation.routes.{AccommodationRelocationBenefitsController, LivingAccommodationBenefitAmountController, QualifyingRelocationBenefitsController}
-import controllers.benefits.travel.routes.TravelOrEntertainmentBenefitsController
-import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.benefits.AccommodationRelocationModel
 import org.jsoup.Jsoup
@@ -33,10 +30,11 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{accommodationRelocationBenefitsUrl, checkYourBenefitsUrl, livingAccommodationBenefitsAmountUrl, overviewUrl, qualifyingRelocationBenefitsUrl, travelOrEntertainmentBenefitsUrl}
 
 class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val taxYearEOY: Int = 2021
+  private val taxYearEOY: Int = taxYear - 1
   private val employmentId: String = "employmentId"
   private val continueButtonLink: String = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/living-accommodation?employmentId=$employmentId"
 
@@ -255,7 +253,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -271,7 +269,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(AccommodationRelocationBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -287,7 +285,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -303,7 +301,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }
@@ -355,7 +353,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(LivingAccommodationBenefitAmountController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodationQuestion)) shouldBe Some(true)
@@ -378,7 +376,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(QualifyingRelocationBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe qualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodationQuestion)) shouldBe Some(false)
@@ -396,7 +394,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -412,7 +410,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(AccommodationRelocationBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -428,7 +426,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -444,7 +442,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }

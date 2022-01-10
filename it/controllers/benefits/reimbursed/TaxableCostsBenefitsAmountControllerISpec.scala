@@ -22,8 +22,6 @@ import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.ReimbursedCostsVouchersAndNonCashModelBuilder.aReimbursedCostsVouchersAndNonCashModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import controllers.benefits.reimbursed.routes.{TaxableCostsBenefitsController, VouchersBenefitsController}
-import controllers.employment.routes.CheckYourBenefitsController
 import models.benefits.BenefitsViewModel
 import models.mongo.EmploymentCYAModel
 import org.jsoup.Jsoup
@@ -32,6 +30,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourBenefitsUrl, overviewUrl, taxableCostsBenefitsUrl, vouchersOrCreditCardsBenefitsUrl}
 
 class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -237,7 +236,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+      result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
     }
 
     "Redirect user to the tax overview page when in year" in {
@@ -250,7 +249,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      result.header("location") shouldBe overviewUrl(taxYear)
     }
 
     "Redirect to 'Taxable cost' question page when there is taxableExpenses amount but has no taxableExpensesQuestion" in {
@@ -264,7 +263,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some(TaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
+      result.header("location") shouldBe taxableCostsBenefitsUrl(taxYearEOY, employmentId)
     }
   }
 
@@ -375,7 +374,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates the CYA model with the new value" in {
@@ -396,7 +395,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(VouchersBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates the CYA model with the new value" in {
@@ -415,7 +414,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -430,7 +429,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -444,7 +443,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some(TaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
+      result.header("location") shouldBe taxableCostsBenefitsUrl(taxYearEOY, employmentId)
     }
   }
 }
