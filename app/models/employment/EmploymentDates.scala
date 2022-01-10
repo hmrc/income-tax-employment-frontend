@@ -16,10 +16,21 @@
 
 package models.employment
 
-import play.api.libs.json.{Json, OFormat}
+import java.time.LocalDate
 
-case class CreatedEmployment(employmentId: String)
+case class EmploymentDates(startAmountDay: String,
+                           startAmountMonth: String,
+                           startAmountYear: String,
+                           endAmountDay: String,
+                           endAmountMonth: String,
+                           endAmountYear: String
+                         ){
 
-object CreatedEmployment {
-  implicit val formats: OFormat[CreatedEmployment] = Json.format[CreatedEmployment]
+  def startDateToLocalDate: LocalDate = LocalDate.of(startAmountYear.toInt, startAmountMonth.toInt, startAmountDay.toInt)
+  def endDateToLocalDate: LocalDate = LocalDate.of(endAmountYear.toInt, endAmountMonth.toInt, endAmountDay.toInt)
+
 }
+
+
+
+

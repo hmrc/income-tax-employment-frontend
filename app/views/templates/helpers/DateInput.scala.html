@@ -35,14 +35,17 @@
         inline: Boolean = false,
         subheading: Option[String] = None,
         headingClasses: String = "govuk-!-margin-bottom-2",
-        content: Option[Html] = None
+        content: Option[Html] = None,
+        multiple: Boolean = false
 )(implicit messages: Messages)
 
 @contentHtml = {
-    @if(subheading.isDefined) {
-        @headingHelper(messages(heading, headingMessageArgs: _*), Some(subheading.get), headingClasses)
-    } else {
-        @messages(heading, headingMessageArgs:_*)
+    @if(!multiple) {
+        @if(subheading.isDefined) {
+            @headingHelper(messages(heading, headingMessageArgs: _*), Some(subheading.get), headingClasses)
+        } else {
+            @messages(heading, headingMessageArgs:_*)
+        }
     }
     @content
 }
@@ -52,7 +55,23 @@
         None
     }
     else {
-        Some(ErrorMessage(content = HtmlContent(errorHtml(form.errors))))
+        if(id == "startAmount") {
+            if(!form.errors.filter(_.key.contains("startAmount")).isEmpty){
+                Some(ErrorMessage(content = HtmlContent(errorHtml(form.errors.filter(_.key.contains("startAmount"))))))
+            } else {
+                None
+            }
+        }
+        else if(id == "endAmount") {
+            if(!form.errors.filter(_.key.contains("endAmount")).isEmpty){
+                Some(ErrorMessage(content = HtmlContent(errorHtml(form.errors.filter(_.key.contains("endAmount"))))))
+            } else {
+                None
+            }
+        }
+        else {
+            Some(ErrorMessage(content = HtmlContent(errorHtml(form.errors))))
+        }
     }
 }
 
