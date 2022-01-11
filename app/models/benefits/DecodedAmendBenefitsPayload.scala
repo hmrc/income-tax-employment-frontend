@@ -119,8 +119,8 @@ object DecodedBenefitsData {
   }
 }
 
-case class DecodedAmendNewBenefitsPayload(priorEmploymentBenefitsData: DecodedBenefitsData, employmentBenefitsData: DecodedBenefitsData)
+case class DecodedAmendBenefitsPayload(priorEmploymentBenefitsData: DecodedBenefitsData, employmentBenefitsData: DecodedBenefitsData)
 
-object DecodedAmendNewBenefitsPayload {
-  implicit val format: OFormat[DecodedAmendNewBenefitsPayload] = Json.format[DecodedAmendNewBenefitsPayload]
+object DecodedAmendBenefitsPayload {
+  implicit val format: OFormat[DecodedAmendBenefitsPayload] = Json.format[DecodedAmendBenefitsPayload]
 }

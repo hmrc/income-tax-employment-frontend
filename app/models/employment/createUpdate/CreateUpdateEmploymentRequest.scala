@@ -18,8 +18,9 @@ package models.employment.createUpdate
 
 import audit.{AmendEmploymentDetailsUpdateAudit, AuditEmploymentData, AuditNewEmploymentData, CreateNewEmploymentDetailsAudit, PriorEmploymentAuditInfo}
 import models.User
-import models.benefits.{Benefits, DecodedAmendNewBenefitsPayload, DecodedBenefitsData, DecodedCreateNewBenefitsPayload, DecodedNewBenefitsData}
+import models.benefits.{Benefits, DecodedAmendBenefitsPayload, DecodedBenefitsData, DecodedCreateNewBenefitsPayload, DecodedNewBenefitsData}
 import models.employment._
+import models.expenses.{DecodedAmendExpensesPayload, DecodedCreateNewExpensesPayload, DecodedNewExpensesData, Expenses}
 import play.api.libs.json.{Json, OFormat}
 
 case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
@@ -140,7 +141,7 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
     DecodedCreateNewBenefitsPayload(
       employerName = employment.map(_.employerName),
       employerRef = employment.flatMap(_.employerRef),
-      benefitsData = DecodedNewBenefitsData(
+      employmentBenefitsData = DecodedNewBenefitsData(
         accommodation = employmentData.flatMap(_.benefitsInKind.flatMap(_.accommodation)),
         assets = employmentData.flatMap(_.benefitsInKind.flatMap(_.assets)),
         assetTransfer = employmentData.flatMap(_.benefitsInKind.flatMap(_.assets)),
@@ -173,7 +174,7 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
     )
   }
 
-  def toAmendDecodedBenefitsPayloadModel(priorData: EmploymentSource)(implicit user: User[_]): DecodedAmendNewBenefitsPayload = {
+  def toAmendDecodedBenefitsPayloadModel(priorData: EmploymentSource)(implicit user: User[_]): DecodedAmendBenefitsPayload = {
 
     def currentOrPrior[T](data: Option[T], priorData: Option[T]): Option[T] ={
       (data, priorData) match {
@@ -183,7 +184,7 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
       }
     }
 
-    DecodedAmendNewBenefitsPayload(
+    DecodedAmendBenefitsPayload(
       priorEmploymentBenefitsData = DecodedBenefitsData(
         accommodation = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.accommodation)),
         assets = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.assets)),

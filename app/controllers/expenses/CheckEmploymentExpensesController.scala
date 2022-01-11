@@ -123,6 +123,11 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
                 case Left(result) => Future.successful(result)
                 case Right(result) =>
                   checkEmploymentExpensesService.performSubmitAudits(model, taxYear, prior)
+
+                  if(appConfig.nrsEnabled){
+                    checkEmploymentExpensesService.performSubmitNrsPayload(model, prior)
+                  }
+
                   employmentSessionService.clearExpenses(taxYear)(result)
               }
             }
