@@ -1,0 +1,84 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.templates.Layout
+@import views.html.templates.helpers.{Button, ErrorSummary, Heading, DateInput, InputText}
+@import models.employment.EmploymentDates
+
+@this(
+   layout: Layout,
+   formWithCSRF: FormWithCSRF,
+   errorSummary: ErrorSummary,
+   button: Button,
+   heading: Heading,
+   dateInput: DateInput,
+   inputText: InputText
+)
+@(form: Form[EmploymentDates], taxYear: Int, employmentId:String, employerName: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+
+@hasFormErrors = @{form.hasErrors}
+
+@headingForUse = @{messages("employment.employmentDetails.employmentDates")}
+
+@titleForUse = @{messages("employment.employmentDetails.employmentDates")}
+
+@contentHtml = {
+    @heading(messages(headingForUse), Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
+    <p class="govuk-body">@{messages(s"employment.employmentDates.tellUs.${if(user.isAgent) "agent" else "individual"}", employerName)}</p>
+    <h2 class="govuk-label--s govuk-!-margin-top-2">@{messages("employment.employmentDates.startDate")}</h2>
+}
+
+@secondContentHtml = {
+    <h2 class="govuk-label--s govuk-!-margin-top-6">@{messages("employment.employmentDates.endDate")}</h2>
+}
+
+@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
+
+    @errorSummary(form.errors)
+
+    @formWithCSRF(action = controllers.employment.routes.EmploymentDatesController.submit(taxYear, employmentId)) {
+
+            @dateInput(
+                form,
+                id = "startAmount",
+                name = "startAmount",
+                heading = headingForUse,
+                headingClasses = "govuk-!-margin-bottom-2",
+                hint = Some(Html(messages("employment.commonEmploymentDate.forExample"))),
+                isPageHeading = false,
+                multiple = true,
+                content = Some(contentHtml)
+            )
+
+            @dateInput(
+                form,
+                id = "endAmount",
+                name = "endAmount",
+                heading = headingForUse,
+                headingClasses = "govuk-!-margin-bottom-2",
+                hint = Some(Html(messages("employment.commonEmploymentDate.forExample"))),
+                isPageHeading = false,
+                multiple = true,
+                content = Some(secondContentHtml)
+            )
+
+        @button()
+    }
+}
+
+@{
+// $COVERAGE-OFF$
+}

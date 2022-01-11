@@ -92,13 +92,10 @@
             messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", user.isAgent), employmentDetails.employerName)
         )
 
-        val employmentDates = EmploymentDataForView(
-            messages(s"$msgKeyGeneric.employmentDates"),
-            employmentDatesFormatter(employmentDetails.startDate.flatMap(dateFormatter), employmentDetails.cessationDate.flatMap(dateFormatter)),
-            controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentDetails.employmentId),
-            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.employmentDates", user.isAgent))
-        )
-        <!--TODO Update change link to go to new employer start/end date page when available-->
+        val employmentDates = EmploymentDataForView(messages(s"$msgKeyGeneric.employmentDates"),
+        employmentDatesFormatter(employmentDetails.startDate.flatMap(dateFormatter), employmentDetails.cessationDate.flatMap(dateFormatter)),
+        controllers.employment.routes.EmploymentDatesController.show(taxYear, employmentDetails.employmentId),
+        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.employmentDates", user.isAgent)))
 
         val datesLineItemToUse = if(employmentDetails.cessationDateQuestion.contains(false)) employmentDates else employmentStartDate
 
