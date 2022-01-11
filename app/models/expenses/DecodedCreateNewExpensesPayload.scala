@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package models.benefits
+package models.expenses
 
 import play.api.libs.json.{Json, OFormat}
 
-case class DecodedCreateNewBenefitsPayload(employerName: Option[String], employerRef: Option[String], employmentBenefitsData: DecodedNewBenefitsData)
+case class DecodedCreateNewExpensesPayload(employmentExpensesData: DecodedNewExpensesData)
 
-object DecodedCreateNewBenefitsPayload {
-  implicit val format: OFormat[DecodedCreateNewBenefitsPayload] = Json.format[DecodedCreateNewBenefitsPayload]
+object DecodedCreateNewExpensesPayload {
+  implicit val format: OFormat[DecodedCreateNewExpensesPayload] = Json.format[DecodedCreateNewExpensesPayload]
 }
-
-
-

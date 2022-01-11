@@ -19,7 +19,7 @@ package models.requests
 import audit.{AmendEmploymentExpensesUpdateAudit, AuditEmploymentExpensesData, AuditNewEmploymentExpensesData, CreateNewEmploymentExpensesAudit}
 import models.User
 import models.employment.EmploymentExpenses
-import models.expenses.Expenses
+import models.expenses.{DecodedAmendExpensesPayload, DecodedCreateNewExpensesPayload, DecodedNewExpensesData, Expenses}
 import play.api.libs.json.{Json, OFormat}
 
 case class CreateUpdateExpensesRequest(ignoreExpenses: Option[Boolean], expenses: Expenses) {
@@ -58,6 +58,57 @@ case class CreateUpdateExpensesRequest(ignoreExpenses: Option[Boolean], expenses
         flatRateJobExpenses = expenses.flatRateJobExpenses,
         professionalSubscriptions = expenses.professionalSubscriptions,
         otherAndCapitalAllowances = expenses.otherAndCapitalAllowances
+      )
+    )
+  }
+
+  def toCreateDecodedExpensesPayloadModel()(implicit user: User[_]): DecodedCreateNewExpensesPayload = {
+
+    DecodedCreateNewExpensesPayload(
+      employmentExpensesData = DecodedNewExpensesData(
+        businessTravelCosts = expenses.businessTravelCosts,
+        jobExpenses = expenses.jobExpenses,
+        flatRateJobExpenses = expenses.flatRateJobExpenses,
+        professionalSubscriptions = expenses.professionalSubscriptions,
+        hotelAndMealExpenses = expenses.hotelAndMealExpenses,
+        otherAndCapitalAllowances = expenses.otherAndCapitalAllowances,
+        vehicleExpenses = expenses.vehicleExpenses,
+        mileageAllowanceRelief = expenses.mileageAllowanceRelief
+      )
+    )
+  }
+
+
+  def toAmendDecodedExpensesPayloadModel(priorData: EmploymentExpenses)(implicit user: User[_]): DecodedAmendExpensesPayload = {
+
+    def currentOrPrior[T](data: Option[T], priorData: Option[T]): Option[T] ={
+      (data, priorData) match {
+        case (data@Some(_), _) => data
+        case (_, priorData@Some(_)) => priorData
+        case _ => None
+      }
+    }
+
+    DecodedAmendExpensesPayload(
+      priorEmploymentExpensesData = DecodedNewExpensesData(
+        businessTravelCosts = currentOrPrior(expenses.businessTravelCosts, priorData.expenses.flatMap(_.businessTravelCosts)),
+        jobExpenses = currentOrPrior(expenses.jobExpenses, priorData.expenses.flatMap(_.jobExpenses)),
+        flatRateJobExpenses = currentOrPrior(expenses.flatRateJobExpenses, priorData.expenses.flatMap(_.flatRateJobExpenses)),
+        professionalSubscriptions = currentOrPrior(expenses.professionalSubscriptions, priorData.expenses.flatMap(_.professionalSubscriptions)),
+        hotelAndMealExpenses = currentOrPrior(expenses.hotelAndMealExpenses, priorData.expenses.flatMap(_.hotelAndMealExpenses)),
+        otherAndCapitalAllowances = currentOrPrior(expenses.otherAndCapitalAllowances, priorData.expenses.flatMap(_.otherAndCapitalAllowances)),
+        vehicleExpenses = currentOrPrior(expenses.vehicleExpenses, priorData.expenses.flatMap(_.vehicleExpenses)),
+        mileageAllowanceRelief = currentOrPrior(expenses.mileageAllowanceRelief, priorData.expenses.flatMap(_.mileageAllowanceRelief))
+      ),
+      employmentExpensesData = DecodedNewExpensesData(
+        businessTravelCosts = expenses.businessTravelCosts,
+        jobExpenses = expenses.jobExpenses,
+        flatRateJobExpenses = expenses.flatRateJobExpenses,
+        professionalSubscriptions = expenses.professionalSubscriptions,
+        hotelAndMealExpenses = expenses.hotelAndMealExpenses,
+        otherAndCapitalAllowances = expenses.otherAndCapitalAllowances,
+        vehicleExpenses = expenses.vehicleExpenses,
+        mileageAllowanceRelief = expenses.mileageAllowanceRelief
       )
     )
   }
