@@ -234,7 +234,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val employerNameHref: Call = EmployerNameController.show(taxYear - 1, employmentId)
     val payeRefHref: Call = PayeRefController.show(taxYear - 1, employmentId)
     val changeEmploymentStartDateHref: Call = EmployerStartDateController.show(taxYear - 1, employmentId)
-    val changeEmploymentDatesHref: Call = CheckEmploymentDetailsController.show(taxYear - 1, employmentId)
+    val changeEmploymentDatesHref: Call = EmploymentDatesController.show(taxYear - 1, employmentId)
     val payrollIdHref: Call = EmployerPayrollIdController.show(taxYear - 1, employmentId)
     val changeStillWorkingForEmployerHref: Call = StillWorkingForEmployerController.show(taxYear - 1, employmentId)
   }

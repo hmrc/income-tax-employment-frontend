@@ -250,6 +250,13 @@ employment.employmentLeaveDate.heading.individual = When did you leave {0}?
 employment.employmentLeaveDate.title.agent = When did your client leave their employer?
 employment.employmentLeaveDate.title.individual = When did you leave your employer?
 
+#################       Employment dates messages        ########################################
+
+employment.employmentDates.tellUs.individual = Tell us when your employment started and ended.
+employment.employmentDates.tellUs.agent = Tell us when your client’s employment started and ended.
+employment.employmentDates.startDate = Start date
+employment.employmentDates.endDate = End date
+
 #################       Still working at employer messages        ########################################
 
 employment.stillWorkingForEmployer.error.agent = Select yes if your client is still working for their employer

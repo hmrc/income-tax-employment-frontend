@@ -56,6 +56,9 @@ POST       /:taxYear/how-much-pay                                               
 GET        /:taxYear/uk-tax                                                         controllers.employment.EmploymentTaxController.show(taxYear: Int, employmentId: String)
 POST       /:taxYear/uk-tax                                                         controllers.employment.EmploymentTaxController.submit(taxYear: Int, employmentId: String)
 
+GET        /:taxYear/employment-dates                                               controllers.employment.EmploymentDatesController.show(taxYear: Int, employmentId: String)
+POST       /:taxYear/employment-dates                                               controllers.employment.EmploymentDatesController.submit(taxYear: Int, employmentId: String)
+
 #################       Employment management pages      ###########################
 
 GET        /:taxYear/add-employment                                                 controllers.employment.AddEmploymentController.show(taxYear: Int)
