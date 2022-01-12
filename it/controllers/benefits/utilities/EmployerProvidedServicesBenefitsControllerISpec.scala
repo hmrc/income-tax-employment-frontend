@@ -22,9 +22,6 @@ import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.UtilitiesAndServicesModelBuilder.aUtilitiesAndServicesModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import controllers.benefits.medical.routes.MedicalDentalChildcareBenefitsController
-import controllers.benefits.utilities.routes.{EmployerProvidedServicesBenefitsAmountController, ProfessionalSubscriptionsBenefitsController, UtilitiesOrGeneralServicesBenefitsController}
-import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.benefits.UtilitiesAndServicesModel
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
@@ -34,6 +31,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourBenefitsUrl, employerProvidedServicesBenefitsAmountUrl, medicalDentalChildcareLoansBenefitsUrl, overviewUrl, professionalFeesOrSubscriptionsBenefitsUrl, utilitiesOrGeneralServicesBenefitsUrl}
 
 class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -229,7 +227,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -245,7 +243,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(UtilitiesOrGeneralServicesBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -261,7 +259,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -277,7 +275,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(MedicalDentalChildcareBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }
@@ -328,7 +326,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -345,7 +343,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(UtilitiesOrGeneralServicesBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -363,7 +361,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -380,7 +378,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(MedicalDentalChildcareBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -399,7 +397,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(EmployerProvidedServicesBenefitsAmountController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe employerProvidedServicesBenefitsAmountUrl(taxYearEOY, employmentId)
       }
 
       s"updates the cyaModel to have the employerProvidedServicesQuestion to be true" in {
@@ -424,7 +422,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(ProfessionalSubscriptionsBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId)
       }
 
       s"updates the cyaModel to have the employerProvidedServicesQuestion to be false and the value to be None" in {
@@ -448,7 +446,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(ProfessionalSubscriptionsBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId)
       }
 
       s"updates the cyaModel to have the employerProvidedServicesQuestion to be false and the value to be None" in {
@@ -472,7 +470,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(ProfessionalSubscriptionsBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId)
       }
 
       s"updates the cyaModel to have the employerProvidedServicesQuestion to be false and the value to be None" in {

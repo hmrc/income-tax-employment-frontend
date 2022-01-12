@@ -21,8 +21,6 @@ import builders.models.UserBuilder.aUserRequest
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
 import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import controllers.benefits.fuel.routes.CompanyVanFuelBenefitsController
-import controllers.employment.routes.CheckYourBenefitsController
 import models.benefits.BenefitsViewModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -30,6 +28,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourBenefitsUrl, mileageBenefitsUrl, overviewUrl, vanBenefitsUrl, vanFuelBenefitsUrl}
 
 class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -206,7 +205,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -222,7 +221,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -237,8 +236,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
+        result.header("location") shouldBe vanBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -253,8 +251,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/mileage?employmentId=$employmentId")
+        result.header("location") shouldBe mileageBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -269,8 +266,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }
@@ -350,9 +346,9 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         urlPost(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
 
-      "has a redirect to the check employment benefits page" in {
+      "has a redirect to the van fuel benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CompanyVanFuelBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe vanFuelBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates the company van amount to be 100" in {
@@ -374,7 +370,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
       "has a redirect to the company van fuel page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CompanyVanFuelBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe vanFuelBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates the company van amount to be 100" in {
@@ -395,7 +391,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -408,7 +404,7 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }

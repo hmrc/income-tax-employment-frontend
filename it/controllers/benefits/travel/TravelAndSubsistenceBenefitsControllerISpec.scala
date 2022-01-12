@@ -29,6 +29,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourBenefitsUrl, companyBenefitsUrl, incidentalOvernightCostsBenefitsUrl, overviewUrl, travelOrEntertainmentBenefitsUrl, travelSubsistenceBenefitsAmountUrl}
 
 class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -193,8 +194,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -209,8 +209,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe companyBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -223,8 +222,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -239,8 +237,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -255,8 +252,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/travel-entertainment?employmentId=$employmentId")
+          result.header("location") shouldBe travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -270,7 +266,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
       }
 
@@ -284,8 +280,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
 
         "doesn't create any benefits data" in {
@@ -349,8 +344,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
 
         "redirects to the incidental costs page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs?employmentId=$employmentId")
+          result.header("location") shouldBe incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
           cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
           cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe Some(false)
@@ -374,8 +368,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
 
         "redirects to the travel and subsistence amount page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/travel-subsistence-amount?employmentId=$employmentId")
+          result.header("location") shouldBe travelSubsistenceBenefitsAmountUrl(taxYearEOY, employmentId)
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
           cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
           cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.travelAndSubsistenceQuestion)) shouldBe Some(true)
@@ -395,7 +388,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
       }
 
@@ -410,8 +403,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
 
         "doesn't create any benefits data" in {
@@ -432,8 +424,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -449,8 +440,7 @@ class TravelAndSubsistenceBenefitsControllerISpec extends IntegrationTest with V
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/travel-entertainment?employmentId=$employmentId")
+          result.header("location") shouldBe travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)
         }
       }
     }

@@ -22,8 +22,6 @@ import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.UtilitiesAndServicesModelBuilder.aUtilitiesAndServicesModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import controllers.benefits.utilities.routes._
-import controllers.employment.routes.CheckYourBenefitsController
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -31,6 +29,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourBenefitsUrl, otherServicesBenefitsUrl, overviewUrl}
 
 class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -200,7 +199,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
       }
       "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -215,7 +214,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
 
       "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
   }
@@ -329,7 +328,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
 
         "has a SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(OtherServicesBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe otherServicesBenefitsUrl(taxYearEOY, employmentId)
         }
 
         "updates employerProvidedProfessionalSubscriptions to the new value" in {
@@ -348,7 +347,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
 
         "has a SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
     }
@@ -364,7 +363,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
 
       "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/2021/benefits/other-services?employmentId=$employmentId")
+        result.header("location") shouldBe otherServicesBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates employerProvidedProfessionalSubscriptions to the new value" in {
@@ -382,7 +381,7 @@ class ProfessionalSubscriptionsBenefitsAmountControllerISpec extends Integration
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
   }

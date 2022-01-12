@@ -21,9 +21,6 @@ import builders.models.UserBuilder.aUserRequest
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsController
-import controllers.benefits.reimbursed.routes.NonTaxableCostsBenefitsController
-import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
@@ -33,6 +30,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{assetsBenefitsUrl, checkYourBenefitsUrl, nonTaxableCostsBenefitsUrl, overviewUrl}
 
 class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -216,7 +214,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -230,7 +228,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -243,7 +241,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
   }
@@ -292,7 +290,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -309,7 +307,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
 
       "redirects to the non taxable costs question page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(NonTaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe nonTaxableCostsBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "update the reimbursedCostsVouchersAndNonCashQuestion to true" in {
@@ -330,7 +328,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
 
       "redirects to the assets section question page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(AssetsOrAssetTransfersBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe assetsBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates the reimbursedCostsVouchersAndNonCashQuestion to false and wipes the other values" in {
@@ -350,7 +348,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
 
       "redirects to the check your benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates the reimbursedCostsVouchersAndNonCashQuestion to false and wipes the other values" in {
@@ -371,7 +369,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
 
       "redirects to the non taxable costs page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(NonTaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe nonTaxableCostsBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "creates the ReimbursedCostsVouchersAndNonCashModel with reimbursedCostsVouchersAndNonCashQuestion set to true" in {

@@ -30,6 +30,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourBenefitsUrl, nonQualifyingRelocationBenefitsAmountUrl, overviewUrl, travelOrEntertainmentBenefitsUrl}
 
 class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -205,8 +206,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -221,8 +221,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
     }
@@ -237,7 +236,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
   }
@@ -295,8 +294,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
 
       "has a SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/non-qualifying-relocation-amount?employmentId=$employmentId")
+        result.header("location") shouldBe nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)
       }
 
       "updates non-QualifyingRelocation Expenses Question to Yes" in {
@@ -317,8 +315,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
 
       "has a SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/travel-entertainment?employmentId=$employmentId")
+        result.header("location") shouldBe travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates non-QualifyingRelocation Expenses Question to No and removes non-QualifyingRelocation Expenses amount" in {
@@ -345,8 +342,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
 
       "has a SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/non-qualifying-relocation-amount?employmentId=$employmentId")
+        result.header("location") shouldBe nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)
       }
 
       "updates non-QualifyingRelocation Expenses Question to Yes" in {
@@ -366,8 +362,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
 
       "has a SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -380,7 +375,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
   }

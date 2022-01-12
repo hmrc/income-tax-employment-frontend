@@ -22,9 +22,6 @@ import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.ReimbursedCostsVouchersAndNonCashModelBuilder.aReimbursedCostsVouchersAndNonCashModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsController
-import controllers.benefits.reimbursed.routes.NonCashBenefitsController
-import controllers.employment.routes.CheckYourBenefitsController
 import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
 import models.mongo.EmploymentCYAModel
 import org.jsoup.Jsoup
@@ -33,6 +30,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{assetsBenefitsUrl, checkYourBenefitsUrl, nonCashBenefitsUrl, overviewUrl}
 
 class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -228,7 +226,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+      result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
     }
 
     "redirect user to the tax overview page when in year" in {
@@ -241,7 +239,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      result.header("location") shouldBe overviewUrl(taxYear)
     }
 
     "redirect to the Non cash benefits page when vouchersAndCreditCardsQuestion is set to false" in {
@@ -254,7 +252,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some(NonCashBenefitsController.show(taxYearEOY, employmentId).url)
+      result.header("location") shouldBe nonCashBenefitsUrl(taxYearEOY, employmentId)
     }
 
     "redirect to the Assets section question page when reimbursedCostsVouchersAndNonCashQuestion is set to false" in {
@@ -267,7 +265,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some(AssetsOrAssetTransfersBenefitsController.show(taxYearEOY, employmentId).url)
+      result.header("location") shouldBe assetsBenefitsUrl(taxYearEOY, employmentId)
     }
 
     "redirect to the CYA page when benefitsReceived is set to false" in {
@@ -279,7 +277,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+      result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
     }
   }
 
@@ -390,7 +388,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates the CYA model with the new value" in {
@@ -411,7 +409,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(NonCashBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe nonCashBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates the CYA model with the new value" in {
@@ -430,7 +428,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -445,7 +443,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -459,7 +457,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some(NonCashBenefitsController.show(taxYearEOY, employmentId).url)
+      result.header("location") shouldBe nonCashBenefitsUrl(taxYearEOY, employmentId)
     }
 
     "redirect to the Assets section question page when reimbursedCostsVouchersAndNonCashQuestion is set to false" in {
@@ -472,7 +470,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some(AssetsOrAssetTransfersBenefitsController.show(taxYearEOY, employmentId).url)
+      result.header("location") shouldBe assetsBenefitsUrl(taxYearEOY, employmentId)
     }
 
     "redirect to the CYA page when benefitsReceived is set to false" in {
@@ -484,7 +482,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+      result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
     }
   }
 }

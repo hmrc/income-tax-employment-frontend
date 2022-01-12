@@ -20,9 +20,6 @@ import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.UserBuilder.aUserRequest
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import controllers.benefits.income.routes.IncomeTaxBenefitsController
-import controllers.benefits.reimbursed.routes.ReimbursedCostsVouchersAndNonCashBenefitsController
-import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.benefits.{BenefitsViewModel, IncomeTaxAndCostsModel}
 import org.jsoup.Jsoup
@@ -31,6 +28,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourBenefitsUrl, incomeTaxBenefitsUrl, overviewUrl, reimbursedCostsBenefitsUrl}
 
 class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -211,7 +209,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -225,7 +223,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
       }
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -237,7 +235,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
       }
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
   }
@@ -286,7 +284,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -302,7 +300,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
 
       "redirects to the income tax question page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(IncomeTaxBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe incomeTaxBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "update the income tax or incurred costs question to true" in {
@@ -323,7 +321,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
 
       "redirects to the income tax question page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(IncomeTaxBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe incomeTaxBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "creates a new incomeTaxAndCostsModel with the sectionQuestion as true" in {
@@ -343,7 +341,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
 
       "redirects to the check your benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates the Income tax or costs question to false and wipes the other values" in {
@@ -364,7 +362,7 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
 
       "redirects to the reimbursed section page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(ReimbursedCostsVouchersAndNonCashBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe reimbursedCostsBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates the Income tax or costs question to false and wipes the other values" in {

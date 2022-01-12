@@ -22,8 +22,6 @@ import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.TravelEntertainmentModelBuilder.aTravelEntertainmentModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import controllers.benefits.travel.routes.{EntertainmentBenefitsAmountController, TravelOrEntertainmentBenefitsController}
-import controllers.benefits.utilities.routes.UtilitiesOrGeneralServicesBenefitsController
 import forms.YesNoForm
 import models.benefits.TravelEntertainmentModel
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
@@ -33,6 +31,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourBenefitsUrl, entertainmentExpensesBenefitsAmountUrl, overviewUrl, travelOrEntertainmentBenefitsUrl, utilitiesOrGeneralServicesBenefitsUrl}
 
 class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -191,8 +190,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
         s"has a SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -207,8 +205,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
         s"has a SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
     }
@@ -223,7 +220,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
       }
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(TravelOrEntertainmentBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -236,7 +233,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
   }
@@ -291,7 +288,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(EntertainmentBenefitsAmountController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe entertainmentExpensesBenefitsAmountUrl(taxYearEOY, employmentId)
       }
 
       "updates entertainingQuestion to Yes" in {
@@ -312,7 +309,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(UtilitiesOrGeneralServicesBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates entertainingQuestion to No and removes entertaining expenses amount" in {
@@ -336,7 +333,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(EntertainmentBenefitsAmountController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe entertainmentExpensesBenefitsAmountUrl(taxYearEOY, employmentId)
       }
 
       "updates entertainingQuestion to Yes" in {
@@ -356,8 +353,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
       }
       "has a SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -370,7 +366,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
   }

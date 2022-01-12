@@ -19,7 +19,6 @@ package controllers.benefits.fuel
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.UserBuilder.aUserRequest
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithBenefits
-import controllers.benefits.accommodation.routes.AccommodationRelocationBenefitsController
 import forms.YesNoForm
 import models.User
 import models.benefits.{BenefitsViewModel, CarVanFuelModel}
@@ -31,6 +30,7 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{accommodationRelocationBenefitsUrl, carBenefitsAmountUrl, carBenefitsUrl, carFuelBenefitsAmountUrl, carFuelBenefitsUrl, carVanFuelBenefitsUrl, checkYourBenefitsUrl, mileageBenefitsAmountUrl, overviewUrl, vanBenefitsUrl, vanFuelBenefitsAmountUrl}
 
 class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -301,7 +301,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -352,8 +352,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "redirects to the check employment benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/accommodation-relocation?employmentId=$employmentId")
+        result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "update the mileageQuestion to false and mileage to none" in {
@@ -376,8 +375,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "redirects to the check employment benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/accommodation-relocation?employmentId=$employmentId")
+        result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "update the mileageQuestion to false and mileage to none" in {
@@ -398,8 +396,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "redirects to the mileage amount page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/mileage-amount?employmentId=$employmentId")
+        result.header("location") shouldBe mileageBenefitsAmountUrl(taxYearEOY, employmentId)
       }
 
       "update the mileageQuestion to true" in {
@@ -419,8 +416,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "redirects to the mileage amount page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/mileage-amount?employmentId=$employmentId")
+        result.header("location") shouldBe mileageBenefitsAmountUrl(taxYearEOY, employmentId)
       }
 
       "update the mileageQuestion to true" in {
@@ -461,7 +457,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(AccommodationRelocationBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -477,8 +473,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/car-van-fuel?employmentId=$employmentId")
+        result.header("location") shouldBe carVanFuelBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -493,8 +488,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-car?employmentId=$employmentId")
+        result.header("location") shouldBe carBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -509,8 +503,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/car-fuel?employmentId=$employmentId")
+        result.header("location") shouldBe carFuelBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -525,8 +518,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
+        result.header("location") shouldBe vanBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -541,8 +533,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some("/update-and-submit-income-tax-return/employment-income/2021/benefits/company-car-amount?employmentId=" + employmentId)
+        result.header("location") shouldBe carBenefitsAmountUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -557,8 +548,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/2021/benefits/car-fuel-amount?employmentId=$employmentId")
+        result.header("location") shouldBe carFuelBenefitsAmountUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -573,8 +563,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some("/update-and-submit-income-tax-return/employment-income/2021/benefits/van-fuel-amount?employmentId=" + employmentId)
+        result.header("location") shouldBe vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -589,8 +578,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some("/update-and-submit-income-tax-return/employment-income/2021/benefits/van-fuel-amount?employmentId=" + employmentId)
+        result.header("location") shouldBe vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -605,8 +593,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -620,8 +607,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }

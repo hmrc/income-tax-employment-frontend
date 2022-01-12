@@ -22,9 +22,6 @@ import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.MedicalChildcareEducationModelBuilder.aMedicalChildcareEducationModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import controllers.benefits.medical.routes._
-import controllers.benefits.routes.ReceiveAnyBenefitsController
-import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -32,6 +29,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{beneficialLoansBenefitsUrl, checkYourBenefitsUrl, companyBenefitsUrl, educationalServicesBenefitsAmountUrl, overviewUrl}
 
 class EducationalServicesBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -194,7 +192,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -208,7 +206,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(ReceiveAnyBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe companyBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -221,7 +219,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -235,7 +233,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
       }
 
@@ -249,7 +247,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
 
         "doesn't create any benefits data" in {
@@ -312,7 +310,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
 
         "redirects to the beneficial loans page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(BeneficialLoansBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe beneficialLoansBenefitsUrl(taxYearEOY, employmentId)
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
 
           cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
@@ -335,7 +333,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
 
         "redirects to the educational services amount page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(EducationalServicesBenefitsAmountController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe educationalServicesBenefitsAmountUrl(taxYearEOY, employmentId)
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
           cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
           cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.educationalServicesQuestion)) shouldBe Some(true)
@@ -351,7 +349,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
       }
 
@@ -366,8 +364,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
 
         "doesn't create any benefits data" in {
