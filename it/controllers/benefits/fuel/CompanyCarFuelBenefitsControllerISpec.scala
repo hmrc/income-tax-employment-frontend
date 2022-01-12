@@ -21,8 +21,6 @@ import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import controllers.benefits.fuel.routes.CarFuelBenefitsAmountController
-import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -30,6 +28,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{carFuelBenefitsAmountUrl, carFuelBenefitsUrl, checkYourBenefitsUrl, overviewUrl, vanBenefitsUrl}
 
 class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -179,7 +178,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }
@@ -198,7 +197,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
           s"has a SEE_OTHER($SEE_OTHER) status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+            result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
           }
         }
 
@@ -236,7 +235,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -253,8 +252,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
+        result.header("location") shouldBe vanBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates the carFuelQuestion to false and carFuel to None" in {
@@ -277,8 +275,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-van?employmentId=$employmentId")
+        result.header("location") shouldBe vanBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates the carFuelQuestion to false and carFuel to None" in {
@@ -303,7 +300,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "redirects to the car fuel amount page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CarFuelBenefitsAmountController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe carFuelBenefitsAmountUrl(taxYearEOY, employmentId)
       }
 
       "updates the car fuel question to be true" in {
@@ -327,7 +324,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
       "redirects to the car fuel amount page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CarFuelBenefitsAmountController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe carFuelBenefitsAmountUrl(taxYearEOY, employmentId)
       }
 
       "updates the car fuel question to be true" in {

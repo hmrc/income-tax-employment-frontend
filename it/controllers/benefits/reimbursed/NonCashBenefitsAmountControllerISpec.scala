@@ -21,9 +21,6 @@ import builders.models.UserBuilder.aUserRequest
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.ReimbursedCostsVouchersAndNonCashModelBuilder.aReimbursedCostsVouchersAndNonCashModel
 import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsController
-import controllers.benefits.reimbursed.routes.OtherBenefitsController
-import controllers.employment.routes.CheckYourBenefitsController
 import forms.AmountForm
 import models.benefits.ReimbursedCostsVouchersAndNonCashModel
 import org.jsoup.Jsoup
@@ -32,6 +29,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{assetsBenefitsUrl, checkYourBenefitsUrl, otherBenefitsUrl, overviewUrl}
 
 class NonCashBenefitsAmountControllerISpec extends IntegrationTest with EmploymentDatabaseHelper with ViewHelpers {
 
@@ -267,7 +265,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -280,7 +278,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -296,7 +294,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(OtherBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe otherBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -312,7 +310,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(AssetsOrAssetTransfersBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe assetsBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }
@@ -426,7 +424,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
       s"redirect to check your benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
 
       s"update nonCash in reimbursedCostsVouchersAndNonCash model" in {
@@ -449,7 +447,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
       s"redirect to other benefits question page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(OtherBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe otherBenefitsUrl(taxYearEOY, employmentId)
       }
 
       s"update expenses in reimbursedCostsVouchersAndNonCash model" in {
@@ -471,7 +469,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -484,7 +482,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -500,7 +498,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(OtherBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe otherBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -516,7 +514,7 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(AssetsOrAssetTransfersBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe assetsBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }

@@ -21,8 +21,6 @@ import builders.models.UserBuilder.aUserRequest
 import builders.models.benefits.AssetsModelBuilder.anAssetsModel
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import controllers.benefits.assets.routes.{AssetTransfersBenefitsController, AssetsBenefitsAmountController}
-import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.benefits.AssetsModel
 import org.jsoup.Jsoup
@@ -31,10 +29,11 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{assetsForUseBenefitsAmountUrl, assetsToKeepBenefitsUrl, checkYourBenefitsUrl, overviewUrl}
 
 class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val taxYearEOY: Int = 2021
+  private val taxYearEOY: Int = taxYear - 1
   private val employmentId: String = "employmentId"
   private val formPostLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/assets-available-for-use?employmentId=$employmentId"
 
@@ -224,7 +223,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -240,7 +239,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -255,7 +254,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
   }
@@ -310,7 +309,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
       "redirect to the assets amount page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(AssetsBenefitsAmountController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId)
       }
 
       "update assetsQuestion to Some(true) in assetsModel" in {
@@ -332,7 +331,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
       "redirect to the check your benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "update assetsQuestion to Some(false) and assets to None" in {
@@ -356,7 +355,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
       "redirect to the assets transfers page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(AssetTransfersBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe assetsToKeepBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "update assetsQuestion to Some(false) and assets to None" in {
@@ -377,7 +376,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -393,7 +392,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -408,7 +407,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
   }

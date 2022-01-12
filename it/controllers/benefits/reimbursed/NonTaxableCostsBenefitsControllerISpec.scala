@@ -22,8 +22,6 @@ import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.ReimbursedCostsVouchersAndNonCashModelBuilder.aReimbursedCostsVouchersAndNonCashModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import controllers.benefits.reimbursed.routes.{NonTaxableCostsBenefitsAmountController, TaxableCostsBenefitsController}
-import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
 import models.benefits.{BenefitsViewModel, ReimbursedCostsVouchersAndNonCashModel}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
@@ -33,6 +31,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourBenefitsUrl, nonTaxableCostsBenefitsAmountUrl, overviewUrl, taxableCostsBenefitsUrl}
 
 class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -219,7 +218,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -234,7 +233,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -247,7 +246,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -261,7 +260,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
 
       }
     }
@@ -276,7 +275,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "doesn't create any benefits data" in {
@@ -337,7 +336,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates non taxable costs question to no and non taxable costs to none" in {
@@ -360,7 +359,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
 
       "redirects to the taxable costs page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(TaxableCostsBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe taxableCostsBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates non taxable costs question to no and non taxable costs to none" in {
@@ -383,7 +382,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
 
       "redirects to the non taxable costs amount page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(NonTaxableCostsBenefitsAmountController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId)
       }
 
       "updates non taxable costs question to yes" in {
@@ -401,7 +400,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -418,7 +417,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "doesn't create any benefits data" in {
@@ -438,7 +437,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -454,7 +453,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }

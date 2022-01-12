@@ -21,7 +21,6 @@ import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.MedicalChildcareEducationModelBuilder.aMedicalChildcareEducationModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import controllers.benefits.medical.routes._
 import forms.YesNoForm
 import models.benefits.{BenefitsViewModel, MedicalChildcareEducationModel}
 import org.jsoup.Jsoup
@@ -30,6 +29,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourBenefitsUrl, childcareBenefitsAmountUrl, educationalServicesBenefitsUrl, overviewUrl}
 
 class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -241,7 +241,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
       }
 
@@ -255,8 +255,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
 
         "doesn't create any benefits data" in {
@@ -276,8 +275,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -292,8 +290,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe
-            Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
     }
@@ -351,7 +348,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "redirects to the child care amount page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(ChildcareBenefitsAmountController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe childcareBenefitsAmountUrl(taxYearEOY, employmentId)
       }
 
       "update the NurseryPlacesQuestion to true" in {
@@ -372,7 +369,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "redirects to the educational services page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(EducationalServicesBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe educationalServicesBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "update the NurseryPlacesQuestion to false, and nurseryPlaces to None" in {
@@ -394,8 +391,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/childcare-amount?employmentId=$employmentId")
+        result.header("location") shouldBe childcareBenefitsAmountUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -409,7 +405,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -424,8 +420,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "doesn't create any benefits data" in {
@@ -446,8 +441,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "redirects to the check employment benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -463,8 +457,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
       "redirects to the check employment benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe
-          Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-benefits?employmentId=$employmentId")
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }

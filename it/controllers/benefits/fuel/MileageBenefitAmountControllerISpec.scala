@@ -22,9 +22,6 @@ import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import controllers.benefits.accommodation.routes._
-import controllers.benefits.fuel.routes._
-import controllers.employment.routes.CheckYourBenefitsController
 import forms.AmountForm
 import models.IncomeTaxUserData
 import org.jsoup.Jsoup
@@ -33,6 +30,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{accommodationRelocationBenefitsUrl, carBenefitsUrl, carFuelBenefitsUrl, checkYourBenefitsUrl, mileageBenefitsUrl, overviewUrl, vanBenefitsUrl}
 
 class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -213,7 +211,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(AccommodationRelocationBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
         }
 
       }
@@ -229,7 +227,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(ReceiveOwnCarMileageBenefitController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe mileageBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -245,7 +243,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CompanyCarBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe carBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -261,7 +259,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CompanyVanBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe vanBenefitsUrl(taxYearEOY, employmentId)
         }
 
       }
@@ -277,7 +275,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CompanyCarFuelBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe carFuelBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -292,7 +290,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -307,7 +305,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
       }
     }
@@ -401,7 +399,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         s"has a SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
           cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel) shouldBe None
         }
@@ -419,7 +417,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         s"has a SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(AccommodationRelocationBenefitsController.show(taxYearEOY, employmentId).url)
+          result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
         }
       }
 
@@ -433,7 +431,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         s"has a SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
       }
     }
@@ -450,7 +448,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
       "redirect to the accommodation page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(AccommodationRelocationBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates the mileage benefit to be 200" in {
@@ -472,7 +470,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
       "redirect to the accommodation relocation controller page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(AccommodationRelocationBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates the mileage benefit to be 200" in {

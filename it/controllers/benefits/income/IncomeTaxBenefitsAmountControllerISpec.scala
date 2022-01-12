@@ -21,8 +21,6 @@ import builders.models.UserBuilder.aUserRequest
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.IncomeTaxAndCostsModelBuilder.anIncomeTaxAndCostsModel
 import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
-import controllers.benefits.income.routes.IncurredCostsBenefitsController
-import controllers.employment.routes.CheckYourBenefitsController
 import forms.AmountForm
 import models.benefits.{BenefitsViewModel, IncomeTaxAndCostsModel}
 import org.jsoup.Jsoup
@@ -31,6 +29,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourBenefitsUrl, incurredCostsBenefitsUrl, overviewUrl}
 
 class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -245,7 +244,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -258,7 +257,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -274,7 +273,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -290,7 +289,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -306,7 +305,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }
@@ -430,7 +429,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       "redirects to check your benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates incomeTaxPaidByDirector value to the new amount" in {
@@ -453,7 +452,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       "redirect to the incurred costs question page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(IncurredCostsBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe incurredCostsBenefitsUrl(taxYearEOY, employmentId)
       }
 
       "updates incomeTaxPaidByDirector value to the new amount" in {
@@ -473,7 +472,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -488,7 +487,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -506,7 +505,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -524,7 +523,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -543,7 +542,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckYourBenefitsController.show(taxYearEOY, employmentId).url)
+        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
       }
     }
   }
