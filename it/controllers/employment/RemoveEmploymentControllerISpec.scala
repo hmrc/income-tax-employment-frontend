@@ -16,7 +16,6 @@
 
 package controllers.employment
 
-import controllers.employment.routes.EmploymentSummaryController
 import forms.YesNoForm
 import models.IncomeTaxUserData
 import models.employment.{AllEmploymentData, EmploymentSource}
@@ -26,6 +25,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{employmentSummaryUrl, overviewUrl}
 
 class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -205,7 +205,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
             s"has a SEE_OTHER ($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+              result.header("location") shouldBe overviewUrl(taxYear)
             }
           }
 
@@ -220,7 +220,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
             s"has a SEE_OTHER ($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYearEOY/view")
+              result.header("location") shouldBe overviewUrl(taxYearEOY)
             }
 
           }
@@ -251,7 +251,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
             }
             s"has a SEE_OTHER ($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+              result.header("location") shouldBe overviewUrl(taxYear)
             }
 
           }
@@ -267,7 +267,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
             s"has a SEE_OTHER ($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYearEOY/view")
+              result.header("location") shouldBe overviewUrl(taxYearEOY)
             }
 
           }
@@ -283,7 +283,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
             s"has a SEE_OTHER ($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYearEOY/view")
+              result.header("location") shouldBe overviewUrl(taxYearEOY)
             }
 
           }
@@ -306,7 +306,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
             "redirects to the employment summary page" in {
               result.status shouldBe SEE_OTHER
-              result.header(HeaderNames.LOCATION) shouldBe Some(EmploymentSummaryController.show(taxYearEOY).url)
+              result.header(HeaderNames.LOCATION) shouldBe employmentSummaryUrl(taxYearEOY)
 
             }
 
@@ -326,7 +326,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
 
             s"has a SEE_OTHER ($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header(HeaderNames.LOCATION) shouldBe Some(EmploymentSummaryController.show(taxYearEOY).url)
+              result.header(HeaderNames.LOCATION) shouldBe employmentSummaryUrl(taxYearEOY)
             }
           }
         }

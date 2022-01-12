@@ -19,7 +19,6 @@ package controllers.employment
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.UserBuilder.aUserRequest
 import common.{SessionValues, UUID}
-import controllers.employment.routes._
 import forms.YesNoForm
 import models.IncomeTaxUserData
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -29,11 +28,11 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-
+import utils.PageUrls.{employerNameUrl, employerNameUrlWithoutEmploymentId, employerPayeReferenceUrl, employmentSummaryUrl, overviewUrl}
 
 class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  private val validTaxYear2021 = 2021
+  private val taxYearEOY = taxYear - 1
 
   object Selectors {
     val valueHref = "#value"
@@ -60,14 +59,14 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
 
   object CommonExpectedEN extends CommonExpectedResults {
     val continueButton: String = "Continue"
-    val expectedCaption = s"Employment for 6 April ${validTaxYear2021 - 1} to 5 April $validTaxYear2021"
+    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val yesText = "Yes"
     val noText = "No"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val continueButton: String = "Continue"
-    val expectedCaption = s"Employment for 6 April ${validTaxYear2021 - 1} to 5 April $validTaxYear2021"
+    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val yesText = "Yes"
     val noText = "No"
   }
@@ -106,7 +105,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
   private def url(taxYear: Int) = s"$appUrl/$taxYear/add-employment"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, validTaxYear2021, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
   def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc))
 
@@ -129,7 +128,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
 
         "return Add an employment page" when {
 
-          val taxYear = validTaxYear2021
+          val taxYear = taxYearEOY
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -155,7 +154,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
 
         "return Add an employment page page with yes pre-filled when there is session value employment id is defined" when {
 
-          val taxYear = validTaxYear2021
+          val taxYear = taxYearEOY
           lazy val result: WSResponse = {
             dropEmploymentDB()
             userDataStub(IncomeTaxUserData(None), nino, taxYear)
@@ -181,7 +180,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
         }
 
         "redirect to Employment Summary page when there is prior data" when {
-          val taxYear = validTaxYear2021
+          val taxYear = taxYearEOY
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -194,7 +193,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to Check Employment Details page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some(EmploymentSummaryController.show(taxYear).url)
+            result.header(HeaderNames.LOCATION) shouldBe employmentSummaryUrl(taxYear)
           }
         }
 
@@ -212,7 +211,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to Overview page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+            result.header(HeaderNames.LOCATION) shouldBe overviewUrl(taxYear)
           }
         }
       }
@@ -238,8 +237,8 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(IncomeTaxUserData(None), nino, validTaxYear2021)
-            urlPost(url(validTaxYear2021), body = yesNoFormEmpty, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
+            userDataStub(IncomeTaxUserData(None), nino, taxYearEOY)
+            urlPost(url(taxYearEOY), body = yesNoFormEmpty, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "status BAD_REQUEST" in {
@@ -262,7 +261,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(None), nino, taxYear)
-            urlPost(url(validTaxYear2021), follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
+            urlPost(url(taxYearEOY), follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "status SEE_OTHER" in {
@@ -270,7 +269,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to Overview page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(validTaxYear2021))
+            result.header(HeaderNames.LOCATION) shouldBe overviewUrl(taxYearEOY)
           }
         }
 
@@ -279,7 +278,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(None), nino, taxYear)
-            urlPost(url(validTaxYear2021), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
+            urlPost(url(taxYearEOY), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "status SEE_OTHER" in {
@@ -287,7 +286,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to employer name page" in {
-            result.header(HeaderNames.LOCATION).toString.contains("/update-and-submit-income-tax-return/employment-income/2021/employer-name?employmentId=") shouldBe true
+            result.header(HeaderNames.LOCATION).getOrElse("") contains employerNameUrlWithoutEmploymentId(taxYearEOY).getOrElse("") shouldBe true
           }
         }
 
@@ -296,7 +295,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(None), nino, taxYear - 1)
-            urlPost(url(validTaxYear2021), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021,
+            urlPost(url(taxYearEOY), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
           }
 
@@ -305,7 +304,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to employer name page" in {
-            result.header(HeaderNames.LOCATION).toString.contains(s"/update-and-submit-income-tax-return/employment-income/2021/employer-name?employmentId=$employmentId") shouldBe true
+            result.header(HeaderNames.LOCATION) shouldBe employerNameUrl(taxYearEOY, employmentId)
           }
         }
 
@@ -315,7 +314,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
             userDataStub(IncomeTaxUserData(None), nino, taxYear - 1)
-            urlPost(url(validTaxYear2021), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021,
+            urlPost(url(taxYearEOY), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
           }
 
@@ -324,7 +323,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to paye ref page" in {
-            result.header(HeaderNames.LOCATION).get shouldBe s"/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=$employmentId"
+            result.header(HeaderNames.LOCATION) shouldBe employerPayeReferenceUrl(taxYearEOY, employmentId)
           }
         }
         "redirect to overview page when radio button no is selected when an id is in session and there is cya data" when {
@@ -333,7 +332,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
             userDataStub(IncomeTaxUserData(None), nino, taxYear - 1)
-            urlPost(url(validTaxYear2021), follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021,
+            urlPost(url(taxYearEOY), follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
           }
 
@@ -342,17 +341,17 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to overview page" in {
-            result.header(HeaderNames.LOCATION).get shouldBe "http://localhost:11111/update-and-submit-income-tax-return/2021/view"
+            result.header(HeaderNames.LOCATION) shouldBe overviewUrl(taxYearEOY)
           }
         }
 
         "redirect to Employment Summary page when there is prior data" when {
-          val taxYear = validTaxYear2021
+          val taxYear = taxYearEOY
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYear)
-            urlPost(url(validTaxYear2021), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(validTaxYear2021)))
+            urlPost(url(taxYearEOY), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "status SEE_OTHER" in {
@@ -360,7 +359,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to Employment summary page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some(EmploymentSummaryController.show(taxYear).url)
+            result.header(HeaderNames.LOCATION) shouldBe employmentSummaryUrl(taxYearEOY)
           }
         }
         "redirect to Overview page when trying to hit the page in year" when {
@@ -377,7 +376,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to Overview page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+            result.header(HeaderNames.LOCATION) shouldBe overviewUrl(taxYear)
           }
         }
       }

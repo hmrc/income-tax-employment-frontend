@@ -23,7 +23,6 @@ import builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
 import builders.models.expenses.ExpensesBuilder.anExpenses
 import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
 import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
-import controllers.expenses.routes._
 import forms.AmountForm
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
@@ -32,6 +31,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourExpensesUrl, otherEquipmentExpensesUrl, overviewUrl}
 
 class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -257,7 +257,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
       }
 
@@ -272,7 +272,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
         }
       }
 
@@ -289,7 +289,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
         }
       }
 
@@ -413,7 +413,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
@@ -446,7 +446,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(OtherEquipmentController.show(taxYearEOY).url)
+          result.header("location") shouldBe otherEquipmentExpensesUrl(taxYearEOY)
         }
       }
 
@@ -464,7 +464,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
 
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
@@ -494,7 +494,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
       }
 
@@ -511,7 +511,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
         }
       }
     }
