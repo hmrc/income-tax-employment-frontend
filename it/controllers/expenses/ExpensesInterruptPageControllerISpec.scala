@@ -27,6 +27,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.overviewUrl
 
 class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -205,7 +206,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 

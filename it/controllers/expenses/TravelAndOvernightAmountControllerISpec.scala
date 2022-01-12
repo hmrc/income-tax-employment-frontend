@@ -24,7 +24,6 @@ import builders.models.expenses.ExpensesBuilder.anExpenses
 import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
 import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
-import controllers.expenses.routes._
 import forms.AmountForm
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
@@ -34,6 +33,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{businessTravelExpensesUrl, checkYourExpensesUrl, overviewUrl, uniformsWorkClothesToolsExpensesUrl}
 
 class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -222,7 +222,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
       "redirect to the CheckEmploymentExpenses page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+        result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
       }
     }
 
@@ -236,7 +236,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
       "redirect to the CheckEmploymentExpenses page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+        result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
       }
     }
 
@@ -252,7 +252,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
       "redirect to the overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
   }
@@ -368,7 +368,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
       "redirect to the overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
 
       "not update the CYA model" in {
@@ -386,7 +386,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
       "redirect to the CYA page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+        result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
       }
 
       "not update the CYA model" in {
@@ -409,7 +409,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
       "redirect to Uniforms Work Clothes or Tools question page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(UniformsOrToolsExpensesController.show(taxYearEOY).url)
+        result.header("location") shouldBe uniformsWorkClothesToolsExpensesUrl(taxYearEOY)
       }
 
       "update the CYA model" in {
@@ -431,7 +431,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
       "redirect to Business Travel and Overnight question page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(BusinessTravelOvernightExpensesController.show(taxYearEOY).url)
+        result.header("location") shouldBe businessTravelExpensesUrl(taxYearEOY)
       }
     }
   }

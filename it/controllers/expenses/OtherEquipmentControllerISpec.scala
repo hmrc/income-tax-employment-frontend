@@ -21,7 +21,6 @@ import builders.models.UserBuilder.aUserRequest
 import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
 import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
-import controllers.expenses.routes.{CheckEmploymentExpensesController, OtherEquipmentAmountController}
 import forms.YesNoForm
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
@@ -31,7 +30,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-
+import utils.PageUrls.{checkYourExpensesUrl, otherEquipmentExpensesAmountUrl, overviewUrl}
 
 class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -237,7 +236,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -250,7 +249,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+        result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
       }
     }
   }
@@ -308,7 +307,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
 
       "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(OtherEquipmentAmountController.show(taxYearEOY).url)
+        result.header("location") shouldBe otherEquipmentExpensesAmountUrl(taxYearEOY)
       }
 
       "updates otherAndCapitalAllowancesQuestion to Some(true)" in {
@@ -332,7 +331,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
 
         "has a SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
         }
 
         "update otherAndCapitalAllowancesQuestion to Some(false) and wipes jobExpenses amount" in {
@@ -355,7 +354,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
         }
       }
     }
@@ -370,7 +369,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 

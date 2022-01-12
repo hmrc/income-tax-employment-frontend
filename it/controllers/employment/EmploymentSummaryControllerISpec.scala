@@ -34,10 +34,12 @@ import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{addEmploymentUrl, employerNameUrlWithoutEmploymentId, overviewUrl}
 
 class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   val url = s"$appUrl/$taxYear/employment-summary"
+  val taxYearEOY: Int = taxYear - 1
 
   object Selectors {
 
@@ -284,7 +286,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
-            result.header(HeaderNames.LOCATION) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+            result.header(HeaderNames.LOCATION) shouldBe overviewUrl(taxYear)
           }
 
         }
@@ -294,12 +296,12 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             val employmentSources = Seq(EmploymentSource(employmentId = "001", employerName = "maggie", None, None, None, None, dateIgnored = Some("2020-03-11"), None, None, None))
             userDataStub(IncomeTaxUserData(Some(anAllEmploymentData.copy(hmrcEmploymentData = employmentSources))), nino, taxYear - 1)
-            urlGet(s"$appUrl/${taxYear - 1}/employment-summary", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+            urlGet(s"$appUrl/$taxYearEOY/employment-summary", welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
-            result.header(HeaderNames.LOCATION) shouldBe Some(AddEmploymentController.show(taxYear - 1).url)
+            result.header(HeaderNames.LOCATION) shouldBe addEmploymentUrl(taxYearEOY)
           }
 
         }
@@ -337,7 +339,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
             userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear - 1)
-            urlPost(s"$appUrl/${taxYear - 1}/employment-summary", follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1,
+            urlPost(s"$appUrl/$taxYearEOY/employment-summary", follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
           }
 
@@ -346,16 +348,16 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           "redirect to employer name page" in {
-            result.header(HeaderNames.LOCATION).get.contains("/update-and-submit-income-tax-return/employment-income/2021/employer-name") shouldBe true
+            result.header(HeaderNames.LOCATION).getOrElse("") contains employerNameUrlWithoutEmploymentId(taxYearEOY).getOrElse("") shouldBe true
           }
         }
-        "redirect to overview page and  clear any existing new employments when selected no" which {
+        "redirect to overview page and clear any existing new employments when selected no" which {
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
             userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear - 1)
-            urlPost(s"$appUrl/${taxYear - 1}/employment-summary", follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1,
+            urlPost(s"$appUrl/$taxYearEOY/employment-summary", follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
           }
 
@@ -363,8 +365,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             result.status shouldBe SEE_OTHER
           }
 
-          "redirect to employer name page" in {
-            result.header(HeaderNames.LOCATION).get shouldBe "http://localhost:11111/update-and-submit-income-tax-return/2021/view"
+          "redirect to the overview page" in {
+            result.header(HeaderNames.LOCATION) shouldBe overviewUrl(taxYearEOY)
           }
         }
       }

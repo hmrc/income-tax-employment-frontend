@@ -27,15 +27,17 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourDetailsUrl, overviewUrl}
 
 class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   val taxYearEOY: Int = taxYear - 1
   val payrollId: String = "123456"
+  val employmentId = "001"
 
-  def url(taxYear: Int): String = s"$appUrl/${taxYear.toString}/payroll-id?employmentId=001"
+  def url(taxYear: Int): String = s"$appUrl/${taxYear.toString}/payroll-id?employmentId=$employmentId"
 
-  val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/payroll-id?employmentId=001"
+  val continueButtonLink: String = s"/update-and-submit-income-tax-return/employment-income/2021/payroll-id?employmentId=$employmentId"
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   private val userRequest: User[_] = User(mtditid, None, nino, sessionId, affinityGroup)
@@ -144,7 +146,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   def cya(isPriorSubmission: Boolean = true): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, "001", isPriorSubmission, hasPriorBenefits = isPriorSubmission,
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission, hasPriorBenefits = isPriorSubmission,
       EmploymentCYAModel(
         EmploymentDetails("maggie", currentDataIsHmrcHeld = false),
         None
@@ -152,7 +154,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     )
 
   def cyaWithPayrollId(isPriorSubmission: Boolean = true): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, "001", isPriorSubmission, hasPriorBenefits = isPriorSubmission,
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission, hasPriorBenefits = isPriorSubmission,
       EmploymentCYAModel(
         EmploymentDetails("maggie", payrollId = Some("123456"), currentDataIsHmrcHeld = false),
         None
@@ -245,7 +247,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001")
+            result.header("location") shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
           }
         }
 
@@ -260,7 +262,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
+            result.header("location") shouldBe overviewUrl(taxYear)
           }
         }
 
@@ -404,11 +406,11 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           "redirect to the Check Employment Details page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=001")
+            result.header(HeaderNames.LOCATION) shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
           }
 
           s"update the cya models payroll id to be $payrollId" in {
-            lazy val cyamodel = findCyaData(taxYearEOY, "001", userRequest).get
+            lazy val cyamodel = findCyaData(taxYearEOY, employmentId, userRequest).get
             cyamodel.employment.employmentDetails.payrollId shouldBe Some(payrollId)
           }
         }

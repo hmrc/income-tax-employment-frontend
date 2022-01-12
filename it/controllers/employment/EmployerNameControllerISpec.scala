@@ -17,7 +17,6 @@
 package controllers.employment
 
 import builders.models.UserBuilder.aUserRequest
-import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.employment.EmployerNameForm
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
@@ -26,6 +25,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourDetailsUrl, employerPayeReferenceUrl, overviewUrl}
 
 class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -211,7 +211,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
 
     }
@@ -324,7 +324,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -340,7 +340,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
       "redirects to the next question page (PAYE reference)" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=001")
+        result.header("location") shouldBe employerPayeReferenceUrl(taxYearEOY, employmentId)
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentDetails.employerName shouldBe employerName
       }
@@ -360,7 +360,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
       "redirects to the next question page (PAYE reference)" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=001")
+        result.header("location") shouldBe employerPayeReferenceUrl(taxYearEOY, employmentId)
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentDetails.employerName shouldBe employerName
       }
@@ -379,7 +379,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
       "redirects to employment details CYA page" in {
         result.status shouldBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) shouldBe Some(CheckEmploymentDetailsController.show(taxYearEOY, employmentId).url)
+        result.header(HeaderNames.LOCATION) shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentDetails.employerName shouldBe updatedEmployerName
 

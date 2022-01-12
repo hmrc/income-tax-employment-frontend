@@ -16,7 +16,6 @@
 
 package controllers.expenses
 
-
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.UserBuilder.aUserRequest
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
@@ -26,8 +25,6 @@ import builders.models.expenses.ExpensesBuilder.anExpenses
 import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
 import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
-import controllers.employment.routes.EmploymentSummaryController
-import controllers.expenses.routes._
 import models.IncomeTaxUserData
 import models.employment.AllEmploymentData
 import models.expenses.Expenses
@@ -41,10 +38,12 @@ import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourExpensesUrl, employmentSummaryUrl, overviewUrl, professionalFeesExpensesUrl}
 
 class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper {
 
   private def url(taxYearToUse: Int = taxYear): String = s"$appUrl/$taxYearToUse/expenses/check-employment-expenses"
+  private val taxYearEOY: Int = taxYear - 1
 
   object Selectors {
     val headingSelector = "#main-content > div > div > header > h1"
@@ -582,7 +581,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      result.header("location") shouldBe overviewUrl(taxYear)
     }
 
     "returns an action when auth call fails" which {
@@ -613,7 +612,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -629,7 +628,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "has a url of expenses show method" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYear - 1).url)
+        result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
       }
     }
 
@@ -650,7 +649,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "has a url of expenses show method" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(ProfessionalFeesAndSubscriptionsExpensesController.show(taxYear - 1).url)
+        result.header("location") shouldBe professionalFeesExpensesUrl(taxYearEOY)
       }
     }
 
@@ -670,7 +669,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "has a url of expenses show method" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(ProfessionalFeesAndSubscriptionsExpensesController.show(taxYear - 1).url)
+        result.header("location") shouldBe professionalFeesExpensesUrl(taxYearEOY)
       }
     }
 
@@ -699,7 +698,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "has an SEE OTHER status and cyaData cleared as data was submitted" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
+        result.header("location") shouldBe employmentSummaryUrl(taxYearEOY)
         findExpensesCyaData(taxYear - 1, aUserRequest) shouldBe None
       }
 
@@ -721,7 +720,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "has an SEE OTHER status and cyaData not cleared as no changes were made" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
+        result.header("location") shouldBe employmentSummaryUrl(taxYearEOY)
         findExpensesCyaData(taxYear - 1, aUserRequest) shouldBe defined
       }
 
@@ -743,7 +742,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
 
       "has an SEE OTHER status and cyaData not cleared as no changes were made" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
+        result.header("location") shouldBe employmentSummaryUrl(taxYearEOY)
         findExpensesCyaData(taxYear - 1, aUserRequest) shouldBe defined
       }
 

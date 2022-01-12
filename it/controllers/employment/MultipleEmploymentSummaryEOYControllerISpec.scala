@@ -25,10 +25,11 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER, UNAUTHORIZED}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{employerNameUrlWithoutEmploymentId, overviewUrl}
 
 class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val validTaxYear2021 = 2021
+  private val taxYearEOY: Int = taxYear - 1
 
   object Selectors {
     val valueHref = "#value"
@@ -92,7 +93,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
 
   object CommonExpectedEN extends CommonExpectedResults {
     val continueButton: String = "Continue"
-    val expectedCaption = s"Employment for 6 April ${validTaxYear2021 - 1} to 5 April $validTaxYear2021"
+    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val doYouNeedAnother: String = "Do you need to add another employment?"
     val yesText: String = "Yes"
     val noText: String = "No"
@@ -110,7 +111,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
 
   object CommonExpectedCY extends CommonExpectedResults {
     val continueButton: String = "Continue"
-    val expectedCaption = s"Employment for 6 April ${validTaxYear2021 - 1} to 5 April $validTaxYear2021"
+    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val doYouNeedAnother: String = "Do you need to add another employment?"
     val yesText: String = "Yes"
     val noText: String = "No"
@@ -173,9 +174,9 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
   val employmentId1 = "001"
   val employmentId2 = "002"
 
-  def changeLinkHref(empId: String): String = s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employer-information?employmentId=$empId"
+  def changeLinkHref(empId: String): String = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-information?employmentId=$empId"
 
-  def removeLinkHref(empId: String): String = s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/remove-employment?employmentId=$empId"
+  def removeLinkHref(empId: String): String = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/remove-employment?employmentId=$empId"
 
   val employmentSource: EmploymentSource = EmploymentSource(
     employmentId = employmentId1,
@@ -238,7 +239,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
         "return the multiple employment summary EOY page" when {
 
           "there are 2 employments and its the EOY showing 2 employments" which {
-            val taxYear = validTaxYear2021
+            val taxYear = taxYearEOY
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
@@ -267,8 +268,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             textOnPageCheck(thisIsATotal, thisIsATotalSelector(5))
             "has an expenses section" should {
               textOnPageCheck(expensesText, expensesSelector(6))
-              linkCheck(specific.changeExpenses, changeExpensesSelector(6), "/update-and-submit-income-tax-return/employment-income/2021/expenses/check-employment-expenses")
-              linkCheck(specific.removeExpenses, removeExpensesSelector(6), "/update-and-submit-income-tax-return/employment-income/2021/expenses/check-employment-expenses")
+              linkCheck(specific.changeExpenses, changeExpensesSelector(6), s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/check-employment-expenses")
+              linkCheck(specific.removeExpenses, removeExpensesSelector(6), s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/check-employment-expenses")
             }
             textOnPageCheck(doYouNeedAnother, doYouNeedAnotherSelector)
             textOnPageCheck(specific.youMustTell, youMustTellSelector)
@@ -276,11 +277,11 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             radioButtonCheck(noText, 2, checked = false)
             buttonCheck(continueButton)
 
-            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employment-summary", formSelector)
+            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employment-summary", formSelector)
           }
 
           "there are 3 employments for EOY, but one has an ignored date, page shows 2 employments" which {
-            val taxYear = validTaxYear2021
+            val taxYear = taxYearEOY
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithOneIgnoredModel)), nino, taxYear)
@@ -309,8 +310,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             textOnPageCheck(thisIsATotal, thisIsATotalSelector(5))
             "has an expenses section" should {
               textOnPageCheck(expensesText, expensesSelector(6))
-              linkCheck(specific.changeExpenses, changeExpensesSelector(6), "/update-and-submit-income-tax-return/employment-income/2021/expenses/check-employment-expenses")
-              linkCheck(specific.removeExpenses, removeExpensesSelector(6), "/update-and-submit-income-tax-return/employment-income/2021/expenses/check-employment-expenses")
+              linkCheck(specific.changeExpenses, changeExpensesSelector(6), s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/check-employment-expenses")
+              linkCheck(specific.removeExpenses, removeExpensesSelector(6), s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/check-employment-expenses")
             }
             textOnPageCheck(doYouNeedAnother, doYouNeedAnotherSelector)
             textOnPageCheck(specific.youMustTell, youMustTellSelector)
@@ -318,7 +319,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             radioButtonCheck(noText, 2, checked = false)
             buttonCheck(continueButton)
 
-            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employment-summary", formSelector)
+            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employment-summary", formSelector)
           }
 
         }
@@ -342,7 +343,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
 
         "return BAD_REQUEST and render correct errors" when {
           "the yes/no radio button has not been selected" which {
-            val taxYear = validTaxYear2021
+            val taxYear = taxYearEOY
             lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
@@ -371,8 +372,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             textOnPageCheck(thisIsATotal, thisIsATotalSelector(6))
             "has an expenses section" should {
               textOnPageCheck(expensesText, expensesSelector(7))
-              linkCheck(specific.changeExpenses, changeExpensesSelector(7), "/update-and-submit-income-tax-return/employment-income/2021/expenses/check-employment-expenses")
-              linkCheck(specific.removeExpenses, removeExpensesSelector(7), "/update-and-submit-income-tax-return/employment-income/2021/expenses/check-employment-expenses")
+              linkCheck(specific.changeExpenses, changeExpensesSelector(7), s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/check-employment-expenses")
+              linkCheck(specific.removeExpenses, removeExpensesSelector(7), s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/check-employment-expenses")
             }
             textOnPageCheck(doYouNeedAnother, doYouNeedAnotherSelector)
             textOnPageCheck(specific.youMustTell, youMustTellSelector)
@@ -382,7 +383,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             radioButtonCheck(noText, 2, checked = false)
             buttonCheck(continueButton)
 
-            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/$validTaxYear2021/employment-summary", formSelector)
+            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employment-summary", formSelector)
           }
         }
       }
@@ -391,11 +392,10 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     "redirect" when {
 
       "radio button is YES and employment data is present" which {
-        val taxYear = validTaxYear2021
         lazy val result: WSResponse = {
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
-          urlPost(url(taxYear), yesNoFormYes, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(url(taxYearEOY), yesNoFormYes, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         "status SEE_OTHER" in {
@@ -403,13 +403,12 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
         }
 
         "redirect to the employer name page" in {
-          result.header(HeaderNames.LOCATION).getOrElse("") contains
-            "/update-and-submit-income-tax-return/employment-income/2021/employer-name?employmentId=" shouldBe true
+          result.header(HeaderNames.LOCATION).getOrElse("") contains employerNameUrlWithoutEmploymentId(taxYearEOY).getOrElse("") shouldBe true
         }
       }
 
       "radio button is NO and employment data is present" which {
-        val taxYear = validTaxYear2021
+        val taxYear = taxYearEOY
         lazy val result: WSResponse = {
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
@@ -421,14 +420,14 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
         }
 
         "redirect to the overview page" in {
-          result.header(HeaderNames.LOCATION) shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+          result.header(HeaderNames.LOCATION) shouldBe overviewUrl(taxYear)
         }
       }
     }
 
     "returns authorization failure" when {
       "user is unauthorised" which {
-        val taxYear = validTaxYear2021
+        val taxYear = taxYearEOY
         lazy val result: WSResponse = {
           unauthorisedAgentOrIndividual(isAgent = false)
           urlPost(url(taxYear), yesNoFormYes, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
