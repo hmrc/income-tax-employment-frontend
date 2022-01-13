@@ -18,17 +18,18 @@ package services.expenses
 
 import audit.{AmendEmploymentExpensesUpdateAudit, AuditEmploymentExpensesData, AuditNewEmploymentExpensesData, CreateNewEmploymentExpensesAudit}
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import config.MockAuditService
-import models.employment.AllEmploymentData
+import config.{MockAuditService, MockEmploymentSessionService, MockNrsService}
+import models.employment._
+import models.expenses.{DecodedAmendExpensesPayload, DecodedCreateNewExpensesPayload, DecodedNewExpensesData, Expenses}
 import models.requests.CreateUpdateExpensesRequest
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.UnitTest
 
-class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService {
+class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService with MockNrsService with MockEmploymentSessionService {
 
   private val taxYear = 2021
 
-  private val underTest = new CheckEmploymentExpensesService(mockAuditService)
+  private val underTest = new CheckEmploymentExpensesService(mockAuditService, mockNrsService)
 
   "calling performSubmitAudit" should {
     "send the audit events from the model when it's a create" in {
@@ -106,4 +107,130 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
     ).toAuditModel)
     await(underTest.performSubmitAudits(model, taxYear, Some(prior))) shouldBe AuditResult.Success
   }
+
+  ".performSubmitNrsPayload" should {
+
+    "send the event from the model when it's a create" in {
+
+      val model: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(
+        Some(true),
+        Expenses(
+          businessTravelCosts = Some(123),
+          jobExpenses = Some(123),
+          flatRateJobExpenses = Some(123),
+          professionalSubscriptions = Some(123),
+          hotelAndMealExpenses = Some(123),
+          otherAndCapitalAllowances = Some(123),
+          vehicleExpenses = Some(123),
+          mileageAllowanceRelief = Some(123)
+        )
+      )
+
+
+      verifySubmitEvent(DecodedCreateNewExpensesPayload(DecodedNewExpensesData(
+        businessTravelCosts = model.expenses.businessTravelCosts,
+        jobExpenses = model.expenses.jobExpenses,
+        flatRateJobExpenses = model.expenses.flatRateJobExpenses,
+        professionalSubscriptions = model.expenses.professionalSubscriptions,
+        hotelAndMealExpenses = model.expenses.hotelAndMealExpenses,
+        otherAndCapitalAllowances = model.expenses.otherAndCapitalAllowances,
+        vehicleExpenses = model.expenses.vehicleExpenses,
+        mileageAllowanceRelief = model.expenses.mileageAllowanceRelief
+      )))
+
+      await(underTest.performSubmitNrsPayload(model, prior = None)) shouldBe Right()
+    }
+
+    "send the event from the model when it's an amend" in {
+
+      val model: CreateUpdateExpensesRequest = CreateUpdateExpensesRequest(
+        None,
+        Expenses(
+          businessTravelCosts = Some(10),
+          jobExpenses = Some(20),
+          flatRateJobExpenses = Some(30),
+          professionalSubscriptions = Some(40),
+          hotelAndMealExpenses = Some(50),
+          otherAndCapitalAllowances = Some(60),
+          vehicleExpenses = Some(70),
+          mileageAllowanceRelief = Some(80))
+      )
+
+      val priorCustomerEmploymentExpenses = employmentExpenses.copy(
+        expenses = Some(expenses.copy(
+          businessTravelCosts = Some(123),
+          jobExpenses = Some(123),
+          flatRateJobExpenses = Some(123),
+          professionalSubscriptions = Some(123),
+          hotelAndMealExpenses = Some(123),
+          otherAndCapitalAllowances = Some(123),
+          vehicleExpenses = Some(123),
+          mileageAllowanceRelief = Some(123))
+        ))
+
+      val employmentSource1 = EmploymentSource(
+        employmentId = "001",
+        employerName = "Mishima Zaibatsu",
+        employerRef = Some("223/AB12399"),
+        payrollId = Some("123456789999"),
+        startDate = Some("2019-04-21"),
+        cessationDate = Some("2020-03-11"),
+        dateIgnored = None,
+        submittedOn = Some("2020-01-04T05:01:01Z"),
+        employmentData = Some(EmploymentData(
+          submittedOn = "2020-02-12",
+          employmentSequenceNumber = Some("123456789999"),
+          companyDirector = Some(true),
+          closeCompany = Some(false),
+          directorshipCeasedDate = Some("2020-02-12"),
+          occPen = Some(false),
+          disguisedRemuneration = Some(false),
+          pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+          Some(Deductions(
+            studentLoans = Some(StudentLoans(
+              uglDeductionAmount = Some(100.00),
+              pglDeductionAmount = Some(100.00)
+            ))
+          ))
+        )),
+        None
+      )
+
+      val priorExpenses: AllEmploymentData = AllEmploymentData(
+        hmrcEmploymentData = Seq(employmentSource1),
+        hmrcExpenses = Some(priorCustomerEmploymentExpenses),
+        customerEmploymentData = Seq(),
+        customerExpenses = None,
+      )
+
+      mockGetLatestExpensesHMRC(priorExpenses, false)
+
+      verifySubmitEvent(
+         DecodedAmendExpensesPayload(
+              priorEmploymentExpensesData = DecodedNewExpensesData(
+                businessTravelCosts = priorCustomerEmploymentExpenses.expenses.flatMap(_.businessTravelCosts),
+                jobExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.jobExpenses),
+                flatRateJobExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.flatRateJobExpenses),
+                professionalSubscriptions = priorCustomerEmploymentExpenses.expenses.flatMap(_.professionalSubscriptions),
+                hotelAndMealExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.hotelAndMealExpenses),
+                otherAndCapitalAllowances = priorCustomerEmploymentExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
+                vehicleExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.vehicleExpenses),
+                mileageAllowanceRelief = priorCustomerEmploymentExpenses.expenses.flatMap(_.mileageAllowanceRelief)
+            ),
+              employmentExpensesData = DecodedNewExpensesData(
+                businessTravelCosts = model.expenses.businessTravelCosts,
+                jobExpenses = model.expenses.jobExpenses,
+                flatRateJobExpenses = model.expenses.flatRateJobExpenses,
+                professionalSubscriptions = model.expenses.professionalSubscriptions,
+                hotelAndMealExpenses = model.expenses.hotelAndMealExpenses,
+                otherAndCapitalAllowances = model.expenses.otherAndCapitalAllowances,
+                vehicleExpenses = model.expenses.vehicleExpenses,
+                mileageAllowanceRelief = model.expenses.mileageAllowanceRelief
+              )))
+
+
+      await(underTest.performSubmitNrsPayload(model, prior = Some(priorExpenses))) shouldBe Right()
+
+      }
+    }
 }

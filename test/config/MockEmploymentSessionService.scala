@@ -17,7 +17,7 @@
 package config
 
 import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
-import models.employment.{AllEmploymentData, EmploymentSource}
+import models.employment.{AllEmploymentData, EmploymentExpenses, EmploymentSource}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData, ExpensesCYAModel, ExpensesUserData}
 import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData, User}
 import org.scalamock.handlers._
@@ -132,5 +132,13 @@ trait MockEmploymentSessionService extends MockFactory {
       .expects(taxYear, isPriorSubmission, hasPriorExpenses, expensesCYAModel, *, *)
       .returns(Future(result))
       .once()
+  }
+
+  def mockGetLatestExpensesHMRC(allEmploymentData: AllEmploymentData,
+                            isInYear: Boolean): CallHandler2[AllEmploymentData, Boolean, Option[(EmploymentExpenses, Boolean)]] = {
+    (mockEmploymentSessionService.getLatestExpenses(_: AllEmploymentData, _: Boolean))
+      .expects(allEmploymentData, isInYear)
+      .returns(Some(allEmploymentData.hmrcExpenses.get, true))
+      .anyNumberOfTimes()
   }
 }
