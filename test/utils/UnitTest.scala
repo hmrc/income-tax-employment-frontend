@@ -233,4 +233,35 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
     assets = Some(27.00),
     assetTransfer = Some(280000.00)
   )
+
+  val amendBenefits: Benefits = Benefits(
+    accommodation = Some(10),
+    assets = Some(10),
+    assetTransfer = Some(10),
+    beneficialLoan = Some(10),
+    car = Some(10),
+    carFuel = Some(10),
+    educationalServices = Some(10),
+    entertaining = Some(10),
+    expenses = Some(10),
+    medicalInsurance = Some(10),
+    telephone = Some(10),
+    service = Some(10),
+    taxableExpenses = Some(10),
+    van = Some(10),
+    vanFuel = Some(10),
+    mileage = Some(10),
+    nonQualifyingRelocationExpenses = Some(10),
+    nurseryPlaces = Some(10),
+    otherItems = Some(10),
+    paymentsOnEmployeesBehalf = Some(10),
+    personalIncidentalExpenses = Some(10),
+    qualifyingRelocationExpenses = Some(10),
+    employerProvidedProfessionalSubscriptions = Some(10),
+    employerProvidedServices = Some(10),
+    incomeTaxPaidByDirector = Some(10),
+    travelAndSubsistence = Some(10),
+    vouchersAndCreditCards = Some(10),
+    nonCash = Some(10)
+  )
 }

@@ -62,7 +62,6 @@ class CheckEmploymentExpensesService @Inject()(auditService: AuditService,
 
     val nrsPayload: Either[DecodedAmendExpensesPayload, DecodedCreateNewExpensesPayload] = prior.flatMap {
       prior =>
-
         val priorData = EmploymentExpensesUtils.getLatestExpenses(prior, isInYear = false)
         priorData.map(prior => model.toAmendDecodedExpensesPayloadModel(prior._1))
     }.map(Left(_)).getOrElse {
@@ -71,7 +70,7 @@ class CheckEmploymentExpensesService @Inject()(auditService: AuditService,
 
     nrsPayload match {
       case Left(amend) => nrsService.submit(user.nino, amend, user.mtditid)
-      case Right(create) =>nrsService.submit(user.nino, create, user.mtditid)
+      case Right(create) => nrsService.submit(user.nino, create, user.mtditid)
     }
   }
 }

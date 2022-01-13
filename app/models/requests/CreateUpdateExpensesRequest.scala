@@ -81,24 +81,16 @@ case class CreateUpdateExpensesRequest(ignoreExpenses: Option[Boolean], expenses
 
   def toAmendDecodedExpensesPayloadModel(priorData: EmploymentExpenses)(implicit user: User[_]): DecodedAmendExpensesPayload = {
 
-    def currentOrPrior[T](data: Option[T], priorData: Option[T]): Option[T] ={
-      (data, priorData) match {
-        case (data@Some(_), _) => data
-        case (_, priorData@Some(_)) => priorData
-        case _ => None
-      }
-    }
-
     DecodedAmendExpensesPayload(
       priorEmploymentExpensesData = DecodedNewExpensesData(
-        businessTravelCosts = currentOrPrior(expenses.businessTravelCosts, priorData.expenses.flatMap(_.businessTravelCosts)),
-        jobExpenses = currentOrPrior(expenses.jobExpenses, priorData.expenses.flatMap(_.jobExpenses)),
-        flatRateJobExpenses = currentOrPrior(expenses.flatRateJobExpenses, priorData.expenses.flatMap(_.flatRateJobExpenses)),
-        professionalSubscriptions = currentOrPrior(expenses.professionalSubscriptions, priorData.expenses.flatMap(_.professionalSubscriptions)),
-        hotelAndMealExpenses = currentOrPrior(expenses.hotelAndMealExpenses, priorData.expenses.flatMap(_.hotelAndMealExpenses)),
-        otherAndCapitalAllowances = currentOrPrior(expenses.otherAndCapitalAllowances, priorData.expenses.flatMap(_.otherAndCapitalAllowances)),
-        vehicleExpenses = currentOrPrior(expenses.vehicleExpenses, priorData.expenses.flatMap(_.vehicleExpenses)),
-        mileageAllowanceRelief = currentOrPrior(expenses.mileageAllowanceRelief, priorData.expenses.flatMap(_.mileageAllowanceRelief))
+        businessTravelCosts = priorData.expenses.flatMap(_.businessTravelCosts),
+        jobExpenses = priorData.expenses.flatMap(_.jobExpenses),
+        flatRateJobExpenses = priorData.expenses.flatMap(_.flatRateJobExpenses),
+        professionalSubscriptions = priorData.expenses.flatMap(_.professionalSubscriptions),
+        hotelAndMealExpenses = priorData.expenses.flatMap(_.hotelAndMealExpenses),
+        otherAndCapitalAllowances = priorData.expenses.flatMap(_.otherAndCapitalAllowances),
+        vehicleExpenses =  priorData.expenses.flatMap(_.vehicleExpenses),
+        mileageAllowanceRelief = priorData.expenses.flatMap(_.mileageAllowanceRelief)
       ),
       employmentExpensesData = DecodedNewExpensesData(
         businessTravelCosts = expenses.businessTravelCosts,
