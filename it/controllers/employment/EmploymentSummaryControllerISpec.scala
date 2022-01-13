@@ -348,7 +348,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           "redirect to employer name page" in {
-            result.header(HeaderNames.LOCATION).getOrElse("") contains employerNameUrlWithoutEmploymentId(taxYearEOY).getOrElse("") shouldBe true
+            result.header(HeaderNames.LOCATION).get contains employerNameUrlWithoutEmploymentId(taxYearEOY).get shouldBe true
           }
         }
         "redirect to overview page and clear any existing new employments when selected no" which {

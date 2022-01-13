@@ -243,7 +243,7 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
             }
 
             "redirect to the employer name page" in {
-              result.header(HeaderNames.LOCATION).getOrElse("") contains employerNameUrlWithoutEmploymentId(taxYear).getOrElse("") shouldBe true
+              result.header(HeaderNames.LOCATION).get contains employerNameUrlWithoutEmploymentId(taxYear).get shouldBe true
             }
           }
 

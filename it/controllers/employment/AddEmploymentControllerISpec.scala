@@ -286,7 +286,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to employer name page" in {
-            result.header(HeaderNames.LOCATION).getOrElse("") contains employerNameUrlWithoutEmploymentId(taxYearEOY).getOrElse("") shouldBe true
+            result.header(HeaderNames.LOCATION).get contains employerNameUrlWithoutEmploymentId(taxYearEOY).get shouldBe true
           }
         }
 
