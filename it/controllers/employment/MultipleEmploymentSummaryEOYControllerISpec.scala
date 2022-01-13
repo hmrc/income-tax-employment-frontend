@@ -403,7 +403,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
         }
 
         "redirect to the employer name page" in {
-          result.header(HeaderNames.LOCATION).getOrElse("") contains employerNameUrlWithoutEmploymentId(taxYearEOY).getOrElse("") shouldBe true
+          result.header(HeaderNames.LOCATION).get contains employerNameUrlWithoutEmploymentId(taxYearEOY).get shouldBe true
         }
       }
 
