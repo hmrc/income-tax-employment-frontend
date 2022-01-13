@@ -16,14 +16,11 @@
 
 package services
 
-import java.util.NoSuchElementException
-
 import config.{AppConfig, ErrorHandler}
 import connectors.parsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmploymentDataResponse
 import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import connectors.{CreateUpdateEmploymentDataConnector, IncomeSourceConnector, IncomeTaxUserDataConnector}
 import controllers.employment.routes.{CheckEmploymentDetailsController, CheckYourBenefitsController, EmploymentSummaryController}
-import javax.inject.{Inject, Singleton}
 import models.benefits.Benefits
 import models.employment._
 import models.employment.createUpdate._
@@ -40,6 +37,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.Clock
 import utils.EmploymentExpensesUtils.{getLatestExpenses => utilsGetLatestExpenses}
 
+import java.util.NoSuchElementException
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
@@ -307,7 +306,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     createOrUpdateEmployment(taxYear, employmentRequest).map {
       case Left(error) => Left(errorHandler.handleError(error.status))
       case Right(None) => Right(Redirect(EmploymentSummaryController.show(taxYear)))
-      case Right(Some(employmentId)) => Right(Redirect(CheckYourBenefitsController.show(taxYear,employmentId)))
+      case Right(Some(employmentId)) => Right(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
     }
   }
 
