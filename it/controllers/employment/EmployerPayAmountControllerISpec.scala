@@ -31,6 +31,7 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourDetailsUrl, overviewUrl}
 
 class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -282,7 +283,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=" + employmentId)
+            result.header("location") shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
           }
         }
 
@@ -298,7 +299,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
+            result.header("location") shouldBe overviewUrl(taxYear)
           }
         }
 
@@ -387,7 +388,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=" + employmentId)
+            result.header("location") shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
           }
         }
       }

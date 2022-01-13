@@ -23,7 +23,6 @@ import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import controllers.employment.routes.CheckEmploymentDetailsController
 import models.employment.AllEmploymentData
 import models.mongo.EmploymentUserData
 import org.jsoup.Jsoup
@@ -32,12 +31,13 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.checkYourDetailsUrl
 
 class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  override val taxYear = 2021
+  private val taxYearEOY: Int = taxYear - 1
   private val employmentId = "employmentId"
-  private val url = s"$appUrl/$taxYear/uk-tax?employmentId=$employmentId"
+  private val url = s"$appUrl/$taxYearEOY/uk-tax?employmentId=$employmentId"
   private val amountInputName = "amount"
 
   trait CommonExpectedResults {
@@ -130,9 +130,9 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData, nino, taxYear)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(cya(), aUserRequest)
-            urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -156,7 +156,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(cya(None), aUserRequest)
-            urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -182,9 +182,9 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
               implicit lazy val result: WSResponse = {
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
-                noUserDataStub(nino, taxYear)
+                noUserDataStub(nino, taxYearEOY)
                 insertCyaData(cya(None, isPriorSubmission = false), aUserRequest)
-                urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+                urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
               }
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -196,9 +196,9 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
               implicit lazy val result: WSResponse = {
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
-                userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYear)
+                userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYearEOY)
                 insertCyaData(cya(), aUserRequest)
-                urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+                urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
               }
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -212,9 +212,9 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
               implicit lazy val result: WSResponse = {
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
-                userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYear)
+                userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYearEOY)
                 insertCyaData(cya(Some(100.00)), aUserRequest)
-                urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+                urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
               }
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -226,9 +226,9 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
               implicit lazy val result: WSResponse = {
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
-                noUserDataStub(nino, taxYear)
+                noUserDataStub(nino, taxYearEOY)
                 insertCyaData(cya(Some(100.00), isPriorSubmission = false), aUserRequest)
-                urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+                urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
               }
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -241,7 +241,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "has an SEE_OTHER status" in {
@@ -249,7 +249,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to OtherPayments not on P60 page" in {
-            result.header(HeaderNames.LOCATION) shouldBe Some(CheckEmploymentDetailsController.show(taxYear, employmentId).url)
+            result.header(HeaderNames.LOCATION) shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
           }
         }
       }

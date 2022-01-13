@@ -21,10 +21,10 @@ import builders.models.UserBuilder.aUserRequest
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import builders.models.employment.PayBuilder.aPay
+import controllers.employment.routes._
 import builders.models.employment.StudentLoansBuilder.aStudentLoans
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import controllers.employment.routes._
 import models.User
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
@@ -38,9 +38,11 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourDetailsUrl, employerPayeReferenceUrl, employmentSummaryUrl, overviewUrl}
 
 class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
+  private val taxYearEOY = taxYear - 1
   private val employmentId = "employmentId"
   private val url = s"$appUrl/$taxYear/check-employment-details?employmentId=$employmentId"
 
@@ -663,7 +665,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(2021))
+        result.header("location") shouldBe overviewUrl(taxYearEOY)
       }
     }
 
@@ -677,7 +679,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(2021))
+        result.header("location") shouldBe overviewUrl(taxYearEOY)
       }
     }
 
@@ -707,7 +709,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       }
 
       "has a redirect url of employer reference page" in {
-        result.header("location") shouldBe Some(PayeRefController.show(2021, employmentId).url)
+        result.header("location") shouldBe employerPayeReferenceUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -730,7 +732,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      result.header("location") shouldBe overviewUrl(taxYear)
     }
   }
 
@@ -745,7 +747,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -759,7 +761,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckEmploymentDetailsController.show(2021, employmentId).url)
+        result.header("location") shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -800,7 +802,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
+        result.header("location") shouldBe employmentSummaryUrl(taxYearEOY)
         findCyaData(taxYear, employmentId, aUserRequest) shouldBe None
       }
     }
@@ -843,7 +845,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
+        result.header("location") shouldBe employmentSummaryUrl(taxYearEOY)
         findCyaData(taxYear, employmentId, aUserRequest) shouldBe None
       }
     }
@@ -878,7 +880,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(EmploymentSummaryController.show(taxYear - 1).url)
+        result.header("location") shouldBe employmentSummaryUrl(taxYearEOY)
         findCyaData(taxYear, employmentId, aUserRequest) shouldBe None
       }
     }
@@ -894,7 +896,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckEmploymentDetailsController.show(2021, "001").url)
+        result.header("location") shouldBe checkYourDetailsUrl(taxYearEOY, "001")
       }
     }
   }

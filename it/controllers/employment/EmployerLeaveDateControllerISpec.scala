@@ -25,6 +25,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourDetailsUrl, overviewUrl, stillWorkingForUrl}
 
 import java.time.LocalDate
 
@@ -269,7 +270,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/still-working-for-employer?employmentId=001")
+        result.header("location") shouldBe stillWorkingForUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -285,7 +286,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-details?employmentId=001")
+        result.header("location") shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -297,7 +298,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
   }
@@ -848,7 +849,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -864,7 +865,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-details?employmentId=001")
+        result.header("location") shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -880,7 +881,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-details?employmentId=001")
+        result.header("location") shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -898,7 +899,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-details?employmentId=$employmentId")
+        result.header("location") shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentDetails.cessationDate shouldBe Some(employmentLeaveDate)
       }

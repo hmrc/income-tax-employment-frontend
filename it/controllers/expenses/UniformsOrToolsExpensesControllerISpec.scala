@@ -21,7 +21,6 @@ import builders.models.UserBuilder.aUserRequest
 import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
 import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
-import controllers.expenses.routes.CheckEmploymentExpensesController
 import forms.YesNoForm
 import models.mongo.ExpensesCYAModel
 import org.jsoup.Jsoup
@@ -30,6 +29,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourExpensesUrl, overviewUrl}
 
 class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -262,7 +262,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
       }
 
@@ -277,7 +277,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
         }
       }
     }
@@ -342,7 +342,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header(name = "location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header(name = "location") shouldBe checkYourExpensesUrl(taxYearEOY)
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.flatRateJobExpensesQuestion shouldBe Some(false)
@@ -363,7 +363,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.flatRateJobExpensesQuestion shouldBe Some(true)
@@ -383,7 +383,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
       }
 
@@ -398,7 +398,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
         }
       }
     }

@@ -25,7 +25,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.ws.WSResponse
 import utils.{IntegrationTest, ViewHelpers}
-
+import utils.PageUrls.overviewUrl
 
 class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with ViewHelpers {
 
@@ -287,7 +287,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           }
 
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
 
         "render the page where the status for benefits is Updated when there is Benefits data in year" which {
