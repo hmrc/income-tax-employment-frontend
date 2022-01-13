@@ -29,16 +29,16 @@ import utils.PageUrls.{employmentSummaryUrl, overviewUrl}
 
 class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val taxYearEOY: Int = taxYear - 1
-  val employmentId: String = "001"
-  val employerName: String = "maggie"
+  private val taxYearEOY: Int = taxYear - 1
+  private val employmentId: String = "001"
+  private val employerName: String = "maggie"
 
   private def url(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/remove-employment?employmentId=$employmentId"
 
   private def continueLink(taxYear: Int, employmentId: String): String =
     s"/update-and-submit-income-tax-return/employment-income/$taxYear/remove-employment?employmentId=$employmentId"
 
-  val model: AllEmploymentData = AllEmploymentData(
+  private val model: AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(
       EmploymentSource(employmentId = "002", employerName = "apple", None, None, None, None, None, None, None, None),
       EmploymentSource(employmentId = "003", employerName = "google", None, None, None, None, None, None, None, None)
@@ -52,10 +52,9 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
     customerExpenses = None
   )
 
-  val modelToDelete: AllEmploymentData = model.copy(
+  private val modelToDelete: AllEmploymentData = model.copy(
     hmrcEmploymentData = Seq(),
-    customerEmploymentData = Seq(
-      EmploymentSource(employmentId = "001", employerName = "maggie", None, None, None, None, None, None, None, None))
+    customerEmploymentData = Seq(EmploymentSource(employmentId = "001", employerName = "maggie", None, None, None, None, None, None, None, None))
   )
 
   object Selectors {
@@ -123,12 +122,12 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
     val expectedErrorNoEntry = "Select yes if you want to remove this employment"
   }
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   ".show" should {
 

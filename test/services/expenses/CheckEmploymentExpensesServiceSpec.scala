@@ -37,7 +37,7 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
         expenses)
       val prior = None
 
-      verifyAuditEvent(CreateNewEmploymentExpensesAudit(
+      mockAuditSendEvent(CreateNewEmploymentExpensesAudit(
         taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, AuditNewEmploymentExpensesData(
           expenses.jobExpenses,
           expenses.flatRateJobExpenses,
@@ -58,7 +58,7 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
         customerExpenses = None
       )
 
-      verifyAuditEvent(CreateNewEmploymentExpensesAudit(
+      mockAuditSendEvent(CreateNewEmploymentExpensesAudit(
         taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, AuditNewEmploymentExpensesData(
           expenses.jobExpenses,
           expenses.flatRateJobExpenses,
@@ -88,7 +88,7 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
       )
     )
 
-    verifyAuditEvent(AmendEmploymentExpensesUpdateAudit(
+    mockAuditSendEvent(AmendEmploymentExpensesUpdateAudit(
       taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid,
       priorEmploymentExpensesData = AuditEmploymentExpensesData(
         priorCustomerEmploymentExpenses.expenses.get.jobExpenses,
