@@ -23,10 +23,37 @@ object PageUrls {
 
   def overviewUrl(taxYear: Int): Option[String] = Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
 
+//  *****************       Summary pages      *****************************************
+
+  def employmentSummaryUrl(taxYear: Int): Option[String] = Some(s"$appUrl/$taxYear/employment-summary")
+  def employerInformationUrl(taxYear: Int, employmentId: String): Option[String] = Some(s"$appUrl/$taxYear/employer-information?employmentId=$employmentId")
+
+//  *****************       Check your answers pages      ******************************
+
+  def checkYourDetailsUrl(taxYear: Int, employmentId: String): Option[String] = Some(s"$appUrl/$taxYear/check-employment-details?employmentId=$employmentId")
+  def checkYourBenefitsUrl(taxYear: Int, employmentId: String): Option[String] = Some(s"$appUrl/$taxYear/check-employment-benefits?employmentId=$employmentId")
+  def checkYourExpensesUrl(taxYear: Int): Option[String] = Some(s"$appUrl/$taxYear/expenses/check-employment-expenses")
+
+//  *****************       Employment details pages      ******************************
+
+  def employerNameUrl(taxYear: Int, employmentId: String): Option[String] = Some(s"$appUrl/$taxYear/employer-name?employmentId=$employmentId")
+  def employerNameUrlWithoutEmploymentId(taxYear: Int): Option[String] = Some(s"$appUrl/$taxYear/employer-name?employmentId=")
+  def employerPayeReferenceUrl(taxYear: Int, employmentId: String): Option[String] = Some(s"$appUrl/$taxYear/employer-paye-reference?employmentId=$employmentId")
+  def employmentStartDateUrl(taxYear: Int, employmentId: String): Option[String] = Some(s"$appUrl/$taxYear/employment-start-date?employmentId=$employmentId")
+  def stillWorkingForUrl(taxYear: Int, employmentId: String): Option[String] = Some(s"$appUrl/$taxYear/still-working-for-employer?employmentId=$employmentId")
+  def employmentEndDateUrl(taxYear: Int, employmentId: String): Option[String] = Some(s"$appUrl/$taxYear/employment-end-date?employmentId=$employmentId")
+  def payrollIdUrl(taxYear: Int, employmentId: String): Option[String] = Some(s"$appUrl/$taxYear/payroll-id?employmentId=$employmentId")
+  def howMuchPayUrl(taxYear: Int, employmentId: String): Option[String] = Some(s"$appUrl/$taxYear/how-much-pay?employmentId=$employmentId")
+  def howMuchTaxUrl(taxYear: Int, employmentId: String): Option[String] = Some(s"$appUrl/$taxYear/uk-tax?employmentId=$employmentId")
+
+//  *****************       Employment management pages      ***************************
+
+  def addEmploymentUrl(taxYear: Int): Option[String] = Some(s"$appUrl/$taxYear/add-employment")
+  def removeEmploymentUrl(taxYear: Int, employmentId: String): Option[String] = Some(s"$appUrl/$taxYear/remove-employment?employmentId=$employmentId")
+
   //  *****************       Employment benefits pages      *****************************
   
   def companyBenefitsUrl(taxYear: Int, employmentId: String): Option[String] = Some(s"$appUrl/$taxYear/benefits/company-benefits?employmentId=$employmentId")
-  def checkYourBenefitsUrl(taxYear: Int, employmentId: String): Option[String] = Some(s"$appUrl/$taxYear/check-employment-benefits?employmentId=$employmentId")
 
   //  *****************       Car van fuel benefits pages      ***************************
   
@@ -117,5 +144,21 @@ object PageUrls {
   def assetsForUseBenefitsAmountUrl(taxYear: Int, employmentId: String): Option[String] = Some(s"$appUrl/$taxYear/benefits/assets-available-for-use-amount?employmentId=$employmentId")
   def assetsToKeepBenefitsUrl(taxYear: Int, employmentId: String): Option[String] = Some(s"$appUrl/$taxYear/benefits/assets-to-keep?employmentId=$employmentId")
   def assetsToKeepBenefitsAmountUrl(taxYear: Int, employmentId: String): Option[String] = Some(s"$appUrl/$taxYear/benefits/assets-to-keep-amount?employmentId=$employmentId")
+
+//  *****************       Employment expenses pages      *****************************
+
+  def claimEmploymentExpensesUrl(taxYear: Int): Option[String] = Some(s"$appUrl/$taxYear/expenses/claim-employment-expenses")
+
+//  *****************       Employment expenses details pages      *********************
+
+  def businessTravelExpensesUrl(taxYear: Int): Option[String] = Some(s"$appUrl/$taxYear/expenses/business-travel-and-overnight-expenses")
+  def travelAmountExpensesUrl(taxYear: Int): Option[String] = Some(s"$appUrl/$taxYear/expenses/travel-amount")
+  def uniformsWorkClothesToolsExpensesUrl(taxYear: Int): Option[String] = Some(s"$appUrl/$taxYear/expenses/uniforms-work-clothes-or-tools")
+  def professionalFeesExpensesUrl(taxYear: Int): Option[String] = Some(s"$appUrl/$taxYear/expenses/professional-fees-and-subscriptions")
+  def professionalFeesExpensesAmountUrl(taxYear: Int): Option[String] = Some(s"$appUrl/$taxYear/expenses/amount-for-professional-fees-and-subscriptions")
+  def otherEquipmentExpensesUrl(taxYear: Int): Option[String] = Some(s"$appUrl/$taxYear/expenses/other-equipment")
+  def otherEquipmentExpensesAmountUrl(taxYear: Int): Option[String] = Some(s"$appUrl/$taxYear/expenses/amount-for-other-equipment")
+  def startEmploymentExpensesUrl(taxYear: Int): Option[String] = Some(s"$appUrl/$taxYear/employment/expenses/start-employment-expenses")
+
 }
 //scalastyle:on number.of.methods

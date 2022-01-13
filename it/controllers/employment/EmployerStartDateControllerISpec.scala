@@ -26,6 +26,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourDetailsUrl, employmentEndDateUrl, overviewUrl}
 
 import java.time.LocalDate
 
@@ -267,7 +268,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
 
     }
@@ -786,7 +787,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -807,7 +808,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
       "has the correct status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employment-end-date?employmentId=$employmentId")
+        result.header("location") shouldBe employmentEndDateUrl(taxYearEOY, employmentId)
 
       }
     }
@@ -826,7 +827,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-details?employmentId=$employmentId")
+        result.header("location") shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentDetails.startDate shouldBe Some(employmentStartDate)
       }

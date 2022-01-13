@@ -21,7 +21,6 @@ import builders.models.UserBuilder.aUserRequest
 import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
 import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
-import controllers.expenses.routes.{CheckEmploymentExpensesController, TravelAndOvernightAmountController}
 import forms.YesNoForm
 import models.expenses.ExpensesViewModel
 import models.mongo.ExpensesCYAModel
@@ -31,6 +30,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourExpensesUrl, overviewUrl, travelAmountExpensesUrl}
 
 class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -361,7 +361,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -374,7 +374,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+        result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
       }
     }
   }
@@ -451,7 +451,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
 
       "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(TravelAndOvernightAmountController.show(taxYearEOY).url)
+        result.header("location") shouldBe travelAmountExpensesUrl(taxYearEOY)
       }
 
       "updates jobExpensesQuestion to Some(true)" in {
@@ -481,7 +481,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
 
       "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+        result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
       }
 
       "update jobExpensesQuestion to Some(false) and wipes jobExpenses amount" in {
@@ -504,7 +504,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+        result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
       }
     }
   }
@@ -519,7 +519,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
 
     "has a url of overview page" in {
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
+      result.header("location") shouldBe overviewUrl(taxYear)
     }
   }
 }

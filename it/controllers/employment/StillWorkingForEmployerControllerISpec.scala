@@ -25,6 +25,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{employmentStartDateUrl, howMuchPayUrl, overviewUrl}
 
 class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -268,7 +269,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+            result.header("location") shouldBe overviewUrl(taxYear)
           }
 
         }
@@ -289,7 +290,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe Some(s"http://localhost:11111/update-and-submit-income-tax-return/$taxYear/view")
+            result.header("location") shouldBe overviewUrl(taxYear)
           }
         }
 
@@ -309,8 +310,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
           "redirects to the how much pay page" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe
-              Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/how-much-pay?employmentId=$employmentId")
+            result.header("location") shouldBe howMuchPayUrl(taxYearEOY, employmentId)
             lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
             cyaModel.employment.employmentDetails.cessationDate shouldBe None
             cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(true)
@@ -336,8 +336,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           //TODO: should navigate to cessationDate page when available
           "redirects to the how much pay details page" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe
-              Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/how-much-pay?employmentId=$employmentId")
+            result.header("location") shouldBe howMuchPayUrl(taxYearEOY, employmentId)
             lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
             cyaModel.employment.employmentDetails.cessationDate shouldBe cessationDate
             cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)
@@ -362,8 +361,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
           "redirects to the missing start date page page" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe
-              Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employment-start-date?employmentId=$employmentId")
+            result.header("location") shouldBe employmentStartDateUrl(taxYearEOY, employmentId)
             lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
             cyaModel.employment.employmentDetails.cessationDate shouldBe cessationDate
             cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)

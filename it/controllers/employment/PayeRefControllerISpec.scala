@@ -33,6 +33,7 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourDetailsUrl, overviewUrl}
 
 class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -40,9 +41,9 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
   private val payeRef: String = "123/AA12345"
   private val employmentId = "employmentId"
 
-  def url(taxYear: Int): String = s"$appUrl/${taxYear.toString}/employer-paye-reference?employmentId=$employmentId"
+  def url(taxYear: Int): String = s"$appUrl/$taxYear/employer-paye-reference?employmentId=$employmentId"
 
-  private val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/employer-paye-reference?employmentId=" + employmentId
+  private val continueButtonLink: String = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-paye-reference?employmentId=$employmentId"
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   private val userRequest: User[_] = User(mtditid, None, nino, sessionId, affinityGroup)
@@ -279,7 +280,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=" + employmentId)
+        result.header("location") shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
       }
     }
 
@@ -294,7 +295,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
   }
@@ -364,7 +365,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some("/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=" + employmentId)
+        result.header("location") shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
       }
     }
   }

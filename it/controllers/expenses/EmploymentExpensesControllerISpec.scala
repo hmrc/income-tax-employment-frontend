@@ -20,7 +20,6 @@ import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.UserBuilder.aUserRequest
 import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
-import controllers.expenses.routes.{CheckEmploymentExpensesController, ExpensesInterruptPageController}
 import forms.YesNoForm
 import models.expenses.{Expenses, ExpensesViewModel}
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
@@ -30,6 +29,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourExpensesUrl, overviewUrl, startEmploymentExpensesUrl}
 
 class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -284,7 +284,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
       }
     }
@@ -359,7 +359,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe false
@@ -393,7 +393,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
         "redirects to the 'expenses interrupt' page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(ExpensesInterruptPageController.show(taxYearEOY).url)
+          result.header("location") shouldBe startEmploymentExpensesUrl(taxYearEOY)
 
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
@@ -425,7 +425,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some("http://localhost:11111/update-and-submit-income-tax-return/2022/view")
+          result.header("location") shouldBe overviewUrl(taxYear)
         }
       }
     }

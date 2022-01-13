@@ -21,7 +21,6 @@ import builders.models.UserBuilder.aUserRequest
 import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
 import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
-import controllers.expenses.routes.{BusinessTravelOvernightExpensesController, CheckEmploymentExpensesController, ProfFeesAndSubscriptionsExpensesAmountController}
 import forms.YesNoForm
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
@@ -31,6 +30,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{businessTravelExpensesUrl, checkYourExpensesUrl, overviewUrl, professionalFeesExpensesAmountUrl}
 
 class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -249,7 +249,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
 
@@ -262,7 +262,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+        result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
       }
     }
 
@@ -277,7 +277,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(BusinessTravelOvernightExpensesController.show(taxYearEOY).url)
+        result.header("location") shouldBe businessTravelExpensesUrl(taxYearEOY)
       }
 
     }
@@ -339,7 +339,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
 
       "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(ProfFeesAndSubscriptionsExpensesAmountController.show(taxYearEOY).url)
+        result.header("location") shouldBe professionalFeesExpensesAmountUrl(taxYearEOY)
       }
 
       "updates professionalSubscriptionQuestion to Some(true)" in {
@@ -362,7 +362,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
 
         "has a SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
         }
 
         "update professionalSubscriptionQuestion to Some(false) and wipes jobExpenses amount" in {
@@ -385,7 +385,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe Some(CheckEmploymentExpensesController.show(taxYearEOY).url)
+          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
         }
       }
     }
@@ -400,7 +400,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header("location") shouldBe overviewUrl(taxYear)
       }
     }
   }
