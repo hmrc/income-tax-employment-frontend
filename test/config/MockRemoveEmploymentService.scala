@@ -18,26 +18,23 @@ package config
 
 import models.User
 import models.employment.AllEmploymentData
-import org.scalamock.handlers.CallHandler7
+import org.scalamock.handlers.CallHandler6
 import org.scalamock.scalatest.MockFactory
-import play.api.mvc.{Request, Result}
-import services.DeleteOrIgnoreEmploymentService
+import play.api.mvc.Result
+import services.employment.RemoveEmploymentService
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-trait MockDeleteOrIgnoreEmploymentService extends MockFactory {
+trait MockRemoveEmploymentService extends MockFactory {
 
-  val mockDeleteOrIgnoreEmploymentService: DeleteOrIgnoreEmploymentService = mock[DeleteOrIgnoreEmploymentService]
+  val mockRemoveEmploymentService: RemoveEmploymentService = mock[RemoveEmploymentService]
 
-  def mockDeleteOrIgnore(user: User[_], employmentData: AllEmploymentData, taxYear: Int, employmentId: String)
-                        (result: Result): CallHandler7[User[_], AllEmploymentData, Int, String, Result, Request[_], HeaderCarrier, Future[Result]] = {
-    (mockDeleteOrIgnoreEmploymentService.deleteOrIgnoreEmployment(_: User[_],
-      _: AllEmploymentData, _: Int, _: String)(_: Result)(_: Request[_], _:HeaderCarrier))
-      .expects(user, employmentData, taxYear, employmentId, result, *, *)
+  def mockDeleteOrIgnore(employmentData: AllEmploymentData, taxYear: Int, employmentId: String)
+                        (result: Result): CallHandler6[AllEmploymentData, Int, String, Result, User[_], HeaderCarrier, Future[Result]] = {
+    (mockRemoveEmploymentService.deleteOrIgnoreEmployment(_: AllEmploymentData, _: Int, _: String)(_: Result)(_: User[_], _: HeaderCarrier))
+      .expects(employmentData, taxYear, employmentId, result, *, *)
       .returns(Future.successful(result))
       .anyNumberOfTimes()
   }
-
-
 }

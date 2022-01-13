@@ -17,7 +17,7 @@
 package config
 
 import audit.{AuditModel, AuditService}
-import org.scalamock.handlers.CallHandler
+import org.scalamock.handlers.CallHandler4
 import org.scalamock.scalatest.MockFactory
 import play.api.libs.json.Writes
 import uk.gov.hmrc.http.HeaderCarrier
@@ -29,10 +29,11 @@ trait MockAuditService extends MockFactory {
 
   val mockAuditService: AuditService = mock[AuditService]
 
-  def verifyAuditEvent[T](event: AuditModel[T]): CallHandler[Future[AuditResult]] = {
+  def mockAuditSendEvent[T](event: AuditModel[T],
+                            auditResult: AuditResult = AuditResult.Success
+                           ): CallHandler4[AuditModel[T], HeaderCarrier, ExecutionContext, Writes[T], Future[AuditResult]] = {
     (mockAuditService.sendAudit(_: AuditModel[T])(_: HeaderCarrier, _: ExecutionContext, _: Writes[T]))
       .expects(event, *, *, *)
-      .returning(Future.successful(AuditResult.Success))
+      .returning(Future.successful(auditResult))
   }
-
 }

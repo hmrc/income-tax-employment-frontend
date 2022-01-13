@@ -28,11 +28,7 @@ class DeleteOrIgnoreEmploymentConnector @Inject()(val http: HttpClient,
 
   def deleteOrIgnoreEmployment(nino: String, taxYear: Int, employmentId: String, toRemove: String)
                               (implicit hc: HeaderCarrier): Future[DeleteOrIgnoreEmploymentResponse] = {
-
     val deleteOrIgnoreUrl: String = config.incomeTaxEmploymentBEUrl + s"/income-tax/nino/$nino/sources/$employmentId/$toRemove?taxYear=$taxYear"
-
     http.DELETE[DeleteOrIgnoreEmploymentResponse](deleteOrIgnoreUrl)
-
   }
-
 }

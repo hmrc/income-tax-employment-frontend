@@ -64,7 +64,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       )
       val prior = None
 
-      verifyAuditEvent(CreateNewEmploymentDetailsAudit(
+      mockAuditSendEvent(CreateNewEmploymentDetailsAudit(
         2021, user.affinityGroup.toLowerCase, user.nino, user.mtditid, AuditNewEmploymentData(
           Some("name"), Some("employerRef"), Some("2000-10-10"), None, Some(4354), Some(564), None
         ), Seq()
@@ -138,7 +138,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       mockGetLatestEmploymentDataEOY(prior, isInYear = false)
       mockEmploymentSourceToUseNone(prior, employmentId = "001", isInYear = false)
 
-      verifyAuditEvent(CreateNewEmploymentDetailsAudit(
+      mockAuditSendEvent(CreateNewEmploymentDetailsAudit(
         2021, user.affinityGroup.toLowerCase, user.nino, user.mtditid, AuditNewEmploymentData(
           Some("name"), Some("employerRef"), Some("2000-10-10"), None, Some(4354), Some(564), None
         ), Seq(PriorEmploymentAuditInfo("Mishima Zaibatsu", Some("223/AB12399")))
@@ -213,7 +213,7 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
 
       mockEmploymentSourceToUseHMRC(prior, employmentId = "001", isInYear = false)
 
-      verifyAuditEvent(AmendEmploymentDetailsUpdateAudit(
+      mockAuditSendEvent(AmendEmploymentDetailsUpdateAudit(
         2021, user.affinityGroup.toLowerCase, user.nino, user.mtditid, AuditEmploymentData(
           employerName = employmentSource1.employerName,
           employerRef = employmentSource1.employerRef,
