@@ -33,7 +33,7 @@ import utils.{Clock, SessionHelper}
 import views.html.employment.PayeRefView
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class PayeRefController @Inject()(implicit val authorisedAction: AuthorisedAction,
                                   mcc: MessagesControllerComponents,
@@ -44,17 +44,15 @@ class PayeRefController @Inject()(implicit val authorisedAction: AuthorisedActio
                                   employmentSessionService: EmploymentSessionService,
                                   employmentService: EmploymentService,
                                   clock: Clock) extends FrontendController(mcc) with I18nSupport with SessionHelper {
-  private implicit val executionContext = mcc.executionContext
+  private implicit val executionContext: ExecutionContext = mcc.executionContext
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
-
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
           case Some(cya) =>
             val cyaRef = cya.employment.employmentDetails.employerRef
-            val priorEmployment = prior.map(priorEmp => employmentSessionService.getLatestEmploymentData(priorEmp, isInYear = false)
-              .filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
+            val priorEmployment = prior.map(priorEmp => priorEmp.latestEOYEmployments.filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
             val priorRef = priorEmployment.headOption.flatMap(_.employerRef)
             lazy val unfilledForm = PayeForm.payeRefForm(user.isAgent)
             val form: Form[String] = cyaRef.fold(unfilledForm)(

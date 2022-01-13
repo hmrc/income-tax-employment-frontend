@@ -31,25 +31,21 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 import utils.PageUrls.{addEmploymentUrl, checkYourBenefitsUrl, checkYourDetailsUrl, checkYourExpensesUrl, employerInformationUrl,
   employerNameUrlWithoutEmploymentId, employmentSummaryUrl, fullUrl, overviewUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   val taxYearEOY: Int = taxYear - 1
 
   object Selectors {
-
     val headingSelector = "#main-content > div > div > header > h1"
     val captionSelector = "#main-content > div > div > header > p"
     val employmentSummaryParagraphSelector = "#main-content > div > div > p:nth-child(2)"
-    val employmentDetailsRowSelector: String =
-      s"#main-content > div > div > ol > li:nth-child(1) > span.app-task-list__task-name"
-    val employmentBenefitsRowSelector: String =
-      s"#main-content > div > div > ol > li:nth-child(2) > span.app-task-list__task-name"
-    val employmentExpensesRowSelector: String =
-      s"#main-content > div > div > ol > li:nth-child(3) > span.app-task-list__task-name"
+    val employmentDetailsRowSelector: String = s"#main-content > div > div > ol > li:nth-child(1) > span.app-task-list__task-name"
+    val employmentBenefitsRowSelector: String = s"#main-content > div > div > ol > li:nth-child(2) > span.app-task-list__task-name"
+    val employmentExpensesRowSelector: String = s"#main-content > div > div > ol > li:nth-child(3) > span.app-task-list__task-name"
     val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
     val expensesParagraphHeadingSelector = "#main-content > div > div > h2.govuk-label--m"
     val expensesParagraphSubheadingSelector = "#main-content > div > div > p:nth-child(6)"
@@ -62,11 +58,9 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
     def employmentExpensesRowLinkSelector: String = s"$employmentExpensesRowSelector > a"
 
-    def employerSummaryListRowFieldNameSelector(i: Int): String =
-      s"#main-content > div > div > ol:nth-child(4) > li:nth-child($i) > span.app-task-list__task-name > a"
+    def employerSummaryListRowFieldNameSelector(i: Int): String = s"#main-content > div > div > ol:nth-child(4) > li:nth-child($i) > span.app-task-list__task-name > a"
 
-    def employerSummaryListRowFieldActionSelector(i: Int): String =
-      s"#main-content > div > div > ol:nth-child(4) > li:nth-child($i) > span.hmrc-status-tag"
+    def employerSummaryListRowFieldActionSelector(i: Int): String = s"#main-content > div > div > ol:nth-child(4) > li:nth-child($i) > span.hmrc-status-tag"
 
     def expensesSummaryListRowFieldNameLinkSelector: String = s"$expensesSummaryListRowFieldNameSelector > a"
   }
@@ -139,21 +133,19 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedInsetText: String = s"You cannot update your client’s employment information until 6 April $taxYear."
   }
 
-  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
-      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
-  }
+  val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
+    UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+    UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+    UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+    UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY))
+  )
 
   ".show" when {
     import Selectors._
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "return single employment summary view when there is only one employment without Expenses and Benefits" which {
-
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)

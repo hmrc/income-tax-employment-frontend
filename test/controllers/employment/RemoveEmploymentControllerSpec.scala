@@ -92,8 +92,6 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp
   ".submit" should {
     s"return a BAD_REQUEST($BAD_REQUEST) status when there a form is submitted with no entry" in new TestWithAuth {
       mockGetPriorRight(validTaxYearEOY, Some(employmentsModel))
-      mockGetLatestEmploymentDataEOY(employmentsModel, isInYear = false)
-      mockEmploymentSourceToUseHMRC(employmentsModel, employmentId, isInYear = false)
 
       val result: Future[Result] = controller.submit(validTaxYearEOY, employmentId)(fakeRequest.withSession(
         SessionValues.TAX_YEAR -> validTaxYearEOY.toString
@@ -105,8 +103,6 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp
     s"return a SEE_OTHER($SEE_OTHER) status" when {
       s"the 'yes' radio button is submitted" in new TestWithAuth {
         mockGetPriorRight(validTaxYearEOY, Some(employmentsModel))
-        mockGetLatestEmploymentDataEOY(employmentsModel, isInYear = false)
-        mockEmploymentSourceToUseHMRC(employmentsModel, employmentId, isInYear = false)
         mockDeleteOrIgnore(employmentsModel, validTaxYearEOY, employmentId)(Redirect(EmploymentSummaryController.show(validTaxYearEOY)))
 
         val result: Future[Result] = controller.submit(validTaxYearEOY, employmentId)(fakeRequest
@@ -122,8 +118,6 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp
 
       s"the 'no' radio button is submitted" in new TestWithAuth {
         mockGetPriorRight(validTaxYearEOY, Some(employmentsModel))
-        mockGetLatestEmploymentDataEOY(employmentsModel, isInYear = false)
-        mockEmploymentSourceToUseHMRC(employmentsModel, employmentId, isInYear = false)
 
         val result: Future[Result] = controller.submit(validTaxYearEOY, employmentId)(fakeRequest
           .withFormUrlEncodedBody("value" -> "false")
@@ -135,10 +129,8 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp
 
       "there's no employment data found for that employmentId" in new TestWithAuth {
         mockGetPriorRight(validTaxYearEOY, Some(employmentsModel))
-        mockGetLatestEmploymentDataEOY(employmentsModel, isInYear = false)
-        mockEmploymentSourceToUseNone(employmentsModel, employmentId, isInYear = false)
 
-        val result: Future[Result] = controller.submit(validTaxYearEOY, employmentId)(fakeRequest
+        val result: Future[Result] = controller.submit(validTaxYearEOY, "unknown-employment-id")(fakeRequest
           .withSession(SessionValues.TAX_YEAR -> validTaxYearEOY.toString))
 
         status(result) shouldBe SEE_OTHER

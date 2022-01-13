@@ -18,8 +18,7 @@ package controllers.employment
 
 import config.AppConfig
 import controllers.predicates.{AuthorisedAction, InYearAction}
-import javax.inject.Inject
-import models.employment.EmploymentSource
+import models.employment.EmploymentSourceOrigin
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
@@ -27,6 +26,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.SessionHelper
 import views.html.employment.EmploymentDetailsAndBenefitsView
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class EmploymentDetailsAndBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -38,26 +38,17 @@ class EmploymentDetailsAndBenefitsController @Inject()(implicit val cc: Messages
                                                        implicit val ec: ExecutionContext
                                                       ) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
-
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
-
-    employmentSessionService.findPreviousEmploymentUserData(user, taxYear){ allEmploymentData =>
-
-      val isInYear: Boolean = inYearAction.inYear(taxYear)
-
-      val latestExpenses = employmentSessionService.getLatestExpenses(allEmploymentData, isInYear)
-      val doExpensesExist = latestExpenses.isDefined
-
-      val employments: Seq[EmploymentSource] = employmentSessionService.getLatestEmploymentData(allEmploymentData,isInYear)
-
-      val isSingleEmployment: Boolean = employments.length == 1
-
-      val source = employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear)
+    employmentSessionService.findPreviousEmploymentUserData(user, taxYear) { allEmploymentData =>
+      val isInYear = inYearAction.inYear(taxYear)
+      val latestExpenses = if (isInYear) allEmploymentData.latestInYearExpenses else allEmploymentData.latestEOYExpenses
+      val isSingleEmployment = if (isInYear) allEmploymentData.isLastInYearEmployment else allEmploymentData.isLastEOYEmployment
+      val source = if (isInYear) allEmploymentData.inYearEmploymentSourceWith(employmentId) else allEmploymentData.eoyEmploymentSourceWith(employmentId)
 
       source match {
-        case Some((source, _)) =>
+        case Some(EmploymentSourceOrigin(source, _)) =>
           val (name, benefitsIsDefined) = (source.employerName, source.employmentBenefits.isDefined)
-          Ok(employmentDetailsAndBenefitsView(name, employmentId, benefitsIsDefined, taxYear, isInYear, doExpensesExist, isSingleEmployment))
+          Ok(employmentDetailsAndBenefitsView(name, employmentId, benefitsIsDefined, taxYear, isInYear, latestExpenses.isDefined, isSingleEmployment))
         case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
     }

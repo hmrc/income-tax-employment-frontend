@@ -18,18 +18,16 @@ package services.employment
 
 import config.{MockAuditService, MockEmploymentSessionService, MockNrsService}
 import models.benefits.{Benefits, DecodedAmendBenefitsPayload, DecodedCreateNewBenefitsPayload}
+import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
-import models.employment.{AllEmploymentData, Deductions, EmploymentBenefits, EmploymentData, EmploymentSource, Pay, StudentLoans}
 import utils.UnitTest
 
 class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionService with MockNrsService with MockAuditService {
 
-  private val underTest = new CheckYourBenefitsService(mockEmploymentSessionService, mockAuditService, mockNrsService)
+  private val underTest = new CheckYourBenefitsService(mockNrsService)
 
   "performSubmitNrsPayload" should {
-
     "send the event from the model when it's a create" in {
-
       val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
         Some("id"),
         Some(
@@ -159,8 +157,6 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
         customerEmploymentData = Seq(),
         customerExpenses = None
       )
-
-      mockEmploymentSourceToUseHMRC(priorData, "001", false)
 
       verifySubmitEvent(DecodedAmendBenefitsPayload(
         Benefits(

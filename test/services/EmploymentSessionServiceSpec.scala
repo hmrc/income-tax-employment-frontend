@@ -42,32 +42,32 @@ class EmploymentSessionServiceSpec extends UnitTest
   with MockIncomeSourceConnector
   with MockExpensesUserDataRepository {
 
-  val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
-  val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
-  val internalServerErrorTemplate: InternalServerErrorTemplate = app.injector.instanceOf[InternalServerErrorTemplate]
-  val mockMessagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  val mockFrontendAppConfig: AppConfig = app.injector.instanceOf[AppConfig]
+  private val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
+  private val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
+  private val internalServerErrorTemplate: InternalServerErrorTemplate = app.injector.instanceOf[InternalServerErrorTemplate]
+  private val mockMessagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  private val mockFrontendAppConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
-  val errorHandler = new ErrorHandler(internalServerErrorTemplate, serviceUnavailableTemplate, mockMessagesApi, notFoundTemplate)(mockFrontendAppConfig)
+  private val errorHandler = new ErrorHandler(internalServerErrorTemplate, serviceUnavailableTemplate, mockMessagesApi, notFoundTemplate)(mockFrontendAppConfig)
 
-  val messages: MessagesApi = app.injector.instanceOf[MessagesApi]
+  private val messages: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  val service: EmploymentSessionService =
+  private val service: EmploymentSessionService =
     new EmploymentSessionService(mockEmploymentUserDataRepository, mockExpensesUserDataRepository, mockUserDataConnector, mockIncomeSourceConnector, mockAppConfig, messages,
       errorHandler, mockCreateUpdateEmploymentDataConnector, mockExecutionContext)
 
-  val taxYear = 2022
+  private val taxYear = 2022
 
   private val anyResult = Ok
 
-  def result(allEmploymentData: AllEmploymentData): Result = {
+  private def result(allEmploymentData: AllEmploymentData): Result = {
     allEmploymentData.hmrcExpenses match {
       case Some(_) => Ok("Ok")
       case None => Redirect("303")
     }
   }
 
-  def allEmploymentData: AllEmploymentData = AllEmploymentData(
+  private def allEmploymentData: AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(
       EmploymentSource(
         employmentId = "001",
@@ -118,7 +118,7 @@ class EmploymentSessionServiceSpec extends UnitTest
     )
   )
 
-  val employmentCYA: EmploymentCYAModel = {
+  private val employmentCYA: EmploymentCYAModel = {
     EmploymentCYAModel(
       employmentDetails = EmploymentDetails(
         "Employer Name",
@@ -140,11 +140,12 @@ class EmploymentSessionServiceSpec extends UnitTest
       ))
   }
 
-  val employmentDataFull: EmploymentUserData = {
+  private val employmentDataFull: EmploymentUserData = {
     EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", isPriorSubmission = true,
       hasPriorBenefits = true, employmentCYA, testClock.now())
   }
-  val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
+
+  private val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
     None,
     Some(
       CreateUpdateEmployment(
@@ -573,195 +574,6 @@ class EmploymentSessionServiceSpec extends UnitTest
       }
 
       status(response) shouldBe INTERNAL_SERVER_ERROR
-    }
-  }
-
-  "getLatestExpenses" should {
-    "return the latest expenses data" when {
-      "only hmrc data is found in year" in {
-        val response = service.getLatestExpenses(allEmploymentData, isInYear = true)
-        response shouldBe Some((allEmploymentData.hmrcExpenses.get, false))
-      }
-
-      "only hmrc data is found at the end of the year" in {
-        val response = service.getLatestExpenses(allEmploymentData.copy(customerExpenses = None), isInYear = false)
-        response shouldBe Some((allEmploymentData.hmrcExpenses.get, false))
-      }
-
-      "only customer data is found at the end of the year" in {
-        val response = service.getLatestExpenses(allEmploymentData.copy(hmrcExpenses = None), isInYear = false)
-        response shouldBe Some((allEmploymentData.customerExpenses.get, true))
-      }
-
-      "there is both customer and hmrc data" in {
-        val response = service.getLatestExpenses(allEmploymentData, isInYear = false)
-        response shouldBe Some((allEmploymentData.customerExpenses.get, true))
-      }
-
-      "there is both customer and hmrc data but customer has a time submitted" in {
-        val response = service.getLatestExpenses(allEmploymentData.copy(hmrcExpenses = allEmploymentData.hmrcExpenses.map(_.copy(submittedOn = None))), isInYear = false)
-        response shouldBe Some((allEmploymentData.customerExpenses.get, true))
-      }
-
-      "there is both customer and hmrc data but neither has a time submitted" in {
-        val response = service.getLatestExpenses(allEmploymentData.copy(hmrcExpenses = allEmploymentData.hmrcExpenses.map(_.copy(submittedOn = None)),
-          customerExpenses = allEmploymentData.customerExpenses.map(_.copy(submittedOn = None))), isInYear = false)
-        response shouldBe Some((allEmploymentData.customerExpenses.map(_.copy(submittedOn = None)).get, true))
-      }
-
-      "there is both customer and hmrc data but customer is the latest" in {
-        val response = service.getLatestExpenses(allEmploymentData.copy(
-          customerExpenses = allEmploymentData.customerExpenses.map(_.copy(submittedOn = Some("2020-02-04T05:01:01Z")))), isInYear = false)
-        response shouldBe Some((allEmploymentData.customerExpenses.map(_.copy(submittedOn = Some("2020-02-04T05:01:01Z"))).get, true))
-      }
-
-      "there are no expenses" in {
-        val response = service.getLatestExpenses(allEmploymentData.copy(hmrcExpenses = None, customerExpenses = None), isInYear = false)
-        response shouldBe None
-      }
-    }
-  }
-
-  "getLatestEmploymentData" should {
-    "return the latest employment data" when {
-      "only hmrc data is found in year" in {
-        val response = service.getLatestEmploymentData(allEmploymentData, isInYear = true)
-        response shouldBe allEmploymentData.hmrcEmploymentData
-      }
-
-      "only hmrc data is found at the end of the year" in {
-        val response = service.getLatestEmploymentData(allEmploymentData, isInYear = false)
-        response shouldBe allEmploymentData.hmrcEmploymentData
-      }
-
-      "when there is no data in year" in {
-        val response = service.getLatestEmploymentData(allEmploymentData.copy(hmrcEmploymentData = Seq()), isInYear = true)
-        response shouldBe Seq()
-      }
-
-      "when there is no data at the end of the year" in {
-        val response = service.getLatestEmploymentData(allEmploymentData.copy(hmrcEmploymentData = Seq()), isInYear = false)
-        response shouldBe Seq()
-      }
-
-      "when there is hmrc data and customer data at the end of the year" in {
-        val response = service.getLatestEmploymentData(allEmploymentData.copy(customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(employmentId = "C001"))), isInYear = false)
-        response shouldBe Seq(allEmploymentData.hmrcEmploymentData.head, allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "C001"))
-      }
-
-      "when there is hmrc data and customer data at the end of the year where the hmrc has been ignored" in {
-        val response = service.getLatestEmploymentData(allEmploymentData.copy(customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(employmentId = "C001")),
-          hmrcEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(dateIgnored = Some("2020-01-04T05:01:01Z")))), isInYear = false)
-        response shouldBe Seq(allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "C001"))
-      }
-
-      "when there is hmrc data and customer data at the end of the year where some customer data is an override and some are new" in {
-        val response = service.getLatestEmploymentData(allEmploymentData.copy(customerEmploymentData = Seq(
-          allEmploymentData.hmrcEmploymentData.head.copy(employerName = "Mr Bean"),
-          allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "C001")
-        ),
-          hmrcEmploymentData = Seq(allEmploymentData.hmrcEmploymentData.head, allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "002"))), isInYear = false)
-        response shouldBe Seq(
-          allEmploymentData.hmrcEmploymentData.head,
-          allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "002"),
-          allEmploymentData.hmrcEmploymentData.head.copy(employerName = "Mr Bean"),
-          allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "C001")
-        )
-      }
-
-      "when there is hmrc data and customer data at the end of the year with different dates" in {
-        val response = service.getLatestEmploymentData(allEmploymentData.copy(customerEmploymentData = Seq(
-          allEmploymentData.hmrcEmploymentData.head.copy(employerName = "Mr Bean", submittedOn = Some("2020-01-03T05:01:01Z")),
-          allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "C001", submittedOn = Some("2020-01-04T05:01:01Z")),
-          allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "002", submittedOn = Some("2020-05-04T05:01:01Z"))
-        ),
-          hmrcEmploymentData = Seq(
-            allEmploymentData.hmrcEmploymentData.head.copy(submittedOn = Some("2020-01-04T05:01:01Z")),
-            allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "002", submittedOn = Some("2020-01-04T05:01:01Z"))
-          )), isInYear = false)
-        response shouldBe Seq(
-          allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "002", submittedOn = Some("2020-05-04T05:01:01Z")),
-          allEmploymentData.hmrcEmploymentData.head.copy(submittedOn = Some("2020-01-04T05:01:01Z")),
-          allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "002", submittedOn = Some("2020-01-04T05:01:01Z")),
-          allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "C001", submittedOn = Some("2020-01-04T05:01:01Z")),
-          allEmploymentData.hmrcEmploymentData.head.copy(employerName = "Mr Bean", submittedOn = Some("2020-01-03T05:01:01Z"))
-        )
-      }
-
-      "when there is only customer data at the end of the year" in {
-        val response = service.getLatestEmploymentData(allEmploymentData.copy(customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(employmentId = "C001")),
-          hmrcEmploymentData = Seq()), isInYear = false)
-        response shouldBe Seq(allEmploymentData.hmrcEmploymentData.head.copy(employmentId = "C001"))
-      }
-    }
-  }
-
-  "employmentSourceToUse" should {
-    "return the latest employment source and whether it is customer data" when {
-      "only hmrc data is found in year" in {
-        val response = service.employmentSourceToUse(allEmploymentData, "001", isInYear = true)
-        response shouldBe Some(allEmploymentData.hmrcEmploymentData.head, false)
-      }
-
-      "only hmrc data is found at the end of the year" in {
-        val response = service.employmentSourceToUse(allEmploymentData, "001", isInYear = false)
-        response shouldBe Some(allEmploymentData.hmrcEmploymentData.head, false)
-      }
-
-      "there is no data" in {
-        val response = service.employmentSourceToUse(allEmploymentData.copy(hmrcEmploymentData = Seq()), "001", isInYear = false)
-        response shouldBe None
-      }
-
-      "there is only customer data in year" in {
-        val response = service.employmentSourceToUse(allEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = allEmploymentData.hmrcEmploymentData), "001", isInYear = true)
-        response shouldBe None
-      }
-
-      "there is only customer data at the end of the year" in {
-        val response = service.employmentSourceToUse(allEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = allEmploymentData.hmrcEmploymentData), "001", isInYear = false)
-        response shouldBe Some(allEmploymentData.hmrcEmploymentData.head, true)
-      }
-
-      "there is both hmrc and customer data with the same submitted on date" in {
-        val response = service.employmentSourceToUse(
-          allEmploymentData.copy(
-            hmrcEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(submittedOn = Some("2020-01-04T05:01:01Z"))),
-            customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(submittedOn = Some("2020-01-04T05:01:01Z"))),
-          ),
-          "001", isInYear = false)
-        response shouldBe Some(allEmploymentData.hmrcEmploymentData.head.copy(submittedOn = Some("2020-01-04T05:01:01Z")), true)
-      }
-
-      "there is both hmrc and customer data when customer has the latest submittedOn date" in {
-        val response = service.employmentSourceToUse(
-          allEmploymentData.copy(
-            hmrcEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(submittedOn = Some("2020-01-04T05:01:01Z"))),
-            customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(submittedOn = Some("2020-02-04T05:01:01Z"))),
-          ),
-          "001", isInYear = false)
-        response shouldBe Some(allEmploymentData.hmrcEmploymentData.head.copy(submittedOn = Some("2020-02-04T05:01:01Z")), true)
-      }
-
-      "there is both hmrc and customer data but only customer has a submitted on date" in {
-        val response = service.employmentSourceToUse(
-          allEmploymentData.copy(
-            hmrcEmploymentData = allEmploymentData.hmrcEmploymentData,
-            customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(submittedOn = Some("2020-01-04T05:01:01Z")))
-          ),
-          "001", isInYear = false)
-        response shouldBe Some(allEmploymentData.hmrcEmploymentData.head.copy(submittedOn = Some("2020-01-04T05:01:01Z")), true)
-      }
-
-      "there is both hmrc and customer data but both have no submitted on date" in {
-        val response = service.employmentSourceToUse(
-          allEmploymentData.copy(
-            hmrcEmploymentData = allEmploymentData.hmrcEmploymentData,
-            customerEmploymentData = allEmploymentData.hmrcEmploymentData
-          ),
-          "001", isInYear = false)
-        response shouldBe Some(allEmploymentData.hmrcEmploymentData.head, true)
-      }
     }
   }
 

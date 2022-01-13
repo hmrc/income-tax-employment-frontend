@@ -37,9 +37,8 @@ import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{checkYourBenefitsUrl, checkYourExpensesUrl, companyBenefitsUrl, employmentSummaryUrl, overviewUrl}
 import utils.PageUrls._
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper {
 

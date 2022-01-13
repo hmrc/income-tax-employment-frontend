@@ -18,39 +18,31 @@ package forms
 
 import models.employment.{AllEmploymentData, EmploymentExpenses, EmploymentSource}
 import play.api.data.Form
-import services.EmploymentSessionService
 
 trait FormUtils {
 
-  val employmentSessionService: EmploymentSessionService
-
   def fillFormFromPriorAndCYA(form: Form[BigDecimal], prior: Option[AllEmploymentData],
-                              cya: Option[BigDecimal], employmentId: String)(f: EmploymentSource => Option[BigDecimal]): Form[BigDecimal] ={
+                              cya: Option[BigDecimal], employmentId: String)(f: EmploymentSource => Option[BigDecimal]): Form[BigDecimal] = {
 
     val priorAmount = prior.flatMap { priorEmp =>
-      employmentSessionService.employmentSourceToUse(priorEmp, employmentId, isInYear = false).flatMap {
-        employmentSource =>
-          f(employmentSource._1)
+      priorEmp.eoyEmploymentSourceWith(employmentId).flatMap {
+        employmentSource => f(employmentSource.employmentSource)
       }
     }
 
-    fillForm(form,priorAmount,cya)
+    fillForm(form, priorAmount, cya)
   }
 
   def fillExpensesFormFromPriorAndCYA(form: Form[BigDecimal], prior: Option[AllEmploymentData],
-                                      cya: Option[BigDecimal])(f: EmploymentExpenses => Option[BigDecimal]): Form[BigDecimal] ={
+                                      cya: Option[BigDecimal])(f: EmploymentExpenses => Option[BigDecimal]): Form[BigDecimal] = {
+    val priorAmount = prior.flatMap(priorEmp =>
+      priorEmp.latestEOYExpenses.flatMap(expenses => f(expenses.latestExpenses))
+    )
 
-    val priorAmount = prior.flatMap { priorEmp =>
-      employmentSessionService.getLatestExpenses(priorEmp, isInYear = false).flatMap {
-        expenses =>
-          f(expenses._1)
-      }
-    }
-
-    fillForm(form,priorAmount,cya)
+    fillForm(form, priorAmount, cya)
   }
 
-  private def fillForm(form: Form[BigDecimal], prior: Option[BigDecimal], cya: Option[BigDecimal]): Form[BigDecimal] ={
-    cya.fold(form)(cya => if(prior.contains(cya)) form else form.fill(cya))
+  private def fillForm(form: Form[BigDecimal], prior: Option[BigDecimal], cya: Option[BigDecimal]): Form[BigDecimal] = {
+    cya.fold(form)(cya => if (prior.contains(cya)) form else form.fill(cya))
   }
 }

@@ -19,7 +19,7 @@ package controllers.employment
 import common.SessionValues
 import config.MockEmploymentSessionService
 import forms.YesNoForm
-import models.employment.{AllEmploymentData, Deductions, EmploymentData, EmploymentSource, Pay, StudentLoans}
+import models.employment._
 import play.api.data.Form
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Result
@@ -124,10 +124,9 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
     inYearAction
   )
 
-  val taxYear:Int = mockAppConfig.defaultTaxYear
+  val taxYear: Int = mockAppConfig.defaultTaxYear
 
   ".show" should {
-
     "render single employment summary view when there is only one employment" which {
       s"has an OK($OK) status" in new TestWithAuth {
         mockFind(taxYear, Ok(singleView(taxYear, FullModel.employmentSource1, false)))
@@ -149,8 +148,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
     }
 
     "redirect the User to the Overview page no data in session" which {
-
-      s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth{
+      s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
         mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
 
         val result: Future[Result] = controller.show(taxYear)(fakeRequest.withSession(SessionValues.TAX_YEAR -> taxYear.toString))
@@ -160,5 +158,4 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
       }
     }
   }
-
 }

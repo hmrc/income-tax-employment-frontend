@@ -24,8 +24,8 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.ws.WSResponse
-import utils.{IntegrationTest, ViewHelpers}
 import utils.PageUrls.{checkYourBenefitsUrl, checkYourDetailsUrl, checkYourExpensesUrl, employerInformationUrl, employmentSummaryUrl, fullUrl, overviewUrl}
+import utils.{IntegrationTest, ViewHelpers}
 
 class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with ViewHelpers {
 
@@ -363,7 +363,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           }
 
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
-          formGetLinkCheck(employmentSummaryUrl(taxYearEOY),"#main-content > div > div > form")
+          formGetLinkCheck(employmentSummaryUrl(taxYearEOY), "#main-content > div > div > form")
 
           welshToggleCheck(user.isWelsh)
         }

@@ -16,21 +16,20 @@
 
 package controllers.employment
 
+import audit.{AuditService, ViewEmploymentBenefitsAudit}
 import common.SessionValues
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.routes.ReceiveAnyBenefitsController
 import controllers.employment.routes.{CheckYourBenefitsController, EmploymentSummaryController}
 import controllers.expenses.routes.CheckEmploymentExpensesController
 import controllers.predicates.{AuthorisedAction, InYearAction}
-import models.User
-import models.benefits.{Benefits, BenefitsViewModel}
-import models.employment.AllEmploymentData
+import models.benefits.Benefits
+import models.employment.{AllEmploymentData, EmploymentSourceOrigin}
 import models.mongo.EmploymentCYAModel
 import play.api.Logging
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
-import services.employment.CheckYourBenefitsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.{CheckYourBenefitsView, CheckYourBenefitsViewEOY}
@@ -44,7 +43,7 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
                                             checkYourBenefitsView: CheckYourBenefitsView,
                                             checkYourBenefitsViewEOY: CheckYourBenefitsViewEOY,
                                             employmentSessionService: EmploymentSessionService,
-                                            checkYourBenefitsService: CheckYourBenefitsService,
+                                            auditService: AuditService,
                                             inYearAction: InYearAction,
                                             errorHandler: ErrorHandler,
                                             implicit val clock: Clock,
@@ -54,20 +53,16 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
   //scalastyle:off
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
     if (inYearAction.inYear(taxYear)) {
-      employmentSessionService.findPreviousEmploymentUserData(user, taxYear) { result: AllEmploymentData =>
+      employmentSessionService.findPreviousEmploymentUserData(user, taxYear) { allEmploymentData: AllEmploymentData =>
         val redirect = Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-        employmentSessionService.employmentSourceToUse(result, employmentId, inYearAction.inYear(taxYear)) match {
-          case Some((source, isUsingCustomerData)) =>
-            val benefits = source.employmentBenefits.flatMap(_.benefits)
-            benefits match {
+        allEmploymentData.inYearEmploymentSourceWith(employmentId) match {
+          case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>
+            source.employmentBenefits.flatMap(_.benefits) match {
               case None => redirect
               case Some(benefits) =>
-                val singleEmployment = checkYourBenefitsService.isSingleEmploymentAndAudit(benefits, taxYear, inYearAction.inYear(taxYear), allEmploymentData = result)
-                if (inYearAction.inYear(taxYear)) {
-                  Ok(checkYourBenefitsView(taxYear, benefits.toBenefitsViewModel(isUsingCustomerData), singleEmployment, employmentId))
-                } else {
-                  Ok(checkYourBenefitsViewEOY(taxYear, benefits.toBenefitsViewModel(isUsingCustomerData), employmentId, isUsingCustomerData))
-                }
+                val auditModel = ViewEmploymentBenefitsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, benefits)
+                auditService.sendAudit[ViewEmploymentBenefitsAudit](auditModel.toAuditModel)
+                Ok(checkYourBenefitsView(taxYear, benefits.toBenefitsViewModel(isUsingCustomerData), allEmploymentData.isLastInYearEmployment, employmentId))
             }
           case None => redirect
         }
@@ -76,22 +71,32 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
       employmentSessionService.getAndHandle(taxYear, employmentId, redirectWhenNoPrior = true) { (cya, prior) =>
         cya match {
           case Some(cya) =>
-            val benefits: Option[BenefitsViewModel] = cya.employment.employmentBenefits
-            benefits match {
+            cya.employment.employmentBenefits match {
               case None => Future(Redirect(ReceiveAnyBenefitsController.show(taxYear, employmentId)))
-              case Some(benefits) => Future {
-                val isSingleEmploymentValue = checkYourBenefitsService.isSingleEmploymentAndAudit(benefits.toBenefits, taxYear, inYearAction.inYear(taxYear),
-                  allEmploymentData = prior.get)
-                if (inYearAction.inYear(taxYear)) {
-                  Ok(checkYourBenefitsView(taxYear, benefits.toBenefits.toBenefitsViewModel(benefits.isUsingCustomerData,
-                    cyaBenefits = Some(benefits)), isSingleEmploymentValue, employmentId))
-                } else {
-                  Ok(checkYourBenefitsViewEOY(taxYear, benefits.toBenefits.toBenefitsViewModel(benefits.isUsingCustomerData,
-                    cyaBenefits = Some(benefits)), employmentId, benefits.isUsingCustomerData))
+              case Some(benefits) => Future(Ok(checkYourBenefitsViewEOY(
+                taxYear,
+                benefits.toBenefits.toBenefitsViewModel(benefits.isUsingCustomerData, cyaBenefits = Some(benefits)),
+                employmentId,
+                benefits.isUsingCustomerData
+              )))
+            }
+          case None => prior.get.eoyEmploymentSourceWith(employmentId) match {
+            case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>
+              employmentSessionService.createOrUpdateSessionData(employmentId, EmploymentCYAModel(source, isUsingCustomerData),
+                taxYear, isPriorSubmission = true, source.hasPriorBenefits
+              )(errorHandler.internalServerError()) {
+                val benefits: Option[Benefits] = source.employmentBenefits.flatMap(_.benefits)
+                benefits match {
+                  case None => Redirect(ReceiveAnyBenefitsController.show(taxYear, employmentId))
+                  case Some(benefits) =>
+                    Ok(checkYourBenefitsViewEOY(taxYear, benefits.toBenefitsViewModel(isUsingCustomerData), employmentId, isUsingCustomerData))
                 }
               }
-            }
-          case None => saveCYAAndReturnEndOfYearResult(taxYear, employmentId, prior.get)
+            case None =>
+              logger.info(s"[CheckYourBenefitsController][saveCYAAndReturnEndOfYearResult] No prior employment data exists with employmentId." +
+                s"Redirecting to overview page. SessionId: ${user.sessionId}")
+              Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+          }
         }
       }
     }
@@ -122,30 +127,4 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
     }
   }
 
-  def saveCYAAndReturnEndOfYearResult(taxYear: Int, employmentId: String, allEmploymentData: AllEmploymentData)
-                                     (implicit user: User[AnyContent]): Future[Result] = {
-    employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, inYearAction.inYear(taxYear)) match {
-      case Some((source, isUsingCustomerData)) =>
-        employmentSessionService.createOrUpdateSessionData(employmentId, EmploymentCYAModel(source, isUsingCustomerData),
-          taxYear, isPriorSubmission = true, source.hasPriorBenefits
-        )(errorHandler.internalServerError()) {
-          val benefits: Option[Benefits] = source.employmentBenefits.flatMap(_.benefits)
-          benefits match {
-            case None => Redirect(ReceiveAnyBenefitsController.show(taxYear, employmentId))
-            case Some(benefits) =>
-              val isSingleEmploymentValue = checkYourBenefitsService.isSingleEmploymentAndAudit(benefits, taxYear, inYearAction.inYear(taxYear), allEmploymentData = allEmploymentData)
-
-              if (inYearAction.inYear(taxYear)) {
-                Ok(checkYourBenefitsView(taxYear, benefits.toBenefitsViewModel(isUsingCustomerData), isSingleEmploymentValue, employmentId))
-              } else {
-                Ok(checkYourBenefitsViewEOY(taxYear, benefits.toBenefitsViewModel(isUsingCustomerData), employmentId, isUsingCustomerData))
-              }
-          }
-        }
-      case None =>
-        logger.info(s"[CheckYourBenefitsController][saveCYAAndReturnEndOfYearResult] No prior employment data exists with employmentId." +
-          s"Redirecting to overview page. SessionId: ${user.sessionId}")
-        Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-    }
-  }
 }

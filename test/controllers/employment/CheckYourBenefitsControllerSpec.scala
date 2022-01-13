@@ -19,45 +19,42 @@ package controllers.employment
 import builders.models.benefits.BenefitsBuilder.aBenefits
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import common.SessionValues
-import config.{MockCheckYourBenefitsService, MockEmploymentSessionService}
+import config.{MockAuditService, MockEmploymentSessionService}
 import play.api.http.Status._
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
-import utils.{UnitTest, UnitTestWithApp}
+import utils.UnitTestWithApp
 import views.html.employment.{CheckYourBenefitsView, CheckYourBenefitsViewEOY}
 
 import scala.concurrent.Future
 
 class CheckYourBenefitsControllerSpec extends UnitTestWithApp
   with MockEmploymentSessionService
-  with UnitTest
-  with MockCheckYourBenefitsService {
+  with MockAuditService {
 
-  lazy val view: CheckYourBenefitsView = app.injector.instanceOf[CheckYourBenefitsView]
-  lazy val viewEOY: CheckYourBenefitsViewEOY = app.injector.instanceOf[CheckYourBenefitsViewEOY]
+  private lazy val view: CheckYourBenefitsView = app.injector.instanceOf[CheckYourBenefitsView]
+  private lazy val viewEOY: CheckYourBenefitsViewEOY = app.injector.instanceOf[CheckYourBenefitsViewEOY]
 
-  lazy val controller = new CheckYourBenefitsController(
+  private lazy val controller = new CheckYourBenefitsController(
     authorisedAction,
     mockMessagesControllerComponents,
     mockAppConfig,
     view,
     viewEOY,
     mockEmploymentSessionService,
-    mockCheckYourBenefitsService,
+    mockAuditService,
     inYearAction,
     mockErrorHandler,
     testClock,
     ec
   )
 
-  val taxYear: Int = mockAppConfig.defaultTaxYear
-  val employmentId = "223/AB12399"
+  private val taxYear: Int = mockAppConfig.defaultTaxYear
+  private val employmentId = "223/AB12399"
 
 
   ".show" should {
-
     "return a result when all data is in Session" which {
-
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {
           mockFind(taxYear, Ok(view(taxYear, aBenefitsViewModel, isSingleEmployment = true, employmentId)))
@@ -71,7 +68,6 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp
     }
 
     "return a result when all data is in Session for EOY" which {
-
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {
           mockFind(taxYear, Ok(viewEOY(taxYear, aBenefits.toBenefitsViewModel(isUsingCustomerData = true),
@@ -86,7 +82,6 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp
     }
 
     "redirect the User to the Overview page no data in mongo" which {
-
       s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
         val result: Future[Result] = {
           mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
@@ -98,5 +93,4 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp
       }
     }
   }
-
 }

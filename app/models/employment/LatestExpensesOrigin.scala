@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-package config
+package models.employment
 
-import org.scalamock.scalatest.MockFactory
-import services.employment.CheckYourBenefitsService
-
-trait MockCheckYourBenefitsService extends MockFactory {
-
-  val mockCheckYourBenefitsService: CheckYourBenefitsService = mock[CheckYourBenefitsService]
-}
+case class LatestExpensesOrigin(latestExpenses: EmploymentExpenses, isCustomerData: Boolean)

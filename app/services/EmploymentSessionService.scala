@@ -35,7 +35,6 @@ import play.api.mvc.{Request, Result}
 import repositories.{EmploymentUserDataRepository, ExpensesUserDataRepository}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Clock
-import utils.EmploymentExpensesUtils.{getLatestExpenses => utilsGetLatestExpenses}
 
 import java.util.NoSuchElementException
 import javax.inject.{Inject, Singleton}
@@ -210,7 +209,6 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   def cyaAndPriorToCreateUpdateEmploymentRequest(cya: EmploymentUserData, prior: Option[AllEmploymentData])(implicit user: User[_]): Either[CreateUpdateEmploymentRequestError, CreateUpdateEmploymentRequest] = {
-
     val hmrcEmploymentIdToIgnore: Option[String] = prior.flatMap(_.hmrcEmploymentData.find(_.employmentId == cya.employmentId).map(_.employmentId))
     val customerEmploymentId: Option[String] = prior.flatMap(_.customerEmploymentData.find(_.employmentId == cya.employmentId).map(_.employmentId))
 
@@ -260,7 +258,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     lazy val default = EmploymentDataAndDataRemainsUnchanged(newCreateUpdateEmployment, dataHasNotChanged = false)
     prior.fold[EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmployment]](default) {
       prior =>
-        val priorData: Option[EmploymentSource] = employmentSourceToUse(prior, cya.employmentId, isInYear = false).map(_._1)
+        val priorData = prior.eoyEmploymentSourceWith(cya.employmentId).map(_.employmentSource)
 
         priorData.fold[EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmployment]](default) {
           prior =>
@@ -286,7 +284,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
     prior.fold[EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmploymentData]](default) {
       prior =>
-        val priorData: Option[EmploymentSource] = employmentSourceToUse(prior, cya.employmentId, isInYear = false).map(_._1)
+        val priorData: Option[EmploymentSource] = prior.eoyEmploymentSourceWith(cya.employmentId).map(_.employmentSource)
 
         priorData.fold[EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmploymentData]](default) {
           prior =>
@@ -382,33 +380,6 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
         case false => errorHandler.internalServerError()
       }
     }
-  }
-
-  def employmentSourceToUse(allEmploymentData: AllEmploymentData, employmentId: String, isInYear: Boolean): Option[(EmploymentSource, Boolean)] = {
-    if (isInYear) {
-      allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId)).map((_, false))
-    } else {
-
-      val hmrcRecord = allEmploymentData.hmrcEmploymentData.find(source => source.employmentId.equals(employmentId) && source.dateIgnored.isEmpty)
-      val customerRecord = allEmploymentData.customerEmploymentData.find(source => source.employmentId.equals(employmentId))
-
-      customerRecord.fold(hmrcRecord.map((_, false)))(customerRecord => Some(customerRecord, true))
-    }
-  }
-
-  def getLatestEmploymentData(allEmploymentData: AllEmploymentData, isInYear: Boolean): Seq[EmploymentSource] = {
-    (if (isInYear) {
-      allEmploymentData.hmrcEmploymentData
-    } else {
-      //Filters out hmrc data that has been ignored
-      val hmrcData: Seq[EmploymentSource] = allEmploymentData.hmrcEmploymentData.filter(_.dateIgnored.isEmpty)
-      val customerData: Seq[EmploymentSource] = allEmploymentData.customerEmploymentData
-      hmrcData ++ customerData
-    }).sorted(Ordering.by((_: EmploymentSource).submittedOn).reverse)
-  }
-
-  def getLatestExpenses(allEmploymentData: AllEmploymentData, isInYear: Boolean): Option[(EmploymentExpenses, Boolean)] = {
-    utilsGetLatestExpenses(allEmploymentData, isInYear)
   }
 }
 

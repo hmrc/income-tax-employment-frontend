@@ -16,12 +16,54 @@
 
 package models.employment
 
+import play.api.Logging
 import play.api.libs.json.{Json, OFormat}
 
 case class AllEmploymentData(hmrcEmploymentData: Seq[EmploymentSource],
                              hmrcExpenses: Option[EmploymentExpenses],
                              customerEmploymentData: Seq[EmploymentSource],
-                             customerExpenses: Option[EmploymentExpenses])
+                             customerExpenses: Option[EmploymentExpenses]) extends Logging {
+
+  def latestInYearEmployments: Seq[EmploymentSource] = {
+    hmrcEmploymentData.sorted(Ordering.by((_: EmploymentSource).submittedOn).reverse)
+  }
+
+  def latestEOYEmployments: Seq[EmploymentSource] = {
+    val hmrcData = hmrcEmploymentData.filter(_.dateIgnored.isEmpty)
+    val customerData = customerEmploymentData
+
+    (hmrcData ++ customerData).sorted(Ordering.by((_: EmploymentSource).submittedOn).reverse)
+  }
+
+  def isLastEOYEmployment: Boolean = latestEOYEmployments.length == 1
+
+  def isLastInYearEmployment: Boolean = latestInYearEmployments.length == 1
+
+  def latestInYearExpenses: Option[LatestExpensesOrigin] = hmrcExpenses.map(LatestExpensesOrigin(_, isCustomerData = false))
+
+  def latestEOYExpenses: Option[LatestExpensesOrigin] = {
+    val hmrcExp = hmrcExpenses.filter(_.dateIgnored.isEmpty)
+
+    // TODO: This logging should be moved to wherever the object is read from, e.g. connector or repository
+    if (hmrcExp.isDefined && customerExpenses.isDefined && hmrcExp.get.dateIgnored.isEmpty) {
+      logger.warn("[AllEmploymentData][latestEOYExpenses] Hmrc expenses and customer expenses exist but hmrc expenses have not been ignored")
+    }
+
+    lazy val default = hmrcExpenses.map(LatestExpensesOrigin(_, isCustomerData = false))
+    customerExpenses.fold(default)(customerExpenses => Some(LatestExpensesOrigin(customerExpenses, isCustomerData = true)))
+  }
+
+  def inYearEmploymentSourceWith(employmentId: String): Option[EmploymentSourceOrigin] = hmrcEmploymentData
+    .find(source => source.employmentId.equals(employmentId))
+    .map(EmploymentSourceOrigin(_, isCustomerData = false))
+
+  def eoyEmploymentSourceWith(employmentId: String): Option[EmploymentSourceOrigin] = {
+    val hmrcRecord = hmrcEmploymentData.find(source => source.employmentId.equals(employmentId) && source.dateIgnored.isEmpty)
+    val customerRecord = customerEmploymentData.find(source => source.employmentId.equals(employmentId))
+    lazy val default = hmrcRecord.map(EmploymentSourceOrigin(_, isCustomerData = false))
+    customerRecord.fold(default)(customerRecord => Some(EmploymentSourceOrigin(customerRecord, isCustomerData = true)))
+  }
+}
 
 object AllEmploymentData {
   implicit val format: OFormat[AllEmploymentData] = Json.format[AllEmploymentData]

@@ -36,23 +36,22 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp
 
   object Model {
 
-    val employmentSource1 = EmploymentDetails(
+    val employmentSource1: EmploymentDetails = EmploymentDetails(
       "Mishima Zaibatsu",
       employerRef = Some("223/AB12399"),
       startDate = Some("2019-04-21"),
       currentDataIsHmrcHeld = true
     )
-    val employmentCyaModel = EmploymentCYAModel(employmentSource1)
-    val employmentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, employmentId, false,
-      hasPriorBenefits = true, employmentCyaModel)
+    val employmentCyaModel: EmploymentCYAModel = EmploymentCYAModel(employmentSource1)
+    val employmentUserData: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = true, employmentCyaModel)
   }
 
-  val taxYear = 2021
-  val employmentId = "223/AB12399"
+  private val taxYear = 2021
+  private val employmentId = "223/AB12399"
 
-  lazy val view = app.injector.instanceOf[EmploymentTaxView]
+  private lazy val view = app.injector.instanceOf[EmploymentTaxView]
 
-  lazy val controller = new EmploymentTaxController()(
+  private lazy val controller = new EmploymentTaxController()(
     mockMessagesControllerComponents,
     authorisedAction,
     mockAppConfig,
@@ -65,7 +64,6 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp
   )
 
   ".show" should {
-
     "return a result when " which {
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {

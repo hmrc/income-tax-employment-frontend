@@ -38,17 +38,13 @@ class CheckEmploymentDetailsService @Inject()(employmentSessionService: Employme
 
     val audit: Either[AuditModel[AmendEmploymentDetailsUpdateAudit], AuditModel[CreateNewEmploymentDetailsAudit]] = prior.flatMap {
       prior =>
-        val priorData = employmentSessionService.employmentSourceToUse(prior, employmentId, isInYear = false)
-        priorData.map(prior => model.toAmendAuditModel(employmentId, taxYear, prior._1).toAuditModel)
+        val priorData = prior.eoyEmploymentSourceWith(employmentId)
+        priorData.map(prior => model.toAmendAuditModel(employmentId, taxYear, prior.employmentSource).toAuditModel)
     }.map(Left(_)).getOrElse {
 
-      val existingEmployments = prior.map {
-        prior =>
-          employmentSessionService.getLatestEmploymentData(prior, isInYear = false).map {
-            employment =>
-              PriorEmploymentAuditInfo(employment.employerName, employment.employerRef)
-          }
-      }.getOrElse(Seq.empty)
+      val existingEmployments = prior.map(
+        prior => prior.latestEOYEmployments.map(employment => PriorEmploymentAuditInfo(employment.employerName, employment.employerRef))
+      ).getOrElse(Seq.empty)
 
       Right(model.toCreateAuditModel(taxYear, existingEmployments = existingEmployments).toAuditModel)
     }
@@ -63,17 +59,12 @@ class CheckEmploymentDetailsService @Inject()(employmentSessionService: Employme
                              (implicit user: User[_], request: Request[_], hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
     val nrsPayload: Either[DecodedAmendEmploymentDetailsPayload, DecodedCreateNewEmploymentDetailsPayload] = prior.flatMap {
       prior =>
-        val priorData = employmentSessionService.employmentSourceToUse(prior, employmentId, isInYear = false)
-        priorData.map(prior => model.toAmendDecodedPayloadModel(employmentId, prior._1))
+        val priorData = prior.eoyEmploymentSourceWith(employmentId)
+        priorData.map(prior => model.toAmendDecodedPayloadModel(employmentId, prior.employmentSource))
     }.map(Left(_)).getOrElse {
-
-      val existingEmployments = prior.map {
-        prior =>
-          employmentSessionService.getLatestEmploymentData(prior, isInYear = false).map {
-            employment =>
-              DecodedPriorEmploymentInfo(employment.employerName, employment.employerRef)
-          }
-      }.getOrElse(Seq.empty)
+      val existingEmployments = prior.map(prior => prior.latestEOYEmployments.map(
+        employment => DecodedPriorEmploymentInfo(employment.employerName, employment.employerRef)
+      )).getOrElse(Seq.empty)
 
       Right(model.toCreateDecodedPayloadModel(existingEmployments))
     }
@@ -93,7 +84,7 @@ class CheckEmploymentDetailsService @Inject()(employmentSessionService: Employme
     auditService.sendAudit[ViewEmploymentDetailsAudit](auditModel.toAuditModel)
 
     val employmentSource = allEmploymentData match {
-      case Some(allEmploymentData) => employmentSessionService.getLatestEmploymentData(allEmploymentData, isInYear)
+      case Some(allEmploymentData) => if (isInYear) allEmploymentData.latestInYearEmployments else allEmploymentData.latestEOYEmployments
       case None => Seq[EmploymentSource]()
     }
 

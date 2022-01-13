@@ -29,7 +29,6 @@ import play.api.Logging
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.EmploymentExpensesUtils.getLatestExpenses
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -98,12 +97,10 @@ class CreateOrAmendExpensesService @Inject()(createOrAmendExpensesConnector: Cre
 
     prior.fold[ExpensesDataRemainsUnchanged[Expenses]](default) {
       prior =>
-        val priorExpensesData: Option[EmploymentExpenses] = getLatestExpenses(prior, isInYear = false).map(_._1)
-
-        priorExpensesData.fold[ExpensesDataRemainsUnchanged[Expenses]](default) {
-          prior =>
-            ExpensesDataRemainsUnchanged(newCreateUpdateExpenses, prior.dataHasNotChanged(newCreateUpdateExpenses))
-        }
+        val priorExpensesData: Option[EmploymentExpenses] = prior.latestEOYExpenses.map(_.latestExpenses)
+        priorExpensesData.fold[ExpensesDataRemainsUnchanged[Expenses]](default)(
+          prior => ExpensesDataRemainsUnchanged(newCreateUpdateExpenses, prior.dataHasNotChanged(newCreateUpdateExpenses))
+        )
     }
   }
 }

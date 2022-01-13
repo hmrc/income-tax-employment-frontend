@@ -20,13 +20,12 @@ import audit._
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import models.User
 import models.employment._
-import models.expenses.{DecodedAmendExpensesPayload, DecodedCreateNewExpensesPayload, Expenses}
+import models.expenses.Expenses
 import models.requests.CreateUpdateExpensesRequest
 import play.api.mvc.Request
 import services.NrsService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
-import utils.EmploymentExpensesUtils
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,15 +35,11 @@ class CheckEmploymentExpensesService @Inject()(auditService: AuditService,
 
   def performSubmitAudits(model: CreateUpdateExpensesRequest, taxYear: Int, prior: Option[AllEmploymentData])
                          (implicit user: User[_], hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
+    val audit = prior
+      .flatMap(prior => prior.latestEOYExpenses.map(prior => model.toAmendAuditModel(taxYear, prior.latestExpenses).toAuditModel))
+      .map(Left(_))
+      .getOrElse(Right(model.toCreateAuditModel(taxYear).toAuditModel))
 
-    val audit: Either[AuditModel[AmendEmploymentExpensesUpdateAudit], AuditModel[CreateNewEmploymentExpensesAudit]] =
-      prior.flatMap {
-        prior =>
-          val priorData = EmploymentExpensesUtils.getLatestExpenses(prior, isInYear = false)
-          priorData.map(prior => model.toAmendAuditModel(taxYear, prior._1).toAuditModel)
-      }.map(Left(_)).getOrElse {
-        Right(model.toCreateAuditModel(taxYear).toAuditModel)
-      }
     audit match {
       case Left(amend) => auditService.sendAudit(amend)
       case Right(create) => auditService.sendAudit(create)
@@ -60,13 +55,10 @@ class CheckEmploymentExpensesService @Inject()(auditService: AuditService,
   def performSubmitNrsPayload(model: CreateUpdateExpensesRequest, prior: Option[AllEmploymentData])
                              (implicit user: User[_], request: Request[_], hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
 
-    val nrsPayload: Either[DecodedAmendExpensesPayload, DecodedCreateNewExpensesPayload] = prior.flatMap {
-      prior =>
-        val priorData = EmploymentExpensesUtils.getLatestExpenses(prior, isInYear = false)
-        priorData.map(prior => model.toAmendDecodedExpensesPayloadModel(prior._1))
-    }.map(Left(_)).getOrElse {
-      Right(model.toCreateDecodedExpensesPayloadModel())
-    }
+    val nrsPayload = prior
+      .flatMap(prior => prior.latestEOYExpenses.map(prior => model.toAmendDecodedExpensesPayloadModel(prior.latestExpenses)))
+      .map(Left(_))
+      .getOrElse(Right(model.toCreateDecodedExpensesPayloadModel()))
 
     nrsPayload match {
       case Left(amend) => nrsService.submit(user.nino, amend, user.mtditid)

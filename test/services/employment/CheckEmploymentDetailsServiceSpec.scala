@@ -135,8 +135,6 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         customerEmploymentData = Seq(),
         customerExpenses = None
       )
-      mockGetLatestEmploymentDataEOY(prior, isInYear = false)
-      mockEmploymentSourceToUseNone(prior, employmentId = "001", isInYear = false)
 
       mockAuditSendEvent(CreateNewEmploymentDetailsAudit(
         2021, user.affinityGroup.toLowerCase, user.nino, user.mtditid, AuditNewEmploymentData(
@@ -210,8 +208,6 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         customerEmploymentData = Seq(),
         customerExpenses = None
       )
-
-      mockEmploymentSourceToUseHMRC(prior, employmentId = "001", isInYear = false)
 
       mockAuditSendEvent(AmendEmploymentDetailsUpdateAudit(
         2021, user.affinityGroup.toLowerCase, user.nino, user.mtditid, AuditEmploymentData(
@@ -334,8 +330,6 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         customerEmploymentData = Seq(),
         customerExpenses = None
       )
-      mockGetLatestEmploymentDataEOY(prior, isInYear = false)
-      mockEmploymentSourceToUseNone(prior, employmentId = "001", isInYear = false)
 
       verifySubmitEvent(DecodedCreateNewEmploymentDetailsPayload(DecodedNewEmploymentData(
         Some("name"), Some("employerRef"), Some("2000-10-10"), None, Some(4354), Some(564), None
@@ -409,8 +403,6 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
         customerExpenses = None
       )
 
-      mockEmploymentSourceToUseHMRC(prior, employmentId = "001", isInYear = false)
-
       verifySubmitEvent(DecodedAmendEmploymentDetailsPayload(DecodedEmploymentData(
         employerName = employmentSource1.employerName,
         employerRef = employmentSource1.employerRef,
@@ -428,5 +420,4 @@ class CheckEmploymentDetailsServiceSpec extends UnitTest
       await(underTest.performSubmitNrsPayload(model, "001", Some(prior))) shouldBe Right()
     }
   }
-
 }
