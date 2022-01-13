@@ -53,6 +53,7 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp
   val taxYear: Int = mockAppConfig.defaultTaxYear
   val employmentId = "223/AB12399"
 
+
   ".show" should {
 
     "return a result when all data is in Session" which {
