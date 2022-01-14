@@ -17,7 +17,7 @@
 package services.employment
 
 import config.{MockAuditService, MockEmploymentSessionService, MockNrsService}
-import models.benefits.{Benefits, DecodedAmendBenefitsPayload, DecodedBenefitsData, DecodedCreateNewBenefitsPayload, DecodedNewBenefitsData}
+import models.benefits.{Benefits, DecodedAmendBenefitsPayload, DecodedCreateNewBenefitsPayload}
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.employment.{AllEmploymentData, Deductions, EmploymentBenefits, EmploymentData, EmploymentSource, Pay, StudentLoans}
 import utils.UnitTest
@@ -60,7 +60,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
       )
 
       verifySubmitEvent(DecodedCreateNewBenefitsPayload(Some("name"), Some("employerRef"),
-        DecodedNewBenefitsData(accommodation = allBenefits.accommodation,
+        Benefits(accommodation = allBenefits.accommodation,
           assets = allBenefits.assets,
           assetTransfer = allBenefits.assetTransfer,
           beneficialLoan = allBenefits.beneficialLoan,
@@ -163,7 +163,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
       mockEmploymentSourceToUseHMRC(priorData, "001", false)
 
       verifySubmitEvent(DecodedAmendBenefitsPayload(
-        DecodedBenefitsData(
+        Benefits(
           accommodation = allBenefits.accommodation,
           assets = allBenefits.assets,
           assetTransfer = allBenefits.assetTransfer,
@@ -193,7 +193,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
           vouchersAndCreditCards = allBenefits.vouchersAndCreditCards,
           nonCash = allBenefits.nonCash
         ),
-        employmentBenefitsData = DecodedBenefitsData(
+        employmentBenefitsData = Benefits(
           accommodation = amendBenefits.accommodation,
           assets = amendBenefits.assets,
           assetTransfer = amendBenefits.assetTransfer,

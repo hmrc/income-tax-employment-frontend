@@ -18,7 +18,7 @@ package models.benefits
 
 import play.api.libs.json.{Json, OFormat}
 
-case class DecodedCreateNewBenefitsPayload(employerName: Option[String], employerRef: Option[String], employmentBenefitsData: DecodedNewBenefitsData)
+case class DecodedCreateNewBenefitsPayload(employerName: Option[String], employerRef: Option[String], employmentBenefitsData: Benefits)
 
 object DecodedCreateNewBenefitsPayload {
   implicit val format: OFormat[DecodedCreateNewBenefitsPayload] = Json.format[DecodedCreateNewBenefitsPayload]

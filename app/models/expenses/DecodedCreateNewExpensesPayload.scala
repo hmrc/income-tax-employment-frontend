@@ -18,7 +18,7 @@ package models.expenses
 
 import play.api.libs.json.{Json, OFormat}
 
-case class DecodedCreateNewExpensesPayload(employmentExpensesData: DecodedNewExpensesData)
+case class DecodedCreateNewExpensesPayload(employmentExpensesData: Expenses)
 
 object DecodedCreateNewExpensesPayload {
   implicit val format: OFormat[DecodedCreateNewExpensesPayload] = Json.format[DecodedCreateNewExpensesPayload]
