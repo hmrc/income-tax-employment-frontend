@@ -140,7 +140,7 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
     DecodedCreateNewBenefitsPayload(
       employerName = employment.map(_.employerName),
       employerRef = employment.flatMap(_.employerRef),
-      employmentBenefitsData = DecodedNewBenefitsData(
+      employmentBenefitsData = Benefits(
         accommodation = employmentData.flatMap(_.benefitsInKind.flatMap(_.accommodation)),
         assets = employmentData.flatMap(_.benefitsInKind.flatMap(_.assets)),
         assetTransfer = employmentData.flatMap(_.benefitsInKind.flatMap(_.assetTransfer)),
@@ -177,7 +177,7 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
 
 
     DecodedAmendBenefitsPayload(
-      priorEmploymentBenefitsData = DecodedBenefitsData(
+      priorEmploymentBenefitsData = Benefits(
         accommodation = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.accommodation)),
         assets = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.assets)),
         assetTransfer = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.assetTransfer)),
@@ -207,7 +207,7 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
         vouchersAndCreditCards = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.vouchersAndCreditCards)),
         nonCash = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.nonCash))
       ),
-      employmentBenefitsData = DecodedBenefitsData(
+      employmentBenefitsData = Benefits(
         accommodation = employmentData.flatMap(_.benefitsInKind.flatMap(_.accommodation)),
         assets = employmentData.flatMap(_.benefitsInKind.flatMap(_.assets)),
         assetTransfer = employmentData.flatMap(_.benefitsInKind.flatMap(_.assetTransfer)),

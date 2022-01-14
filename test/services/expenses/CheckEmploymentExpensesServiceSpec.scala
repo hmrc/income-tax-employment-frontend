@@ -20,7 +20,7 @@ import audit.{AmendEmploymentExpensesUpdateAudit, AuditEmploymentExpensesData, A
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import config.{MockAuditService, MockEmploymentSessionService, MockNrsService}
 import models.employment._
-import models.expenses.{DecodedAmendExpensesPayload, DecodedCreateNewExpensesPayload, DecodedNewExpensesData, Expenses}
+import models.expenses.{DecodedAmendExpensesPayload, DecodedCreateNewExpensesPayload, Expenses}
 import models.requests.CreateUpdateExpensesRequest
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.UnitTest
@@ -127,7 +127,7 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
       )
 
 
-      verifySubmitEvent(DecodedCreateNewExpensesPayload(DecodedNewExpensesData(
+      verifySubmitEvent(DecodedCreateNewExpensesPayload(Expenses(
         businessTravelCosts = model.expenses.businessTravelCosts,
         jobExpenses = model.expenses.jobExpenses,
         flatRateJobExpenses = model.expenses.flatRateJobExpenses,
@@ -207,7 +207,7 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
 
       verifySubmitEvent(
          DecodedAmendExpensesPayload(
-              priorEmploymentExpensesData = DecodedNewExpensesData(
+              priorEmploymentExpensesData = Expenses(
                 businessTravelCosts = priorCustomerEmploymentExpenses.expenses.flatMap(_.businessTravelCosts),
                 jobExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.jobExpenses),
                 flatRateJobExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.flatRateJobExpenses),
@@ -217,7 +217,7 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
                 vehicleExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.vehicleExpenses),
                 mileageAllowanceRelief = priorCustomerEmploymentExpenses.expenses.flatMap(_.mileageAllowanceRelief)
             ),
-              employmentExpensesData = DecodedNewExpensesData(
+              employmentExpensesData = Expenses(
                 businessTravelCosts = model.expenses.businessTravelCosts,
                 jobExpenses = model.expenses.jobExpenses,
                 flatRateJobExpenses = model.expenses.flatRateJobExpenses,
