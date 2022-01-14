@@ -175,17 +175,17 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
     val expectedTitle = "Employment dates"
     val expectedH1 = "Employment dates"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val startEmptyDayError = "The date your client started employment must include a day"
-    val startEmptyMonthError = "The date your client started employment must include a month"
-    val startEmptyYearError = "The date your client started employment must include a year"
-    val startEmptyDayYearError = "The date your client started employment must include a day and year"
-    val startEmptyMonthYearError = "The date your client started employment must include a month and year"
-    val startEmptyDayMonthError = "The date your client started employment must include a day and month"
+    val startEmptyDayError = "The date your client started their employment must include a day"
+    val startEmptyMonthError = "The date your client started their employment must include a month"
+    val startEmptyYearError = "The date your client started their employment must include a year"
+    val startEmptyDayYearError = "The date your client started their employment must include a day and year"
+    val startEmptyMonthYearError = "The date your client started their employment must include a month and year"
+    val startEmptyDayMonthError = "The date your client started their employment must include a day and month"
     val startEmptyAllError = "Enter the date your client’s employment started"
-    val invalidStartDateError = "The date your client started employment must be a real date"
+    val invalidStartDateError = "The date your client started their employment must be a real date"
     val startTooLongAgoDateError = "The date your client started their employment must be after 1 January 1900"
-    val startTooRecentDateError = s"The date your client started employment must be before 6 April $taxYearEOY"
-    val startFutureDateError = "The date your client started employment must be in the past"
+    val startTooRecentDateError = s"The date your client started their employment must be before 6 April $taxYearEOY"
+    val startFutureDateError = "The date your client started their employment must be in the past"
     val leaveBeforeStartDate = s"The date your client left their employment cannot be before 4 April $taxYearEOY"
     val leaveEmptyDayError = "The date your client left their employment must include a day"
     val leaveEmptyMonthError = "The date your client left their employment must include a month"
@@ -204,17 +204,17 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
     val expectedTitle = "Employment dates"
     val expectedH1 = "Employment dates"
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val startEmptyDayError = "The date your client started employment must include a day"
-    val startEmptyMonthError = "The date your client started employment must include a month"
-    val startEmptyYearError = "The date your client started employment must include a year"
-    val startEmptyDayYearError = "The date your client started employment must include a day and year"
-    val startEmptyMonthYearError = "The date your client started employment must include a month and year"
-    val startEmptyDayMonthError = "The date your client started employment must include a day and month"
+    val startEmptyDayError = "The date your client started their employment must include a day"
+    val startEmptyMonthError = "The date your client started their employment must include a month"
+    val startEmptyYearError = "The date your client started their employment must include a year"
+    val startEmptyDayYearError = "The date your client started their employment must include a day and year"
+    val startEmptyMonthYearError = "The date your client started their employment must include a month and year"
+    val startEmptyDayMonthError = "The date your client started their employment must include a day and month"
     val startEmptyAllError = "Enter the date your client’s employment started"
-    val invalidStartDateError = "The date your client started employment must be a real date"
+    val invalidStartDateError = "The date your client started their employment must be a real date"
     val startTooLongAgoDateError = "The date your client started their employment must be after 1 January 1900"
-    val startTooRecentDateError = s"The date your client started employment must be before 6 April $taxYearEOY"
-    val startFutureDateError = "The date your client started employment must be in the past"
+    val startTooRecentDateError = s"The date your client started their employment must be before 6 April $taxYearEOY"
+    val startFutureDateError = "The date your client started their employment must be in the past"
     val leaveBeforeStartDate = s"The date your client left their employment cannot be before 4 April $taxYearEOY"
     val leaveEmptyDayError = "The date your client left their employment must include a day"
     val leaveEmptyMonthError = "The date your client left their employment must include a month"
@@ -248,10 +248,11 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {
-    Seq(UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)))
-//      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
-//      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
-//      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
+    Seq(
+      UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
+      UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
+      UserScenario(isWelsh = true, isAgent = false, CommonExpectedCY, Some(ExpectedIndividualCY)),
+      UserScenario(isWelsh = true, isAgent = true, CommonExpectedCY, Some(ExpectedAgentCY)))
   }
 
   private val employmentDetailsWithCessationDate = anEmploymentUserData.copy(
@@ -265,40 +266,6 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
-        "render the 'start date' page with the correct content" which {
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
-            authoriseAgentOrIndividual(user.isAgent)
-            urlGet(employmentDatesUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-          import Selectors._
-          import user.commonExpectedResults._
-
-          "has an OK status" in {
-            result.status shouldBe OK
-          }
-
-          titleCheck(user.specificExpectedResults.get.expectedTitle)
-          h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
-          textOnPageCheck(forExample, startForExampleSelector, "forStart")
-          inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "")
-          inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "")
-          inputFieldValueCheck(startYearInputName, Selectors.startYearSelector, "")
-          textOnPageCheck(forExample, endForExampleSelector, "forEnd")
-          inputFieldValueCheck(endDayInputName, Selectors.endDaySelector, "")
-          inputFieldValueCheck(endMonthInputName, Selectors.endMonthSelector, "")
-          inputFieldValueCheck(endYearInputName, Selectors.endYearSelector, "")
-          buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
-          welshToggleCheck(user.isWelsh)
-
-        }
 
         "render the 'start date' page with the correct content and the date prefilled when its already in session" which {
           val cya = cyaModel(employerName, hmrc = true)
@@ -339,6 +306,23 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
       }
     }
 
+    "render the 'start date' page with the correct content" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        insertCyaData(anEmploymentUserData, aUserRequest)
+        authoriseAgentOrIndividual(false)
+        urlGet(employmentDatesUrl(taxYearEOY), welsh = false, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+      "has an SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location") shouldBe Some(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/check-employment-details?employmentId=$employmentId")
+      }
+
+    }
+
     "redirect the user to the overview page when it is not end of year" which {
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
@@ -357,7 +341,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
   ".submit" should {
 
     userScenarios.foreach { user =>
-      s"language is ${welshTest(true)} and request is from an ${agentTest(false)}" should {
+      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
         s"return a BAD_REQUEST($BAD_REQUEST) status" when {
 

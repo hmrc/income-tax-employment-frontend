@@ -17,6 +17,7 @@
 package controllers.employment
 
 import config.{AppConfig, ErrorHandler}
+import controllers.employment.routes.CheckEmploymentDetailsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.employment.EmploymentDatesForm
 import models.employment.EmploymentDates
@@ -60,7 +61,7 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
                 parsedEndDate.getDayOfMonth.toString,parsedEndDate.getMonthValue.toString, parsedEndDate.getYear.toString))
             Future.successful(Ok(employmentDatesView(filledForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
           case _ =>
-            Future.successful(Ok(employmentDatesView(datesForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
+            Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
         }
       }
     }
