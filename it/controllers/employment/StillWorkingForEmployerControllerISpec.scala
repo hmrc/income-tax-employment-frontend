@@ -25,7 +25,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{employmentStartDateUrl, howMuchPayUrl, overviewUrl}
+import utils.PageUrls.{employmentStartDateUrl, fullUrl, howMuchPayUrl, overviewUrl, stillWorkingForUrl}
 
 class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -42,10 +42,6 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
                cessationDateQuestion: Option[Boolean] = None): EmploymentCYAModel =
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc, employerRef = Some("123/AB456"), payrollId = Some("payRollId"),
       startDate = startDate, cessationDate = cessationDate, cessationDateQuestion = cessationDateQuestion), None)
-
-  private def stillWorkingForEmployerPageUrl(taxYear: Int) = s"$appUrl/$taxYear/still-working-for-employer?employmentId=$employmentId"
-
-  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/still-working-for-employer?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -128,7 +124,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, hmrc = true)), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(stillWorkingForEmployerPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -146,7 +142,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(stillWorkingForUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -156,7 +152,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = Some("2021-01-01"),
               cessationDateQuestion = Some(false), hmrc = true)), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(stillWorkingForEmployerPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -174,7 +170,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(stillWorkingForUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -184,7 +180,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = None,
               cessationDateQuestion = Some(true), hmrc = true)), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(stillWorkingForEmployerPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -202,7 +198,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(stillWorkingForUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -211,7 +207,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDateQuestion = None, hmrc = true)), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(stillWorkingForEmployerPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -229,7 +225,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(stillWorkingForUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -239,7 +235,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = cessationDate,
               cessationDateQuestion = None, hmrc = true)), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(stillWorkingForEmployerPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -257,19 +253,19 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(stillWorkingForUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
         "redirect the user to the overview page when it is not end of year" which {
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(stillWorkingForEmployerPageUrl(taxYear), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(stillWorkingForUrl(taxYear, employmentId)), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe overviewUrl(taxYear)
+            result.header("location").contains(overviewUrl(taxYear)) shouldBe true
           }
 
         }
@@ -285,12 +281,12 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
         "redirect the user to the overview page when it is not end of year" which {
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(stillWorkingForEmployerPageUrl(taxYear), body = "", user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlPost(fullUrl(stillWorkingForUrl(taxYear, employmentId)), body = "", user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe overviewUrl(taxYear)
+            result.header("location").contains(overviewUrl(taxYear)) shouldBe true
           }
         }
 
@@ -304,13 +300,13 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
               cessationDateQuestion = None, hmrc = true)), aUserRequest)
 
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(stillWorkingForEmployerPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
+            urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "redirects to the how much pay page" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe howMuchPayUrl(taxYearEOY, employmentId)
+            result.header("location").contains(howMuchPayUrl(taxYearEOY, employmentId)) shouldBe true
             lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
             cyaModel.employment.employmentDetails.cessationDate shouldBe None
             cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(true)
@@ -329,14 +325,14 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
               cessationDateQuestion = None, hmrc = true)), aUserRequest)
 
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(stillWorkingForEmployerPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
+            urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           //TODO: should navigate to cessationDate page when available
           "redirects to the how much pay details page" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe howMuchPayUrl(taxYearEOY, employmentId)
+            result.header("location").contains(howMuchPayUrl(taxYearEOY, employmentId)) shouldBe true
             lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
             cyaModel.employment.employmentDetails.cessationDate shouldBe cessationDate
             cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)
@@ -355,13 +351,13 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
               cessationDateQuestion = None, hmrc = true)), aUserRequest)
 
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(stillWorkingForEmployerPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
+            urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "redirects to the missing start date page page" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe employmentStartDateUrl(taxYearEOY, employmentId)
+            result.header("location").contains(employmentStartDateUrl(taxYearEOY, employmentId)) shouldBe true
             lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
             cyaModel.employment.employmentDetails.cessationDate shouldBe cessationDate
             cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)
@@ -379,7 +375,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
               dropEmploymentDB()
               insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(stillWorkingForEmployerPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
+              urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -397,16 +393,14 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
             radioButtonCheck(yesText, 1, checked = false)
             radioButtonCheck(noText, 2, checked = false)
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            formPostLinkCheck(stillWorkingForUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
             errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
           }
         }
-
       }
     }
-
   }
 }

@@ -25,7 +25,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER, UNAUTHORIZED}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{employerNameUrlWithoutEmploymentId, overviewUrl}
+import utils.PageUrls.{checkYourExpensesUrl, employerInformationUrl, employerNameUrlWithoutEmploymentId, employmentSummaryUrl, fullUrl, overviewUrl, removeEmploymentUrl}
 
 class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -169,14 +169,8 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val removeExpenses: String = "Remove Remove your client’s expenses from all employment this tax year" //First remove is the text/link, second remove is part of hidden text
   }
 
-  private def url(taxYear: Int) = s"$appUrl/$taxYear/employment-summary"
-
   val employmentId1 = "001"
   val employmentId2 = "002"
-
-  def changeLinkHref(empId: String): String = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-information?employmentId=$empId"
-
-  def removeLinkHref(empId: String): String = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/remove-employment?employmentId=$empId"
 
   val employmentSource: EmploymentSource = EmploymentSource(
     employmentId = employmentId1,
@@ -243,7 +237,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
-              urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              urlGet(fullUrl(employmentSummaryUrl(taxYear)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
 
             implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -259,17 +253,17 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
 
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(2))
             textOnPageCheck(employerName, employerName1Selector(3))
-            linkCheck(change(employerName), changeLink1Selector(3), changeLinkHref(employmentId1))
-            linkCheck(remove(employerName), removeLink1Selector(3), removeLinkHref(employmentId1))
+            linkCheck(change(employerName), changeLink1Selector(3), employerInformationUrl(taxYearEOY, employmentId1))
+            linkCheck(remove(employerName), removeLink1Selector(3), removeEmploymentUrl(taxYearEOY, employmentId1))
             textOnPageCheck(employerName2, employerName2Selector(3))
-            linkCheck(change(employerName2), changeLink2Selector(3), changeLinkHref(employmentId2))
-            linkCheck(remove(employerName2), removeLink2Selector(3), removeLinkHref(employmentId2))
+            linkCheck(change(employerName2), changeLink2Selector(3), employerInformationUrl(taxYearEOY, employmentId2))
+            linkCheck(remove(employerName2), removeLink2Selector(3), removeEmploymentUrl(taxYearEOY, employmentId2))
             textOnPageCheck(expensesText, expensesHeaderSelector)
             textOnPageCheck(thisIsATotal, thisIsATotalSelector(5))
             "has an expenses section" should {
               textOnPageCheck(expensesText, expensesSelector(6))
-              linkCheck(specific.changeExpenses, changeExpensesSelector(6), s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/check-employment-expenses")
-              linkCheck(specific.removeExpenses, removeExpensesSelector(6), s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/check-employment-expenses")
+              linkCheck(specific.changeExpenses, changeExpensesSelector(6), checkYourExpensesUrl(taxYearEOY))
+              linkCheck(specific.removeExpenses, removeExpensesSelector(6), checkYourExpensesUrl(taxYearEOY))
             }
             textOnPageCheck(doYouNeedAnother, doYouNeedAnotherSelector)
             textOnPageCheck(specific.youMustTell, youMustTellSelector)
@@ -277,7 +271,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             radioButtonCheck(noText, 2, checked = false)
             buttonCheck(continueButton)
 
-            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employment-summary", formSelector)
+            formPostLinkCheck(employmentSummaryUrl(taxYearEOY), formSelector)
           }
 
           "there are 3 employments for EOY, but one has an ignored date, page shows 2 employments" which {
@@ -285,7 +279,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithOneIgnoredModel)), nino, taxYear)
-              urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              urlGet(fullUrl(employmentSummaryUrl(taxYear)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
 
             implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -301,17 +295,17 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
 
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(2))
             textOnPageCheck(employerName, employerName1Selector(3))
-            linkCheck(change(employerName), changeLink1Selector(3), changeLinkHref(employmentId1))
-            linkCheck(remove(employerName), removeLink1Selector(3), removeLinkHref(employmentId1))
+            linkCheck(change(employerName), changeLink1Selector(3), employerInformationUrl(taxYearEOY, employmentId1))
+            linkCheck(remove(employerName), removeLink1Selector(3), removeEmploymentUrl(taxYearEOY, employmentId1))
             textOnPageCheck(employerName2, employerName2Selector(3))
-            linkCheck(change(employerName2), changeLink2Selector(3), changeLinkHref(employmentId2))
-            linkCheck(remove(employerName2), removeLink2Selector(3), removeLinkHref(employmentId2))
+            linkCheck(change(employerName2), changeLink2Selector(3), employerInformationUrl(taxYearEOY, employmentId2))
+            linkCheck(remove(employerName2), removeLink2Selector(3), removeEmploymentUrl(taxYearEOY, employmentId2))
             textOnPageCheck(expensesText, expensesHeaderSelector)
             textOnPageCheck(thisIsATotal, thisIsATotalSelector(5))
             "has an expenses section" should {
               textOnPageCheck(expensesText, expensesSelector(6))
-              linkCheck(specific.changeExpenses, changeExpensesSelector(6), s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/check-employment-expenses")
-              linkCheck(specific.removeExpenses, removeExpensesSelector(6), s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/check-employment-expenses")
+              linkCheck(specific.changeExpenses, changeExpensesSelector(6), checkYourExpensesUrl(taxYearEOY))
+              linkCheck(specific.removeExpenses, removeExpensesSelector(6), checkYourExpensesUrl(taxYearEOY))
             }
             textOnPageCheck(doYouNeedAnother, doYouNeedAnotherSelector)
             textOnPageCheck(specific.youMustTell, youMustTellSelector)
@@ -319,7 +313,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             radioButtonCheck(noText, 2, checked = false)
             buttonCheck(continueButton)
 
-            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employment-summary", formSelector)
+            formPostLinkCheck(employmentSummaryUrl(taxYearEOY), formSelector)
           }
 
         }
@@ -347,7 +341,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
-              urlPost(url(taxYear), yesNoFormEmpty, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              urlPost(fullUrl(employmentSummaryUrl(taxYear)), yesNoFormEmpty, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
 
             s"has an BAD_REQUEST($BAD_REQUEST) status" in {
@@ -363,17 +357,17 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
 
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector(3))
             textOnPageCheck(employerName, employerName1Selector(4))
-            linkCheck(change(employerName), changeLink1Selector(4), changeLinkHref(employmentId1))
-            linkCheck(remove(employerName), removeLink1Selector(4), removeLinkHref(employmentId1))
+            linkCheck(change(employerName), changeLink1Selector(4), employerInformationUrl(taxYearEOY, employmentId1))
+            linkCheck(remove(employerName), removeLink1Selector(4), removeEmploymentUrl(taxYearEOY, employmentId1))
             textOnPageCheck(employerName2, employerName2Selector(4))
-            linkCheck(change(employerName2), changeLink2Selector(4), changeLinkHref(employmentId2))
-            linkCheck(remove(employerName2), removeLink2Selector(4), removeLinkHref(employmentId2))
+            linkCheck(change(employerName2), changeLink2Selector(4), employerInformationUrl(taxYearEOY, employmentId2))
+            linkCheck(remove(employerName2), removeLink2Selector(4), removeEmploymentUrl(taxYearEOY, employmentId2))
             textOnPageCheck(expensesText, expensesHeaderSelector)
             textOnPageCheck(thisIsATotal, thisIsATotalSelector(6))
             "has an expenses section" should {
               textOnPageCheck(expensesText, expensesSelector(7))
-              linkCheck(specific.changeExpenses, changeExpensesSelector(7), s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/check-employment-expenses")
-              linkCheck(specific.removeExpenses, removeExpensesSelector(7), s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/check-employment-expenses")
+              linkCheck(specific.changeExpenses, changeExpensesSelector(7), checkYourExpensesUrl(taxYearEOY))
+              linkCheck(specific.removeExpenses, removeExpensesSelector(7), checkYourExpensesUrl(taxYearEOY))
             }
             textOnPageCheck(doYouNeedAnother, doYouNeedAnotherSelector)
             textOnPageCheck(specific.youMustTell, youMustTellSelector)
@@ -383,7 +377,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
             radioButtonCheck(noText, 2, checked = false)
             buttonCheck(continueButton)
 
-            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employment-summary", formSelector)
+            formPostLinkCheck(employmentSummaryUrl(taxYearEOY), formSelector)
           }
         }
       }
@@ -395,7 +389,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
         lazy val result: WSResponse = {
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
-          urlPost(url(taxYearEOY), yesNoFormYes, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(fullUrl(employmentSummaryUrl(taxYearEOY)), yesNoFormYes, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         "status SEE_OTHER" in {
@@ -403,7 +397,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
         }
 
         "redirect to the employer name page" in {
-          result.header(HeaderNames.LOCATION).get contains employerNameUrlWithoutEmploymentId(taxYearEOY).get shouldBe true
+          result.header(HeaderNames.LOCATION).get.contains(employerNameUrlWithoutEmploymentId(taxYearEOY)) shouldBe true
         }
       }
 
@@ -412,7 +406,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
         lazy val result: WSResponse = {
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
-          urlPost(url(taxYear), yesNoFormNo, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(fullUrl(employmentSummaryUrl(taxYear)), yesNoFormNo, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         "status SEE_OTHER" in {
@@ -420,7 +414,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
         }
 
         "redirect to the overview page" in {
-          result.header(HeaderNames.LOCATION) shouldBe overviewUrl(taxYear)
+          result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYear)) shouldBe true
         }
       }
     }
@@ -430,7 +424,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
         val taxYear = taxYearEOY
         lazy val result: WSResponse = {
           unauthorisedAgentOrIndividual(isAgent = false)
-          urlPost(url(taxYear), yesNoFormYes, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(fullUrl(employmentSummaryUrl(taxYear)), yesNoFormYes, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         "has an UNAUTHORIZED(401) status" in {

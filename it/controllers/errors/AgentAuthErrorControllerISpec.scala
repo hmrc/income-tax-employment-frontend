@@ -20,6 +20,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.Status.UNAUTHORIZED
 import play.api.libs.ws.WSResponse
+import utils.PageUrls.{authoriseAsAnAgentLink, fullUrl, tryAnotherExpectedHref, youNeedClientAuthUrl}
 import utils.{IntegrationTest, ViewHelpers}
 
 class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
@@ -30,8 +31,6 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
     val tryAnother = "#main-content > div > div > a"
   }
 
-  val url = s"$appUrl/error/you-need-client-authorisation"
-
   trait CommonExpectedResults {
     val heading: String
     val title: String
@@ -39,8 +38,6 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
     val authoriseYouAsText: String
     val beforeYouCanTryText: String
     val tryAnother: String
-    val authoriseAsAnAgentLink: String
-    val tryAnotherExpectedHref: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -50,8 +47,6 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
     val authoriseYouAsText = "authorise you as their agent (opens in new tab)"
     val beforeYouCanTryText = "before you can sign in to this service."
     val tryAnother = "Try another client’s details"
-    val authoriseAsAnAgentLink = "https://www.gov.uk/guidance/client-authorisation-an-overview"
-    val tryAnotherExpectedHref = "http://localhost:11111/report-quarterly/income-and-expenses/view/agents/client-utr"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -61,8 +56,6 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
     val authoriseYouAsText = "authorise you as their agent (opens in new tab)"
     val beforeYouCanTryText = "before you can sign in to this service."
     val tryAnother = "Try another client’s details"
-    val authoriseAsAnAgentLink = "https://www.gov.uk/guidance/client-authorisation-an-overview"
-    val tryAnotherExpectedHref = "http://localhost:11111/report-quarterly/income-and-expenses/view/agents/client-utr"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = {
@@ -80,7 +73,7 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(url, welsh = user.isWelsh)
+            urlGet(fullUrl(youNeedClientAuthUrl), welsh = user.isWelsh)
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)

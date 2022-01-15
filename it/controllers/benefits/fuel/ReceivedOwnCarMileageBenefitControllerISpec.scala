@@ -30,15 +30,13 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{accommodationRelocationBenefitsUrl, carBenefitsAmountUrl, carBenefitsUrl, carFuelBenefitsAmountUrl, carFuelBenefitsUrl, carVanFuelBenefitsUrl, checkYourBenefitsUrl, mileageBenefitsAmountUrl, overviewUrl, vanBenefitsUrl, vanFuelBenefitsAmountUrl}
+import utils.PageUrls.{accommodationRelocationBenefitsUrl, carBenefitsAmountUrl, carBenefitsUrl, carFuelBenefitsAmountUrl, carFuelBenefitsUrl, carVanFuelBenefitsUrl, checkYourBenefitsUrl, fullUrl, mileageBenefitsAmountUrl, mileageBenefitsUrl, overviewUrl, vanBenefitsUrl, vanFuelBenefitsAmountUrl}
 
 class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val employmentId = "employmentId"
   private val mileageAmount: Option[BigDecimal] = Some(BigDecimal(4.9))
   private val taxYearEOY: Int = taxYear - 1
-  private val urlEOY = s"$appUrl/$taxYearEOY/benefits/mileage?employmentId=$employmentId"
-  private val continueButtonLink: String = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/mileage?employmentId=$employmentId"
 
   private implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
@@ -182,7 +180,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyMileage, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, affinityGroup))
-            urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -199,7 +197,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
+          formPostLinkCheck(mileageBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -209,7 +207,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithMileageYes(), isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, affinityGroup))
-            urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -226,7 +224,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
+          formPostLinkCheck(mileageBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -238,7 +236,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             val benefitsViewModel = benefitsWithMileageYes(mileageAmount = None)
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, affinityGroup))
-            urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -255,7 +253,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
+          formPostLinkCheck(mileageBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -265,7 +263,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithMileageNo, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, affinityGroup))
-            urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -282,7 +280,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
+          formPostLinkCheck(mileageBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
       }
@@ -301,7 +299,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -319,7 +317,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyMileage, isPriorSubmission = false, hasPriorBenefits = false),
               User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh,
+            urlPost(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -347,12 +345,12 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyMileage), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
         authoriseAgentOrIndividual(user.isAgent)
-        urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check employment benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
 
       "update the mileageQuestion to false and mileage to none" in {
@@ -370,12 +368,12 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
         val mileage = benefitsWithEmptyMileage
         insertCyaData(anEmploymentUserDataWithBenefits(mileage, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
         authoriseAgentOrIndividual(user.isAgent)
-        urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check employment benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
 
       "update the mileageQuestion to false and mileage to none" in {
@@ -391,12 +389,12 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyMileage), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
         authoriseAgentOrIndividual(user.isAgent)
-        urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the mileage amount page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe mileageBenefitsAmountUrl(taxYearEOY, employmentId)
+        result.header("location").contains(mileageBenefitsAmountUrl(taxYearEOY, employmentId)) shouldBe true
       }
 
       "update the mileageQuestion to true" in {
@@ -411,12 +409,12 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyMileage, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
         authoriseAgentOrIndividual(user.isAgent)
-        urlPost(urlEOY, body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the mileage amount page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe mileageBenefitsAmountUrl(taxYearEOY, employmentId)
+        result.header("location").contains(mileageBenefitsAmountUrl(taxYearEOY, employmentId)) shouldBe true
       }
 
       "update the mileageQuestion to true" in {
@@ -440,9 +438,9 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
     lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
 
     def url: WSResponse = if (isSubmitTest) {
-      urlGet(urlEOY, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      urlGet(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
     } else {
-      urlPost(urlEOY, follow = false,
+      urlPost(fullUrl(mileageBenefitsUrl(taxYearEOY, employmentId)), follow = false,
         welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = form)
     }
 
@@ -457,7 +455,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -473,7 +471,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe carVanFuelBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(carVanFuelBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -488,7 +486,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe carBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(carBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -503,7 +501,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe carFuelBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(carFuelBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -518,7 +516,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe vanBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(vanBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -533,7 +531,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe carBenefitsAmountUrl(taxYearEOY, employmentId)
+        result.header("location").contains(carBenefitsAmountUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -548,7 +546,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe carFuelBenefitsAmountUrl(taxYearEOY, employmentId)
+        result.header("location").contains(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -563,7 +561,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)
+        result.header("location").contains(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -578,7 +576,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)
+        result.header("location").contains(vanFuelBenefitsAmountUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -593,7 +591,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -607,7 +605,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
   }

@@ -29,7 +29,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{checkYourExpensesUrl, overviewUrl, startEmploymentExpensesUrl}
+import utils.PageUrls.{checkYourExpensesUrl, claimEmploymentExpensesUrl, fullUrl, overviewUrl, startEmploymentExpensesUrl, taxReliefLink}
 
 class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -40,11 +40,6 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
   def cyaModel(isUsingCustomerData: Boolean, expenses: Expenses): ExpensesCYAModel =
     ExpensesCYAModel.makeModel(expenses, isUsingCustomerData, submittedOn = None)
-
-  private def employmentExpensesQuestionPageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/claim-employment-expenses"
-
-  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/claim-employment-expenses"
-  private val expensesLink = "https://www.gov.uk/tax-relief-for-employees"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -160,7 +155,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
               ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = false))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(employmentExpensesQuestionPageUrl(taxYearEOY), user.isWelsh, follow = false,
+            urlGet(fullUrl(claimEmploymentExpensesUrl(taxYearEOY)), user.isWelsh, follow = false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -182,11 +177,11 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           textOnPageCheck(expectedThisIncludesExample2, thisIncludesExample2Selector)
           textOnPageCheck(expectedThisIncludesExample3, thisIncludesExample3Selector)
           textOnPageCheck(expectedFindOutMore, findOutMoreParagraphSelector)
-          linkCheck(expectedFindOutMoreLink, expensesLinkSelector, expensesLink)
+          linkCheck(expectedFindOutMoreLink, expensesLinkSelector, taxReliefLink)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(claimEmploymentExpensesUrl(taxYearEOY), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -197,7 +192,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
             userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(employmentExpensesQuestionPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(claimEmploymentExpensesUrl(taxYearEOY)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -218,11 +213,11 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           textOnPageCheck(expectedThisIncludesExample2, thisIncludesExample2Selector)
           textOnPageCheck(expectedThisIncludesExample3, thisIncludesExample3Selector)
           textOnPageCheck(expectedFindOutMore, findOutMoreParagraphSelector)
-          linkCheck(expectedFindOutMoreLink, expensesLinkSelector, expensesLink)
+          linkCheck(expectedFindOutMoreLink, expensesLinkSelector, taxReliefLink)
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(claimEmploymentExpensesUrl(taxYearEOY), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -234,7 +229,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
               anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(claimingEmploymentExpenses = false))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(employmentExpensesQuestionPageUrl(taxYearEOY), welsh = user.isWelsh,
+            urlGet(fullUrl(claimEmploymentExpensesUrl(taxYearEOY)), welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -256,11 +251,11 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           textOnPageCheck(expectedThisIncludesExample2, thisIncludesExample2Selector)
           textOnPageCheck(expectedThisIncludesExample3, thisIncludesExample3Selector)
           textOnPageCheck(expectedFindOutMore, findOutMoreParagraphSelector)
-          linkCheck(expectedFindOutMoreLink, expensesLinkSelector, expensesLink)
+          linkCheck(expectedFindOutMoreLink, expensesLinkSelector, taxReliefLink)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(claimEmploymentExpensesUrl(taxYearEOY), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
       }
@@ -277,14 +272,14 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           authoriseAgentOrIndividual(isAgent = false)
 
           userDataStub(anIncomeTaxUserData, nino, taxYear)
-          urlGet(employmentExpensesQuestionPageUrl(taxYear), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlGet(fullUrl(claimEmploymentExpensesUrl(taxYear)), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe overviewUrl(taxYear)
+          result.header("location").contains(overviewUrl(taxYear)) shouldBe true
         }
       }
     }
@@ -305,7 +300,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employmentExpensesQuestionPageUrl(taxYearEOY), body = form, welsh = user.isWelsh, follow = false,
+              urlPost(fullUrl(claimEmploymentExpensesUrl(taxYearEOY)), body = form, welsh = user.isWelsh, follow = false,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -327,11 +322,11 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
             textOnPageCheck(expectedThisIncludesExample2, thisIncludesExample2Selector)
             textOnPageCheck(expectedThisIncludesExample3, thisIncludesExample3Selector)
             textOnPageCheck(expectedFindOutMore, findOutMoreParagraphSelector)
-            linkCheck(expectedFindOutMoreLink, expensesLinkSelector, expensesLink)
+            linkCheck(expectedFindOutMoreLink, expensesLinkSelector, taxReliefLink)
             radioButtonCheck(yesText, 1, checked = false)
             radioButtonCheck(noText, 2, checked = false)
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            formPostLinkCheck(claimEmploymentExpensesUrl(taxYearEOY), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorText, Selectors.yesSelector)
@@ -353,13 +348,13 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           dropExpensesDB()
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
-          urlPost(employmentExpensesQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
+          urlPost(fullUrl(claimEmploymentExpensesUrl(taxYearEOY)), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
+          result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe false
@@ -387,13 +382,13 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           authoriseAgentOrIndividual(user.isAgent)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
             ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = false))), aUserRequest)
-          urlPost(employmentExpensesQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
+          urlPost(fullUrl(claimEmploymentExpensesUrl(taxYearEOY)), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the 'expenses interrupt' page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe startEmploymentExpensesUrl(taxYearEOY)
+          result.header("location").contains(startEmploymentExpensesUrl(taxYearEOY)) shouldBe true
 
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
@@ -417,7 +412,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(anIncomeTaxUserData, nino, taxYear)
-          urlPost(employmentExpensesQuestionPageUrl(taxYear), body = "", user.isWelsh, follow = false,
+          urlPost(fullUrl(claimEmploymentExpensesUrl(taxYear)), body = "", user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
@@ -425,7 +420,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe overviewUrl(taxYear)
+          result.header("location").contains(overviewUrl(taxYear)) shouldBe true
         }
       }
     }

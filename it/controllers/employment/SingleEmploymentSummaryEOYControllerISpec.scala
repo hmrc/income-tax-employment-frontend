@@ -25,7 +25,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER, UNAUTHORIZED}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{employerNameUrlWithoutEmploymentId, overviewUrl}
+import utils.PageUrls.{employerInformationUrl, employerNameUrlWithoutEmploymentId, employmentSummaryUrl, fullUrl, overviewUrl, removeEmploymentUrl}
 
 class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -124,10 +124,7 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
     val youMustTell: String = "You must tell us about all your client’s employment."
   }
 
-  private def url(taxYear: Int) = s"$appUrl/$taxYear/employment-summary"
   val employmentId = "001"
-  val changeLinkHref = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-information?employmentId=$employmentId"
-  val removeLinkHref = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/remove-employment?employmentId=$employmentId"
 
   val employmentSource: EmploymentSource = EmploymentSource(
     employmentId = employmentId,
@@ -183,7 +180,7 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
             implicit lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
-              urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              urlGet(fullUrl(employmentSummaryUrl(taxYearEOY)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
 
             implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -199,15 +196,15 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
 
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector)
             textOnPageCheck(name, employerNameSelector)
-            linkCheck(change, changeLinkSelector, changeLinkHref)
-            linkCheck(remove, removeLinkSelector, removeLinkHref)
+            linkCheck(change, changeLinkSelector, employerInformationUrl(taxYearEOY, employmentId))
+            linkCheck(remove, removeLinkSelector, removeEmploymentUrl(taxYearEOY, employmentId))
             textOnPageCheck(doYouNeedAnother, doYouNeedAnotherSelector)
             textOnPageCheck(specific.youMustTell, youMustTellSelector)
             radioButtonCheck(yesText, 1, checked = false)
             radioButtonCheck(noText, 2, checked = false)
             buttonCheck(continueButton)
 
-            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employment-summary", formSelector)
+            formPostLinkCheck(employmentSummaryUrl(taxYearEOY), formSelector)
           }
         }
       }
@@ -235,7 +232,7 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
             lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
-              urlPost(url(taxYear), yesNoFormYes, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              urlPost(fullUrl(employmentSummaryUrl(taxYear)), yesNoFormYes, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
 
             "status SEE_OTHER" in {
@@ -243,7 +240,7 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
             }
 
             "redirect to the employer name page" in {
-              result.header(HeaderNames.LOCATION).get contains employerNameUrlWithoutEmploymentId(taxYear).get shouldBe true
+              result.header(HeaderNames.LOCATION).get.contains(employerNameUrlWithoutEmploymentId(taxYear)) shouldBe true
             }
           }
 
@@ -252,7 +249,7 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
             lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
-              urlPost(url(taxYear), yesNoFormNo, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              urlPost(fullUrl(employmentSummaryUrl(taxYearEOY)), yesNoFormNo, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
 
             "status SEE_OTHER" in {
@@ -260,7 +257,7 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
             }
 
             "redirect to the overview page" in {
-              result.header(HeaderNames.LOCATION) shouldBe overviewUrl(taxYear)
+              result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYear)) shouldBe true
             }
           }
         }
@@ -271,7 +268,7 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
             lazy val result: WSResponse = {
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
-              urlPost(url(taxYear), yesNoFormEmpty, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              urlPost(fullUrl(employmentSummaryUrl(taxYearEOY)), yesNoFormEmpty, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
 
             s"has an BAD_REQUEST($BAD_REQUEST) status" in {
@@ -287,8 +284,8 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
 
             textOnPageCheck(specific.yourEmpInfo, yourEmpInfoSelector)
             textOnPageCheck(name, employerNameSelector)
-            linkCheck(change, changeLinkSelector, changeLinkHref)
-            linkCheck(remove, removeLinkSelector, removeLinkHref)
+            linkCheck(change, changeLinkSelector, employerInformationUrl(taxYearEOY, employmentId))
+            linkCheck(remove, removeLinkSelector, removeEmploymentUrl(taxYearEOY, employmentId))
             textOnPageCheck(doYouNeedAnother, doYouNeedAnotherSelector)
             textOnPageCheck(specific.youMustTell, youMustTellSelector)
             errorSummaryCheck(specific.expectedErrorText, valueHref)
@@ -297,7 +294,7 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
             radioButtonCheck(noText, 2, checked = false)
             buttonCheck(continueButton)
 
-            formPostLinkCheck(s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employment-summary", formSelector)
+            formPostLinkCheck(employmentSummaryUrl(taxYearEOY), formSelector)
           }
         }
 
@@ -306,7 +303,7 @@ class SingleEmploymentSummaryEOYControllerISpec extends IntegrationTest with Vie
             val taxYear = taxYearEOY
             lazy val result: WSResponse = {
               unauthorisedAgentOrIndividual(user.isAgent)
-              urlPost(url(taxYear), yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              urlPost(fullUrl(employmentSummaryUrl(taxYearEOY)), yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
 
             "has an UNAUTHORIZED(401) status" in {

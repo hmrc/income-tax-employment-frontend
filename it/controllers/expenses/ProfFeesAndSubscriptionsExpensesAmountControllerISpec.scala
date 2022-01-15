@@ -31,7 +31,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{checkYourExpensesUrl, otherEquipmentExpensesUrl, overviewUrl, professionalFeesExpensesUrl}
+import utils.PageUrls.{checkYourExpensesUrl, fullUrl, otherEquipmentExpensesUrl, overviewUrl, professionalFeesExpensesAmountUrl, professionalFeesExpensesUrl}
 
 class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -42,15 +42,12 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
   private val expectedErrorHref = "#amount"
   private val poundPrefixText = "£"
   private val maxLimit: String = "100,000,000,000"
-  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/amount-for-professional-fees-and-subscriptions"
 
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
     anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
 
   private def expensesViewModel(profFeesAndSubscriptions: Option[BigDecimal] = None): ExpensesViewModel =
     anExpensesViewModel.copy(professionalSubscriptions = profFeesAndSubscriptions, otherAndCapitalAllowancesQuestion = None, otherAndCapitalAllowances = None)
-
-  private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/amount-for-professional-fees-and-subscriptions"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > label > header > p"
@@ -162,7 +159,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
               ExpensesCYAModel(expensesViewModel(profFeesAndSubscriptions = None))), aUserRequest)
-            urlGet(pageUrl(taxYearEOY), user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has an OK($OK) status" in {
@@ -179,7 +176,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
           inputFieldValueCheck(amountFieldName, amountFieldSelector, "")
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(professionalFeesExpensesAmountUrl(taxYearEOY), formSelector)
 
           welshToggleCheck(user.isWelsh)
         }
@@ -191,7 +188,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
               anExpensesCYAModel.copy(expensesViewModel(Some(newAmount)))), aUserRequest)
-            urlGet(pageUrl(taxYearEOY), user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has an OK($OK) status" in {
@@ -208,7 +205,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
           inputFieldValueCheck(amountFieldName, amountFieldSelector, newAmount.toString())
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(professionalFeesExpensesAmountUrl(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -219,7 +216,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
             val allEmploymentData = anAllEmploymentData.copy(hmrcExpenses = None)
             userDataStub(anIncomeTaxUserData.copy(Some(allEmploymentData)), nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
-            urlGet(pageUrl(taxYearEOY), user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has an OK($OK) status" in {
@@ -236,7 +233,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
           inputFieldValueCheck(amountFieldName, amountFieldSelector, amount.toString())
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(professionalFeesExpensesAmountUrl(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
         }
       }
@@ -248,12 +245,12 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
         dropExpensesDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
-        urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(professionalFeesExpensesAmountUrl(taxYear)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
       s"has an SEE OTHER($SEE_OTHER) status" in {
 
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -263,12 +260,12 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
         implicit lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
-          urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         s"has an SEE OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
+          result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
         }
       }
 
@@ -278,11 +275,11 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
           dropExpensesDB()
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
             anExpensesCYAModel.copy(expensesViewModel(profFeesAndSubscriptions = None).copy(professionalSubscriptionsQuestion = Some(false)))), aUserRequest)
-          urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
         s"has an SEE OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
+          result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
         }
       }
     }
@@ -304,7 +301,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
               dropExpensesDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
-              urlPost(pageUrl(taxYearEOY), body = "", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), body = "", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has an BAD REQUEST($BAD_REQUEST) status" in {
@@ -320,7 +317,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
             textOnPageCheck(expectedHintText, hintTextSelector)
             inputFieldValueCheck(amountFieldName, amountFieldSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, formSelector)
+            formPostLinkCheck(professionalFeesExpensesAmountUrl(taxYearEOY), formSelector)
             welshToggleCheck(user.isWelsh)
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorNoEntry, expectedErrorHref)
             errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Some(amountFieldName))
@@ -334,7 +331,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
               dropExpensesDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
-              urlPost(pageUrl(taxYearEOY), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has an BAD REQUEST($BAD_REQUEST) status" in {
@@ -350,7 +347,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
             textOnPageCheck(expectedHintText, hintTextSelector)
             inputFieldValueCheck(amountFieldName, amountFieldSelector, "abc")
             buttonCheck(continueButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, formSelector)
+            formPostLinkCheck(professionalFeesExpensesAmountUrl(taxYearEOY), formSelector)
             welshToggleCheck(user.isWelsh)
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, expectedErrorHref)
             errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, Some(amountFieldName))
@@ -364,7 +361,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
               dropExpensesDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
-              urlPost(pageUrl(taxYearEOY), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has an BAD REQUEST($BAD_REQUEST) status" in {
@@ -380,7 +377,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
             textOnPageCheck(expectedHintText, hintTextSelector)
             inputFieldValueCheck(amountFieldName, amountFieldSelector, maxLimit)
             buttonCheck(continueButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, formSelector)
+            formPostLinkCheck(professionalFeesExpensesAmountUrl(taxYearEOY), formSelector)
             welshToggleCheck(user.isWelsh)
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, expectedErrorHref)
             errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, Some(amountFieldName))
@@ -394,12 +391,12 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
         dropExpensesDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
-        urlPost(pageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYear)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
       s"has an SEE OTHER($SEE_OTHER) status" in {
 
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -409,12 +406,12 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropExpensesDB()
-        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
+        result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
       }
     }
 
@@ -426,12 +423,12 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
         dropExpensesDB()
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
           anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))), aUserRequest)
-        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe professionalFeesExpensesUrl(taxYearEOY)
+        result.header("location").contains(professionalFeesExpensesUrl(taxYearEOY)) shouldBe true
       }
     }
 
@@ -442,12 +439,12 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
         authoriseAgentOrIndividual(isAgent = false)
         dropExpensesDB()
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, ExpensesCYAModel(expensesViewModel())), aUserRequest)
-        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe otherEquipmentExpensesUrl(taxYearEOY)
+        result.header("location").contains(otherEquipmentExpensesUrl(taxYearEOY)) shouldBe true
       }
 
       "updates professionalSubscriptions to the new value" in {

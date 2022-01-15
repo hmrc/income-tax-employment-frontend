@@ -25,14 +25,12 @@ import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.ws.WSResponse
 import utils.{IntegrationTest, ViewHelpers}
-import utils.PageUrls.overviewUrl
+import utils.PageUrls.{checkYourBenefitsUrl, checkYourDetailsUrl, checkYourExpensesUrl, employerInformationUrl, employmentSummaryUrl, fullUrl, overviewUrl}
 
 class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with ViewHelpers {
 
   private val taxYearEOY: Int = taxYear - 1
   private val employmentId = "employmentId"
-
-  private def url(taxYear: Int): String = s"$appUrl/$taxYear/employer-information?employmentId=$employmentId"
 
   object Selectors {
     val headingSelector = "#main-content > div > div > header > h1"
@@ -49,15 +47,6 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
     def taskListRowFieldAmountSelector(i: Int): String =
       s"#main-content > div > div > ul > li:nth-child($i) > span.hmrc-status-tag"
   }
-
-  def employmentDetailsUrl(taxYear: Int): String =
-    s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-details?employmentId=$employmentId"
-
-  def employmentBenefitsUrl(taxYear: Int): String =
-    s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-benefits?employmentId=$employmentId"
-
-  def employmentExpensesUrl(taxYear: Int): String =
-    s"/update-and-submit-income-tax-return/employment-income/$taxYear/expenses/check-employment-expenses"
 
   object ExpectedResults {
 
@@ -171,7 +160,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
             authoriseAgentOrIndividual(user.isAgent)
             val employment = anEmploymentSource.copy(employmentBenefits = None)
             userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(employment)))), nino, taxYear)
-            urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(employerInformationUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -182,7 +171,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           textOnPageCheck(user.specificExpectedResults.get.expectedContent(taxYear), p1Selector)
 
           "has an employment details section" which {
-            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl(taxYear))
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, checkYourDetailsUrl(taxYear, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(1))
           }
 
@@ -191,7 +180,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
             textOnPageCheck(user.commonExpectedResults.cannotUpdate, taskListRowFieldAmountSelector(2))
           }
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
-          formGetLinkCheck("/update-and-submit-income-tax-return/employment-income/2022/employment-summary", "#main-content > div > div > form")
+          formGetLinkCheck(employmentSummaryUrl(taxYear), "#main-content > div > div > form")
 
           welshToggleCheck(user.isWelsh)
         }
@@ -202,7 +191,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
             val employmentOne = anEmploymentSource.copy(employmentBenefits = None)
             val employmentTwo = anEmploymentSource.copy(employmentId = "004", employerName = "someName", employmentBenefits = None)
             userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(employmentOne, employmentTwo)))), nino, taxYear)
-            urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(employerInformationUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -213,7 +202,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           textOnPageCheck(user.specificExpectedResults.get.expectedContent(taxYear), p1Selector)
 
           "has an employment details section" which {
-            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl(taxYear))
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, checkYourDetailsUrl(taxYear, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(1))
           }
 
@@ -222,7 +211,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
             textOnPageCheck(user.commonExpectedResults.cannotUpdate, taskListRowFieldAmountSelector(2))
           }
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
-          formGetLinkCheck("/update-and-submit-income-tax-return/employment-income/2022/employment-summary", "#main-content > div > div > form")
+          formGetLinkCheck(employmentSummaryUrl(taxYear), "#main-content > div > div > form")
 
           welshToggleCheck(user.isWelsh)
         }
@@ -230,7 +219,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(employerInformationUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -240,12 +229,12 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
 
           "has an employment expenses section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(2), employmentExpensesLinkSelector, employmentExpensesUrl(taxYearEOY))
+            linkCheck(user.commonExpectedResults.fieldNames(2), employmentExpensesLinkSelector, checkYourExpensesUrl(taxYearEOY))
             textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(3))
           }
 
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
-          formGetLinkCheck("/update-and-submit-income-tax-return/employment-income/2021/employment-summary", "#main-content > div > div > form")
+          formGetLinkCheck(employmentSummaryUrl(taxYearEOY), "#main-content > div > div > form")
 
           welshToggleCheck(user.isWelsh)
         }
@@ -259,7 +248,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
               customerExpenses = None
             )
             userDataStub(anIncomeTaxUserData.copy(Some(employmentData)), nino, taxYearEOY)
-            urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(employerInformationUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -269,12 +258,12 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
 
           "has an employment expenses section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(2), employmentExpensesLinkSelector, employmentExpensesUrl(taxYearEOY))
+            linkCheck(user.commonExpectedResults.fieldNames(2), employmentExpensesLinkSelector, checkYourExpensesUrl(taxYearEOY))
             textOnPageCheck(user.commonExpectedResults.notStarted, taskListRowFieldAmountSelector(3))
           }
 
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
-          formGetLinkCheck("/update-and-submit-income-tax-return/employment-income/2021/employment-summary", "#main-content > div > div > form")
+          formGetLinkCheck(employmentSummaryUrl(taxYearEOY), "#main-content > div > div > form")
 
           welshToggleCheck(user.isWelsh)
         }
@@ -283,18 +272,18 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq()))), nino, taxYear)
-            urlGet(url(taxYear), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(employerInformationUrl(taxYear, employmentId)), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe overviewUrl(taxYear)
+          result.header("location").contains(overviewUrl(taxYear)) shouldBe true
         }
 
         "render the page where the status for benefits is Updated when there is Benefits data in year" which {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYear)
-            urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(employerInformationUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -305,18 +294,17 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           textOnPageCheck(user.specificExpectedResults.get.expectedContent(taxYear), p1Selector)
 
           "has an employment details section" which {
-            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl(taxYear))
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, checkYourDetailsUrl(taxYear, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(1))
           }
 
           "has a benefits section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, employmentBenefitsUrl(taxYear))
+            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, checkYourBenefitsUrl(taxYear, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(2))
           }
 
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
-          formGetLinkCheck("/update-and-submit-income-tax-return/employment-income/2022/employment-summary",
-            "#main-content > div > div > form")
+          formGetLinkCheck(employmentSummaryUrl(taxYear), "#main-content > div > div > form")
 
           welshToggleCheck(user.isWelsh)
         }
@@ -326,7 +314,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))))), nino, taxYear - 1)
-            urlGet(url(taxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+            urlGet(fullUrl(employerInformationUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -336,18 +324,17 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
 
           "has an employment details section" which {
-            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl(taxYear - 1))
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, checkYourDetailsUrl(taxYearEOY, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(1))
           }
 
           "has a benefits section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, employmentBenefitsUrl(taxYear - 1))
+            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, checkYourBenefitsUrl(taxYearEOY, employmentId))
             textOnPageCheck(user.commonExpectedResults.notStarted, taskListRowFieldAmountSelector(2))
           }
 
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
-          formGetLinkCheck("/update-and-submit-income-tax-return/employment-income/2021/employment-summary",
-            "#main-content > div > div > form")
+          formGetLinkCheck(employmentSummaryUrl(taxYearEOY), "#main-content > div > div > form")
 
           welshToggleCheck(user.isWelsh)
         }
@@ -356,7 +343,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
-            urlGet(url(taxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+            urlGet(fullUrl(employerInformationUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -366,18 +353,17 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
 
           "has an employment details section" which {
-            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, employmentDetailsUrl(taxYear - 1))
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, checkYourDetailsUrl(taxYearEOY, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(1))
           }
 
           "has a benefits section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, employmentBenefitsUrl(taxYear - 1))
+            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, checkYourBenefitsUrl(taxYearEOY, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, taskListRowFieldAmountSelector(2))
           }
 
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
-          formGetLinkCheck("/update-and-submit-income-tax-return/employment-income/2021/employment-summary",
-            "#main-content > div > div > form")
+          formGetLinkCheck(employmentSummaryUrl(taxYearEOY),"#main-content > div > div > form")
 
           welshToggleCheck(user.isWelsh)
         }
@@ -385,7 +371,7 @@ class EmploymentDetailsAndBenefitsControllerISpec extends IntegrationTest with V
         "render Unauthorised user error page" which {
           lazy val result: WSResponse = {
             unauthorisedAgentOrIndividual(user.isAgent)
-            urlGet(url(taxYear), welsh = user.isWelsh)
+            urlGet(fullUrl(employerInformationUrl(taxYear, employmentId)), welsh = user.isWelsh)
           }
           "has an UNAUTHORIZED(401) status" in {
             result.status shouldBe UNAUTHORIZED

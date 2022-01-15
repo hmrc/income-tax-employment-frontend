@@ -29,7 +29,7 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{accommodationRelocationBenefitsUrl, carBenefitsUrl, carFuelBenefitsUrl, checkYourBenefitsUrl, overviewUrl, vanBenefitsUrl}
+import utils.PageUrls.{accommodationRelocationBenefitsUrl, carBenefitsAmountUrl, carBenefitsUrl, carFuelBenefitsUrl, checkYourBenefitsUrl, fullUrl, overviewUrl, vanBenefitsUrl}
 
 class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -39,9 +39,6 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
   private val newAmount: BigDecimal = 250
   private val maxLimit: String = "100,000,000,000"
   private val amountInputName = "amount"
-  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/company-car-amount?employmentId=$employmentId"
-
-  private def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/company-car-amount?employmentId=$employmentId"
 
   private implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
@@ -166,7 +163,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoCarAmount, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, "agent"))
-            urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -180,7 +177,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           textOnPageCheck(user.commonExpectedResults.hintText, hintTextSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(carBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -190,7 +187,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithCarAmount, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, "agent"))
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -205,7 +202,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           textOnPageCheck(user.commonExpectedResults.hintText, hintTextSelector)
           inputFieldValueCheck(amountInputName, inputSelector, carAmount.toString())
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(carBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -214,7 +211,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
             dropEmploymentDB()
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithCarAmount, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, "agent"))
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -229,7 +226,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           textOnPageCheck(user.commonExpectedResults.hintText, hintTextSelector)
           inputFieldValueCheck(amountInputName, inputSelector, carAmount.toString())
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(carBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
           welshToggleCheck(user.isWelsh)
         }
       }
@@ -240,12 +237,12 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithCarAmount, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, "agent"))
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(url(taxYear), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
+        urlGet(fullUrl(carBenefitsAmountUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
       }
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -254,12 +251,12 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         dropEmploymentDB()
         userDataStub(IncomeTaxUserData(None), nino, taxYearEOY)
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(url(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+        urlGet(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
       }
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -268,13 +265,13 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoCarQuestion, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, "agent"))
-        urlGet(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe carBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(carBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -283,12 +280,12 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithFalseCarQuestion, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, "agent"))
-        urlGet(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe vanBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(vanBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -297,13 +294,13 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithFalseCarQuestion), User(mtditid, None, nino, sessionId, "agent"))
-        urlGet(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -312,12 +309,12 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithFalseCarVanFuelQuestion, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, "agent"))
-        urlGet(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -326,12 +323,12 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoBenefitsReceived, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, "agent"))
-        urlGet(url(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
   }
@@ -347,7 +344,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
               dropEmploymentDB()
               insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoCarAmount, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, "agent"))
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has a BAD_REQUEST ($BAD_REQUEST) status" in {
@@ -372,7 +369,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
               dropEmploymentDB()
               insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoCarAmount, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, "agent"))
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has a BAD_REQUEST ($BAD_REQUEST) status" in {
@@ -397,7 +394,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
               dropEmploymentDB()
               insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoCarAmount, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, "agent"))
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has a BAD_REQUEST ($BAD_REQUEST) status" in {
@@ -425,12 +422,12 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithCarAmount), User(mtditid, None, nino, sessionId, "agent"))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe carFuelBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(carFuelBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe Some(true)
@@ -444,12 +441,12 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoCarAmount), User(mtditid, None, nino, sessionId, "agent"))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to check your benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe carFuelBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(carFuelBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe Some(true)
@@ -463,12 +460,12 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoCarAmount, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, "agent"))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to check your benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe carFuelBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(carFuelBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carQuestion)) shouldBe Some(true)
@@ -482,12 +479,12 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         dropEmploymentDB()
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoCarAmount, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, "agent"))
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(url(taxYear), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(carBenefitsAmountUrl(taxYear, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -497,12 +494,12 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
         dropEmploymentDB()
         userDataStub(IncomeTaxUserData(None), nino, taxYearEOY)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
   }

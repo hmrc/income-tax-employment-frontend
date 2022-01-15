@@ -20,6 +20,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.Status.OK
 import play.api.libs.ws.WSResponse
+import utils.PageUrls.{fullUrl, startUrl, timeoutUrl}
 import utils.{IntegrationTest, ViewHelpers}
 
 class SessionExpiredControllerISpec extends IntegrationTest with ViewHelpers {
@@ -31,27 +32,22 @@ class SessionExpiredControllerISpec extends IntegrationTest with ViewHelpers {
     val formSelector = "#main-content > div > div > form"
   }
 
-  val url = s"$appUrl/timeout"
-
   trait CommonExpectedResults {
     val h1Expected: String
     val p1Expected: String
     val buttonExpectedText: String
-    val buttonExpectedUrl: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
     val h1Expected = "For your security, we signed you out"
     val p1Expected = "We did not save your answers."
     val buttonExpectedText = "Sign in"
-    val buttonExpectedUrl: String = "http://localhost:11111/update-and-submit-income-tax-return/2022/start"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val h1Expected = "For your security, we signed you out"
     val p1Expected = "We did not save your answers."
     val buttonExpectedText = "Sign in"
-    val buttonExpectedUrl: String = "http://localhost:11111/update-and-submit-income-tax-return/2022/start"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = {
@@ -69,7 +65,7 @@ class SessionExpiredControllerISpec extends IntegrationTest with ViewHelpers {
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(url, welsh = user.isWelsh)
+            urlGet(fullUrl(timeoutUrl), welsh = user.isWelsh)
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -86,7 +82,7 @@ class SessionExpiredControllerISpec extends IntegrationTest with ViewHelpers {
 
           textOnPageCheck(p1Expected,p1Selector)
           buttonCheck(buttonExpectedText, buttonSelector)
-          formGetLinkCheck(buttonExpectedUrl, formSelector)
+          formGetLinkCheck(startUrl(taxYear), formSelector)
         }
       }
     }
