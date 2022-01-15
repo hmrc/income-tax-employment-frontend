@@ -28,7 +28,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{employerNameUrl, employerNameUrlWithoutEmploymentId, employerPayeReferenceUrl, employmentSummaryUrl, overviewUrl}
+import utils.PageUrls.{addEmploymentUrl, employerNameUrl, employerNameUrlWithoutEmploymentId, employerPayeReferenceUrl, employmentSummaryUrl, fullUrl, overviewUrl}
 
 class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -102,8 +102,6 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
 
   private val employmentId = UUID.randomUUID
 
-  private def url(taxYear: Int) = s"$appUrl/$taxYear/add-employment"
-
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
@@ -133,7 +131,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(None), nino, taxYear)
-            urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(addEmploymentUrl(taxYear)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -149,7 +147,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           buttonCheck(continueButton)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
-          formPostLinkCheck("/update-and-submit-income-tax-return/employment-income/2021/add-employment", formSelector)
+          formPostLinkCheck(addEmploymentUrl(taxYearEOY), formSelector)
         }
 
         "return Add an employment page page with yes pre-filled when there is session value employment id is defined" when {
@@ -160,7 +158,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             userDataStub(IncomeTaxUserData(None), nino, taxYear)
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
-            urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear, Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "fake-id"))))
+            urlGet(fullUrl(addEmploymentUrl(taxYear)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear, Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "fake-id"))))
           }
 
           "status OK" in {
@@ -174,7 +172,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           h1Check(specific.expectedH1)
           textOnPageCheck(expectedCaption, captionSelector)
           buttonCheck(continueButton)
-          formPostLinkCheck("/update-and-submit-income-tax-return/employment-income/2021/add-employment", formSelector)
+          formPostLinkCheck(addEmploymentUrl(taxYearEOY), formSelector)
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
         }
@@ -185,7 +183,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYear)
-            urlGet(url(taxYear), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(addEmploymentUrl(taxYear)), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status SEE_OTHER" in {
@@ -193,7 +191,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to Check Employment Details page" in {
-            result.header(HeaderNames.LOCATION) shouldBe employmentSummaryUrl(taxYear)
+            result.header(HeaderNames.LOCATION).contains(employmentSummaryUrl(taxYear)) shouldBe true
           }
         }
 
@@ -203,7 +201,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYear)
-            urlGet(url(taxYear), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(addEmploymentUrl(taxYear)), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status SEE_OTHER" in {
@@ -211,7 +209,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to Overview page" in {
-            result.header(HeaderNames.LOCATION) shouldBe overviewUrl(taxYear)
+            result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYear)) shouldBe true
           }
         }
       }
@@ -238,7 +236,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(None), nino, taxYearEOY)
-            urlPost(url(taxYearEOY), body = yesNoFormEmpty, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(fullUrl(addEmploymentUrl(taxYearEOY)), body = yesNoFormEmpty, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "status BAD_REQUEST" in {
@@ -253,7 +251,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           textOnPageCheck(expectedCaption, captionSelector)
           buttonCheck(continueButton)
           errorSummaryCheck(specific.expectedErrorText, expectedErrorHref)
-          formPostLinkCheck("/update-and-submit-income-tax-return/employment-income/2021/add-employment", formSelector)
+          formPostLinkCheck(addEmploymentUrl(taxYearEOY), formSelector)
         }
 
         "redirect to Overview Page when radio button no is selected" when {
@@ -261,7 +259,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(None), nino, taxYear)
-            urlPost(url(taxYearEOY), follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(fullUrl(addEmploymentUrl(taxYearEOY)), follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "status SEE_OTHER" in {
@@ -269,7 +267,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to Overview page" in {
-            result.header(HeaderNames.LOCATION) shouldBe overviewUrl(taxYearEOY)
+            result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYearEOY)) shouldBe true
           }
         }
 
@@ -278,7 +276,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(None), nino, taxYear)
-            urlPost(url(taxYearEOY), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(fullUrl(addEmploymentUrl(taxYearEOY)), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "status SEE_OTHER" in {
@@ -286,7 +284,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to employer name page" in {
-            result.header(HeaderNames.LOCATION).get contains employerNameUrlWithoutEmploymentId(taxYearEOY).get shouldBe true
+            result.header(HeaderNames.LOCATION).get contains employerNameUrlWithoutEmploymentId(taxYearEOY) shouldBe true
           }
         }
 
@@ -295,7 +293,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(None), nino, taxYear - 1)
-            urlPost(url(taxYearEOY), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY,
+            urlPost(fullUrl(addEmploymentUrl(taxYearEOY)), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
           }
 
@@ -304,7 +302,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to employer name page" in {
-            result.header(HeaderNames.LOCATION) shouldBe employerNameUrl(taxYearEOY, employmentId)
+            result.header(HeaderNames.LOCATION).contains(employerNameUrl(taxYearEOY, employmentId)) shouldBe true
           }
         }
 
@@ -314,7 +312,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
             userDataStub(IncomeTaxUserData(None), nino, taxYear - 1)
-            urlPost(url(taxYearEOY), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY,
+            urlPost(fullUrl(addEmploymentUrl(taxYearEOY)), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
           }
 
@@ -323,7 +321,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to paye ref page" in {
-            result.header(HeaderNames.LOCATION) shouldBe employerPayeReferenceUrl(taxYearEOY, employmentId)
+            result.header(HeaderNames.LOCATION).contains(employerPayeReferenceUrl(taxYearEOY, employmentId)) shouldBe true
           }
         }
         "redirect to overview page when radio button no is selected when an id is in session and there is cya data" when {
@@ -332,7 +330,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
             userDataStub(IncomeTaxUserData(None), nino, taxYear - 1)
-            urlPost(url(taxYearEOY), follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY,
+            urlPost(fullUrl(addEmploymentUrl(taxYearEOY)), follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
           }
 
@@ -341,7 +339,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to overview page" in {
-            result.header(HeaderNames.LOCATION) shouldBe overviewUrl(taxYearEOY)
+            result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYearEOY)) shouldBe true
           }
         }
 
@@ -351,7 +349,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYear)
-            urlPost(url(taxYearEOY), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(fullUrl(addEmploymentUrl(taxYearEOY)), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "status SEE_OTHER" in {
@@ -359,7 +357,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to Employment summary page" in {
-            result.header(HeaderNames.LOCATION) shouldBe employmentSummaryUrl(taxYearEOY)
+            result.header(HeaderNames.LOCATION).contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
           }
         }
         "redirect to Overview page when trying to hit the page in year" when {
@@ -368,7 +366,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYear)
-            urlPost(url(taxYear), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlPost(fullUrl(addEmploymentUrl(taxYear)), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status SEE_OTHER" in {
@@ -376,7 +374,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           "redirect to Overview page" in {
-            result.header(HeaderNames.LOCATION) shouldBe overviewUrl(taxYear)
+            result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYear)) shouldBe true
           }
         }
       }

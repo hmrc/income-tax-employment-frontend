@@ -33,23 +33,20 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{businessTravelExpensesUrl, checkYourExpensesUrl, overviewUrl, uniformsWorkClothesToolsExpensesUrl}
+import utils.PageUrls.{businessTravelExpensesUrl, checkYourExpensesUrl, fullUrl, overviewUrl, professionalFeesExpensesAmountUrl, travelAmountExpensesUrl, uniformsWorkClothesToolsExpensesUrl}
 
 class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val taxYearEOY: Int = taxYear - 1
   private val newAmount = 25
   private val amountInputName = "amount"
-  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/travel-amount"
 
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
     anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
 
   private def expensesViewModel(jobExpensesQuestion: Option[Boolean] = None): ExpensesViewModel =
     ExpensesViewModel(isUsingCustomerData = true, claimingEmploymentExpenses = true, jobExpensesQuestion = jobExpensesQuestion)
-
-  private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/travel-amount"
-
+  
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > label > header > p"
     val continueButtonSelector: String = "#continue"
@@ -160,7 +157,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
             val employmentData = anAllEmploymentData.copy(hmrcExpenses = Some(anEmploymentExpenses.copy(expenses = Some(anExpenses.copy(jobExpenses = None)))))
             userDataStub(anIncomeTaxUserData.copy(Some(employmentData)), nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel.copy(expensesViewModel(Some(true)))), aUserRequest)
-            urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(travelAmountExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -176,7 +173,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           hintTextCheck(hintText)
           inputFieldValueCheck(amountInputName, Selectors.amountSelector, "")
           buttonCheck(buttonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(travelAmountExpensesUrl(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -187,7 +184,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
               ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = true)).copy(expensesViewModel(Some(true)).copy(jobExpenses = Some(newAmount)))), aUserRequest)
-            urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(travelAmountExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -204,7 +201,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           hintTextCheck(hintText)
           inputFieldValueCheck(amountInputName, Selectors.amountSelector, newAmount.toString)
           buttonCheck(buttonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(travelAmountExpensesUrl(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
         }
       }
@@ -217,12 +214,12 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
           anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(jobExpensesQuestion = Some(false)))), aUserRequest)
-        urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(travelAmountExpensesUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to the CheckEmploymentExpenses page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
+        result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
       }
     }
 
@@ -231,12 +228,12 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
       lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(travelAmountExpensesUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to the CheckEmploymentExpenses page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
+        result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
       }
     }
 
@@ -247,12 +244,12 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
           anExpensesCYAModel), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(travelAmountExpensesUrl(taxYear)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "redirect to the overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
   }
@@ -270,7 +267,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
             userDataStub(anIncomeTaxUserData, nino, taxYear)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(pageUrl(taxYearEOY), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -288,7 +285,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
           errorAboveElementCheck(user.specificExpectedResults.get.expectedFormatError, Some("amount"))
           errorSummaryCheck(user.specificExpectedResults.get.expectedFormatError, Selectors.amountSelector)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(travelAmountExpensesUrl(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -301,7 +298,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
             userDataStub(anIncomeTaxUserData, nino, taxYear)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(pageUrl(taxYearEOY), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -319,7 +316,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
           errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryError, Some("amount"))
           errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryError, Selectors.amountSelector)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(travelAmountExpensesUrl(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -332,7 +329,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
             userDataStub(anIncomeTaxUserData, nino, taxYear)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(pageUrl(taxYearEOY), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -350,7 +347,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
           errorAboveElementCheck(user.specificExpectedResults.get.expectedOverMaxError, Some("amount"))
           errorSummaryCheck(user.specificExpectedResults.get.expectedOverMaxError, Selectors.amountSelector)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(travelAmountExpensesUrl(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
         }
       }
@@ -363,12 +360,12 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
         userDataStub(anIncomeTaxUserData, nino, taxYear)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(pageUrl(taxYear), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(travelAmountExpensesUrl(taxYear)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "redirect to the overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
 
       "not update the CYA model" in {
@@ -381,12 +378,12 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
       lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to the CYA page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
+        result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
       }
 
       "not update the CYA model" in {
@@ -404,12 +401,12 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
           anExpensesCYAModel.copy(anExpensesViewModel.copy(flatRateJobExpensesQuestion = None))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to Uniforms Work Clothes or Tools question page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe uniformsWorkClothesToolsExpensesUrl(taxYearEOY)
+        result.header("location").contains(uniformsWorkClothesToolsExpensesUrl(taxYearEOY)) shouldBe true
       }
 
       "update the CYA model" in {
@@ -426,12 +423,12 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
           ExpensesCYAModel(expensesViewModel(None))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to Business Travel and Overnight question page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe businessTravelExpensesUrl(taxYearEOY)
+        result.header("location").contains(businessTravelExpensesUrl(taxYearEOY)) shouldBe true
       }
     }
   }

@@ -20,6 +20,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.Status.UNAUTHORIZED
 import play.api.libs.ws.WSResponse
+import utils.PageUrls.{fullUrl, incomeTaxHomePageLink, notAuthorisedUrl, selfAssessmentLink}
 import utils.{IntegrationTest, ViewHelpers}
 
 class UnauthorisedUserErrorControllerISpec extends IntegrationTest with ViewHelpers {
@@ -32,8 +33,6 @@ class UnauthorisedUserErrorControllerISpec extends IntegrationTest with ViewHelp
     val selfAssessmentLinkSelector = "#govuk-self-assessment-link"
   }
 
-  val url = s"$appUrl/error/not-authorised-to-use-service"
-
   trait CommonExpectedResults {
     val h1Expected: String
     val youCanText: String
@@ -43,8 +42,6 @@ class UnauthorisedUserErrorControllerISpec extends IntegrationTest with ViewHelp
     val useText: String
     val selfAssessmentText: String
     val toSpeakText: String
-    val incomeTaxHomePageLink: String
-    val selfAssessmentLink: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -56,8 +53,7 @@ class UnauthorisedUserErrorControllerISpec extends IntegrationTest with ViewHelp
     val useText = "use"
     val selfAssessmentText = "Self Assessment: general enquiries (opens in new tab)"
     val toSpeakText = "to speak to someone about your income tax"
-    val incomeTaxHomePageLink = "https://www.gov.uk/income-tax"
-    val selfAssessmentLink = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment"
+
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -69,8 +65,6 @@ class UnauthorisedUserErrorControllerISpec extends IntegrationTest with ViewHelp
     val useText = "use"
     val selfAssessmentText = "Self Assessment: general enquiries (opens in new tab)"
     val toSpeakText = "to speak to someone about your income tax"
-    val incomeTaxHomePageLink = "https://www.gov.uk/income-tax"
-    val selfAssessmentLink = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = {
@@ -88,7 +82,7 @@ class UnauthorisedUserErrorControllerISpec extends IntegrationTest with ViewHelp
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(url, welsh = user.isWelsh)
+            urlGet(fullUrl(notAuthorisedUrl), welsh = user.isWelsh)
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)

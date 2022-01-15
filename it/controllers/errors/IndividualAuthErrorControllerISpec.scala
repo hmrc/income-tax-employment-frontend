@@ -20,6 +20,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.Status.UNAUTHORIZED
 import play.api.libs.ws.WSResponse
+import utils.PageUrls.{fullUrl, signUpForMTDLink, youNeedToSignUpUrl}
 import utils.{IntegrationTest, ViewHelpers}
 
 class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
@@ -29,27 +30,22 @@ class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelper
     val linkSelector: String = paragraphSelector + " > a"
   }
 
-  val url = s"$appUrl/error/you-need-to-sign-up"
-
   trait CommonExpectedResults {
     val validTitle: String
     val pageContent: String
     val linkContent: String
-    val linkHref: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
     val validTitle: String = "You cannot view this page"
     val pageContent: String = "You need to sign up for Making Tax Digital for Income Tax before you can view this page."
     val linkContent: String = "sign up for Making Tax Digital for Income Tax"
-    val linkHref: String = "https://www.gov.uk/guidance/sign-up-your-business-for-making-tax-digital-for-income-tax"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val validTitle: String = "You cannot view this page"
     val pageContent: String = "You need to sign up for Making Tax Digital for Income Tax before you can view this page."
     val linkContent: String = "sign up for Making Tax Digital for Income Tax"
-    val linkHref: String = "https://www.gov.uk/guidance/sign-up-your-business-for-making-tax-digital-for-income-tax"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = {
@@ -67,7 +63,7 @@ class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelper
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(url, welsh = user.isWelsh)
+            urlGet(fullUrl(youNeedToSignUpUrl), welsh = user.isWelsh)
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -82,7 +78,7 @@ class IndividualAuthErrorControllerISpec extends IntegrationTest with ViewHelper
           welshToggleCheck(user.isWelsh)
           h1Check(validTitle, "xl")
           textOnPageCheck(pageContent, paragraphSelector)
-          linkCheck(linkContent, linkSelector, linkHref)
+          linkCheck(linkContent, linkSelector, signUpForMTDLink)
         }
       }
     }

@@ -30,17 +30,12 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{checkYourBenefitsUrl, otherServicesBenefitsUrl, overviewUrl, professionalFeesOrSubscriptionsBenefitsAmountUrl}
+import utils.PageUrls.{checkYourBenefitsUrl, fullUrl, otherServicesBenefitsUrl, overviewUrl, professionalFeesOrSubscriptionsBenefitsAmountUrl, professionalFeesOrSubscriptionsBenefitsUrl}
 
 class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest with EmploymentDatabaseHelper with ViewHelpers {
 
   private val taxYearEOY: Int = taxYear - 1
   private val employmentId: String = "employmentId"
-  private val formLink: String =
-    s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/professional-fees-or-subscriptions?employmentId=$employmentId"
-
-  private def professionalSubscriptionsBenefitsPageUrl(taxYear: Int): String =
-    s"$appUrl/$taxYear/benefits/professional-fees-or-subscriptions?employmentId=$employmentId"
 
   private def employmentUserData(hasPriorBenefits: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     anEmploymentUserData.copy(isPriorSubmission = true, hasPriorBenefits = hasPriorBenefits, employment = employmentCyaModel)
@@ -144,7 +139,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(employerProvidedProfessionalSubscriptionsQuestion = None)))
             insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-            urlGet(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has an OK($OK) status" in {
@@ -161,7 +156,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(formLink, formSelector)
+          formPostLinkCheck(professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId), formSelector)
 
           welshToggleCheck(user.isWelsh)
         }
@@ -172,7 +167,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
-            urlGet(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), welsh = user.isWelsh,
+            urlGet(fullUrl(professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -190,7 +185,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(formLink, formSelector)
+          formPostLinkCheck(professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId), formSelector)
 
           welshToggleCheck(user.isWelsh)
         }
@@ -201,7 +196,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
             dropEmploymentDB()
             val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(employerProvidedProfessionalSubscriptionsQuestion = Some(false))))
             insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-            urlGet(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), welsh = user.isWelsh,
+            urlGet(fullUrl(professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -219,7 +214,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
           buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(formLink, formSelector)
+          formPostLinkCheck(professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId), formSelector)
 
           welshToggleCheck(user.isWelsh)
         }
@@ -232,12 +227,12 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
-        urlGet(professionalSubscriptionsBenefitsPageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(professionalFeesOrSubscriptionsBenefitsUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -245,12 +240,12 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        urlGet(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
   }
@@ -267,7 +262,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
-            urlPost(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), body = "", welsh = user.isWelsh,
+            urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId)), body = "", welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -286,7 +281,7 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
           radioButtonCheck(noText, 2, checked = false)
           errorSummaryCheck(user.specificExpectedResults.get.expectedErrorMessage, yesRadioSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorMessage, Some("value"))
-          formPostLinkCheck(formLink, formSelector)
+          formPostLinkCheck(professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId), formSelector)
         }
       }
     }
@@ -299,12 +294,12 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
         insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-        urlPost(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"update the utilitiesAndServicesModel model and redirect to other services benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe otherServicesBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(otherServicesBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptionsQuestion)) shouldBe Some(false)
@@ -321,13 +316,13 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
           .copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(employerProvidedProfessionalSubscriptionsQuestion = None)))
           .copy(medicalChildcareEducationModel = None)
         insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-        urlPost(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), body = form, follow = false,
+        urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"update the utilitiesAndServicesModel model and redirect to the professional subscriptions amount page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe professionalFeesOrSubscriptionsBenefitsAmountUrl(taxYearEOY, employmentId)
+        result.header("location").contains(professionalFeesOrSubscriptionsBenefitsAmountUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedProfessionalSubscriptionsQuestion)) shouldBe Some(true)
@@ -341,13 +336,13 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
-        urlPost(professionalSubscriptionsBenefitsPageUrl(taxYear), body = "", follow = false,
+        urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsUrl(taxYear, employmentId)), body = "", follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
 
     }
@@ -356,12 +351,12 @@ class ProfessionalSubscriptionsBenefitsControllerISpec extends IntegrationTest w
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        urlPost(professionalSubscriptionsBenefitsPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
   }

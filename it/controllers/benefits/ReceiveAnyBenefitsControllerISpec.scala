@@ -27,7 +27,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{carVanFuelBenefitsUrl, checkYourBenefitsUrl, overviewUrl}
+import utils.PageUrls.{carVanFuelBenefitsUrl, checkYourBenefitsUrl, companyBenefitsUrl, fullUrl, overviewUrl}
 
 class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -102,10 +102,6 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
     val expectedErrorText = "Select yes if your client got any benefits from this company"
   }
 
-  private def url(taxYear: Int) = s"$appUrl/$taxYear/benefits/company-benefits?employmentId=${defaultUser.employmentId}"
-
-  private val postUrl = s"/update-and-submit-income-tax-return/employment-income/2021/benefits/company-benefits?employmentId=${defaultUser.employmentId}"
-
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
     UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
     UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
@@ -120,12 +116,11 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       val specific = user.specificExpectedResults.get
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
         "return Did you receive any benefits question page" when {
-          val taxYear = taxYearEOY
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
-            urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "status OK" in {
@@ -142,17 +137,17 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           buttonCheck(continueButton)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
-          formPostLinkCheck(postUrl, formSelector)
+          formPostLinkCheck(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId), formSelector)
         }
 
         "return Did you receive any benefits question page with radio button pre-filled if isBenefits received field true" when {
-          val taxYear = taxYearEOY
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = false, isBenefitsReceived = true)
             insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-            urlGet(url(taxYear), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear, Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "fake-id"))))
+            urlGet(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), welsh = user.isWelsh,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY, Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "fake-id"))))
           }
 
           "status OK" in {
@@ -169,17 +164,16 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           buttonCheck(continueButton)
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
-          formPostLinkCheck(postUrl, formSelector)
+          formPostLinkCheck(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId), formSelector)
         }
       }
     }
 
     "redirect to Check your benefits page when there is no cya" when {
-      val taxYear = taxYearEOY
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(url(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "status SEE_OTHER" in {
@@ -187,7 +181,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       }
 
       "redirect to Check Employment Details page" in {
-        result.header(HeaderNames.LOCATION) shouldBe overviewUrl(taxYear)
+        result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYearEOY)) shouldBe true
       }
     }
 
@@ -197,7 +191,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
         val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = false, isBenefitsReceived = true)
         insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(url(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(companyBenefitsUrl(taxYear, defaultUser.employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "status SEE_OTHER" in {
@@ -205,7 +199,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       }
 
       "redirect to Overview page" in {
-        result.header(HeaderNames.LOCATION) shouldBe overviewUrl(taxYear)
+        result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYear)) shouldBe true
       }
     }
   }
@@ -225,7 +219,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
-            urlPost(url(taxYearEOY), body = yesNoFormEmpty, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), body = yesNoFormEmpty, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "status BAD_REQUEST" in {
@@ -240,7 +234,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           textOnPageCheck(expectedCaption, captionSelector)
           buttonCheck(continueButton)
           errorSummaryCheck(specific.expectedErrorText, expectedErrorHref)
-          formPostLinkCheck(postUrl, formSelector)
+          formPostLinkCheck(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId), formSelector)
         }
       }
     }
@@ -251,12 +245,12 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = false)
         insertCyaData(defaultUser.copy(isPriorSubmission = true, hasPriorBenefits = true, employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-        urlPost(url(taxYearEOY), follow = false, body = yesNoFormYes, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), follow = false, body = yesNoFormYes, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to Car van fuel Benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) shouldBe carVanFuelBenefitsUrl(taxYearEOY, defaultUser.employmentId)
+        result.header(HeaderNames.LOCATION).contains(carVanFuelBenefitsUrl(taxYearEOY, defaultUser.employmentId)) shouldBe true
       }
 
       "update the isBenefitsReceived value to true" in {
@@ -271,12 +265,12 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = false)
         insertCyaData(defaultUser.copy(isPriorSubmission = true, hasPriorBenefits = true, employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-        urlPost(url(taxYearEOY), follow = false, body = yesNoFormYes, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), follow = false, body = yesNoFormYes, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to Car van fuel Benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) shouldBe carVanFuelBenefitsUrl(taxYearEOY, defaultUser.employmentId)
+        result.header(HeaderNames.LOCATION).contains(carVanFuelBenefitsUrl(taxYearEOY, defaultUser.employmentId)) shouldBe true
       }
 
       "update the isBenefitsReceived value to true" in {
@@ -290,12 +284,12 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
-        urlPost(url(taxYearEOY), follow = false, body = yesNoFormYes, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), follow = false, body = yesNoFormYes, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to Car van fuel Benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) shouldBe carVanFuelBenefitsUrl(taxYearEOY, defaultUser.employmentId)
+        result.header(HeaderNames.LOCATION).contains(carVanFuelBenefitsUrl(taxYearEOY, defaultUser.employmentId)) shouldBe true
       }
 
       "update the isBenefitsReceived value to true" in {
@@ -309,12 +303,12 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
-        urlPost(url(taxYearEOY), follow = false, body = yesNoFormNo, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), follow = false, body = yesNoFormNo, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to check your Benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) shouldBe checkYourBenefitsUrl(taxYearEOY, defaultUser.employmentId)
+        result.header(HeaderNames.LOCATION).contains(checkYourBenefitsUrl(taxYearEOY, defaultUser.employmentId)) shouldBe true
       }
 
       "update the isBenefitsReceived value to false" in {
@@ -328,12 +322,12 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(defaultUser.copy(isPriorSubmission = true, hasPriorBenefits = true, employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
-        urlPost(url(taxYearEOY), follow = false, body = yesNoFormNo, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), follow = false, body = yesNoFormNo, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to check your Benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) shouldBe checkYourBenefitsUrl(taxYearEOY, defaultUser.employmentId)
+        result.header(HeaderNames.LOCATION).contains(checkYourBenefitsUrl(taxYearEOY, defaultUser.employmentId)) shouldBe true
       }
 
       "update the isBenefitsReceived value to false" in {
@@ -346,7 +340,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(url(taxYear), follow = false, body = yesNoFormYes, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(companyBenefitsUrl(taxYear, defaultUser.employmentId)), follow = false, body = yesNoFormYes, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "status SEE_OTHER" in {
@@ -354,7 +348,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       }
 
       "redirect to Check Employment Benefits page" in {
-        result.header(HeaderNames.LOCATION) shouldBe overviewUrl(taxYear)
+        result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYear)) shouldBe true
       }
     }
   }

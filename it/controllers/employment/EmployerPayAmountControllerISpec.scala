@@ -31,15 +31,13 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{checkYourDetailsUrl, overviewUrl}
+import utils.PageUrls.{checkYourDetailsUrl, fullUrl, howMuchPayUrl, overviewUrl}
 
 class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val taxYearEOY: Int = taxYear - 1
   private val amount: BigDecimal = 100
   private val employmentId = "employmentId"
-  private val urlEOY = s"$appUrl/2021/how-much-pay?employmentId=$employmentId"
-  private val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/how-much-pay?employmentId=" + employmentId
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   private val userRequest: User[_] = User(mtditid, None, nino, sessionId, affinityGroup)
@@ -160,7 +158,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(cya(), User(mtditid, None, nino, sessionId, "agent"))
-            urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -177,7 +175,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
+          formPostLinkCheck(howMuchPayUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -188,7 +186,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(cya(None), User(mtditid, None, nino, sessionId, "agent"))
-            urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -205,7 +203,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(continueButtonLink, continueButtonFormSelector)
+          formPostLinkCheck(howMuchPayUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
 
         }
@@ -219,7 +217,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
                 dropEmploymentDB()
                 noUserDataStub(nino, taxYearEOY)
                 insertCyaData(cya(payToDate = None, isPriorSubmission = false), User(mtditid, None, nino, sessionId, "agent"))
-                urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+                urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -234,7 +232,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
                 dropEmploymentDB()
                 userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYearEOY)
                 insertCyaData(cya(), User(mtditid, None, nino, sessionId, "agent"))
-                urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+                urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -250,7 +248,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
                 dropEmploymentDB()
                 userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYearEOY)
                 insertCyaData(cya(Some(110.00)), User(mtditid, None, nino, sessionId, "agent"))
-                urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+                urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -264,7 +262,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
                 dropEmploymentDB()
                 noUserDataStub(nino, taxYearEOY)
                 insertCyaData(cya(Some(100.00), isPriorSubmission = false), User(mtditid, None, nino, sessionId, "agent"))
-                urlGet(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+                urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
               implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -277,13 +275,13 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            urlGet(urlEOY, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
+            result.header("location").contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
           }
         }
 
@@ -299,7 +297,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe overviewUrl(taxYear)
+            result.header("location").contains(overviewUrl(taxYear)) shouldBe true
           }
         }
 
@@ -322,7 +320,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(cya(), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
-            urlPost(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
+            urlPost(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -342,7 +340,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(cya(), User(mtditid, None, nino, sessionId, "agent"))
-            urlPost(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "|"))
+            urlPost(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "|"))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -362,7 +360,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(cya(), User(mtditid, None, nino, sessionId, "agent"))
-            urlPost(urlEOY, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)),
+            urlPost(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)),
               body = Map("amount" -> "9999999999999999999999999999"))
           }
 
@@ -382,13 +380,13 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(cya(), userRequest)
-            urlPost(urlEOY, follow = false,
+            urlPost(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), follow = false,
               welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
           }
 
           "has an SEE_OTHER status" in {
             result.status shouldBe SEE_OTHER
-            result.header("location") shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
+            result.header("location").contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
           }
         }
       }

@@ -31,7 +31,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{checkYourExpensesUrl, otherEquipmentExpensesUrl, overviewUrl}
+import utils.PageUrls.{checkYourExpensesUrl, fullUrl, otherEquipmentExpensesAmountUrl, otherEquipmentExpensesUrl, overviewUrl}
 
 class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -41,12 +41,9 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
   private val maxLimit: String = "100000000000"
   private val amountField = "#amount"
   private val amountFieldName = "amount"
-  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/amount-for-other-equipment"
 
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
     anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
-
-  private def employmentExpensesAmountPageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/amount-for-other-equipment"
 
   object Selectors {
     val formSelector = "#main-content > div > div > form"
@@ -161,7 +158,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
             val expensesCYAModel = anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(otherAndCapitalAllowances = None))
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, expensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(employmentExpensesAmountPageUrl(taxYearEOY), user.isWelsh, follow = false,
+            urlGet(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), user.isWelsh, follow = false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -179,7 +176,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountField, "")
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(otherEquipmentExpensesAmountUrl(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -191,7 +188,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
               anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(otherAndCapitalAllowances = Some(newAmount)))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(employmentExpensesAmountPageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -208,7 +205,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountField, newAmount.toString())
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(otherEquipmentExpensesAmountUrl(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -219,7 +216,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(employmentExpensesAmountPageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -236,7 +233,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountField, "")
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(otherEquipmentExpensesAmountUrl(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
         }
       }
@@ -252,12 +249,12 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           userDataStub(anIncomeTaxUserData, nino, taxYear)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
-          urlGet(employmentExpensesAmountPageUrl(taxYear), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlGet(fullUrl(otherEquipmentExpensesAmountUrl(taxYear)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe overviewUrl(taxYear)
+          result.header("location").contains(overviewUrl(taxYear)) shouldBe true
         }
       }
 
@@ -266,13 +263,13 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           dropExpensesDB()
           authoriseAgentOrIndividual(user.isAgent)
           authoriseAgentOrIndividual(user.isAgent)
-          urlGet(employmentExpensesAmountPageUrl(taxYearEOY), user.isWelsh, follow = false,
+          urlGet(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), user.isWelsh, follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
+          result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
         }
       }
 
@@ -284,12 +281,12 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
             anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(otherAndCapitalAllowancesQuestion = Some(false)))), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
-          urlGet(employmentExpensesAmountPageUrl(taxYearEOY), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
+          result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
         }
       }
 
@@ -314,7 +311,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
             userDataStub(anIncomeTaxUserData, nino, taxYear)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(employmentExpensesAmountPageUrl(taxYearEOY), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
 
           }
 
@@ -331,11 +328,10 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountField, "abc")
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(otherEquipmentExpensesAmountUrl(taxYearEOY), formSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedInvalidFormatErrorMessage, Some(amountFieldName))
           errorSummaryCheck(user.specificExpectedResults.get.expectedInvalidFormatErrorMessage, amountField)
           welshToggleCheck(user.isWelsh)
-
         }
 
         "return an error when no otherAndCapitalAllowances amount is submitted" which {
@@ -345,7 +341,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
             userDataStub(anIncomeTaxUserData, nino, taxYear)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(employmentExpensesAmountPageUrl(taxYearEOY), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -361,7 +357,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountField, "")
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(otherEquipmentExpensesAmountUrl(taxYearEOY), formSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Some(amountFieldName))
           errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, amountField)
           welshToggleCheck(user.isWelsh)
@@ -374,7 +370,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
             userDataStub(anIncomeTaxUserData, nino, taxYear)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(employmentExpensesAmountPageUrl(taxYearEOY), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -390,7 +386,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountField, maxLimit)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(otherEquipmentExpensesAmountUrl(taxYearEOY), formSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedOverMaximumErrorMessage, Some(amountFieldName))
           errorSummaryCheck(user.specificExpectedResults.get.expectedOverMaximumErrorMessage, amountField)
           welshToggleCheck(user.isWelsh)
@@ -408,12 +404,12 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
-          urlPost(employmentExpensesAmountPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
+          result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
@@ -440,13 +436,13 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
             anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(otherAndCapitalAllowancesQuestion = None))), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
-          urlPost(employmentExpensesAmountPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
+          urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe otherEquipmentExpensesUrl(taxYearEOY)
+          result.header("location").contains(otherEquipmentExpensesUrl(taxYearEOY)) shouldBe true
         }
       }
 
@@ -457,14 +453,14 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
-          urlPost(employmentExpensesAmountPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
+          urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
 
-          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
+          result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
@@ -489,12 +485,12 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           userDataStub(anIncomeTaxUserData, nino, taxYear)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
           authoriseAgentOrIndividual(user.isAgent)
-          urlPost(employmentExpensesAmountPageUrl(taxYear), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYear)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe overviewUrl(taxYear)
+          result.header("location").contains(overviewUrl(taxYear)) shouldBe true
         }
       }
 
@@ -505,13 +501,13 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           dropExpensesDB()
           authoriseAgentOrIndividual(user.isAgent)
           authoriseAgentOrIndividual(user.isAgent)
-          urlPost(employmentExpensesAmountPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh,
+          urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
+          result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
         }
       }
     }

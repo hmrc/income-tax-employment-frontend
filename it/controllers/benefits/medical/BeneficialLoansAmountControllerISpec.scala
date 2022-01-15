@@ -28,7 +28,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{checkYourBenefitsUrl, incomeTaxOrIncurredCostsBenefitsUrl, overviewUrl}
+import utils.PageUrls.{beneficialLoansBenefitsAmountUrl, checkYourBenefitsUrl, fullUrl, incomeTaxOrIncurredCostsBenefitsUrl, overviewUrl}
 
 class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -37,9 +37,6 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
   private val amountFieldHref = "#amount"
   private val taxYearEOY: Int = taxYear - 1
   private val employmentId: String = "employmentId"
-  private val formPostLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/beneficial-loans-amount?employmentId=$employmentId"
-
-  private def beneficialLoansAmountPageUrl(taxYear: Int): String = s"$appUrl/$taxYear/benefits/beneficial-loans-amount?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > label > header > p"
@@ -153,7 +150,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(beneficialLoan = Some(18.00))))
               insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-              urlGet(beneficialLoansAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlGet(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has an OK($OK) status" in {
@@ -170,7 +167,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             textOnPageCheck(expectedHintText, hintTextSelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
-            formPostLinkCheck(formPostLink, formSelector)
+            formPostLinkCheck(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
             welshToggleCheck(user.isWelsh)
           }
@@ -182,7 +179,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(beneficialLoan = None)))
               insertCyaData(anEmploymentUserDataWithBenefits(benefits = benefitsViewModel, hasPriorBenefits = false), aUserRequest)
-              urlGet(beneficialLoansAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlGet(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has an OK($OK) status" in {
@@ -199,7 +196,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             textOnPageCheck(expectedHintText, hintTextSelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
-            formPostLinkCheck(formPostLink, formSelector)
+            formPostLinkCheck(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
             welshToggleCheck(user.isWelsh)
           }
@@ -212,7 +209,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               insertCyaData(anEmploymentUserData, aUserRequest)
-              urlGet(beneficialLoansAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlGet(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has an OK($OK) status" in {
@@ -229,7 +226,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             textOnPageCheck(expectedHintText, hintTextSelector)
             inputFieldValueCheck(amountInputName, inputSelector, amountInModel.toString())
             buttonCheck(continueButtonText, continueButtonSelector)
-            formPostLinkCheck(formPostLink, formSelector)
+            formPostLinkCheck(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
             welshToggleCheck(user.isWelsh)
           }
@@ -240,7 +237,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               insertCyaData(anEmploymentUserDataWithBenefits(aBenefitsViewModel, hasPriorBenefits = false), aUserRequest)
-              urlGet(beneficialLoansAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlGet(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has an OK($OK) status" in {
@@ -257,7 +254,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             textOnPageCheck(expectedHintText, hintTextSelector)
             inputFieldValueCheck(amountInputName, inputSelector, amountInModel.toString())
             buttonCheck(continueButtonText, continueButtonSelector)
-            formPostLinkCheck(formPostLink, formSelector)
+            formPostLinkCheck(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
             welshToggleCheck(user.isWelsh)
           }
@@ -271,12 +268,12 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertCyaData(anEmploymentUserData, aUserRequest)
-        urlGet(beneficialLoansAmountPageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(beneficialLoansBenefitsAmountUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -284,12 +281,12 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        urlGet(beneficialLoansAmountPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
   }
@@ -307,7 +304,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               insertCyaData(anEmploymentUserData, aUserRequest)
-              urlPost(beneficialLoansAmountPageUrl(taxYearEOY), body = "", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has an BAD REQUEST($BAD_REQUEST) status" in {
@@ -324,7 +321,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             textOnPageCheck(expectedHintText, hintTextSelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
-            formPostLinkCheck(formPostLink, formSelector)
+            formPostLinkCheck(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
             errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Some(amountInputName))
             errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, amountFieldHref)
@@ -340,7 +337,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               insertCyaData(anEmploymentUserData, aUserRequest)
-              urlPost(beneficialLoansAmountPageUrl(taxYearEOY), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -353,7 +350,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             textOnPageCheck(expectedHintText, hintTextSelector)
             inputFieldValueCheck(amountInputName, inputSelector, incorrectFormatAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
-            formPostLinkCheck(formPostLink, formSelector)
+            formPostLinkCheck(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
             errorAboveElementCheck(user.specificExpectedResults.get.expectedIncorrectFormatErrorMessage, Some(amountInputName))
             errorSummaryCheck(user.specificExpectedResults.get.expectedIncorrectFormatErrorMessage, amountFieldHref)
@@ -369,7 +366,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               insertCyaData(anEmploymentUserData, aUserRequest)
-              urlPost(beneficialLoansAmountPageUrl(taxYearEOY), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -382,7 +379,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
             textOnPageCheck(expectedHintText, hintTextSelector)
             inputFieldValueCheck(amountInputName, inputSelector, overMaximumAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
-            formPostLinkCheck(formPostLink, formSelector)
+            formPostLinkCheck(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
             errorAboveElementCheck(user.specificExpectedResults.get.expectedOverMaximumErrorMessage, Some(amountInputName))
             errorSummaryCheck(user.specificExpectedResults.get.expectedOverMaximumErrorMessage, amountFieldHref)
@@ -402,12 +399,12 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-        urlPost(beneficialLoansAmountPageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"update medicalChildcareEducationModel and redirect to income tax section" in {
         result.status shouldBe SEE_OTHER
-        result.header(name = "location") shouldBe incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId)
+        result.header(name = "location").contains(incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoanQuestion)) shouldBe Some(true)
@@ -423,12 +420,12 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(hasPriorBenefits = false, benefits = benefitsViewModel), aUserRequest)
-        urlPost(beneficialLoansAmountPageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"update medicalChildcareEducationModel and redirect to income tax and costs yes no page" in {
         result.status shouldBe SEE_OTHER
-        result.header(name = "location") shouldBe incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId)
+        result.header(name = "location").contains(incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoanQuestion)) shouldBe Some(true)
@@ -442,12 +439,12 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertCyaData(anEmploymentUserData, aUserRequest)
-        urlPost(beneficialLoansAmountPageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(beneficialLoansBenefitsAmountUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -455,12 +452,12 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        urlPost(beneficialLoansAmountPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
   }

@@ -20,8 +20,6 @@ import builders.models.UserBuilder.aUserRequest
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import common.{SessionValues, UUID}
 import controllers.employment.EmploymentSummaryControllerISpec.FullModel._
-import controllers.employment.routes._
-import controllers.expenses.routes.CheckEmploymentExpensesController
 import forms.YesNoForm
 import models.IncomeTaxUserData
 import models.benefits.Benefits
@@ -34,11 +32,11 @@ import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{addEmploymentUrl, employerNameUrlWithoutEmploymentId, overviewUrl}
+import utils.PageUrls.{addEmploymentUrl, checkYourBenefitsUrl, checkYourDetailsUrl, checkYourExpensesUrl, employerInformationUrl,
+  employerNameUrlWithoutEmploymentId, employmentSummaryUrl, fullUrl, overviewUrl}
 
 class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
-  val url = s"$appUrl/$taxYear/employment-summary"
   val taxYearEOY: Int = taxYear - 1
 
   object Selectors {
@@ -159,7 +157,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
-            urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(employmentSummaryUrl(taxYear)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -173,7 +171,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(user.commonExpectedResults.expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, employmentSummaryParagraphSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetText, insetTextSelector)
-          linkCheck(user.commonExpectedResults.employmentDetails, employmentDetailsRowLinkSelector, CheckEmploymentDetailsController.show(taxYear, employmentId1).url)
+          linkCheck(user.commonExpectedResults.employmentDetails, employmentDetailsRowLinkSelector, checkYourDetailsUrl(taxYear, employmentId1))
           textOnPageCheck(user.commonExpectedResults.benefits, employmentBenefitsRowSelector)
           textOnPageCheck(user.commonExpectedResults.expenses, employmentExpensesRowSelector)
           buttonCheck(user.commonExpectedResults.button)
@@ -184,7 +182,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(Some(AllEmploymentData(Seq(), None, Seq(employmentSource), None))), nino, taxYear)
-            urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(employmentSummaryUrl(taxYear)), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -196,7 +194,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(Some(singleEmploymentWithExpensesAndBenefitsModel)), nino, taxYear)
-            urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(employmentSummaryUrl(taxYear)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -210,9 +208,9 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(user.commonExpectedResults.expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, employmentSummaryParagraphSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetText, insetTextSelector)
-          linkCheck(user.commonExpectedResults.employmentDetails, employmentDetailsRowLinkSelector, CheckEmploymentDetailsController.show(taxYear, employmentId3).url)
-          linkCheck(user.commonExpectedResults.benefits, employmentBenefitsRowLinkSelector, CheckYourBenefitsController.show(taxYear, employmentId3).url)
-          linkCheck(user.commonExpectedResults.expenses, employmentExpensesRowLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
+          linkCheck(user.commonExpectedResults.employmentDetails, employmentDetailsRowLinkSelector, checkYourDetailsUrl(taxYear, employmentId3))
+          linkCheck(user.commonExpectedResults.benefits, employmentBenefitsRowLinkSelector, checkYourBenefitsUrl(taxYear, employmentId3))
+          linkCheck(user.commonExpectedResults.expenses, employmentExpensesRowLinkSelector, checkYourExpensesUrl(taxYear))
           buttonCheck(user.commonExpectedResults.button)
           welshToggleCheck(user.isWelsh)
         }
@@ -221,7 +219,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(Some(multipleEmploymentModel)), nino, taxYear)
-            urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(employmentSummaryUrl(taxYear)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -235,9 +233,9 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(user.commonExpectedResults.expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, employmentSummaryParagraphSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetText, insetTextSelector)
-          linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId1).url)
+          linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), employerInformationUrl(taxYear, employmentId1))
           textOnPageCheck(user.commonExpectedResults.updated, employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
-          linkCheck(employerName2, employerSummaryListRowFieldNameSelector(2), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId2).url)
+          linkCheck(employerName2, employerSummaryListRowFieldNameSelector(2), employerInformationUrl(taxYear, employmentId2))
           textOnPageCheck(user.commonExpectedResults.updated, employerSummaryListRowFieldActionSelector(2), s"for $employerName2 row")
           textOnPageCheck(user.commonExpectedResults.expenses, expensesParagraphHeadingSelector, "for Expenses heading")
           textOnPageCheck(user.commonExpectedResults.expensesContent, expensesParagraphSubheadingSelector)
@@ -251,7 +249,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(Some(multipleEmploymentWithExpensesModel)), nino, taxYear)
-            urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(employmentSummaryUrl(taxYear)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "status OK" in {
@@ -265,13 +263,13 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           textOnPageCheck(user.commonExpectedResults.expectedCaption, captionSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, employmentSummaryParagraphSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetText, insetTextSelector)
-          linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId1).url)
+          linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), employerInformationUrl(taxYear, employmentId1))
           textOnPageCheck(user.commonExpectedResults.updated, employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
-          linkCheck(employerName3, employerSummaryListRowFieldNameSelector(2), EmploymentDetailsAndBenefitsController.show(taxYear, employmentId3).url)
+          linkCheck(employerName3, employerSummaryListRowFieldNameSelector(2), employerInformationUrl(taxYear, employmentId3))
           textOnPageCheck(user.commonExpectedResults.updated, employerSummaryListRowFieldActionSelector(2), s"for $employerName3 row")
           textOnPageCheck(user.commonExpectedResults.expenses, expensesParagraphHeadingSelector)
           textOnPageCheck(user.commonExpectedResults.expensesContent, expensesParagraphSubheadingSelector)
-          linkCheck(user.commonExpectedResults.expenses, expensesSummaryListRowFieldNameLinkSelector, CheckEmploymentExpensesController.show(taxYear).url)
+          linkCheck(user.commonExpectedResults.expenses, expensesSummaryListRowFieldNameLinkSelector, checkYourExpensesUrl(taxYear))
           textOnPageCheck(user.commonExpectedResults.updated, expensesSummaryListRowFieldActionSelector)
           buttonCheck(user.commonExpectedResults.button)
           welshToggleCheck(user.isWelsh)
@@ -281,12 +279,12 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(), nino, taxYear)
-            urlGet(url, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(employmentSummaryUrl(taxYear)), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
-            result.header(HeaderNames.LOCATION) shouldBe overviewUrl(taxYear)
+            result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYear)) shouldBe true
           }
 
         }
@@ -301,7 +299,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
           "has an SEE_OTHER(303) status" in {
             result.status shouldBe SEE_OTHER
-            result.header(HeaderNames.LOCATION) shouldBe addEmploymentUrl(taxYearEOY)
+            result.header(HeaderNames.LOCATION).contains(addEmploymentUrl(taxYearEOY)) shouldBe true
           }
 
         }
@@ -309,7 +307,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
         "returns an action when auth call fails" which {
           lazy val result: WSResponse = {
             unauthorisedAgentOrIndividual(user.isAgent)
-            urlGet(url)
+            urlGet(fullUrl(employmentSummaryUrl(taxYear)))
           }
           "has an UNAUTHORIZED(401) status" in {
             result.status shouldBe UNAUTHORIZED
@@ -348,7 +346,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           "redirect to employer name page" in {
-            result.header(HeaderNames.LOCATION).get contains employerNameUrlWithoutEmploymentId(taxYearEOY).get shouldBe true
+            result.header(HeaderNames.LOCATION).get contains employerNameUrlWithoutEmploymentId(taxYearEOY) shouldBe true
           }
         }
         "redirect to overview page and clear any existing new employments when selected no" which {
@@ -366,7 +364,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           }
 
           "redirect to the overview page" in {
-            result.header(HeaderNames.LOCATION) shouldBe overviewUrl(taxYearEOY)
+            result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYearEOY)) shouldBe true
           }
         }
       }
