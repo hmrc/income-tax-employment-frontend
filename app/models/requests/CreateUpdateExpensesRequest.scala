@@ -19,7 +19,7 @@ package models.requests
 import audit.{AmendEmploymentExpensesUpdateAudit, AuditEmploymentExpensesData, AuditNewEmploymentExpensesData, CreateNewEmploymentExpensesAudit}
 import models.User
 import models.employment.EmploymentExpenses
-import models.expenses.Expenses
+import models.expenses.{DecodedAmendExpensesPayload, DecodedCreateNewExpensesPayload, Expenses}
 import play.api.libs.json.{Json, OFormat}
 
 case class CreateUpdateExpensesRequest(ignoreExpenses: Option[Boolean], expenses: Expenses) {
@@ -58,6 +58,49 @@ case class CreateUpdateExpensesRequest(ignoreExpenses: Option[Boolean], expenses
         flatRateJobExpenses = expenses.flatRateJobExpenses,
         professionalSubscriptions = expenses.professionalSubscriptions,
         otherAndCapitalAllowances = expenses.otherAndCapitalAllowances
+      )
+    )
+  }
+
+  def toCreateDecodedExpensesPayloadModel()(implicit user: User[_]): DecodedCreateNewExpensesPayload = {
+
+    DecodedCreateNewExpensesPayload(
+      employmentExpensesData = Expenses(
+        businessTravelCosts = expenses.businessTravelCosts,
+        jobExpenses = expenses.jobExpenses,
+        flatRateJobExpenses = expenses.flatRateJobExpenses,
+        professionalSubscriptions = expenses.professionalSubscriptions,
+        hotelAndMealExpenses = expenses.hotelAndMealExpenses,
+        otherAndCapitalAllowances = expenses.otherAndCapitalAllowances,
+        vehicleExpenses = expenses.vehicleExpenses,
+        mileageAllowanceRelief = expenses.mileageAllowanceRelief
+      )
+    )
+  }
+
+
+  def toAmendDecodedExpensesPayloadModel(priorData: EmploymentExpenses)(implicit user: User[_]): DecodedAmendExpensesPayload = {
+
+    DecodedAmendExpensesPayload(
+      priorEmploymentExpensesData = Expenses(
+        businessTravelCosts = priorData.expenses.flatMap(_.businessTravelCosts),
+        jobExpenses = priorData.expenses.flatMap(_.jobExpenses),
+        flatRateJobExpenses = priorData.expenses.flatMap(_.flatRateJobExpenses),
+        professionalSubscriptions = priorData.expenses.flatMap(_.professionalSubscriptions),
+        hotelAndMealExpenses = priorData.expenses.flatMap(_.hotelAndMealExpenses),
+        otherAndCapitalAllowances = priorData.expenses.flatMap(_.otherAndCapitalAllowances),
+        vehicleExpenses =  priorData.expenses.flatMap(_.vehicleExpenses),
+        mileageAllowanceRelief = priorData.expenses.flatMap(_.mileageAllowanceRelief)
+      ),
+      employmentExpensesData = Expenses(
+        businessTravelCosts = expenses.businessTravelCosts,
+        jobExpenses = expenses.jobExpenses,
+        flatRateJobExpenses = expenses.flatRateJobExpenses,
+        professionalSubscriptions = expenses.professionalSubscriptions,
+        hotelAndMealExpenses = expenses.hotelAndMealExpenses,
+        otherAndCapitalAllowances = expenses.otherAndCapitalAllowances,
+        vehicleExpenses = expenses.vehicleExpenses,
+        mileageAllowanceRelief = expenses.mileageAllowanceRelief
       )
     )
   }
