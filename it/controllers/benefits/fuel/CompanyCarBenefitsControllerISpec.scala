@@ -27,13 +27,13 @@ import org.jsoup.nodes.Document
 import org.scalatest.BeforeAndAfterEach
 import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
+import utils.PageUrls.{carBenefitsUrl, fullUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper {
 
-  override val taxYear = 2021
+  private val taxYearEOY = taxYear  - 1
   private val employmentId = "employmentId"
-  private val url = s"$appUrl/$taxYear/benefits/company-car?employmentId=$employmentId"
 
   object Selectors {
     val yesSelector = "#value"
@@ -104,8 +104,8 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(carQuestion = None)))
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData, nino, taxYear)
-            urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            urlGet(fullUrl(carBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -130,8 +130,8 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(carQuestion = None)))
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData, nino, taxYear)
-            urlPost(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = form)
+            userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+            urlPost(fullUrl(carBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = form)
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)

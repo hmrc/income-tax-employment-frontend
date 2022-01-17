@@ -27,7 +27,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.overviewUrl
+import utils.PageUrls.{fullUrl, overviewUrl, startEmploymentExpensesUrl}
 
 class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -35,9 +35,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
 
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
     ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
-
-  private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/employment/expenses/start-employment-expenses"
-
+  
   object Selectors {
     val captionSelector: String = "#main-content > div > div > div.govuk-panel.govuk-panel--interruption > form > header > p"
 
@@ -45,8 +43,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
 
     val continueButtonSelector: String = "button.govuk-button"
   }
-
-
+  
   trait CommonExpectedResults {
     val expectedCaption: Int => String
     val buttonText: String
@@ -115,7 +112,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = false))), aUserRequest)
-            urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -142,7 +139,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
-            urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -170,7 +167,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
               ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = false))), aUserRequest)
-            urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -201,12 +198,12 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYear)
-        urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(startEmploymentExpensesUrl(taxYear)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -214,7 +211,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
       lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has an OK status" in {

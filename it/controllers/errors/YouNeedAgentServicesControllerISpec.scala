@@ -20,6 +20,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.Status.UNAUTHORIZED
 import play.api.libs.ws.WSResponse
+import utils.PageUrls.{createAnAgentLink, fullUrl, youNeedAgentServicesUrl}
 import utils.{IntegrationTest, ViewHelpers}
 
 class YouNeedAgentServicesControllerISpec extends IntegrationTest with ViewHelpers {
@@ -29,14 +30,11 @@ class YouNeedAgentServicesControllerISpec extends IntegrationTest with ViewHelpe
     val createAnAgentLinkSelector = "#create_agent_services_link"
   }
 
-  val url = s"$appUrl/error/you-need-agent-services-account"
-
   trait CommonExpectedResults {
     val h1Expected: String
     val youNeedText: String
     val createAnAgentText: String
     val beforeYouCanText: String
-    val createAnAgentLink: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -44,7 +42,6 @@ class YouNeedAgentServicesControllerISpec extends IntegrationTest with ViewHelpe
     val youNeedText = "You need to"
     val createAnAgentText = "create an agent services account"
     val beforeYouCanText = "before you can view this page."
-    val createAnAgentLink = "https://www.gov.uk/guidance/get-an-hmrc-agent-services-account"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -52,7 +49,6 @@ class YouNeedAgentServicesControllerISpec extends IntegrationTest with ViewHelpe
     val youNeedText = "You need to"
     val createAnAgentText = "create an agent services account"
     val beforeYouCanText = "before you can view this page."
-    val createAnAgentLink = "https://www.gov.uk/guidance/get-an-hmrc-agent-services-account"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = {
@@ -70,7 +66,7 @@ class YouNeedAgentServicesControllerISpec extends IntegrationTest with ViewHelpe
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(url, welsh = user.isWelsh)
+            urlGet(fullUrl(youNeedAgentServicesUrl), welsh = user.isWelsh)
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)

@@ -30,7 +30,8 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{accommodationRelocationBenefitsUrl, carBenefitsUrl, carFuelBenefitsUrl, checkYourBenefitsUrl, mileageBenefitsUrl, overviewUrl, vanBenefitsUrl}
+import utils.PageUrls.{accommodationRelocationBenefitsUrl, carBenefitsUrl, carFuelBenefitsUrl, checkYourBenefitsUrl, fullUrl,
+  mileageBenefitsAmountUrl, mileageBenefitsUrl, overviewUrl, vanBenefitsUrl}
 
 class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -38,9 +39,6 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
   private val employmentId = "employmentId"
   private val poundPrefixText = "£"
   private val amountInputName = "amount"
-  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/mileage-amount?employmentId=$employmentId"
-
-  private def url(taxYear: Int): String = s"$appUrl/$taxYear/benefits/mileage-amount?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -145,7 +143,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
             val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(mileage = None)))
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(mileageBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -161,7 +159,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, Selectors.inputSelector, "")
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(mileageBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
           welshToggleCheck(user.isWelsh)
 
         }
@@ -172,7 +170,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(anEmploymentUserData, aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(url(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(mileageBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -192,7 +190,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           textOnPageCheck(hintText, hintTextSelector)
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, Selectors.inputSelector, "500")
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(mileageBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
           welshToggleCheck(user.isWelsh)
         }
       }
@@ -206,12 +204,12 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(mileageQuestion = Some(false))))
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
-          urlGet(url(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+          urlGet(fullUrl(mileageBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
         }
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
+          result.header("location").contains(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         }
 
       }
@@ -222,12 +220,12 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(mileageQuestion = None)))
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
-          urlGet(url(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+          urlGet(fullUrl(mileageBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
         }
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe mileageBenefitsUrl(taxYearEOY, employmentId)
+          result.header("location").contains(mileageBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         }
       }
 
@@ -238,12 +236,12 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(carQuestion = None)))
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
-          urlGet(url(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+          urlGet(fullUrl(mileageBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
         }
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe carBenefitsUrl(taxYearEOY, employmentId)
+          result.header("location").contains(carBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         }
       }
 
@@ -254,12 +252,12 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(vanQuestion = None)))
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
-          urlGet(url(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+          urlGet(fullUrl(mileageBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
         }
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe vanBenefitsUrl(taxYearEOY, employmentId)
+          result.header("location").contains(vanBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         }
 
       }
@@ -270,12 +268,12 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(carFuelQuestion = None)))
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
-          urlGet(url(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+          urlGet(fullUrl(mileageBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
         }
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe carFuelBenefitsUrl(taxYearEOY, employmentId)
+          result.header("location").contains(carFuelBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         }
       }
 
@@ -285,12 +283,12 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           noUserDataStub(nino, taxYearEOY)
           userDataStub(IncomeTaxUserData(None), nino, taxYearEOY)
           authoriseAgentOrIndividual(isAgent = false)
-          urlGet(url(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+          urlGet(fullUrl(mileageBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
         }
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+          result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         }
       }
 
@@ -300,12 +298,12 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           noUserDataStub(nino, taxYear)
           insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
-          urlGet(url(taxYear), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
+          urlGet(fullUrl(mileageBenefitsAmountUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
         }
 
         s"has an SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe overviewUrl(taxYear)
+          result.header("location").contains(overviewUrl(taxYear)) shouldBe true
         }
       }
     }
@@ -320,7 +318,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
             dropEmploymentDB()
             insertCyaData(anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(fullUrl(mileageBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has a BAD_REQUEST ($BAD_REQUEST) status" in {
@@ -343,7 +341,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
             dropEmploymentDB()
             insertCyaData(anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(fullUrl(mileageBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has a BAD_REQUEST ($BAD_REQUEST) status" in {
@@ -367,7 +365,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
             dropEmploymentDB()
             insertCyaData(anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(url(taxYearEOY), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(fullUrl(mileageBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has a BAD_REQUEST ($BAD_REQUEST) status" in {
@@ -394,12 +392,12 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(mileageBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         s"has a SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+          result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
           cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel) shouldBe None
         }
@@ -412,12 +410,12 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(mileageQuestion = Some(false))))
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(mileageBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         s"has a SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
+          result.header("location").contains(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         }
       }
 
@@ -426,12 +424,12 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(url(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(fullUrl(mileageBenefitsAmountUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         s"has a SEE_OTHER($SEE_OTHER) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe overviewUrl(taxYear)
+          result.header("location").contains(overviewUrl(taxYear)) shouldBe true
         }
       }
     }
@@ -443,12 +441,12 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(mileageBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to the accommodation page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
 
       "updates the mileage benefit to be 200" in {
@@ -465,12 +463,12 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(url(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(mileageBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to the accommodation relocation controller page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
 
       "updates the mileage benefit to be 200" in {

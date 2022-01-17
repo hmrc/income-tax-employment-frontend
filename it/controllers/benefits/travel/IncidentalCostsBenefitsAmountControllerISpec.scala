@@ -30,7 +30,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{checkYourBenefitsUrl, entertainmentExpensesBenefitsUrl, incidentalOvernightCostsBenefitsUrl, overviewUrl}
+import utils.PageUrls.{checkYourBenefitsUrl, entertainmentExpensesBenefitsUrl, fullUrl, incidentalOvernightCostsBenefitsAmountUrl, incidentalOvernightCostsBenefitsUrl, overviewUrl}
 
 class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -38,11 +38,6 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   private val employmentId: String = "employmentId"
   private val prefilledAmount: BigDecimal = 200
   private val amountInputName = "amount"
-  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/incidental-overnight-costs-amount?employmentId=$employmentId"
-
-  private def incidentalOvernightCostsAmountPageUrl(taxYear: Int): String =
-    s"$appUrl/$taxYear/benefits/incidental-overnight-costs-amount?employmentId=$employmentId"
-
 
   private def employmentUserData(hasPriorBenefits: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
     anEmploymentUserData.copy(isPriorSubmission = hasPriorBenefits, hasPriorBenefits = hasPriorBenefits, employment = employmentCyaModel)
@@ -151,7 +146,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpenses = None)))
             insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-            urlGet(incidentalOvernightCostsAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has an OK($OK) status" in {
@@ -167,7 +162,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
           textOnPageCheck(currencyPrefix, currencyPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
           welshToggleCheck(user.isWelsh)
         }
@@ -178,7 +173,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
-            urlGet(incidentalOvernightCostsAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has an OK($OK) status" in {
@@ -194,7 +189,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
           textOnPageCheck(currencyPrefix, currencyPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, prefilledAmount.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
           welshToggleCheck(user.isWelsh)
         }
@@ -205,7 +200,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
-            urlGet(incidentalOvernightCostsAmountPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has an OK($OK) status" in {
@@ -221,7 +216,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
           textOnPageCheck(currencyPrefix, currencyPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, prefilledAmount.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
           welshToggleCheck(user.isWelsh)
         }
@@ -234,12 +229,12 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYear)
         insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
-        urlGet(incidentalOvernightCostsAmountPageUrl(taxYear), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
+        urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
       }
 
       s"has a SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -250,12 +245,12 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpensesQuestion = None)))
         insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-        urlGet(incidentalOvernightCostsAmountPageUrl(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+        urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
       }
 
       s"has a SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -266,12 +261,12 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpensesQuestion = Some(false))))
         insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-        urlGet(incidentalOvernightCostsAmountPageUrl(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+        urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
       }
 
       s"has a SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe entertainmentExpensesBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(entertainmentExpensesBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -282,12 +277,12 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpensesQuestion = Some(false))))
         insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-        urlGet(incidentalOvernightCostsAmountPageUrl(taxYearEOY), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+        urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
       }
 
       s"has a SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
   }
@@ -304,7 +299,8 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
-              urlPost(incidentalOvernightCostsAmountPageUrl(taxYearEOY), body = "", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", welsh = user.isWelsh,
+                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has an BAD REQUEST($BAD_REQUEST) status" in {
@@ -322,7 +318,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
             buttonCheck(continueButtonText, continueButtonSelector)
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorNoEntry, inputSelector)
             errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Some(amountInputName))
-            formPostLinkCheck(continueLink, formSelector)
+            formPostLinkCheck(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
             welshToggleCheck(user.isWelsh)
           }
@@ -335,7 +331,8 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
-              urlPost(incidentalOvernightCostsAmountPageUrl(taxYearEOY), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, welsh = user.isWelsh,
+                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has an BAD REQUEST($BAD_REQUEST) status" in {
@@ -353,7 +350,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
             buttonCheck(continueButtonText, continueButtonSelector)
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, inputSelector)
             errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, Some(amountInputName))
-            formPostLinkCheck(continueLink, formSelector)
+            formPostLinkCheck(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
             welshToggleCheck(user.isWelsh)
           }
@@ -366,7 +363,8 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
-              urlPost(incidentalOvernightCostsAmountPageUrl(taxYearEOY), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, welsh = user.isWelsh,
+                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has an BAD REQUEST($BAD_REQUEST) status" in {
@@ -384,7 +382,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
             buttonCheck(continueButtonText, continueButtonSelector)
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, inputSelector)
             errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, Some(amountInputName))
-            formPostLinkCheck(continueLink, formSelector)
+            formPostLinkCheck(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
             welshToggleCheck(user.isWelsh)
           }
@@ -401,12 +399,12 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val model = aBenefitsViewModel.copy(utilitiesAndServicesModel = None)
         insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(model))), aUserRequest)
-        urlPost(incidentalOvernightCostsAmountPageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"redirect to the entertaining page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe entertainmentExpensesBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(entertainmentExpensesBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe Some(true)
@@ -425,12 +423,12 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
           .copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpenses = None)))
           .copy(utilitiesAndServicesModel = None)
         insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-        urlPost(incidentalOvernightCostsAmountPageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"redirect to the entertaining question page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe entertainmentExpensesBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(entertainmentExpensesBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.personalIncidentalExpensesQuestion)) shouldBe Some(true)
@@ -444,12 +442,12 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYear)
         insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
-        urlGet(incidentalOvernightCostsAmountPageUrl(taxYear), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
+        urlGet(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
       }
 
       s"has a SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -460,13 +458,13 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         userDataStub(anIncomeTaxUserData, nino, taxYear)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpensesQuestion = None)))
         insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-        urlPost(incidentalOvernightCostsAmountPageUrl(taxYearEOY), body = "", follow = false,
+        urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -477,12 +475,12 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpensesQuestion = Some(false))))
         insertCyaData(employmentUserData(hasPriorBenefits = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-        urlPost(incidentalOvernightCostsAmountPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe entertainmentExpensesBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(entertainmentExpensesBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -493,12 +491,12 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(personalIncidentalExpensesQuestion = Some(false))))
         insertCyaData(employmentUserData(hasPriorBenefits = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-        urlPost(incidentalOvernightCostsAmountPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
   }

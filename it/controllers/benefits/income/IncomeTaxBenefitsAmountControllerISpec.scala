@@ -29,7 +29,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{checkYourBenefitsUrl, incurredCostsBenefitsUrl, overviewUrl}
+import utils.PageUrls.{checkYourBenefitsUrl, fullUrl, incomeTaxBenefitsAmountUrl, incurredCostsBenefitsUrl, overviewUrl}
 
 class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -38,10 +38,6 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   private val amount: BigDecimal = 255
   private val amountInputName = "amount"
   private val expectedErrorHref = "#amount"
-  private val formLink: String = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/employer-income-tax-amount?employmentId=$employmentId"
-
-  def pageUrl(taxYear: Int): String =
-    s"$appUrl/$taxYear/benefits/employer-income-tax-amount?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > label > header > p"
@@ -155,7 +151,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(anIncomeTaxAndCostsModel.copy(incomeTaxPaidByDirector = None)))
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-            urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
           s"has an OK($OK) status" in {
             result.status shouldBe OK
@@ -171,7 +167,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
           elementNotOnPageCheck(ifItWasNotTextSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(formLink, formSelector)
+          formPostLinkCheck(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
           welshToggleCheck(user.isWelsh)
         }
@@ -182,7 +178,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(anEmploymentUserData, aUserRequest)
-            urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has an OK($OK) status" in {
@@ -199,7 +195,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(formLink, formSelector)
+          formPostLinkCheck(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
           welshToggleCheck(user.isWelsh)
         }
@@ -209,7 +205,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
-            urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has an OK($OK) status" in {
@@ -226,7 +222,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
-          formPostLinkCheck(formLink, formSelector)
+          formPostLinkCheck(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
           welshToggleCheck(user.isWelsh)
         }
@@ -239,12 +235,12 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertCyaData(anEmploymentUserData, aUserRequest)
-        urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(incomeTaxBenefitsAmountUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -252,12 +248,12 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -268,12 +264,12 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(anIncomeTaxAndCostsModel.copy(incomeTaxPaidByDirectorQuestion = Some(false), incomeTaxPaidByDirector = None)))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-        urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -284,12 +280,12 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(IncomeTaxAndCostsModel(sectionQuestion = Some(false))))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-        urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -300,12 +296,12 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = true)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-        urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
   }
@@ -323,7 +319,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               insertCyaData(anEmploymentUserData, aUserRequest)
-              urlPost(pageUrl(taxYearEOY), body = "", welsh = user.isWelsh,
+              urlPost(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", welsh = user.isWelsh,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -343,7 +339,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
             buttonCheck(continueButtonText, continueButtonSelector)
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorNoEntry, expectedErrorHref)
             errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Some(amountInputName))
-            formPostLinkCheck(formLink, formSelector)
+            formPostLinkCheck(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
             welshToggleCheck(user.isWelsh)
           }
@@ -357,7 +353,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               insertCyaData(anEmploymentUserData, aUserRequest)
-              urlPost(pageUrl(taxYearEOY), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has an BAD REQUEST($BAD_REQUEST) status" in {
@@ -376,7 +372,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
             buttonCheck(continueButtonText, continueButtonSelector)
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, expectedErrorHref)
             errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorIncorrectFormat, Some(amountInputName))
-            formPostLinkCheck(formLink, formSelector)
+            formPostLinkCheck(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
             welshToggleCheck(user.isWelsh)
           }
@@ -389,7 +385,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               insertCyaData(anEmploymentUserData, aUserRequest)
-              urlPost(pageUrl(taxYearEOY), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has an BAD REQUEST($BAD_REQUEST) status" in {
@@ -408,7 +404,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
             buttonCheck(continueButtonText, continueButtonSelector)
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, expectedErrorHref)
             errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorOverMaximum, Some(amountInputName))
-            formPostLinkCheck(formLink, formSelector)
+            formPostLinkCheck(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
 
             welshToggleCheck(user.isWelsh)
           }
@@ -424,12 +420,12 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertCyaData(anEmploymentUserData, aUserRequest)
-        urlPost(pageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to check your benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
 
       "updates incomeTaxPaidByDirector value to the new amount" in {
@@ -447,12 +443,12 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
-        urlPost(pageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to the incurred costs question page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe incurredCostsBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(incurredCostsBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
 
       "updates incomeTaxPaidByDirector value to the new amount" in {
@@ -467,12 +463,12 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
       val form: Map[String, String] = Map(AmountForm.amount -> newAmount.toString())
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(pageUrl(taxYear), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(incomeTaxBenefitsAmountUrl(taxYear, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -482,12 +478,12 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        urlPost(pageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -500,12 +496,12 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = true)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-        urlPost(pageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -518,12 +514,12 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(anIncomeTaxAndCostsModel.copy(incomeTaxPaidByDirectorQuestion = Some(false), incomeTaxPaidByDirector = None)))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-        urlPost(pageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -537,12 +533,12 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(anIncomeTaxAndCostsModel.copy(incomeTaxPaidByDirectorQuestion = Some(false), incomeTaxPaidByDirector = None)))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-        urlPost(pageUrl(taxYearEOY), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
   }

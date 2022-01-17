@@ -29,16 +29,12 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{checkYourBenefitsUrl, childcareBenefitsAmountUrl, educationalServicesBenefitsUrl, overviewUrl}
+import utils.PageUrls.{checkYourBenefitsUrl, childcareBenefitsAmountUrl, childcareBenefitsUrl, educationalServicesBenefitsUrl, exemptLink, fullUrl, overviewUrl}
 
 class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val taxYearEOY: Int = taxYear - 1
   private val employmentId: String = "employmentId"
-  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/childcare?employmentId=$employmentId"
-  private val exemptLink = "https://www.gov.uk/expenses-and-benefits-childcare/whats-exempt"
-
-  private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/childcare?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -140,7 +136,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(nurseryPlacesQuestion = None)))
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-            urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -162,7 +158,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(childcareBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -171,7 +167,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             insertCyaData(anEmploymentUserData, aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -193,7 +189,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(childcareBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -203,7 +199,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(nurseryPlacesQuestion = Some(false))))
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -225,7 +221,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(childcareBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
       }
@@ -236,12 +232,12 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
-          urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(childcareBenefitsUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe overviewUrl(taxYear)
+          result.header("location").contains(overviewUrl(taxYear)) shouldBe true
         }
       }
 
@@ -250,12 +246,12 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(isPriorSubmission = true, hasPriorBenefits = true, employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
-          urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+          result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         }
 
         "doesn't create any benefits data" in {
@@ -270,12 +266,12 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           authoriseAgentOrIndividual(isAgent = false)
           val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(MedicalChildcareEducationModel(sectionQuestion = Some(false))))
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-          urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+          result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         }
       }
 
@@ -285,12 +281,12 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           authoriseAgentOrIndividual(isAgent = false)
           val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = true)
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-          urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+          result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         }
       }
     }
@@ -305,7 +301,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             insertCyaData(anEmploymentUserData, aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(pageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "has the correct status" in {
@@ -327,7 +323,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(childcareBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
 
           errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
@@ -343,12 +339,12 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the child care amount page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe childcareBenefitsAmountUrl(taxYearEOY, employmentId)
+        result.header("location").contains(childcareBenefitsAmountUrl(taxYearEOY, employmentId)) shouldBe true
       }
 
       "update the NurseryPlacesQuestion to true" in {
@@ -364,12 +360,12 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the educational services page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe educationalServicesBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(educationalServicesBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
 
       "update the NurseryPlacesQuestion to false, and nurseryPlaces to None" in {
@@ -386,12 +382,12 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
-        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe childcareBenefitsAmountUrl(taxYearEOY, employmentId)
+        result.header("location").contains(childcareBenefitsAmountUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -400,12 +396,12 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(anEmploymentUserData, aUserRequest)
-        urlPost(pageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(childcareBenefitsUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -415,12 +411,12 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
 
       "doesn't create any benefits data" in {
@@ -436,12 +432,12 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(MedicalChildcareEducationModel(sectionQuestion = Some(false))))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "redirects to the check employment benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -452,12 +448,12 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = true)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "redirects to the check employment benefits page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
   }

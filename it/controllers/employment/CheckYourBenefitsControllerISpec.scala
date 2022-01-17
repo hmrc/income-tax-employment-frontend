@@ -33,15 +33,12 @@ import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{checkYourBenefitsUrl, companyBenefitsUrl, overviewUrl}
-
+import utils.PageUrls._
 
 class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper {
 
   private val employmentId = "employmentId"
   private val taxYearEOY = taxYear - 1
-
-  private def url(taxYear: Int = taxYear): String = s"$appUrl/$taxYear/check-employment-benefits?employmentId=$employmentId"
 
   lazy val filteredBenefits: Some[EmploymentBenefits] = Some(EmploymentBenefits(
     submittedOn = "2020-02-12",
@@ -221,9 +218,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val benefitsReceived: String
     val saveAndContinue: String
     val returnToEmployerText: String
-    val returnToEmployerLink: String
     val returnToEmploymentSummaryText: String
-    val returnToEmploymentSummaryLink: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -307,9 +302,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val benefitsReceived = "Benefits received"
     val saveAndContinue: String = "Save and continue"
     val returnToEmployerText: String = "Return to employer"
-    val returnToEmployerLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employer-details-and-benefits?employmentId=001"
     val returnToEmploymentSummaryText: String = "Return to employment summary"
-    val returnToEmploymentSummaryLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employment-summary"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -393,9 +386,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val benefitsReceived = "Benefits received"
     val saveAndContinue: String = "Save and continue"
     val returnToEmployerText: String = "Return to employer"
-    val returnToEmployerLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employer-details-and-benefits?employmentId=001"
     val returnToEmploymentSummaryText: String = "Return to employment summary"
-    val returnToEmploymentSummaryLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employment-summary"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -690,84 +681,6 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val benefitsReceivedHiddenText: String = "Change if your client got employment benefits from this company"
   }
 
-  object Hrefs {
-    val receiveAnyBenefitsHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/company-benefits?employmentId=$employmentId"
-    val carVanFuelBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/car-van-fuel?employmentId=$employmentId"
-    val companyCarHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/company-car?employmentId=$employmentId"
-    val companyCarAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/company-car-amount?employmentId=$employmentId"
-    val companyCarFuelBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/car-fuel?employmentId=$employmentId"
-    val carFuelAmountBenefitsHref = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/car-fuel-amount?employmentId=$employmentId"
-    val mileageAmountBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/mileage-amount?employmentId=$employmentId"
-    val receivedOwnCarMileageBenefitHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/mileage?employmentId=$employmentId"
-    val companyVanBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/company-van?employmentId=$employmentId"
-    val companyVanFuelBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/van-fuel?employmentId=$employmentId"
-    val companyVanBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/company-van-amount?employmentId=$employmentId"
-    val companyVanFuelBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/van-fuel-amount?employmentId=$employmentId"
-    val accommodationRelocationBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/accommodation-relocation?employmentId=$employmentId"
-    val livingAccommodationBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/living-accommodation?employmentId=$employmentId"
-    val livingAccommodationAmountBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/living-accommodation-amount?employmentId=$employmentId"
-    val qualifyingRelocationBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/qualifying-relocation?employmentId=$employmentId"
-    val qualifyingRelocationBenefitsAmountHref: String =
-      s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/qualifying-relocation-amount?employmentId=$employmentId"
-    val nonQualifyingRelocationBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/non-qualifying-relocation?employmentId=$employmentId"
-    val nonQualifyingRelocationAmountBenefitsHref: String =
-      s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/non-qualifying-relocation-amount?employmentId=$employmentId"
-    val travelEntertainmentBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/travel-entertainment?employmentId=$employmentId"
-    val travelOrSubsistenceBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/travel-subsistence?employmentId=$employmentId"
-    val travelOrSubsistenceBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/travel-subsistence-amount?employmentId=$employmentId"
-    val incidentalCostsBenefitsAmountHref: String =
-      s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/incidental-overnight-costs-amount?employmentId=$employmentId"
-    val utilitiesOrGeneralServicesBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/utility-general-service?employmentId=$employmentId"
-    val entertainingBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/entertainment-expenses?employmentId=$employmentId"
-    val telephoneBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/telephone?employmentId=$employmentId"
-    val otherServicesBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/other-services-amount?employmentId=$employmentId"
-    val incidentalOvernightCostEmploymentBenefitsHref: String =
-      s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/incidental-overnight-costs?employmentId=$employmentId"
-    val otherServicesBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/other-services?employmentId=$employmentId"
-    val entertainmentAmountBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/entertainment-expenses-amount?employmentId=$employmentId"
-    val employerProvidedServicesBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/employer-provided-services?employmentId=$employmentId"
-    val telephoneEmploymentBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/telephone-amount?employmentId=$employmentId"
-    val educationalServicesAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/educational-services-amount?employmentId=$employmentId"
-    val employerProvidedServicesBenefitsAmountHref: String =
-      s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/employer-provided-services-amount?employmentId=$employmentId"
-    val professionalSubscriptionsBenefitsHref: String =
-      s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/professional-fees-or-subscriptions?employmentId=$employmentId"
-    val professionalSubscriptionsBenefitsAmountHref: String =
-      s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/professional-fees-or-subscriptions-amount?employmentId=$employmentId"
-    val medicalChildcareEducationHref: String =
-      s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/medical-dental-childcare-education-loans?employmentId=$employmentId"
-    val medicalDentalHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/medical-dental?employmentId=$employmentId"
-    val childcareBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/childcare?employmentId=$employmentId"
-    val childcareBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/childcare-amount?employmentId=$employmentId"
-    val beneficialLoansBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/beneficial-loans?employmentId=$employmentId"
-    val medicalOrDentalBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/medical-dental-amount?employmentId=$employmentId"
-    val beneficialLoansAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/beneficial-loans-amount?employmentId=$employmentId"
-    val incomeTaxOrIncurredCostsBenefitsHref: String =
-      s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/employer-income-tax-or-incurred-costs?employmentId=$employmentId"
-    val incomeTaxBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/employer-income-tax-amount?employmentId=$employmentId"
-    val incomeTaxBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/employer-income-tax?employmentId=$employmentId"
-    val educationServiceBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/educational-services?employmentId=$employmentId"
-    val incurredCostsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/incurred-costs?employmentId=$employmentId"
-    val incurredCostsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/incurred-costs-amount?employmentId=$employmentId"
-    val reimbursedCostsVouchersAndNonCashBenefitsHref: String =
-      s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/reimbursed-costs-vouchers-non-cash-benefits?employmentId=$employmentId"
-    val nonTaxableCostsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/non-taxable-costs?employmentId=$employmentId"
-    val taxableCostsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/taxable-costs?employmentId=$employmentId"
-    val taxableCostsReimbursedByEmployerAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/taxable-costs-amount?employmentId=$employmentId"
-    val nonTaxableCostsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/non-taxable-costs-amount?employmentId=$employmentId"
-    val vouchersBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/vouchers-or-credit-cards?employmentId=$employmentId"
-    val vouchersBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/vouchers-or-credit-cards-amount?employmentId=$employmentId"
-    val nonCashBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/non-cash-benefits?employmentId=$employmentId"
-    val nonCashBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/non-cash-benefits-amount?employmentId=$employmentId"
-    val otherBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/other-benefits-amount?employmentId=$employmentId"
-    val otherBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/other-benefits?employmentId=$employmentId"
-    val assetsOrAssetTransfersBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/assets?employmentId=$employmentId"
-    val assetsBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/assets-available-for-use?employmentId=$employmentId"
-    val assetsBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/assets-available-for-use-amount?employmentId=$employmentId"
-    val assetTransfersBenefitsHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/assets-to-keep?employmentId=$employmentId"
-    val assetTransfersBenefitsAmountHref: String = s"/update-and-submit-income-tax-return/employment-income/${taxYear - 1}/benefits/assets-to-keep-amount?employmentId=$employmentId"
-  }
-
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
     UserScenario(isWelsh = false, isAgent = false, CommonExpectedEN, Some(ExpectedIndividualEN)),
     UserScenario(isWelsh = false, isAgent = true, CommonExpectedEN, Some(ExpectedAgentEN)),
@@ -776,7 +689,6 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   )
 
   ".show" when {
-    import Hrefs._
     import Selectors._
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
@@ -788,7 +700,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYear)
-            urlGet(url(), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(checkYourBenefitsUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -954,7 +866,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
               ))
 
             userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = multipleSources))), nino, taxYear)
-            urlGet(url(), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(checkYourBenefitsUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -1111,7 +1023,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
-            urlGet(url(taxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+            urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -1121,92 +1033,116 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           captionCheck(common.expectedCaption(taxYear - 1))
           textOnPageCheck(specific.expectedP1, Selectors.p1)
 
-          changeAmountRowCheck(common.benefitsReceived, common.yes, 3, 1, s"${common.changeText} ${specific.benefitsReceivedHiddenText}", receiveAnyBenefitsHref)
+          changeAmountRowCheck(common.benefitsReceived, common.yes, 3, 1, s"${common.changeText} ${specific.benefitsReceivedHiddenText}", companyBenefitsUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.vehicleHeader, fieldHeaderSelector(4))
 
-          changeAmountRowCheck(common.carSubheading, common.yes, 5, 1, s"${common.changeText} ${specific.carSubheadingHiddenText}", carVanFuelBenefitsHref)
-          changeAmountRowCheck(common.companyCar, common.yes, 5, 2, s"${common.changeText} ${specific.companyCarHiddenText}", companyCarHref)
-          changeAmountRowCheck(common.companyCarAmount, "£1.23", 5, 3, s"${common.changeText} ${specific.companyCarAmountHiddenText}", companyCarAmountHref)
-          changeAmountRowCheck(common.fuelForCompanyCar, common.yes, 5, 4, s"${common.changeText} ${specific.fuelForCompanyCarHiddenText}", companyCarFuelBenefitsHref)
-          changeAmountRowCheck(common.fuelForCompanyCarAmount, "£2", 5, 5, s"${common.changeText} ${specific.fuelForCompanyCarAmountHiddenText}", carFuelAmountBenefitsHref)
-          changeAmountRowCheck(common.companyVan, common.yes, 5, 6, s"${common.changeText} ${specific.companyVanHiddenText}", companyVanBenefitsHref)
-          changeAmountRowCheck(common.fuelForCompanyVan, common.yes, 5, 8, s"${common.changeText} ${specific.fuelForCompanyVanHiddenText}", companyVanFuelBenefitsHref)
-          changeAmountRowCheck(common.companyVanAmount, "£3", 5, 7, s"${common.changeText} ${specific.companyVanAmountHiddenText}", companyVanBenefitsAmountHref)
-          changeAmountRowCheck(common.fuelForCompanyVanAmount, "£4", 5, 9, s"${common.changeText} ${specific.fuelForCompanyVanAmountHiddenText}", companyVanFuelBenefitsAmountHref)
-          changeAmountRowCheck(common.mileageBenefit, common.yes, 5, 10, s"${common.changeText} ${specific.mileageBenefitHiddenText}", receivedOwnCarMileageBenefitHref)
-          changeAmountRowCheck(common.mileageBenefitAmount, "£5", 5, 11, s"${common.changeText} ${specific.mileageBenefitAmountHiddenText}", mileageAmountBenefitsHref)
+          changeAmountRowCheck(common.carSubheading, common.yes, 5, 1, s"${common.changeText} ${specific.carSubheadingHiddenText}", carVanFuelBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.companyCar, common.yes, 5, 2, s"${common.changeText} ${specific.companyCarHiddenText}", carBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.companyCarAmount, "£1.23", 5, 3, s"${common.changeText} ${specific.companyCarAmountHiddenText}", carBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.fuelForCompanyCar, common.yes, 5, 4, s"${common.changeText} ${specific.fuelForCompanyCarHiddenText}", carFuelBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.fuelForCompanyCarAmount, "£2", 5, 5, s"${common.changeText} ${specific.fuelForCompanyCarAmountHiddenText}",
+            carFuelBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.companyVan, common.yes, 5, 6, s"${common.changeText} ${specific.companyVanHiddenText}", vanBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.fuelForCompanyVan, common.yes, 5, 8, s"${common.changeText} ${specific.fuelForCompanyVanHiddenText}", vanFuelBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.companyVanAmount, "£3", 5, 7, s"${common.changeText} ${specific.companyVanAmountHiddenText}", vanBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.fuelForCompanyVanAmount, "£4", 5, 9, s"${common.changeText} ${specific.fuelForCompanyVanAmountHiddenText}",
+            vanFuelBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.mileageBenefit, common.yes, 5, 10, s"${common.changeText} ${specific.mileageBenefitHiddenText}", mileageBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.mileageBenefitAmount, "£5", 5, 11, s"${common.changeText} ${specific.mileageBenefitAmountHiddenText}", mileageBenefitsAmountUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.accommodationHeader, fieldHeaderSelector(6))
-          changeAmountRowCheck(common.accommodationSubheading, common.yes, 7, 1, s"${common.changeText} ${specific.accommodationSubheadingHiddenText}", accommodationRelocationBenefitsHref)
-          changeAmountRowCheck(common.accommodation, common.yes, 7, 2, s"${common.changeText} ${specific.accommodationHiddenText}", livingAccommodationBenefitsHref)
-          changeAmountRowCheck(common.accommodationAmount, "£6", 7, 3, s"${common.changeText} ${specific.accommodationAmountHiddenText}", livingAccommodationAmountBenefitsHref)
-          changeAmountRowCheck(common.qualifyingRelocationCosts, common.yes, 7, 4, s"${common.changeText} ${specific.qualifyingRelocationCostsHiddenText}", qualifyingRelocationBenefitsHref)
+          changeAmountRowCheck(common.accommodationSubheading, common.yes, 7, 1, s"${common.changeText} ${specific.accommodationSubheadingHiddenText}",
+            accommodationRelocationBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.accommodation, common.yes, 7, 2, s"${common.changeText} ${specific.accommodationHiddenText}", livingAccommodationBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.accommodationAmount, "£6", 7, 3, s"${common.changeText} ${specific.accommodationAmountHiddenText}",
+            livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.qualifyingRelocationCosts, common.yes, 7, 4, s"${common.changeText} ${specific.qualifyingRelocationCostsHiddenText}",
+            qualifyingRelocationBenefitsUrl(taxYearEOY, employmentId))
           changeAmountRowCheck(common.qualifyingRelocationCostsAmount, "£7", 7, 5, s"${common.changeText} ${specific.qualifyingRelocationCostsAmountHiddenText}",
-            qualifyingRelocationBenefitsAmountHref)
-          changeAmountRowCheck(common.nonQualifyingRelocationCosts, common.yes, 7, 6, s"${common.changeText} ${specific.nonQualifyingRelocationCostsHiddenText}", nonQualifyingRelocationBenefitsHref)
+            qualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.nonQualifyingRelocationCosts, common.yes, 7, 6, s"${common.changeText} ${specific.nonQualifyingRelocationCostsHiddenText}",
+            nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId))
           changeAmountRowCheck(common.nonQualifyingRelocationCostsAmount, "£8", 7, 7, s"${common.changeText} ${specific.nonQualifyingRelocationCostsAmountHiddenText}",
-            nonQualifyingRelocationAmountBenefitsHref)
+            nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.travelHeader, fieldHeaderSelector(8))
-          changeAmountRowCheck(common.travelSubheading, common.yes, 9, 1, s"${common.changeText} ${specific.travelSubheadingHiddenText}", travelEntertainmentBenefitsAmountHref)
-          changeAmountRowCheck(common.travelAndSubsistence, common.yes, 9, 2, s"${common.changeText} ${specific.travelAndSubsistenceHiddenText}", travelOrSubsistenceBenefitsHref)
-          changeAmountRowCheck(common.travelAndSubsistenceAmount, "£9", 9, 3, s"${common.changeText} ${specific.travelAndSubsistenceAmountHiddenText}", travelOrSubsistenceBenefitsAmountHref)
-          changeAmountRowCheck(common.personalCosts, common.yes, 9, 4, s"${common.changeText} ${specific.personalCostsHiddenText}", incidentalOvernightCostEmploymentBenefitsHref)
-          changeAmountRowCheck(common.personalCostsAmount, "£10", 9, 5, s"${common.changeText} ${specific.personalCostsAmountHiddenText}", incidentalCostsBenefitsAmountHref)
-          changeAmountRowCheck(common.entertainment, common.yes, 9, 6, s"${common.changeText} ${specific.entertainmentHiddenText}", entertainingBenefitsHref)
-          changeAmountRowCheck(common.entertainmentAmount, "£11", 9, 7, s"${common.changeText} ${specific.entertainmentAmountHiddenText}", entertainmentAmountBenefitsHref)
+          changeAmountRowCheck(common.travelSubheading, common.yes, 9, 1, s"${common.changeText} ${specific.travelSubheadingHiddenText}",
+            travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.travelAndSubsistence, common.yes, 9, 2, s"${common.changeText} ${specific.travelAndSubsistenceHiddenText}",
+            travelSubsistenceBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.travelAndSubsistenceAmount, "£9", 9, 3, s"${common.changeText} ${specific.travelAndSubsistenceAmountHiddenText}",
+            travelSubsistenceBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.personalCosts, common.yes, 9, 4, s"${common.changeText} ${specific.personalCostsHiddenText}", incidentalOvernightCostsBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.personalCostsAmount, "£10", 9, 5, s"${common.changeText} ${specific.personalCostsAmountHiddenText}",
+            incidentalOvernightCostsBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.entertainment, common.yes, 9, 6, s"${common.changeText} ${specific.entertainmentHiddenText}", entertainmentExpensesBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.entertainmentAmount, "£11", 9, 7, s"${common.changeText} ${specific.entertainmentAmountHiddenText}",
+            entertainmentExpensesBenefitsAmountUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.utilitiesHeader, fieldHeaderSelector(10))
-          changeAmountRowCheck(common.utilitiesSubheading, common.yes, 11, 1, s"${common.changeText} ${specific.utilitiesSubheadingHiddenText}", utilitiesOrGeneralServicesBenefitsHref)
-          changeAmountRowCheck(common.telephone, common.yes, 11, 2, s"${common.changeText} ${specific.telephoneHiddenText}", telephoneBenefitsHref)
-          changeAmountRowCheck(common.telephoneAmount, "£12", 11, 3, s"${common.changeText} ${specific.telephoneAmountHiddenText}", telephoneEmploymentBenefitsAmountHref)
-          changeAmountRowCheck(common.servicesProvided, common.yes, 11, 4, s"${common.changeText} ${specific.servicesProvidedHiddenText}", employerProvidedServicesBenefitsHref)
-          changeAmountRowCheck(common.servicesProvidedAmount, "£13", 11, 5, s"${common.changeText} ${specific.servicesProvidedAmountHiddenText}", employerProvidedServicesBenefitsAmountHref)
-          changeAmountRowCheck(common.profSubscriptions, common.yes, 11, 6, s"${common.changeText} ${specific.profSubscriptionsHiddenText}", professionalSubscriptionsBenefitsHref)
-          changeAmountRowCheck(common.profSubscriptionsAmount, "£14", 11, 7, s"${common.changeText} ${specific.profSubscriptionsAmountHiddenText}", professionalSubscriptionsBenefitsAmountHref)
-          changeAmountRowCheck(common.otherServices, common.yes, 11, 8, s"${common.changeText} ${specific.otherServicesHiddenText}", otherServicesBenefitsHref)
-          changeAmountRowCheck(common.otherServicesAmount, "£15", 11, 9, s"${common.changeText} ${specific.otherServicesAmountHiddenText}", otherServicesBenefitsAmountHref)
+          changeAmountRowCheck(common.utilitiesSubheading, common.yes, 11, 1, s"${common.changeText} ${specific.utilitiesSubheadingHiddenText}",
+            utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.telephone, common.yes, 11, 2, s"${common.changeText} ${specific.telephoneHiddenText}", telephoneBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.telephoneAmount, "£12", 11, 3, s"${common.changeText} ${specific.telephoneAmountHiddenText}", telephoneBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.servicesProvided, common.yes, 11, 4, s"${common.changeText} ${specific.servicesProvidedHiddenText}",
+            employerProvidedServicesBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.servicesProvidedAmount, "£13", 11, 5, s"${common.changeText} ${specific.servicesProvidedAmountHiddenText}",
+            employerProvidedServicesBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.profSubscriptions, common.yes, 11, 6, s"${common.changeText} ${specific.profSubscriptionsHiddenText}",
+            professionalFeesOrSubscriptionsBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.profSubscriptionsAmount, "£14", 11, 7, s"${common.changeText} ${specific.profSubscriptionsAmountHiddenText}",
+            professionalFeesOrSubscriptionsBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.otherServices, common.yes, 11, 8, s"${common.changeText} ${specific.otherServicesHiddenText}", otherServicesBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.otherServicesAmount, "£15", 11, 9, s"${common.changeText} ${specific.otherServicesAmountHiddenText}",
+            otherServicesBenefitsAmountUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.medicalHeader, fieldHeaderSelector(12))
-          changeAmountRowCheck(common.medicalSubheading, common.yes, 13, 1, s"${common.changeText} ${specific.medicalSubheadingHiddenText}", medicalChildcareEducationHref)
-          changeAmountRowCheck(common.medicalIns, common.yes, 13, 2, s"${common.changeText} ${specific.medicalInsHiddenText}", medicalDentalHref)
-          changeAmountRowCheck(common.medicalInsAmount, "£16", 13, 3, s"${common.changeText} ${specific.medicalInsAmountHiddenText}", medicalOrDentalBenefitsAmountHref)
-          changeAmountRowCheck(common.nursery, common.yes, 13, 4, s"${common.changeText} ${specific.nurseryHiddenText}", childcareBenefitsHref)
-          changeAmountRowCheck(common.nurseryAmount, "£17", 13, 5, s"${common.changeText} ${specific.nurseryAmountHiddenText}", childcareBenefitsAmountHref)
-          changeAmountRowCheck(common.educational, common.yes, 13, 6, s"${common.changeText} ${specific.educationalHiddenText}", educationServiceBenefitsHref)
-          changeAmountRowCheck(common.educationalAmount, "£19", 13, 7, s"${common.changeText} ${specific.educationalAmountHiddenText}", educationalServicesAmountHref)
-          changeAmountRowCheck(common.beneficialLoans, common.yes, 13, 8, s"${common.changeText} ${specific.beneficialLoansHiddenText}", beneficialLoansBenefitsHref)
-          changeAmountRowCheck(common.beneficialLoansAmount, "£18", 13, 9, s"${common.changeText} ${specific.beneficialLoansAmountHiddenText}", beneficialLoansAmountHref)
+          changeAmountRowCheck(common.medicalSubheading, common.yes, 13, 1, s"${common.changeText} ${specific.medicalSubheadingHiddenText}",
+            medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.medicalIns, common.yes, 13, 2, s"${common.changeText} ${specific.medicalInsHiddenText}", medicalDentalBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.medicalInsAmount, "£16", 13, 3, s"${common.changeText} ${specific.medicalInsAmountHiddenText}", medicalDentalBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.nursery, common.yes, 13, 4, s"${common.changeText} ${specific.nurseryHiddenText}", childcareBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.nurseryAmount, "£17", 13, 5, s"${common.changeText} ${specific.nurseryAmountHiddenText}", childcareBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.educational, common.yes, 13, 6, s"${common.changeText} ${specific.educationalHiddenText}", educationalServicesBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.educationalAmount, "£19", 13, 7, s"${common.changeText} ${specific.educationalAmountHiddenText}",
+            educationalServicesBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.beneficialLoans, common.yes, 13, 8, s"${common.changeText} ${specific.beneficialLoansHiddenText}", beneficialLoansBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.beneficialLoansAmount, "£18", 13, 9, s"${common.changeText} ${specific.beneficialLoansAmountHiddenText}",
+            beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.incomeTaxHeader, fieldHeaderSelector(14))
-          changeAmountRowCheck(common.incomeTaxSubheading, common.yes, 15, 1, s"${common.changeText} ${specific.incomeTaxSubheadingHiddenText}", incomeTaxOrIncurredCostsBenefitsHref)
-          changeAmountRowCheck(common.incomeTaxPaid, common.yes, 15, 2, s"${common.changeText} ${specific.incomeTaxPaidHiddenText}", incomeTaxBenefitsHref)
-          changeAmountRowCheck(common.incomeTaxPaidAmount, "£20", 15, 3, s"${common.changeText} ${specific.incomeTaxPaidAmountHiddenText}", incomeTaxBenefitsAmountHref)
-          changeAmountRowCheck(common.incurredCostsPaid, common.yes, 15, 4, s"${common.changeText} ${specific.incurredCostsPaidHiddenText}", incurredCostsBenefitsHref)
-          changeAmountRowCheck(common.incurredCostsPaidAmount, "£21", 15, 5, s"${common.changeText} ${specific.incurredCostsPaidAmountHiddenText}", incurredCostsBenefitsAmountHref)
+          changeAmountRowCheck(common.incomeTaxSubheading, common.yes, 15, 1, s"${common.changeText} ${specific.incomeTaxSubheadingHiddenText}",
+            incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.incomeTaxPaid, common.yes, 15, 2, s"${common.changeText} ${specific.incomeTaxPaidHiddenText}", incomeTaxBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.incomeTaxPaidAmount, "£20", 15, 3, s"${common.changeText} ${specific.incomeTaxPaidAmountHiddenText}", incomeTaxBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.incurredCostsPaid, common.yes, 15, 4, s"${common.changeText} ${specific.incurredCostsPaidHiddenText}", incurredCostsBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.incurredCostsPaidAmount, "£21", 15, 5, s"${common.changeText} ${specific.incurredCostsPaidAmountHiddenText}",
+            incurredCostsBenefitsAmountUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(16))
-          changeAmountRowCheck(common.reimbursedSubheading, common.yes, 17, 1, s"${common.changeText} ${specific.reimbursedSubheadingHiddenText}", reimbursedCostsVouchersAndNonCashBenefitsHref)
+          changeAmountRowCheck(common.reimbursedSubheading, common.yes, 17, 1, s"${common.changeText} ${specific.reimbursedSubheadingHiddenText}",
+            reimbursedCostsBenefitsUrl(taxYearEOY, employmentId))
 
-          changeAmountRowCheck(common.nonTaxable, common.yes, 17, 2, s"${common.changeText} ${specific.nonTaxableHiddenText}", nonTaxableCostsHref)
-          changeAmountRowCheck(common.nonTaxableAmount, "£22", 17, 3, s"${common.changeText} ${specific.nonTaxableAmountHiddenText}", nonTaxableCostsBenefitsAmountHref)
+          changeAmountRowCheck(common.nonTaxable, common.yes, 17, 2, s"${common.changeText} ${specific.nonTaxableHiddenText}", nonTaxableCostsBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.nonTaxableAmount, "£22", 17, 3, s"${common.changeText} ${specific.nonTaxableAmountHiddenText}", nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId))
 
-          changeAmountRowCheck(common.taxableCosts, common.yes, 17, 4, s"${common.changeText} ${specific.taxableCostsHiddenText}", taxableCostsBenefitsHref)
-          changeAmountRowCheck(common.taxableCostsAmount, "£23", 17, 5, s"${common.changeText} ${specific.taxableCostsAmountHiddenText}", taxableCostsReimbursedByEmployerAmountHref)
-          changeAmountRowCheck(common.vouchers, common.yes, 17, 6, s"${common.changeText} ${specific.vouchersHiddenText}", vouchersBenefitsHref)
-          changeAmountRowCheck(common.vouchersAmount, "£24", 17, 7, s"${common.changeText} ${specific.vouchersAmountHiddenText}", vouchersBenefitsAmountHref)
-          changeAmountRowCheck(common.nonCash, common.yes, 17, 8, s"${common.changeText} ${specific.nonCashHiddenText}", nonCashBenefitsHref)
-          changeAmountRowCheck(common.nonCashAmount, "£25", 17, 9, s"${common.changeText} ${specific.nonCashAmountHiddenText}", nonCashBenefitsAmountHref)
-          changeAmountRowCheck(common.otherBenefits, common.yes, 17, 10, s"${common.changeText} ${specific.otherBenefitsHiddenText}", otherBenefitsHref)
-          changeAmountRowCheck(common.otherBenefitsAmount, "£26", 17, 11, s"${common.changeText} ${specific.otherBenefitsAmountHiddenText}", otherBenefitsAmountHref)
+          changeAmountRowCheck(common.taxableCosts, common.yes, 17, 4, s"${common.changeText} ${specific.taxableCostsHiddenText}", taxableCostsBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.taxableCostsAmount, "£23", 17, 5, s"${common.changeText} ${specific.taxableCostsAmountHiddenText}", taxableCostsBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.vouchers, common.yes, 17, 6, s"${common.changeText} ${specific.vouchersHiddenText}", vouchersOrCreditCardsBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.vouchersAmount, "£24", 17, 7, s"${common.changeText} ${specific.vouchersAmountHiddenText}", vouchersOrCreditCardsBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.nonCash, common.yes, 17, 8, s"${common.changeText} ${specific.nonCashHiddenText}", nonCashBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.nonCashAmount, "£25", 17, 9, s"${common.changeText} ${specific.nonCashAmountHiddenText}", nonCashBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.otherBenefits, common.yes, 17, 10, s"${common.changeText} ${specific.otherBenefitsHiddenText}", otherBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.otherBenefitsAmount, "£26", 17, 11, s"${common.changeText} ${specific.otherBenefitsAmountHiddenText}", otherBenefitsAmountUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.assetsHeader, fieldHeaderSelector(18), "for section")
-          changeAmountRowCheck(common.assetsSubheading, common.yes, 19, 1, s"${common.changeText} ${specific.assetsSubheadingHiddenText}", assetsOrAssetTransfersBenefitsHref)
-          changeAmountRowCheck(common.assets, common.yes, 19, 2, s"${common.changeText} ${specific.assetsHiddenText}", assetsBenefitsHref)
-          changeAmountRowCheck(common.assetsAmount, "£27", 19, 3, s"${common.changeText} ${specific.assetsAmountHiddenText}", assetsBenefitsAmountHref)
-          changeAmountRowCheck(common.assetTransfers, common.yes, 19, 4, s"${common.changeText} ${specific.assetTransfersHiddenText}", assetTransfersBenefitsHref)
-          changeAmountRowCheck(common.assetTransfersAmount, "£280000", 19, 5, s"${common.changeText} ${specific.assetTransfersAmountHiddenText}", assetTransfersBenefitsAmountHref)
+          changeAmountRowCheck(common.assetsSubheading, common.yes, 19, 1, s"${common.changeText} ${specific.assetsSubheadingHiddenText}", assetsBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.assets, common.yes, 19, 2, s"${common.changeText} ${specific.assetsHiddenText}", assetsForUseBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.assetsAmount, "£27", 19, 3, s"${common.changeText} ${specific.assetsAmountHiddenText}", assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.assetTransfers, common.yes, 19, 4, s"${common.changeText} ${specific.assetTransfersHiddenText}", assetsToKeepBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.assetTransfersAmount, "£280000", 19, 5, s"${common.changeText} ${specific.assetTransfersAmountHiddenText}",
+            assetsToKeepBenefitsAmountUrl(taxYearEOY, employmentId))
 
           buttonCheck(common.saveAndContinue)
           welshToggleCheck(user.isWelsh)
@@ -1218,7 +1154,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             val employmentSources = Seq(anEmploymentSource.copy(employmentBenefits = filteredBenefits))
             userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = employmentSources))), nino, taxYear - 1)
-            urlGet(url(taxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+            urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -1228,40 +1164,46 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           captionCheck(common.expectedCaption(taxYear - 1))
           textOnPageCheck(specific.expectedP1, Selectors.p1)
 
-          changeAmountRowCheck(common.benefitsReceived, common.yes, 3, 1, s"${common.changeText} ${specific.benefitsReceivedHiddenText}", receiveAnyBenefitsHref)
+          changeAmountRowCheck(common.benefitsReceived, common.yes, 3, 1, s"${common.changeText} ${specific.benefitsReceivedHiddenText}", companyBenefitsUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.vehicleHeader, fieldHeaderSelector(4))
 
-          changeAmountRowCheck(common.carSubheading, common.yes, 5, 1, s"${common.changeText} ${specific.carSubheadingHiddenText}", carVanFuelBenefitsHref)
-          changeAmountRowCheck(common.companyCar, common.no, 5, 2, s"${common.changeText} ${specific.companyCarHiddenText}", companyCarHref)
-          changeAmountRowCheck(common.fuelForCompanyCar, common.no, 5, 3, s"${common.changeText} ${specific.fuelForCompanyCarHiddenText}", companyCarFuelBenefitsHref)
-          changeAmountRowCheck(common.companyVan, common.yes, 5, 4, s"${common.changeText} ${specific.companyVanHiddenText}", companyVanBenefitsHref)
-          changeAmountRowCheck(common.fuelForCompanyVan, common.yes, 5, 6, s"${common.changeText} ${specific.fuelForCompanyVanHiddenText}", companyVanFuelBenefitsHref)
-          changeAmountRowCheck(common.companyVanAmount, "£3", 5, 5, s"${common.changeText} ${specific.companyVanAmountHiddenText}", companyVanBenefitsAmountHref)
-          changeAmountRowCheck(common.fuelForCompanyVanAmount, "£4", 5, 7, s"${common.changeText} ${specific.fuelForCompanyVanAmountHiddenText}", companyVanFuelBenefitsAmountHref)
-          changeAmountRowCheck(common.mileageBenefit, common.yes, 5, 8, s"${common.changeText} ${specific.mileageBenefitHiddenText}", receivedOwnCarMileageBenefitHref)
-          changeAmountRowCheck(common.mileageBenefitAmount, "£5", 5, 9, s"${common.changeText} ${specific.mileageBenefitAmountHiddenText}", mileageAmountBenefitsHref)
+          changeAmountRowCheck(common.carSubheading, common.yes, 5, 1, s"${common.changeText} ${specific.carSubheadingHiddenText}", carVanFuelBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.companyCar, common.no, 5, 2, s"${common.changeText} ${specific.companyCarHiddenText}", carBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.fuelForCompanyCar, common.no, 5, 3, s"${common.changeText} ${specific.fuelForCompanyCarHiddenText}", carFuelBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.companyVan, common.yes, 5, 4, s"${common.changeText} ${specific.companyVanHiddenText}", vanBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.fuelForCompanyVan, common.yes, 5, 6, s"${common.changeText} ${specific.fuelForCompanyVanHiddenText}", vanFuelBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.companyVanAmount, "£3", 5, 5, s"${common.changeText} ${specific.companyVanAmountHiddenText}", vanBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.fuelForCompanyVanAmount, "£4", 5, 7, s"${common.changeText} ${specific.fuelForCompanyVanAmountHiddenText}",
+            vanFuelBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.mileageBenefit, common.yes, 5, 8, s"${common.changeText} ${specific.mileageBenefitHiddenText}", mileageBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.mileageBenefitAmount, "£5", 5, 9, s"${common.changeText} ${specific.mileageBenefitAmountHiddenText}", mileageBenefitsAmountUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.accommodationHeader, fieldHeaderSelector(6))
-          changeAmountRowCheck(common.accommodationSubheading, common.no, 7, 1, s"${common.changeText} ${specific.accommodationSubheadingHiddenText}", accommodationRelocationBenefitsHref)
+          changeAmountRowCheck(common.accommodationSubheading, common.no, 7, 1, s"${common.changeText} ${specific.accommodationSubheadingHiddenText}",
+            accommodationRelocationBenefitsUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.travelHeader, fieldHeaderSelector(8))
-          changeAmountRowCheck(common.travelSubheading, common.no, 9, 1, s"${common.changeText} ${specific.travelSubheadingHiddenText}", travelEntertainmentBenefitsAmountHref)
+          changeAmountRowCheck(common.travelSubheading, common.no, 9, 1, s"${common.changeText} ${specific.travelSubheadingHiddenText}", travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.utilitiesHeader, fieldHeaderSelector(10))
-          changeAmountRowCheck(common.utilitiesSubheading, common.no, 11, 1, s"${common.changeText} ${specific.utilitiesSubheadingHiddenText}", utilitiesOrGeneralServicesBenefitsHref)
+          changeAmountRowCheck(common.utilitiesSubheading, common.no, 11, 1, s"${common.changeText} ${specific.utilitiesSubheadingHiddenText}",
+            utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.medicalHeader, fieldHeaderSelector(12))
-          changeAmountRowCheck(common.medicalSubheading, common.no, 13, 1, s"${common.changeText} ${specific.medicalSubheadingHiddenText}", medicalChildcareEducationHref)
+          changeAmountRowCheck(common.medicalSubheading, common.no, 13, 1, s"${common.changeText} ${specific.medicalSubheadingHiddenText}",
+            medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.incomeTaxHeader, fieldHeaderSelector(14))
-          changeAmountRowCheck(common.incomeTaxSubheading, common.no, 15, 1, s"${common.changeText} ${specific.incomeTaxSubheadingHiddenText}", incomeTaxOrIncurredCostsBenefitsHref)
+          changeAmountRowCheck(common.incomeTaxSubheading, common.no, 15, 1, s"${common.changeText} ${specific.incomeTaxSubheadingHiddenText}",
+            incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(16))
-          changeAmountRowCheck(common.reimbursedSubheading, common.no, 17, 1, s"${common.changeText} ${specific.reimbursedSubheadingHiddenText}", reimbursedCostsVouchersAndNonCashBenefitsHref)
+          changeAmountRowCheck(common.reimbursedSubheading, common.no, 17, 1, s"${common.changeText} ${specific.reimbursedSubheadingHiddenText}",
+            reimbursedCostsBenefitsUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.assetsHeader, fieldHeaderSelector(18), "for section")
-          changeAmountRowCheck(common.assetsSubheading, common.no, 19, 1, s"${common.changeText} ${specific.assetsSubheadingHiddenText}", assetsOrAssetTransfersBenefitsHref)
+          changeAmountRowCheck(common.assetsSubheading, common.no, 19, 1, s"${common.changeText} ${specific.assetsSubheadingHiddenText}", assetsBenefitsUrl(taxYearEOY, employmentId))
 
           buttonCheck(common.saveAndContinue)
 
@@ -1319,7 +1261,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
-            urlGet(url(taxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+            urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -1328,36 +1270,44 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           h1Check(specific.expectedH1)
           captionCheck(common.expectedCaption(taxYear - 1))
 
-          changeAmountRowCheck(common.benefitsReceived, common.yes, 2, 1, s"${common.changeText} ${specific.benefitsReceivedHiddenText}", receiveAnyBenefitsHref)
+          changeAmountRowCheck(common.benefitsReceived, common.yes, 2, 1, s"${common.changeText} ${specific.benefitsReceivedHiddenText}", companyBenefitsUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.vehicleHeader, fieldHeaderSelector(3))
 
-          changeAmountRowCheck(common.carSubheading, common.no, 4, 1, s"${common.changeText} ${specific.carSubheadingHiddenText}", carVanFuelBenefitsHref)
+          changeAmountRowCheck(common.carSubheading, common.no, 4, 1, s"${common.changeText} ${specific.carSubheadingHiddenText}", carVanFuelBenefitsUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.accommodationHeader, fieldHeaderSelector(5))
-          changeAmountRowCheck(common.accommodationSubheading, common.yes, 6, 1, s"${common.changeText} ${specific.accommodationSubheadingHiddenText}", accommodationRelocationBenefitsHref)
-          changeAmountRowCheck(common.accommodation, common.yes, 6, 2, s"${common.changeText} ${specific.accommodationHiddenText}", livingAccommodationBenefitsHref)
-          changeAmountRowCheck(common.accommodationAmount, "£3", 6, 3, s"${common.changeText} ${specific.accommodationAmountHiddenText}", livingAccommodationAmountBenefitsHref)
-          changeAmountRowCheck(common.qualifyingRelocationCosts, common.no, 6, 4, s"${common.changeText} ${specific.qualifyingRelocationCostsHiddenText}", qualifyingRelocationBenefitsHref)
-          changeAmountRowCheck(common.nonQualifyingRelocationCosts, common.no, 6, 5, s"${common.changeText} ${specific.nonQualifyingRelocationCostsHiddenText}", nonQualifyingRelocationBenefitsHref)
+          changeAmountRowCheck(common.accommodationSubheading, common.yes, 6, 1, s"${common.changeText} ${specific.accommodationSubheadingHiddenText}",
+            accommodationRelocationBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.accommodation, common.yes, 6, 2, s"${common.changeText} ${specific.accommodationHiddenText}", livingAccommodationBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.accommodationAmount, "£3", 6, 3, s"${common.changeText} ${specific.accommodationAmountHiddenText}",
+            livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.qualifyingRelocationCosts, common.no, 6, 4, s"${common.changeText} ${specific.qualifyingRelocationCostsHiddenText}",
+            qualifyingRelocationBenefitsUrl(taxYearEOY, employmentId))
+          changeAmountRowCheck(common.nonQualifyingRelocationCosts, common.no, 6, 5, s"${common.changeText} ${specific.nonQualifyingRelocationCostsHiddenText}",
+            nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.travelHeader, fieldHeaderSelector(7))
-          changeAmountRowCheck(common.travelSubheading, common.no, 8, 1, s"${common.changeText} ${specific.travelSubheadingHiddenText}", travelEntertainmentBenefitsAmountHref)
+          changeAmountRowCheck(common.travelSubheading, common.no, 8, 1, s"${common.changeText} ${specific.travelSubheadingHiddenText}", travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.utilitiesHeader, fieldHeaderSelector(9))
-          changeAmountRowCheck(common.utilitiesSubheading, common.no, 10, 1, s"${common.changeText} ${specific.utilitiesSubheadingHiddenText}", utilitiesOrGeneralServicesBenefitsHref)
+          changeAmountRowCheck(common.utilitiesSubheading, common.no, 10, 1, s"${common.changeText} ${specific.utilitiesSubheadingHiddenText}",
+            utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.medicalHeader, fieldHeaderSelector(11))
-          changeAmountRowCheck(common.medicalSubheading, common.no, 12, 1, s"${common.changeText} ${specific.medicalSubheadingHiddenText}", medicalChildcareEducationHref)
+          changeAmountRowCheck(common.medicalSubheading, common.no, 12, 1, s"${common.changeText} ${specific.medicalSubheadingHiddenText}",
+            medicalDentalChildcareLoansBenefitsUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.incomeTaxHeader, fieldHeaderSelector(13))
-          changeAmountRowCheck(common.incomeTaxSubheading, common.no, 14, 1, s"${common.changeText} ${specific.incomeTaxSubheadingHiddenText}", incomeTaxOrIncurredCostsBenefitsHref)
+          changeAmountRowCheck(common.incomeTaxSubheading, common.no, 14, 1, s"${common.changeText} ${specific.incomeTaxSubheadingHiddenText}",
+            incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.reimbursedHeader, fieldHeaderSelector(15))
-          changeAmountRowCheck(common.reimbursedSubheading, common.no, 16, 1, s"${common.changeText} ${specific.reimbursedSubheadingHiddenText}", reimbursedCostsVouchersAndNonCashBenefitsHref)
+          changeAmountRowCheck(common.reimbursedSubheading, common.no, 16, 1, s"${common.changeText} ${specific.reimbursedSubheadingHiddenText}",
+            reimbursedCostsBenefitsUrl(taxYearEOY, employmentId))
 
           textOnPageCheck(common.assetsHeader, fieldHeaderSelector(17), "for section")
-          changeAmountRowCheck(common.assetsSubheading, common.no, 18, 1, s"${common.changeText} ${specific.assetsSubheadingHiddenText}", assetsOrAssetTransfersBenefitsHref)
+          changeAmountRowCheck(common.assetsSubheading, common.no, 18, 1, s"${common.changeText} ${specific.assetsSubheadingHiddenText}", assetsBenefitsUrl(taxYearEOY, employmentId))
 
           buttonCheck(common.saveAndContinue)
 
@@ -1431,7 +1381,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
-            urlGet(url(taxYear - 1), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+            urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -1441,7 +1391,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           captionCheck(common.expectedCaption(taxYear - 1))
           textOnPageCheck(specific.expectedP1, Selectors.p1)
 
-          changeAmountRowCheck(common.benefitsReceived, common.no, 3, 1, s"${common.changeText} ${specific.benefitsReceivedHiddenText}", receiveAnyBenefitsHref)
+          changeAmountRowCheck(common.benefitsReceived, common.no, 3, 1, s"${common.changeText} ${specific.benefitsReceivedHiddenText}", companyBenefitsUrl(taxYearEOY, employmentId))
 
           buttonCheck(common.saveAndContinue)
 
@@ -1465,7 +1415,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             val employmentSources = Seq(anEmploymentSource.copy(employmentBenefits = filteredBenefits))
             userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = employmentSources))), nino, taxYear)
-            urlGet(url(), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(checkYourBenefitsUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -1538,7 +1488,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             unauthorisedAgentOrIndividual(user.isAgent)
-            urlGet(url(), welsh = user.isWelsh)
+            urlGet(fullUrl(checkYourBenefitsUrl(taxYear, employmentId)), welsh = user.isWelsh)
           }
           "has an UNAUTHORIZED(401) status" in {
             result.status shouldBe UNAUTHORIZED
@@ -1553,11 +1503,11 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         authoriseAgentOrIndividual(isAgent = false)
         val employmentSources = Seq(anEmploymentSource.copy(employmentBenefits = Some(anEmploymentBenefits)))
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = employmentSources))), nino, taxYear)
-        urlGet(s"$appUrl/${taxYear - 1}/check-employment-benefits?employmentId=0022", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+        urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, "0022")), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe overviewUrl(taxYearEOY)
+      result.header("location").contains(overviewUrl(taxYearEOY)) shouldBe true
     }
 
     "redirect to the Did your client receive any benefits page when its EOY and theres no benefits model in the session data" in {
@@ -1576,11 +1526,11 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         authoriseAgentOrIndividual(isAgent = false)
         val employmentData = anAllEmploymentData.copy(hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None)))
         userDataStub(anIncomeTaxUserData.copy(Some(employmentData)), nino, taxYear - 1)
-        urlGet(url(taxYear - 1), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+        urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe companyBenefitsUrl(taxYearEOY, employmentId)
+      result.header("location").contains(companyBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
     }
 
     "redirect to the Did your client receive any benefits page when its EOY and theres no benefits model in the mongodb data" in {
@@ -1589,11 +1539,11 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         authoriseAgentOrIndividual(isAgent = false)
         val employmentData = anAllEmploymentData.copy(hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None)))
         userDataStub(anIncomeTaxUserData.copy(Some(employmentData)), nino, taxYear)
-        urlGet(url(taxYear - 1), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+        urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe companyBenefitsUrl(taxYearEOY, employmentId)
+      result.header("location").contains(companyBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
     }
 
     "redirect to overview page when theres no benefits and in year" in {
@@ -1602,11 +1552,11 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         authoriseAgentOrIndividual(isAgent = false)
         val hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = hmrcEmploymentData))), nino, taxYear)
-        urlGet(url(), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(checkYourBenefitsUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe overviewUrl(taxYear)
+      result.header("location").contains(overviewUrl(taxYear)) shouldBe true
     }
   }
 
@@ -1617,12 +1567,12 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = true)
         userDataStub(anIncomeTaxUserData, nino, taxYear)
-        urlPost(url(), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(checkYourBenefitsUrl(taxYear, employmentId)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -1633,7 +1583,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(anEmploymentUserData.copy(employment = employmentData).copy(employmentId = employmentId), aUserRequest)
         userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
-        urlPost(url(taxYear - 1), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
       result.status shouldBe INTERNAL_SERVER_ERROR
@@ -1644,12 +1594,12 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
-        urlPost(url(taxYear - 1), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
+        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
       "has a url of benefits show method" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
   }

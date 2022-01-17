@@ -29,15 +29,12 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{beneficialLoansBenefitsUrl, checkYourBenefitsUrl, companyBenefitsUrl, educationalServicesBenefitsAmountUrl, overviewUrl}
+import utils.PageUrls.{beneficialLoansBenefitsUrl, checkYourBenefitsUrl, companyBenefitsUrl, educationalServicesBenefitsAmountUrl, educationalServicesBenefitsUrl, fullUrl, overviewUrl}
 
 class EducationalServicesBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val taxYearEOY: Int = taxYear - 1
   private val employmentId: String = "employmentId"
-  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/educational-services?employmentId=$employmentId"
-
-  private def educationServiceQuestionPageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/educational-services?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -127,7 +124,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
             val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(educationalServicesQuestion = None)))
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(educationServiceQuestionPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(educationalServicesBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -146,7 +143,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(educationalServicesBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -156,7 +153,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
             dropEmploymentDB()
             insertCyaData(anEmploymentUserData, aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(educationServiceQuestionPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(educationalServicesBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -175,7 +172,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(educationalServicesBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
       }
@@ -187,12 +184,12 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
-          urlGet(educationServiceQuestionPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(educationalServicesBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+          result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         }
       }
 
@@ -201,12 +198,12 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
-          urlGet(educationServiceQuestionPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(educationalServicesBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe companyBenefitsUrl(taxYearEOY, employmentId)
+          result.header("location").contains(companyBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         }
       }
 
@@ -214,12 +211,12 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
-          urlGet(educationServiceQuestionPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(educationalServicesBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+          result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         }
       }
 
@@ -228,12 +225,12 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(anEmploymentUserData, aUserRequest)
-          urlGet(educationServiceQuestionPageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(educationalServicesBenefitsUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe overviewUrl(taxYear)
+          result.header("location").contains(overviewUrl(taxYear)) shouldBe true
         }
       }
 
@@ -242,12 +239,12 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
-          urlGet(educationServiceQuestionPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlGet(fullUrl(educationalServicesBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+          result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         }
 
         "doesn't create any benefits data" in {
@@ -268,7 +265,8 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
               dropEmploymentDB()
               insertCyaData(anEmploymentUserData, aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(educationServiceQuestionPageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(educationalServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
+                welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -287,7 +285,7 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
             radioButtonCheck(yesText, 1, checked = false)
             radioButtonCheck(noText, 2, checked = false)
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            formPostLinkCheck(educationalServicesBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorText, Selectors.yesSelector)
@@ -305,12 +303,12 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
           val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = None)
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(educationServiceQuestionPageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(educationalServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the beneficial loans page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe beneficialLoansBenefitsUrl(taxYearEOY, employmentId)
+          result.header("location").contains(beneficialLoansBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
 
           cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
@@ -328,12 +326,12 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
             .copy(incomeTaxAndCostsModel = None)
           insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(educationServiceQuestionPageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(educationalServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the educational services amount page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe educationalServicesBenefitsAmountUrl(taxYearEOY, employmentId)
+          result.header("location").contains(educationalServicesBenefitsAmountUrl(taxYearEOY, employmentId)) shouldBe true
           lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
           cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
           cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.educationalServicesQuestion)) shouldBe Some(true)
@@ -344,12 +342,12 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
       "redirect the user to the overview page when it is in year" which {
         lazy val result: WSResponse = {
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(educationServiceQuestionPageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(fullUrl(educationalServicesBenefitsUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe overviewUrl(taxYear)
+          result.header("location").contains(overviewUrl(taxYear)) shouldBe true
         }
       }
 
@@ -359,12 +357,12 @@ class EducationalServicesBenefitsControllerISpec extends IntegrationTest with Vi
           dropEmploymentDB()
           insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(educationServiceQuestionPageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(educationalServicesBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+          result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         }
 
         "doesn't create any benefits data" in {

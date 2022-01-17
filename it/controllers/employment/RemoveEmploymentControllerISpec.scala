@@ -25,18 +25,13 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{employmentSummaryUrl, overviewUrl}
+import utils.PageUrls.{employmentSummaryUrl, fullUrl, overviewUrl, removeEmploymentUrl}
 
 class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val taxYearEOY: Int = taxYear - 1
   private val employmentId: String = "001"
   private val employerName: String = "maggie"
-
-  private def url(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/remove-employment?employmentId=$employmentId"
-
-  private def continueLink(taxYear: Int, employmentId: String): String =
-    s"/update-and-submit-income-tax-return/employment-income/$taxYear/remove-employment?employmentId=$employmentId"
 
   private val model: AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(
@@ -146,7 +141,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(Some(model)), nino, taxYearEOY)
-            urlGet(url(taxYearEOY, employmentId), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has an OK ($OK) status" in {
@@ -172,7 +167,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(Some(modelToDelete)), nino, taxYearEOY)
-            urlGet(url(taxYearEOY, employmentId), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has an OK ($OK) status" in {
@@ -199,12 +194,12 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(IncomeTaxUserData(Some(modelToDelete)), nino, taxYear)
-              urlGet(url(taxYear, employmentId), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
+              urlGet(fullUrl(removeEmploymentUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
             }
 
             s"has a SEE_OTHER ($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe overviewUrl(taxYear)
+              result.header("location").contains(overviewUrl(taxYear)) shouldBe true
             }
           }
 
@@ -214,12 +209,12 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(IncomeTaxUserData(Some(modelToDelete)), nino, taxYearEOY)
-              urlGet(url(taxYearEOY, "123"), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
+              urlGet(fullUrl(removeEmploymentUrl(taxYearEOY, "123")), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), follow = false)
             }
 
             s"has a SEE_OTHER ($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe overviewUrl(taxYearEOY)
+              result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYearEOY)) shouldBe true
             }
 
           }
@@ -246,11 +241,11 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
             lazy val result: WSResponse = {
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(url(taxYear, employmentId), body = "", user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+              urlPost(fullUrl(removeEmploymentUrl(taxYear, employmentId)), body = "", user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
             s"has a SEE_OTHER ($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe overviewUrl(taxYear)
+              result.header("location").contains(overviewUrl(taxYear)) shouldBe true
             }
 
           }
@@ -260,13 +255,13 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(IncomeTaxUserData(Some(model)), nino, taxYearEOY)
-              urlPost(url(taxYearEOY, "123"), body = "", user.isWelsh, follow = false,
+              urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, "123")), body = "", user.isWelsh, follow = false,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has a SEE_OTHER ($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe overviewUrl(taxYearEOY)
+              result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYearEOY)) shouldBe true
             }
 
           }
@@ -276,17 +271,15 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(IncomeTaxUserData(None), nino, taxYearEOY)
-              urlPost(url(taxYearEOY, employmentId), body = "", user.isWelsh, follow = false,
+              urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = "", user.isWelsh, follow = false,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has a SEE_OTHER ($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header("location") shouldBe overviewUrl(taxYearEOY)
+              result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYearEOY)) shouldBe true
             }
-
           }
-
         }
 
         "redirect to the employment summary page" when {
@@ -299,13 +292,13 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(IncomeTaxUserData(Some(model)), nino, taxYearEOY)
               userDataStubDeleteOrIgnoreEmployment(IncomeTaxUserData(Some(modelToDelete)), nino, taxYearEOY, employmentId, "CUSTOMER")
-              urlPost(url(taxYearEOY, employmentId), body = form, user.isWelsh, follow = false,
+              urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = form, user.isWelsh, follow = false,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "redirects to the employment summary page" in {
               result.status shouldBe SEE_OTHER
-              result.header(HeaderNames.LOCATION) shouldBe employmentSummaryUrl(taxYearEOY)
+              result.header(HeaderNames.LOCATION).contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
 
             }
 
@@ -319,13 +312,13 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(IncomeTaxUserData(Some(model)), nino, taxYearEOY)
-              urlPost(url(taxYearEOY, employmentId), body = form, user.isWelsh, follow = false,
+              urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = form, user.isWelsh, follow = false,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             s"has a SEE_OTHER ($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
-              result.header(HeaderNames.LOCATION) shouldBe employmentSummaryUrl(taxYearEOY)
+              result.header(HeaderNames.LOCATION).contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
             }
           }
         }
@@ -338,7 +331,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(Some(model)), nino, taxYearEOY)
-            urlPost(url(taxYearEOY, employmentId), body = form, user.isWelsh, follow = false,
+            urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = form, user.isWelsh, follow = false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
           s"has a BAD_REQUEST ($BAD_REQUEST) status" in {
@@ -354,13 +347,9 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           textOnPageCheck(common.expectedRemoveAccountText, paragraphTextSelector)
           buttonCheck(common.continueButton)
           errorSummaryCheck(specific.expectedErrorNoEntry, yesRadioButtonSelector)
-          formPostLinkCheck(continueLink(taxYearEOY, employmentId), formSelector)
-
+          formPostLinkCheck(removeEmploymentUrl(taxYearEOY, employmentId), formSelector)
         }
-
       }
-
     }
-
   }
 }

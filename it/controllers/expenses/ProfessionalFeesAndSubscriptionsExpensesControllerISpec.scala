@@ -30,18 +30,14 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{businessTravelExpensesUrl, checkYourExpensesUrl, overviewUrl, professionalFeesExpensesAmountUrl}
+import utils.PageUrls.{businessTravelExpensesUrl, checkYourExpensesUrl, fullUrl, overviewUrl, professionalFeesExpensesAmountUrl, professionalFeesExpensesUrl, professionalFeesLink}
 
 class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val taxYearEOY: Int = taxYear - 1
-  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/professional-fees-and-subscriptions"
-  private val professionalFeesLink = "https://www.gov.uk/tax-relief-for-employees/professional-fees-and-subscriptions"
 
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
     anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
-
-  private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/professional-fees-and-subscriptions"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -147,7 +143,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
               anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))), aUserRequest)
-            urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -169,7 +165,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(professionalFeesExpensesUrl(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -178,7 +174,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
-            urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -200,7 +196,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(professionalFeesExpensesUrl(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -210,7 +206,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
               anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = Some(false)))), aUserRequest)
-            urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -232,7 +228,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
           buttonCheck(buttonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(professionalFeesExpensesUrl(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -244,12 +240,12 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYear)
-        urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(professionalFeesExpensesUrl(taxYear)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -257,12 +253,12 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
       lazy val result: WSResponse = {
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
+        result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
       }
     }
 
@@ -272,12 +268,12 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
         authoriseAgentOrIndividual(isAgent = false)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
           anExpensesCYAModel.copy(ExpensesViewModel(claimingEmploymentExpenses = true, isUsingCustomerData = true))), aUserRequest)
-        urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe businessTravelExpensesUrl(taxYearEOY)
+        result.header("location").contains(businessTravelExpensesUrl(taxYearEOY)) shouldBe true
       }
 
     }
@@ -295,7 +291,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
               anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlPost(pageUrl(taxYearEOY), body = form, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           "has the correct status" in {
@@ -316,7 +312,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, formSelector)
+          formPostLinkCheck(professionalFeesExpensesUrl(taxYearEOY), formSelector)
           welshToggleCheck(user.isWelsh)
           errorSummaryCheck(user.specificExpectedResults.get.expectedErrorMessage, Selectors.yesSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorMessage, Some("value"))
@@ -334,12 +330,12 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
         userDataStub(anIncomeTaxUserData, nino, taxYear)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
           anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptions = None))), aUserRequest)
-        urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has a SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe professionalFeesExpensesAmountUrl(taxYearEOY)
+        result.header("location").contains(professionalFeesExpensesAmountUrl(taxYearEOY)) shouldBe true
       }
 
       "updates professionalSubscriptionQuestion to Some(true)" in {
@@ -357,12 +353,12 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(anIncomeTaxUserData, nino, taxYear)
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has a SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
+          result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
         }
 
         "update professionalSubscriptionQuestion to Some(false) and wipes jobExpenses amount" in {
@@ -380,12 +376,12 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
         lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
+          result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
         }
       }
     }
@@ -395,12 +391,12 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYear)
-        urlPost(pageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(professionalFeesExpensesUrl(taxYear)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
   }

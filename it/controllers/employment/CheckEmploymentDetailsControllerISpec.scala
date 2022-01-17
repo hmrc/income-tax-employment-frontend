@@ -21,7 +21,6 @@ import builders.models.UserBuilder.aUserRequest
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import builders.models.employment.PayBuilder.aPay
-import controllers.employment.routes._
 import builders.models.employment.StudentLoansBuilder.aStudentLoans
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
@@ -35,16 +34,15 @@ import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{checkYourDetailsUrl, employerPayeReferenceUrl, employmentSummaryUrl, overviewUrl}
+import utils.PageUrls.{checkYourDetailsUrl, employerNameUrl, employerPayeReferenceUrl, employmentDatesUrl, employmentStartDateUrl,
+  employmentSummaryUrl, fullUrl, howMuchPayUrl, howMuchTaxUrl, overviewUrl, payrollIdUrl, stillWorkingForUrl}
 
 class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val taxYearEOY = taxYear - 1
   private val employmentId = "employmentId"
-  private val url = s"$appUrl/$taxYear/check-employment-details?employmentId=$employmentId"
 
   object Selectors {
     val headingSelector = "#main-content > div > div > header > h1"
@@ -86,8 +84,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val expectedCaption: Int => String
     val changeLinkExpected: String
     val continueButtonText: String
-    val continueButtonLink: String
-    val taxButtonLink: String
     val employerNameField1: String
     val employmentStartDateField1: String
     val stillWorkingForEmployerField1: String
@@ -99,9 +95,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payrollIdHiddenText: String
     val changeEmployerNameHiddenText: String
     val returnToEmploymentSummaryText: String
-    val returnToEmploymentSummaryLink: String
     val returnToEmployerText: String
-    val returnToEmployerLink: String
   }
 
   object ContentValues {
@@ -123,8 +117,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val changeLinkExpected = "Change"
     val continueButtonText = "Save and continue"
-    val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=" + employmentId
-    val taxButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/uk-tax?employmentId=" + employmentId
     val employerNameField1 = "Employer"
     val employmentStartDateField1 = "Employment start date"
     val stillWorkingForEmployerField1 = "Still working for your employer"
@@ -136,17 +128,13 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payrollIdField: String = "Payroll ID"
     val payrollIdHiddenText: String = "Change the payroll ID for this employment"
     val returnToEmploymentSummaryText: String = "Return to employment summary"
-    val returnToEmploymentSummaryLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employment-summary"
     val returnToEmployerText: String = "Return to employer"
-    val returnToEmployerLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employer-details-and-benefits?employmentId=" + employmentId
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val changeLinkExpected = "Change"
     val continueButtonText = "Save and continue"
-    val continueButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/check-employment-details?employmentId=" + employmentId
-    val taxButtonLink: String = "/update-and-submit-income-tax-return/employment-income/2021/uk-tax?employmentId=" + employmentId
     val employerNameField1 = "Employer"
     val employmentStartDateField1 = "Employment start date"
     val stillWorkingForEmployerField1 = "Still working for your employer"
@@ -158,9 +146,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val payrollIdField: String = "Payroll ID"
     val payrollIdHiddenText: String = "Change the payroll ID for this employment"
     val returnToEmploymentSummaryText: String = "Return to employment summary"
-    val returnToEmploymentSummaryLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employment-summary"
     val returnToEmployerText: String = "Return to employer"
-    val returnToEmployerLink: String = "/update-and-submit-income-tax-return/employment-income/2022/employer-details-and-benefits?employmentId=" + employmentId
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
@@ -229,16 +215,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
     val amountOfPaymentsNotOnP60HiddenText: String = "Change the amount of payments that were not on your client’s P60"
     val changeStillWorkingForEmployerHiddenText = "Change if your client is still working for their employer"
     val paymentsNotOnYourP60: String = "Payments not on your client’s P60"
-  }
-
-  object ChangeLinks {
-    val employerPayAmountControllerHref: Call = EmployerPayAmountController.show(taxYear - 1, employmentId)
-    val employerNameHref: Call = EmployerNameController.show(taxYear - 1, employmentId)
-    val payeRefHref: Call = PayeRefController.show(taxYear - 1, employmentId)
-    val changeEmploymentStartDateHref: Call = EmployerStartDateController.show(taxYear - 1, employmentId)
-    val changeEmploymentDatesHref: Call = EmploymentDatesController.show(taxYear - 1, employmentId)
-    val payrollIdHref: Call = EmployerPayrollIdController.show(taxYear - 1, employmentId)
-    val changeStillWorkingForEmployerHref: Call = StillWorkingForEmployerController.show(taxYear - 1, employmentId)
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
@@ -358,7 +334,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
   }
 
   ".show" when {
-    import ChangeLinks._
     import Selectors._
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
@@ -383,7 +358,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             ), User(mtditid, if (user.isAgent) Some("12345678") else None, nino, sessionId, if (user.isAgent) "Agent" else "Individual")(FakeRequest()))
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, 2021)
-            urlGet(s"$appUrl/2021/check-employment-details?employmentId=$employmentId", follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+            urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -403,7 +378,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
           textOnPageCheck(common.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(3))
-          linkCheck(s"${common.changeLinkExpected} ${specific.changeStillWorkingForEmployerHiddenText}", cyaChangeLink(3), changeStillWorkingForEmployerHref.url)
+          linkCheck(s"${common.changeLinkExpected} ${specific.changeStillWorkingForEmployerHiddenText}", cyaChangeLink(3), stillWorkingForUrl(taxYearEOY, employmentId))
           textOnPageCheck(common.employmentDatesField, summaryListRowFieldNameSelector(4))
           textOnPageCheck(ContentValues.employmentDates, summaryListRowFieldAmountSelector(4))
           textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
@@ -419,7 +394,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYear)
-            urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(checkYourDetailsUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -464,7 +439,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
                 startDate = Some("2018-04-18"),
               ))
             userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = multipleSources))), nino, taxYear)
-            urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(checkYourDetailsUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -501,7 +476,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
-            urlGet(s"$appUrl/${taxYear - 1}/check-employment-details?employmentId=$employmentId", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -517,25 +492,26 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
-          linkCheck(s"${common.changeLinkExpected} ${common.changeEmployerNameHiddenText}", cyaChangeLink(1), employerNameHref.url, Some(cyaHiddenChangeLink(1)))
+          linkCheck(s"${common.changeLinkExpected} ${common.changeEmployerNameHiddenText}", cyaChangeLink(1), employerNameUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(1)))
           textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
           textOnPageCheck(ContentValues.payeRef, summaryListRowFieldAmountSelector(2))
-          linkCheck(s"${common.changeLinkExpected} ${specific.changePAYERefHiddenText}", cyaChangeLink(2), payeRefHref.url, Some(cyaHiddenChangeLink(2)))
+          linkCheck(s"${common.changeLinkExpected} ${specific.changePAYERefHiddenText}", cyaChangeLink(2), employerPayeReferenceUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(2)))
           textOnPageCheck(common.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.stillWorkingNo, summaryListRowFieldAmountSelector(3))
-          linkCheck(s"${common.changeLinkExpected} ${specific.changeStillWorkingForEmployerHiddenText}", cyaChangeLink(3), changeStillWorkingForEmployerHref.url, Some(cyaHiddenChangeLink(3)))
+          linkCheck(s"${common.changeLinkExpected} ${specific.changeStillWorkingForEmployerHiddenText}", cyaChangeLink(3),
+            stillWorkingForUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(3)))
           textOnPageCheck(common.employmentDatesField, summaryListRowFieldNameSelector(4))
           textOnPageCheck(ContentValues.employmentDates, summaryListRowFieldAmountSelector(4))
-          linkCheck(s"${common.changeLinkExpected} ${specific.changeEmploymentDatesHiddenText}", cyaChangeLink(4), changeEmploymentDatesHref.url, Some(cyaHiddenChangeLink(4)))
+          linkCheck(s"${common.changeLinkExpected} ${specific.changeEmploymentDatesHiddenText}", cyaChangeLink(4), employmentDatesUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(4)))
           textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
           textOnPageCheck(ContentValues.payrollId, summaryListRowFieldAmountSelector(5))
-          linkCheck(s"${common.changeLinkExpected} ${common.payrollIdHiddenText}", cyaChangeLink(5), payrollIdHref.url, Some(cyaHiddenChangeLink(5)))
+          linkCheck(s"${common.changeLinkExpected} ${common.payrollIdHiddenText}", cyaChangeLink(5), payrollIdUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(5)))
           textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(6))
           textOnPageCheck(ContentValues.payReceived, summaryListRowFieldAmountSelector(6))
-          linkCheck(s"${common.changeLinkExpected} ${specific.changePayReceivedHiddenText}", cyaChangeLink(6), employerPayAmountControllerHref.url, Some(cyaHiddenChangeLink(6)))
+          linkCheck(s"${common.changeLinkExpected} ${specific.changePayReceivedHiddenText}", cyaChangeLink(6), howMuchPayUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(6)))
           textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))
           textOnPageCheck(ContentValues.taxTakenFromPay, summaryListRowFieldAmountSelector(7))
-          linkCheck(s"${common.changeLinkExpected} ${specific.taxTakenFromPayHiddenText}", cyaChangeLink(7), EmploymentTaxController.show(taxYear - 1, employmentId).url, Some(cyaHiddenChangeLink(7)))
+          linkCheck(s"${common.changeLinkExpected} ${specific.taxTakenFromPayHiddenText}", cyaChangeLink(7), howMuchTaxUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(7)))
         }
 
         "for end of year return a fully populated page, with change links when minimum data is returned" which {
@@ -543,7 +519,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData.copy(Some(MinModel.miniData)), nino, taxYear)
-            urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(checkYourDetailsUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -578,8 +554,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(anIncomeTaxUserData.copy(Some(CustomerMinModel.miniData)), nino, taxYear - 1)
-            urlGet(s"$appUrl/${taxYear - 1}/check-employment-details?employmentId=$employmentId", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            userDataStub(anIncomeTaxUserData.copy(Some(CustomerMinModel.miniData)), nino, taxYearEOY)
+            urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -594,28 +570,29 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
-          linkCheck(s"${common.changeLinkExpected} ${common.changeEmployerNameHiddenText}", cyaChangeLink(1), employerNameHref.url, Some(cyaHiddenChangeLink(1)))
+          linkCheck(s"${common.changeLinkExpected} ${common.changeEmployerNameHiddenText}", cyaChangeLink(1), employerNameUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(1)))
           textOnPageCheck(common.payeReferenceField2, summaryListRowFieldNameSelector(2))
           textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(2), "for payee reference")
-          linkCheck(s"${common.changeLinkExpected} ${specific.changePAYERefHiddenText}", cyaChangeLink(2), payeRefHref.url, Some(cyaHiddenChangeLink(2)))
+          linkCheck(s"${common.changeLinkExpected} ${specific.changePAYERefHiddenText}", cyaChangeLink(2), employerPayeReferenceUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(2)))
           textOnPageCheck(common.stillWorkingForEmployerField1, summaryListRowFieldNameSelector(3))
           textOnPageCheck(ContentValues.stillWorkingYes, summaryListRowFieldAmountSelector(3))
-          linkCheck(s"${common.changeLinkExpected} ${specific.changeStillWorkingForEmployerHiddenText}", cyaChangeLink(3), changeStillWorkingForEmployerHref.url)
+          linkCheck(s"${common.changeLinkExpected} ${specific.changeStillWorkingForEmployerHiddenText}", cyaChangeLink(3), stillWorkingForUrl(taxYearEOY, employmentId))
           textOnPageCheck(common.employmentStartDateField1, summaryListRowFieldNameSelector(4))
           textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(4), "for start date")
-          linkCheck(s"${common.changeLinkExpected} ${specific.changeEmploymentStartDateHiddenText}", cyaChangeLink(4), changeEmploymentStartDateHref.url, Some(cyaHiddenChangeLink(4)))
+          linkCheck(s"${common.changeLinkExpected} ${specific.changeEmploymentStartDateHiddenText}", cyaChangeLink(4),
+            employmentStartDateUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(4)))
           textOnPageCheck(common.payrollIdField, summaryListRowFieldNameSelector(5))
           textOnPageCheck("Not provided", summaryListRowFieldAmountSelector(5), "for payroll")
-          linkCheck(s"${common.changeLinkExpected} ${common.payrollIdHiddenText}", cyaChangeLink(5), payrollIdHref.url, Some(cyaHiddenChangeLink(5)))
+          linkCheck(s"${common.changeLinkExpected} ${common.payrollIdHiddenText}", cyaChangeLink(5), payrollIdUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(5)))
           textOnPageCheck(common.payReceivedField3, summaryListRowFieldNameSelector(6))
           textOnPageCheck(ContentValues.payReceivedB, summaryListRowFieldAmountSelector(6))
-          linkCheck(s"${common.changeLinkExpected} ${specific.changePayReceivedHiddenText}", cyaChangeLink(6), employerPayAmountControllerHref.url, Some(cyaHiddenChangeLink(6)))
+          linkCheck(s"${common.changeLinkExpected} ${specific.changePayReceivedHiddenText}", cyaChangeLink(6), howMuchPayUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(6)))
           textOnPageCheck(common.taxField4, summaryListRowFieldNameSelector(7))
           textOnPageCheck(ContentValues.taxTakenFromPayB, summaryListRowFieldAmountSelector(7))
-          linkCheck(s"${common.changeLinkExpected} ${specific.taxTakenFromPayHiddenText}", cyaChangeLink(7), EmploymentTaxController.show(taxYear - 1, employmentId).url, Some(cyaHiddenChangeLink(7)))
+          linkCheck(s"${common.changeLinkExpected} ${specific.taxTakenFromPayHiddenText}", cyaChangeLink(7), howMuchTaxUrl(taxYearEOY, employmentId), Some(cyaHiddenChangeLink(7)))
 
           buttonCheck(common.continueButtonText, continueButtonSelector)
-          formPostLinkCheck(common.continueButtonLink, continueButtonFormSelector)
+          formPostLinkCheck(checkYourDetailsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
         }
 
         "handle a model with an Invalid date format returned" when {
@@ -623,7 +600,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData.copy(Some(SomeModelWithInvalidDateFormat.invalidData)), nino, taxYear)
-            urlGet(url, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+            urlGet(fullUrl(checkYourDetailsUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -660,12 +637,12 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, 2021)
-        urlGet(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+        urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, "001")), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
       }
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYearEOY)
+        result.header("location").contains(overviewUrl(taxYearEOY)) shouldBe true
       }
     }
 
@@ -674,12 +651,12 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         noUserDataStub(nino, 2021)
-        urlGet(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+        urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
       }
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYearEOY)
+        result.header("location").contains(overviewUrl(taxYearEOY)) shouldBe true
       }
     }
 
@@ -701,7 +678,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         ), User(mtditid, None, nino, sessionId, "Individual")(FakeRequest()))
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, 2021)
-        urlGet(s"$appUrl/2021/check-employment-details?employmentId=$employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
+        urlGet(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)))
       }
 
       "has an SEE OTHER status" in {
@@ -709,14 +686,14 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       }
 
       "has a redirect url of employer reference page" in {
-        result.header("location") shouldBe employerPayeReferenceUrl(taxYearEOY, employmentId)
+        result.header("location").contains(employerPayeReferenceUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
     "returns an action when auth call fails" which {
       lazy val result: WSResponse = {
         unauthorisedAgentOrIndividual(isAgent = false)
-        urlGet(url)
+        urlGet(fullUrl(checkYourDetailsUrl(taxYear, employmentId)))
       }
       "has an UNAUTHORIZED(401) status" in {
         result.status shouldBe UNAUTHORIZED
@@ -728,11 +705,11 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq.empty))), nino, taxYear)
-        urlGet(url, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(checkYourDetailsUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe overviewUrl(taxYear)
+      result.header("location").contains(overviewUrl(taxYear)) shouldBe true
     }
   }
 
@@ -742,12 +719,12 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, 2022)
-        urlPost(s"$appUrl/2022/check-employment-details?employmentId=employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
+        urlPost(fullUrl(checkYourDetailsUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
       }
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -756,12 +733,12 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, 2021)
-        urlPost(s"$appUrl/2021/check-employment-details?employmentId=$employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
+        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
       }
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -797,12 +774,12 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
           Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        urlPost(s"$appUrl/2021/check-employment-details?employmentId=$employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
+        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
       }
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe employmentSummaryUrl(taxYearEOY)
+        result.header("location").contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
         findCyaData(taxYear, employmentId, aUserRequest) shouldBe None
       }
     }
@@ -840,12 +817,12 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
           Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        urlPost(s"$appUrl/2021/check-employment-details?employmentId=$employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
+        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
       }
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe employmentSummaryUrl(taxYearEOY)
+        result.header("location").contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
         findCyaData(taxYear, employmentId, aUserRequest) shouldBe None
       }
     }
@@ -875,12 +852,12 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
           Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        urlPost(s"$appUrl/2021/check-employment-details?employmentId=employmentId", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
+        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
       }
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe employmentSummaryUrl(taxYearEOY)
+        result.header("location").contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
         findCyaData(taxYear, employmentId, aUserRequest) shouldBe None
       }
     }
@@ -891,12 +868,12 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(anEmploymentUserData, aUserRequest)
         userDataStub(anIncomeTaxUserData, nino, 2021)
-        urlPost(s"$appUrl/2021/check-employment-details?employmentId=001", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
+        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, "001")), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
       }
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourDetailsUrl(taxYearEOY, "001")
+        result.header("location").contains(checkYourDetailsUrl(taxYearEOY, "001")) shouldBe true
       }
     }
   }

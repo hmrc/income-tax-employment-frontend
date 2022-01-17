@@ -30,15 +30,13 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{accommodationRelocationBenefitsUrl, checkYourBenefitsUrl, livingAccommodationBenefitsAmountUrl, overviewUrl, qualifyingRelocationBenefitsUrl, travelOrEntertainmentBenefitsUrl}
+import utils.PageUrls.{accommodationRelocationBenefitsUrl, checkYourBenefitsUrl, fullUrl, livingAccommodationBenefitsAmountUrl,
+  livingAccommodationBenefitsUrl, overviewUrl, qualifyingRelocationBenefitsUrl, travelOrEntertainmentBenefitsUrl}
 
 class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val taxYearEOY: Int = taxYear - 1
   private val employmentId: String = "employmentId"
-  private val continueButtonLink: String = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/living-accommodation?employmentId=$employmentId"
-
-  private def livingAccommodationPageUrl(taxYear: Int): String = s"$appUrl/$taxYear/benefits/living-accommodation?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -155,7 +153,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodationQuestion = None)))
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-            urlGet(livingAccommodationPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has an OK($OK) status" in {
@@ -171,7 +169,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
-          formPostLinkCheck(continueButtonLink, formSelector)
+          formPostLinkCheck(livingAccommodationBenefitsUrl(taxYearEOY, employmentId), formSelector)
           textOnPageCheck(expectedDetailsTitle, detailsTitleSelector)
           textOnPageCheck(expectedDetailsText1, detailsText1Selector)
           textOnPageCheck(user.specificExpectedResults.get.expectedDetailsText2, detailsText2Selector)
@@ -186,7 +184,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodationQuestion = Some(true))))
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-            urlGet(livingAccommodationPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has an OK($OK) status" in {
@@ -202,7 +200,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(buttonText, continueButtonSelector)
-          formPostLinkCheck(continueButtonLink, formSelector)
+          formPostLinkCheck(livingAccommodationBenefitsUrl(taxYearEOY, employmentId), formSelector)
           textOnPageCheck(expectedDetailsTitle, detailsTitleSelector)
           textOnPageCheck(expectedDetailsText1, detailsText1Selector)
           textOnPageCheck(user.specificExpectedResults.get.expectedDetailsText2, detailsText2Selector)
@@ -217,7 +215,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodationQuestion = Some(false))))
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
-            urlGet(livingAccommodationPageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has an OK($OK) status" in {
@@ -233,7 +231,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
           buttonCheck(buttonText, continueButtonSelector)
-          formPostLinkCheck(continueButtonLink, formSelector)
+          formPostLinkCheck(livingAccommodationBenefitsUrl(taxYearEOY, employmentId), formSelector)
           textOnPageCheck(expectedDetailsTitle, detailsTitleSelector)
           textOnPageCheck(expectedDetailsText1, detailsText1Selector)
           textOnPageCheck(user.specificExpectedResults.get.expectedDetailsText2, detailsText2Selector)
@@ -248,12 +246,12 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(livingAccommodationPageUrl(taxYear), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
+        urlGet(fullUrl(livingAccommodationBenefitsUrl(taxYear, employmentId)), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
       }
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -264,12 +262,12 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = None)))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(livingAccommodationPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -280,12 +278,12 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = Some(false))))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(livingAccommodationPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -296,12 +294,12 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = Some(false))))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(livingAccommodationPageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
   }
@@ -319,7 +317,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel))
             insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-            urlPost(livingAccommodationPageUrl(taxYearEOY), body = "", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlPost(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), body = "", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           s"has an BAD REQUEST($BAD_REQUEST) status" in {
@@ -333,7 +331,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
           captionCheck(expectedCaption(taxYearEOY), captionSelector)
           errorSummaryCheck(user.specificExpectedResults.get.expectedErrorMessage, yesSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorMessage, Some("value"))
-          formPostLinkCheck(continueButtonLink, formSelector)
+          formPostLinkCheck(livingAccommodationBenefitsUrl(taxYearEOY, employmentId), formSelector)
         }
       }
     }
@@ -348,12 +346,12 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
           .copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodationQuestion = Some(false))))
           .copy(travelEntertainmentModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-        urlPost(livingAccommodationPageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)
+        result.header("location").contains(livingAccommodationBenefitsAmountUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodationQuestion)) shouldBe Some(true)
@@ -371,12 +369,12 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
           .copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(accommodationQuestion = None)))
           .copy(travelEntertainmentModel = None)
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
-        urlPost(livingAccommodationPageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has an SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe qualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(qualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodationQuestion)) shouldBe Some(false)
@@ -389,12 +387,12 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(livingAccommodationPageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(livingAccommodationBenefitsUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -405,12 +403,12 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = None)))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(livingAccommodationPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -421,12 +419,12 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = Some(false))))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(livingAccommodationPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -437,12 +435,12 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = Some(false))))
         insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(livingAccommodationPageUrl(taxYearEOY), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       s"has a SEE_OTHER($SEE_OTHER) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
   }

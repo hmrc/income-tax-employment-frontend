@@ -30,18 +30,15 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{assetsBenefitsUrl, checkYourBenefitsUrl, overviewUrl}
+import utils.PageUrls.{assetsBenefitsUrl, checkYourBenefitsUrl, fullUrl, otherBenefitsAmountUrl, overviewUrl}
 
 class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val taxYearEOY: Int = taxYear - 1
   private val employmentId = "employmentId"
-  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/benefits/other-benefits-amount?employmentId=$employmentId"
   private val poundPrefixText = "£"
   private val amountInputName = "amount"
-
-  private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/benefits/other-benefits-amount?employmentId=$employmentId"
-
+  
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel) =
     anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employment = employmentCyaModel)
 
@@ -141,7 +138,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
             val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(otherItems = None)))
             insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(otherBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -158,7 +155,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continue, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(otherBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -168,7 +165,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(otherBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -185,7 +182,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "500")
           buttonCheck(continue, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(otherBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -195,7 +192,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(otherBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -212,7 +209,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "500")
           buttonCheck(continue, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(otherBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
       }
@@ -223,11 +220,11 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(otherBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+      result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
     }
 
     "redirect user to the tax overview page when in year" in {
@@ -236,11 +233,11 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = benefitsWithNoBenefitsReceived)), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(otherBenefitsAmountUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe overviewUrl(taxYear)
+      result.header("location").contains(overviewUrl(taxYear)) shouldBe true
     }
 
     "redirect to Assets section question page when the otherItemsQuestion value is false" in {
@@ -249,11 +246,11 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(otherItemsQuestion = Some(false))))
         insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-        urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(otherBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe assetsBenefitsUrl(taxYearEOY, employmentId)
+      result.header("location").contains(assetsBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
     }
 
     "redirect to Assets section question page when the reimbursedCostsVouchersAndNonCashQuestion value is false" in {
@@ -262,11 +259,11 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(ReimbursedCostsVouchersAndNonCashModel(sectionQuestion = Some(false))))
         insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-        urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(otherBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe assetsBenefitsUrl(taxYearEOY, employmentId)
+      result.header("location").contains(assetsBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
     }
 
     "redirect to cya page when the benefitsReceived value is false" in {
@@ -274,11 +271,11 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = benefitsWithNoBenefitsReceived)), aUserRequest)
-        urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlGet(fullUrl(otherBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+      result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
     }
   }
 
@@ -293,7 +290,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
-            urlPost(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
+            urlPost(fullUrl(otherBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -310,7 +307,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(otherBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
 
           errorSummaryCheck(user.specificExpectedResults.get.emptyErrorText, expectedErrorHref)
@@ -322,7 +319,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
-            urlPost(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "abc"))
+            urlPost(fullUrl(otherBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "abc"))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -339,7 +336,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "abc")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(otherBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
 
           errorSummaryCheck(user.specificExpectedResults.get.invalidFormatErrorText, expectedErrorHref)
@@ -351,7 +348,8 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
-            urlPost(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100,000,000,000"))
+            urlPost(fullUrl(otherBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100,000,000,000"))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -368,7 +366,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
           textOnPageCheck(poundPrefixText, poundPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "100,000,000,000")
           buttonCheck(user.commonExpectedResults.continue, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(otherBenefitsAmountUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
 
           errorSummaryCheck(maxAmountErrorText, expectedErrorHref)
@@ -382,12 +380,12 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
-        urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "123.45"))
+        urlPost(fullUrl(otherBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "123.45"))
       }
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
 
       "updates the CYA model with the new value" in {
@@ -403,12 +401,12 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = None)
         insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-        urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "234.56"))
+        urlPost(fullUrl(otherBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "234.56"))
       }
 
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe assetsBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(assetsBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
 
       "updates the CYA model with the new value" in {
@@ -422,12 +420,12 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "345.67"))
+        urlPost(fullUrl(otherBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "345.67"))
       }
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
       }
     }
 
@@ -437,12 +435,12 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.50"))
+        urlPost(fullUrl(otherBenefitsAmountUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.50"))
       }
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -452,11 +450,11 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(aReimbursedCostsVouchersAndNonCashModel.copy(otherItemsQuestion = Some(false))))
         insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-        urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "123.45"))
+        urlPost(fullUrl(otherBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "123.45"))
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe assetsBenefitsUrl(taxYearEOY, employmentId)
+      result.header("location").contains(assetsBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
     }
 
     "redirect to Assets section question page when the reimbursedCostsVouchersAndNonCashQuestion value is false" in {
@@ -465,11 +463,11 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = Some(ReimbursedCostsVouchersAndNonCashModel(sectionQuestion = Some(false))))
         insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
-        urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "123.45"))
+        urlPost(fullUrl(otherBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "123.45"))
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe assetsBenefitsUrl(taxYearEOY, employmentId)
+      result.header("location").contains(assetsBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
     }
 
     "redirect to cya page when the benefitsReceived value is false" in {
@@ -477,11 +475,11 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = benefitsWithNoBenefitsReceived)), aUserRequest)
-        urlPost(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "123.45"))
+        urlPost(fullUrl(otherBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "123.45"))
       }
 
       result.status shouldBe SEE_OTHER
-      result.header("location") shouldBe checkYourBenefitsUrl(taxYearEOY, employmentId)
+      result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
     }
   }
 }

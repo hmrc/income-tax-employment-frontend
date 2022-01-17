@@ -20,6 +20,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.Status.OK
 import play.api.libs.ws.WSResponse
+import utils.PageUrls.{fullUrl, selfAssessmentLink, wrongTaxYearUrl}
 import utils.{IntegrationTest, ViewHelpers}
 
 class TaxYearErrorControllerISpec extends IntegrationTest with ViewHelpers {
@@ -32,14 +33,11 @@ class TaxYearErrorControllerISpec extends IntegrationTest with ViewHelpers {
     val linkSelector = "#govuk-self-assessment-link"
   }
 
-  val url = s"$appUrl/error/wrong-tax-year"
-
   trait CommonExpectedResults {
     val h1Expected: String
     val p1Expected: String
     val p2Expected: String
     val p3Expected: String
-    val p3ExpectedLink: String
     val p3ExpectedLinkText: String
   }
 
@@ -49,7 +47,6 @@ class TaxYearErrorControllerISpec extends IntegrationTest with ViewHelpers {
     val p2Expected = "Check that you’ve entered the correct web address."
     val p3Expected: String = "If the web address is correct or you selected a link or button, you can use Self Assessment: " +
       "general enquiries (opens in new tab) to speak to someone about your income tax."
-    val p3ExpectedLink = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment"
     val p3ExpectedLinkText = "Self Assessment: general enquiries (opens in new tab)"
   }
 
@@ -59,7 +56,6 @@ class TaxYearErrorControllerISpec extends IntegrationTest with ViewHelpers {
     val p2Expected = "Check that you’ve entered the correct web address."
     val p3Expected: String = "If the web address is correct or you selected a link or button, you can use Self Assessment: " +
       "general enquiries (opens in new tab) to speak to someone about your income tax."
-    val p3ExpectedLink = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment"
     val p3ExpectedLinkText = "Self Assessment: general enquiries (opens in new tab)"
   }
 
@@ -78,7 +74,7 @@ class TaxYearErrorControllerISpec extends IntegrationTest with ViewHelpers {
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(url, welsh = user.isWelsh)
+            urlGet(fullUrl(wrongTaxYearUrl), welsh = user.isWelsh)
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -95,7 +91,7 @@ class TaxYearErrorControllerISpec extends IntegrationTest with ViewHelpers {
           textOnPageCheck(p1Expected,p1Selector)
           textOnPageCheck(p2Expected,p2Selector)
           textOnPageCheck(p3Expected,p3Selector)
-          linkCheck(p3ExpectedLinkText, linkSelector, p3ExpectedLink)
+          linkCheck(p3ExpectedLinkText, linkSelector, selfAssessmentLink)
         }
       }
     }
