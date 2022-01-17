@@ -16,10 +16,12 @@
 
 package controllers.expenses
 
+import common.SessionValues
 import config.{AppConfig, ErrorHandler}
-import controllers.expenses.routes.CheckEmploymentExpensesController
+import controllers.expenses.routes.{CheckEmploymentExpensesController, EmploymentExpensesController}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.User
+import models.employment.AllEmploymentData.employmentIdExists
 import models.employment.{AllEmploymentData, EmploymentExpenses}
 import models.expenses.{Expenses, ExpensesViewModel}
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
@@ -57,43 +59,37 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
             val expensesViewModel: ExpensesViewModel = cya.expensesCya.expenses
             val isUsingCustomerData = expensesViewModel.isUsingCustomerData
 
-            Future(performAuditAndRenderView(
-              expensesViewModel.toExpenses,
-              taxYear,
-              inYearAction.inYear(taxYear),
-              prior.exists(isMultipleEmployments(_, inYearAction.inYear(taxYear))),
-              isUsingCustomerData,
-              Some(expensesViewModel)))
+            Future(performAuditAndRenderView(expensesViewModel.toExpenses, taxYear, inYearAction.inYear(taxYear),
+              prior.exists(isMultipleEmployments(_, inYearAction.inYear(taxYear))), isUsingCustomerData, Some(expensesViewModel)))
+
           case None =>
             prior match {
               case Some(allEmploymentData) =>
-                employmentSessionService.getLatestExpenses(allEmploymentData, inYearAction.inYear(taxYear)) match {
+                employmentSessionService.getLatestExpenses(allEmploymentData, inYearAction.inYear(taxYear))
+                match {
                   case Some((EmploymentExpenses(submittedOn, _, _, Some(expenses)), isUsingCustomerData)) =>
                     employmentSessionService.createOrUpdateExpensesSessionData(ExpensesCYAModel.makeModel(expenses, isUsingCustomerData, submittedOn),
-                      taxYear, isPriorSubmission = true, hasPriorExpenses = false
+                      taxYear, isPriorSubmission = true, hasPriorExpenses = true
                     )(errorHandler.internalServerError()) {
-                      performAuditAndRenderView(
-                        expenses,
-                        taxYear,
-                        inYearAction.inYear(taxYear),
-                        isMultipleEmployments(allEmploymentData, inYearAction.inYear(taxYear)),
-                        isUsingCustomerData)
+                      if (employmentIdExists(allEmploymentData, getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID))) {
+                        //TODO: add a redirect for "do you need to add any additional/new expenses?" page when available
+                        Redirect(EmploymentExpensesController.show(taxYear))
+                      } else {
+                        performAuditAndRenderView(expenses, taxYear, inYearAction.inYear(taxYear),
+                          isMultipleEmployments(allEmploymentData, inYearAction.inYear(taxYear)), isUsingCustomerData)
+                      }
                     }
-                  //TODO redirect to receive any expenses page
-                  case None => Future(performAuditAndRenderView(
-                    Expenses(),
-                    taxYear,
-                    inYearAction.inYear(taxYear),
-                    isMultipleEmployments(allEmploymentData, inYearAction.inYear(taxYear)),
-                    isUsingCustomerData = true))
+                  case None =>
+                    if (employmentIdExists(allEmploymentData, getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID))) {
+                      Future.successful(Redirect(EmploymentExpensesController.show(taxYear)))
+                    } else {
+                      Future.successful(performAuditAndRenderView(Expenses(), taxYear, inYearAction.inYear(taxYear),
+                        isMultipleEmployments(allEmploymentData, inYearAction.inYear(taxYear)), isUsingCustomerData = true))
+                    }
                 }
               //TODO redirect to receive any expenses page
               case None => Future(performAuditAndRenderView(
-                Expenses(),
-                taxYear,
-                inYearAction.inYear(taxYear),
-                isMultipleEmployments = false,
-                isUsingCustomerData = true))
+                Expenses(), taxYear, inYearAction.inYear(taxYear), isMultipleEmployments = false, isUsingCustomerData = true))
             }
         }
       }
@@ -124,11 +120,9 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
                 case Right(result) =>
                   checkEmploymentExpensesService.performSubmitAudits(model, taxYear, prior)
 
-                  if(appConfig.nrsEnabled){
-                    checkEmploymentExpensesService.performSubmitNrsPayload(model, prior)
-                  }
+                  if(appConfig.nrsEnabled) checkEmploymentExpensesService.performSubmitNrsPayload(model, prior)
 
-                  employmentSessionService.clearExpenses(taxYear)(result)
+                  employmentSessionService.clearExpenses(taxYear)(result.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID))
               }
             }
           }

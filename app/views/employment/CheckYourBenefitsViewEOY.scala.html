@@ -320,7 +320,9 @@
 
     }
 
-    @button("common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))
+    @formWithCSRF(action = controllers.employment.routes.CheckYourBenefitsController.submit(taxYear, employmentId)) {
+        @button("common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))
+    }
 }
 
 @{
