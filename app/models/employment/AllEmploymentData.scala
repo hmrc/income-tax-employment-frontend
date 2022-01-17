@@ -25,4 +25,13 @@ case class AllEmploymentData(hmrcEmploymentData: Seq[EmploymentSource],
 
 object AllEmploymentData {
   implicit val format: OFormat[AllEmploymentData] = Json.format[AllEmploymentData]
+
+  def employmentIdExists(allEmploymentData: AllEmploymentData, employmentId: Option[String]): Boolean = {
+    employmentId.exists { employmentId =>
+      val idExistsInHMRCData: Boolean = allEmploymentData.hmrcEmploymentData.exists(_.employmentId == employmentId)
+      val idExistsInCustomerData: Boolean = allEmploymentData.customerEmploymentData.exists(_.employmentId == employmentId)
+
+      idExistsInHMRCData || idExistsInCustomerData
+    }
+  }
 }

@@ -25,6 +25,8 @@ import builders.models.expenses.ExpensesBuilder.anExpenses
 import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
 import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
+import common.SessionValues
+import helpers.SessionCookieCrumbler.getSessionMap
 import models.IncomeTaxUserData
 import models.employment.AllEmploymentData
 import models.expenses.Expenses
@@ -38,6 +40,7 @@ import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import utils.PageUrls.{checkYourExpensesUrl, claimEmploymentExpensesUrl, employmentSummaryUrl, overviewUrl, professionalFeesExpensesUrl}
 import utils.PageUrls._
 
 class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper {
@@ -563,6 +566,39 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
       result.header("location").contains(overviewUrl(taxYear)) shouldBe true
     }
 
+    "redirect to employment expenses page when no expenses has been added yet (making a new employment journey)" in {
+      val customerData = anEmploymentSource
+
+      lazy val result: WSResponse = {
+        dropExpensesDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcExpenses = None, customerEmploymentData = Seq(customerData)))), nino, taxYear - 1)
+        urlGet(fullUrl(checkYourExpensesUrl(taxYear - 1)), follow = false,
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1, Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> customerData.employmentId))))
+      }
+
+      result.status shouldBe SEE_OTHER
+      result.header("location").contains(claimEmploymentExpensesUrl(taxYearEOY)) shouldBe true
+
+    }
+
+    "redirect to 'do you need to add any additional new expenses?' page when there's prior expenses (making a new employment journey)" in {
+      val customerData = anEmploymentSource
+
+      lazy val result: WSResponse = {
+        dropExpensesDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(customerEmploymentData = Seq(customerData)))), nino, taxYear - 1)
+        urlGet(fullUrl(checkYourExpensesUrl(taxYear - 1)), follow = false,
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1, Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> customerData.employmentId))))
+      }
+
+      result.status shouldBe SEE_OTHER
+      //TODO: add a redirect for "do you need to add any additional/new expenses?" page when available
+      result.header("location").contains(claimEmploymentExpensesUrl(taxYearEOY)) shouldBe true
+
+    }
+
     "returns an action when auth call fails" which {
       lazy val result: WSResponse = {
         dropExpensesDB()
@@ -679,6 +715,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         result.status shouldBe SEE_OTHER
         result.header("location").contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
         findExpensesCyaData(taxYear - 1, aUserRequest) shouldBe None
+        getSessionMap(result, "mdtp").get("TEMP_NEW_EMPLOYMENT_ID") shouldBe None
       }
 
     }
@@ -701,6 +738,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         result.status shouldBe SEE_OTHER
         result.header("location").contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
         findExpensesCyaData(taxYear - 1, aUserRequest) shouldBe defined
+        getSessionMap(result, "mdtp").get("TEMP_NEW_EMPLOYMENT_ID") shouldBe None
       }
 
     }
@@ -723,6 +761,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         result.status shouldBe SEE_OTHER
         result.header("location").contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
         findExpensesCyaData(taxYear - 1, aUserRequest) shouldBe defined
+        getSessionMap(result, "mdtp").get("TEMP_NEW_EMPLOYMENT_ID") shouldBe None
       }
 
     }
