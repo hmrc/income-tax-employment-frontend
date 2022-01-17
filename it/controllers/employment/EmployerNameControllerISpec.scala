@@ -25,7 +25,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{checkYourDetailsUrl, employerPayeReferenceUrl, overviewUrl}
+import utils.PageUrls.{checkYourDetailsUrl, employerNameUrl, employerPayeReferenceUrl, fullUrl, overviewUrl}
 
 class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -42,10 +42,6 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
     EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
 
   private def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc))
-
-  private def employerNamePageUrl(taxYear: Int) = s"$appUrl/$taxYear/employer-name?employmentId=$employmentId"
-
-  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employer-name?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > label > header > p"
@@ -146,7 +142,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(employerNamePageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(employerNameUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -163,7 +159,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(employerNameUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(paragraphText, paragraphTextSelector)
           textOnPageCheck(formatList1, formatListSelector1)
@@ -176,7 +172,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
-            urlGet(employerNamePageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(employerNameUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -193,7 +189,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
           textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
           inputFieldValueCheck(amountInputName, inputSelector, employerName)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(employerNameUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(paragraphText, paragraphTextSelector)
           textOnPageCheck(formatList1, formatListSelector1)
@@ -206,12 +202,12 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
     "redirect the user to the overview page when it is not end of year" which {
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(employerNamePageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(employerNameUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
 
     }
@@ -232,7 +228,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
             lazy val result: WSResponse = {
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerNamePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(employerNameUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -261,7 +257,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
             lazy val result: WSResponse = {
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerNamePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(employerNameUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -290,7 +286,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
             lazy val result: WSResponse = {
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerNamePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(employerNameUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -319,12 +315,12 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
     "redirect the user to the overview page when it is not end of year" which {
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(employerNamePageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(employerNameUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -335,12 +331,12 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(employerNamePageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(employerNameUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the next question page (PAYE reference)" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe employerPayeReferenceUrl(taxYearEOY, employmentId)
+        result.header("location").contains(employerPayeReferenceUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentDetails.employerName shouldBe employerName
       }
@@ -355,12 +351,12 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, hmrc = false)), aUserRequest)
-        urlPost(employerNamePageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(employerNameUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the next question page (PAYE reference)" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe employerPayeReferenceUrl(taxYearEOY, employmentId)
+        result.header("location").contains(employerPayeReferenceUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentDetails.employerName shouldBe employerName
       }
@@ -374,12 +370,12 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
-        urlPost(employerNamePageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(employerNameUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to employment details CYA page" in {
         result.status shouldBe SEE_OTHER
-        result.header(HeaderNames.LOCATION) shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
+        result.header(HeaderNames.LOCATION).contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentDetails.employerName shouldBe updatedEmployerName
 

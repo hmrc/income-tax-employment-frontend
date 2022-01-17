@@ -29,7 +29,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{checkYourExpensesUrl, overviewUrl}
+import utils.PageUrls.{checkYourExpensesUrl, fullUrl, overviewUrl, uniformsAndToolsLink, uniformsWorkClothesToolsExpensesUrl}
 
 class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -37,11 +37,6 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
 
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel) =
     anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
-
-  private def pageUrl(taxYear: Int) = s"$appUrl/$taxYear/expenses/uniforms-work-clothes-or-tools"
-
-  private val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/expenses/uniforms-work-clothes-or-tools"
-  private val uniformsAndToolsLink = "https://www.gov.uk/guidance/job-expenses-for-uniforms-work-clothing-and-tools"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -156,7 +151,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(anExpensesViewModel.copy(flatRateJobExpensesQuestion = None))), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(pageUrl(taxYearEOY), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -177,7 +172,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(uniformsWorkClothesToolsExpensesUrl(taxYearEOY), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -187,7 +182,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
             userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYearEOY)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -211,7 +206,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(uniformsWorkClothesToolsExpensesUrl(taxYearEOY), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
 
@@ -222,7 +217,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
             val expensesViewModel = anExpensesViewModel.copy(flatRateJobExpensesQuestion = Some(false))
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel.copy(expenses = expensesViewModel)), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(pageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYearEOY)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -243,7 +238,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(uniformsWorkClothesToolsExpensesUrl(taxYearEOY), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
         }
       }
@@ -255,14 +250,14 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(anIncomeTaxUserData, nino, taxYear)
-          urlGet(pageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlGet(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYear)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe overviewUrl(taxYear)
+          result.header("location").contains(overviewUrl(taxYear)) shouldBe true
         }
       }
 
@@ -270,14 +265,14 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
         implicit lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
-          urlGet(pageUrl(taxYearEOY), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlGet(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
+          result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
         }
       }
     }
@@ -295,7 +290,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
               insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(pageUrl(taxYearEOY), body = form, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYearEOY)), body = form, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -319,7 +314,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
             radioButtonCheck(yesText, 1, checked = false)
             radioButtonCheck(noText, 2, checked = false)
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            formPostLinkCheck(uniformsWorkClothesToolsExpensesUrl(taxYearEOY), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.expectedErrorText, Selectors.yesSelector)
@@ -337,12 +332,12 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           dropExpensesDB()
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header(name = "location") shouldBe checkYourExpensesUrl(taxYearEOY)
+          result.header(name = "location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.flatRateJobExpensesQuestion shouldBe Some(false)
@@ -358,12 +353,12 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           val expenses = anExpensesViewModel.copy(flatRateJobExpensesQuestion = None, flatRateJobExpenses = Some(10.00))
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel.copy(expenses = expenses)), aUserRequest)
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
+          result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
           lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
 
           cyaModel.expensesCya.expenses.flatRateJobExpensesQuestion shouldBe Some(true)
@@ -376,14 +371,14 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(anIncomeTaxUserData, nino, taxYear)
-          urlPost(pageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          urlPost(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYear)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
         implicit def document: () => Document = () => Jsoup.parse(result.body)
 
         "has a url of overview page" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe overviewUrl(taxYear)
+          result.header("location").contains(overviewUrl(taxYear)) shouldBe true
         }
       }
 
@@ -393,12 +388,12 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
         lazy val result: WSResponse = {
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
-          urlPost(pageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          urlPost(fullUrl(uniformsWorkClothesToolsExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
         "has an SEE_OTHER(303) status" in {
           result.status shouldBe SEE_OTHER
-          result.header("location") shouldBe checkYourExpensesUrl(taxYearEOY)
+          result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
         }
       }
     }

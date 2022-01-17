@@ -26,7 +26,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{checkYourDetailsUrl, employmentEndDateUrl, overviewUrl}
+import utils.PageUrls.{checkYourDetailsUrl, employmentEndDateUrl, employmentStartDateUrl, fullUrl, overviewUrl}
 
 import java.time.LocalDate
 
@@ -49,10 +49,6 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
     taxablePayToDate = Some(5),
     totalTaxToDate = Some(5)
   ))
-
-  private def employerStartDatePageUrl(taxYear: Int) = s"$appUrl/$taxYear/employment-start-date?employmentId=$employmentId"
-
-  val continueLink = s"/update-and-submit-income-tax-return/employment-income/$taxYearEOY/employment-start-date?employmentId=$employmentId"
 
   object Selectors {
     val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
@@ -202,7 +198,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
             authoriseAgentOrIndividual(user.isAgent)
-            urlGet(employerStartDatePageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -222,7 +218,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, "")
           inputFieldValueCheck(yearInputName, Selectors.yearSelector, "")
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
 
         }
@@ -232,7 +228,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             insertCyaData(CyaModel.cya, aUserRequest)
-            urlGet(employerStartDatePageUrl(taxYearEOY), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            urlGet(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           implicit def document: () => Document = () => Jsoup.parse(result.body)
@@ -252,7 +248,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, "1")
           inputFieldValueCheck(yearInputName, Selectors.yearSelector, "2020")
           buttonCheck(expectedButtonText, continueButtonSelector)
-          formPostLinkCheck(continueLink, continueButtonFormSelector)
+          formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
           welshToggleCheck(user.isWelsh)
 
         }
@@ -263,12 +259,12 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
     "redirect the user to the overview page when it is not end of year" which {
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
-        urlGet(employerStartDatePageUrl(taxYear), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlGet(fullUrl(employmentStartDateUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
 
     }
@@ -290,7 +286,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
               dropEmploymentDB()
               insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -310,7 +306,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "01")
             inputFieldValueCheck(yearInputName, Selectors.yearSelector, "2020")
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.emptyDayError, Selectors.daySelector)
@@ -325,7 +321,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
               dropEmploymentDB()
               insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -345,7 +341,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "")
             inputFieldValueCheck(yearInputName, Selectors.yearSelector, "2020")
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.emptyMonthError, Selectors.monthSelector)
@@ -360,7 +356,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
               dropEmploymentDB()
               insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -380,7 +376,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "01")
             inputFieldValueCheck(yearInputName, Selectors.yearSelector, "")
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.emptyYearError, Selectors.yearSelector)
@@ -395,7 +391,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
               dropEmploymentDB()
               insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -415,7 +411,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "")
             inputFieldValueCheck(yearInputName, Selectors.yearSelector, "2020")
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.emptyDayMonthError, Selectors.daySelector)
@@ -430,7 +426,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
               dropEmploymentDB()
               insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -450,7 +446,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "01")
             inputFieldValueCheck(yearInputName, Selectors.yearSelector, "")
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.emptyDayYearError, Selectors.daySelector)
@@ -465,7 +461,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
               dropEmploymentDB()
               insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -485,7 +481,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "")
             inputFieldValueCheck(yearInputName, Selectors.yearSelector, "")
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.emptyMonthYearError, Selectors.monthSelector)
@@ -500,7 +496,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
               dropEmploymentDB()
               insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -520,7 +516,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "")
             inputFieldValueCheck(yearInputName, Selectors.yearSelector, "")
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.emptyAllError, Selectors.daySelector)
@@ -535,7 +531,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
               dropEmploymentDB()
               insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -555,7 +551,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "01")
             inputFieldValueCheck(yearInputName, Selectors.yearSelector, "2020")
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.invalidDateError, Selectors.daySelector)
@@ -570,7 +566,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
               dropEmploymentDB()
               insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -590,7 +586,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "abc")
             inputFieldValueCheck(yearInputName, Selectors.yearSelector, "2020")
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.invalidDateError, Selectors.daySelector)
@@ -605,7 +601,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
               dropEmploymentDB()
               insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -625,7 +621,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "01")
             inputFieldValueCheck(yearInputName, Selectors.yearSelector, "abc")
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.invalidDateError, Selectors.daySelector)
@@ -640,7 +636,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
               dropEmploymentDB()
               insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -660,7 +656,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "13")
             inputFieldValueCheck(yearInputName, Selectors.yearSelector, "2020")
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.invalidDateError, Selectors.daySelector)
@@ -675,7 +671,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
               dropEmploymentDB()
               insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -695,7 +691,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "1")
             inputFieldValueCheck(yearInputName, Selectors.yearSelector, "1900")
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.tooLongAgoDateError, Selectors.daySelector)
@@ -710,7 +706,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
               dropEmploymentDB()
               insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -730,7 +726,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "06")
             inputFieldValueCheck(yearInputName, Selectors.yearSelector, taxYearEOY.toString)
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.tooRecentDateError, Selectors.daySelector)
@@ -748,7 +744,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
               dropEmploymentDB()
               insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
               authoriseAgentOrIndividual(user.isAgent)
-              urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+              urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "has the correct status" in {
@@ -768,7 +764,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, nowDatePlusOne.getMonthValue.toString)
             inputFieldValueCheck(yearInputName, Selectors.yearSelector, nowDatePlusOne.getYear.toString)
             buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(continueLink, continueButtonFormSelector)
+            formPostLinkCheck(employmentStartDateUrl(taxYearEOY, employmentId), continueButtonFormSelector)
             welshToggleCheck(user.isWelsh)
 
             errorSummaryCheck(user.specificExpectedResults.get.futureDateError, Selectors.daySelector)
@@ -782,12 +778,12 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
     "redirect the user to the overview page when it is not end of year" which {
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(employerStartDatePageUrl(taxYear), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+        urlPost(fullUrl(employmentStartDateUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe overviewUrl(taxYear)
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
       }
     }
 
@@ -803,12 +799,12 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
         insertCyaData(anEmploymentUserData.copy(employment = cya.copy(employmentDetails = cya.employmentDetails.copy(
           cessationDateQuestion = Some(false), cessationDate = Some(s"${taxYearEOY - 1}-11-10")))), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "has the correct status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe employmentEndDateUrl(taxYearEOY, employmentId)
+        result.header("location").contains(employmentEndDateUrl(taxYearEOY, employmentId)) shouldBe true
 
       }
     }
@@ -822,12 +818,12 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
         authoriseAgentOrIndividual(isAgent = false)
-        urlPost(employerStartDatePageUrl(taxYearEOY), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location") shouldBe checkYourDetailsUrl(taxYearEOY, employmentId)
+        result.header("location").contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
         lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
         cyaModel.employment.employmentDetails.startDate shouldBe Some(employmentStartDate)
       }
