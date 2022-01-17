@@ -32,7 +32,7 @@ import utils.{Clock, SessionHelper}
 import views.html.employment.EmployerPayAmountView
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerComponents,
                                             authAction: AuthorisedAction,
@@ -43,7 +43,7 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
                                             employmentService: EmploymentService,
                                             errorHandler: ErrorHandler,
                                             clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
-  private implicit val executionContext = cc.executionContext
+  private implicit val executionContext: ExecutionContext = cc.executionContext
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
@@ -52,8 +52,7 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
         cya match {
           case Some(cya) =>
             val cyaAmount = cya.employment.employmentDetails.taxablePayToDate
-            val priorEmployment = prior.map(priorEmp => employmentSessionService.getLatestEmploymentData(priorEmp, isInYear = false)
-              .filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
+            val priorEmployment = prior.map(priorEmp => priorEmp.latestEOYEmployments.filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
             val priorAmount = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)))
             lazy val unfilledForm = buildForm(user.isAgent)
             val form: Form[BigDecimal] = cyaAmount.fold(unfilledForm)(

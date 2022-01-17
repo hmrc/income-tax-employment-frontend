@@ -37,10 +37,10 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp
   with MockCheckEmploymentExpensesService
   with MockAuditService {
 
-  lazy val view: CheckEmploymentExpensesView = app.injector.instanceOf[CheckEmploymentExpensesView]
-  lazy val viewEOY: CheckEmploymentExpensesViewEOY = app.injector.instanceOf[CheckEmploymentExpensesViewEOY]
+  private lazy val view: CheckEmploymentExpensesView = app.injector.instanceOf[CheckEmploymentExpensesView]
+  private lazy val viewEOY: CheckEmploymentExpensesViewEOY = app.injector.instanceOf[CheckEmploymentExpensesViewEOY]
 
-  lazy val controller = new CheckEmploymentExpensesController(
+  private lazy val controller = new CheckEmploymentExpensesController(
     authorisedAction,
     view,
     viewEOY,
@@ -55,7 +55,7 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp
     ec
   )
 
-  val taxYear = 2022
+  private val taxYear = 2022
 
   "calling show() as an individual" should {
     "return status code 303 with correct Location header" when {

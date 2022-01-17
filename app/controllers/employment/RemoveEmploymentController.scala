@@ -20,7 +20,7 @@ import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.EmploymentSummaryController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
-import models.employment.AllEmploymentData
+import models.employment.{AllEmploymentData, EmploymentSourceOrigin}
 import models.{IncomeTaxUserData, User}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -48,12 +48,9 @@ class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerCo
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.findPreviousEmploymentUserData(user, taxYear) { allEmploymentData =>
-        val totalEmployments = employmentSessionService.getLatestEmploymentData(allEmploymentData, isInYear = false).length
-        val isLastEmployment: Boolean = totalEmployments == 1
-        val source = employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear = false)
-        source match {
-          case Some((source, _)) => val employerName = source.employerName
-            Ok(removeEmploymentView(form, taxYear, employmentId, employerName, isLastEmployment))
+        allEmploymentData.eoyEmploymentSourceWith(employmentId) match {
+          case Some(EmploymentSourceOrigin(source, _)) => val employerName = source.employerName
+            Ok(removeEmploymentView(form, taxYear, employmentId, employerName, allEmploymentData.isLastEOYEmployment))
           case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
         }
       }
@@ -66,11 +63,9 @@ class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerCo
         case Left(error) => Future.successful(errorHandler.handleError(error.status))
         case Right(IncomeTaxUserData(None)) => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
         case Right(IncomeTaxUserData(Some(allEmploymentData))) =>
-          val totalEmployments = employmentSessionService.getLatestEmploymentData(allEmploymentData, isInYear = false).length
-          val isLastEmployment: Boolean = totalEmployments == 1
-
-          employmentSessionService.employmentSourceToUse(allEmploymentData, employmentId, isInYear = false) match {
-            case Some((source, _)) =>
+          val isLastEmployment = allEmploymentData.isLastEOYEmployment
+          allEmploymentData.eoyEmploymentSourceWith(employmentId) match {
+            case Some(EmploymentSourceOrigin(source, _)) =>
               val employerName = source.employerName
               form.bindFromRequest().fold(
                 formWithErrors => Future.successful(BadRequest(removeEmploymentView(formWithErrors, taxYear, employmentId, employerName, isLastEmployment))),

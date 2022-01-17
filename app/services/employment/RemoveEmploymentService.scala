@@ -32,6 +32,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
+// TODO: Refactor this service to be a proper service and does not return Result
 class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: DeleteOrIgnoreEmploymentConnector,
                                         incomeSourceConnector: IncomeSourceConnector,
                                         auditService: AuditService,

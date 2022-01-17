@@ -29,9 +29,9 @@ import scala.concurrent.Future
 
 class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp with MockEmploymentSessionService {
 
-  lazy val view = app.injector.instanceOf[EmploymentDetailsAndBenefitsView]
+  private lazy val view = app.injector.instanceOf[EmploymentDetailsAndBenefitsView]
 
-  lazy val controller = new EmploymentDetailsAndBenefitsController()(
+  private lazy val controller = new EmploymentDetailsAndBenefitsController()(
     mockMessagesControllerComponents,
     authorisedAction,
     view,
@@ -63,7 +63,6 @@ class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp with Mo
     }
 
     "redirect the User to the Overview page no data in mongo" which {
-
       s"has the SEE_OTHER($SEE_OTHER) status" in new TestWithAuth {
         val result: Future[Result] = {
           mockFind(taxYear, Redirect(mockAppConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
@@ -75,5 +74,4 @@ class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp with Mo
       }
     }
   }
-
 }

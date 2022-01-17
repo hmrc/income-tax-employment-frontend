@@ -18,6 +18,7 @@ package config
 
 import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import models.employment.{AllEmploymentData, EmploymentExpenses, EmploymentSource}
+import models.employment.AllEmploymentData
 import models.mongo.{EmploymentCYAModel, EmploymentUserData, ExpensesCYAModel, ExpensesUserData}
 import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData, User}
 import org.scalamock.handlers._
@@ -69,31 +70,6 @@ trait MockEmploymentSessionService extends MockFactory {
       .anyNumberOfTimes()
   }
 
-  def mockEmploymentSourceToUseHMRC(allEmploymentData: AllEmploymentData, employmentId: String,
-                                    isInYear: Boolean): CallHandler3[AllEmploymentData, String, Boolean, Option[(EmploymentSource, Boolean)]] = {
-    (mockEmploymentSessionService.employmentSourceToUse(_: AllEmploymentData, _: String, _: Boolean))
-      .expects(allEmploymentData, employmentId, isInYear)
-      .returns(Some(allEmploymentData.hmrcEmploymentData.head, true))
-      .anyNumberOfTimes()
-  }
-
-  def mockEmploymentSourceToUseNone(allEmploymentData: AllEmploymentData, employmentId: String,
-                                    isInYear: Boolean): CallHandler3[AllEmploymentData, String, Boolean, Option[(EmploymentSource, Boolean)]] = {
-    (mockEmploymentSessionService.employmentSourceToUse(_: AllEmploymentData, _: String, _: Boolean))
-      .expects(allEmploymentData, employmentId, isInYear)
-      .returns(None)
-      .anyNumberOfTimes()
-  }
-
-  def mockGetLatestEmploymentDataEOY(allEmploymentData: AllEmploymentData,
-                                     isInYear: Boolean): CallHandler2[AllEmploymentData, Boolean, Seq[EmploymentSource]] = {
-    (mockEmploymentSessionService.getLatestEmploymentData(_: AllEmploymentData, _: Boolean))
-      .expects(allEmploymentData, isInYear)
-      .returns(allEmploymentData.hmrcEmploymentData.filter(_.dateIgnored.isEmpty) ++ allEmploymentData.customerEmploymentData)
-      .anyNumberOfTimes()
-
-  }
-
   def mockGetSessionData(taxYear: Int, employmentId: String, result: Result)
                         (implicit executionContext: ExecutionContext): CallHandler5[Int, String, Option[EmploymentUserData] => Future[Result], User[_], Request[_], Future[Result]] = {
     (mockEmploymentSessionService.getSessionDataResult(_: Int, _: String)(_: Option[EmploymentUserData] => Future[Result])(_: User[_], _: Request[_]))
@@ -132,13 +108,5 @@ trait MockEmploymentSessionService extends MockFactory {
       .expects(taxYear, isPriorSubmission, hasPriorExpenses, expensesCYAModel, *, *)
       .returns(Future(result))
       .once()
-  }
-
-  def mockGetLatestExpensesHMRC(allEmploymentData: AllEmploymentData,
-                            isInYear: Boolean): CallHandler2[AllEmploymentData, Boolean, Option[(EmploymentExpenses, Boolean)]] = {
-    (mockEmploymentSessionService.getLatestExpenses(_: AllEmploymentData, _: Boolean))
-      .expects(allEmploymentData, isInYear)
-      .returns(Some(allEmploymentData.hmrcExpenses.get, true))
-      .anyNumberOfTimes()
   }
 }

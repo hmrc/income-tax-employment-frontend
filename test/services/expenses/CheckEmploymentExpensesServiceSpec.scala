@@ -203,34 +203,32 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
         customerExpenses = None,
       )
 
-      mockGetLatestExpensesHMRC(priorExpenses, false)
-
       verifySubmitEvent(
-         DecodedAmendExpensesPayload(
-              priorEmploymentExpensesData = Expenses(
-                businessTravelCosts = priorCustomerEmploymentExpenses.expenses.flatMap(_.businessTravelCosts),
-                jobExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.jobExpenses),
-                flatRateJobExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.flatRateJobExpenses),
-                professionalSubscriptions = priorCustomerEmploymentExpenses.expenses.flatMap(_.professionalSubscriptions),
-                hotelAndMealExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.hotelAndMealExpenses),
-                otherAndCapitalAllowances = priorCustomerEmploymentExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
-                vehicleExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.vehicleExpenses),
-                mileageAllowanceRelief = priorCustomerEmploymentExpenses.expenses.flatMap(_.mileageAllowanceRelief)
-            ),
-              employmentExpensesData = Expenses(
-                businessTravelCosts = model.expenses.businessTravelCosts,
-                jobExpenses = model.expenses.jobExpenses,
-                flatRateJobExpenses = model.expenses.flatRateJobExpenses,
-                professionalSubscriptions = model.expenses.professionalSubscriptions,
-                hotelAndMealExpenses = model.expenses.hotelAndMealExpenses,
-                otherAndCapitalAllowances = model.expenses.otherAndCapitalAllowances,
-                vehicleExpenses = model.expenses.vehicleExpenses,
-                mileageAllowanceRelief = model.expenses.mileageAllowanceRelief
-              )))
+        DecodedAmendExpensesPayload(
+          priorEmploymentExpensesData = Expenses(
+            businessTravelCosts = priorCustomerEmploymentExpenses.expenses.flatMap(_.businessTravelCosts),
+            jobExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.jobExpenses),
+            flatRateJobExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.flatRateJobExpenses),
+            professionalSubscriptions = priorCustomerEmploymentExpenses.expenses.flatMap(_.professionalSubscriptions),
+            hotelAndMealExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.hotelAndMealExpenses),
+            otherAndCapitalAllowances = priorCustomerEmploymentExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
+            vehicleExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.vehicleExpenses),
+            mileageAllowanceRelief = priorCustomerEmploymentExpenses.expenses.flatMap(_.mileageAllowanceRelief)
+          ),
+          employmentExpensesData = Expenses(
+            businessTravelCosts = model.expenses.businessTravelCosts,
+            jobExpenses = model.expenses.jobExpenses,
+            flatRateJobExpenses = model.expenses.flatRateJobExpenses,
+            professionalSubscriptions = model.expenses.professionalSubscriptions,
+            hotelAndMealExpenses = model.expenses.hotelAndMealExpenses,
+            otherAndCapitalAllowances = model.expenses.otherAndCapitalAllowances,
+            vehicleExpenses = model.expenses.vehicleExpenses,
+            mileageAllowanceRelief = model.expenses.mileageAllowanceRelief
+          )))
 
 
       await(underTest.performSubmitNrsPayload(model, prior = Some(priorExpenses))) shouldBe Right()
 
-      }
     }
+  }
 }

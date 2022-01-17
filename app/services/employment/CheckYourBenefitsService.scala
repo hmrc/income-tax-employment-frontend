@@ -16,45 +16,32 @@
 
 package services.employment
 
-import audit._
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import models.User
-import models.benefits.{Benefits, DecodedAmendBenefitsPayload, DecodedCreateNewBenefitsPayload}
+import models.benefits.{DecodedAmendBenefitsPayload, DecodedCreateNewBenefitsPayload}
 import models.employment.AllEmploymentData
 import models.employment.createUpdate.CreateUpdateEmploymentRequest
 import play.api.mvc.Request
-import services.{EmploymentSessionService, NrsService}
+import services.NrsService
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class CheckYourBenefitsService @Inject()(employmentSessionService: EmploymentSessionService,
-                                         auditService: AuditService,
-                                         nrsService: NrsService) {
-
-  def isSingleEmploymentAndAudit(benefits: Benefits, taxYear: Int, isInYear: Boolean, allEmploymentData: AllEmploymentData)
-                                (implicit user: User[_], hc: HeaderCarrier, ec: ExecutionContext): Boolean = {
-    val auditModel = ViewEmploymentBenefitsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, benefits)
-    auditService.sendAudit[ViewEmploymentBenefitsAudit](auditModel.toAuditModel)
-
-    val employmentSource = employmentSessionService.getLatestEmploymentData(allEmploymentData, isInYear)
-    employmentSource.length == 1
-  }
+class CheckYourBenefitsService @Inject()(nrsService: NrsService) {
 
   def performSubmitNrsPayload(model: CreateUpdateEmploymentRequest, employmentId: String, prior: Option[AllEmploymentData])
                              (implicit user: User[_], request: Request[_], hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
 
     val nrsPayload: Either[DecodedAmendBenefitsPayload, DecodedCreateNewBenefitsPayload] = prior.flatMap {
       prior =>
-        val priorData = employmentSessionService.employmentSourceToUse(prior, employmentId, isInYear = false)
-        priorData.map(prior => model.toAmendDecodedBenefitsPayloadModel(prior._1))
+        val priorData = prior.eoyEmploymentSourceWith(employmentId)
+        priorData.map(prior => model.toAmendDecodedBenefitsPayloadModel(prior.employmentSource))
     }.map(Left(_)).getOrElse(Right(model.toCreateDecodedBenefitsPayloadModel()))
 
     nrsPayload match {
       case Left(amend) => nrsService.submit(user.nino, amend, user.mtditid)
       case Right(create) => nrsService.submit(user.nino, create, user.mtditid)
     }
-
   }
 }
