@@ -44,7 +44,7 @@
                     href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url))
                     } else {
                         @button("common.returnToEmployer", attributes = Map("id" -> "returnToEmployerBtn"),
-                            href = Some(controllers.employment.routes.EmploymentDetailsAndBenefitsController.show(taxYear, employmentId).url))
+                            href = Some(controllers.employment.routes.EmployerInformationController.show(taxYear, employmentId).url))
             }
 }
 
