@@ -18,6 +18,7 @@ package builders.models.mongo
 
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import models.benefits.BenefitsViewModel
+import models.employment.StudentLoansCYAModel
 import models.mongo.{EmploymentDetails, EmploymentUserData}
 
 object EmploymentUserDataBuilder {
@@ -50,6 +51,15 @@ object EmploymentUserDataBuilder {
       isPriorSubmission = isPriorSubmission,
       hasPriorBenefits = hasPriorBenefits,
       employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails)
+    )
+  }
+  def anEmploymentUserDataWithStudentLoans(studentLoans: StudentLoansCYAModel,
+                                      isPriorSubmission: Boolean = true,
+                                      hasPriorBenefits: Boolean = true): EmploymentUserData = {
+    anEmploymentUserData.copy(
+      isPriorSubmission = isPriorSubmission,
+      hasPriorBenefits = hasPriorBenefits,
+      employment = anEmploymentCYAModel.copy(studentLoansCYAModel = Some(studentLoans))
     )
   }
 }

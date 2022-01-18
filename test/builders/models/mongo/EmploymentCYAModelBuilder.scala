@@ -18,6 +18,7 @@ package builders.models.mongo
 
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
+import builders.models.employment.StudentLoansBuilder.aStudentLoans
 import models.mongo.EmploymentCYAModel
 
 object EmploymentCYAModelBuilder {
@@ -25,5 +26,6 @@ object EmploymentCYAModelBuilder {
   val anEmploymentCYAModel: EmploymentCYAModel = EmploymentCYAModel(
     employmentDetails = anEmploymentDetails,
     employmentBenefits = Some(aBenefitsViewModel),
+    studentLoansCYAModel = Some(aStudentLoans.toStudentLoansCYAModel())
   )
 }

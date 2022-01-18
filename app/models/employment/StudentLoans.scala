@@ -19,7 +19,17 @@ package models.employment
 import play.api.libs.json.{Json, OFormat}
 
 case class StudentLoans(uglDeductionAmount: Option[BigDecimal],
-                        pglDeductionAmount: Option[BigDecimal])
+                        pglDeductionAmount: Option[BigDecimal]) {
+
+  def toStudentLoansCYAModel(): StudentLoansCYAModel = {
+    StudentLoansCYAModel(
+      uglDeduction = uglDeductionAmount.isDefined,
+      uglDeductionAmount = uglDeductionAmount,
+      pglDeduction = pglDeductionAmount.isDefined,
+      pglDeductionAmount = pglDeductionAmount
+    )
+  }
+}
 
 object StudentLoans {
   implicit val formats: OFormat[StudentLoans] = Json.format[StudentLoans]
