@@ -32,7 +32,11 @@ class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionS
                            (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val newStudentLoans: Option[StudentLoansCYAModel] = originalEmploymentUserData.employment.studentLoansCYAModel.
-      map(studentLoan => studentLoan.copy(uglDeduction = ugl, uglDeductionAmount = None))
+      map(studentLoan => if (ugl) {
+        studentLoan.copy(uglDeduction = ugl)
+      } else {
+        studentLoan.copy(uglDeduction = ugl, uglDeductionAmount = None)
+      })
     val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoansCYAModel = newStudentLoans)
 
     employmentSessionService.createOrUpdateEmploymentUserDataWith(
@@ -47,7 +51,11 @@ class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionS
                            (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val newStudentLoans: Option[StudentLoansCYAModel] = originalEmploymentUserData.employment.studentLoansCYAModel.
-      map(studentLoan => studentLoan.copy(pglDeduction = pgl, pglDeductionAmount = None))
+      map(studentLoan => if (pgl) {
+        studentLoan.copy(pglDeduction = pgl)
+      } else {
+        studentLoan.copy(pglDeduction = pgl, pglDeductionAmount = None)
+      })
     val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoansCYAModel = newStudentLoans)
 
     employmentSessionService.createOrUpdateEmploymentUserDataWith(
