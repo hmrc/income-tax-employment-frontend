@@ -49,4 +49,10 @@ class ViewUtilSpec extends UnitTest with GuiceOneAppPerSuite with ViewTest {
       ariaVisuallyHiddenText("some-text") shouldBe HtmlContent("""<span class="govuk-visually-hidden">some-text</span>""")
     }
   }
+
+  "bigDecimalCurrency" should {
+    "Place comma in appropriate place when given amount over 999" in {
+      ViewUtils.bigDecimalCurrency("45000.10") shouldBe "£45,000.10"
+    }
+  }
 }
