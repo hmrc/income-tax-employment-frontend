@@ -18,6 +18,7 @@ package services
 
 import config.AppConfig
 import models.benefits._
+import models.employment.{EncryptedStudentLoansCYAModel, StudentLoansCYAModel}
 import models.expenses.{EncryptedExpensesViewModel, ExpensesViewModel}
 import models.mongo._
 import utils.SecureGCMCipher
@@ -45,7 +46,8 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
   private def encryptEmployment(employment: EmploymentCYAModel)(implicit textAndKey: TextAndKey): EncryptedEmploymentCYAModel = {
     EncryptedEmploymentCYAModel(
       employmentDetails = encryptEmploymentDetails(employment.employmentDetails),
-      employmentBenefits = employment.employmentBenefits.map(encryptEmploymentBenefits)
+      employmentBenefits = employment.employmentBenefits.map(encryptEmploymentBenefits),
+      studentLoansCYAModel = employment.studentLoansCYAModel.map(encryptStudentLoansCYAModel)
     )
   }
 
@@ -370,6 +372,27 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
     )
   }
 
+  private def encryptStudentLoansCYAModel(studentloans: StudentLoansCYAModel)
+                                                   (implicit textAndKey: TextAndKey): EncryptedStudentLoansCYAModel ={
+    EncryptedStudentLoansCYAModel(
+      secureGCMCipher.encrypt[Boolean](studentloans.uglDeduction),
+      studentloans.uglDeductionAmount.map(x => secureGCMCipher.encrypt[BigDecimal](x)),
+      secureGCMCipher.encrypt[Boolean](studentloans.pglDeduction),
+      studentloans.pglDeductionAmount.map(x => secureGCMCipher.encrypt[BigDecimal](x))
+    )
+  }
+
+  private def decryptStudentLoansCYAModel(studentloans: EncryptedStudentLoansCYAModel)
+                                                   (implicit textAndKey: TextAndKey): StudentLoansCYAModel ={
+    StudentLoansCYAModel(
+      secureGCMCipher.decrypt[Boolean](studentloans.uglDeduction.value, studentloans.uglDeduction.nonce),
+      studentloans.uglDeductionAmount.map(x => secureGCMCipher.decrypt[BigDecimal](x.value,x.nonce)),
+      secureGCMCipher.decrypt[Boolean](studentloans.pglDeduction.value, studentloans.pglDeduction.nonce),
+      studentloans.pglDeductionAmount.map(x => secureGCMCipher.decrypt[BigDecimal](x.value,x.nonce))
+    )
+  }
+
+
   def decryptExpenses(userData: EncryptedExpensesUserData): ExpensesUserData = {
 
     implicit val textAndKey: TextAndKey = TextAndKey(userData.mtdItId, appConfig.encryptionKey)
@@ -430,7 +453,8 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
   private def decryptEmployment(employment: EncryptedEmploymentCYAModel)(implicit textAndKey: TextAndKey): EmploymentCYAModel = {
     EmploymentCYAModel(
       employmentDetails = decryptEmploymentDetails(employment.employmentDetails),
-      employmentBenefits = employment.employmentBenefits.map(decryptEmploymentBenefits)
+      employmentBenefits = employment.employmentBenefits.map(decryptEmploymentBenefits),
+      studentLoansCYAModel = employment.studentLoansCYAModel.map(decryptStudentLoansCYAModel)
     )
   }
 

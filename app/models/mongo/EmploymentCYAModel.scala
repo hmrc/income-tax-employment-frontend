@@ -17,11 +17,12 @@
 package models.mongo
 
 import models.benefits.{BenefitsViewModel, EncryptedBenefitsViewModel}
-import models.employment.{EmploymentDetailsViewModel, EmploymentSource}
+import models.employment.{EmploymentDetailsViewModel, EmploymentSource, EncryptedStudentLoansCYAModel, StudentLoansCYAModel}
 import play.api.libs.json.{Json, OFormat}
 
 case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
-                              employmentBenefits: Option[BenefitsViewModel] = None) {
+                              employmentBenefits: Option[BenefitsViewModel] = None,
+                              studentLoansCYAModel: Option[StudentLoansCYAModel] = None) {
 
   def toEmploymentDetailsView(employmentId: String, isUsingCustomerData: Boolean): EmploymentDetailsViewModel = {
     EmploymentDetailsViewModel(
@@ -43,12 +44,14 @@ object EmploymentCYAModel {
 
   def apply(employmentSource: EmploymentSource, isUsingCustomerData: Boolean): EmploymentCYAModel = EmploymentCYAModel(
     employmentDetails = employmentSource.toEmploymentDetails(isUsingCustomerData),
-    employmentBenefits = employmentSource.toBenefitsViewModel(isUsingCustomerData)
+    employmentBenefits = employmentSource.toBenefitsViewModel(isUsingCustomerData),
+    studentLoansCYAModel = employmentSource.toStudentLoansCYAModel
   )
 }
 
 case class EncryptedEmploymentCYAModel(employmentDetails: EncryptedEmploymentDetails,
-                                       employmentBenefits: Option[EncryptedBenefitsViewModel] = None)
+                                       employmentBenefits: Option[EncryptedBenefitsViewModel] = None,
+                                       studentLoansCYAModel: Option[EncryptedStudentLoansCYAModel])
 
 object EncryptedEmploymentCYAModel {
   implicit val format: OFormat[EncryptedEmploymentCYAModel] = Json.format[EncryptedEmploymentCYAModel]

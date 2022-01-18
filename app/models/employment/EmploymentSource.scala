@@ -66,6 +66,16 @@ case class EmploymentSource(employmentId: String,
     )
   }
 
+  def toStudentLoansCYAModel: Option[StudentLoansCYAModel] = {
+    employmentData.flatMap(_.deductions.flatMap(_.studentLoans.map(data =>
+      StudentLoansCYAModel(
+        data.uglDeductionAmount.isDefined,
+        data.uglDeductionAmount,
+        data.pglDeductionAmount.isDefined,
+        data.pglDeductionAmount))))
+  }
+
+
   def toEmploymentDetailsViewModel(isUsingCustomerData: Boolean): EmploymentDetailsViewModel = {
     EmploymentDetailsViewModel(
       employerName,
