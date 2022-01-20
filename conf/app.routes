@@ -17,7 +17,7 @@ GET        /timeout                                                             
 GET        /:taxYear/employment-summary                                             controllers.employment.EmploymentSummaryController.show(taxYear: Int)
 POST       /:taxYear/employment-summary                                             controllers.employment.EmploymentSummaryController.submit(taxYear: Int)
 
-GET        /:taxYear/employer-information                                  controllers.employment.EmploymentDetailsAndBenefitsController.show(taxYear: Int, employmentId: String)
+GET        /:taxYear/employer-information                                           controllers.employment.EmploymentDetailsAndBenefitsController.show(taxYear: Int, employmentId: String)
 
 #################       Check your answers pages      ##############################
 
