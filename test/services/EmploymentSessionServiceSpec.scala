@@ -145,7 +145,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       hasPriorBenefits = true, employmentCYA, testClock.now())
   }
 
-  private val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
+  private val createUpdateEmploymentRequest: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
     None,
     Some(
       CreateUpdateEmployment(
@@ -225,34 +225,48 @@ class EmploymentSessionServiceSpec extends UnitTest
   }
 
   "createOrUpdateEmploymentResult" should {
-    "use the request model to make the api call and return the correct redirect" in {
-      mockCreateUpdateEmploymentData(nino, taxYear, model)()
+    "use the request model to make the api call and return the correct redirect when" when {
+      "request has not employmentId" in {
+        val requestWithoutEmploymentId = createUpdateEmploymentRequest.copy(employmentId = None)
+        mockCreateUpdateEmploymentData(nino, taxYear, requestWithoutEmploymentId)(Right(None))
 
-      val response = service.createOrUpdateEmploymentResult(taxYear, model)
+        val response = service.createOrUpdateEmploymentResult(taxYear, requestWithoutEmploymentId)
 
-      status(response.map(_.right.get)) shouldBe SEE_OTHER
-      redirectUrl(response.map(_.right.get)) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYear/employment-summary"
+        status(response.map(_.right.get)) shouldBe SEE_OTHER
+        redirectUrl(response.map(_.right.get)) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYear/employment-summary"
+      }
+
+      "request has employmentId" in {
+        val requestWithEmploymentId = createUpdateEmploymentRequest.copy(employmentId = Some("some-employment-id"))
+        mockCreateUpdateEmploymentData(nino, taxYear, requestWithEmploymentId)(Right(None))
+
+        val response = service.createOrUpdateEmploymentResult(taxYear, requestWithEmploymentId)
+
+        status(response.map(_.right.get)) shouldBe SEE_OTHER
+        redirectUrl(response.map(_.right.get)) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYear/employer-information?employmentId=some-employment-id"
+      }
     }
-    "use the request model to make the api call and return the correct redirect when it is an add case" in {
-      mockCreateUpdateEmploymentData(nino, taxYear, model)(Right(Some("473474747")))
 
-      val response = service.createOrUpdateEmploymentResult(taxYear, model)
+    "use the request model to make the api call and return the correct redirect when it is an add case" in {
+      mockCreateUpdateEmploymentData(nino, taxYear, createUpdateEmploymentRequest)(Right(Some("473474747")))
+
+      val response = service.createOrUpdateEmploymentResult(taxYear, createUpdateEmploymentRequest)
 
       status(response.map(_.right.get)) shouldBe SEE_OTHER
       redirectUrl(response.map(_.right.get)) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-benefits?employmentId=473474747"
     }
 
     "use the request model to make the api call  and handle an error" in {
-      mockCreateUpdateEmploymentData(nino, taxYear, model)(Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError)))
+      mockCreateUpdateEmploymentData(nino, taxYear, createUpdateEmploymentRequest)(Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError)))
 
-      val response = service.createOrUpdateEmploymentResult(taxYear, model)
+      val response = service.createOrUpdateEmploymentResult(taxYear, createUpdateEmploymentRequest)
 
       status(response.map(_.left.get)) shouldBe INTERNAL_SERVER_ERROR
     }
   }
 
   "createModelAndReturnResult" should {
-    "return to overview when nothing to update" in {
+    "return to employment details when nothing to update" in {
       lazy val response = service.createModelAndReturnResult(
         employmentDataFull, Some(
           AllEmploymentData(
@@ -283,7 +297,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       )(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYear/employment-summary"
+      redirectUrl(response) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYear/employer-information?employmentId=${employmentDataFull.employmentId}"
     }
 
     "create the model to send and return the correct result" in {

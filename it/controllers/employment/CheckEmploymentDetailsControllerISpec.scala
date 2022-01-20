@@ -114,7 +114,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val changeLinkExpected = "Change"
     val continueButtonText = "Save and continue"
     val employerNameField1 = "Employer"
@@ -132,7 +132,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val changeLinkExpected = "Change"
     val continueButtonText = "Save and continue"
     val employerNameField1 = "Employer"
@@ -739,48 +739,6 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location").contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
-      }
-    }
-
-    "create the model to update the data and return the correct redirect" which {
-      val employmentData = anEmploymentCYAModel.copy(employmentBenefits = None)
-      implicit lazy val result: WSResponse = {
-        dropEmploymentDB()
-        authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(anEmploymentUserData.copy(employment = employmentData).copy(employmentId = employmentId), aUserRequest)
-        val customerEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
-        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(customerEmploymentData = customerEmploymentData))), nino, 2021)
-
-        val model = CreateUpdateEmploymentRequest(
-          Some(employmentId),
-          Some(
-            CreateUpdateEmployment(
-              employmentData.employmentDetails.employerRef,
-              employmentData.employmentDetails.employerName,
-              employmentData.employmentDetails.startDate.get
-            )
-          ),
-          Some(
-            CreateUpdateEmploymentData(
-              pay = CreateUpdatePay(
-                employmentData.employmentDetails.taxablePayToDate.get,
-                employmentData.employmentDetails.totalTaxToDate.get,
-              ),
-              deductions = Some(Deductions(Some(aStudentLoans)))
-            )
-          )
-        )
-
-        stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
-          Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
-
-        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
-      }
-
-      "has an SEE OTHER status" in {
-        result.status shouldBe SEE_OTHER
-        result.header("location").contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
-        findCyaData(taxYear, employmentId, aUserRequest) shouldBe None
       }
     }
 

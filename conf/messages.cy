@@ -89,6 +89,7 @@ timeout.p1 = We did not save your answers.
 #################       Employment summary messages        ########################################
 
 employment.employment.details.label = Employment Details
+employment.employmentDetails.caption = Employment details for 6 April {0} to 5 April {1}
 employment.employmentDetails.heading.agent = Check your client’s employment details
 employment.employmentDetails.heading.individual = Check your employment details
 employment.employmentInfo.buttonText = Return to employment summary

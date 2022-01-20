@@ -53,7 +53,7 @@
 
 @layout(pageTitle = headingForUse, taxYear = Some(taxYear), isAgent = user.isAgent) {
 
-    @heading(headingForUse, Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), margin)
+    @heading(headingForUse, Some(messages("employment.employmentDetails.caption", (taxYear - 1).toString, taxYear.toString)), margin)
 
     @if(!employmentDetails.isUsingCustomerData){
         <p class="govuk-body">@messages(s"employment.employmentInformation.content.${if(user.isAgent) "agent" else "individual"}")</p>
