@@ -190,7 +190,6 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
         }
 
 
-
         "render the page where the status for benefits is Updated when there is Benefits data in year" which {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)

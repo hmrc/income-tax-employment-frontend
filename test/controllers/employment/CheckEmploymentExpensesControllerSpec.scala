@@ -80,7 +80,7 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp
           )
 
         val responseF: Future[Result] = {
-          mockFind(taxYear, Ok(view(taxYear, anExpensesViewModel, isInYear = true, isMultipleEmployments = true)))
+          mockFind(taxYear, Ok(view(taxYear, anExpensesViewModel, isInYear = true)))
           controller.show(taxYear)(request)
         }
 
@@ -106,7 +106,7 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp
       "there is expenses data in the database" in new TestWithAuth(isAgent = true) {
         val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequestWithMtditidAndNino
         val responseF: Future[Result] = {
-          mockFind(taxYear, Ok(view(taxYear, anExpensesViewModel, isInYear = true, isMultipleEmployments = true)))
+          mockFind(taxYear, Ok(view(taxYear, anExpensesViewModel, isInYear = true)))
           controller.show(taxYear)(request)
         }
 

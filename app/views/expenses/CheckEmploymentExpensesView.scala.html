@@ -30,7 +30,7 @@
         govUkButton: GovukButton
 )
 
-@(taxYear: Int, expenses: ExpensesViewModel, isInYear: Boolean, isMultipleEmployments: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, expenses: ExpensesViewModel, isInYear: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @mapToYesNo(value: Boolean) = @{
     if(value){messages("common.yes")} else {messages("common.no")}
@@ -39,16 +39,12 @@
 @layout(pageTitle = messages(s"checkYourExpenses.heading.${if(user.isAgent) "agent" else "individual"}"), taxYear = Some(taxYear), isAgent = user.isAgent) {
     @heading(
         messages(s"checkYourExpenses.heading.${if(user.isAgent) "agent" else "individual"}"),
-        Some(messages(s"employment.caption", (taxYear - 1).toString, taxYear.toString)),
+        Some(messages(s"expenses.caption", (taxYear - 1).toString, taxYear.toString)),
         "govuk-!-margin-bottom-3"
     )
 
     <p class="govuk-body">
-        @{if(isMultipleEmployments){
-            messages(s"checkYourExpenses.sub-heading.${if(user.isAgent) "agent" else "individual"}.multiple")
-        } else {
-            messages(s"checkYourExpenses.hmrcOnlyInfo.${if(user.isAgent) "agent" else "individual"}")
-        }}
+        @messages(s"checkYourExpenses.sub-heading.${if(user.isAgent) "agent" else "individual"}")
     </p>
 
     @{
@@ -102,7 +98,7 @@
     }
 
     @if(isInYear) {
-        @button("employment.employmentInfo.buttonText", attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
+        @button("common.returnToPayeEmployment", attributes = Map("id" -> "returnToEmploymentSummaryBtn"),
                     href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear).url))
     }
 

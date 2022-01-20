@@ -50,7 +50,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val headingSelector = "#main-content > div > div > header > h1"
     val subHeadingSelector = "#main-content > div > div > header > p"
     val contentSelector = "#main-content > div > div > p.govuk-body"
-    val insetEOYSelector = "#main-content > div > div > p.govuk-inset-text"
     val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
     val summaryListSelector = "#main-content > div > div > dl"
     val continueButtonFormSelector = "#main-content > div > div > form"
@@ -67,10 +66,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   trait SpecificExpectedResults {
     val expectedH1: String
     val expectedTitle: String
-    val expectedContentSingle: String
-    val expectedContentMultiple: String
-    val expectedInsetMultiple: String
-    val hmrcOnlyInfo: String
+    val expectedContent: String
     val expensesHiddenText: String
     val jobExpensesHiddenText: String
     val jobExpensesAmountHiddenText: String
@@ -118,7 +114,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val otherAndCapitalAllowancesQuestion = "Other equipment"
     val otherAndCapitalAllowancesAmount = "Amount for other equipment"
     val continueButtonText = "Save and continue"
-    val returnToEmploymentSummaryText: String = "Return to employment summary"
+    val returnToEmploymentSummaryText: String = "Return to PAYE employment"
     val fieldNames = Seq(
       "Employment expenses",
       "Business travel and overnight stays",
@@ -133,7 +129,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val yes: String = "Yes"
     val no: String = "No"
 
-    def expectedCaption(taxYear: Int = taxYear): String = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    def expectedCaption(taxYear: Int = taxYear): String = s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -149,7 +145,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val otherAndCapitalAllowancesQuestion = "Other equipment"
     val otherAndCapitalAllowancesAmount = "Amount for other equipment"
     val continueButtonText = "Save and continue"
-    val returnToEmploymentSummaryText: String = "Return to employment summary"
+    val returnToEmploymentSummaryText: String = "Return to PAYE employment"
 
     val fieldNames = Seq(
       "Employment expenses",
@@ -165,17 +161,13 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
     val yes: String = "Yes"
     val no: String = "No"
 
-    def expectedCaption(taxYear: Int = taxYear): String = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    def expectedCaption(taxYear: Int = taxYear): String = s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedH1 = "Check your employment expenses"
     val expectedTitle = "Check your employment expenses"
-    val expectedContentSingle = "Your employment expenses are based on the information we already hold about you."
-    val expectedContentMultiple: String = "Your employment expenses are based on the information we already hold about you. " +
-      "This is a total of expenses from all employment in the tax year."
-    val expectedInsetMultiple = "Your employment expenses is a total of all employment in the tax year."
-    val hmrcOnlyInfo = "Your employment expenses are based on the information we already hold about you."
+    val expectedContent = "Your employment expenses are based on the information we already hold about you."
     val expensesHiddenText = "Change if you want to claim employment expenses"
     val jobExpensesHiddenText = "Change if you want to claim business travel and overnight stays"
     val jobExpensesAmountHiddenText = "Change the amount you want to claim for business travel and overnight stays"
@@ -192,11 +184,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedH1 = "Check your client’s employment expenses"
     val expectedTitle = "Check your client’s employment expenses"
-    val expectedContentSingle = "Your client’s employment expenses are based on the information we already hold about them."
-    val expectedContentMultiple: String = "Your client’s employment expenses are based on the information we already hold about them. " +
-      "This is a total of expenses from all employment in the tax year."
-    val expectedInsetMultiple = "Your client’s employment expenses is a total of all employment in the tax year."
-    val hmrcOnlyInfo = "Your client’s employment expenses are based on the information we already hold about them."
+    val expectedContent = "Your client’s employment expenses are based on the information we already hold about them."
     val expensesHiddenText = "Change if you want to claim employment expenses for your client"
     val jobExpensesHiddenText = "Change if you want to claim business travel and overnight stays for your client"
     val jobExpensesAmountHiddenText = "Change the amount you want to claim for your client’s business travel and overnight stays"
@@ -213,11 +201,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedH1 = "Check your employment expenses"
     val expectedTitle = "Check your employment expenses"
-    val expectedContentSingle = "Your employment expenses are based on the information we already hold about you."
-    val expectedContentMultiple: String = "Your employment expenses are based on the information we already hold about you. " +
-      "This is a total of expenses from all employment in the tax year."
-    val expectedInsetMultiple = "Your employment expenses is a total of all employment in the tax year."
-    val hmrcOnlyInfo = "Your employment expenses are based on the information we already hold about you."
+    val expectedContent = "Your employment expenses are based on the information we already hold about you."
+    val expectedSubHeadingContent: String = "Your employment expenses are based on the information we already hold about you."
     val expensesHiddenText = "Change if you want to claim employment expenses"
     val jobExpensesHiddenText = "Change if you want to claim business travel and overnight stays"
     val jobExpensesAmountHiddenText = "Change the amount you want to claim for business travel and overnight stays"
@@ -234,11 +219,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedH1 = "Check your client’s employment expenses"
     val expectedTitle = "Check your client’s employment expenses"
-    val expectedContentSingle = "Your client’s employment expenses are based on the information we already hold about them."
-    val expectedContentMultiple: String = "Your client’s employment expenses are based on the information we already hold about them. " +
-      "This is a total of expenses from all employment in the tax year."
-    val expectedInsetMultiple = "Your client’s employment expenses is a total of all employment in the tax year."
-    val hmrcOnlyInfo = "Your client’s employment expenses are based on the information we already hold about them."
+    val expectedContent = "Your client’s employment expenses are based on the information we already hold about them."
     val expensesHiddenText = "Change if you want to claim employment expenses for your client"
     val jobExpensesHiddenText = "Change if you want to claim business travel and overnight stays for your client"
     val jobExpensesAmountHiddenText = "Change the amount you want to claim for your client’s business travel and overnight stays"
@@ -284,7 +265,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption())
-          textOnPageCheck(user.specificExpectedResults.get.expectedContentSingle, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetText(), insetTextSelector)
           welshToggleCheck(user.isWelsh)
 
@@ -322,7 +303,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           titleCheck(specificResults.expectedTitle)
           h1Check(specificResults.expectedH1)
           captionCheck(commonResults.expectedCaption(taxYear - 1))
-          textOnPageCheck(specificResults.expectedContentSingle, contentSelector)
+          textOnPageCheck(specificResults.expectedContent, contentSelector)
           welshToggleCheck(user.isWelsh)
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           formPostLinkCheck(checkYourExpensesUrl(taxYearEOY), continueButtonFormSelector)
@@ -413,7 +394,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
-          textOnPageCheck(user.specificExpectedResults.get.expectedContentSingle, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
           welshToggleCheck(user.isWelsh)
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           formPostLinkCheck(checkYourExpensesUrl(taxYearEOY), continueButtonFormSelector)
@@ -451,7 +432,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear))
-          textOnPageCheck(user.specificExpectedResults.get.expectedContentMultiple, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetText(taxYear), insetTextSelector)
           welshToggleCheck(user.isWelsh)
 
@@ -491,7 +472,6 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
-          textOnPageCheck(user.specificExpectedResults.get.expectedInsetMultiple, insetEOYSelector)
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           formPostLinkCheck(checkYourExpensesUrl(taxYearEOY), continueButtonFormSelector)
 
@@ -532,7 +512,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           captionCheck(user.commonExpectedResults.expectedCaption(taxYear - 1))
-          textOnPageCheck(user.specificExpectedResults.get.expectedContentSingle, contentSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
           welshToggleCheck(user.isWelsh)
           buttonCheck(user.commonExpectedResults.continueButtonText, continueButtonSelector)
           formPostLinkCheck(checkYourExpensesUrl(taxYearEOY), continueButtonFormSelector)

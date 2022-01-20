@@ -37,6 +37,7 @@ common.opensInNewTab = (opens in new tab)
 common.remove = Remove
 common.return.overview.buttonText = Return to overview
 common.returnToEmployer = Return to employer
+common.returnToPayeEmployment = Return to PAYE employment
 common.saveAndContinue = Save and continue
 common.status.cannotUpdate = Cannot update
 common.status.notStarted = Not started
@@ -95,7 +96,6 @@ employment.employmentDetails.heading.agent = Check your client’s employment de
 employment.employmentDetails.heading.individual = Check your employment details
 employment.employmentInfo.buttonText = Return to employment summary
 employment.employerInformation.title = Employer information
-employment.employerInformation.buttonText = Return to PAYE employment
 employment.employmentInfo.p1.agent = You cannot update your client’s employment information until 6 April {0}.
 employment.employmentInfo.p1.individual = You cannot update your employment information until 6 April {0}.
 employment.employmentInformation.content.agent = Your client’s employment details are based on the information we already hold about them.
@@ -261,7 +261,6 @@ employment.employmentDates.tellUs.agent = Tell us when your client’s employmen
 employment.employmentDates.startDate = Start date
 employment.employmentDates.endDate = End date
 
-
 #################       Still working at employer messages        ########################################
 
 employment.stillWorkingForEmployer.error.agent = Select yes if your client is still working for their employer
@@ -346,8 +345,6 @@ checkYourExpenses.flatRateJobExpensesQuestion.hiddenText.individual = Change if 
 checkYourExpenses.flatRateJobExpensesQuestion = Uniforms, work clothes, or tools
 checkYourExpenses.heading.agent = Check your client’s employment expenses
 checkYourExpenses.heading.individual = Check your employment expenses
-checkYourExpenses.hmrcOnlyInfo.agent = Your client’s employment expenses are based on the information we already hold about them.
-checkYourExpenses.hmrcOnlyInfo.individual = Your employment expenses are based on the information we already hold about you.
 checkYourExpenses.inYearInfo.agent = You cannot update your client’s employment expenses until 6 April {0}.
 checkYourExpenses.inYearInfo.individual = You cannot update your employment expenses until 6 April {0}.
 checkYourExpenses.jobExpensesAmount.hiddenText.agent = Change the amount you want to claim for your client’s business travel and overnight stays
@@ -356,8 +353,6 @@ checkYourExpenses.jobExpensesAmount = Amount for business travel and overnight s
 checkYourExpenses.jobExpensesQuestion.hiddenText.agent = Change if you want to claim business travel and overnight stays for your client
 checkYourExpenses.jobExpensesQuestion.hiddenText.individual = Change if you want to claim business travel and overnight stays
 checkYourExpenses.jobExpensesQuestion = Business travel and overnight stays
-checkYourExpenses.multiple.agent = Your client’s employment expenses is a total of all employment in the tax year.
-checkYourExpenses.multiple.individual = Your employment expenses is a total of all employment in the tax year.
 checkYourExpenses.otherAndCapitalAllowancesAmount.hiddenText.agent = Change the amount you want to claim for your client’s other equipment
 checkYourExpenses.otherAndCapitalAllowancesAmount.hiddenText.individual = Change the amount you want to claim for other equipment
 checkYourExpenses.otherAndCapitalAllowancesAmount = Amount for other equipment
@@ -371,8 +366,8 @@ checkYourExpenses.professionalSubscriptionsAmount = Amount for professional fees
 checkYourExpenses.professionalSubscriptionsQuestion.hiddenText.agent = Change if you want to claim professional fees and subscriptions for your client
 checkYourExpenses.professionalSubscriptionsQuestion.hiddenText.individual = Change if you want to claim professional fees and subscriptions
 checkYourExpenses.professionalSubscriptionsQuestion = Professional fees and subscriptions
-checkYourExpenses.sub-heading.agent.multiple = Your client’s employment expenses are based on the information we already hold about them. This is a total of expenses from all employment in the tax year.
-checkYourExpenses.sub-heading.individual.multiple = Your employment expenses are based on the information we already hold about you. This is a total of expenses from all employment in the tax year.
+checkYourExpenses.sub-heading.agent = Your client’s employment expenses are based on the information we already hold about them.
+checkYourExpenses.sub-heading.individual = Your employment expenses are based on the information we already hold about you.
 
 #################       Check employment benefits messages        ########################################
 
