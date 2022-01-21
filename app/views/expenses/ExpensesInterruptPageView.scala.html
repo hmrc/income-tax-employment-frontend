@@ -14,20 +14,21 @@
  * limitations under the License.
  *@
 
-@import views.html.templates.Layout
 @import views.html.templates.helpers.ErrorSummary
 @import views.html.templates.helpers.Button
 @import views.html.templates.helpers.Heading
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import views.html.templates.helpers.InputText
 @import views.html.templates.helpers.Heading
+@import views.html.templates.GovUkLayoutFullWidth
 
 
 @this(
-        layout: Layout,
+        layout: GovUkLayoutFullWidth,
         button: Button,
         heading: Heading,
         formHelper: FormWithCSRF
+
 )
 
 @(taxYear: Int)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
