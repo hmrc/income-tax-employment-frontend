@@ -32,7 +32,7 @@
         govukInsetText : GovukInsetText
 )
 
-@(taxYear: Int, expenses: ExpensesViewModel, isInYear: Boolean, isMultipleEmployments: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, expenses: ExpensesViewModel, isInYear: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
     @headingForUse = @{messages(s"checkYourExpenses.heading.${if(user.isAgent) "agent" else "individual"}")}
 
@@ -50,16 +50,10 @@
 
     @layout(pageTitle = titleForUse, taxYear = Some(taxYear)) {
 
-        @heading(headingForUse, Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-5")
+        @heading(headingForUse, Some(messages("expenses.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-5")
 
         @if(!expenses.isUsingCustomerData){
-            <p class="govuk-body">@messages(s"checkYourExpenses.hmrcOnlyInfo.${if(user.isAgent) "agent" else "individual"}")</p>
-        }
-
-        @if(isMultipleEmployments){
-            <p class="govuk-inset-text">
-            @messages(s"checkYourExpenses.multiple.${if(user.isAgent) "agent" else "individual"}")
-            </p>
+            <p class="govuk-body">@messages(s"checkYourExpenses.sub-heading.${if(user.isAgent) "agent" else "individual"}")</p>
         }
 
         @{

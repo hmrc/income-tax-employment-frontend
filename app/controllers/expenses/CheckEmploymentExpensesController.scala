@@ -54,7 +54,7 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
       employmentSessionService.findPreviousEmploymentUserData(user, taxYear)(allEmploymentData =>
         allEmploymentData.latestInYearExpenses match {
           case Some(LatestExpensesOrigin(EmploymentExpenses(_, _, _, Some(expenses)), isUsingCustomerData)) => performAuditAndRenderView(expenses,
-            taxYear, isInYear = true, isMultipleEmployments = allEmploymentData.latestInYearEmployments.length > 1, isUsingCustomerData = isUsingCustomerData)
+            taxYear, isInYear = true, isUsingCustomerData = isUsingCustomerData)
           case _ => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
         })
     } else {
@@ -65,7 +65,6 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
               cya.expensesCya.expenses.toExpenses,
               taxYear,
               isInYear = false,
-              isMultipleEmployments = prior.exists(_.latestEOYEmployments.length > 1),
               isUsingCustomerData = cya.expensesCya.expenses.isUsingCustomerData,
               Some(cya.expensesCya.expenses)))
           case None =>
@@ -83,7 +82,6 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
                           expenses,
                           taxYear,
                           isInYear = false,
-                          isMultipleEmployments = allEmploymentData.latestEOYEmployments.length > 1,
                           isUsingCustomerData = isUsingCustomerData)
                       }
                     }
@@ -95,12 +93,11 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
                         Expenses(),
                         taxYear,
                         isInYear = false,
-                        isMultipleEmployments = allEmploymentData.latestEOYEmployments.length > 1,
                         isUsingCustomerData = true))
                     }
                 }
               //TODO redirect to receive any expenses page
-              case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear = false, isMultipleEmployments = false, isUsingCustomerData = true))
+              case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear = false, isUsingCustomerData = true))
             }
         }
       }
@@ -132,14 +129,16 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
     }
   }
 
-  private def performAuditAndRenderView(expenses: Expenses, taxYear: Int, isInYear: Boolean, isMultipleEmployments: Boolean,
-                                        isUsingCustomerData: Boolean, cya: Option[ExpensesViewModel] = None)
-                                       (implicit user: User[_]): Result = {
+  private def performAuditAndRenderView(expenses: Expenses,
+                                        taxYear: Int,
+                                        isInYear: Boolean,
+                                        isUsingCustomerData: Boolean,
+                                        cya: Option[ExpensesViewModel] = None)(implicit user: User[_]): Result = {
     checkEmploymentExpensesService.sendViewEmploymentExpensesAudit(taxYear, expenses)
     if (isInYear) {
-      Ok(checkEmploymentExpensesView(taxYear, expenses.toExpensesViewModel(isUsingCustomerData, cyaExpenses = cya), isInYear, isMultipleEmployments))
+      Ok(checkEmploymentExpensesView(taxYear, expenses.toExpensesViewModel(isUsingCustomerData, cyaExpenses = cya), isInYear))
     } else {
-      Ok(checkEmploymentExpensesViewEOY(taxYear, expenses.toExpensesViewModel(isUsingCustomerData, cyaExpenses = cya), isInYear, isMultipleEmployments))
+      Ok(checkEmploymentExpensesViewEOY(taxYear, expenses.toExpensesViewModel(isUsingCustomerData, cyaExpenses = cya), isInYear))
     }
   }
 }
