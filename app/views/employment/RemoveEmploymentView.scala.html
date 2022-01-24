@@ -14,19 +14,19 @@
  * limitations under the License.
  *@
 
+@import controllers.employment.routes.EmploymentSummaryController
+@import controllers.employment.routes.RemoveEmploymentController
 @import views.html.templates.Layout
-@import views.html.templates.helpers.{Button, ErrorSummary, InputRadio}
+@import views.html.templates.helpers.{Heading, Link}
 
 @this(
     layout: Layout,
-    inputRadio: InputRadio,
+    heading: Heading,
+    link: Link,
     formWithCsrf: FormWithCSRF,
-    errorSummary: ErrorSummary,
-    button: Button
+    govUkButton: GovukButton
 )
-@(form: Form[Boolean], taxYear: Int, employmentId:String, employerName: String, lastEmployment: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
-
-@hasFormErrors = @{form.hasErrors}
+@(taxYear: Int, employmentId:String, employerName: String, lastEmployment: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @titleForUse = @{
     messages("employment.removeEmployment.title")
@@ -36,31 +36,25 @@
     messages("employment.removeEmployment.heading", employerName)
 }
 
-@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
+@layout(pageTitle = titleForUse, taxYear = Some(taxYear), isAgent = user.isAgent) {
+    @formWithCsrf(action = RemoveEmploymentController.submit(taxYear, employmentId)) {
+        @heading(headingForUse, Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-3")
 
-    @errorSummary(form.errors.distinct)
+        @if(lastEmployment) {
+            <p class="govuk-body">@messages("employment.removeEmployment.remove-all-paragraph")</p>
+        } else {
+            <p class="govuk-body">@messages("employment.removeEmployment.remove-paragraph")</p>
+        }
 
-    @formWithCsrf(action = controllers.employment.routes.RemoveEmploymentController.submit(taxYear, employmentId)) {
-
-        @inputRadio(
-            form = form,
-            heading = headingForUse,
-            hint = None,
-            classes = "govuk-!-margin-bottom-4",
-            content = Some(contentHtml),
-            inline = true,
-            subheading = Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString))
-        )
-
-        @button()
-    }
-}
-
-@contentHtml = {
-    @if(lastEmployment) {
-        <p>@messages("employment.removeEmployment.remove-all-paragraph")</p>
-    } else {
-        <p>@messages("employment.removeEmployment.remove-paragraph")</p>
+        <div class="govuk-button-group">
+            @govUkButton(Button(
+                attributes = Map("data-module" -> "govuk-button", "id" -> "remove-employer-button-id"),
+                preventDoubleClick = true,
+                content = Text(messages("employment.removeEmployment.button")),
+                classes = "govuk-button--warning"
+            ))
+            @link(EmploymentSummaryController.show(taxYear).url, messages("common.cancel"), id = Some("cancel-link-id"))
+        </div>
     }
 }
 

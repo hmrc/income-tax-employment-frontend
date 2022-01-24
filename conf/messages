@@ -14,12 +14,13 @@ common.account = account
 common.aDifferentAmount = A different amount
 common.back = Back
 common.benefits = Benefits
-common.employmentBenefits = Employment benefits
+common.cancel = Cancel
 common.change = Change
 common.checkWithEmployer.agent = Check with your client’s employer if you are unsure.
 common.checkWithEmployer.individual = Check with your employer if you are unsure.
 common.continue = Continue
 common.currency.hint = For example, £600 or £193.54
+common.employmentBenefits = Employment benefits
 common.employmentDetails = Employment details
 common.enterAmount = Enter amount
 common.enterTheTotal = Enter the total.
@@ -120,11 +121,11 @@ employment.addAnother = Do you need to add another employment?
 
 #################       Remove employment messages        ########################################
 
-employment.removeEmployment.error.no-entry = Select yes if you want to remove this employment
-employment.removeEmployment.heading = Are you sure you want to remove {0}?
-employment.removeEmployment.remove-all-paragraph = This will remove all your employment for this tax year.
-employment.removeEmployment.remove-paragraph = This will also remove any benefits you told us about for this employment.
 employment.removeEmployment.title = Are you sure you want to remove this employment?
+employment.removeEmployment.heading = Are you sure you want to remove {0}?
+employment.removeEmployment.remove-all-paragraph = This will remove any benefits and expenses for this employer.
+employment.removeEmployment.remove-paragraph = This will also remove any benefits for this employer.
+employment.removeEmployment.button = Remove employer
 
 #################       Check Employment details messages        ########################################
 
