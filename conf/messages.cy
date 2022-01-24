@@ -14,13 +14,13 @@ common.account = account
 common.aDifferentAmount = A different amount
 common.back = Back
 common.benefits = Benefits
+common.employmentBenefits = Employment benefits
 common.change = Change
 common.checkWithEmployer.agent = Check with your client’s employer if you are unsure.
 common.checkWithEmployer.individual = Check with your employer if you are unsure.
 common.continue = Continue
 common.currency.hint = For example, £600 or £193.54
 common.employmentDetails = Employment details
-common.employmentDetailsAndBenefits = Employer information
 common.enterAmount = Enter amount
 common.enterTheTotal = Enter the total.
 common.error.amountMaxLimit = Enter an amount less than £100,000,000,000
@@ -46,6 +46,7 @@ common.update = Update
 common.use = use
 common.yes = Yes
 employment.caption = Employment for 6 April {0} to 5 April {1}
+payeEmployment.caption = PAYE employment for 6 April {0} to 5 April {1}
 
 #################       Error messages        ########################################
 
@@ -93,6 +94,8 @@ employment.employmentDetails.caption = Employment details for 6 April {0} to 5 A
 employment.employmentDetails.heading.agent = Check your client’s employment details
 employment.employmentDetails.heading.individual = Check your employment details
 employment.employmentInfo.buttonText = Return to employment summary
+employment.employerInformation.title = Employer information
+employment.employerInformation.buttonText = Return to PAYE employment
 employment.employmentInfo.p1.agent = You cannot update your client’s employment information until 6 April {0}.
 employment.employmentInfo.p1.individual = You cannot update your employment information until 6 April {0}.
 employment.employmentInformation.content.agent = Your client’s employment details are based on the information we already hold about them.

@@ -20,7 +20,7 @@ import config.{AppConfig, ErrorHandler}
 import connectors.parsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmploymentDataResponse
 import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import connectors.{CreateUpdateEmploymentDataConnector, IncomeSourceConnector, IncomeTaxUserDataConnector}
-import controllers.employment.routes.{CheckEmploymentDetailsController, CheckYourBenefitsController, EmploymentDetailsAndBenefitsController, EmploymentSummaryController}
+import controllers.employment.routes.{CheckEmploymentDetailsController, CheckYourBenefitsController, EmployerInformationController, EmploymentSummaryController}
 import models.benefits.Benefits
 import models.employment._
 import models.employment.createUpdate._
@@ -200,7 +200,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   def createModelAndReturnResult(cya: EmploymentUserData, prior: Option[AllEmploymentData], taxYear: Int)
                                 (result: CreateUpdateEmploymentRequest => Future[Result])(implicit user: User[_]): Future[Result] = {
     cyaAndPriorToCreateUpdateEmploymentRequest(cya, prior) match {
-      case Left(NothingToUpdate) => Future.successful(Redirect(EmploymentDetailsAndBenefitsController.show(taxYear, cya.employmentId)))
+      case Left(NothingToUpdate) => Future.successful(Redirect(EmployerInformationController.show(taxYear, cya.employmentId)))
       case Left(JourneyNotFinished) =>
         //TODO Route to: journey not finished page / show banner saying not finished / hide submit button when not complete?
         Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, cya.employmentId)))
@@ -304,7 +304,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     createOrUpdateEmployment(taxYear, employmentRequest).map {
       case Left(error) => Left(errorHandler.handleError(error.status))
       case Right(None) => employmentRequest.employmentId match {
-        case Some(employmentId) => Right(Redirect(EmploymentDetailsAndBenefitsController.show(taxYear, employmentId)))
+        case Some(employmentId) => Right(Redirect(EmployerInformationController.show(taxYear, employmentId)))
         case None => Right(Redirect(EmploymentSummaryController.show(taxYear)))
       }
       case Right(Some(employmentId)) => Right(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))

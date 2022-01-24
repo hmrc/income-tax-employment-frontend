@@ -23,15 +23,15 @@ import play.api.http.Status._
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
 import utils.UnitTestWithApp
-import views.html.employment.EmploymentDetailsAndBenefitsView
+import views.html.employment.EmployerInformationView
 
 import scala.concurrent.Future
 
-class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp with MockEmploymentSessionService {
+class EmployerInformationControllerSpec extends UnitTestWithApp with MockEmploymentSessionService {
 
-  private lazy val view = app.injector.instanceOf[EmploymentDetailsAndBenefitsView]
+  private lazy val view = app.injector.instanceOf[EmployerInformationView]
 
-  private lazy val controller = new EmploymentDetailsAndBenefitsController()(
+  private lazy val controller = new EmployerInformationController()(
     mockMessagesControllerComponents,
     authorisedAction,
     view,
@@ -52,7 +52,7 @@ class EmploymentDetailsAndBenefitsControllerSpec extends UnitTestWithApp with Mo
         val benefitsIsDefined: Boolean = anEmploymentSource.employmentBenefits.isDefined
 
         val result: Future[Result] = {
-          mockFind(taxYear, Ok(view(name, employmentId, benefitsIsDefined, taxYear, isInYear = true, doExpensesExist = true, isSingleEmployment = true)))
+          mockFind(taxYear, Ok(view(name, employmentId, benefitsIsDefined, taxYear, isInYear = true)))
           controller.show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))

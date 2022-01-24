@@ -226,7 +226,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
   "createOrUpdateEmploymentResult" should {
     "use the request model to make the api call and return the correct redirect when" when {
-      "request has not employmentId" in {
+      "request has no employmentId" in {
         val requestWithoutEmploymentId = createUpdateEmploymentRequest.copy(employmentId = None)
         mockCreateUpdateEmploymentData(nino, taxYear, requestWithoutEmploymentId)(Right(None))
 

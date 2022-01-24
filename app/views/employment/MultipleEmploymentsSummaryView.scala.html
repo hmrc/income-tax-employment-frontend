@@ -21,7 +21,7 @@
 @import views.html.templates.helpers.ErrorSummary
 @import models.employment.EmploymentSource
 @import controllers.expenses.routes.CheckEmploymentExpensesController
-@import controllers.employment.routes.{EmploymentDetailsAndBenefitsController, RemoveEmploymentController, EmploymentSummaryController}
+@import controllers.employment.routes.{EmployerInformationController, RemoveEmploymentController, EmploymentSummaryController}
 
 @this(
     layout: Layout,
@@ -77,14 +77,14 @@
         @if(isInYear){
             <ol style="padding-left:0;" class="app-task-list__items">
                 @employments.map { (employment:EmploymentSource) =>
-                        @employmentRow(employment.employerName, EmploymentDetailsAndBenefitsController.show(taxYear, employment.employmentId))
+                        @employmentRow(employment.employerName, EmployerInformationController.show(taxYear, employment.employmentId))
                 }
             </ol>
         } else {
             <div class="govuk-form-group">
                     <ul class="hmrc-add-to-a-list hmrc-add-to-a-list--short">
                         @employments.map { (employment:EmploymentSource) =>
-                            @employmentRowEOY(employment.employerName, EmploymentDetailsAndBenefitsController.show(taxYear, employment.employmentId), RemoveEmploymentController.show(taxYear, employment.employmentId))
+                            @employmentRowEOY(employment.employerName, EmployerInformationController.show(taxYear, employment.employmentId), RemoveEmploymentController.show(taxYear, employment.employmentId))
                         }
                     </ul>
             </div>
