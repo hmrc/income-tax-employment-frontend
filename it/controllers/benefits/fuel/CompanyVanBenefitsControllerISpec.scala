@@ -37,9 +37,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   private val employmentId = "employmentId"
 
   object Selectors {
-    val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val yesRadioButtonSelector = "#value"
-    val noRadioButtonSelector = "#value-no"
     val formSelector = "#main-content > div > div > form"
     val continueButtonSelector = "#continue"
   }
@@ -218,6 +216,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, yesRadioButtonSelector)
 
           welshToggleCheck(user.isWelsh)

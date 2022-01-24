@@ -62,13 +62,10 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
   }
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val contentSelector = "#main-content > div > div > form > div > fieldset > legend > p"
-    val contentExample1Selector = "#main-content > div > div > form > div > fieldset > legend > ul > li:nth-child(1)"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
@@ -204,7 +201,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
 
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             radioButtonCheck(yesText, 1, checked = true)
             radioButtonCheck(noText, 2, checked = false)
             buttonCheck(expectedButtonText, continueButtonSelector)
@@ -233,7 +230,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
 
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             radioButtonCheck(yesText, 1, checked = false)
             radioButtonCheck(noText, 2, checked = true)
             buttonCheck(expectedButtonText, continueButtonSelector)
@@ -331,7 +328,7 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           errorSummaryCheck(user.specificExpectedResults.get.expectedError, yesSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
           formPostLinkCheck(qualifyingRelocationBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)

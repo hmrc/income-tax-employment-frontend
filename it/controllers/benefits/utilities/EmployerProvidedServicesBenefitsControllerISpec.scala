@@ -43,15 +43,9 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
     anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employment = employmentCyaModel)
 
   object Selectors {
-    val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val paragraphSelector = "#main-content > div > div > form > div > fieldset > legend > p"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
     val continueButtonSelector = "#continue"
-    val detailsTitleSelector = "#main-content > div > div > form > details > summary > span"
-    val detailsText1Selector = "#main-content > div > div > form > details > div > p:nth-child(1)"
-    val detailsText2Selector = "#main-content > div > div > form > details > div > p:nth-child(2)"
-    val detailsText3Selector = "#main-content > div > div > form > details > div > p:nth-child(3)"
     val formSelector = "#main-content > div > div > form"
   }
 
@@ -147,7 +141,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
@@ -175,7 +169,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
@@ -202,7 +196,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
@@ -298,7 +292,7 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedParagraphText, paragraphSelector)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)

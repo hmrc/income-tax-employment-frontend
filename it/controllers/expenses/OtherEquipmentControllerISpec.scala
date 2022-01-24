@@ -43,8 +43,6 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
     anExpensesViewModel.copy(otherAndCapitalAllowancesQuestion = otherAndCapitalAllowancesQuestion, otherAndCapitalAllowances = None)
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
-
     def paragraphSelector(index: Int): String = s"#main-content > div > div > form > div > fieldset > legend > p:nth-child($index)"
 
     def bulletListSelector(index: Int): String = s"#main-content > div > div > form > div > fieldset > legend > ul > li:nth-child($index)"
@@ -52,7 +50,6 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
     val continueButtonSelector: String = "#continue"
     val formSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
   }
 
 
@@ -152,7 +149,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
           textOnPageCheck(expectedExample1, bulletListSelector(1))
           textOnPageCheck(expectedExample2, bulletListSelector(2))
@@ -179,7 +176,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
           textOnPageCheck(expectedExample1, bulletListSelector(1))
           textOnPageCheck(expectedExample2, bulletListSelector(2))
@@ -207,7 +204,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
           textOnPageCheck(expectedExample1, bulletListSelector(1))
           textOnPageCheck(expectedExample2, bulletListSelector(2))
@@ -275,7 +272,7 @@ class OtherEquipmentControllerISpec extends IntegrationTest with ViewHelpers wit
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
           textOnPageCheck(expectedExample1, bulletListSelector(1))
           textOnPageCheck(expectedExample2, bulletListSelector(2))

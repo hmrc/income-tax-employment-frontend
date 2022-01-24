@@ -39,7 +39,6 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   private val expectedErrorHref = "#amount"
 
   object Selectors {
-    val captionSelector = "#main-content > div > div > form > div > label > header > p"
     val optionalParagraphTextSelector = "#main-content > div > div > form > div > label > p"
     val hintTextSelector = "#amount-hint"
     val currencyPrefixSelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
@@ -154,7 +153,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           elementNotOnPageCheck(optionalParagraphTextSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "")
@@ -181,7 +180,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(optionalParagraphText(amount), optionalParagraphTextSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
@@ -207,7 +206,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(optionalParagraphText(amount), optionalParagraphTextSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
@@ -272,6 +271,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(optionalParagraphText(amount), optionalParagraphTextSelector)
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
@@ -304,6 +304,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(optionalParagraphText(amount), optionalParagraphTextSelector)
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
@@ -335,6 +336,7 @@ class ChildcareBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(optionalParagraphText(amount), optionalParagraphTextSelector)
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)

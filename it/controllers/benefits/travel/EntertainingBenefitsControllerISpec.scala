@@ -43,9 +43,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
     anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employment = employmentCyaModel)
 
   object Selectors {
-    val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
     val formSelector = "#main-content > div > div > form"
     val continueButtonSelector = "#continue"
     val contentSelector = "#main-content > div > div > form > div > fieldset > legend > p"
@@ -141,7 +139,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
@@ -166,7 +164,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
@@ -258,7 +256,7 @@ class EntertainingBenefitsControllerISpec extends IntegrationTest with ViewHelpe
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentSelector)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)

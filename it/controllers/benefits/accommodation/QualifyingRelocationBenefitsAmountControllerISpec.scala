@@ -43,7 +43,6 @@ class QualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTest 
     val poundPrefixSelector = ".govuk-input__prefix"
     val continueButtonSelector = "#continue"
     val continueButtonFormSelector = "#main-content > div > div > form"
-    val subheading = "#main-content > div > div > form > div > label > header > p"
     val expectedErrorHref = "#amount"
   }
 

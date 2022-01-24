@@ -45,11 +45,9 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
     val canClaimExample2Selector: String = "#main-content > div > div > form > div > fieldset > legend > ul > li:nth-child(2)"
     val flatRateExpenseParagraphSelector: String = "#main-content > div > div > form > div > fieldset > legend > p.govuk-body:nth-child(4)"
     val uniformsAndToolsLinkSelector: String = "#uniforms-and-tools-link"
-    val findOutMoreParagraphSelector: String = "#main-content > div > div > form > div > fieldset > legend > p:nth-child(5)"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
   }
 
   trait SpecificExpectedResults {

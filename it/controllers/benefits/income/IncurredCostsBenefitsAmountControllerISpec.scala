@@ -29,7 +29,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{checkYourBenefitsUrl, fullUrl, incomeTaxOrIncurredCostsBenefitsUrl, incurredCostsBenefitsAmountUrl, overviewUrl, reimbursedCostsBenefitsUrl}
+import utils.PageUrls.{checkYourBenefitsUrl, fullUrl, incurredCostsBenefitsAmountUrl, overviewUrl, reimbursedCostsBenefitsUrl}
 
 class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -40,7 +40,6 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
   private val expectedErrorHref = "#amount"
 
   object Selectors {
-    val captionSelector = "#main-content > div > div > form > div > label > header > p"
     val hintTextSelector = "#amount-hint"
     val currencyPrefixSelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
     val inputSelector = "#amount"
@@ -159,7 +158,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(enterTotalText, paragraphSelector(2))
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "")
@@ -186,7 +185,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
           textOnPageCheck(enterTotalText, paragraphSelector(3))
           textOnPageCheck(expectedHintText, hintTextSelector)
@@ -213,7 +212,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
           textOnPageCheck(enterTotalText, paragraphSelector(3))
           textOnPageCheck(expectedHintText, hintTextSelector)
@@ -327,6 +326,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
+            captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
             textOnPageCheck(enterTotalText, paragraphSelector(3))
             hintTextCheck(expectedHintText, hintTextSelector)
@@ -359,6 +359,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
+            captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
             textOnPageCheck(enterTotalText, paragraphSelector(3))
             hintTextCheck(expectedHintText, hintTextSelector)
@@ -391,6 +392,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
+            captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
             textOnPageCheck(enterTotalText, paragraphSelector(3))
             hintTextCheck(expectedHintText, hintTextSelector)

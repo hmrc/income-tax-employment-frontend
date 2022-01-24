@@ -41,8 +41,6 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
   private val amountInputName = "amount"
 
   object Selectors {
-    val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
-
     def paragraphTextSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
 
     val hintTextSelector = "#amount-hint"

@@ -37,7 +37,6 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
   object Selectors {
     val yesSelector = "#value"
-    val noSelector = "#value-no"
   }
 
   trait SpecificExpectedResults {
@@ -47,7 +46,8 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   trait CommonExpectedResults {
-    val expectedCaption: String
+    def expectedCaption(taxYear: Int): String
+
     val radioTextYes: String
     val radioTextNo: String
   }
@@ -77,13 +77,15 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: String = "Employment benefits for 6 April 2020 to 5 April 2021"
+    def expectedCaption(taxYear: Int): String = s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
+
     val radioTextYes: String = "Yes"
     val radioTextNo: String = "No"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: String = "Employment benefits for 6 April 2020 to 5 April 2021"
+    def expectedCaption(taxYear: Int): String = s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
+
     val radioTextYes: String = "Yes"
     val radioTextNo: String = "No"
   }
@@ -112,7 +114,7 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(user.commonExpectedResults.expectedCaption)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           radioButtonCheck(user.commonExpectedResults.radioTextYes, 1, checked = false)
           radioButtonCheck(user.commonExpectedResults.radioTextNo, 2, checked = false)
         }
@@ -138,7 +140,7 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
           titleCheck("Error: " + user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          captionCheck(user.commonExpectedResults.expectedCaption)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
           radioButtonCheck(user.commonExpectedResults.radioTextYes, 1, checked = false)

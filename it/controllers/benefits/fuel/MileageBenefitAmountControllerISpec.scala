@@ -41,7 +41,6 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
   private val amountInputName = "amount"
 
   object Selectors {
-    val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val formSelector = "#main-content > div > div > form"
     val continueButtonSelector = "#continue"
     val contentSelector = "#main-content > div > div > form > div > label > p"
@@ -329,6 +328,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, Selectors.inputSelector)
           inputFieldValueCheck(amountInputName, Selectors.inputSelector, "")
           errorAboveElementCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage)
@@ -352,6 +352,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           errorSummaryCheck(user.specificExpectedResults.get.expectedWrongFormatErrorMessage, Selectors.inputSelector)
           inputFieldValueCheck(amountInputName, Selectors.inputSelector, "abc")
           errorAboveElementCheck(user.specificExpectedResults.get.expectedWrongFormatErrorMessage)
@@ -376,6 +377,7 @@ class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           errorSummaryCheck(user.specificExpectedResults.get.expectedMaxErrorMessage, Selectors.inputSelector)
           inputFieldValueCheck(amountInputName, Selectors.inputSelector, "2353453425345234")
           errorAboveElementCheck(user.specificExpectedResults.get.expectedMaxErrorMessage)

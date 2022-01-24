@@ -47,11 +47,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
   private val taxYearEOY: Int = taxYear - 1
 
   object Selectors {
-    val headingSelector = "#main-content > div > div > header > h1"
-    val subHeadingSelector = "#main-content > div > div > header > p"
     val contentSelector = "#main-content > div > div > p.govuk-body"
     val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
-    val summaryListSelector = "#main-content > div > div > dl"
     val continueButtonFormSelector = "#main-content > div > div > form"
     val continueButtonSelector = "#continue"
     val returnToEmploymentSummarySelector = "#returnToEmploymentSummaryBtn"

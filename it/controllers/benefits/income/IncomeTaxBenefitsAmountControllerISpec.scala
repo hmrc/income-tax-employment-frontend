@@ -40,8 +40,6 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   private val expectedErrorHref = "#amount"
 
   object Selectors {
-    val captionSelector = "#main-content > div > div > form > div > label > header > p"
-
     def paragraphSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
 
     val hintTextSelector = "#amount-hint"
@@ -161,7 +159,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(enterTotalText, paragraphSelector(2))
           textOnPageCheck(expectedHintText, hintTextSelector)
           elementNotOnPageCheck(ifItWasNotTextSelector)
@@ -189,7 +187,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(optionalParagraphText(amount), ifItWasNotTextSelector)
           textOnPageCheck(enterTotalText, paragraphSelector(3))
           textOnPageCheck(expectedHintText, hintTextSelector)
@@ -216,7 +214,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
           textOnPageCheck(enterTotalText, paragraphSelector(3))
           textOnPageCheck(expectedHintText, hintTextSelector)
@@ -331,6 +329,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
+            captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), ifItWasNotTextSelector)
             textOnPageCheck(enterTotalText, paragraphSelector(3))
             hintTextCheck(expectedHintText, hintTextSelector)
@@ -364,6 +363,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
+            captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), paragraphSelector(2))
             textOnPageCheck(enterTotalText, paragraphSelector(3))
             hintTextCheck(expectedHintText, hintTextSelector)
@@ -395,6 +395,7 @@ class IncomeTaxBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
             implicit def document: () => Document = () => Jsoup.parse(result.body)
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            captionCheck(expectedCaption)
             h1Check(user.specificExpectedResults.get.expectedHeading)
             textOnPageCheck(optionalParagraphText(amount), ifItWasNotTextSelector)
             textOnPageCheck(enterTotalText, paragraphSelector(3))

@@ -36,7 +36,7 @@
 @titleForUse = @{messages("employment.employmentDetails.employmentDates")}
 
 @contentHtml = {
-    @heading(messages(headingForUse), Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
+    @heading(messages(headingForUse), Some(messages("employmentDetails.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
     <p class="govuk-body">@{messages(s"employment.employmentDates.tellUs.${if(user.isAgent) "agent" else "individual"}", employerName)}</p>
     <h2 class="govuk-label--s govuk-!-margin-top-2">@{messages("employment.employmentDates.startDate")}</h2>
 }

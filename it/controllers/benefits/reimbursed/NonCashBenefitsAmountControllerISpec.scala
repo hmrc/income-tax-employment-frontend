@@ -41,7 +41,6 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
   private val amountFieldHref = "#amount"
 
   object Selectors {
-    val captionSelector = "#main-content > div > div > form > div > label > header > p"
     val ifItWasNotTextSelector = "#previous-amount-text"
     val hintTextSelector = "#amount-hint"
     val prefixedCurrencySelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
@@ -154,9 +153,10 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amount), ifItWasNotTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(nonCashBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -182,9 +182,10 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             elementNotOnPageCheck(ifItWasNotTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(nonCashBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -211,9 +212,10 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, amountInModel.toString())
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(nonCashBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -238,9 +240,10 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, amountInModel.toString())
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(nonCashBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -335,9 +338,10 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(nonCashBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -364,9 +368,10 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, incorrectFormatAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(nonCashBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -392,9 +397,10 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, overMaximumAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(nonCashBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)

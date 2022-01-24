@@ -41,11 +41,9 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
   private implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
     val p1Selector = "#main-content > div > div > form > div > fieldset > legend > p:nth-child(2)"
     val p2Selector = "#main-content > div > div > form > div > fieldset > legend > p:nth-child(3)"
   }
@@ -191,7 +189,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedP1, p1Selector)
           textOnPageCheck(user.specificExpectedResults.get.expectedP2, p2Selector)
           radioButtonCheck(yesText, 1, checked = false)
@@ -218,7 +216,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedP1, p1Selector)
           textOnPageCheck(user.specificExpectedResults.get.expectedP2, p2Selector)
           radioButtonCheck(yesText, 1, checked = true)
@@ -247,7 +245,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedP1, p1Selector)
           textOnPageCheck(user.specificExpectedResults.get.expectedP2, p2Selector)
           radioButtonCheck(yesText, 1, checked = true)
@@ -274,7 +272,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedP1, p1Selector)
           textOnPageCheck(user.specificExpectedResults.get.expectedP2, p2Selector)
           radioButtonCheck(yesText, 1, checked = false)
@@ -329,6 +327,7 @@ class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with V
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
 

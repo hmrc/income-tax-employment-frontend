@@ -43,7 +43,6 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
     anEmploymentUserData.copy(isPriorSubmission = hasPriorBenefits, hasPriorBenefits = hasPriorBenefits, employment = employmentCyaModel)
 
   object Selectors {
-    val captionSelector = "#main-content > div > div > form > div > label > header > p"
     val optionalParagraphSelector = "#main-content > div > div > form > div > label > p"
     val hintTextSelector = "#amount-hint"
     val currencyPrefixSelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
@@ -157,6 +156,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
+          captionCheck(expectedCaption(taxYearEOY))
           elementNotOnPageCheck(optionalParagraphSelector)
           hintTextCheck(expectedHintText, hintTextSelector)
           textOnPageCheck(currencyPrefix, currencyPrefixSelector)
@@ -184,6 +184,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
           hintTextCheck(expectedHintText, hintTextSelector)
           textOnPageCheck(currencyPrefix, currencyPrefixSelector)
@@ -211,6 +212,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
           hintTextCheck(expectedHintText, hintTextSelector)
           textOnPageCheck(currencyPrefix, currencyPrefixSelector)
@@ -311,6 +313,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
@@ -343,6 +346,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)
@@ -375,6 +379,7 @@ class IncidentalCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(optionalParagraphText(prefilledAmount), optionalParagraphSelector)
             hintTextCheck(expectedHintText, hintTextSelector)
             textOnPageCheck(currencyPrefix, currencyPrefixSelector)

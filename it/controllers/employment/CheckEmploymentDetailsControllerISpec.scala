@@ -44,11 +44,8 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
   private val employmentId = "employmentId"
 
   object Selectors {
-    val headingSelector = "#main-content > div > div > header > h1"
-    val captionSelector = "#main-content > div > div > header > p"
     val contentTextSelector = "#main-content > div > div > p"
     val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
-    val summaryListSelector = "#main-content > div > div > dl"
     val continueButtonSelector = "#continue"
     val continueButtonFormSelector = "#main-content > div > div > form"
     val returnToEmploymentSummarySelector = "#returnToEmploymentSummaryBtn"
@@ -368,7 +365,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           titleCheck(specific.expectedTitle)
           h1Check(specific.expectedH1)
-          textOnPageCheck(common.expectedCaption(2021), captionSelector)
+          captionCheck(common.expectedCaption(taxYearEOY))
           textOnPageCheck(specific.expectedContent, contentTextSelector)
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
@@ -404,7 +401,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           titleCheck(specific.expectedTitle)
           h1Check(specific.expectedH1)
-          textOnPageCheck(common.expectedCaption(taxYear), captionSelector)
+          captionCheck(common.expectedCaption(taxYear))
           textOnPageCheck(specific.expectedContent, contentTextSelector)
           textOnPageCheck(specific.expectedInsetText, insetTextSelector)
           welshToggleCheck(user.isWelsh)
@@ -449,7 +446,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(user.commonExpectedResults.expectedCaption(taxYear), captionSelector)
+          captionCheck(common.expectedCaption(taxYear))
           textOnPageCheck(user.specificExpectedResults.get.expectedContent, contentTextSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetText, insetTextSelector)
           welshToggleCheck(user.isWelsh)
@@ -486,7 +483,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           titleCheck(specific.expectedTitle)
           h1Check(specific.expectedH1)
-          textOnPageCheck(common.expectedCaption(2021), captionSelector)
+          captionCheck(common.expectedCaption(taxYearEOY))
           textOnPageCheck(specific.expectedContent, contentTextSelector)
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
@@ -528,7 +525,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           }
           titleCheck(specific.expectedTitle)
           h1Check(specific.expectedH1)
-          textOnPageCheck(common.expectedCaption(taxYear), captionSelector)
+          captionCheck(common.expectedCaption(taxYear))
           textOnPageCheck(specific.expectedContent, contentTextSelector)
           textOnPageCheck(specific.expectedInsetText, insetTextSelector)
           welshToggleCheck(user.isWelsh)
@@ -565,7 +562,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
           titleCheck(specific.expectedTitle)
           h1Check(specific.expectedH1)
-          textOnPageCheck(common.expectedCaption(2021), captionSelector)
+          captionCheck(common.expectedCaption(taxYearEOY))
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(common.employerNameField1, summaryListRowFieldNameSelector(1))
           textOnPageCheck(ContentValues.employerName, summaryListRowFieldAmountSelector(1))
@@ -609,7 +606,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           }
           titleCheck(specific.expectedTitle)
           h1Check(specific.expectedH1)
-          textOnPageCheck(common.expectedCaption(taxYear), captionSelector)
+          captionCheck(common.expectedCaption(taxYear))
           textOnPageCheck(specific.expectedContent, contentTextSelector)
           textOnPageCheck(specific.expectedInsetText, insetTextSelector)
           welshToggleCheck(user.isWelsh)

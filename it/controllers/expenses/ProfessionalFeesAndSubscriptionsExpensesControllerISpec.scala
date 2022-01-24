@@ -40,8 +40,6 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
     anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
-
     def paragraphSelector(index: Int): String = s"#main-content > div > div > form > div > fieldset > legend > p:nth-child($index)"
 
     def bulletListSelector(index: Int): String = s"#main-content > div > div > form > div > fieldset > legend > ul > li:nth-child($index)"
@@ -49,7 +47,6 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
     val continueButtonSelector: String = "#continue"
     val formSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
     val professionFeesLinkSelector = "#professional-fees-link"
   }
 
@@ -157,7 +154,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample1, bulletListSelector(1))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample2, bulletListSelector(2))
@@ -188,7 +185,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample1, bulletListSelector(1))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample2, bulletListSelector(2))
@@ -220,7 +217,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample1, bulletListSelector(1))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample2, bulletListSelector(2))
@@ -304,7 +301,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample1, bulletListSelector(1))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample2, bulletListSelector(2))

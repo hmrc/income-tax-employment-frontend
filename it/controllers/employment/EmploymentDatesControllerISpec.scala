@@ -55,7 +55,6 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
   ))
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val startDaySelector: String = "#startAmount-day"
     val startMonthSelector: String = "#startAmount-month"
     val startYearSelector: String = "#startAmount-year"
@@ -223,7 +222,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
     val day = "day"
     val month = "month"
@@ -232,7 +231,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
     val day = "day"
     val month = "month"
@@ -261,7 +260,6 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
         "render the 'start date' page with the correct content and the date prefilled when its already in session" which {
-          val cya = cyaModel(employerName, hmrc = true)
 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
@@ -281,7 +279,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, startForExampleSelector, "forStart")
           inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "11")
           inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "11")
@@ -363,7 +361,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "01")
@@ -405,7 +403,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
               titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
               h1Check(user.specificExpectedResults.get.expectedH1)
-              textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+              captionCheck(expectedCaption(taxYearEOY))
               textOnPageCheck(forExample, startForExampleSelector)
               inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
               inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "")
@@ -447,7 +445,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "01")
@@ -489,7 +487,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "")
@@ -531,7 +529,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "01")
@@ -573,7 +571,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "")
@@ -615,7 +613,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "")
@@ -657,7 +655,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "abc")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "01")
@@ -699,7 +697,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "abc")
@@ -741,7 +739,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "01")
@@ -783,7 +781,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "13")
@@ -825,7 +823,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "01")
@@ -867,7 +865,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "06")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "09")
@@ -913,7 +911,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, nowDatePlusOne.getDayOfMonth.toString)
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, nowDatePlusOne.getMonthValue.toString)
@@ -957,7 +955,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector, "forStart")
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "04")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "04")
@@ -1002,7 +1000,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "01")
@@ -1044,7 +1042,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "01")
@@ -1086,7 +1084,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "01")
@@ -1128,7 +1126,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "01")
@@ -1170,7 +1168,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "01")
@@ -1212,7 +1210,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "01")
@@ -1254,7 +1252,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "01")
@@ -1296,7 +1294,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "01")
@@ -1338,7 +1336,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "01")
@@ -1380,7 +1378,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "01")
@@ -1422,7 +1420,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "01")
@@ -1464,7 +1462,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "01")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "01")
@@ -1506,7 +1504,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "05")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "03")
@@ -1549,7 +1547,7 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, startForExampleSelector)
             inputFieldValueCheck(startDayInputName, Selectors.startDaySelector, "06")
             inputFieldValueCheck(startMonthInputName, Selectors.startMonthSelector, "03")

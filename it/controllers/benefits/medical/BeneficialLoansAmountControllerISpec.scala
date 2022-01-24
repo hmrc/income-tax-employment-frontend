@@ -39,7 +39,6 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
   private val employmentId: String = "employmentId"
 
   object Selectors {
-    val captionSelector = "#main-content > div > div > form > div > label > header > p"
     val paragraphTextSelector = "#main-content > div > div > form > div > label > p:nth-child(2)"
     val paragraphTextSelector2 = "#main-content > div > div > form > div > label > p:nth-child(3)"
     val hintTextSelector = "#amount-hint"
@@ -161,10 +160,11 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
 
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amount), paragraphTextSelector)
             textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector2)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -190,10 +190,11 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
 
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector)
             elementNotOnPageCheck(paragraphTextSelector2)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -220,10 +221,11 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
 
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
             textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector2)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, amountInModel.toString())
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -248,10 +250,11 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
 
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
             textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector2)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, amountInModel.toString())
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -315,10 +318,11 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
             textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector2)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -344,10 +348,11 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
             textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector2)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, incorrectFormatAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -373,10 +378,11 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), paragraphTextSelector)
             textOnPageCheck(user.specificExpectedResults.get.youCanFindText, paragraphTextSelector2)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, overMaximumAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(beneficialLoansBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)

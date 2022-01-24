@@ -44,7 +44,6 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
     val poundPrefixSelector = ".govuk-input__prefix"
     val continueButtonSelector = "#continue"
     val continueButtonFormSelector = "#main-content > div > div > form"
-    val subheading = "#main-content > div > div > form > div > label > header > p"
     val expectedErrorHref = "#amount"
   }
 
@@ -289,6 +288,8 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           }
 
           titleCheck(get.expectedErrorTitle)
+          h1Check(get.expectedHeading)
+          captionCheck(user.commonExpectedResults.expectedCaption)
           inputFieldValueCheck(amountInputName, inputSelector, "")
           errorSummaryCheck(get.emptyErrorText, expectedErrorHref)
         }
@@ -308,6 +309,8 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           }
 
           titleCheck(get.expectedErrorTitle)
+          h1Check(get.expectedHeading)
+          captionCheck(user.commonExpectedResults.expectedCaption)
           inputFieldValueCheck(amountInputName, inputSelector, "|")
           errorSummaryCheck(get.wrongFormatErrorText, expectedErrorHref)
         }
@@ -328,6 +331,8 @@ class CompanyVanBenefitsAmountControllerISpec extends IntegrationTest with ViewH
           }
 
           titleCheck(get.expectedErrorTitle)
+          h1Check(get.expectedHeading)
+          captionCheck(user.commonExpectedResults.expectedCaption)
           inputFieldValueCheck(amountInputName, inputSelector, "9999999999999999999999999999")
           errorSummaryCheck(get.maxAmountErrorText, expectedErrorHref)
         }

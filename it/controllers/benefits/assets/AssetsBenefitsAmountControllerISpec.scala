@@ -41,7 +41,6 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
   private val assetsSoFar: AssetsModel = AssetsModel(sectionQuestion = Some(true), assetsQuestion = Some(true), None, None, None)
 
   object Selectors {
-    val captionSelector = "#main-content > div > div > form > div > label > header > p"
     val hintTextSelector = "#amount-hint"
     val currencyPrefixSelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
     val inputSelector = "#amount"
@@ -167,11 +166,12 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           elementNotOnPageCheck(previousAmountSelector)
           textOnPageCheck(enterTotalText, enterTotalSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
+          textOnPageCheck(currencyPrefix, currencyPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -196,11 +196,12 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
           textOnPageCheck(enterTotalText, enterTotalSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
+          textOnPageCheck(currencyPrefix, currencyPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -224,11 +225,12 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
           textOnPageCheck(enterTotalText, enterTotalSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
+          textOnPageCheck(currencyPrefix, currencyPrefixSelector)
           inputFieldValueCheck(amountInputName, inputSelector, amount.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -339,11 +341,12 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, currencyPrefixSelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -374,11 +377,12 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, currencyPrefixSelector)
             inputFieldValueCheck(amountInputName, inputSelector, incorrectFormatAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -409,11 +413,12 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, currencyPrefixSelector)
             inputFieldValueCheck(amountInputName, inputSelector, overMaximumAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)

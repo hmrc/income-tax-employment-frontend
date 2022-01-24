@@ -44,8 +44,6 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
 
   object Selectors {
     val contentSelector = "#main-content > div > div > form > div > label > p"
-    val headingSelector = "#main-content > div > div > header > h1"
-    val captionSelector = "#main-content > div > div > header > p"
     val hintTestSelector = "#amount-hint"
     val poundPrefixSelector = ".govuk-input__prefix"
     val inputSelector = "#amount"
@@ -75,7 +73,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment details for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
     val hintText = "For example, £600 or £193.54"
     val wrongFormatErrorText: String = "Enter the amount paid in the correct format"
@@ -83,7 +81,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment details for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
     val hintText = "For example, £600 or £193.54"
     val wrongFormatErrorText: String = "Enter the amount paid in the correct format"
@@ -375,7 +373,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           errorSummaryCheck(maxAmountErrorText, expectedErrorHref)
         }
 
-        "redirect to Overview page when a valid form is submitted" when {
+        "redirect to check employment details page when a valid form is submitted" when {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()

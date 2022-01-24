@@ -63,8 +63,6 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
       car = Some(carAmount))), isUsingCustomerData = true)
 
   object Selectors {
-    val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
-
     def paragraphTextSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
 
     val hintTextSelector = "#amount-hint"
@@ -357,6 +355,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
+            captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
             errorSummaryCheck(user.specificExpectedResults.get.expectedNoEntryErrorMessage, inputSelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
 
@@ -382,6 +381,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
+            captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
             errorSummaryCheck(user.specificExpectedResults.get.expectedInvalidFormatErrorMessage, inputSelector)
             inputFieldValueCheck(amountInputName, inputSelector, "abc")
 
@@ -407,6 +407,7 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
+            captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
             errorSummaryCheck(user.specificExpectedResults.get.expectedMaxLengthErrorMessage, inputSelector)
             inputFieldValueCheck(amountInputName, inputSelector, maxLimit)
 

@@ -33,7 +33,7 @@ import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-import utils.PageUrls.{businessTravelExpensesUrl, checkYourExpensesUrl, fullUrl, overviewUrl, professionalFeesExpensesAmountUrl, travelAmountExpensesUrl, uniformsWorkClothesToolsExpensesUrl}
+import utils.PageUrls.{businessTravelExpensesUrl, checkYourExpensesUrl, fullUrl, overviewUrl, travelAmountExpensesUrl, uniformsWorkClothesToolsExpensesUrl}
 
 class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -48,7 +48,6 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
     ExpensesViewModel(isUsingCustomerData = true, claimingEmploymentExpenses = true, jobExpensesQuestion = jobExpensesQuestion)
   
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > label > header > p"
     val continueButtonSelector: String = "#continue"
     val formSelector: String = "#main-content > div > div > form"
     val amountSelector = "#amount"
@@ -168,7 +167,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(2))
           hintTextCheck(hintText)
           inputFieldValueCheck(amountInputName, Selectors.amountSelector, "")
@@ -195,7 +194,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedReplay(newAmount), paragraphSelector(2))
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(3))
           hintTextCheck(hintText)
@@ -277,7 +276,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           }
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(2))
           hintTextCheck(hintText)
           inputFieldValueCheck(amountInputName, Selectors.amountSelector, "badThings")
@@ -308,7 +307,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           }
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(2))
           hintTextCheck(hintText)
           inputFieldValueCheck(amountInputName, Selectors.amountSelector, "")
@@ -339,7 +338,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           }
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedDoNotClaim, paragraphSelector(2))
           hintTextCheck(hintText)
           inputFieldValueCheck(amountInputName, Selectors.amountSelector, "100000000000")

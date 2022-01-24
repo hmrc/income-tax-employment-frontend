@@ -26,7 +26,6 @@ import utils.{IntegrationTest, ViewHelpers}
 class SessionExpiredControllerISpec extends IntegrationTest with ViewHelpers {
 
   object Selectors {
-    val h1Selector = "#main-content > div > div > header > h1"
     val p1Selector = "#main-content > div > div > div.govuk-body > p"
     val buttonSelector = "#continue"
     val formSelector = "#main-content > div > div > form"

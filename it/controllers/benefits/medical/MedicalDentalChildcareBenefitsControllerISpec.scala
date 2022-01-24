@@ -38,12 +38,9 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
   private val employmentId: String = "employmentId"
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
-    val paragraphSelector: String = "#main-content > div > div > form > div > fieldset > legend > p"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
   }
 
   trait SpecificExpectedResults {
@@ -134,7 +131,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           radioButtonCheck(yesText, radioNumber = 1, checked = false)
           radioButtonCheck(noText, radioNumber = 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
@@ -162,7 +159,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
@@ -276,7 +273,7 @@ class MedicalDentalChildcareBenefitsControllerISpec extends IntegrationTest with
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            textOnPageCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             radioButtonCheck(yesText, 1, checked = false)
             radioButtonCheck(noText, 2, checked = false)
             buttonCheck(expectedButtonText, continueButtonSelector)
