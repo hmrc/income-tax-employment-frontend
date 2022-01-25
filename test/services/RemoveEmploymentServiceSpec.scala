@@ -31,7 +31,8 @@ class RemoveEmploymentServiceSpec extends UnitTest
   with MockDeleteOrIgnoreEmploymentConnector
   with MockIncomeSourceConnector
   with MockAuditService
-  with MockEmploymentUserDataRepository {
+  with MockEmploymentUserDataRepository
+  with MockNrsService {
 
   private val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
   private val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
@@ -46,6 +47,7 @@ class RemoveEmploymentServiceSpec extends UnitTest
     mockIncomeSourceConnector,
     mockAuditService,
     errorHandler,
+    mockNrsService,
     mockExecutionContext
   )
 

@@ -17,12 +17,23 @@
 package models.employment
 
 import models.benefits.Benefits
-import models.expenses.DecodedExpensesData
+import models.expenses.Expenses
 import play.api.libs.json.{Json, OFormat}
 
 case class DecodedDeleteEmploymentPayload(employmentData: EmploymentDetailsViewModel,
-                                          benefits: Benefits,
-                                          expenses: DecodedExpensesData)
+                                          benefits: Option[Benefits],
+                                          expenses: Option[Expenses]) {
+
+  def toNrsPayloadModel: DecodedDeleteEmploymentPayload = {
+   val nrsExpenses = expenses.map(_.copy(
+     businessTravelCosts = None,
+     hotelAndMealExpenses = None,
+     vehicleExpenses = None,
+     mileageAllowanceRelief = None
+   ))
+    DecodedDeleteEmploymentPayload(employmentData, benefits, nrsExpenses)
+  }
+}
 
 object DecodedDeleteEmploymentPayload {
   implicit val format: OFormat[DecodedDeleteEmploymentPayload] = Json.format[DecodedDeleteEmploymentPayload]

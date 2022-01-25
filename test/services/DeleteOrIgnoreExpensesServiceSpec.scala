@@ -16,10 +16,10 @@
 
 package services
 
-import config.{AppConfig, ErrorHandler, MockDeleteOrIgnoreExpensesConnector, MockIncomeSourceConnector}
+import config.{AppConfig, ErrorHandler, MockDeleteOrIgnoreExpensesConnector, MockIncomeSourceConnector, MockNrsService}
 import controllers.employment.routes.EmploymentSummaryController
 import models.employment._
-import models.expenses.Expenses
+import models.expenses.{DecodedDeleteEmploymentExpensesPayload, Expenses}
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.i18n.MessagesApi
 import play.api.mvc.Results.{Ok, Redirect}
@@ -28,7 +28,8 @@ import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, Serv
 
 class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
   with MockDeleteOrIgnoreExpensesConnector
-  with MockIncomeSourceConnector {
+  with MockIncomeSourceConnector
+  with MockNrsService {
 
   val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
   val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
@@ -38,7 +39,7 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
 
   val errorHandler = new ErrorHandler(internalServerErrorTemplate, serviceUnavailableTemplate, mockMessagesApi, notFoundTemplate)(mockFrontendAppConfig)
 
-  val service: DeleteOrIgnoreExpensesService = new DeleteOrIgnoreExpensesService(mockDeleteOrIgnoreExpensesConnector, mockIncomeSourceConnector, errorHandler, mockExecutionContext)
+  val service: DeleteOrIgnoreExpensesService = new DeleteOrIgnoreExpensesService(mockDeleteOrIgnoreExpensesConnector, mockIncomeSourceConnector, errorHandler, mockNrsService, mockExecutionContext)
 
   val taxYear = 2022
 
@@ -144,6 +145,72 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
         val response = service.deleteOrIgnoreExpenses(data(None, Some(customerExpenses)), taxYear)(Ok)
 
         status(response) shouldBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "calling performNrsSubmitPayload" should {
+      "send the event from the model" in {
+
+        val employmentSource1 = EmploymentSource(
+          employmentId = "001",
+          employerName = "Mishima Zaibatsu",
+          employerRef = Some("223/AB12399"),
+          payrollId = Some("123456789999"),
+          startDate = Some("2019-04-21"),
+          cessationDate = Some("2020-03-11"),
+          dateIgnored = None,
+          submittedOn = Some("2020-01-04T05:01:01Z"),
+          employmentData = Some(EmploymentData(
+            submittedOn = "2020-02-12",
+            employmentSequenceNumber = Some("123456789999"),
+            companyDirector = Some(true),
+            closeCompany = Some(false),
+            directorshipCeasedDate = Some("2020-02-12"),
+            occPen = Some(false),
+            disguisedRemuneration = Some(false),
+            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+            Some(Deductions(
+              studentLoans = Some(StudentLoans(
+                uglDeductionAmount = Some(100.00),
+                pglDeductionAmount = Some(100.00)
+              ))
+            ))
+          )),
+          None
+        )
+
+        val priorCustomerEmploymentExpenses = employmentExpenses.copy(
+          expenses = Some(expenses.copy(
+            businessTravelCosts = Some(10),
+            jobExpenses = Some(10),
+            flatRateJobExpenses = Some(10),
+            professionalSubscriptions = Some(10),
+            hotelAndMealExpenses = Some(10),
+            otherAndCapitalAllowances = Some(10),
+            vehicleExpenses = Some(10),
+            mileageAllowanceRelief = Some(10))
+          ))
+
+        val priorData: AllEmploymentData = AllEmploymentData(
+          hmrcEmploymentData = Seq(employmentSource1),
+          hmrcExpenses = None,
+          customerEmploymentData = Seq(),
+          customerExpenses = Some(priorCustomerEmploymentExpenses)
+        )
+
+        verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
+          businessTravelCosts = priorCustomerEmploymentExpenses.expenses.flatMap(_.businessTravelCosts),
+          jobExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.jobExpenses),
+          flatRateJobExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.flatRateJobExpenses),
+          professionalSubscriptions = priorCustomerEmploymentExpenses.expenses.flatMap(_.professionalSubscriptions),
+          hotelAndMealExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.hotelAndMealExpenses),
+          otherAndCapitalAllowances = priorCustomerEmploymentExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
+          vehicleExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.vehicleExpenses),
+          mileageAllowanceRelief = priorCustomerEmploymentExpenses.expenses.flatMap(_.mileageAllowanceRelief)
+        ))
+        ).toNrsPayloadModel))
+
+        await(service.performSubmitNrsPayload(priorData)) shouldBe Right()
       }
     }
   }
