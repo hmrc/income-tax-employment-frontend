@@ -25,7 +25,6 @@ import connectors.{DeleteOrIgnoreEmploymentConnector, IncomeSourceConnector}
 import controllers.employment.routes.EmploymentSummaryController
 import models.User
 import models.employment.{AllEmploymentData, DecodedDeleteEmploymentPayload, EmploymentSource}
-import models.expenses.DecodedExpensesData
 import play.api.Logging
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, Result}

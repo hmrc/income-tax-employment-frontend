@@ -16,7 +16,7 @@
 
 package services
 
-import config.{AppConfig, ErrorHandler, MockDeleteOrIgnoreExpensesConnector, MockIncomeSourceConnector, MockNrsService}
+import config.{AppConfig, ErrorHandler, MockDeleteOrIgnoreExpensesConnector, MockDeleteOrIgnoreExpensesService, MockIncomeSourceConnector, MockNrsService}
 import controllers.employment.routes.EmploymentSummaryController
 import models.employment._
 import models.expenses.{DecodedDeleteEmploymentExpensesPayload, Expenses}
@@ -29,7 +29,8 @@ import views.html.templates.{InternalServerErrorTemplate, NotFoundTemplate, Serv
 class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
   with MockDeleteOrIgnoreExpensesConnector
   with MockIncomeSourceConnector
-  with MockNrsService {
+  with MockNrsService
+  with MockDeleteOrIgnoreExpensesService {
 
   val serviceUnavailableTemplate: ServiceUnavailableTemplate = app.injector.instanceOf[ServiceUnavailableTemplate]
   val notFoundTemplate: NotFoundTemplate = app.injector.instanceOf[NotFoundTemplate]
@@ -67,6 +68,41 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
       Some(Expenses(Some(5), Some(5), Some(5), Some(5), Some(5), Some(5), Some(5), Some(5)))
     )
 
+  private val employmentSource1: EmploymentSource = EmploymentSource(
+    employmentId = "001",
+    employerName = "Mishima Zaibatsu",
+    employerRef = Some("223/AB12399"),
+    payrollId = Some("123456789999"),
+    startDate = Some("2019-04-21"),
+    cessationDate = Some("2020-03-11"),
+    dateIgnored = None,
+    submittedOn = Some("2020-01-04T05:01:01Z"),
+    employmentData = Some(EmploymentData(
+      submittedOn = "2020-02-12",
+      employmentSequenceNumber = Some("123456789999"),
+      companyDirector = Some(true),
+      closeCompany = Some(false),
+      directorshipCeasedDate = Some("2020-02-12"),
+      occPen = Some(false),
+      disguisedRemuneration = Some(false),
+      pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
+      Some(Deductions(
+        studentLoans = Some(StudentLoans(
+          uglDeductionAmount = Some(100.00),
+          pglDeductionAmount = Some(100.00)
+        ))
+      ))
+    )),
+    None
+  )
+
+  private val priorData: AllEmploymentData = AllEmploymentData(
+    hmrcEmploymentData = Seq(employmentSource1),
+    hmrcExpenses = None,
+    customerEmploymentData = Seq(),
+    customerExpenses = Some(customerExpenses)
+  )
+
   def data(hmrcExpenses: Option[EmploymentExpenses], customerExpenses: Option[EmploymentExpenses]): AllEmploymentData = AllEmploymentData(
     hmrcEmploymentData = Seq(),
     hmrcExpenses = hmrcExpenses,
@@ -78,6 +114,19 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
     "return a successful result" when {
       "there is both hmrc expenses and customer expenses" which {
         "toRemove is equal to 'ALL'" in {
+
+          verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
+            businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
+            jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
+            flatRateJobExpenses = customerExpenses.expenses.flatMap(_.flatRateJobExpenses),
+            professionalSubscriptions = customerExpenses.expenses.flatMap(_.professionalSubscriptions),
+            hotelAndMealExpenses = customerExpenses.expenses.flatMap(_.hotelAndMealExpenses),
+            otherAndCapitalAllowances = customerExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
+            vehicleExpenses = customerExpenses.expenses.flatMap(_.vehicleExpenses),
+            mileageAllowanceRelief = customerExpenses.expenses.flatMap(_.mileageAllowanceRelief)
+          ))
+          ).toNrsPayloadModel))
+
           mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
           mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "ALL")
 
@@ -89,6 +138,18 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
 
       "there is both hmrc expenses and customer expenses but hmrc data has dateIgnored" which {
         "toRemove is equal to 'CUSTOMER'" in {
+          verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
+            businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
+            jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
+            flatRateJobExpenses = customerExpenses.expenses.flatMap(_.flatRateJobExpenses),
+            professionalSubscriptions = customerExpenses.expenses.flatMap(_.professionalSubscriptions),
+            hotelAndMealExpenses = customerExpenses.expenses.flatMap(_.hotelAndMealExpenses),
+            otherAndCapitalAllowances = customerExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
+            vehicleExpenses = customerExpenses.expenses.flatMap(_.vehicleExpenses),
+            mileageAllowanceRelief = customerExpenses.expenses.flatMap(_.mileageAllowanceRelief)
+          ))
+          ).toNrsPayloadModel))
+
           mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
           mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "CUSTOMER")
 
@@ -100,6 +161,18 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
 
       "there is hmrc data and no customer data" which {
         "toRemove is equal to 'HMRC-HELD'" in {
+          verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
+            businessTravelCosts = hmrcExpensesWithoutDateIgnored.expenses.flatMap(_.businessTravelCosts),
+            jobExpenses = hmrcExpensesWithoutDateIgnored.expenses.flatMap(_.jobExpenses),
+            flatRateJobExpenses = hmrcExpensesWithoutDateIgnored.expenses.flatMap(_.flatRateJobExpenses),
+            professionalSubscriptions = hmrcExpensesWithoutDateIgnored.expenses.flatMap(_.professionalSubscriptions),
+            hotelAndMealExpenses = hmrcExpensesWithoutDateIgnored.expenses.flatMap(_.hotelAndMealExpenses),
+            otherAndCapitalAllowances = hmrcExpensesWithoutDateIgnored.expenses.flatMap(_.otherAndCapitalAllowances),
+            vehicleExpenses = hmrcExpensesWithoutDateIgnored.expenses.flatMap(_.vehicleExpenses),
+            mileageAllowanceRelief = hmrcExpensesWithoutDateIgnored.expenses.flatMap(_.mileageAllowanceRelief)
+          ))
+          ).toNrsPayloadModel))
+
           mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
           mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "HMRC-HELD")
 
@@ -111,6 +184,18 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
 
       "there is customer data and no hmrc data" which {
         "toRemove is equal to 'CUSTOMER'" in {
+          verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
+            businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
+            jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
+            flatRateJobExpenses = customerExpenses.expenses.flatMap(_.flatRateJobExpenses),
+            professionalSubscriptions = customerExpenses.expenses.flatMap(_.professionalSubscriptions),
+            hotelAndMealExpenses = customerExpenses.expenses.flatMap(_.hotelAndMealExpenses),
+            otherAndCapitalAllowances = customerExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
+            vehicleExpenses = customerExpenses.expenses.flatMap(_.vehicleExpenses),
+            mileageAllowanceRelief = customerExpenses.expenses.flatMap(_.mileageAllowanceRelief)
+          ))
+          ).toNrsPayloadModel))
+
           mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
           mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "CUSTOMER")
 
@@ -130,6 +215,18 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
       }
 
       "the connector throws a Left" in {
+        verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
+          businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
+          jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
+          flatRateJobExpenses = customerExpenses.expenses.flatMap(_.flatRateJobExpenses),
+          professionalSubscriptions = customerExpenses.expenses.flatMap(_.professionalSubscriptions),
+          hotelAndMealExpenses = customerExpenses.expenses.flatMap(_.hotelAndMealExpenses),
+          otherAndCapitalAllowances = customerExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
+          vehicleExpenses = customerExpenses.expenses.flatMap(_.vehicleExpenses),
+          mileageAllowanceRelief = customerExpenses.expenses.flatMap(_.mileageAllowanceRelief)
+        ))
+        ).toNrsPayloadModel))
+
         mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
         mockDeleteOrIgnoreExpensesError(nino, taxYear, "ALL")
 
@@ -139,6 +236,18 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
       }
 
       "incomeSourceConnector returns error" in {
+        verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
+          businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
+          jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
+          flatRateJobExpenses = customerExpenses.expenses.flatMap(_.flatRateJobExpenses),
+          professionalSubscriptions = customerExpenses.expenses.flatMap(_.professionalSubscriptions),
+          hotelAndMealExpenses = customerExpenses.expenses.flatMap(_.hotelAndMealExpenses),
+          otherAndCapitalAllowances = customerExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
+          vehicleExpenses = customerExpenses.expenses.flatMap(_.vehicleExpenses),
+          mileageAllowanceRelief = customerExpenses.expenses.flatMap(_.mileageAllowanceRelief)
+        ))
+        ).toNrsPayloadModel))
+
         mockRefreshIncomeSourceResponseError(taxYear, nino, "employment")
         mockDeleteOrIgnoreExpensesSuccess(nino, taxYear, "CUSTOMER")
 
@@ -151,62 +260,15 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
     "calling performNrsSubmitPayload" should {
       "send the event from the model" in {
 
-        val employmentSource1 = EmploymentSource(
-          employmentId = "001",
-          employerName = "Mishima Zaibatsu",
-          employerRef = Some("223/AB12399"),
-          payrollId = Some("123456789999"),
-          startDate = Some("2019-04-21"),
-          cessationDate = Some("2020-03-11"),
-          dateIgnored = None,
-          submittedOn = Some("2020-01-04T05:01:01Z"),
-          employmentData = Some(EmploymentData(
-            submittedOn = "2020-02-12",
-            employmentSequenceNumber = Some("123456789999"),
-            companyDirector = Some(true),
-            closeCompany = Some(false),
-            directorshipCeasedDate = Some("2020-02-12"),
-            occPen = Some(false),
-            disguisedRemuneration = Some(false),
-            pay = Some(Pay(Some(34234.15), Some(6782.92), Some("CALENDAR MONTHLY"), Some("2020-04-23"), Some(32), Some(2))),
-            Some(Deductions(
-              studentLoans = Some(StudentLoans(
-                uglDeductionAmount = Some(100.00),
-                pglDeductionAmount = Some(100.00)
-              ))
-            ))
-          )),
-          None
-        )
-
-        val priorCustomerEmploymentExpenses = employmentExpenses.copy(
-          expenses = Some(expenses.copy(
-            businessTravelCosts = Some(10),
-            jobExpenses = Some(10),
-            flatRateJobExpenses = Some(10),
-            professionalSubscriptions = Some(10),
-            hotelAndMealExpenses = Some(10),
-            otherAndCapitalAllowances = Some(10),
-            vehicleExpenses = Some(10),
-            mileageAllowanceRelief = Some(10))
-          ))
-
-        val priorData: AllEmploymentData = AllEmploymentData(
-          hmrcEmploymentData = Seq(employmentSource1),
-          hmrcExpenses = None,
-          customerEmploymentData = Seq(),
-          customerExpenses = Some(priorCustomerEmploymentExpenses)
-        )
-
         verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
-          businessTravelCosts = priorCustomerEmploymentExpenses.expenses.flatMap(_.businessTravelCosts),
-          jobExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.jobExpenses),
-          flatRateJobExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.flatRateJobExpenses),
-          professionalSubscriptions = priorCustomerEmploymentExpenses.expenses.flatMap(_.professionalSubscriptions),
-          hotelAndMealExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.hotelAndMealExpenses),
-          otherAndCapitalAllowances = priorCustomerEmploymentExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
-          vehicleExpenses = priorCustomerEmploymentExpenses.expenses.flatMap(_.vehicleExpenses),
-          mileageAllowanceRelief = priorCustomerEmploymentExpenses.expenses.flatMap(_.mileageAllowanceRelief)
+          businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
+          jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
+          flatRateJobExpenses = customerExpenses.expenses.flatMap(_.flatRateJobExpenses),
+          professionalSubscriptions = customerExpenses.expenses.flatMap(_.professionalSubscriptions),
+          hotelAndMealExpenses = customerExpenses.expenses.flatMap(_.hotelAndMealExpenses),
+          otherAndCapitalAllowances = customerExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
+          vehicleExpenses = customerExpenses.expenses.flatMap(_.vehicleExpenses),
+          mileageAllowanceRelief = customerExpenses.expenses.flatMap(_.mileageAllowanceRelief)
         ))
         ).toNrsPayloadModel))
 
