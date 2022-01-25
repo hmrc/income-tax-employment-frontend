@@ -256,24 +256,24 @@ class DeleteOrIgnoreExpensesServiceSpec extends UnitTest
         status(response) shouldBe INTERNAL_SERVER_ERROR
       }
     }
+  }
 
-    "calling performNrsSubmitPayload" should {
-      "send the event from the model" in {
+  "calling performNrsSubmitPayload" should {
+    "send the event from the model" in {
 
-        verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
-          businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
-          jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
-          flatRateJobExpenses = customerExpenses.expenses.flatMap(_.flatRateJobExpenses),
-          professionalSubscriptions = customerExpenses.expenses.flatMap(_.professionalSubscriptions),
-          hotelAndMealExpenses = customerExpenses.expenses.flatMap(_.hotelAndMealExpenses),
-          otherAndCapitalAllowances = customerExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
-          vehicleExpenses = customerExpenses.expenses.flatMap(_.vehicleExpenses),
-          mileageAllowanceRelief = customerExpenses.expenses.flatMap(_.mileageAllowanceRelief)
-        ))
-        ).toNrsPayloadModel))
+      verifySubmitEvent(Some(DecodedDeleteEmploymentExpensesPayload(expenses = Some(Expenses(
+        businessTravelCosts = customerExpenses.expenses.flatMap(_.businessTravelCosts),
+        jobExpenses = customerExpenses.expenses.flatMap(_.jobExpenses),
+        flatRateJobExpenses = customerExpenses.expenses.flatMap(_.flatRateJobExpenses),
+        professionalSubscriptions = customerExpenses.expenses.flatMap(_.professionalSubscriptions),
+        hotelAndMealExpenses = customerExpenses.expenses.flatMap(_.hotelAndMealExpenses),
+        otherAndCapitalAllowances = customerExpenses.expenses.flatMap(_.otherAndCapitalAllowances),
+        vehicleExpenses = customerExpenses.expenses.flatMap(_.vehicleExpenses),
+        mileageAllowanceRelief = customerExpenses.expenses.flatMap(_.mileageAllowanceRelief)
+      ))
+      ).toNrsPayloadModel))
 
-        await(service.performSubmitNrsPayload(priorData)) shouldBe Right()
-      }
+      await(service.performSubmitNrsPayload(priorData)) shouldBe Right()
     }
   }
 }

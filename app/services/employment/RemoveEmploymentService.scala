@@ -81,7 +81,7 @@ class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: Delet
     auditService.sendAudit[DeleteEmploymentAudit](auditModel.toAuditModel)
   }
 
-  private def performSubmitNrsPayload(employmentData: AllEmploymentData, employmentSource: EmploymentSource,
+  def performSubmitNrsPayload(employmentData: AllEmploymentData, employmentSource: EmploymentSource,
                                       isUsingCustomerData: Boolean)
                                      (implicit user: User[_], request: Request[_], hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
 

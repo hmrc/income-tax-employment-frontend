@@ -20,6 +20,7 @@ import audit.DeleteEmploymentAudit
 import config._
 import controllers.employment.routes.EmploymentSummaryController
 import models.employment._
+import models.expenses.Expenses
 import play.api.http.Status.INTERNAL_SERVER_ERROR
 import play.api.i18n.MessagesApi
 import play.api.mvc.Results.{Ok, Redirect}
@@ -72,7 +73,22 @@ class RemoveEmploymentServiceSpec extends UnitTest
     hmrcEmploymentData = Seq(empSource),
     hmrcExpenses = None,
     customerEmploymentData = Seq(empSource.copy(employmentId = "002")),
-    None
+    customerExpenses = None
+  )
+
+  private val customerExpenses =
+    EmploymentExpenses(
+      None,
+      None,
+      Some(40.00),
+      Some(Expenses(Some(5), Some(5), Some(5), Some(5), Some(5), Some(5), Some(5), Some(5)))
+    )
+
+  private val dataWithExpenses: AllEmploymentData = AllEmploymentData(
+    hmrcEmploymentData = Seq(empSource),
+    hmrcExpenses = None,
+    customerEmploymentData = Seq(empSource.copy(employmentId = "001")),
+    customerExpenses = Some(customerExpenses)
   )
 
   ".deleteOrIgnoreEmployment" should {
@@ -85,6 +101,12 @@ class RemoveEmploymentServiceSpec extends UnitTest
           val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", nino, mtditid, employmentDetailsViewModel, None, None)
 
           mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
+          verifySubmitEvent(DecodedDeleteEmploymentPayload(
+            employmentData = employmentDetailsViewModel,
+            benefits = None,
+            expenses = None
+          ).toNrsPayloadModel)
+
           mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
           mockDeleteOrIgnoreEmploymentRight(nino, taxYear, employmentId, "HMRC-HELD")
 
@@ -100,6 +122,11 @@ class RemoveEmploymentServiceSpec extends UnitTest
           val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", nino, mtditid, employmentDetailsViewModel, None, None)
 
           mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
+          verifySubmitEvent(DecodedDeleteEmploymentPayload(
+            employmentData = employmentDetailsViewModel,
+            benefits = None,
+            expenses = None
+          ).toNrsPayloadModel)
           mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
           mockDeleteOrIgnoreEmploymentRight(nino, taxYear, "002", "CUSTOMER")
 
@@ -130,6 +157,11 @@ class RemoveEmploymentServiceSpec extends UnitTest
         val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", nino, mtditid, employmentDetailsViewModel, None, None)
 
         mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
+        verifySubmitEvent(DecodedDeleteEmploymentPayload(
+          employmentData = employmentDetailsViewModel,
+          benefits = None,
+          expenses = None
+        ).toNrsPayloadModel)
         mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
         mockDeleteOrIgnoreEmploymentLeft(nino, taxYear, "002", "CUSTOMER")
 
@@ -143,11 +175,33 @@ class RemoveEmploymentServiceSpec extends UnitTest
         val deleteEmploymentAudit = DeleteEmploymentAudit(taxYear, "individual", nino, mtditid, employmentDetailsViewModel, None, None)
 
         mockAuditSendEvent(deleteEmploymentAudit.toAuditModel)
+        verifySubmitEvent(DecodedDeleteEmploymentPayload(
+          employmentData = employmentDetailsViewModel,
+          benefits = None,
+          expenses = None
+        ).toNrsPayloadModel)
         mockRefreshIncomeSourceResponseError(taxYear, nino, "employment")
         mockDeleteOrIgnoreEmploymentRight(nino, taxYear, "002", "CUSTOMER")
 
         status(service.deleteOrIgnoreEmployment(allEmploymentData, taxYear, "002")(Ok)) shouldBe INTERNAL_SERVER_ERROR
       }
+    }
+  }
+
+  "calling .performSubmitNrsPayload" should {
+    "send the event from the model" in {
+
+      val customerDataSource = dataWithExpenses.customerEmploymentData.find(_.employmentId.equals("001")).get
+
+      verifySubmitEvent(DecodedDeleteEmploymentPayload(
+        employmentData = customerDataSource.toEmploymentDetailsViewModel(isUsingCustomerData = true),
+        benefits = None,
+        expenses = customerExpenses.expenses
+        ).toNrsPayloadModel
+      )
+
+      await(service.performSubmitNrsPayload(dataWithExpenses, empSource, isUsingCustomerData = true)) shouldBe Right()
+
     }
   }
 }
