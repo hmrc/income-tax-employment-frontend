@@ -123,7 +123,7 @@ employment.addAnother = Do you need to add another employment?
 
 employment.removeEmployment.title = Are you sure you want to remove this employment?
 employment.removeEmployment.heading = Are you sure you want to remove {0}?
-employment.removeEmployment.remove-all-paragraph = This will remove any benefits and expenses for this employer.
+employment.removeEmployment.remove-all-paragraph = This will also remove any benefits and expenses for this employer.
 employment.removeEmployment.remove-paragraph = This will also remove any benefits for this employer.
 employment.removeEmployment.button = Remove employer
 
