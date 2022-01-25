@@ -16,13 +16,12 @@
 
 package controllers.employment
 
-import forms.YesNoForm
 import models.IncomeTaxUserData
 import models.employment.{AllEmploymentData, EmploymentSource}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
-import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
+import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.PageUrls.{employmentSummaryUrl, fullUrl, overviewUrl, removeEmploymentUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
@@ -53,11 +52,9 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
   )
 
   object Selectors {
-    val paragraphTextSelector = "#main-content > div > div > form > div > fieldset > legend > p"
-    val radioButtonSelector = "#main-content > div > div > form > div > fieldset > div"
-    val yesRadioButtonSelector = "#value"
-    val noRadioButtonSelector = "#value-no"
-    val continueButtonSelector = "#continue"
+    val paragraphTextSelector = "#main-content > div > div > form > p"
+    val removeEmployerButtonSelector = "#remove-employer-button-id"
+    val cancelLinkSelector = "#cancel-link-id"
     val formSelector = "#main-content > div > div > form"
   }
 
@@ -65,21 +62,24 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
     val expectedCaption: String
     val expectedRemoveAccountText: String
     val expectedLastAccountText: String
-    val continueButton: String
+    val expectedRemoveEmployerButton: String
+    val expectedCancelLink: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedRemoveAccountText = "This will also remove any benefits you told us about for this employment."
-    val expectedLastAccountText = "This will remove all your employment for this tax year."
-    val continueButton = "Continue"
+    val expectedRemoveAccountText = "This will also remove any benefits for this employer."
+    val expectedLastAccountText = "This will remove any benefits and expenses for this employer."
+    val expectedRemoveEmployerButton = "Remove employer"
+    val expectedCancelLink = "Cancel"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
-    val expectedRemoveAccountText = "This will also remove any benefits you told us about for this employment."
-    val expectedLastAccountText = "This will remove all your employment for this tax year."
-    val continueButton = "Continue"
+    val expectedRemoveAccountText = "This will also remove any benefits for this employer."
+    val expectedLastAccountText = "This will remove any benefits and expenses for this employer."
+    val expectedRemoveEmployerButton = "Remove employer"
+    val expectedCancelLink = "Cancel"
   }
 
   trait SpecificExpectedResults {
@@ -134,9 +134,7 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
       val specific = user.specificExpectedResults.get
 
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "render the remove employment page for when it isn't the last employment" which {
-
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -156,13 +154,12 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           h1Check(specific.expectedHeading)
           captionCheck(common.expectedCaption)
           textOnPageCheck(common.expectedRemoveAccountText, paragraphTextSelector)
-          radioButtonCheck("Yes", 1, checked = false)
-          radioButtonCheck("No", 2, checked = false)
-          buttonCheck(common.continueButton, continueButtonSelector)
+          buttonCheck(common.expectedRemoveEmployerButton, removeEmployerButtonSelector)
+          linkCheck(common.expectedCancelLink, cancelLinkSelector, employmentSummaryUrl(taxYearEOY))
+          formPostLinkCheck(removeEmploymentUrl(taxYearEOY, employmentId), formSelector)
         }
 
         "render the remove employment page for when it's the last employment" which {
-
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
@@ -182,13 +179,12 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           h1Check(specific.expectedHeading)
           captionCheck(common.expectedCaption)
           textOnPageCheck(common.expectedLastAccountText, paragraphTextSelector)
-          radioButtonCheck("Yes", 1, checked = false)
-          radioButtonCheck("No", 2, checked = false)
-          buttonCheck(common.continueButton, continueButtonSelector)
+          buttonCheck(common.expectedRemoveEmployerButton, removeEmployerButtonSelector)
+          linkCheck(common.expectedCancelLink, cancelLinkSelector, employmentSummaryUrl(taxYearEOY))
+          formPostLinkCheck(removeEmploymentUrl(taxYearEOY, employmentId), formSelector)
         }
 
         "redirect to the overview page" when {
-
           "it is not end of year" which {
             lazy val result: WSResponse = {
               dropEmploymentDB()
@@ -204,7 +200,6 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
           }
 
           "the user does not have employment data with that employmentId" which {
-
             lazy val result: WSResponse = {
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
@@ -216,38 +211,29 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
               result.status shouldBe SEE_OTHER
               result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYearEOY)) shouldBe true
             }
-
           }
         }
       }
     }
-
   }
 
   ".submit" should {
 
-    import Selectors._
-
     userScenarios.foreach { user =>
 
-      val common = user.commonExpectedResults
-      val specific = user.specificExpectedResults.get
-
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-
         "redirect the user to the overview page" when {
-
           "it is not end of year" which {
             lazy val result: WSResponse = {
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(fullUrl(removeEmploymentUrl(taxYear, employmentId)), body = "", user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
+
             s"has a SEE_OTHER ($SEE_OTHER) status" in {
               result.status shouldBe SEE_OTHER
               result.header("location").contains(overviewUrl(taxYear)) shouldBe true
             }
-
           }
 
           "the user does not have employment data with that employmentId" which {
@@ -263,7 +249,6 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
               result.status shouldBe SEE_OTHER
               result.header(HeaderNames.LOCATION).contains(overviewUrl(taxYearEOY)) shouldBe true
             }
-
           }
 
           "there is no employment data found" which {
@@ -283,71 +268,21 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
         }
 
         "redirect to the employment summary page" when {
-
           "an employment is removed" which {
-            val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
-
             lazy val result: WSResponse = {
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(IncomeTaxUserData(Some(model)), nino, taxYearEOY)
               userDataStubDeleteOrIgnoreEmployment(IncomeTaxUserData(Some(modelToDelete)), nino, taxYearEOY, employmentId, "CUSTOMER")
-              urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = form, user.isWelsh, follow = false,
+              urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = "", user.isWelsh, follow = false,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
             "redirects to the employment summary page" in {
               result.status shouldBe SEE_OTHER
               result.header(HeaderNames.LOCATION).contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
-
-            }
-
-          }
-
-          "the 'no' radio button is selected " which {
-
-            val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
-
-            lazy val result: WSResponse = {
-              dropEmploymentDB()
-              authoriseAgentOrIndividual(user.isAgent)
-              userDataStub(IncomeTaxUserData(Some(model)), nino, taxYearEOY)
-              urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = form, user.isWelsh, follow = false,
-                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
-
-            s"has a SEE_OTHER ($SEE_OTHER) status" in {
-              result.status shouldBe SEE_OTHER
-              result.header(HeaderNames.LOCATION).contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
             }
           }
-        }
-
-        s"return an error when there is no entry" which {
-
-          val form: Map[String, String] = Map[String, String]()
-
-          lazy val result: WSResponse = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(user.isAgent)
-            userDataStub(IncomeTaxUserData(Some(model)), nino, taxYearEOY)
-            urlPost(fullUrl(removeEmploymentUrl(taxYearEOY, employmentId)), body = form, user.isWelsh, follow = false,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
-          s"has a BAD_REQUEST ($BAD_REQUEST) status" in {
-            result.status shouldBe BAD_REQUEST
-          }
-
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
-
-          welshToggleCheck(user.isWelsh)
-          titleCheck(specific.expectedErrorTitle)
-          h1Check(specific.expectedHeading)
-          captionCheck(common.expectedCaption)
-          textOnPageCheck(common.expectedRemoveAccountText, paragraphTextSelector)
-          buttonCheck(common.continueButton)
-          errorSummaryCheck(specific.expectedErrorNoEntry, yesRadioButtonSelector)
-          formPostLinkCheck(removeEmploymentUrl(taxYearEOY, employmentId), formSelector)
         }
       }
     }

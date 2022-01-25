@@ -19,8 +19,7 @@ package controllers.employment
 import common.SessionValues
 import config.{MockEmploymentSessionService, MockRemoveEmploymentService}
 import controllers.employment.routes.EmploymentSummaryController
-import forms.YesNoForm
-import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
+import play.api.http.Status.{INTERNAL_SERVER_ERROR, OK, SEE_OTHER}
 import play.api.mvc.Results.{InternalServerError, Ok, Redirect}
 import play.api.mvc.{Request, Result}
 import utils.UnitTestWithApp
@@ -36,7 +35,6 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp
   private val validTaxYearEOY: Int = taxYear - 1
   private val employmentId = "001"
   private val employerName = "maggie"
-  private val form = YesNoForm.yesNoForm(missingInputError = "employment.removeEmployment.error.no-entry")
 
   private lazy val view: RemoveEmploymentView = app.injector.instanceOf[RemoveEmploymentView]
 
@@ -55,7 +53,7 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp
   ".show" should {
     "return a result" which {
       s"has an OK($OK) status when there is employment data" in new TestWithAuth {
-        mockFind(validTaxYearEOY, Ok(view(form, validTaxYearEOY, employmentId, employerName, lastEmployment = false)))
+        mockFind(validTaxYearEOY, Ok(view(validTaxYearEOY, employmentId, employerName, lastEmployment = false)))
 
         val result: Future[Result] = controller.show(validTaxYearEOY, employmentId)(fakeRequest.withSession(
           SessionValues.TAX_YEAR -> validTaxYearEOY.toString
@@ -90,18 +88,8 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp
   }
 
   ".submit" should {
-    s"return a BAD_REQUEST($BAD_REQUEST) status when there a form is submitted with no entry" in new TestWithAuth {
-      mockGetPriorRight(validTaxYearEOY, Some(employmentsModel))
-
-      val result: Future[Result] = controller.submit(validTaxYearEOY, employmentId)(fakeRequest.withSession(
-        SessionValues.TAX_YEAR -> validTaxYearEOY.toString
-      ))
-
-      status(result) shouldBe BAD_REQUEST
-    }
-
     s"return a SEE_OTHER($SEE_OTHER) status" when {
-      s"the 'yes' radio button is submitted" in new TestWithAuth {
+      s"form is submitted" in new TestWithAuth {
         mockGetPriorRight(validTaxYearEOY, Some(employmentsModel))
         mockDeleteOrIgnore(employmentsModel, validTaxYearEOY, employmentId)(Redirect(EmploymentSummaryController.show(validTaxYearEOY)))
 
@@ -114,17 +102,6 @@ class RemoveEmploymentControllerSpec extends UnitTestWithApp
         status(result) shouldBe SEE_OTHER
         redirectUrl(result) shouldBe EmploymentSummaryController.show(validTaxYearEOY).url
         bodyOf(result).contains(employerName) shouldBe false
-      }
-
-      s"the 'no' radio button is submitted" in new TestWithAuth {
-        mockGetPriorRight(validTaxYearEOY, Some(employmentsModel))
-
-        val result: Future[Result] = controller.submit(validTaxYearEOY, employmentId)(fakeRequest
-          .withFormUrlEncodedBody("value" -> "false")
-          .withSession(SessionValues.TAX_YEAR -> validTaxYearEOY.toString))
-
-        status(result) shouldBe SEE_OTHER
-        redirectUrl(result) shouldBe EmploymentSummaryController.show(validTaxYearEOY).url
       }
 
       "there's no employment data found for that employmentId" in new TestWithAuth {

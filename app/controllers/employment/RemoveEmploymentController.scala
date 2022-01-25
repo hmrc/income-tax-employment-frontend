@@ -19,12 +19,10 @@ package controllers.employment
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.EmploymentSummaryController
 import controllers.predicates.{AuthorisedAction, InYearAction}
-import forms.YesNoForm
-import models.employment.{AllEmploymentData, EmploymentSourceOrigin}
-import models.{IncomeTaxUserData, User}
-import play.api.data.Form
+import models.IncomeTaxUserData
+import models.employment.EmploymentSourceOrigin
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
 import services.employment.RemoveEmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -50,7 +48,7 @@ class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerCo
       employmentSessionService.findPreviousEmploymentUserData(user, taxYear) { allEmploymentData =>
         allEmploymentData.eoyEmploymentSourceWith(employmentId) match {
           case Some(EmploymentSourceOrigin(source, _)) => val employerName = source.employerName
-            Ok(removeEmploymentView(form, taxYear, employmentId, employerName, allEmploymentData.isLastEOYEmployment))
+            Ok(removeEmploymentView(taxYear, employmentId, employerName, allEmploymentData.isLastEOYEmployment))
           case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
         }
       }
@@ -63,32 +61,13 @@ class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerCo
         case Left(error) => Future.successful(errorHandler.handleError(error.status))
         case Right(IncomeTaxUserData(None)) => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
         case Right(IncomeTaxUserData(Some(allEmploymentData))) =>
-          val isLastEmployment = allEmploymentData.isLastEOYEmployment
           allEmploymentData.eoyEmploymentSourceWith(employmentId) match {
-            case Some(EmploymentSourceOrigin(source, _)) =>
-              val employerName = source.employerName
-              form.bindFromRequest().fold(
-                formWithErrors => Future.successful(BadRequest(removeEmploymentView(formWithErrors, taxYear, employmentId, employerName, isLastEmployment))),
-                yesNo => handleSuccessForm(taxYear, employmentId, allEmploymentData, yesNo)
-              )
+            case Some(EmploymentSourceOrigin(_, _)) => removeEmploymentService.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId) {
+              Redirect(EmploymentSummaryController.show(taxYear))
+            }
             case None => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
           }
       }
     }
   }
-
-  private def handleSuccessForm(taxYear: Int, employmentId: String, allEmploymentData: AllEmploymentData, questionValue: Boolean)
-                               (implicit user: User[_]): Future[Result] = {
-    if (questionValue) {
-      removeEmploymentService.deleteOrIgnoreEmployment(allEmploymentData, taxYear, employmentId) {
-        Redirect(EmploymentSummaryController.show(taxYear))
-      }
-    } else {
-      Future.successful(Redirect(EmploymentSummaryController.show(taxYear)))
-    }
-  }
-
-  private def form(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = "employment.removeEmployment.error.no-entry"
-  )
 }
