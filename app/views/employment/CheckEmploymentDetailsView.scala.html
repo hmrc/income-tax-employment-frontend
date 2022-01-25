@@ -142,7 +142,7 @@
                     case EmploymentDataForView(fieldHeading, mayBeFieldValue, changeLink, hiddenText) =>
                         summaryListRow(
                             key = HtmlContent(fieldHeading),
-                            value = mayBeFieldValue.fold(ariaVisuallyHiddenText(messages(msgKeyGeneric + ".notProvided")))(HtmlContent(_)),
+                            value = mayBeFieldValue.fold(ariaVisuallyHiddenText(messages("common.notProvided")))(HtmlContent(_)),
                             keyClasses = "govuk-!-width-two-thirds",
                             actions = if(!isInYear) Seq((changeLink, messages("common.change"), Some(hiddenText))) else Seq.empty
                         )

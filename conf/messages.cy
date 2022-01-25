@@ -47,6 +47,8 @@ common.thisIncludes = This includes things like:
 common.update = Update
 common.use = use
 common.yes = Yes
+common.and = and
+common.notProvided = Not provided
 employment.caption = Employment for 6 April {0} to 5 April {1}
 payeEmployment.caption = PAYE employment for 6 April {0} to 5 April {1}
 
@@ -167,7 +169,6 @@ employment.employmentDetails.employmentDates.format = {0} to {1}
 employment.employmentDetails.tipsAndOtherPayments.agent =  Amount of payments not on your client’s P6
 employment.employmentDetails.tipsAndOtherPayments.individual =  Amount of payments not on your P60
 employment.employmentDetails.totalTaxToDate =  UK tax taken from pay
-employment.employmentDetails.notProvided =  Not provided
 
 #################       Employment name messages        ########################################
 
@@ -1289,3 +1290,18 @@ expenses.otherEquipmentAmount.title.agent = How much do you want to claim for bu
 expenses.otherEquipmentAmount.title.individual = How much do you want to claim for buying other equipment?
 expenses.otherEquipmentAmount.wantToClaim.agent =  You told us you want to claim {0} for buying other equipment for your client. Tell us if this has changed.
 expenses.otherEquipmentAmount.wantToClaim.individual =  You told us you want to claim {0} for buying other equipment. Tell us if this has changed.
+
+#####################    Check your Student Loans messages    #####################
+
+studentLoans.title.individual = Check your student loan repayment details
+studentLoans.title.agent = Check your client’s student loan repayment details
+studentLoans.subheading = Student Loans for 6 April {0} to 5 April {1}
+studentLoans.slr = Student loan repayments?
+studentLoans.ura = Undergraduate repayments amount
+studentLoans.pra = Postgraduate repayments amount
+studentLoans.undergraduate = Undergraduate 
+studentLoans.postgraduate = Postgraduate
+studentLoans.p.individual = Your student loan repayment details are based on the information we already hold about you.
+studentLoans.p.agent = Your client’s student loan repayment details are based on the information we already hold about you.
+studentLoans.inset.individual = You cannot update your student loan details until 6 April {0}.
+studentLoans.inset.agent = You cannot update your client’s student loan details until 6 April {0}.
