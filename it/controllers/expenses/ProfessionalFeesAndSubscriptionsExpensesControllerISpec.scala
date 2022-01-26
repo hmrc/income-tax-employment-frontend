@@ -94,7 +94,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
     val expectedErrorMessage = "Select yes to claim for professional fees and subscriptions"
     val expectedExample1 = "professional membership fees, if you have to pay the fees to do your job"
     val expectedExample2 = "yearly subscriptions to approved professional bodies or learned societies relevant to your job"
-    val checkIfYouCanClaim = "Check if you can claim for professional fees and subscriptions (opens in new tab)"
+    val checkIfYouCanClaim = "Check if you can claim for professional fees and subscriptions (opens in new tab)."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
@@ -104,7 +104,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
     val expectedErrorMessage = "Select yes to claim for professional fees and subscriptions"
     val expectedExample1 = "professional membership fees, if you have to pay the fees to do your job"
     val expectedExample2 = "yearly subscriptions to approved professional bodies or learned societies relevant to your job"
-    val checkIfYouCanClaim = "Check if you can claim for professional fees and subscriptions (opens in new tab)"
+    val checkIfYouCanClaim = "Check if you can claim for professional fees and subscriptions (opens in new tab)."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
@@ -114,7 +114,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
     val expectedErrorMessage = "Select yes to claim for your client’s professional fees and subscriptions"
     val expectedExample1 = "professional membership fees, if your client has to pay the fees to do their job"
     val expectedExample2 = "yearly subscriptions to approved professional bodies or learned societies relevant to your client’s job"
-    val checkIfYouCanClaim = "Check if your client can claim for professional fees and subscriptions (opens in new tab)"
+    val checkIfYouCanClaim = "Check if your client can claim for professional fees and subscriptions (opens in new tab)."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
@@ -124,7 +124,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
     val expectedErrorMessage = "Select yes to claim for your client’s professional fees and subscriptions"
     val expectedExample1 = "professional membership fees, if your client has to pay the fees to do their job"
     val expectedExample2 = "yearly subscriptions to approved professional bodies or learned societies relevant to your client’s job"
-    val checkIfYouCanClaim = "Check if your client can claim for professional fees and subscriptions (opens in new tab)"
+    val checkIfYouCanClaim = "Check if your client can claim for professional fees and subscriptions (opens in new tab)."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(

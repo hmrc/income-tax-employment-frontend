@@ -108,7 +108,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val yesText = "Yes"
     val noText = "No"
     val expectedWeOnly = "We only need to know about childcare costs above the exempt limit (opens in new tab)."
-    val expectedWeOnlyLink = "exempt limit (opens in new tab)"
+    val expectedWeOnlyLink = "exempt limit (opens in new tab)."
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
@@ -117,7 +117,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
     val yesText = "Yes"
     val noText = "No"
     val expectedWeOnly = "We only need to know about childcare costs above the exempt limit (opens in new tab)."
-    val expectedWeOnlyLink = "exempt limit (opens in new tab)"
+    val expectedWeOnlyLink = "exempt limit (opens in new tab)."
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = Seq(
