@@ -30,7 +30,7 @@
         govUkButton: GovukButton
 )
 
-@(employerNameData: String, empId:String, benefitsDefined:Boolean, taxYear: Int, isInYear:Boolean)(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
+@(employerNameData: String, empId:String, benefitsDefined:Boolean, studentLoansDefined:Boolean, taxYear: Int, isInYear:Boolean)(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
 
 @titleForUse = @{messages("employment.employerInformation.title")}
 
@@ -61,32 +61,50 @@
 
         val benefitsRowInYear: Seq[SummaryListRow] = {
             if (benefitsDefined){
-                Seq(toSummaryListRow(messages("common.employmentBenefits"),messages("common.status.updated"), Some(CheckYourBenefitsController.show(taxYear, empId))))
+                Seq(toSummaryListRow(messages("common.employmentBenefits"), messages("common.status.updated"), Some(CheckYourBenefitsController.show(taxYear, empId))))
             } else {
-                Seq(toSummaryListRow(messages("common.employmentBenefits"),messages("common.status.cannotUpdate"), None))
+                Seq(toSummaryListRow(messages("common.employmentBenefits"), messages("common.status.cannotUpdate"), None))
             }
         }
 
         val benefitsRowEOY: Seq[SummaryListRow] = {
             if (benefitsDefined){
-                Seq(toSummaryListRow(messages("common.employmentBenefits"),messages("common.status.updated"), Some(CheckYourBenefitsController.show(taxYear, empId))))
+                Seq(toSummaryListRow(messages("common.employmentBenefits"), messages("common.status.updated"), Some(CheckYourBenefitsController.show(taxYear, empId))))
             } else {
-                Seq(toSummaryListRow(messages("common.employmentBenefits"),messages("common.status.notStarted"), Some(CheckYourBenefitsController.show(taxYear, empId))))
+                Seq(toSummaryListRow(messages("common.employmentBenefits"), messages("common.status.notStarted"), Some(CheckYourBenefitsController.show(taxYear, empId))))
+            }
+        }
+
+        val studentLoansRow: Seq[SummaryListRow] = {
+            if (studentLoansDefined){
+                Seq(toSummaryListRow(messages("common.studentLoans"), messages("common.status.updated"), Some(CheckEmploymentDetailsController.show(taxYear, empId))))
+            } else {
+                Seq(toSummaryListRow(messages("common.studentLoans"), messages("common.status.notStarted"), Some(CheckEmploymentDetailsController.show(taxYear, empId))))
             }
         }
 
         if(isInYear) {
             govukSummaryList(
                 SummaryList(
-                    Seq(toSummaryListRow(messages("common.employmentDetails"), messages("common.status.updated"),
-                    Some(CheckEmploymentDetailsController.show(taxYear, empId)))) ++ benefitsRowInYear
+                    if(appConfig.studentLoansEnabled) {
+                        Seq(toSummaryListRow(messages("common.employmentDetails"), messages("common.status.updated"),
+                        Some(CheckEmploymentDetailsController.show(taxYear, empId)))) ++ benefitsRowInYear ++ studentLoansRow
+                    }else{
+                        Seq(toSummaryListRow(messages("common.employmentDetails"), messages("common.status.updated"),
+                        Some(CheckEmploymentDetailsController.show(taxYear, empId)))) ++ benefitsRowInYear
+                    }
                 )
             )
         } else {
             govukSummaryList(
-            SummaryList(
-                Seq(toSummaryListRow(messages("common.employmentDetails"), messages("common.status.updated"),
-                Some(CheckEmploymentDetailsController.show(taxYear, empId)))) ++ benefitsRowEOY
+                SummaryList(
+                    if(appConfig.studentLoansEnabled) {
+                        Seq(toSummaryListRow(messages("common.employmentDetails"), messages("common.status.updated"),
+                        Some(CheckEmploymentDetailsController.show(taxYear, empId)))) ++ benefitsRowEOY ++ studentLoansRow
+                    }else{
+                        Seq(toSummaryListRow(messages("common.employmentDetails"), messages("common.status.updated"),
+                        Some(CheckEmploymentDetailsController.show(taxYear, empId)))) ++ benefitsRowEOY
+                    }
                 )
             )
         }

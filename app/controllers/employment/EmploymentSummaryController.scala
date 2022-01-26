@@ -85,12 +85,14 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
     employmentSessionService.findPreviousEmploymentUserData(user, taxYear, overrideRedirect) { allEmploymentData =>
       val latestExpenses = if (isInYear) allEmploymentData.latestInYearExpenses else allEmploymentData.latestEOYExpenses
       val doExpensesExist = latestExpenses.isDefined
+      val latestStudentLoans = allEmploymentData.hmrcEmploymentData.flatMap(_.employmentData).flatMap(_.deductions).flatMap(_.studentLoans)
+      val doStudentLoansExist = latestStudentLoans.nonEmpty
       val employmentData = if (isInYear) allEmploymentData.latestInYearEmployments else allEmploymentData.latestEOYEmployments
 
       employmentData match {
         case Seq() if isInYear => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
         case Seq() if !isInYear => Redirect(AddEmploymentController.show(taxYear))
-        case Seq(employment) if isInYear => status(singleEmploymentSummaryView(taxYear, employment, doExpensesExist))
+        case Seq(employment) if isInYear => status(singleEmploymentSummaryView(taxYear, employment, doExpensesExist, doStudentLoansExist))
         case Seq(employment) if !isInYear => status(singleEmploymentSummaryEOYView(taxYear, employment, yesNoForm))
         case _ => status(multipleEmploymentsSummaryView(taxYear, employmentData, doExpensesExist, isInYear, yesNoForm))
       }

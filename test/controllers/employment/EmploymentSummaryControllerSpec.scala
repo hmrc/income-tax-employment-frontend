@@ -105,9 +105,9 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
     )
   }
 
-  lazy val singleView = app.injector.instanceOf[SingleEmploymentSummaryView]
-  lazy val singleEOYView = app.injector.instanceOf[SingleEmploymentSummaryViewEOY]
-  lazy val multipleView = app.injector.instanceOf[MultipleEmploymentsSummaryView]
+  lazy val singleView: SingleEmploymentSummaryView = app.injector.instanceOf[SingleEmploymentSummaryView]
+  lazy val singleEOYView: SingleEmploymentSummaryViewEOY = app.injector.instanceOf[SingleEmploymentSummaryViewEOY]
+  lazy val multipleView: MultipleEmploymentsSummaryView = app.injector.instanceOf[MultipleEmploymentsSummaryView]
 
   lazy val yesNoForm: Form[Boolean] = YesNoForm.yesNoForm(
     missingInputError = "employment.addAnother.error"
@@ -129,7 +129,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
   ".show" should {
     "render single employment summary view when there is only one employment" which {
       s"has an OK($OK) status" in new TestWithAuth {
-        mockFind(taxYear, Ok(singleView(taxYear, FullModel.employmentSource1, false)))
+        mockFind(taxYear, Ok(singleView(taxYear, FullModel.employmentSource1, expensesExist = false, studentLoansExist = false)))
 
         val result: Future[Result] = controller.show(taxYear)(fakeRequest)
         status(result) shouldBe OK
@@ -139,7 +139,8 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
     "render multiple employment summary view when there are two employments" which {
       s"has an OK($OK) status" in new TestWithAuth {
-        mockFind(taxYear, Ok(multipleView(taxYear, Seq(FullModel.employmentSource1, FullModel.employmentSource2), false, false, yesNoForm)))
+        mockFind(taxYear, Ok(multipleView(taxYear, Seq(FullModel.employmentSource1, FullModel.employmentSource2),
+          expensesExist = false, isInYear = false, yesNoForm)))
 
         val result: Future[Result] = controller.show(taxYear)(fakeRequest)
         status(result) shouldBe OK

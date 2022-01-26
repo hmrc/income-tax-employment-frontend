@@ -18,6 +18,8 @@ package controllers.employment
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import builders.models.employment.DeductionsBuilder.aDeductions
+import builders.models.employment.EmploymentDataBuilder.anEmploymentData
 import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -37,6 +39,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
     val buttonSelector = "#returnToEmploymentSummaryBtn"
     val employmentDetailsLinkSelector = "#employment-details_link"
     val employmentBenefitsLinkSelector = "#employment-benefits_link"
+    val studentLoansLinkSelector = "#student-loans_link"
     val formSelector = "#main-content > div > div > form"
 
     def summaryListKeySelector(i: Int): String = {
@@ -72,7 +75,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
   object CommonExpectedEN extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"PAYE employment for 6 April ${taxYear - 1} to 5 April $taxYear"
 
-    val fieldNames = Seq("Employment details", "Employment benefits")
+    val fieldNames = Seq("Employment details", "Employment benefits", "Student Loans")
     val buttonText = "Return to PAYE employment"
     val updated = "Updated"
     val cannotUpdate = "Cannot update"
@@ -82,7 +85,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"PAYE employment for 6 April ${taxYear - 1} to 5 April $taxYear"
 
-    val fieldNames = Seq("Employment details", "Employment benefits")
+    val fieldNames = Seq("Employment details", "Employment benefits", "Student Loans")
     val buttonText = "Return to PAYE employment"
     val updated = "Updated"
     val cannotUpdate = "Cannot update"
@@ -152,6 +155,48 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
             textOnPageCheck(user.commonExpectedResults.fieldNames(1), summaryListKeySelector(2))
             textOnPageCheck(user.commonExpectedResults.cannotUpdate, summaryListStatusTagsSelector(2))
           }
+
+          "has a student loans section" which {
+            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector, checkYourDetailsUrl(taxYear, employmentId))
+            textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelector(3))
+          }
+
+          buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
+          formGetLinkCheck(employmentSummaryUrl(taxYear), "#main-content > div > div > form")
+
+          welshToggleCheck(user.isWelsh)
+        }
+
+        "render the page where the status for student loans is Not Started when there is no Student Loans data in year" which {
+          implicit lazy val result: WSResponse = {
+            authoriseAgentOrIndividual(user.isAgent)
+            val employment = anEmploymentSource.copy(employmentData = Some(anEmploymentData.copy(deductions = Some(aDeductions.copy(studentLoans = None)))))
+            userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = Seq(employment)))), nino, taxYear)
+            urlGet(fullUrl(employerInformationUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+          }
+
+          implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(user.specificExpectedResults.get.expectedTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYear))
+          textOnPageCheck(user.specificExpectedResults.get.expectedContent(taxYear), insetTextSelector)
+
+          "has an employment details section" which {
+            linkCheck(user.commonExpectedResults.fieldNames.head, employmentDetailsLinkSelector, checkYourDetailsUrl(taxYear, employmentId))
+            textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelector(1))
+          }
+
+          "has a benefits section" which {
+            linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, checkYourBenefitsUrl(taxYear, employmentId))
+            textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelector(2))
+          }
+
+          "has a student loans section" which {
+            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector, checkYourDetailsUrl(taxYear, employmentId))
+            textOnPageCheck(user.commonExpectedResults.notStarted, summaryListStatusTagsSelector(3))
+          }
+
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
           formGetLinkCheck(employmentSummaryUrl(taxYear), "#main-content > div > div > form")
 
@@ -183,6 +228,12 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
             textOnPageCheck(user.commonExpectedResults.fieldNames(1), summaryListKeySelector(2))
             textOnPageCheck(user.commonExpectedResults.cannotUpdate, summaryListStatusTagsSelector(2))
           }
+
+          "has a student loans section" which {
+            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector, checkYourDetailsUrl(taxYear, employmentId))
+            textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelector(3))
+          }
+
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
           formGetLinkCheck(employmentSummaryUrl(taxYear), formSelector)
 
@@ -212,6 +263,11 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           "has a benefits section" which {
             linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, checkYourBenefitsUrl(taxYear, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelector(2))
+          }
+
+          "has a student loans section" which {
+            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector, checkYourDetailsUrl(taxYear, employmentId))
+            textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelector(3))
           }
 
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
@@ -244,6 +300,11 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
             textOnPageCheck(user.commonExpectedResults.notStarted, summaryListStatusTagsSelectorEOY(2))
           }
 
+          "has a student loans section" which {
+            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector, checkYourDetailsUrl(taxYearEOY, employmentId))
+            textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelectorEOY(3))
+          }
+
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)
           formGetLinkCheck(employmentSummaryUrl(taxYearEOY), formSelector)
 
@@ -271,6 +332,11 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           "has a benefits section" which {
             linkCheck(user.commonExpectedResults.fieldNames(1), employmentBenefitsLinkSelector, checkYourBenefitsUrl(taxYearEOY, employmentId))
             textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelectorEOY(2))
+          }
+
+          "has a student loans section" which {
+            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector, checkYourDetailsUrl(taxYearEOY, employmentId))
+            textOnPageCheck(user.commonExpectedResults.updated, summaryListStatusTagsSelectorEOY(3))
           }
 
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)

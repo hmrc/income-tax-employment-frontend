@@ -45,7 +45,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     val employmentSummaryParagraphSelector = "#main-content > div > div > p:nth-child(2)"
     val employmentDetailsRowSelector: String = s"#main-content > div > div > ol > li:nth-child(1) > span.app-task-list__task-name"
     val employmentBenefitsRowSelector: String = s"#main-content > div > div > ol > li:nth-child(2) > span.app-task-list__task-name"
-    val employmentExpensesRowSelector: String = s"#main-content > div > div > ol > li:nth-child(3) > span.app-task-list__task-name"
+    val studentLoansRowSelector: String = s"#main-content > div > div > ol > li:nth-child(3) > span.app-task-list__task-name"
+    val employmentExpensesRowSelector: String = s"#main-content > div > div > ol > li:nth-child(4) > span.app-task-list__task-name"
     val insetTextSelector = "#main-content > div > div > div.govuk-inset-text"
     val expensesParagraphHeadingSelector = "#main-content > div > div > h2.govuk-label--m"
     val expensesParagraphSubheadingSelector = "#main-content > div > div > p:nth-child(6)"
@@ -55,6 +56,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     def employmentDetailsRowLinkSelector: String = s"$employmentDetailsRowSelector > a"
 
     def employmentBenefitsRowLinkSelector: String = s"$employmentBenefitsRowSelector > a"
+
+    def studentLoansRowLinkSelector: String = s"$studentLoansRowSelector > a"
 
     def employmentExpensesRowLinkSelector: String = s"$employmentExpensesRowSelector > a"
 
@@ -68,7 +71,8 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
   trait SpecificExpectedResults {
     val expectedH1: String
     val expectedTitle: String
-    val expectedContent: String
+    val expectedSingleContent: String
+    val expectedMultipleContent: String
     val expectedInsetText: String
   }
 
@@ -76,6 +80,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedCaption: String
     val employmentDetails: String
     val benefits: String
+    val studentLoans: String
     val expenses: String
     val button: String
     val updated: String
@@ -87,6 +92,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedCaption = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val employmentDetails = "Employment details"
     val benefits = "Benefits"
+    val studentLoans = "Student Loans"
     val expenses = "Expenses"
     val button = "Return to overview"
     val updated = "Updated"
@@ -98,6 +104,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
     val expectedCaption = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
     val employmentDetails = "Employment details"
     val benefits = "Benefits"
+    val studentLoans = "Student Loans"
     val expenses = "Expenses"
     val button = "Return to overview"
     val updated = "Updated"
@@ -108,28 +115,32 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedH1: String = "Employment"
     val expectedTitle: String = "Employment"
-    val expectedContent: String = "Your employment information is based on the information we already hold about you."
+    val expectedSingleContent: String = "Your employment information is based on the information we already hold about you."
+    val expectedMultipleContent: String = "Your employment information is based on the information we already hold about you. It includes employment details, benefits and student loans contributions."
     val expectedInsetText: String = s"You cannot update your employment information until 6 April $taxYear."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedH1: String = "Employment"
     val expectedTitle: String = "Employment"
-    val expectedContent: String = "Your client’s employment information is based on the information we already hold about them."
+    val expectedSingleContent: String = "Your client’s employment information is based on the information we already hold about them."
+    val expectedMultipleContent: String = "Your client’s employment information is based on the information we already hold about them. It includes employment details, benefits and student loans contributions."
     val expectedInsetText: String = s"You cannot update your client’s employment information until 6 April $taxYear."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedH1: String = "Employment"
     val expectedTitle: String = "Employment"
-    val expectedContent: String = "Your employment information is based on the information we already hold about you."
+    val expectedSingleContent: String = "Your employment information is based on the information we already hold about you."
+    val expectedMultipleContent: String = "Your employment information is based on the information we already hold about you. It includes employment details, benefits and student loans contributions."
     val expectedInsetText: String = s"You cannot update your employment information until 6 April $taxYear."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedH1: String = "Employment"
     val expectedTitle: String = "Employment"
-    val expectedContent: String = "Your client’s employment information is based on the information we already hold about them."
+    val expectedSingleContent: String = "Your client’s employment information is based on the information we already hold about them."
+    val expectedMultipleContent: String = "Your client’s employment information is based on the information we already hold about them. It includes employment details, benefits and student loans contributions."
     val expectedInsetText: String = s"You cannot update your client’s employment information until 6 April $taxYear."
   }
 
@@ -145,7 +156,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
 
     userScenarios.foreach { user =>
       s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
-        "return single employment summary view when there is only one employment without Expenses and Benefits" which {
+        "return single employment summary view when there is only one employment without Expenses, Benefits and Student Loans" which {
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(Some(singleEmploymentModel)), nino, taxYear)
@@ -161,10 +172,11 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(employerName1)
           textOnPageCheck(user.commonExpectedResults.expectedCaption, captionSelector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedContent, employmentSummaryParagraphSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedSingleContent, employmentSummaryParagraphSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetText, insetTextSelector)
           linkCheck(user.commonExpectedResults.employmentDetails, employmentDetailsRowLinkSelector, checkYourDetailsUrl(taxYear, employmentId1))
           textOnPageCheck(user.commonExpectedResults.benefits, employmentBenefitsRowSelector)
+          linkCheck(user.commonExpectedResults.studentLoans, studentLoansRowLinkSelector, checkYourDetailsUrl(taxYear, employmentId1))
           textOnPageCheck(user.commonExpectedResults.expenses, employmentExpensesRowSelector)
           buttonCheck(user.commonExpectedResults.button)
           welshToggleCheck(user.isWelsh)
@@ -182,7 +194,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           }
         }
 
-        "return single employment summary view when there is only one employment with Expenses and Benefits" which {
+        "return single employment summary view when there is only one employment with Expenses, Benefits and Student Loans" which {
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(IncomeTaxUserData(Some(singleEmploymentWithExpensesAndBenefitsModel)), nino, taxYear)
@@ -198,10 +210,11 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(employerName3)
           textOnPageCheck(user.commonExpectedResults.expectedCaption, captionSelector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedContent, employmentSummaryParagraphSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedSingleContent, employmentSummaryParagraphSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetText, insetTextSelector)
           linkCheck(user.commonExpectedResults.employmentDetails, employmentDetailsRowLinkSelector, checkYourDetailsUrl(taxYear, employmentId3))
           linkCheck(user.commonExpectedResults.benefits, employmentBenefitsRowLinkSelector, checkYourBenefitsUrl(taxYear, employmentId3))
+          linkCheck(user.commonExpectedResults.studentLoans, studentLoansRowLinkSelector, checkYourDetailsUrl(taxYear, employmentId3))
           linkCheck(user.commonExpectedResults.expenses, employmentExpensesRowLinkSelector, checkYourExpensesUrl(taxYear))
           buttonCheck(user.commonExpectedResults.button)
           welshToggleCheck(user.isWelsh)
@@ -223,7 +236,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           textOnPageCheck(user.commonExpectedResults.expectedCaption, captionSelector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedContent, employmentSummaryParagraphSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedMultipleContent, employmentSummaryParagraphSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetText, insetTextSelector)
           linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), employerInformationUrl(taxYear, employmentId1))
           textOnPageCheck(user.commonExpectedResults.updated, employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")
@@ -253,7 +266,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
           textOnPageCheck(user.commonExpectedResults.expectedCaption, captionSelector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedContent, employmentSummaryParagraphSelector)
+          textOnPageCheck(user.specificExpectedResults.get.expectedMultipleContent, employmentSummaryParagraphSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedInsetText, insetTextSelector)
           linkCheck(employerName1, employerSummaryListRowFieldNameSelector(1), employerInformationUrl(taxYear, employmentId1))
           textOnPageCheck(user.commonExpectedResults.updated, employerSummaryListRowFieldActionSelector(1), s"for $employerName1 row")

@@ -50,9 +50,10 @@ class EmployerInformationControllerSpec extends UnitTestWithApp with MockEmploym
         val name: String = anEmploymentSource.employerName
         val employmentId: String = anEmploymentSource.employmentId
         val benefitsIsDefined: Boolean = anEmploymentSource.employmentBenefits.isDefined
+        val studentLoansIsDefined: Boolean = anEmploymentSource.employmentData.flatMap(_.deductions).flatMap(_.studentLoans).isDefined
 
         val result: Future[Result] = {
-          mockFind(taxYear, Ok(view(name, employmentId, benefitsIsDefined, taxYear, isInYear = true)))
+          mockFind(taxYear, Ok(view(name, employmentId, benefitsIsDefined, studentLoansIsDefined, taxYear, isInYear = true)))
           controller.show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))

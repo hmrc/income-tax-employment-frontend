@@ -130,7 +130,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorText = "Select yes if you need to add another employment"
-    val yourEmpInfo: String = "Your employment information is based on the information we already hold about you."
+    val yourEmpInfo: String = "Your employment information is based on the information we already hold about you. It includes employment details, benefits and student loans contributions."
     val youMustTell: String = "You must tell us about all your employment."
     val changeExpenses: String = "Change Change your expenses from all employment this tax year" //First change is the text/link, second change is part of hidden text
     val removeExpenses: String = "Remove Remove your expenses from all employment this tax year" //First remove is the text/link, second remove is part of hidden text
@@ -141,7 +141,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorText = "Select yes if you need to add another employment"
-    val yourEmpInfo: String = "Your client’s employment information is based on the information we already hold about them."
+    val yourEmpInfo: String = "Your client’s employment information is based on the information we already hold about them. It includes employment details, benefits and student loans contributions."
     val youMustTell: String = "You must tell us about all your client’s employment."
     val changeExpenses: String = "Change Change your client’s expenses from all employment this tax year" //First change is the text/link, second change is part of hidden text
     val removeExpenses: String = "Remove Remove your client’s expenses from all employment this tax year" //First remove is the text/link, second remove is part of hidden text
@@ -152,7 +152,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorText = "Select yes if you need to add another employment"
-    val yourEmpInfo: String = "Your employment information is based on the information we already hold about you."
+    val yourEmpInfo: String = "Your employment information is based on the information we already hold about you. It includes employment details, benefits and student loans contributions."
     val youMustTell: String = "You must tell us about all your employment."
     val changeExpenses: String = "Change Change your expenses from all employment this tax year" //First change is the text/link, second change is part of hidden text
     val removeExpenses: String = "Remove Remove your expenses from all employment this tax year" //First remove is the text/link, second remove is part of hidden text
@@ -163,7 +163,7 @@ class MultipleEmploymentSummaryEOYControllerISpec extends IntegrationTest with V
     val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorText = "Select yes if you need to add another employment"
-    val yourEmpInfo: String = "Your client’s employment information is based on the information we already hold about them."
+    val yourEmpInfo: String = "Your client’s employment information is based on the information we already hold about them. It includes employment details, benefits and student loans contributions."
     val youMustTell: String = "You must tell us about all your client’s employment."
     val changeExpenses: String = "Change Change your client’s expenses from all employment this tax year" //First change is the text/link, second change is part of hidden text
     val removeExpenses: String = "Remove Remove your client’s expenses from all employment this tax year" //First remove is the text/link, second remove is part of hidden text

@@ -30,7 +30,7 @@
         govukInsetText: GovukInsetText,
         govUkButton: GovukButton
 )
-@(taxYear: Int, employment: EmploymentSource, expensesExist: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, employment: EmploymentSource, expensesExist: Boolean, studentLoansExist: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @headingForUse = @{
     employment.employerName
@@ -60,6 +60,20 @@
                 @if(employment.employmentBenefits.isDefined){ @messages("common.status.updated") }else{ @messages("common.status.cannotUpdate")}
             </span>
         </li>
+
+        @if(appConfig.studentLoansEnabled) {
+            <li class="app-task-list__item">
+                <span class="app-task-list__task-name">
+                    <a class="govuk-link" href="@CheckEmploymentDetailsController.show(taxYear, employment.employmentId)">
+                        @messages("common.studentLoans")
+                    </a>
+                </span>
+                <span class="hmrc-status-tag">
+                    @if(studentLoansExist){ @messages("common.status.updated") }else{ @messages("common.status.notStarted")}
+                </span>
+            </li>
+        }
+
         <li class="app-task-list__item">
             <span class="app-task-list__task-name">
                 @if(expensesExist) {
