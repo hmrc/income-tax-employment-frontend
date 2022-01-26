@@ -56,7 +56,6 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedTitle: String
     val expectedHeading: String
     val expectedCanClaimExample1: String
-    val expectedUniformsAndToolsText: String
     val expectedUniformsAndToolsLink: String
     val expectedErrorTitle: String
     val expectedErrorText: String
@@ -76,8 +75,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedTitle = "Do you want to claim for uniforms, work clothes, or tools?"
     val expectedHeading = "Do you want to claim for uniforms, work clothes, or tools?"
     val expectedCanClaimExample1 = "repairing or replacing small tools you need to do your job"
-    val expectedUniformsAndToolsText = "Check if you can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)."
-    val expectedUniformsAndToolsLink = "Check if you can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)"
+    val expectedUniformsAndToolsLink = "Check if you can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)."
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorText = "Select yes to claim for uniforms, work clothes, or tools"
   }
@@ -86,8 +84,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedTitle = "Do you want to claim for uniforms, work clothes, or tools?"
     val expectedHeading = "Do you want to claim for uniforms, work clothes, or tools?"
     val expectedCanClaimExample1 = "repairing or replacing small tools you need to do your job"
-    val expectedUniformsAndToolsText = "Check if you can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)."
-    val expectedUniformsAndToolsLink = "Check if you can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)"
+    val expectedUniformsAndToolsLink = "Check if you can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)."
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorText = "Select yes to claim for uniforms, work clothes, or tools"
   }
@@ -96,8 +93,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedTitle = "Do you want to claim for uniforms, work clothes, or tools for your client?"
     val expectedHeading = "Do you want to claim for uniforms, work clothes, or tools for your client?"
     val expectedCanClaimExample1 = "repairing or replacing small tools your client needs to do their job"
-    val expectedUniformsAndToolsText = "Check if your client can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)."
-    val expectedUniformsAndToolsLink = "Check if your client can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)"
+    val expectedUniformsAndToolsLink = "Check if your client can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)."
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorText = "Select yes to claim for your client’s uniforms, work clothes, or tools"
   }
@@ -106,8 +102,7 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
     val expectedTitle = "Do you want to claim for uniforms, work clothes, or tools for your client?"
     val expectedHeading = "Do you want to claim for uniforms, work clothes, or tools for your client?"
     val expectedCanClaimExample1 = "repairing or replacing small tools your client needs to do their job"
-    val expectedUniformsAndToolsText = "Check if your client can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)."
-    val expectedUniformsAndToolsLink = "Check if your client can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)"
+    val expectedUniformsAndToolsLink = "Check if your client can claim flat rate expenses for uniforms, work clothes, or tools (opens in new tab)."
     val expectedErrorTitle = s"Error: $expectedTitle"
     val expectedErrorText = "Select yes to claim for your client’s uniforms, work clothes, or tools"
   }
@@ -167,7 +162,6 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           textOnPageCheck(user.specificExpectedResults.get.expectedCanClaimExample1, canClaimExample1Selector)
           textOnPageCheck(expectedCanClaimExample2, canClaimExample2Selector)
           textOnPageCheck(flatRateExpense, flatRateExpenseParagraphSelector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedUniformsAndToolsText, findOutMoreParagraphSelector)
           linkCheck(user.specificExpectedResults.get.expectedUniformsAndToolsLink, uniformsAndToolsLinkSelector, uniformsAndToolsLink)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
@@ -201,7 +195,6 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           textOnPageCheck(flatRateExpense, flatRateExpenseParagraphSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedCanClaimExample1, canClaimExample1Selector)
           textOnPageCheck(expectedCanClaimExample2, canClaimExample2Selector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedUniformsAndToolsText, findOutMoreParagraphSelector)
           linkCheck(user.specificExpectedResults.get.expectedUniformsAndToolsLink, uniformsAndToolsLinkSelector, uniformsAndToolsLink)
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
@@ -233,7 +226,6 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
           textOnPageCheck(flatRateExpense, flatRateExpenseParagraphSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedCanClaimExample1, canClaimExample1Selector)
           textOnPageCheck(expectedCanClaimExample2, canClaimExample2Selector)
-          textOnPageCheck(user.specificExpectedResults.get.expectedUniformsAndToolsText, findOutMoreParagraphSelector)
           linkCheck(user.specificExpectedResults.get.expectedUniformsAndToolsLink, uniformsAndToolsLinkSelector, uniformsAndToolsLink)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
@@ -309,7 +301,6 @@ class UniformsOrToolsExpensesControllerISpec extends IntegrationTest with ViewHe
             textOnPageCheck(flatRateExpense, flatRateExpenseParagraphSelector)
             textOnPageCheck(user.specificExpectedResults.get.expectedCanClaimExample1, canClaimExample1Selector)
             textOnPageCheck(expectedCanClaimExample2, canClaimExample2Selector)
-            textOnPageCheck(user.specificExpectedResults.get.expectedUniformsAndToolsText, findOutMoreParagraphSelector)
             linkCheck(user.specificExpectedResults.get.expectedUniformsAndToolsLink, uniformsAndToolsLinkSelector, uniformsAndToolsLink)
             radioButtonCheck(yesText, 1, checked = false)
             radioButtonCheck(noText, 2, checked = false)
