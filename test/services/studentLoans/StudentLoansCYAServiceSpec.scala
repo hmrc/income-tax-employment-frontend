@@ -16,74 +16,63 @@
 
 package services.studentLoans
 
-import akka.http.scaladsl.model.HttpHeader.ParsingResult.Ok
 import connectors.CreateUpdateEmploymentDataConnector
-import connectors.parsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmploymentDataResponse
-import models.User
-import models.employment.{AllEmploymentData, StudentLoansCYAModel}
-import models.employment.createUpdate.CreateUpdateEmploymentRequest
-import models.mongo.{DatabaseError, EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
-import org.scalamock.handlers.CallHandler3
-import play.api.mvc.Result
-import play.api.mvc.Results.{Created, InternalServerError, NoContent}
-import repositories.EmploymentUserDataRepository
+import models.employment.{AllEmploymentData, EmploymentSource}
 import services.EmploymentSessionService
-import uk.gov.hmrc.http.HeaderCarrier
 import utils.UnitTest
 
-import scala.concurrent.Future
-
 class StudentLoansCYAServiceSpec extends UnitTest {
-  
-  val taxYear: Int = 2022
-  val employmentId: String = "1234567890-1234567890"
-  
-  lazy val repo: EmploymentUserDataRepository = mock[EmploymentUserDataRepository]
+
   lazy val connector: CreateUpdateEmploymentDataConnector = mock[CreateUpdateEmploymentDataConnector]
   lazy val session: EmploymentSessionService = mock[EmploymentSessionService]
   
-  private def mockRepoCall(employmentData: Option[EmploymentUserData]) = {
-    (repo.find(_: Int, _: String)(_: User[_]))
-      .expects(*, *, *)
-      .returns(Future.successful(Right(employmentData)))
-  }
+  lazy val service = new StudentLoansCYAService(
+    connector, session, mockAppConfig, mockErrorHandler, mockExecutionContext, testClock
+  )
   
-  lazy val controller = new StudentLoansCYAService(repo, connector, session, mockAppConfig, mockExecutionContext)
+  lazy val employerId = "1234567890"
   
-  ".retrieveCyaData" should {
+  lazy val hmrcSource: EmploymentSource = EmploymentSource(
+    employerId, "HMRC", None, None, None, None, None, None, None, None
+  )
+  
+  lazy val customerSource: EmploymentSource = EmploymentSource(
+    employerId, "Customer", None, None, None, None, None, None, None, None
+  )
+  
+  lazy val allEmploymentData: AllEmploymentData = AllEmploymentData(
+    Seq(hmrcSource), None, Seq(customerSource), None
+  )
+  
+  ".extractEmploymentInformation" should {
     
-    "return a CYA model" when {
+    "return an employment source" when {
       
-      "data exist in session (mongo)" in {
-        val employmentUserData = EmploymentUserData(
-          sessionId, mtditid, nino, taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false,
-          EmploymentCYAModel(
-            EmploymentDetails(
-              "AN Employer",
-              currentDataIsHmrcHeld = false
-            ),
-            studentLoansCYAModel = Some(StudentLoansCYAModel(uglDeduction = false, None, pglDeduction = false, None))
-          )
-        )
+      "the data contains customer data and is flagged as customer held" in {
+        val result = service.extractEmploymentInformation(allEmploymentData, employerId, isCustomerHeld = true)
         
-        val result = {
-          mockRepoCall(Some(employmentUserData))
-          await(controller.retrieveCyaDataAndIsPrior(taxYear, employmentId)(user))
-        }
+        result shouldBe Some(customerSource)
+      }
+      
+      "the data contains hmrc data and is flagged as hmrc held" in {
+        val result = service.extractEmploymentInformation(allEmploymentData, employerId, isCustomerHeld = false)
         
-        result shouldBe employmentUserData.employment.studentLoansCYAModel.map(_ -> false)
+        result shouldBe Some(hmrcSource)
       }
       
     }
     
-    "return a None" when {
+    "return a none" when {
       
-      "there's no data in session (mongo)" in {
-        val result = {
-          mockRepoCall(None)
-          await(controller.retrieveCyaDataAndIsPrior(taxYear, employmentId)(user))
-        }
-
+      "the data does not contain customer data and is flagged as customer held" in {
+        val result = service.extractEmploymentInformation(allEmploymentData.copy(customerEmploymentData = Seq()), employerId, isCustomerHeld = true)
+        
+        result shouldBe None
+      }
+      
+      "the data does not contain hmrc data and is flagged as hmrc held" in {
+        val result = service.extractEmploymentInformation(allEmploymentData.copy(hmrcEmploymentData = Seq()), employerId, isCustomerHeld = false)
+        
         result shouldBe None
       }
       

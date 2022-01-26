@@ -17,8 +17,8 @@
 package controllers.studentLoans
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.employment._
+import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import models.{IncomeTaxUserData, User}
 import org.joda.time.DateTime
@@ -34,9 +34,9 @@ import utils.PageUrls._
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
-
+  
   val employmentId: String = "1234567890-0987654321"
-  def url: Int => String = taxYearUnique => fullUrl(studentLoansCyaPage(taxYearUnique, employmentId))
+  def url(taxYearUnique: Int): String = fullUrl(studentLoansCyaPage(taxYearUnique, employmentId))
 
   private def stubEmploymentPost(request: CreateUpdateEmploymentRequest, taxYear: Int) =
     stubPostWithHeadersCheck(
@@ -246,6 +246,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
                 ))
               )
             ), user)
+            userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYear)
             
             urlGet(url(scenarioData.commonExpectedResults.taxYear), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYear)))
           }
@@ -268,10 +269,34 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
           buttonCheck(buttonText)
         }
 
+        "there is no CYA data, but there is Prior data" which {
+          
+        }
       }
 
       s"redirect the user to the overview page for $inYearText for an $affinityText when there is $prior" when {
 
+        "there is no CYA data but there is Prior data that does not contain Student Loans information" in {
+          lazy val result = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(scenarioData.isAgent)
+            userDataStub(IncomeTaxUserData(Some(AllEmploymentData(
+              Seq(EmploymentSource(
+                employmentId, "Whiterun Guards", None, None, None, None, None, None, Some(EmploymentData(
+                  "2022-01-01", None, None, None, None, None, None, None, None
+                )), None
+              )), None,
+              Seq(), None
+            ))), nino, scenarioData.commonExpectedResults.taxYear)
+
+            urlGet(
+              url(scenarioData.commonExpectedResults.taxYear), scenarioData.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYear))
+            )
+          }
+          
+          result.headers("Location").headOption shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(scenarioData.commonExpectedResults.taxYear))
+        }
+        
         "there is no data in session" in {
           val request = {
             dropEmploymentDB()
@@ -420,6 +445,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
 
           val result: WSResponse = {
             dropEmploymentDB()
+            wireMockServer.resetAll()
             authoriseIndividual()
             insertCyaData(EmploymentUserData(
               sessionId,
@@ -453,7 +479,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYear)))
           }
 
-          result.headers("Location").headOption shouldBe Some(employmentSummaryUrl(scenarioData.commonExpectedResults.taxYear))
+          result.status shouldBe INTERNAL_SERVER_ERROR
         }
 
       }

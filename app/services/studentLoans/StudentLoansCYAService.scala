@@ -16,43 +16,90 @@
 
 package services.studentLoans
 
-import config.AppConfig
+import config.{AppConfig, ErrorHandler}
 import connectors.CreateUpdateEmploymentDataConnector
 import connectors.parsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmploymentDataResponse
 import models.User
-import models.employment.StudentLoansCYAModel
+import models.employment.{AllEmploymentData, EmploymentSource, StudentLoansCYAModel}
+import models.mongo.EmploymentCYAModel
+import org.slf4j
+import play.api.Logger
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
-import repositories.EmploymentUserDataRepository
 import services.EmploymentSessionService
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.Clock
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class StudentLoansCYAService @Inject()(
-                                        repo: EmploymentUserDataRepository,
                                         employmentConnector: CreateUpdateEmploymentDataConnector,
                                         employmentSessionService: EmploymentSessionService,
                                         appConfig: AppConfig,
-                                        implicit val ec: ExecutionContext
+                                        errorHandler: ErrorHandler,
+                                        implicit val ec: ExecutionContext,
+                                        implicit val clock: Clock
                                       ) {
 
-  def retrieveCyaDataAndIsPrior(taxYear: Int, employmentId: String)(implicit user: User[_]): Future[Option[(StudentLoansCYAModel, Boolean)]] = {
-    repo.find(taxYear, employmentId).map {
-      case Right(data) => data.flatMap(sessionData => sessionData.employment.studentLoansCYAModel.map(_ -> sessionData.isPriorSubmission))
-      case Left(_) => None
+  lazy val logger: slf4j.Logger = Logger.apply(this.getClass).logger
+  
+  private[studentLoans] def extractEmploymentInformation(
+                                                          allEmploymentData: AllEmploymentData,
+                                                          employmentId: String,
+                                                          isCustomerHeld: Boolean
+                                                        ): Option[EmploymentSource] = {
+    
+    if(isCustomerHeld) {
+      allEmploymentData.customerEmploymentData.find(_.employmentId == employmentId)
+    } else {
+      allEmploymentData.hmrcEmploymentData.find(_.employmentId == employmentId)
     }
   }
   
   //noinspection ScalaStyle
-  def submitStudentLoans(taxYear: Int, employmentId: String)(block: Option[CreateUpdateEmploymentDataResponse] => Result)(implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
-    employmentSessionService.getAndHandle(taxYear, employmentId) { case (employment, prior) =>
+  def retrieveCyaDataAndIsCustomerHeld(taxYear: Int, employmentId: String)(block: Option[(StudentLoansCYAModel, Boolean)] => Result)
+                                      (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
+    
+    employmentSessionService.getAndHandle(taxYear, employmentId) { case (employmentData, optionalAllEmploymentData) =>
+      val studentLoansCya: Option[StudentLoansCYAModel] = employmentData.flatMap(_.employment.studentLoansCYAModel)
+      val customerHeld = optionalAllEmploymentData.exists { allEmploymentData =>
+        Seq(
+          allEmploymentData.inYearEmploymentSourceWith(employmentId).map(_.isCustomerData),
+          allEmploymentData.eoyEmploymentSourceWith(employmentId).map(_.isCustomerData)
+        ).flatten.forall(isCustomer => isCustomer)
+      }
+      
+      (studentLoansCya, optionalAllEmploymentData, customerHeld) match {
+        case (Some(cya), _, isCustomerHeld) => Future.successful(block(Some(cya, isCustomerHeld)))
+        case (_, Some(alLEmploymentData), isCustomerHeld) =>
+          logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] No CYA data. Constructing CYA from prior data.")
+          extractEmploymentInformation(alLEmploymentData, employmentId, isCustomerHeld)
+            .map(source => (EmploymentCYAModel(source, isCustomerHeld), source.hasPriorBenefits))
+            .fold(Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))) { case (employmentCya, hasPriorBenefits) =>
+              employmentSessionService.createOrUpdateSessionData(
+                employmentId, employmentCya, taxYear, isPriorSubmission = true, hasPriorBenefits = hasPriorBenefits
+              )(errorHandler.internalServerError()) {
+                block(employmentCya.studentLoansCYAModel.map(cya => (cya, isCustomerHeld)))
+              }
+            }
+          
+        case _ =>
+          logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] No CYA or prior data. Redirecting to the overview page.")
+          Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+      }
+    }
+  }
+  
+  def submitStudentLoans(taxYear: Int, employmentId: String)(block: CreateUpdateEmploymentDataResponse => Result)
+                        (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
+    
+    employmentSessionService.getAndHandle(taxYear, employmentId) { case (employment, allEmploymentData) =>
       employment.fold(Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))))(employmentData => {
-        employmentSessionService.cyaAndPriorToCreateUpdateEmploymentRequest(employmentData, prior) match {
-          case Right(createUpdateRequest) =>
-            employmentConnector.createUpdateEmploymentData(user.nino, taxYear, createUpdateRequest)(hc.withExtraHeaders("mtditid" -> user.mtditid)).map(response => block(Some(response)))
-          case Left(_) => Future.successful(block(None))
+        employmentSessionService.createModelAndReturnResult(employmentData, allEmploymentData, taxYear) { createUpdateRequest =>
+          employmentConnector.createUpdateEmploymentData(
+            user.nino, taxYear, createUpdateRequest
+          )(hc.withExtraHeaders("mtditid" -> user.mtditid)).map(response => block(response))
         }
       })
     }

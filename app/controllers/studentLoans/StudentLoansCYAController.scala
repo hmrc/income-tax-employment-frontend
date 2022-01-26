@@ -22,6 +22,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.studentLoans.StudentLoansCYAService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.Clock
 import views.html.studentLoans.StudentLoansCYAView
 
 import javax.inject.Inject
@@ -35,27 +36,25 @@ class StudentLoansCYAController @Inject()(
                                            inYearAction: InYearAction,
                                            errorHandler: ErrorHandler,
                                            implicit val appConfig: AppConfig,
-                                           implicit val ec: ExecutionContext
+                                           implicit val ec: ExecutionContext,
+                                           implicit val clock: Clock
                                          ) extends FrontendController(mcc) with I18nSupport {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
     
     val inYear: Boolean = inYearAction.inYear(taxYear)
     
-    service.retrieveCyaDataAndIsPrior(taxYear, employmentId).map {
-      case Some((data, isPriorData)) => Ok(view(taxYear, employmentId, data, isPriorData, inYear))
-      case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-    }
-    
+    service.retrieveCyaDataAndIsCustomerHeld(taxYear, employmentId)(_.fold(
+      Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+    ) { case (cya, isCustomer) =>
+      Ok(view(taxYear, employmentId, cya, !isCustomer, inYear))
+    })
   }
   
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
     service.submitStudentLoans(taxYear, employmentId) {
-      case Some(employmentResponse) => employmentResponse match {
-        case Right(_) => Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear))
-        case Left(_) => errorHandler.internalServerError()
-      }
-      case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      case Right(_) => Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear))
+      case Left(_) => errorHandler.internalServerError()
     }
   }
   
