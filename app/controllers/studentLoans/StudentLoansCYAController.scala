@@ -26,7 +26,7 @@ import utils.Clock
 import views.html.studentLoans.StudentLoansCYAView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class StudentLoansCYAController @Inject()(
                                            mcc: MessagesControllerComponents,
@@ -41,20 +41,28 @@ class StudentLoansCYAController @Inject()(
                                          ) extends FrontendController(mcc) with I18nSupport {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
-    
-    val inYear: Boolean = inYearAction.inYear(taxYear)
-    
-    service.retrieveCyaDataAndIsCustomerHeld(taxYear, employmentId)(_.fold(
-      Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-    ) { case (cya, isCustomer) =>
-      Ok(view(taxYear, employmentId, cya, !isCustomer, inYear))
-    })
+
+    if(appConfig.studentLoansEnabled) {
+      val inYear: Boolean = inYearAction.inYear(taxYear)
+      
+      service.retrieveCyaDataAndIsCustomerHeld(taxYear, employmentId)(_.fold(
+        Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      ) { case (cya, isCustomer) =>
+        Ok(view(taxYear, employmentId, cya, !isCustomer, inYear))
+      })
+    } else {
+      Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+    }
   }
   
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
-    service.submitStudentLoans(taxYear, employmentId) {
-      case Right(_) => Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear))
-      case Left(_) => errorHandler.internalServerError()
+    if(appConfig.studentLoansEnabled) {
+      service.submitStudentLoans(taxYear, employmentId) {
+        case Right(_) => Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear))
+        case Left(_) => errorHandler.internalServerError()
+      }
+    } else {
+      Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     }
   }
   

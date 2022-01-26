@@ -27,13 +27,15 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, NO_CONTENT}
 import play.api.libs.json.Json
-import play.api.libs.ws.WSResponse
+import play.api.libs.ws.{WSClient, WSResponse}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.PageUrls._
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
+  
+  lazy val wsClientFeatureSwitchOff: WSClient = appWithFeatureSwitchesOff.injector.instanceOf[WSClient]
   
   val employmentId: String = "1234567890-0987654321"
   def url(taxYearUnique: Int): String = fullUrl(studentLoansCyaPage(taxYearUnique, employmentId))
@@ -210,6 +212,20 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
   
   ".show" should {
     
+    "immediately redirect the user to the overview page" when {
+      
+      "the student loans feature switch is off" in {
+        val result = {
+          dropEmploymentDB()
+          authoriseIndividual()
+          await(wsClientFeatureSwitchOff.url(url(taxYear)).withFollowRedirects(false).get())
+        }
+        
+        result.headers("Location").headOption shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      }
+      
+    }
+    
     userScenarios.foreach { scenarioData =>
       val inYearText = if(scenarioData.commonExpectedResults.isEndOfYear) "end of year" else "in year"
       val affinityText = if(scenarioData.isAgent) "agent" else "individual"
@@ -319,6 +335,20 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
 
   ".submit" should {
 
+    "immediately redirect the user to the overview page" when {
+
+      "the student loans feature switch is off" in {
+        val result = {
+          dropEmploymentDB()
+          authoriseIndividual()
+          await(wsClientFeatureSwitchOff.url(url(taxYear)).withFollowRedirects(false).post("{}"))
+        }
+
+        result.headers("Location").headOption shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+      }
+
+    }
+    
     userScenarios.foreach { scenarioData =>
       val inYearText = if(scenarioData.commonExpectedResults.isEndOfYear) "end of year" else "in year"
       val affinityText = if(scenarioData.isAgent) "agent" else "individual"
