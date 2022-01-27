@@ -35,8 +35,7 @@ import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.FakeRequest
-import utils.PageUrls.{checkYourDetailsUrl, employerNameUrl, employerPayeReferenceUrl, employmentDatesUrl, employmentStartDateUrl,
-  employmentSummaryUrl, fullUrl, howMuchPayUrl, howMuchTaxUrl, overviewUrl, payrollIdUrl, stillWorkingForUrl}
+import utils.PageUrls.{checkYourDetailsUrl, employerNameUrl, employerPayeReferenceUrl, employmentDatesUrl, employmentStartDateUrl, employmentSummaryUrl, fullUrl, howMuchPayUrl, howMuchTaxUrl, overviewUrl, payrollIdUrl, stillWorkingForUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 //import org.scalatest.DoNotDiscover
 //

@@ -16,13 +16,10 @@
 
 package controllers.employment
 
-import common.{SessionValues, UUID}
 import config.AppConfig
-import controllers.employment.routes.{AddEmploymentController, EmployerNameController}
+import controllers.employment.routes.AddEmploymentController
 import controllers.predicates.{AuthorisedAction, InYearAction}
-import forms.YesNoForm
 import models.User
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -47,39 +44,11 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
     val isInYear: Boolean = inYearAction.inYear(taxYear)
-    findPriorDataAndReturnResult(taxYear, isInYear, yesNoForm)
+    findPriorDataAndReturnResult(taxYear, isInYear)
   }
 
-  def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
-    inYearAction.notInYear(taxYear) {
-      yesNoForm.bindFromRequest().fold(
-        formWithErrors => findPriorDataAndReturnResult(taxYear, isInYear = false, formWithErrors),
-        yesNo => {
-          val idInSession: Option[String] = getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)
-          val newId = UUID.randomUUID
-          val redirect = Redirect(EmployerNameController.show(taxYear, newId))
-
-          if (yesNo) {
-            idInSession.fold(Future.successful(redirect.addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> newId)))(
-              employmentSessionService.clear(taxYear, _)(redirect.addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> newId)))
-          } else {
-            val redirect = Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-
-            idInSession.fold(Future.successful(redirect))(employmentSessionService.clear(taxYear, _)(
-              redirect.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)))
-          }
-        }
-      )
-    }
-  }
-
-  private def yesNoForm: Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = "employment.addAnother.error"
-  )
-
-  private def findPriorDataAndReturnResult(taxYear: Int, isInYear: Boolean, yesNoForm: Form[Boolean])
+  private def findPriorDataAndReturnResult(taxYear: Int, isInYear: Boolean)
                                           (implicit user: User[_]): Future[Result] = {
-    val status = if (yesNoForm.hasErrors) BadRequest else Ok
     val overrideRedirect = if (isInYear) None else Some(Redirect(AddEmploymentController.show(taxYear)))
 
     employmentSessionService.findPreviousEmploymentUserData(user, taxYear, overrideRedirect) { allEmploymentData =>
@@ -90,9 +59,9 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
       employmentData match {
         case Seq() if isInYear => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
         case Seq() if !isInYear => Redirect(AddEmploymentController.show(taxYear))
-        case Seq(employment) if isInYear => status(singleEmploymentSummaryView(taxYear, employment, doExpensesExist))
-        case Seq(employment) if !isInYear => status(singleEmploymentSummaryEOYView(taxYear, employment, yesNoForm))
-        case _ => status(multipleEmploymentsSummaryView(taxYear, employmentData, doExpensesExist, isInYear, yesNoForm))
+        case Seq(employment) if isInYear => Ok(singleEmploymentSummaryView(taxYear, employment, doExpensesExist))
+        case Seq(employment) if !isInYear => Ok(singleEmploymentSummaryEOYView(taxYear, employment, doExpensesExist))
+        case _ => Ok(multipleEmploymentsSummaryView(taxYear, employmentData, doExpensesExist, isInYear))
       }
     }
   }

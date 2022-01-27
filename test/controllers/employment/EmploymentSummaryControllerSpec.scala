@@ -18,9 +18,7 @@ package controllers.employment
 
 import common.SessionValues
 import config.MockEmploymentSessionService
-import forms.YesNoForm
 import models.employment._
-import play.api.data.Form
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
@@ -33,7 +31,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
   object FullModel {
 
-    val employmentSource1 = EmploymentSource(
+    val employmentSource1: EmploymentSource = EmploymentSource(
       employmentId = "223/AB12399",
       employerName = "Mishima Zaibatsu",
       employerRef = Some("223/AB12399"),
@@ -61,7 +59,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
       None
     )
 
-    val employmentSource2 = EmploymentSource(
+    val employmentSource2: EmploymentSource = EmploymentSource(
       employmentId = "223/AB12399",
       employerName = "Violet Systems",
       employerRef = Some("223/AB12399"),
@@ -105,15 +103,11 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
     )
   }
 
-  lazy val singleView = app.injector.instanceOf[SingleEmploymentSummaryView]
-  lazy val singleEOYView = app.injector.instanceOf[SingleEmploymentSummaryViewEOY]
-  lazy val multipleView = app.injector.instanceOf[MultipleEmploymentsSummaryView]
+  private val singleView: SingleEmploymentSummaryView = app.injector.instanceOf[SingleEmploymentSummaryView]
+  private val singleEOYView: SingleEmploymentSummaryViewEOY = app.injector.instanceOf[SingleEmploymentSummaryViewEOY]
+  private val multipleView: MultipleEmploymentsSummaryView = app.injector.instanceOf[MultipleEmploymentsSummaryView]
 
-  lazy val yesNoForm: Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = "employment.addAnother.error"
-  )
-
-  lazy val controller = new EmploymentSummaryController()(
+  private lazy val controller = new EmploymentSummaryController()(
     mockMessagesControllerComponents,
     authorisedAction,
     mockAppConfig,
@@ -124,12 +118,12 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
     inYearAction
   )
 
-  val taxYear: Int = mockAppConfig.defaultTaxYear
+  private val taxYear: Int = mockAppConfig.defaultTaxYear
 
   ".show" should {
     "render single employment summary view when there is only one employment" which {
       s"has an OK($OK) status" in new TestWithAuth {
-        mockFind(taxYear, Ok(singleView(taxYear, FullModel.employmentSource1, false)))
+        mockFind(taxYear, Ok(singleView(taxYear, FullModel.employmentSource1, expensesExist = false)))
 
         val result: Future[Result] = controller.show(taxYear)(fakeRequest)
         status(result) shouldBe OK
@@ -139,7 +133,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
     "render multiple employment summary view when there are two employments" which {
       s"has an OK($OK) status" in new TestWithAuth {
-        mockFind(taxYear, Ok(multipleView(taxYear, Seq(FullModel.employmentSource1, FullModel.employmentSource2), false, false, yesNoForm)))
+        mockFind(taxYear, Ok(multipleView(taxYear, Seq(FullModel.employmentSource1, FullModel.employmentSource2), expensesExist = false, isInYear = false)))
 
         val result: Future[Result] = controller.show(taxYear)(fakeRequest)
         status(result) shouldBe OK

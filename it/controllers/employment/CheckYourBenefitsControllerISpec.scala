@@ -46,7 +46,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   private val employmentId = "employmentId"
   private val taxYearEOY = taxYear - 1
 
-  lazy val filteredBenefits: Some[EmploymentBenefits] = Some(EmploymentBenefits(
+  private lazy val filteredBenefits: Some[EmploymentBenefits] = Some(EmploymentBenefits(
     submittedOn = "2020-02-12",
     benefits = Some(Benefits(
       van = Some(3.00),

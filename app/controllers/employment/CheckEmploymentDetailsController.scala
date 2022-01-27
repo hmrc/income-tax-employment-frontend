@@ -102,7 +102,10 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
                 if (appConfig.nrsEnabled) {
                   checkEmploymentDetailsService.performSubmitNrsPayload(model, employmentId, prior)
                 }
-                employmentSessionService.clear(taxYear, employmentId)(result.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID))
+                employmentSessionService.clear(taxYear, employmentId).map {
+                  case Left(_) => errorHandler.internalServerError()
+                  case Right(_) => result.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)
+                }
             }
           }
           case None => Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))

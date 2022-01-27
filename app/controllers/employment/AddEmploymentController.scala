@@ -74,8 +74,10 @@ class AddEmploymentController @Inject()(implicit val cc: MessagesControllerCompo
         }
         case _ =>
           val redirect = Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-          idInSession.fold(Future.successful(redirect))(employmentSessionService.clear(taxYear, _)(
-            redirect.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)))
+          idInSession.fold(Future.successful(redirect))(employmentSessionService.clear(taxYear, _).map {
+            case Left(_) => errorHandler.internalServerError()
+            case Right(_) => redirect.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)
+          })
       })
   }
 

@@ -27,9 +27,9 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 import utils.PageUrls.{addEmploymentUrl, employerNameUrl, employerNameUrlWithoutEmploymentId, employerPayeReferenceUrl, employmentSummaryUrl, fullUrl, overviewUrl}
 import org.scalatest.DoNotDiscover
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 @DoNotDiscover
 class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
