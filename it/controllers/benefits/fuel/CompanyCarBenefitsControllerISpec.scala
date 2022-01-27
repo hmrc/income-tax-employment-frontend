@@ -29,7 +29,9 @@ import play.api.http.HeaderNames
 import play.api.libs.ws.WSResponse
 import utils.PageUrls.{carBenefitsUrl, fullUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import org.scalatest.DoNotDiscover
 
+@DoNotDiscover
 class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper {
 
   private val taxYearEOY = taxYear  - 1

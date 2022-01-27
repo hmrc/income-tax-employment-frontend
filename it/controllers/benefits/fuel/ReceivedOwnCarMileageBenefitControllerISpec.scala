@@ -31,7 +31,9 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 import utils.PageUrls.{accommodationRelocationBenefitsUrl, carBenefitsAmountUrl, carBenefitsUrl, carFuelBenefitsAmountUrl, carFuelBenefitsUrl, carVanFuelBenefitsUrl, checkYourBenefitsUrl, fullUrl, mileageBenefitsAmountUrl, mileageBenefitsUrl, overviewUrl, vanBenefitsUrl, vanFuelBenefitsAmountUrl}
+import org.scalatest.DoNotDiscover
 
+@DoNotDiscover
 class ReceivedOwnCarMileageBenefitControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val employmentId = "employmentId"

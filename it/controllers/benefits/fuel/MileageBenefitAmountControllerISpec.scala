@@ -32,7 +32,9 @@ import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 import utils.PageUrls.{accommodationRelocationBenefitsUrl, carBenefitsUrl, carFuelBenefitsUrl, checkYourBenefitsUrl, fullUrl,
   mileageBenefitsAmountUrl, mileageBenefitsUrl, overviewUrl, vanBenefitsUrl}
+import org.scalatest.DoNotDiscover
 
+@DoNotDiscover
 class MileageBenefitAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val taxYearEOY: Int = taxYear - 1

@@ -18,6 +18,7 @@ package utils
 
 import models.User
 import models.mongo.{EmploymentUserData, ExpensesUserData}
+import org.mongodb.scala.bson.collection.immutable.Document
 import repositories.{EmploymentUserDataRepositoryImpl, ExpensesUserDataRepositoryImpl}
 
 trait EmploymentDatabaseHelper {
@@ -28,13 +29,15 @@ trait EmploymentDatabaseHelper {
 
   //noinspection ScalaStyle
   def dropEmploymentDB(): Unit = {
-    await(employmentDatabase.collection.drop().toFutureOption())
+//    await(employmentDatabase.collection.drop().toFutureOption())
+    await(employmentDatabase.collection.deleteMany(filter = Document()).toFuture())
     await(employmentDatabase.ensureIndexes)
   }
 
   //noinspection ScalaStyle
   def dropExpensesDB(): Unit = {
-    await(expensesDatabase.collection.drop().toFutureOption())
+    await(expensesDatabase.collection.deleteMany(filter = Document()).toFuture())
+//    await(expensesDatabase.collection.drop().toFutureOption())
     await(expensesDatabase.ensureIndexes)
   }
 
