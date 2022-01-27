@@ -30,9 +30,13 @@ case class EmploymentData(submittedOn: String,
                           deductions: Option[Deductions]
                          ){
 
-  def dataHasNotChanged(createUpdatePay: CreateUpdatePay): Boolean = {
-    pay.flatMap(_.taxablePayToDate).contains(createUpdatePay.taxablePayToDate) &&
-    pay.flatMap(_.totalTaxToDate).contains(createUpdatePay.totalTaxToDate)
+  def payDataHasNotChanged(cyaPay: CreateUpdatePay): Boolean = {
+    pay.flatMap(_.taxablePayToDate).contains(cyaPay.taxablePayToDate) &&
+    pay.flatMap(_.totalTaxToDate).contains(cyaPay.totalTaxToDate)
+  }
+
+  def studentLoansDataHasNotChanged(cyaStudentLoans: Option[Deductions]): Boolean = {
+    cyaStudentLoans == deductions
   }
 }
 

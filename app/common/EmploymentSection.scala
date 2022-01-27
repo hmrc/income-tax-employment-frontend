@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package builders.models.mongo
+package common
 
-import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
-import builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
-import builders.models.employment.StudentLoansBuilder.aStudentLoans
-import models.mongo.EmploymentCYAModel
-
-object EmploymentCYAModelBuilder {
-
-  val anEmploymentCYAModel: EmploymentCYAModel = EmploymentCYAModel(
-    employmentDetails = anEmploymentDetails,
-    employmentBenefits = Some(aBenefitsViewModel),
-    studentLoans = Some(aStudentLoans.toStudentLoansCYAModel())
-  )
+object EmploymentSection extends Enumeration {
+  val EMPLOYMENT_DETAILS: EmploymentSection.Value = Value
+  val EMPLOYMENT_BENEFITS: EmploymentSection.Value = Value
+  val STUDENT_LOANS: EmploymentSection.Value = Value
 }

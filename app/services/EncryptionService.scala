@@ -47,7 +47,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
     EncryptedEmploymentCYAModel(
       employmentDetails = encryptEmploymentDetails(employment.employmentDetails),
       employmentBenefits = employment.employmentBenefits.map(encryptEmploymentBenefits),
-      studentLoansCYAModel = employment.studentLoansCYAModel.map(encryptStudentLoansCYAModel)
+      studentLoansCYAModel = employment.studentLoans.map(encryptStudentLoansCYAModel)
     )
   }
 
@@ -454,7 +454,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
     EmploymentCYAModel(
       employmentDetails = decryptEmploymentDetails(employment.employmentDetails),
       employmentBenefits = employment.employmentBenefits.map(decryptEmploymentBenefits),
-      studentLoansCYAModel = employment.studentLoansCYAModel.map(decryptStudentLoansCYAModel)
+      studentLoans = employment.studentLoansCYAModel.map(decryptStudentLoansCYAModel)
     )
   }
 
