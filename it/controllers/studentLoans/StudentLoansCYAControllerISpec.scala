@@ -34,10 +34,11 @@ import utils.PageUrls._
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
-  
+
   lazy val wsClientFeatureSwitchOff: WSClient = appWithFeatureSwitchesOff.injector.instanceOf[WSClient]
-  
+
   val employmentId: String = "1234567890-0987654321"
+
   def url(taxYearUnique: Int): String = fullUrl(studentLoansCyaPage(taxYearUnique, employmentId))
 
   private def stubEmploymentPost(request: CreateUpdateEmploymentRequest, taxYear: Int) =
@@ -64,19 +65,19 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     val title: String
     val caption: String
     val paragraphText: String
-    
+
     val questionStudentLoan: String
     val questionUndergraduateAmount: String
     val questionPostGraduateAmount: String
 
     val answerStudentLoan: String
-    
+
     val hiddenTextStudentLoan: String
     val hiddenTextUndergraduate: String
     val hiddenTextPostgraduate: String
-    
+
     val insetText: String
-    
+
     val buttonText: String
   }
 
@@ -91,15 +92,15 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override val questionStudentLoan = "Student loan repayments?"
     override val questionUndergraduateAmount = "Undergraduate repayments amount"
     override val questionPostGraduateAmount = "Postgraduate repayments amount"
-    
+
     override val answerStudentLoan = "Undergraduate and Postgraduate"
 
     override val hiddenTextStudentLoan: String = "Change Change Student loan repayments?"
     override val hiddenTextUndergraduate: String = "Change Change Undergraduate repayments amount"
     override val hiddenTextPostgraduate: String = "Change Change Postgraduate repayments amount"
-    
+
     override val insetText: String = "NOT IMPLEMENTED"
-    
+
     override val buttonText: String = "Save and continue"
   }
 
@@ -107,7 +108,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override lazy val isEndOfYear: Boolean = false
     override lazy val taxYear: Int = DateTime.now().year().get() + 1
     override lazy val hasPrior: Boolean = false
-    
+
     override lazy val title: String = "Check your student loan repayment details"
     override lazy val caption: String = s"Student Loans for 6 April ${taxYear - 1} to 5 April $taxYear"
     override lazy val paragraphText: String = "NOT IMPLEMENTED"
@@ -115,15 +116,15 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override lazy val questionStudentLoan = "Student loan repayments?"
     override lazy val questionUndergraduateAmount = "Undergraduate repayments amount"
     override lazy val questionPostGraduateAmount = "Postgraduate repayments amount"
-    
+
     override lazy val answerStudentLoan = "Undergraduate and Postgraduate"
 
     override lazy val hiddenTextStudentLoan: String = "Change Change Student loan repayments?"
     override lazy val hiddenTextUndergraduate: String = "Change Change Undergraduate repayments amount"
     override lazy val hiddenTextPostgraduate: String = "Change Change Postgraduate repayments amount"
-    
+
     override lazy val insetText: String = s"You cannot update your student loan details until 6 April $taxYear."
-    
+
     override lazy val buttonText: String = "Return to employer"
   }
 
@@ -138,15 +139,15 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override val questionStudentLoan = "Student loan repayments?"
     override val questionUndergraduateAmount = "Undergraduate repayments amount"
     override val questionPostGraduateAmount = "Postgraduate repayments amount"
-    
+
     override val answerStudentLoan = "Undergraduate and Postgraduate"
 
     override val hiddenTextStudentLoan: String = "Change Change Student loan repayments?"
     override val hiddenTextUndergraduate: String = "Change Change Undergraduate repayments amount"
     override val hiddenTextPostgraduate: String = "Change Change Postgraduate repayments amount"
-    
+
     override val insetText: String = "NOT IMPLEMENTED"
-    
+
     override val buttonText: String = "Save and continue"
   }
 
@@ -154,7 +155,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override lazy val isEndOfYear: Boolean = false
     override lazy val taxYear: Int = DateTime.now().year().get() + 1
     override lazy val hasPrior: Boolean = false
-    
+
     override lazy val title: String = "Check your client’s student loan repayment details"
     override lazy val caption: String = s"Student Loans for 6 April ${taxYear - 1} to 5 April $taxYear"
     override lazy val paragraphText: String = "NOT IMPLEMENTED"
@@ -162,37 +163,39 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override lazy val questionStudentLoan = "Student loan repayments?"
     override lazy val questionUndergraduateAmount = "Undergraduate repayments amount"
     override lazy val questionPostGraduateAmount = "Postgraduate repayments amount"
-    
+
     override lazy val answerStudentLoan = "Undergraduate and Postgraduate"
 
     override lazy val hiddenTextStudentLoan: String = "Change Change Student loan repayments?"
     override lazy val hiddenTextUndergraduate: String = "Change Change Undergraduate repayments amount"
     override lazy val hiddenTextPostgraduate: String = "Change Change Postgraduate repayments amount"
-    
+
     override lazy val insetText: String = s"You cannot update your client’s student loan details until 6 April $taxYear."
-    
+
     override lazy val buttonText: String = "Return to employer"
   }
 
   object Selectors {
     val paragraphSelector = ".govuk-body"
-    
+
     def column1Selector(row: Int): String = s".govuk-summary-list__row:nth-of-type($row) > .govuk-summary-list__key"
+
     def column2Selector(row: Int): String = s".govuk-summary-list__row:nth-of-type($row) > .govuk-summary-list__value"
+
     def column3Selector(row: Int): String = s".govuk-summary-list__row:nth-of-type($row) > .govuk-summary-list__actions > .govuk-link"
-    
+
     val insetText: String = ".govuk-inset-text"
   }
-  
+
   override val userScenarios: Seq[UserScenario[CommonExpectedResults, CommonExpectedResults]] = Seq(
     UserScenario(isWelsh = false, isAgent = false, ExpectedResultsEnglishEOY),
     UserScenario(isWelsh = false, isAgent = false, ExpectedResultsEnglishInYear),
     UserScenario(isWelsh = false, isAgent = true, ExpectedResultsEnglishEOYAgent),
     UserScenario(isWelsh = false, isAgent = true, ExpectedResultsEnglishInYearAgent)
   )
-  
+
   private def answerRowInYearOrEndOfYear(keyName: String, value: String, hiddenText: String, href: String, row: Int, isEndOfYear: Boolean)(implicit document: () => Document): Unit = {
-    if(isEndOfYear) {
+    if (isEndOfYear) {
       changeAmountRowCheck(
         keyName,
         value,
@@ -209,35 +212,35 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
       }
     }
   }
-  
+
   ".show" should {
-    
+
     "immediately redirect the user to the overview page" when {
-      
+
       "the student loans feature switch is off" in {
         val result = {
           dropEmploymentDB()
           authoriseIndividual()
           await(wsClientFeatureSwitchOff.url(url(taxYear)).withFollowRedirects(false).get())
         }
-        
+
         result.headers("Location").headOption shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       }
-      
+
     }
-    
+
     userScenarios.foreach { scenarioData =>
-      val inYearText = if(scenarioData.commonExpectedResults.isEndOfYear) "end of year" else "in year"
-      val affinityText = if(scenarioData.isAgent) "agent" else "individual"
-      val prior = if(scenarioData.commonExpectedResults.hasPrior) "prior data" else "no prior data"
-      
+      val inYearText = if (scenarioData.commonExpectedResults.isEndOfYear) "end of year" else "in year"
+      val affinityText = if (scenarioData.isAgent) "agent" else "individual"
+      val prior = if (scenarioData.commonExpectedResults.hasPrior) "prior data" else "no prior data"
+
       s"render the page for $inYearText, for an $affinityText when there is $prior" when {
 
         "there is CYA data in session" which {
           import scenarioData.commonExpectedResults._
-          
+
           def user: User[AnyContentAsEmpty.type] = User(mtditid, None, nino, sessionId, affinityGroup)(FakeRequest())
-          
+
           lazy val result = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
@@ -257,31 +260,31 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
                   totalTaxToDate = Some(300.00),
                   currentDataIsHmrcHeld = false
                 ),
-                studentLoansCYAModel = Some(StudentLoansCYAModel(
+                studentLoans = Some(StudentLoansCYAModel(
                   uglDeduction = true, Some(1000.22), pglDeduction = true, Some(3000.22)
                 ))
               )
             ), user)
             userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYear)
-            
+
             urlGet(url(scenarioData.commonExpectedResults.taxYear), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYear)))
           }
-          
+
           implicit val document: () => Document = () => Jsoup.parse(result.body)
 
           titleCheck(title)
           h1Check(title)
           captionCheck(caption)
-          if(hasPrior) textOnPageCheck(paragraphText, Selectors.paragraphSelector)
-          
+          if (hasPrior) textOnPageCheck(paragraphText, Selectors.paragraphSelector)
+
           answerRowInYearOrEndOfYear(questionStudentLoan, answerStudentLoan, hiddenTextStudentLoan, studentLoansCyaPage(scenarioData.commonExpectedResults.taxYear, employmentId), 1, isEndOfYear)
           answerRowInYearOrEndOfYear(questionUndergraduateAmount, "1000.22", hiddenTextUndergraduate, studentLoansCyaPage(scenarioData.commonExpectedResults.taxYear, employmentId), 2, isEndOfYear)
           answerRowInYearOrEndOfYear(questionPostGraduateAmount, "3000.22", hiddenTextPostgraduate, studentLoansCyaPage(scenarioData.commonExpectedResults.taxYear, employmentId), 3, isEndOfYear)
-          
-          if(!isEndOfYear) {
+
+          if (!isEndOfYear) {
             textOnPageCheck(insetText, Selectors.insetText)
           }
-          
+
           buttonCheck(buttonText)
         }
       }
@@ -305,10 +308,10 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
               url(scenarioData.commonExpectedResults.taxYear), scenarioData.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYear))
             )
           }
-          
+
           result.headers("Location").headOption shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(scenarioData.commonExpectedResults.taxYear))
         }
-        
+
         "there is no data in session" in {
           val request = {
             dropEmploymentDB()
@@ -320,7 +323,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYear))
             )
           }
-          
+
           request.headers("Location").headOption shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(scenarioData.commonExpectedResults.taxYear))
         }
 
@@ -344,42 +347,41 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
       }
 
     }
-    
+
     userScenarios.foreach { scenarioData =>
-      val inYearText = if(scenarioData.commonExpectedResults.isEndOfYear) "end of year" else "in year"
-      val affinityText = if(scenarioData.isAgent) "agent" else "individual"
-      val prior = if(scenarioData.commonExpectedResults.hasPrior) "prior data" else "no prior data"
-      
+      val inYearText = if (scenarioData.commonExpectedResults.isEndOfYear) "end of year" else "in year"
+      val affinityText = if (scenarioData.isAgent) "agent" else "individual"
+      val prior = if (scenarioData.commonExpectedResults.hasPrior) "prior data" else "no prior data"
+
+      lazy val incomeTaxUserData = IncomeTaxUserData(Some(AllEmploymentData(
+        Seq(),
+        None,
+        Seq(EmploymentSource(
+          employmentId,
+          "Whiterun Guard",
+          None, None, Some("2022-01-01"), None, None, None, Some(EmploymentData(
+            "2022-04-01", None, None, None, None, None, None,
+            Some(Pay(Some(3000.00), Some(300.00), Some("WEEKLY"), Some("2022-01-01"), Some(3), Some(3))),
+            Some(Deductions(Some(StudentLoans(Some(1000.00), Some(3000.00)))))
+          )), None
+        )),
+        None
+      )))
+
       s"redirect to the employment overview page for $inYearText for an $affinityText when there is $prior" when {
 
         "the student loans submission is successful" in {
           def user: User[AnyContentAsEmpty.type] = User(mtditid, None, nino, sessionId, affinityGroup)(FakeRequest())
 
           lazy val createUpdateRequest = CreateUpdateEmploymentRequest(
-            Some(employmentId), Some(CreateUpdateEmployment(
-              Some("223/AB12399"), "Whiterun Guards", "2022-04-01"
-            )), Some(CreateUpdateEmploymentData(
-              CreateUpdatePay(3000.00, 300.00),
-              Some(Deductions(Some(StudentLoans(
-                Some(1000.00), Some(3000.00)
-              ))))
-            )), None
-          )
-
-          lazy val incomeTaxUserData = IncomeTaxUserData(Some(AllEmploymentData(
-            Seq(),
+            Some(employmentId),
             None,
-            Seq(EmploymentSource(
-              employmentId,
-              "Whiterun Guard",
-              None, None, None, None, None, None, Some(EmploymentData(
-                "2022-04-01", None, None, None, None, None, None, None, Some(Deductions(Some(StudentLoans(
-                  Some(1000.00), Some(3000.00)
-                ))))
-              )), None
+            Some(CreateUpdateEmploymentData(
+              CreateUpdatePay(3000.00, 300.00),
+              Some(Deductions(Some(StudentLoans(Some(2000.00), Some(4000.00)))))
             )),
             None
-          )))
+          )
 
           val result: WSResponse = {
             dropEmploymentDB()
@@ -400,8 +402,8 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
                   totalTaxToDate = Some(300.00),
                   currentDataIsHmrcHeld = false
                 ),
-                studentLoansCYAModel = Some(StudentLoansCYAModel(
-                  uglDeduction = true, Some(1000.00), pglDeduction = true, Some(3000.00)
+                studentLoans = Some(StudentLoansCYAModel(
+                  uglDeduction = true, Some(2000.00), pglDeduction = true, Some(4000.00)
                 ))
               )
             ), user)
@@ -428,7 +430,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
           val result: WSResponse = {
             dropEmploymentDB()
             authoriseIndividual()
-            userDataStub(anIncomeTaxUserData, nino, scenarioData.commonExpectedResults.taxYear)
+            userDataStub(incomeTaxUserData, nino, scenarioData.commonExpectedResults.taxYear)
 
             urlPost(url(scenarioData.commonExpectedResults.taxYear), "{}", scenarioData.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
@@ -444,30 +446,16 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
           def user: User[AnyContentAsEmpty.type] = User(mtditid, None, nino, sessionId, affinityGroup)(FakeRequest())
 
           lazy val createUpdateRequest = CreateUpdateEmploymentRequest(
-            Some(employmentId), Some(CreateUpdateEmployment(
-              Some("223/AB12399"), "Whiterun Guards", "2022-04-01"
-            )), Some(CreateUpdateEmploymentData(
+            Some(employmentId),
+            None,
+            Some(CreateUpdateEmploymentData(
               CreateUpdatePay(3000.00, 300.00),
               Some(Deductions(Some(StudentLoans(
-                Some(1000.00), Some(3000.00)
+                Some(2000.00), Some(4000.00)
               ))))
-            )), None
-          )
-
-          lazy val incomeTaxUserData = IncomeTaxUserData(Some(AllEmploymentData(
-            Seq(),
-            None,
-            Seq(EmploymentSource(
-              employmentId,
-              "Whiterun Guard",
-              None, None, None, None, None, None, Some(EmploymentData(
-                "2022-04-01", None, None, None, None, None, None, None, Some(Deductions(Some(StudentLoans(
-                  Some(1000.00), Some(3000.00)
-                ))))
-              )), None
             )),
             None
-          )))
+          )
 
           val result: WSResponse = {
             dropEmploymentDB()
@@ -489,8 +477,8 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
                   totalTaxToDate = Some(300.00),
                   currentDataIsHmrcHeld = false
                 ),
-                studentLoansCYAModel = Some(StudentLoansCYAModel(
-                  uglDeduction = true, Some(1000.00), pglDeduction = true, Some(3000.00)
+                studentLoans = Some(StudentLoansCYAModel(
+                  uglDeduction = true, Some(2000.00), pglDeduction = true, Some(4000.00)
                 ))
               )
             ), user)
@@ -502,7 +490,8 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
               "{}",
               scenarioData.isWelsh,
               follow = false,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYear)))
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYear))
+            )
           }
 
           result.status shouldBe INTERNAL_SERVER_ERROR

@@ -16,6 +16,7 @@
 
 package services.studentLoans
 
+import common.EmploymentSection
 import config.{AppConfig, ErrorHandler}
 import connectors.CreateUpdateEmploymentDataConnector
 import connectors.parsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmploymentDataResponse
@@ -43,33 +44,33 @@ class StudentLoansCYAService @Inject()(
                                       ) {
 
   lazy val logger: slf4j.Logger = Logger.apply(this.getClass).logger
-  
+
   private[studentLoans] def extractEmploymentInformation(
                                                           allEmploymentData: AllEmploymentData,
                                                           employmentId: String,
                                                           isCustomerHeld: Boolean
                                                         ): Option[EmploymentSource] = {
-    
-    if(isCustomerHeld) {
+
+    if (isCustomerHeld) {
       allEmploymentData.customerEmploymentData.find(_.employmentId == employmentId)
     } else {
       allEmploymentData.hmrcEmploymentData.find(_.employmentId == employmentId)
     }
   }
-  
+
   //noinspection ScalaStyle
   def retrieveCyaDataAndIsCustomerHeld(taxYear: Int, employmentId: String)(block: Option[(StudentLoansCYAModel, Boolean)] => Result)
                                       (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
-    
+
     employmentSessionService.getAndHandle(taxYear, employmentId) { case (employmentData, optionalAllEmploymentData) =>
-      val studentLoansCya: Option[StudentLoansCYAModel] = employmentData.flatMap(_.employment.studentLoansCYAModel)
+      val studentLoansCya: Option[StudentLoansCYAModel] = employmentData.flatMap(_.employment.studentLoans)
       val customerHeld = optionalAllEmploymentData.exists { allEmploymentData =>
         Seq(
           allEmploymentData.inYearEmploymentSourceWith(employmentId).map(_.isCustomerData),
           allEmploymentData.eoyEmploymentSourceWith(employmentId).map(_.isCustomerData)
         ).flatten.forall(isCustomer => isCustomer)
       }
-      
+
       (studentLoansCya, optionalAllEmploymentData, customerHeld) match {
         case (Some(cya), _, isCustomerHeld) => Future.successful(block(Some(cya, isCustomerHeld)))
         case (_, Some(alLEmploymentData), isCustomerHeld) =>
@@ -80,23 +81,25 @@ class StudentLoansCYAService @Inject()(
               employmentSessionService.createOrUpdateSessionData(
                 employmentId, employmentCya, taxYear, isPriorSubmission = true, hasPriorBenefits = hasPriorBenefits
               )(errorHandler.internalServerError()) {
-                block(employmentCya.studentLoansCYAModel.map(cya => (cya, isCustomerHeld)))
+                block(employmentCya.studentLoans.map(cya => (cya, isCustomerHeld)))
               }
             }
-          
+
         case _ =>
           logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] No CYA or prior data. Redirecting to the overview page.")
           Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
       }
     }
   }
-  
+
   def submitStudentLoans(taxYear: Int, employmentId: String)(block: CreateUpdateEmploymentDataResponse => Result)
                         (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
-    
+
     employmentSessionService.getAndHandle(taxYear, employmentId) { case (employment, allEmploymentData) =>
       employment.fold(Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))))(employmentData => {
-        employmentSessionService.createModelAndReturnResult(employmentData, allEmploymentData, taxYear) { createUpdateRequest =>
+        employmentSessionService.createModelAndReturnResult(
+          employmentData, allEmploymentData, taxYear, EmploymentSection.STUDENT_LOANS
+        ) { createUpdateRequest =>
           employmentConnector.createUpdateEmploymentData(
             user.nino, taxYear, createUpdateRequest
           )(hc.withExtraHeaders("mtditid" -> user.mtditid)).map(response => block(response))
