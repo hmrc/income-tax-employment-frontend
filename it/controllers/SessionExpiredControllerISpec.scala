@@ -22,7 +22,9 @@ import play.api.http.Status.OK
 import play.api.libs.ws.WSResponse
 import utils.PageUrls.{fullUrl, startUrl, timeoutUrl}
 import utils.{IntegrationTest, ViewHelpers}
+import org.scalatest.DoNotDiscover
 
+@DoNotDiscover
 class SessionExpiredControllerISpec extends IntegrationTest with ViewHelpers {
 
   object Selectors {

@@ -22,7 +22,9 @@ import play.api.http.Status.UNAUTHORIZED
 import play.api.libs.ws.WSResponse
 import utils.PageUrls.{fullUrl, incomeTaxHomePageLink, notAuthorisedUrl, selfAssessmentLink}
 import utils.{IntegrationTest, ViewHelpers}
+import org.scalatest.DoNotDiscover
 
+@DoNotDiscover
 class UnauthorisedUserErrorControllerISpec extends IntegrationTest with ViewHelpers {
 
   object Selectors {

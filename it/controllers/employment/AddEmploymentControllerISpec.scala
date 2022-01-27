@@ -29,7 +29,9 @@ import play.api.http.Status.{BAD_REQUEST, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 import utils.PageUrls.{addEmploymentUrl, employerNameUrl, employerNameUrlWithoutEmploymentId, employerPayeReferenceUrl, employmentSummaryUrl, fullUrl, overviewUrl}
+import org.scalatest.DoNotDiscover
 
+@DoNotDiscover
 class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val taxYearEOY = taxYear - 1

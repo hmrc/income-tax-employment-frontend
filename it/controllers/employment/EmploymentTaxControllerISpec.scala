@@ -32,7 +32,9 @@ import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.PageUrls.{checkYourDetailsUrl, fullUrl, howMuchTaxUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import org.scalatest.DoNotDiscover
 
+@DoNotDiscover
 class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val taxYearEOY: Int = taxYear - 1

@@ -41,7 +41,9 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import utils.PageUrls._
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+import org.scalatest.DoNotDiscover
 
+@DoNotDiscover
 class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers with BeforeAndAfterEach with EmploymentDatabaseHelper {
 
   private val taxYearEOY: Int = taxYear - 1

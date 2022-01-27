@@ -22,7 +22,9 @@ import play.api.http.Status.UNAUTHORIZED
 import play.api.libs.ws.WSResponse
 import utils.PageUrls.{authoriseAsAnAgentLink, fullUrl, tryAnotherExpectedHref, youNeedClientAuthUrl}
 import utils.{IntegrationTest, ViewHelpers}
+import org.scalatest.DoNotDiscover
 
+@DoNotDiscover
 class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
 
   object Selectors {

@@ -38,7 +38,9 @@ import play.api.test.FakeRequest
 import utils.PageUrls.{checkYourDetailsUrl, employerNameUrl, employerPayeReferenceUrl, employmentDatesUrl, employmentStartDateUrl,
   employmentSummaryUrl, fullUrl, howMuchPayUrl, howMuchTaxUrl, overviewUrl, payrollIdUrl, stillWorkingForUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
-
+//import org.scalatest.DoNotDiscover
+//
+//@DoNotDiscover
 class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val taxYearEOY = taxYear - 1

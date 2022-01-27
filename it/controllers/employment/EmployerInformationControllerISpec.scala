@@ -26,7 +26,9 @@ import play.api.http.Status._
 import play.api.libs.ws.WSResponse
 import utils.PageUrls.{checkYourBenefitsUrl, checkYourDetailsUrl, employerInformationUrl, employmentSummaryUrl, fullUrl, overviewUrl}
 import utils.{IntegrationTest, ViewHelpers}
+import org.scalatest.DoNotDiscover
 
+@DoNotDiscover
 class EmployerInformationControllerISpec extends IntegrationTest with ViewHelpers {
 
   private val taxYearEOY: Int = taxYear - 1

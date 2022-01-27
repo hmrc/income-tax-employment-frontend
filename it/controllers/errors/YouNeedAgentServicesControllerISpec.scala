@@ -22,7 +22,9 @@ import play.api.http.Status.UNAUTHORIZED
 import play.api.libs.ws.WSResponse
 import utils.PageUrls.{createAnAgentLink, fullUrl, youNeedAgentServicesUrl}
 import utils.{IntegrationTest, ViewHelpers}
+import org.scalatest.DoNotDiscover
 
+@DoNotDiscover
 class YouNeedAgentServicesControllerISpec extends IntegrationTest with ViewHelpers {
 
   object Selectors {

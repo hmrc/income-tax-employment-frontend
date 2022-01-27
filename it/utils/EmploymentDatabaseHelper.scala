@@ -29,7 +29,6 @@ trait EmploymentDatabaseHelper {
 
   //noinspection ScalaStyle
   def dropEmploymentDB(): Unit = {
-//    await(employmentDatabase.collection.drop().toFutureOption())
     await(employmentDatabase.collection.deleteMany(filter = Document()).toFuture())
     await(employmentDatabase.ensureIndexes)
   }
@@ -37,7 +36,6 @@ trait EmploymentDatabaseHelper {
   //noinspection ScalaStyle
   def dropExpensesDB(): Unit = {
     await(expensesDatabase.collection.deleteMany(filter = Document()).toFuture())
-//    await(expensesDatabase.collection.drop().toFutureOption())
     await(expensesDatabase.ensureIndexes)
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,7 @@
 
 package utils
 
-import controllers.benefits.accommodation.{AccommodationRelocationBenefitsControllerISpec, LivingAccommodationBenefitAmountControllerISpec,
-  LivingAccommodationBenefitsControllerISpec, NonQualifyingRelocationBenefitsAmountControllerISpec, NonQualifyingRelocationBenefitsControllerISpec,
-  QualifyingRelocationBenefitsAmountControllerISpec, QualifyingRelocationBenefitsControllerISpec}
+import controllers.benefits.accommodation._
 import controllers.benefits.assets._
 import controllers.benefits.fuel._
 import controllers.benefits.income._
@@ -27,7 +25,10 @@ import controllers.benefits.reimbursed._
 import controllers.benefits.travel._
 import controllers.benefits.utilities._
 import controllers.benefits._
-
+import controllers.employment._
+import controllers.errors._
+import controllers.expenses._
+import controllers._
 import org.scalatest.{Suites, TestSuite}
 
 class AAA extends Suites(AAA.all_suites_that_need_postgress: _*) with TestSuite
@@ -102,6 +103,41 @@ object AAA {
     new ProfessionalSubscriptionsBenefitsControllerISpec,
     new TelephoneBenefitsAmountControllerISpec,
     new TelephoneBenefitsControllerISpec,
-    new UtilitiesOrGeneralServicesBenefitsControllerISpec
+    new UtilitiesOrGeneralServicesBenefitsControllerISpec,
+    new ReceiveAnyBenefitsControllerISpec,
+    new AddEmploymentControllerISpec,
+//    new CheckEmploymentDetailsControllerISpec,
+//    new CheckYourBenefitsControllerISpec,
+    new EmployerInformationControllerISpec,
+    new EmployerLeaveDateControllerISpec,
+    new EmployerNameControllerISpec,
+    new EmployerPayAmountControllerISpec,
+    new EmployerPayrollIdControllerISpec,
+    new EmployerStartDateControllerISpec,
+    new EmploymentDatesControllerISpec,
+    new EmploymentSummaryControllerISpec,
+    new EmploymentTaxControllerISpec,
+    new MultipleEmploymentSummaryEOYControllerISpec,
+    new PayeRefControllerISpec,
+    new RemoveEmploymentControllerISpec,
+    new SingleEmploymentSummaryEOYControllerISpec,
+    new StillWorkingForEmployerControllerISpec,
+    new AgentAuthErrorControllerISpec,
+    new IndividualAuthErrorControllerISpec,
+    new TaxYearErrorControllerISpec,
+    new UnauthorisedUserErrorControllerISpec,
+    new YouNeedAgentServicesControllerISpec,
+    new BusinessTravelOvernightExpensesControllerISpec,
+    new CheckEmploymentExpensesControllerISpec,
+    new EmploymentExpensesControllerISpec,
+    new ExpensesInterruptPageControllerISpec,
+    new OtherEquipmentAmountControllerISpec,
+    new OtherEquipmentControllerISpec,
+    new ProfessionalFeesAndSubscriptionsExpensesControllerISpec,
+    new ProfFeesAndSubscriptionsExpensesAmountControllerISpec,
+    new TravelAndOvernightAmountControllerISpec,
+    new UniformsOrToolsExpensesAmountControllerISpec,
+    new UniformsOrToolsExpensesControllerISpec,
+    new SessionExpiredControllerISpec
   )
 }

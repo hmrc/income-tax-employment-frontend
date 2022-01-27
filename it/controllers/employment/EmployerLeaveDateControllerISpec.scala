@@ -30,6 +30,9 @@ import utils.PageUrls.{checkYourDetailsUrl, employmentEndDateUrl, fullUrl, overv
 import java.time.LocalDate
 
 //scalastyle:off
+import org.scalatest.DoNotDiscover
+
+@DoNotDiscover
 class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   val taxYearEOY: Int = taxYear - 1
