@@ -26,9 +26,10 @@
         govukSummaryList: GovukSummaryList,
         heading: Heading,
         button: Button,
-        govukInsetText : GovukInsetText
+        govukInsetText : GovukInsetText,
+        formWithCsrf: FormWithCSRF
 )
-@(taxYear: Int, employmentId: String, model: StudentLoansCYAModel, hasPriorData: Boolean, inYear: Boolean = false)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, employmentId: String, model: StudentLoansCYAModel, isCustomerHeld: Boolean, inYear: Boolean = false)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @agentOrIndividual = @{
     if(user.isAgent) "agent" else "individual"
@@ -64,7 +65,7 @@
 
     @heading(messages("studentLoans.title." + agentOrIndividual), Some(messages("studentLoans.subheading", Seq((taxYear-1).toString, taxYear.toString): _*)))
 
-    @if(hasPriorData) { <p class="govuk-body govuk-!-margin-top-6">@messages("studentLoans.p."+agentOrIndividual)</p> }
+    @if(!isCustomerHeld) { <p class="govuk-body govuk-!-margin-top-6">@messages("studentLoans.p."+agentOrIndividual)</p> }
     
     @if(inYear) { @govukInsetText(InsetText(content = Text(messages("studentLoans.inset."+agentOrIndividual, taxYear.toString)))) }
     
@@ -79,7 +80,9 @@
     @if(inYear) {
         @button(alternativeText = "common.returnToEmployer", classes = Some("govuk-!-margin-top-6"), href = Some(controllers.employment.routes.EmploymentSummaryController.show(taxYear: Int).url))
     } else {
-        @button(alternativeText = "common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))
+        @formWithCsrf(controllers.studentLoans.routes.StudentLoansCYAController.submit(taxYear, employmentId)) {
+            @button(alternativeText = "common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))
+        }
     }
 
 }

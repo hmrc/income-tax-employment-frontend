@@ -133,7 +133,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     override val hasPrior: Boolean = true
     override val title: String = "Check your client’s student loan repayment details"
     override val caption: String = "Student Loans for 6 April 2020 to 5 April 2021"
-    override val paragraphText: String = "Your client’s student loan repayment details are based on the information we already hold about you."
+    override val paragraphText: String = "Your client’s student loan repayment details are based on the information we already hold about them."
 
     override val questionStudentLoan = "Student loan repayments?"
     override val questionUndergraduateAmount = "Undergraduate repayments amount"
@@ -283,10 +283,6 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
           }
           
           buttonCheck(buttonText)
-        }
-
-        "there is no CYA data, but there is Prior data" which {
-          
         }
       }
 

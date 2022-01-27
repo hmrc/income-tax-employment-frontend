@@ -1302,6 +1302,6 @@ studentLoans.pra = Postgraduate repayments amount
 studentLoans.undergraduate = Undergraduate 
 studentLoans.postgraduate = Postgraduate
 studentLoans.p.individual = Your student loan repayment details are based on the information we already hold about you.
-studentLoans.p.agent = Your client’s student loan repayment details are based on the information we already hold about you.
+studentLoans.p.agent = Your client’s student loan repayment details are based on the information we already hold about them.
 studentLoans.inset.individual = You cannot update your student loan details until 6 April {0}.
 studentLoans.inset.agent = You cannot update your client’s student loan details until 6 April {0}.

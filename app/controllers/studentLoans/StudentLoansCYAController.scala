@@ -48,7 +48,7 @@ class StudentLoansCYAController @Inject()(
       service.retrieveCyaDataAndIsCustomerHeld(taxYear, employmentId)(_.fold(
         Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
       ) { case (cya, isCustomer) =>
-        Ok(view(taxYear, employmentId, cya, !isCustomer, inYear))
+        Ok(view(taxYear, employmentId, cya, isCustomer, inYear))
       })
     } else {
       Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
