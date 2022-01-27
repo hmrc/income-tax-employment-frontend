@@ -1086,28 +1086,21 @@ class EmploymentSessionServiceSpec extends UnitTest
       mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
       mockClear(taxYear, "employmentId", response = true)
 
-      val response = service.clear(taxYear, "employmentId")(Redirect("303"))
-
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      await(service.clear(taxYear, "employmentId")) shouldBe Right()
     }
 
     "redirect to error when the record in the database has not been removed" in {
       mockRefreshIncomeSourceResponseSuccess(taxYear, nino, "employment")
       mockClear(taxYear, "employmentId", response = false)
 
-      val response = service.clear(taxYear, "employmentId")(Redirect("303"))
-
-      status(response) shouldBe INTERNAL_SERVER_ERROR
+      await(service.clear(taxYear, "employmentId")) shouldBe Left()
     }
 
     "error when incomeSourceConnector returns error" in {
-      mockRefreshIncomeSourceResponseError(taxYear, nino, "employment")
+      mockRefreshIncomeSourceResponseError(taxYear, nino, incomeSource = "employment")
       mockClear(taxYear, "employmentId", response = true)
 
-      val response = service.clear(taxYear, "employmentId")(Redirect("303"))
-
-      status(response) shouldBe INTERNAL_SERVER_ERROR
+      await(service.clear(taxYear, "employmentId")) shouldBe Left()
     }
   }
 

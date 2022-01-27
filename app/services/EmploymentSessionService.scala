@@ -411,12 +411,12 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     result.flatten
   }
 
-  def clear(taxYear: Int, employmentId: String)(onSuccess: Result)(implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
+  def clear(taxYear: Int, employmentId: String)(implicit user: User[_], hc: HeaderCarrier): Future[Either[Unit, Unit]] = {
     incomeSourceConnector.put(taxYear, user.nino, "employment")(hc.withExtraHeaders("mtditid" -> user.mtditid)).flatMap {
-      case Left(_) => Future.successful(errorHandler.internalServerError())
+      case Left(_) => Future.successful(Left())
       case _ => employmentUserDataRepository.clear(taxYear, employmentId).map {
-        case true => onSuccess
-        case false => errorHandler.internalServerError()
+        case true => Right()
+        case false => Left()
       }
     }
   }

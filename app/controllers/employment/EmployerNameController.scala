@@ -16,6 +16,7 @@
 
 package controllers.employment
 
+import common.SessionValues
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.employment.EmployerNameForm
@@ -26,7 +27,6 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import services.RedirectService.employmentDetailsRedirect
-import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.EmployerNameView
@@ -41,21 +41,29 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
                                        inYearAction: InYearAction,
                                        errorHandler: ErrorHandler,
                                        employmentSessionService: EmploymentSessionService,
-                                       employmentService: EmploymentService,
                                        implicit val clock: Clock,
                                        implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getSessionDataResult(taxYear, employmentId) {
-        case Some(data) =>
-          val employerName = data.employment.employmentDetails.employerName
-          val prefilledForm: Form[String] = EmployerNameForm.employerNameForm(user.isAgent).fill(employerName)
-          Future.successful(Ok(employerNameView(prefilledForm, taxYear, employmentId)))
-        case None =>
-          val form: Form[String] = EmployerNameForm.employerNameForm(user.isAgent)
-          Future.successful(Ok(employerNameView(form, taxYear, employmentId)))
-      }
+      getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID).fold(
+        handleSuccessfulGet(taxYear, employmentId).map(_.addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))
+      )(employmentSessionService.clear(taxYear, _).flatMap {
+        case Left(_) => Future.successful(errorHandler.internalServerError())
+        case Right(_) => handleSuccessfulGet(taxYear, employmentId)
+      })
+    }
+  }
+
+  private def handleSuccessfulGet(taxYear: Int, employmentId: String)(implicit user: User[_]): Future[Result] = {
+    employmentSessionService.getSessionDataResult(taxYear, employmentId) {
+      case Some(data) =>
+        val employerName = data.employment.employmentDetails.employerName
+        val prefilledForm: Form[String] = EmployerNameForm.employerNameForm(user.isAgent).fill(employerName)
+        Future.successful(Ok(employerNameView(prefilledForm, taxYear, employmentId)))
+      case None =>
+        val form: Form[String] = EmployerNameForm.employerNameForm(user.isAgent)
+        Future.successful(Ok(employerNameView(form, taxYear, employmentId)))
     }
   }
 

@@ -33,8 +33,8 @@ import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.{CheckYourBenefitsView, CheckYourBenefitsViewEOY}
-import javax.inject.Inject
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
@@ -112,13 +112,14 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
                 employmentSessionService.createOrUpdateEmploymentResult(taxYear, model).flatMap {
                   case Left(result) => Future.successful(result)
                   case Right(result) =>
-                    employmentSessionService.clear(taxYear, employmentId)(
-                      if (cya.hasPriorBenefits) {
+                    employmentSessionService.clear(taxYear, employmentId).map {
+                      case Left(_) => errorHandler.internalServerError()
+                      case Right(_) => if (cya.hasPriorBenefits) {
                         Redirect(EmploymentSummaryController.show(taxYear))
                       } else {
                         Redirect(CheckEmploymentExpensesController.show(taxYear)).addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId)
                       }
-                    )
+                    }
                 }
             }
           case None => Future.successful(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
@@ -126,5 +127,4 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
       }
     }
   }
-
 }
