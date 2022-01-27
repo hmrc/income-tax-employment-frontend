@@ -31,9 +31,7 @@ object DecodedEmploymentData {
   implicit def writes: OWrites[DecodedEmploymentData] = Json.writes[DecodedEmploymentData]
 }
 
-case class DecodedAmendEmploymentDetailsPayload(priorEmploymentData: DecodedEmploymentData, employmentData: DecodedEmploymentData) {
-  private def name = "DecodedAmendEmploymentDetailsPayload"
-}
+case class DecodedAmendEmploymentDetailsPayload(priorEmploymentData: DecodedEmploymentData, employmentData: DecodedEmploymentData)
 
 object DecodedAmendEmploymentDetailsPayload {
   implicit def writes: OWrites[DecodedAmendEmploymentDetailsPayload] = Json.writes[DecodedAmendEmploymentDetailsPayload]

@@ -18,12 +18,14 @@ package services
 
 import common.EmploymentToRemove._
 import config.ErrorHandler
+import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import connectors.{DeleteOrIgnoreExpensesConnector, IncomeSourceConnector}
 import controllers.employment.routes.EmploymentSummaryController
 import models.User
 import models.employment.AllEmploymentData
+import models.expenses.DecodedDeleteEmploymentExpensesPayload
 import play.api.Logging
-import play.api.mvc.Result
+import play.api.mvc.{Request, Result}
 import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -34,6 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class DeleteOrIgnoreExpensesService @Inject()(deleteOverrideExpensesConnector: DeleteOrIgnoreExpensesConnector,
                                               incomeSourceConnector: IncomeSourceConnector,
                                               errorHandler: ErrorHandler,
+                                              nrsService: NrsService,
                                               implicit val executionContext: ExecutionContext) extends Logging {
 
   def deleteOrIgnoreExpenses(employmentData: AllEmploymentData, taxYear: Int)(result: Result)
@@ -42,9 +45,15 @@ class DeleteOrIgnoreExpensesService @Inject()(deleteOverrideExpensesConnector: D
     val hmrcExpenses = employmentData.hmrcExpenses.filter(_.dateIgnored.isEmpty)
     val customerExpenses = employmentData.customerExpenses
     val eventualResult = (hmrcExpenses, customerExpenses) match {
-      case (Some(_), Some(_)) => handleConnectorCall(taxYear, all)(result)
-      case (Some(_), None) => handleConnectorCall(taxYear, hmrcHeld)(result)
-      case (None, Some(_)) => handleConnectorCall(taxYear, customer)(result)
+      case (Some(_), Some(_)) =>
+        performSubmitNrsPayload(employmentData)
+        handleConnectorCall(taxYear, all)(result)
+      case (Some(_), None) =>
+        performSubmitNrsPayload(employmentData)
+        handleConnectorCall(taxYear, hmrcHeld)(result)
+      case (None, Some(_)) =>
+        performSubmitNrsPayload(employmentData)
+        handleConnectorCall(taxYear, customer)(result)
       case (None, None) =>
         logger.info(s"[DeleteOrIgnoreExpensesService][deleteOrIgnoreExpenses]" +
           s" No expenses data found for user and employmentId. SessionId: ${user.sessionId}")
@@ -57,6 +66,16 @@ class DeleteOrIgnoreExpensesService @Inject()(deleteOverrideExpensesConnector: D
         case _ => result
       }
     }
+  }
+
+  def performSubmitNrsPayload(employmentData: AllEmploymentData)(implicit request: Request[_], user: User[_],
+                                                                 hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
+
+   val latestExpenses = employmentData.latestEOYExpenses.map(expensesData =>
+     DecodedDeleteEmploymentExpensesPayload(expensesData.latestExpenses.expenses).toNrsPayloadModel)
+
+    nrsService.submit(user.nino, latestExpenses, user.mtditid)
+
   }
 
   private def handleConnectorCall(taxYear: Int, toRemove: String)(result: Result)
