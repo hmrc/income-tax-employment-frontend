@@ -110,6 +110,9 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
     "metrics.enabled" -> "false"
   )
 
+  def configContentFeatureSwitchOff: Map[String, String] = config +
+    ("feature-switch.studentLoans" -> "false")
+  
   lazy val agentAuthErrorPage: AgentAuthErrorPageView = app.injector.instanceOf[AgentAuthErrorPageView]
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
@@ -124,6 +127,11 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
 
   lazy val appWithInvalidEncryptionKey: Application = GuiceApplicationBuilder()
     .configure(configWithInvalidEncryptionKey)
+    .build()
+  
+  lazy val appWithFeatureSwitchesOff: Application = GuiceApplicationBuilder()
+    .in(Environment.simple(mode = Mode.Dev))
+    .configure(configContentFeatureSwitchOff)
     .build()
 
   implicit lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]

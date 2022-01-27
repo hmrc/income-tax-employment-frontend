@@ -187,5 +187,8 @@ object PageUrls extends IntegrationTest {
   def youNeedAgentServicesUrl: String = s"$appUrl/error/you-need-agent-services-account"
   def timeoutUrl: String = s"$appUrl/timeout"
 
+//  *****************       Student loans pages      *********************
+  
+  def studentLoansCyaPage(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/student-loans/check-student-loans-repayments?employmentId=$employmentId"
 }
 //scalastyle:on number.of.methods
