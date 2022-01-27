@@ -30,7 +30,9 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 import utils.PageUrls.{checkYourBenefitsUrl, fullUrl, incidentalOvernightCostsBenefitsUrl, overviewUrl, travelSubsistenceBenefitsAmountUrl}
+import org.scalatest.DoNotDiscover
 
+@DoNotDiscover
 class TravelOrSubsistenceBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val poundPrefixText = "£"

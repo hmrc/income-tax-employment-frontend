@@ -31,7 +31,9 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 import utils.PageUrls.{checkYourBenefitsUrl, entertainmentExpensesBenefitsAmountUrl, entertainmentExpensesBenefitsUrl, fullUrl, overviewUrl, utilitiesOrGeneralServicesBenefitsUrl}
+import org.scalatest.DoNotDiscover
 
+@DoNotDiscover
 class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   private val taxYearEOY: Int = taxYear - 1
