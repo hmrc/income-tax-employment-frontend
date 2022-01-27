@@ -43,6 +43,7 @@ object PageUrls extends IntegrationTest {
   //  *****************       Summary pages      *****************************************
 
   def employmentSummaryUrl(taxYear: Int): String = s"$appUrl/$taxYear/employment-summary"
+  def addNewEmployerUrl(taxYear: Int): String = s"$appUrl/$taxYear/employment/add-new-employer"
   def employerInformationUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/employer-information?employmentId=$employmentId"
 
 //  *****************       Check your answers pages      ******************************

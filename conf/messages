@@ -47,10 +47,13 @@ common.thisIncludes = This includes things like:
 common.update = Update
 common.use = use
 common.yes = Yes
+common.view = View
 common.and = and
 common.notProvided = Not provided
 employment.caption = Employment for 6 April {0} to 5 April {1}
 payeEmployment.caption = PAYE employment for 6 April {0} to 5 April {1}
+common.add = Add
+common.employer = Employer
 
 #################       Error messages        ########################################
 
@@ -99,24 +102,28 @@ employment.employmentDetails.heading.agent = Check your client’s employment de
 employment.employmentDetails.heading.individual = Check your employment details
 employment.employmentInfo.buttonText = Return to employment summary
 employment.employerInformation.title = Employer information
-employment.employmentInfo.p1.agent = You cannot update your client’s employment information until 6 April {0}.
-employment.employmentInfo.p1.individual = You cannot update your employment information until 6 April {0}.
+employment.employmentInfo.p1.agent = You cannot change your client’s employment information until 6 April {0}.
+employment.employmentInfo.p1.individual = You cannot change your employment information until 6 April {0}.
 employment.employmentInformation.content.agent = Your client’s employment details are based on the information we already hold about them.
 employment.employmentInformation.content.individual = Your employment details are based on the information we already hold about you.
-employment.employmentSummary.content.agent = Your client’s employment information is based on the information we already hold about them.
-employment.employmentSummary.content.individual = Your employment information is based on the information we already hold about you.
-employment.employmentSummary.heading = Employment
+employment.employmentSummary.content.agent = Your client’s employment information is based on the information we already hold about them. It includes employment details and benefits.
+employment.employmentSummary.content.individual = Your employment information is based on the information we already hold about you. It includes employment details and benefits.
+employment.employmentSummary.heading = PAYE employment
 employment.expenses.label = Expenses
 employment.expenses.subheading = This is a total of expenses from all employment in the tax year.
 employment.hiddenText = employment information for {0}
 expenses.hiddenText.agent = your client’s expenses from all employment this tax year
 expenses.hiddenText.individual = your expenses from all employment this tax year
+employment.employmentSummary.employers = Employers
+employment.employmentSummary.addAnotherEmployer = Add another employer
+employment.employmentSummary.noExpensesAdded = No expenses added
+employment.employmentSummary.cannotAdd.individual = You cannot add expenses until 6 April {0}.
+employment.employmentSummary.cannotAdd.agent = You cannot add your client’s expenses until 6 April {0}.
 
 #################       Add another employment messages        ########################################
 
 AddEmployment.error = Select yes if you want to add an employment
 AddEmployment.header = Do you want to add an employment?
-employment.addAnother.error = Select yes if you need to add another employment
 employment.addAnother.hint.agent = You must tell us about all your client’s employment.
 employment.addAnother.hint.individual = You must tell us about all your employment.
 employment.addAnother = Do you need to add another employment?
@@ -136,7 +143,6 @@ employment.employmentDetails.companyDirector =  Company director
 employment.employmentDetails.content.agent = Your client’s employment details are based on the details we already hold about them.
 employment.employmentDetails.content.individual = Your employment details are based on the details we already hold about you.
 employment.employmentDetails.directorCeasedDate =  Director role end date
-employment.employmentDetails.employer =  Employer
 employment.employmentDetails.hiddenText.employer = Change the name of this employer
 employment.employmentDetails.hiddenText.payeRef.agent = Change your client’s PAYE reference number
 employment.employmentDetails.hiddenText.payeRef.individual = Change your PAYE reference number
