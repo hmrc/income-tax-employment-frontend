@@ -31,13 +31,13 @@ class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionS
   def updateUglQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, ugl: Boolean)
                            (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
-    val newStudentLoans: Option[StudentLoansCYAModel] = originalEmploymentUserData.employment.studentLoansCYAModel.
+    val newStudentLoans: Option[StudentLoansCYAModel] = originalEmploymentUserData.employment.studentLoans.
       map(studentLoan => if (ugl) {
         studentLoan.copy(uglDeduction = ugl)
       } else {
         studentLoan.copy(uglDeduction = ugl, uglDeductionAmount = None)
       })
-    val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoansCYAModel = newStudentLoans)
+    val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoans = newStudentLoans)
 
     employmentSessionService.createOrUpdateEmploymentUserDataWith(
       taxYear,
@@ -50,13 +50,13 @@ class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionS
   def updatePglQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, pgl: Boolean)
                            (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
-    val newStudentLoans: Option[StudentLoansCYAModel] = originalEmploymentUserData.employment.studentLoansCYAModel.
+    val newStudentLoans: Option[StudentLoansCYAModel] = originalEmploymentUserData.employment.studentLoans.
       map(studentLoan => if (pgl) {
         studentLoan.copy(pglDeduction = pgl)
       } else {
         studentLoan.copy(pglDeduction = pgl, pglDeductionAmount = None)
       })
-    val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoansCYAModel = newStudentLoans)
+    val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoans = newStudentLoans)
 
     employmentSessionService.createOrUpdateEmploymentUserDataWith(
       taxYear,
@@ -70,9 +70,9 @@ class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionS
   def updateUglDeductionAmount(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, uglAmount: BigDecimal)
                        (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
-    val newStudentLoans: Option[StudentLoansCYAModel] = originalEmploymentUserData.employment.studentLoansCYAModel.
+    val newStudentLoans: Option[StudentLoansCYAModel] = originalEmploymentUserData.employment.studentLoans.
       map(studentLoan => studentLoan.copy(uglDeductionAmount = Some(uglAmount)))
-    val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoansCYAModel = newStudentLoans)
+    val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoans = newStudentLoans)
 
     employmentSessionService.createOrUpdateEmploymentUserDataWith(
       taxYear,
@@ -86,9 +86,9 @@ class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionS
   def updatePglDeductionAmount(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, pglAmount: BigDecimal)
                               (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
-    val newStudentLoans: Option[StudentLoansCYAModel] = originalEmploymentUserData.employment.studentLoansCYAModel.
+    val newStudentLoans: Option[StudentLoansCYAModel] = originalEmploymentUserData.employment.studentLoans.
       map(studentLoan => studentLoan.copy(pglDeductionAmount = Some(pglAmount)))
-    val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoansCYAModel = newStudentLoans)
+    val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoans = newStudentLoans)
 
     employmentSessionService.createOrUpdateEmploymentUserDataWith(
       taxYear,

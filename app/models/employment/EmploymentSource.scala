@@ -31,7 +31,8 @@ case class EmploymentSource(employmentId: String,
                             dateIgnored: Option[String],
                             submittedOn: Option[String],
                             employmentData: Option[EmploymentData],
-                            employmentBenefits: Option[EmploymentBenefits]) extends Logging {
+                            employmentBenefits: Option[EmploymentBenefits]
+                           ) extends Logging {
 
   def hasPriorBenefits: Boolean =
     employmentBenefits.exists(_.benefits.exists(_.hasBenefitsPopulated))
@@ -72,7 +73,8 @@ case class EmploymentSource(employmentId: String,
         data.uglDeductionAmount.isDefined,
         data.uglDeductionAmount,
         data.pglDeductionAmount.isDefined,
-        data.pglDeductionAmount))))
+        data.pglDeductionAmount)
+    )))
   }
 
 

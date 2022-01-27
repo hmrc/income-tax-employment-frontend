@@ -22,7 +22,7 @@ import play.api.libs.json.{Json, OFormat}
 
 case class EmploymentCYAModel(employmentDetails: EmploymentDetails,
                               employmentBenefits: Option[BenefitsViewModel] = None,
-                              studentLoansCYAModel: Option[StudentLoansCYAModel] = None) {
+                              studentLoans: Option[StudentLoansCYAModel] = None) {
 
   def toEmploymentDetailsView(employmentId: String, isUsingCustomerData: Boolean): EmploymentDetailsViewModel = {
     EmploymentDetailsViewModel(
@@ -45,7 +45,7 @@ object EmploymentCYAModel {
   def apply(employmentSource: EmploymentSource, isUsingCustomerData: Boolean): EmploymentCYAModel = EmploymentCYAModel(
     employmentDetails = employmentSource.toEmploymentDetails(isUsingCustomerData),
     employmentBenefits = employmentSource.toBenefitsViewModel(isUsingCustomerData),
-    studentLoansCYAModel = employmentSource.toStudentLoansCYAModel
+    studentLoans = employmentSource.toStudentLoansCYAModel
   )
 }
 

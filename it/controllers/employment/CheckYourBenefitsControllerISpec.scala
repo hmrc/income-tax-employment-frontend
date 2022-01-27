@@ -18,7 +18,6 @@ package controllers.employment
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.UserBuilder.aUserRequest
-import builders.models.benefits.BenefitsBuilder.aBenefits
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
 import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
@@ -27,7 +26,7 @@ import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import helpers.SessionCookieCrumbler.getSessionMap
 import models.benefits.{AccommodationRelocationModel, Benefits, BenefitsViewModel}
-import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
+import models.employment.createUpdate.{CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.employment.{Deductions, EmploymentBenefits}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
@@ -1618,20 +1617,15 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         val model = CreateUpdateEmploymentRequest(
           Some(employmentId),
-          Some(
-            CreateUpdateEmployment(
-              anEmploymentCYAModel.employmentDetails.employerRef,
-              anEmploymentCYAModel.employmentDetails.employerName,
-              anEmploymentCYAModel.employmentDetails.startDate.get
-            )
-          ),
+          None,
           Some(
             CreateUpdateEmploymentData(
               pay = CreateUpdatePay(
-                anEmploymentCYAModel.employmentDetails.taxablePayToDate.get,
-                anEmploymentCYAModel.employmentDetails.totalTaxToDate.get,
+                anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate))).get,
+                anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))).get
               ),
-              deductions = Some(Deductions(Some(aStudentLoans)))
+              deductions = Some(Deductions(Some(aStudentLoans))),
+              benefitsInKind = anEmploymentCYAModel.employmentBenefits.map(_.toBenefits)
             )
           )
         )
@@ -1653,27 +1647,65 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        val customerEmploymentData = Seq(anEmploymentSource)
+
+        val customerEmploymentData = Seq(anEmploymentSource.copy(employmentData = anEmploymentSource.employmentData.map(_.copy(
+          pay = Some(anEmploymentSource.employmentData.flatMap(_.pay).get.copy(taxablePayToDate = Some(34786788.77), totalTaxToDate = Some(35553311.89))
+          )))))
+
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
         insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel, hasPriorBenefits = true), aUserRequest)
 
         val model = CreateUpdateEmploymentRequest(
           Some(employmentId),
-          Some(
-            CreateUpdateEmployment(
-              anEmploymentCYAModel.employmentDetails.employerRef,
-              anEmploymentCYAModel.employmentDetails.employerName,
-              anEmploymentCYAModel.employmentDetails.startDate.get
-            )
-          ),
+          None,
           Some(
             CreateUpdateEmploymentData(
               pay = CreateUpdatePay(
-                anEmploymentCYAModel.employmentDetails.taxablePayToDate.get,
-                anEmploymentCYAModel.employmentDetails.totalTaxToDate.get,
+                34786788.77, 35553311.89
               ),
               deductions = Some(Deductions(Some(aStudentLoans))),
-              benefitsInKind = Some(aBenefits)
+              benefitsInKind = Some(anEmploymentCYAModel.employmentBenefits.get.toBenefits)
+            )
+          )
+        )
+
+        stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYearEOY", NO_CONTENT,
+          Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+
+        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "redirect to the employment summary page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location").contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
+      }
+    }
+    "return a redirect when the user has prior benefits but is removing them" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+
+        val customerEmploymentData = Seq(anEmploymentSource.copy(employmentData = anEmploymentSource.employmentData.map(_.copy(
+          pay = Some(anEmploymentSource.employmentData.flatMap(_.pay).get.copy(taxablePayToDate = Some(34786788.77), totalTaxToDate = Some(35553311.89))
+          )))))
+
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = Some(
+          BenefitsViewModel(
+            isUsingCustomerData = true, isBenefitsReceived = true
+          )
+        )), hasPriorBenefits = true), aUserRequest)
+
+        val model = CreateUpdateEmploymentRequest(
+          Some(employmentId),
+          None,
+          Some(
+            CreateUpdateEmploymentData(
+              pay = CreateUpdatePay(
+                34786788.77, 35553311.89
+              ),
+              deductions = Some(Deductions(Some(aStudentLoans))),
+              benefitsInKind = None
             )
           )
         )

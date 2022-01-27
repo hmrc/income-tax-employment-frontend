@@ -20,7 +20,12 @@ import models.benefits.Benefits
 import play.api.libs.json.{Json, OFormat}
 
 case class EmploymentBenefits(submittedOn: String,
-                              benefits: Option[Benefits])
+                              benefits: Option[Benefits]){
+
+  def benefitsDataHasNotChanged(cyaBenefits: Option[Benefits]): Boolean = {
+    cyaBenefits == benefits
+  }
+}
 
 object EmploymentBenefits {
   implicit val formats: OFormat[EmploymentBenefits] = Json.format[EmploymentBenefits]

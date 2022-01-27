@@ -59,7 +59,7 @@ object EmploymentUserDataBuilder {
     anEmploymentUserData.copy(
       isPriorSubmission = isPriorSubmission,
       hasPriorBenefits = hasPriorBenefits,
-      employment = anEmploymentCYAModel.copy(studentLoansCYAModel = Some(studentLoans))
+      employment = anEmploymentCYAModel.copy(studentLoans = Some(studentLoans))
     )
   }
 }

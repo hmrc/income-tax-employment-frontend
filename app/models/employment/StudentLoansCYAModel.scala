@@ -20,9 +20,23 @@ import play.api.libs.json.{Json, OFormat}
 import utils.EncryptedValue
 
 case class StudentLoansCYAModel(uglDeduction: Boolean,
-                                uglDeductionAmount: Option[BigDecimal],
+                                uglDeductionAmount: Option[BigDecimal] = None,
                                 pglDeduction: Boolean,
-                                pglDeductionAmount: Option[BigDecimal])
+                                pglDeductionAmount: Option[BigDecimal] = None){
+
+  def toDeductions: Option[Deductions] = {
+    if (uglDeductionAmount.isDefined || pglDeductionAmount.isDefined) {
+      Some(Deductions(Some(
+        StudentLoans(
+          uglDeductionAmount,
+          pglDeductionAmount
+        )
+      )))
+    } else {
+      None
+    }
+  }
+}
 
 
 object StudentLoansCYAModel {

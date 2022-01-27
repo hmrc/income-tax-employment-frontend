@@ -17,7 +17,7 @@
 package controllers.employment
 
 import audit.{AuditService, ViewEmploymentBenefitsAudit}
-import common.SessionValues
+import common.{EmploymentSection, SessionValues}
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.routes.ReceiveAnyBenefitsController
 import controllers.employment.routes.{CheckYourBenefitsController, EmploymentSummaryController}
@@ -33,8 +33,8 @@ import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.{CheckYourBenefitsView, CheckYourBenefitsViewEOY}
-
 import javax.inject.Inject
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
@@ -107,18 +107,18 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
           case Some(cya) =>
-            //            TODO create CreateUpdateEmploymentRequest model with new benefits data (SASS-1845)
-            employmentSessionService.createModelAndReturnResult(cya, prior, taxYear) {
+            employmentSessionService.createModelAndReturnResult(cya, prior, taxYear, EmploymentSection.EMPLOYMENT_BENEFITS) {
               model =>
                 employmentSessionService.createOrUpdateEmploymentResult(taxYear, model).flatMap {
                   case Left(result) => Future.successful(result)
                   case Right(result) =>
-                    employmentSessionService.clear(taxYear, employmentId)(result)
-                    if (cya.hasPriorBenefits) {
-                      Future.successful(Redirect(EmploymentSummaryController.show(taxYear)))
-                    } else {
-                      Future.successful(Redirect(CheckEmploymentExpensesController.show(taxYear)).addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))
-                    }
+                    employmentSessionService.clear(taxYear, employmentId)(
+                      if (cya.hasPriorBenefits) {
+                        Redirect(EmploymentSummaryController.show(taxYear))
+                      } else {
+                        Redirect(CheckEmploymentExpensesController.show(taxYear)).addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId)
+                      }
+                    )
                 }
             }
           case None => Future.successful(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))

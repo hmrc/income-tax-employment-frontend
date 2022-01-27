@@ -16,7 +16,7 @@
 
 package controllers.employment
 
-import common.SessionValues
+import common.{EmploymentSection, SessionValues}
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckEmploymentDetailsController
 import controllers.predicates.{AuthorisedAction, InYearAction}
@@ -32,8 +32,8 @@ import services.employment.CheckEmploymentDetailsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, SessionHelper}
 import views.html.employment.CheckEmploymentDetailsView
-
 import javax.inject.Inject
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -95,7 +95,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
-          case Some(cya) => employmentSessionService.createModelAndReturnResult(cya, prior, taxYear) { model =>
+          case Some(cya) => employmentSessionService.createModelAndReturnResult(cya, prior, taxYear, EmploymentSection.EMPLOYMENT_DETAILS) { model =>
             employmentSessionService.createOrUpdateEmploymentResult(taxYear, model).flatMap {
               case Left(result) => Future.successful(result)
               case Right(result) => checkEmploymentDetailsService.performSubmitAudits(model, employmentId, taxYear, prior)
