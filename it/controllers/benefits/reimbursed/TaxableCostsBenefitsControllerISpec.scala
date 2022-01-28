@@ -94,7 +94,7 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedButtonText = "Continue"
     val yesText = "Yes"
     val noText = "No"
@@ -102,7 +102,7 @@ class TaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHelpe
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedButtonText = "Continue"
     val yesText = "Yes"
     val noText = "No"

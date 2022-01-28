@@ -60,7 +60,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    def expectedCaption(taxYear: Int): String = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    def expectedCaption(taxYear: Int): String = s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
 
     val yesText = "Yes"
     val noText = "No"
@@ -68,7 +68,7 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    def expectedCaption(taxYear: Int): String = s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    def expectedCaption(taxYear: Int): String = s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
 
     val yesText = "Yes"
     val noText = "No"

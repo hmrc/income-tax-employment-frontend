@@ -91,14 +91,14 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: String = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedButtonText = "Continue"
     val yesText = "Yes"
     val noText = "No"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: String = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedButtonText = "Continue"
     val yesText = "Yes"
     val noText = "No"

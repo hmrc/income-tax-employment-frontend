@@ -73,7 +73,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
 
   object CommonExpectedEN extends CommonExpectedResults {
     override val amountHint: String = "For example, £600 or £193.54"
-    val expectedCaption: String = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue: String = "Continue"
     val previousExpectedContent: String = "If it was not £300, tell us the correct amount."
     val expectedTitle: String = "What is the total value of vouchers and credit card payments?"
@@ -86,7 +86,7 @@ class VouchersBenefitsAmountControllerISpec extends IntegrationTest with ViewHel
 
   object CommonExpectedCY extends CommonExpectedResults {
     override val amountHint: String = "For example, £600 or £193.54"
-    val expectedCaption: String = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue: String = "Continue"
     val previousExpectedContent: String = "If it was not £300, tell us the correct amount."
     val expectedTitle: String = "What is the total value of vouchers and credit card payments?"

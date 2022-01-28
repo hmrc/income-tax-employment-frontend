@@ -73,7 +73,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
 
   object CommonExpectedEN extends CommonExpectedResults {
     override val amountHint: String = "For example, £600 or £193.54"
-    val expectedCaption: String = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue: String = "Continue"
     val previousExpectedContent: String = "If it was not £200, tell us the correct amount."
     val enterTotalText: String = "Enter the total."
@@ -81,7 +81,7 @@ class TaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with Vie
 
   object CommonExpectedCY extends CommonExpectedResults {
     override val amountHint: String = "For example, £600 or £193.54"
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue = "Continue"
     val previousExpectedContent: String = "If it was not £200, tell us the correct amount."
     val enterTotalText: String = "Enter the total."

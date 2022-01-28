@@ -102,7 +102,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedBullet1 = "goods and services"
     val expectedBullet2 = "a sum of money substantially less than the cost to provide them"
     val expectedButtonText = "Continue"
@@ -113,7 +113,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedBullet1 = "goods and services"
     val expectedBullet2 = "a sum of money substantially less than the cost to provide them"
     val expectedButtonText = "Continue"

@@ -71,7 +71,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedParagraphText: String = "Living accommodation is any accommodation that you can live in, whether you live there all " +
       "the time or only occasionally. It includes houses, flats, houseboats, holiday homes and apartments."
     val yesText = "Yes"
@@ -85,7 +85,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedParagraphText: String = "Living accommodation is any accommodation that you can live in, whether you live there all " +
       "the time or only occasionally. It includes houses, flats, houseboats, holiday homes and apartments."
     val yesText = "Yes"
