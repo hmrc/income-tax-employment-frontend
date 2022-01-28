@@ -20,7 +20,7 @@ import audit.{AuditService, ViewEmploymentBenefitsAudit}
 import common.{EmploymentSection, SessionValues}
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.routes.ReceiveAnyBenefitsController
-import controllers.employment.routes.{CheckYourBenefitsController, EmployerInformationController, EmploymentSummaryController}
+import controllers.employment.routes.{CheckYourBenefitsController, EmployerInformationController}
 import controllers.expenses.routes.CheckEmploymentExpensesController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.benefits.Benefits
