@@ -39,7 +39,7 @@
     val keyMessage = messages(key)
     SummaryListRow(
         key = Key(content = Text(keyMessage), "govuk-!-width-one-third"),
-        value = Value(text.fold(ariaVisuallyHiddenText(messages("common.notProvided"))){ textValue => HtmlContent(Text(messages(textValue)).asHtml)}, "govuk-!-width-one-third"),
+        value = Value(text.fold(ariaVisuallyHiddenText(messages("common.notProvided"))){ textValue => HtmlContent(Text(bigDecimalCurrency(messages(textValue))).asHtml)}, "govuk-!-width-one-third"),
         actions = if(inYear) None else changeLink.map ( href =>
             Actions(
                 items = Seq(ActionItem(

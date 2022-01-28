@@ -278,8 +278,8 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
           if (hasPrior) textOnPageCheck(paragraphText, Selectors.paragraphSelector)
 
           answerRowInYearOrEndOfYear(questionStudentLoan, answerStudentLoan, hiddenTextStudentLoan, studentLoansCyaPage(scenarioData.commonExpectedResults.taxYear, employmentId), 1, isEndOfYear)
-          answerRowInYearOrEndOfYear(questionUndergraduateAmount, "1000.22", hiddenTextUndergraduate, studentLoansCyaPage(scenarioData.commonExpectedResults.taxYear, employmentId), 2, isEndOfYear)
-          answerRowInYearOrEndOfYear(questionPostGraduateAmount, "3000.22", hiddenTextPostgraduate, studentLoansCyaPage(scenarioData.commonExpectedResults.taxYear, employmentId), 3, isEndOfYear)
+          answerRowInYearOrEndOfYear(questionUndergraduateAmount, "£1,000.22", hiddenTextUndergraduate, studentLoansCyaPage(scenarioData.commonExpectedResults.taxYear, employmentId), 2, isEndOfYear)
+          answerRowInYearOrEndOfYear(questionPostGraduateAmount, "£3,000.22", hiddenTextPostgraduate, studentLoansCyaPage(scenarioData.commonExpectedResults.taxYear, employmentId), 3, isEndOfYear)
 
           if (!isEndOfYear) {
             textOnPageCheck(insetText, Selectors.insetText)
