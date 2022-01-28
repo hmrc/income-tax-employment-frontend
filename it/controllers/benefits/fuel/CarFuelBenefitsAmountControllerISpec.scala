@@ -78,14 +78,14 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
     val hintText = "For example, £600 or £193.54"
     val optionalText = s"If it was not £$carFuelAmount, tell us the correct amount."
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
     val hintText = "For example, £600 or £193.54"
     val optionalText = s"If it was not £$carFuelAmount, tell us the correct amount."

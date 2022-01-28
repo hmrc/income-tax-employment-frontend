@@ -31,7 +31,7 @@
     govUkButton: GovukButton
 )
 
-@(taxYear: Int, benefits: BenefitsViewModel, isSingleEmployment: Boolean, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, employerName: String, benefits: BenefitsViewModel, isSingleEmployment: Boolean, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @headingForUse = @{messages(s"checkYourBenefits.heading.${if(user.isAgent) "agent" else "individual"}")}
 
@@ -64,7 +64,7 @@
 
 @layout(pageTitle = titleForUse, taxYear = Some(taxYear)) {
 
-    @heading(headingForUse, Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-5")
+    @heading(headingForUse, Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-5")
 
     <p class="govuk-body">@messages(s"checkYourBenefits.p1.${if(user.isAgent) "agent" else "individual"}")</p>
 
@@ -74,6 +74,7 @@
         ))
     }
 
+    <h2 class="govuk-label--m govuk-!-margin-top-9">@employerName</h2>
     @govukSummaryList(SummaryList(Seq(showRow("checkYourBenefits.benefitsReceived", mapToYesNo(benefits.isBenefitsReceived)))))
 
     @if(benefits.vehicleDetailsPopulated){

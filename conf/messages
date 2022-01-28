@@ -590,6 +590,7 @@ checkYourBenefits.vouchersAmount = Amount for vouchers or credit cards
 
 #################       Benefits messages        ########################################
 
+benefits.caption = Employment benefits for 6 April {0} to 5 April {1}
 receiveAnyBenefits.errors.noRadioSelected.agent = Select yes if your client got any benefits from this company
 receiveAnyBenefits.errors.noRadioSelected.individual = Select yes if you got any benefits from this company
 receiveAnyBenefits.paragraph = Examples of benefits include company cars or vans, fuel allowance and medical insurance.

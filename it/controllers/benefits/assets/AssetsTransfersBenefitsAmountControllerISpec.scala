@@ -73,7 +73,7 @@ class AssetsTransfersBenefitsAmountControllerISpec extends IntegrationTest with 
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: String = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
 
     def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
 
@@ -84,7 +84,7 @@ class AssetsTransfersBenefitsAmountControllerISpec extends IntegrationTest with 
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: String = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption: String = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
 
     def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
 

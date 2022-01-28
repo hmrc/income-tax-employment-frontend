@@ -20,7 +20,7 @@ import audit.{AuditService, ViewEmploymentBenefitsAudit}
 import common.{EmploymentSection, SessionValues}
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.routes.ReceiveAnyBenefitsController
-import controllers.employment.routes.{CheckYourBenefitsController, EmploymentSummaryController}
+import controllers.employment.routes.{CheckYourBenefitsController, EmployerInformationController}
 import controllers.expenses.routes.CheckEmploymentExpensesController
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.benefits.Benefits
@@ -62,7 +62,7 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
               case Some(benefits) =>
                 val auditModel = ViewEmploymentBenefitsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, benefits)
                 auditService.sendAudit[ViewEmploymentBenefitsAudit](auditModel.toAuditModel)
-                Ok(checkYourBenefitsView(taxYear, benefits.toBenefitsViewModel(isUsingCustomerData), allEmploymentData.isLastInYearEmployment, employmentId))
+                Ok(checkYourBenefitsView(taxYear, source.employerName, benefits.toBenefitsViewModel(isUsingCustomerData), allEmploymentData.isLastInYearEmployment, employmentId))
             }
           case None => redirect
         }
@@ -75,6 +75,7 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
               case None => Future(Redirect(ReceiveAnyBenefitsController.show(taxYear, employmentId)))
               case Some(benefits) => Future(Ok(checkYourBenefitsViewEOY(
                 taxYear,
+                cya.employment.employmentDetails.employerName,
                 benefits.toBenefits.toBenefitsViewModel(benefits.isUsingCustomerData, cyaBenefits = Some(benefits)),
                 employmentId,
                 benefits.isUsingCustomerData
@@ -89,7 +90,7 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
                 benefits match {
                   case None => Redirect(ReceiveAnyBenefitsController.show(taxYear, employmentId))
                   case Some(benefits) =>
-                    Ok(checkYourBenefitsViewEOY(taxYear, benefits.toBenefitsViewModel(isUsingCustomerData), employmentId, isUsingCustomerData))
+                    Ok(checkYourBenefitsViewEOY(taxYear, source.employerName, benefits.toBenefitsViewModel(isUsingCustomerData), employmentId, isUsingCustomerData))
                 }
               }
             case None =>
@@ -115,7 +116,7 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
                     employmentSessionService.clear(taxYear, employmentId).map {
                       case Left(_) => errorHandler.internalServerError()
                       case Right(_) => if (cya.hasPriorBenefits) {
-                        Redirect(EmploymentSummaryController.show(taxYear))
+                        Redirect(EmployerInformationController.show(taxYear, employmentId))
                       } else {
                         Redirect(CheckEmploymentExpensesController.show(taxYear)).addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId)
                       }

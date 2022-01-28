@@ -73,14 +73,14 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
 
   object CommonExpectedEN extends CommonExpectedResults {
     override val amountHint: String = "For example, £600 or £193.54"
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue = "Continue"
     val previousExpectedContent: String = "If it was not £300, tell us the correct amount."
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     override val amountHint: String = "For example, £600 or £193.54"
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continue = "Continue"
     val previousExpectedContent: String = "If it was not £300, tell us the correct amount."
   }

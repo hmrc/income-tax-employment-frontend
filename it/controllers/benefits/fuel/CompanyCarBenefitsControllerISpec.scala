@@ -77,13 +77,13 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: String = "Employment for 6 April 2020 to 5 April 2021"
+    val expectedCaption: String = "Employment benefits for 6 April 2020 to 5 April 2021"
     val radioTextYes: String = "Yes"
     val radioTextNo: String = "No"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: String = "Employment for 6 April 2020 to 5 April 2021"
+    val expectedCaption: String = "Employment benefits for 6 April 2020 to 5 April 2021"
     val radioTextYes: String = "Yes"
     val radioTextNo: String = "No"
   }

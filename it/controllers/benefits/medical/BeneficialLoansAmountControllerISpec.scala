@@ -70,7 +70,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
 
     def ifItWasNotText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
 
@@ -80,7 +80,7 @@ class BeneficialLoansAmountControllerISpec extends IntegrationTest with ViewHelp
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
 
     def ifItWasNotText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
 

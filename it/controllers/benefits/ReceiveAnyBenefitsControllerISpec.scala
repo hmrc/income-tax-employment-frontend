@@ -60,7 +60,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
   object CommonExpectedEN extends CommonExpectedResults {
     val continueButton: String = "Continue"
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val paragraphText = "Examples of benefits include company cars or vans, fuel allowance and medical insurance."
     val yesText = "Yes"
     val noText = "No"
@@ -68,7 +68,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
 
   object CommonExpectedCY extends CommonExpectedResults {
     val continueButton: String = "Continue"
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment benefits for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val paragraphText = "Examples of benefits include company cars or vans, fuel allowance and medical insurance."
     val yesText = "Yes"
     val noText = "No"

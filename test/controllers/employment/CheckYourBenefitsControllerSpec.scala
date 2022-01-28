@@ -51,13 +51,14 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp
 
   private val taxYear: Int = mockAppConfig.defaultTaxYear
   private val employmentId = "223/AB12399"
+  val employerName: String = "Mishima Zaibatsu"
 
 
   ".show" should {
     "return a result when all data is in Session" which {
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {
-          mockFind(taxYear, Ok(view(taxYear, aBenefitsViewModel, isSingleEmployment = true, employmentId)))
+          mockFind(taxYear, Ok(view(taxYear, employerName, aBenefitsViewModel, isSingleEmployment = true, employmentId)))
           controller.show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
           ))
@@ -70,7 +71,7 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp
     "return a result when all data is in Session for EOY" which {
       s"has an OK($OK) status" in new TestWithAuth {
         val result: Future[Result] = {
-          mockFind(taxYear, Ok(viewEOY(taxYear, aBenefits.toBenefitsViewModel(isUsingCustomerData = true),
+          mockFind(taxYear, Ok(viewEOY(taxYear, employerName, aBenefits.toBenefitsViewModel(isUsingCustomerData = true),
             employmentId = employmentId, isUsingCustomerData = true)))
           controller.show(taxYear, employmentId)(fakeRequest.withSession(
             SessionValues.TAX_YEAR -> taxYear.toString
