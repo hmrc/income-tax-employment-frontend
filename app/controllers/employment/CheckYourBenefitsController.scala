@@ -22,6 +22,7 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.routes.ReceiveAnyBenefitsController
 import controllers.employment.routes.{CheckYourBenefitsController, EmployerInformationController}
 import controllers.expenses.routes.CheckEmploymentExpensesController
+import controllers.predicates.CommonPredicates.commonPredicates
 import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.benefits.Benefits
 import models.employment.{AllEmploymentData, EmploymentSourceOrigin}
@@ -37,9 +38,9 @@ import views.html.employment.{CheckYourBenefitsView, CheckYourBenefitsViewEOY}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
+class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
                                             val mcc: MessagesControllerComponents,
-                                            implicit val appConfig: AppConfig,
+                                            authorisedAction: AuthorisedAction,
                                             checkYourBenefitsView: CheckYourBenefitsView,
                                             checkYourBenefitsViewEOY: CheckYourBenefitsViewEOY,
                                             employmentSessionService: EmploymentSessionService,
@@ -51,7 +52,7 @@ class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
                                            ) extends FrontendController(mcc) with I18nSupport with SessionHelper with Logging {
 
   //scalastyle:off
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = commonPredicates(taxYear).async { implicit user =>
     if (inYearAction.inYear(taxYear)) {
       employmentSessionService.findPreviousEmploymentUserData(user, taxYear) { allEmploymentData: AllEmploymentData =>
         val redirect = Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))

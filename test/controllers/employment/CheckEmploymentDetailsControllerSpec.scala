@@ -36,8 +36,8 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
   private lazy val view = app.injector.instanceOf[CheckEmploymentDetailsView]
   private lazy val controller = new CheckEmploymentDetailsController()(
     mockMessagesControllerComponents,
-    authorisedAction,
     view,
+    authorisedAction,
     inYearAction,
     mockAppConfig,
     mockEmploymentSessionService,

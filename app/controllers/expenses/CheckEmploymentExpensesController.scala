@@ -19,7 +19,8 @@ package controllers.expenses
 import common.SessionValues
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes.{CheckEmploymentExpensesController, EmploymentExpensesController}
-import controllers.predicates.{AuthorisedAction, InYearAction}
+import controllers.predicates.CommonPredicates.commonPredicates
+import controllers.predicates.{AuthorisedAction, InYearAction, TaxYearAction}
 import models.User
 import models.employment.AllEmploymentData.employmentIdExists
 import models.employment.{EmploymentExpenses, LatestExpensesOrigin}
@@ -36,7 +37,7 @@ import views.html.expenses.{CheckEmploymentExpensesView, CheckEmploymentExpenses
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAction,
+class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: AuthorisedAction,
                                                   checkEmploymentExpensesView: CheckEmploymentExpensesView,
                                                   checkEmploymentExpensesViewEOY: CheckEmploymentExpensesViewEOY,
                                                   createOrAmendExpensesService: CreateOrAmendExpensesService,
@@ -49,7 +50,7 @@ class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAc
                                                   implicit val mcc: MessagesControllerComponents,
                                                   implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int): Action[AnyContent] = authorisedAction.async { implicit user =>
+  def show(taxYear: Int): Action[AnyContent] = commonPredicates(taxYear).async { implicit user =>
     if (inYearAction.inYear(taxYear)) {
       employmentSessionService.findPreviousEmploymentUserData(user, taxYear)(allEmploymentData =>
         allEmploymentData.latestInYearExpenses match {
