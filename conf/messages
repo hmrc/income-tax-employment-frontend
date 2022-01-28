@@ -122,8 +122,10 @@ employment.employmentSummary.cannotAdd.agent = You cannot add your client’s ex
 
 #################       Add another employment messages        ########################################
 
-AddEmployment.error = Select yes if you want to add an employment
-AddEmployment.header = Do you want to add an employment?
+
+employment.addEmployment.error = Select yes if you want to add an employer
+employment.addEmployment.header = Do you want to add an employer?
+employment.addAnother.error = Select yes if you need to add another employer
 employment.addAnother.hint.agent = You must tell us about all your client’s employment.
 employment.addAnother.hint.individual = You must tell us about all your employment.
 employment.addAnother = Do you need to add another employment?

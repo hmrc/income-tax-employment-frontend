@@ -82,7 +82,7 @@ class AddEmploymentController @Inject()(implicit val cc: MessagesControllerCompo
   }
 
   private def buildForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = "AddEmployment.error"
+    missingInputError = "employment.addEmployment.error"
   )
 
   private def redirectOrRenderView(taxYear: Int)(block: => Future[Result])(implicit user: User[_]): Future[Result] = {
