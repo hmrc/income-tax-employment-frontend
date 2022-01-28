@@ -51,12 +51,12 @@ class undergraduateLoanAmountController @Inject()(implicit val cc: MessagesContr
         cya match {
           case Some(cya) =>
             val cyaAmount = cya.employment.studentLoansCYAModel.flatMap()
-            lazy val unfilledForm = buildForm(user.isAgent)
+            lazy val unfilledForm = buildForm(user.isAgent, )
             val form: Form[BigDecimal] = cyaAmount.fold(unfilledForm)(
-              cyaPay => if (priorAmount.exists(_.equals(cyaPay))) unfilledForm else buildForm(user.isAgent).fill(cyaPay))
+              cyaPay => if (prior.exists(_.equals(cyaPay))) unfilledForm else buildForm(user.isAgent).fill(cyaPay))
 
-            Future.successful(Ok(undergraduateLoanAmountView(taxYear, form,
-              cyaAmount, cya.employment.employmentDetails.employerName, employmentId)))
+            Future.successful(Ok(undergraduateLoanAmountView(form, taxYear,
+              data.employment.employmentDetails.employerName, employmentId, data.employment.studentLoansCYAModel.uglDeductionAmount)))
 
           case None => Future.successful(
             Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId)))
@@ -65,18 +65,19 @@ class undergraduateLoanAmountController @Inject()(implicit val cc: MessagesContr
     }
   }
 
-  def submit(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, uglAmount: BigDecimal): Action[AnyContent] = (authAction andThen
-    TaxYearAction.taxYearAction(taxYear)).async { implicit user =>
-    if(appConfig.studentLoansEnabled) {
-      studentLoansService.updateUglDeductionAmount(taxYear, employmentId, employmentUserData, uglAmount) {
-          buildForm(user.isAgent).bindFromRequest().fold(
+  def submit(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, uglAmount: BigDecimal): Action[AnyContent] = authAction.async { implicit user =>
+    inYearAction.notInYear(taxYear) {
+      if(appConfig.studentLoansEnabled) {
+        studentLoansService.updateUglDeductionAmount(taxYear, employmentId, employmentUserData, uglAmount) { data =>
+          buildForm(user.isAgent, data).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(undergraduateLoanAmountView(formWithErrors, taxYear,
               data.employment.employmentDetails.employerName, employmentId, data.employment.studentLoansCYAModel.uglDeductionAmount))),
             amount => handleSuccessForm(taxYear, employmentId, data, amount)
           )
         }
-    } else {
-      Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+      } else {
+        Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+      }
     }
   }
 
@@ -86,7 +87,7 @@ class undergraduateLoanAmountController @Inject()(implicit val cc: MessagesContr
                                (implicit user: User[_]): Future[Result] = {
     studentLoansService.updateUglDeductionAmount(taxYear, employmentId, employmentUserData, uglAmount).map {
       case Left(_) => errorHandler.internalServerError()
-      case Right(employmentUserData) => Redirect(employmentUserData.employment, taxYear, employmentId, employmentUserData.isPriorSubmission)
+      case Right(employmentUserData) => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
     }
   }
 
