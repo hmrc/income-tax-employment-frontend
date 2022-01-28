@@ -29,7 +29,7 @@
 
 @(form: Form[Boolean], taxYear: Int)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
-@titleForUse = @{messages("AddEmployment.header")}
+@titleForUse = @{messages("employment.addEmployment.header")}
 @headingForUse = @{titleForUse}
 
 @hasFormErrors = @{form.hasErrors}

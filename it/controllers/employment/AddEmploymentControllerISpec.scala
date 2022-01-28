@@ -72,32 +72,32 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
-    val expectedH1: String = "Do you want to add an employment?"
+    val expectedH1: String = "Do you want to add an employer?"
     val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorText = "Select yes if you want to add an employment"
+    val expectedErrorText = "Select yes if you want to add an employer"
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
-    val expectedH1: String = "Do you want to add an employment?"
+    val expectedH1: String = "Do you want to add an employer?"
     val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorText = "Select yes if you want to add an employment"
+    val expectedErrorText = "Select yes if you want to add an employer"
 
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val expectedH1: String = "Do you want to add an employment?"
+    val expectedH1: String = "Do you want to add an employer?"
     val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorText = "Select yes if you want to add an employment"
+    val expectedErrorText = "Select yes if you want to add an employer"
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val expectedH1: String = "Do you want to add an employment?"
+    val expectedH1: String = "Do you want to add an employer?"
     val expectedTitle: String = expectedH1
     val expectedErrorTitle = s"Error: $expectedTitle"
-    val expectedErrorText = "Select yes if you want to add an employment"
+    val expectedErrorText = "Select yes if you want to add an employer"
   }
 
   private val employmentId = UUID.randomUUID
