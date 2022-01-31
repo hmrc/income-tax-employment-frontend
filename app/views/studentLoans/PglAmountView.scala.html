@@ -23,10 +23,10 @@
 
 @this(layout: Layout, formWithCsrf: FormWithCSRF, inputText: InputText, heading: Heading, button: Button, errorSummary: ErrorSummary)
 
-@(taxYear: Int, form: Form[BigDecimal], preAmount: Option[BigDecimal], employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, form: Form[BigDecimal], employmentId: String, employerName: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @titleText = @{
-    messages(s"studentLoans.pglAmount.title.${if (user.isAgent) "agent" else "individual"}")
+    messages(s"studentLoans.pglAmount.title.${if (user.isAgent) "agent" else "individual"}", employerName)
 }
 
 @contentHtml = {
@@ -37,7 +37,7 @@
 
     @errorSummary(form.errors)
 
-    @formWithCsrf(controllers.benefits.assets.routes.AssetsBenefitsAmountController.submit(taxYear, employmentId)) {
+    @formWithCsrf(action = controllers.studentLoans.routes.PglAmountController.submit(taxYear, employmentId)) {
         @inputText(
             form,
             id = "amount",
