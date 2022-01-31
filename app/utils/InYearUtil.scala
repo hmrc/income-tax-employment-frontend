@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package controllers.predicates
-
-import java.time.{LocalDateTime, ZoneId}
+package utils
 
 import config.AppConfig
-import javax.inject.Inject
 import play.api.Logger
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
 
+import java.time.{LocalDateTime, ZoneId}
+import javax.inject.Inject
 import scala.concurrent.Future
 
-class InYearAction @Inject()(implicit val appConfig: AppConfig) {
+class InYearUtil @Inject()(implicit val appConfig: AppConfig) {
 
   lazy val logger: Logger = Logger.apply(this.getClass)
 

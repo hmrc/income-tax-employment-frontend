@@ -16,10 +16,11 @@
 
 package controllers.expenses
 
+import actions.AuthorisedTaxYearAction.authorisedTaxYearAction
+import actions.{AuthorisedAction, TaxYearAction}
 import common.SessionValues
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes.{CheckEmploymentExpensesController, EmploymentExpensesController}
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.User
 import models.employment.AllEmploymentData.employmentIdExists
 import models.employment.{EmploymentExpenses, LatestExpensesOrigin}
@@ -30,26 +31,26 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.expenses.CheckEmploymentExpensesService
 import services.{CreateOrAmendExpensesService, EmploymentSessionService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.expenses.{CheckEmploymentExpensesView, CheckEmploymentExpensesViewEOY}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CheckEmploymentExpensesController @Inject()(authorisedAction: AuthorisedAction,
+class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: AuthorisedAction,
                                                   checkEmploymentExpensesView: CheckEmploymentExpensesView,
                                                   checkEmploymentExpensesViewEOY: CheckEmploymentExpensesViewEOY,
                                                   createOrAmendExpensesService: CreateOrAmendExpensesService,
                                                   employmentSessionService: EmploymentSessionService,
                                                   checkEmploymentExpensesService: CheckEmploymentExpensesService,
-                                                  inYearAction: InYearAction,
+                                                  inYearAction: InYearUtil,
                                                   errorHandler: ErrorHandler,
                                                   implicit val clock: Clock,
                                                   implicit val appConfig: AppConfig,
                                                   implicit val mcc: MessagesControllerComponents,
                                                   implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int): Action[AnyContent] = authorisedAction.async { implicit user =>
+  def show(taxYear: Int): Action[AnyContent] = authorisedTaxYearAction(taxYear).async { implicit user =>
     if (inYearAction.inYear(taxYear)) {
       employmentSessionService.findPreviousEmploymentUserData(user, taxYear)(allEmploymentData =>
         allEmploymentData.latestInYearExpenses match {

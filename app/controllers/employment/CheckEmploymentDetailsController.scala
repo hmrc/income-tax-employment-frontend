@@ -16,10 +16,11 @@
 
 package controllers.employment
 
+import actions.AuthorisedAction
+import actions.AuthorisedTaxYearAction.authorisedTaxYearAction
 import common.{EmploymentSection, SessionValues}
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckEmploymentDetailsController
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.User
 import models.employment._
 import models.mongo.EmploymentCYAModel
@@ -30,16 +31,16 @@ import services.EmploymentSessionService
 import services.RedirectService.employmentDetailsRedirect
 import services.employment.CheckEmploymentDetailsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.employment.CheckEmploymentDetailsView
-import javax.inject.Inject
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesControllerComponents,
-                                                 authAction: AuthorisedAction,
                                                  employmentDetailsView: CheckEmploymentDetailsView,
-                                                 inYearAction: InYearAction,
+                                                 authorisedAction: AuthorisedAction,
+                                                 inYearAction: InYearUtil,
                                                  appConfig: AppConfig,
                                                  employmentSessionService: EmploymentSessionService,
                                                  checkEmploymentDetailsService: CheckEmploymentDetailsService,
@@ -48,7 +49,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
                                                  clock: Clock
                                                 ) extends FrontendController(cc) with I18nSupport with SessionHelper with Logging {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedTaxYearAction(taxYear).async { implicit user =>
     if (inYearAction.inYear(taxYear)) {
       employmentSessionService.findPreviousEmploymentUserData(user, taxYear) { employmentData =>
         employmentData.inYearEmploymentSourceWith(employmentId) match {
@@ -91,7 +92,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {

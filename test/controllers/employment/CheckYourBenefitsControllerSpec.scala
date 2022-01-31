@@ -35,10 +35,10 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp
   private lazy val view: CheckYourBenefitsView = app.injector.instanceOf[CheckYourBenefitsView]
   private lazy val viewEOY: CheckYourBenefitsViewEOY = app.injector.instanceOf[CheckYourBenefitsViewEOY]
 
-  private lazy val controller = new CheckYourBenefitsController(
-    authorisedAction,
-    mockMessagesControllerComponents,
+  private lazy val controller = new CheckYourBenefitsController()(
     mockAppConfig,
+    mockMessagesControllerComponents,
+    authorisedAction,
     view,
     viewEOY,
     mockEmploymentSessionService,

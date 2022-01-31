@@ -16,9 +16,9 @@
 
 package controllers.benefits.utilities
 
+import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.utilities.routes._
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import models.User
 import models.employment.EmploymentBenefitsType
@@ -31,7 +31,7 @@ import services.EmploymentSessionService
 import services.RedirectService.{benefitsSubmitRedirect, employerProvidedSubscriptionsBenefitsAmountRedirects, redirectBasedOnCurrentAnswers}
 import services.benefits.UtilitiesService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.benefits.utilities.ProfessionalSubscriptionsBenefitsAmountView
 
 import javax.inject.Inject
@@ -40,7 +40,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ProfessionalSubscriptionsBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
                                                                   authAction: AuthorisedAction,
-                                                                  inYearAction: InYearAction,
+                                                                  inYearAction: InYearUtil,
                                                                   appConfig: AppConfig,
                                                                   professionalSubscriptionBenefitsView: ProfessionalSubscriptionsBenefitsAmountView,
                                                                   val employmentSessionService: EmploymentSessionService,

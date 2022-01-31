@@ -16,10 +16,10 @@
 
 package controllers.benefits.reimbursed
 
+import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.reimbursed.routes.TaxableCostsBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import models.User
 import models.employment.EmploymentBenefitsType
@@ -32,7 +32,7 @@ import services.RedirectService.redirectBasedOnCurrentAnswers
 import services.benefits.ReimbursedService
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.benefits.reimbursed.NonTaxableCostsBenefitsAmountView
 
 import javax.inject.Inject
@@ -40,7 +40,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class NonTaxableCostsBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
                                                         authAction: AuthorisedAction,
-                                                        inYearAction: InYearAction,
+                                                        inYearAction: InYearUtil,
                                                         nonTaxableCostsAmountBenefitsView: NonTaxableCostsBenefitsAmountView,
                                                         appConfig: AppConfig,
                                                         val employmentSessionService: EmploymentSessionService,

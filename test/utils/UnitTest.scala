@@ -16,11 +16,11 @@
 
 package utils
 
+import actions.AuthorisedAction
 import akka.actor.ActorSystem
 import com.codahale.metrics.SharedMetricRegistries
 import common.{EnrolmentIdentifiers, EnrolmentKeys, SessionValues}
 import config.{AppConfig, ErrorHandler, MockAppConfig}
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.benefits.Benefits
 import models.employment._
 import models.expenses.Expenses
@@ -67,7 +67,8 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
   val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withHeaders("X-Session-ID" -> sessionId)
   val fakeRequestWithMtditidAndNino: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
     SessionValues.CLIENT_MTDITID -> "1234567890",
-    SessionValues.CLIENT_NINO -> "AA123456A"
+    SessionValues.CLIENT_NINO -> "AA123456A",
+    SessionValues.TAX_YEAR -> "2022"
   ).withHeaders("X-Session-ID" -> sessionId)
   val fakeRequestWithNino: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(
     SessionValues.CLIENT_NINO -> "AA123456A"
@@ -88,7 +89,7 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
 
   val authorisedAction = new AuthorisedAction(mockAppConfig)(mockAuthService, stubMessagesControllerComponents())
 
-  val inYearAction = new InYearAction
+  val inYearAction = new InYearUtil
 
   def status(awaitable: Future[Result]): Int = await(awaitable).header.status
 

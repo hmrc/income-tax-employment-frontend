@@ -16,10 +16,10 @@
 
 package controllers.employment
 
+import actions.AuthorisedAction
 import common.{SessionValues, UUID}
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.EmployerNameController
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.{IncomeTaxUserData, User}
 import play.api.data.Form
@@ -28,7 +28,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import services.RedirectService.employmentDetailsRedirect
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.SessionHelper
+import utils.{InYearUtil, SessionHelper}
 import views.html.employment.AddEmploymentView
 
 import javax.inject.Inject
@@ -36,7 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AddEmploymentController @Inject()(implicit val cc: MessagesControllerComponents,
                                         authAction: AuthorisedAction,
-                                        inYearAction: InYearAction,
+                                        inYearAction: InYearUtil,
                                         addEmploymentView: AddEmploymentView,
                                         appConfig: AppConfig,
                                         employmentSessionService: EmploymentSessionService,

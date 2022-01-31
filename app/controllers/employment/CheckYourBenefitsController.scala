@@ -16,13 +16,14 @@
 
 package controllers.employment
 
+import actions.AuthorisedAction
+import actions.AuthorisedTaxYearAction.authorisedTaxYearAction
 import audit.{AuditService, ViewEmploymentBenefitsAudit}
 import common.{EmploymentSection, SessionValues}
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.routes.ReceiveAnyBenefitsController
 import controllers.employment.routes.{CheckYourBenefitsController, EmployerInformationController}
 import controllers.expenses.routes.CheckEmploymentExpensesController
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.benefits.Benefits
 import models.employment.{AllEmploymentData, EmploymentSourceOrigin}
 import models.mongo.EmploymentCYAModel
@@ -31,27 +32,27 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.employment.{CheckYourBenefitsView, CheckYourBenefitsViewEOY}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CheckYourBenefitsController @Inject()(authorisedAction: AuthorisedAction,
+class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
                                             val mcc: MessagesControllerComponents,
-                                            implicit val appConfig: AppConfig,
+                                            authorisedAction: AuthorisedAction,
                                             checkYourBenefitsView: CheckYourBenefitsView,
                                             checkYourBenefitsViewEOY: CheckYourBenefitsViewEOY,
                                             employmentSessionService: EmploymentSessionService,
                                             auditService: AuditService,
-                                            inYearAction: InYearAction,
+                                            inYearAction: InYearUtil,
                                             errorHandler: ErrorHandler,
                                             implicit val clock: Clock,
                                             implicit val ec: ExecutionContext
                                            ) extends FrontendController(mcc) with I18nSupport with SessionHelper with Logging {
 
   //scalastyle:off
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedTaxYearAction(taxYear).async { implicit user =>
     if (inYearAction.inYear(taxYear)) {
       employmentSessionService.findPreviousEmploymentUserData(user, taxYear) { allEmploymentData: AllEmploymentData =>
         val redirect = Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))

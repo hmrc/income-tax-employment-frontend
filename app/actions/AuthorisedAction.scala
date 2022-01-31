@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package controllers.predicates
+package actions
 
 import common.{EnrolmentIdentifiers, EnrolmentKeys, SessionValues}
 import config.AppConfig
-import javax.inject.Inject
 import models.User
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -31,6 +30,7 @@ import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthorisedAction @Inject()(appConfig: AppConfig)
@@ -107,7 +107,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
     }
   }
 
-  private[predicates] def agentAuthentication[A](block: User[A] => Future[Result])
+  private[actions] def agentAuthentication[A](block: User[A] => Future[Result])
                                                 (implicit request: Request[A], hc: HeaderCarrier): Future[Result] = {
 
     lazy val agentDelegatedAuthRuleKey = "mtd-it-auth"
@@ -155,7 +155,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
     }
   }
 
-  private[predicates] def enrolmentGetIdentifierValue(
+  private[actions] def enrolmentGetIdentifierValue(
                                                        checkedKey: String,
                                                        checkedIdentifier: String,
                                                        enrolments: Enrolments

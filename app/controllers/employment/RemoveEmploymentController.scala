@@ -16,9 +16,9 @@
 
 package controllers.employment
 
+import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.EmploymentSummaryController
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.IncomeTaxUserData
 import models.employment.EmploymentSourceOrigin
 import play.api.i18n.I18nSupport
@@ -26,7 +26,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
 import services.employment.RemoveEmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.SessionHelper
+import utils.{InYearUtil, SessionHelper}
 import views.html.employment.RemoveEmploymentView
 
 import javax.inject.Inject
@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerComponents,
                                            authAction: AuthorisedAction,
-                                           inYearAction: InYearAction,
+                                           inYearAction: InYearUtil,
                                            removeEmploymentView: RemoveEmploymentView,
                                            appConfig: AppConfig,
                                            employmentSessionService: EmploymentSessionService,

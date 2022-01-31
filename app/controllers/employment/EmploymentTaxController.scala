@@ -16,9 +16,9 @@
 
 package controllers.employment
 
+import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes._
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.AmountForm
 import models.User
 import models.mongo.EmploymentUserData
@@ -29,7 +29,7 @@ import services.EmploymentSessionService
 import services.RedirectService.employmentDetailsRedirect
 import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.employment.EmploymentTaxView
 
 import javax.inject.Inject
@@ -41,7 +41,7 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
                                         employmentTaxView: EmploymentTaxView,
                                         employmentSessionService: EmploymentSessionService,
                                         employmentService: EmploymentService,
-                                        inYearAction: InYearAction,
+                                        inYearAction: InYearUtil,
                                         errorHandler: ErrorHandler,
                                         implicit val clock: Clock) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 

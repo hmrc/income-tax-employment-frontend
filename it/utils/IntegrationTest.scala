@@ -16,12 +16,12 @@
 
 package utils
 
+import actions.AuthorisedAction
 import akka.actor.ActorSystem
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import common.SessionValues
 import config.AppConfig
-import controllers.predicates.AuthorisedAction
 import helpers.{PlaySessionCookieBaker, WireMockHelper, WiremockStubHelpers}
 import models.IncomeTaxUserData
 import models.mongo.EmploymentUserData

@@ -16,12 +16,12 @@
 
 package controllers.expenses
 
+import actions.AuthorisedAction
 import config.AppConfig
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.expenses.ExpensesInterruptPageView
 
 import javax.inject.Inject
@@ -29,7 +29,7 @@ import scala.concurrent.Future
 
 class ExpensesInterruptPageController @Inject() (implicit val cc: MessagesControllerComponents,
                                                  authAction: AuthorisedAction,
-                                                 inYearAction: InYearAction,
+                                                 inYearAction: InYearUtil,
                                                  expensesInterruptPageView: ExpensesInterruptPageView,
                                                  appConfig: AppConfig,
                                                  clock: Clock

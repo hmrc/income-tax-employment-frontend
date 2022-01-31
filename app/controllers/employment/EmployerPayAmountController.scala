@@ -16,8 +16,8 @@
 
 package controllers.employment
 
+import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.AmountForm
 import models.User
 import models.mongo.EmploymentUserData
@@ -28,7 +28,7 @@ import services.EmploymentSessionService
 import services.RedirectService.employmentDetailsRedirect
 import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.employment.EmployerPayAmountView
 
 import javax.inject.Inject
@@ -37,7 +37,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerComponents,
                                             authAction: AuthorisedAction,
                                             employerPayAmountView: EmployerPayAmountView,
-                                            inYearAction: InYearAction,
+                                            inYearAction: InYearUtil,
                                             appConfig: AppConfig,
                                             employmentSessionService: EmploymentSessionService,
                                             employmentService: EmploymentService,

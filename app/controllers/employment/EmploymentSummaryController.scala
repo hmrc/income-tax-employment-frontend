@@ -16,15 +16,15 @@
 
 package controllers.employment
 
+import actions.AuthorisedAction
 import config.AppConfig
 import controllers.employment.routes.AddEmploymentController
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.User
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.SessionHelper
+import utils.{InYearUtil, SessionHelper}
 import views.html.employment.{MultipleEmploymentsSummaryView, SingleEmploymentSummaryView, SingleEmploymentSummaryViewEOY}
 
 import javax.inject.Inject
@@ -37,7 +37,7 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
                                             multipleEmploymentsSummaryView: MultipleEmploymentsSummaryView,
                                             singleEmploymentSummaryEOYView: SingleEmploymentSummaryViewEOY,
                                             employmentSessionService: EmploymentSessionService,
-                                            inYearAction: InYearAction
+                                            inYearAction: InYearUtil
                                            ) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   private implicit val executionContext: ExecutionContext = mcc.executionContext
