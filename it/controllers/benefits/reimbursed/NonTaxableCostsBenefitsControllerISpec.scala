@@ -42,12 +42,10 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
     anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employment = employmentCyaModel)
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val paragraphSelector: String = "#main-content > div > div > form > div > fieldset > legend > p"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
   }
 
   trait SpecificExpectedResults {
@@ -141,7 +139,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
@@ -167,7 +165,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
@@ -194,7 +192,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
@@ -306,7 +304,7 @@ class NonTaxableCostsBenefitsControllerISpec extends IntegrationTest with ViewHe
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            textOnPageCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
             radioButtonCheck(yesText, 1, checked = false)
             radioButtonCheck(noText, 2, checked = false)

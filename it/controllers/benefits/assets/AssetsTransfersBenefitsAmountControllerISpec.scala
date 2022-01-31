@@ -40,7 +40,6 @@ class AssetsTransfersBenefitsAmountControllerISpec extends IntegrationTest with 
   private val expectedErrorHref = "#amount"
 
   object Selectors {
-    val captionSelector = "#main-content > div > div > form > div > label > header > p"
     val hintTextSelector = "#amount-hint"
     val currencyPrefixSelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
     val amountFieldSelector = "#amount"
@@ -166,11 +165,12 @@ class AssetsTransfersBenefitsAmountControllerISpec extends IntegrationTest with 
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           elementNotOnPageCheck(previousAmountSelector)
           textOnPageCheck(enterTotalText, enterTotalSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
+          textOnPageCheck(currencyPrefix, currencyPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountFieldSelector, "")
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(assetsToKeepBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -195,11 +195,12 @@ class AssetsTransfersBenefitsAmountControllerISpec extends IntegrationTest with 
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
           textOnPageCheck(enterTotalText, enterTotalSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
+          textOnPageCheck(currencyPrefix, currencyPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountFieldSelector, amount.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(assetsToKeepBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -223,11 +224,12 @@ class AssetsTransfersBenefitsAmountControllerISpec extends IntegrationTest with 
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
           textOnPageCheck(enterTotalText, enterTotalSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
+          textOnPageCheck(currencyPrefix, currencyPrefixSelector)
           inputFieldValueCheck(amountFieldName, amountFieldSelector, amount.toString())
           buttonCheck(continueButtonText, continueButtonSelector)
           formPostLinkCheck(assetsToKeepBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -339,11 +341,12 @@ class AssetsTransfersBenefitsAmountControllerISpec extends IntegrationTest with 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, currencyPrefixSelector)
             inputFieldValueCheck(amountFieldName, amountFieldSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(assetsToKeepBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -374,11 +377,12 @@ class AssetsTransfersBenefitsAmountControllerISpec extends IntegrationTest with 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, currencyPrefixSelector)
             inputFieldValueCheck(amountFieldName, amountFieldSelector, incorrectFormatAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(assetsToKeepBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -409,11 +413,12 @@ class AssetsTransfersBenefitsAmountControllerISpec extends IntegrationTest with 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(optionalParagraphText(amount), previousAmountSelector)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(user.specificExpectedResults.get.expectedYouCanText, youCanSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, currencyPrefixSelector)
             inputFieldValueCheck(amountFieldName, amountFieldSelector, overMaximumAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(assetsToKeepBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)

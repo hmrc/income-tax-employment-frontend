@@ -50,10 +50,17 @@ common.yes = Yes
 common.view = View
 common.and = and
 common.notProvided = Not provided
-employment.caption = Employment for 6 April {0} to 5 April {1}
-payeEmployment.caption = PAYE employment for 6 April {0} to 5 April {1}
 common.add = Add
 common.employer = Employer
+
+#################   Subheadings/Captions    ##################################
+
+employment.caption = Employment for 6 April {0} to 5 April {1}
+payeEmployment.caption = PAYE employment for 6 April {0} to 5 April {1}
+employmentDetails.caption = Employment details for 6 April {0} to 5 April {1}
+benefits.caption = Employment benefits for 6 April {0} to 5 April {1}
+expenses.caption = Employment expenses for 6 April {0} to 5 April {1}
+studentLoans.subheading = Student Loans for 6 April {0} to 5 April {1}
 
 #################       Error messages        ########################################
 
@@ -97,7 +104,6 @@ timeout.p1 = We did not save your answers.
 #################       Employment summary messages        ########################################
 
 employment.employment.details.label = Employment Details
-employment.employmentDetails.caption = Employment details for 6 April {0} to 5 April {1}
 employment.employmentDetails.heading.agent = Check your client’s employment details
 employment.employmentDetails.heading.individual = Check your employment details
 employment.employmentInfo.buttonText = Return to employment summary
@@ -1164,7 +1170,6 @@ benefits.assetTransfersAmount.error.overMaximum.agent = The total amount for ass
 
 #################       Expenses  messages        ########################################
 
-expenses.caption = Employment expenses for 6 April {0} to 5 April {1}
 expenses.claimEmploymentExpenses.canClaim.agent = You can claim employment expenses your client did not claim through their employer.
 expenses.claimEmploymentExpenses.canClaim.individual = You can claim employment expenses you did not claim through your employer.
 expenses.claimEmploymentExpenses.error.noEntry.agent = Select yes if you want to claim for your client’s employment expenses
@@ -1303,11 +1308,10 @@ expenses.otherEquipmentAmount.wantToClaim.individual =  You told us you want to 
 
 studentLoans.title.individual = Check your student loan repayment details
 studentLoans.title.agent = Check your client’s student loan repayment details
-studentLoans.subheading = Student Loans for 6 April {0} to 5 April {1}
 studentLoans.slr = Student loan repayments?
 studentLoans.ura = Undergraduate repayments amount
 studentLoans.pra = Postgraduate repayments amount
-studentLoans.undergraduate = Undergraduate 
+studentLoans.undergraduate = Undergraduate
 studentLoans.postgraduate = Postgraduate
 studentLoans.p.individual = Your student loan repayment details are based on the information we already hold about you.
 studentLoans.p.agent = Your client’s student loan repayment details are based on the information we already hold about them.

@@ -38,7 +38,6 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
   private val employmentId: String = "employmentId"
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val descriptionParagraphSelector: String = "#main-content > div > div > form > div > fieldset > legend > p.govuk-body:nth-child(2)"
     val includesParagraphSelector: String = "#main-content > div > div > form > div > fieldset > legend > p.govuk-body:nth-child(3)"
     val bullet1Selector: String = "#main-content > div > div > form > div > fieldset > legend > ul.govuk-list > li:nth-child(1)"
@@ -46,7 +45,6 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
   }
 
   trait SpecificExpectedResults {
@@ -151,7 +149,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(expectedDescriptionParagraph, descriptionParagraphSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedIncludesParagraph, includesParagraphSelector)
           textOnPageCheck(expectedBullet1, bullet1Selector)
@@ -181,7 +179,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(expectedDescriptionParagraph, descriptionParagraphSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedIncludesParagraph, includesParagraphSelector)
           textOnPageCheck(expectedBullet1, bullet1Selector)
@@ -211,7 +209,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(expectedDescriptionParagraph, descriptionParagraphSelector)
           textOnPageCheck(user.specificExpectedResults.get.expectedIncludesParagraph, includesParagraphSelector)
           textOnPageCheck(expectedBullet1, bullet1Selector)
@@ -312,7 +310,7 @@ class AssetsOrAssetTransfersBenefitsControllerISpec extends IntegrationTest with
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            textOnPageCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(expectedDescriptionParagraph, descriptionParagraphSelector)
             textOnPageCheck(user.specificExpectedResults.get.expectedIncludesParagraph, includesParagraphSelector)
             textOnPageCheck(expectedBullet1, bullet1Selector)

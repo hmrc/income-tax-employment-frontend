@@ -34,13 +34,9 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
   private val taxYearEOY: Int = taxYear - 1
 
   object Selectors {
-    val valueHref = "#value"
     val expectedErrorHref = "#value"
-    val headingSelector = "#main-content > div > div > form > div > fieldset > legend > header > h1"
-    val captionSelector = ".govuk-caption-l"
     val paragraphSelector = "#main-content > div > div > form > div > fieldset > legend > p"
     val formSelector = "#main-content > div > div > form"
-    val yesRadioButton = "#value"
   }
 
   trait SpecificExpectedResults {
@@ -132,7 +128,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           welshToggleCheck(user.isWelsh)
           titleCheck(specific.expectedTitle)
           h1Check(specific.expectedH1)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(paragraphText, paragraphSelector)
           buttonCheck(continueButton)
           radioButtonCheck(yesText, 1, checked = false)
@@ -159,7 +155,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           welshToggleCheck(user.isWelsh)
           titleCheck(specific.expectedTitle)
           h1Check(specific.expectedH1)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(paragraphText, paragraphSelector)
           buttonCheck(continueButton)
           radioButtonCheck(yesText, 1, checked = true)
@@ -231,7 +227,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           welshToggleCheck(user.isWelsh)
           titleCheck(specific.expectedErrorTitle)
           h1Check(specific.expectedH1)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           buttonCheck(continueButton)
           errorSummaryCheck(specific.expectedErrorText, expectedErrorHref)
           formPostLinkCheck(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId), formSelector)

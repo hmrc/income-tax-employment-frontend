@@ -36,11 +36,9 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
   private val employmentId: String = "employmentId"
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
   }
 
   trait SpecificExpectedResults {
@@ -129,7 +127,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
@@ -156,7 +154,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
@@ -216,6 +214,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
 

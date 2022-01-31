@@ -37,15 +37,12 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
   private val employmentId: String = "employmentId"
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
-
     def paragraphSelector(index: Int): String = s"#main-content > div > div > form > div > fieldset > legend > p:nth-child($index)"
 
     val onlyNeedLinkSelector: String = "#exempt-link"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
   }
 
   trait SpecificExpectedResults {
@@ -150,7 +147,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedTheseAre, paragraphSelector(2))
           textOnPageCheck(expectedWeOnly, paragraphSelector(3))
           linkCheck(expectedWeOnlyLink, onlyNeedLinkSelector, exemptLink)
@@ -181,7 +178,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedTheseAre, paragraphSelector(2))
           textOnPageCheck(expectedWeOnly, paragraphSelector(3))
           linkCheck(expectedWeOnlyLink, onlyNeedLinkSelector, exemptLink)
@@ -213,7 +210,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedTheseAre, paragraphSelector(2))
           textOnPageCheck(expectedWeOnly, paragraphSelector(3))
           linkCheck(expectedWeOnlyLink, onlyNeedLinkSelector, exemptLink)
@@ -315,7 +312,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedTheseAre, paragraphSelector(2))
           textOnPageCheck(expectedWeOnly, paragraphSelector(3))
           linkCheck(expectedWeOnlyLink, onlyNeedLinkSelector, exemptLink)

@@ -42,11 +42,9 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
     anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employment = employmentCyaModel)
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
   }
 
   trait SpecificExpectedResults {
@@ -136,7 +134,7 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
@@ -161,7 +159,7 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
@@ -187,7 +185,7 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
           buttonCheck(expectedButtonText, continueButtonSelector)
@@ -296,7 +294,7 @@ class OtherBenefitsControllerISpec extends IntegrationTest with ViewHelpers with
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             radioButtonCheck(yesText, 1, checked = false)
             radioButtonCheck(noText, 2, checked = false)
             buttonCheck(expectedButtonText, continueButtonSelector)

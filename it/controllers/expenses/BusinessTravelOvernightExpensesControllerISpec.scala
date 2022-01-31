@@ -40,11 +40,9 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
     anExpensesUserData.copy(isPriorSubmission = isPrior, hasPriorExpenses = hasPriorExpenses, expensesCya = expensesCyaModel)
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val continueButtonSelector: String = "#continue"
     val formSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
     val detailsSelector: String = s"#main-content > div > div > form > details > summary > span"
     val h2Selector: String = s"#main-content > div > div > form > details > div > h2"
 
@@ -216,7 +214,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
           textOnPageCheck(expectedExample1, bulletListSelector(1))
           textOnPageCheck(expectedExample2, bulletListSelector(2))
@@ -265,7 +263,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
           textOnPageCheck(expectedExample1, bulletListSelector(1))
           textOnPageCheck(expectedExample2, bulletListSelector(2))
@@ -315,7 +313,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
           textOnPageCheck(expectedExample1, bulletListSelector(1))
           textOnPageCheck(expectedExample2, bulletListSelector(2))
@@ -400,7 +398,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector(2))
           textOnPageCheck(expectedExample1, bulletListSelector(1))
           textOnPageCheck(expectedExample2, bulletListSelector(2))

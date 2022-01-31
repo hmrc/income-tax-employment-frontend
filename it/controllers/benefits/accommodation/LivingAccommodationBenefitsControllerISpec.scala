@@ -42,7 +42,6 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
     val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val paragraphSelector = "#main-content > div > div > form > div > fieldset > legend > p"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
     val continueButtonSelector = "#continue"
     val detailsTitleSelector = "#main-content > div > div > form > details > summary > span"
     val detailsText1Selector = "#main-content > div > div > form > details > div > p:nth-child(1)"
@@ -164,7 +163,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
@@ -195,7 +194,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector)
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
@@ -226,7 +225,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(expectedParagraphText, paragraphSelector)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
@@ -328,7 +327,7 @@ class LivingAccommodationBenefitsControllerISpec extends IntegrationTest with Vi
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           errorSummaryCheck(user.specificExpectedResults.get.expectedErrorMessage, yesSelector)
           errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorMessage, Some("value"))
           formPostLinkCheck(livingAccommodationBenefitsUrl(taxYearEOY, employmentId), formSelector)

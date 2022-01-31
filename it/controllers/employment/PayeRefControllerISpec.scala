@@ -46,14 +46,11 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
 
   object Selectors {
     val contentSelector = "#main-content > div > div > form > div > label > p"
-    val headingSelector = "#main-content > div > div > header > h1"
-    val captionSelector = "#main-content > div > div > header > p"
     val hintTestSelector = "#payeRef-hint"
     val inputSelector = "#payeRef"
     val continueButtonSelector = "#continue"
     val continueButtonFormSelector = "#main-content > div > div > form"
     val expectedErrorHref = "#payeRef"
-    val inputAmountField = "#payeRef"
   }
 
   val amountInputName = "payeRef"
@@ -76,7 +73,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment details for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedH1: String = "What’s the PAYE reference of maggie?"
     val continueButtonText = "Continue"
     val hintText = "For example, 123/AB456"
@@ -87,7 +84,7 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption = s"Employment details for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val expectedH1: String = "What’s the PAYE reference of maggie?"
     val continueButtonText = "Continue"
     val hintText = "For example, 123/AB456"

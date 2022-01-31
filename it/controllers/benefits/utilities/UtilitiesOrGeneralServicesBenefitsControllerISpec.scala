@@ -36,12 +36,10 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
   private val employmentId: String = "employmentId"
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val thisIncludesSelector: String = "#main-content > div > div > form > div > fieldset > legend > p.govuk-body"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
   }
 
   trait SpecificExpectedResults {
@@ -133,7 +131,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(thisIncludes, thisIncludesSelector)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
@@ -161,7 +159,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(thisIncludes, thisIncludesSelector)
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
@@ -247,7 +245,7 @@ class UtilitiesOrGeneralServicesBenefitsControllerISpec extends IntegrationTest 
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(thisIncludes, thisIncludesSelector)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)

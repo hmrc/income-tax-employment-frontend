@@ -47,8 +47,6 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
   private implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   object Selectors {
-    val headingSelector = "#main-content > div > div > header > h1"
-
     def paragraphTextSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
 
     val hintTextSelector = "#amount-hint"
@@ -57,7 +55,6 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
     val continueButtonSelector = "#continue"
     val continueButtonFormSelector = "#main-content > div > div > form"
     val expectedErrorHref = "#amount"
-    val inputAmountField = "#amount"
   }
 
   trait SpecificExpectedResults {

@@ -53,7 +53,6 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
     currentDataIsHmrcHeld = hmrc))
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val daySelector: String = "#amount-day"
     val monthSelector: String = "#amount-month"
     val yearSelector: String = "#amount-year"
@@ -162,7 +161,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
     val day = "day"
     val month = "month"
@@ -171,7 +170,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
     val day = "day"
     val month = "month"
@@ -209,7 +208,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "")
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, "")
@@ -241,7 +240,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(forExample, forExampleSelector)
           inputFieldValueCheck(dayInputName, Selectors.daySelector, "1")
           inputFieldValueCheck(monthInputName, Selectors.monthSelector, "1")
@@ -326,7 +325,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "01")
@@ -361,7 +360,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "")
@@ -396,7 +395,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "01")
@@ -431,7 +430,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "")
@@ -466,7 +465,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "01")
@@ -501,7 +500,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "")
@@ -536,7 +535,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "")
@@ -571,7 +570,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "abc")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "01")
@@ -606,7 +605,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "abc")
@@ -641,7 +640,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "01")
@@ -676,7 +675,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "01")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "13")
@@ -711,7 +710,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "09")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "06")
@@ -746,7 +745,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "05")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "04")
@@ -784,7 +783,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, nowDatePlusOne.getDayOfMonth.toString)
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, nowDatePlusOne.getMonthValue.toString)
@@ -820,7 +819,7 @@ class EmployerLeaveDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(forExample, forExampleSelector)
             inputFieldValueCheck(dayInputName, Selectors.daySelector, "31")
             inputFieldValueCheck(monthInputName, Selectors.monthSelector, "12")

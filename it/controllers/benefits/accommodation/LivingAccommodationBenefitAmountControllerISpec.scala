@@ -42,13 +42,10 @@ class LivingAccommodationBenefitAmountControllerISpec extends IntegrationTest wi
   private val livingAccommodationBenefitAmount: Option[BigDecimal] = Some(123.45)
 
   object Selectors {
-    val headingSelector = "#main-content > div > div > header > h1"
-
     def paragraphTextSelector(index: Int): String = s"#main-content > div > div > form > div > label > p:nth-child($index)"
 
     val hintTextSelector = "#amount-hint"
     val poundPrefixSelector = ".govuk-input__prefix"
-    val inputSelector = "#amount"
     val continueButtonSelector = "#continue"
     val continueButtonFormSelector = "#main-content > div > div > form"
     val expectedErrorHref = "#amount"

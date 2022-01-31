@@ -44,11 +44,9 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
       startDate = startDate, cessationDate = cessationDate, cessationDateQuestion = cessationDateQuestion), None)
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
   }
 
   trait SpecificExpectedResults {
@@ -94,14 +92,14 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
     val yesText = "Yes"
     val noText = "No"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
     val yesText = "Yes"
     val noText = "No"
@@ -138,7 +136,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
@@ -166,7 +164,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
           buttonCheck(expectedButtonText, continueButtonSelector)
@@ -194,7 +192,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
@@ -221,7 +219,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
           buttonCheck(expectedButtonText, continueButtonSelector)
@@ -249,7 +247,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
           buttonCheck(expectedButtonText, continueButtonSelector)
@@ -390,6 +388,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
+            captionCheck(expectedCaption(taxYearEOY))
             radioButtonCheck(yesText, 1, checked = false)
             radioButtonCheck(noText, 2, checked = false)
             buttonCheck(expectedButtonText, continueButtonSelector)

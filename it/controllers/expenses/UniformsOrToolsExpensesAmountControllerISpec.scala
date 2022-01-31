@@ -47,14 +47,11 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
   
   object Selectors {
     val formSelector = "#main-content > div > div > form"
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val wantToClaimSelector: String = "#previous-amount"
-
     val cannotClaimParagraphSelector: String = "#cannot-claim"
     val hintTextSelector = "#amount-hint"
     val poundPrefixSelector = ".govuk-input__prefix"
     val continueButtonSelector: String = "#continue"
-    val continueButtonFormSelector: String = "#main-content > div > div > form"
   }
 
   trait SpecificExpectedResults {

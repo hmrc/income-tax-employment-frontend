@@ -42,14 +42,12 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
     anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employment = employmentCyaModel)
     
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val paragraphSelector: String = "#main-content > div > div > form > div > fieldset > legend > p"
     val bullet1Selector: String = "#main-content > div > div > form > div > fieldset > legend > ul.govuk-list > li:nth-child(1)"
     val bullet2Selector: String = "#main-content > div > div > form > div > fieldset > legend > ul.govuk-list > li:nth-child(2)"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
   }
 
   trait SpecificExpectedResults {
@@ -153,7 +151,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
           textOnPageCheck(expectedBullet1, bullet1Selector)
           textOnPageCheck(expectedBullet2, bullet2Selector)
@@ -181,7 +179,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
           textOnPageCheck(expectedBullet1, bullet1Selector)
           textOnPageCheck(expectedBullet2, bullet2Selector)
@@ -211,7 +209,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
           textOnPageCheck(expectedBullet1, bullet1Selector)
           textOnPageCheck(expectedBullet2, bullet2Selector)
@@ -324,7 +322,7 @@ class VouchersBenefitsControllerISpec extends IntegrationTest with ViewHelpers w
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            textOnPageCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(user.specificExpectedResults.get.paragraph, paragraphSelector)
             textOnPageCheck(expectedBullet1, bullet1Selector)
             textOnPageCheck(expectedBullet2, bullet2Selector)

@@ -37,8 +37,6 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
     ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
   
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > div.govuk-panel.govuk-panel--interruption > form > header > p"
-
     def paragraphSelector(index: Int): String = s"#main-content > div > div > div.govuk-panel.govuk-panel--interruption > form > p:nth-child($index)"
 
     val continueButtonSelector: String = "button.govuk-button"
@@ -58,7 +56,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
     val buttonText = "Continue"
     val expectedTitle = "Employment expenses"
     val expectedHeading = "Employment expenses"
@@ -66,7 +64,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment expenses for 6 April ${taxYear - 1} to 5 April $taxYear"
     val buttonText = "Continue"
     val expectedTitle = "Employment expenses"
     val expectedHeading = "Employment expenses"
@@ -126,7 +124,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
 
           titleCheck(expectedTitle)
           h1Check(expectedTitle)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample1, paragraphSelector(3))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample2, paragraphSelector(4))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample3, paragraphSelector(5))
@@ -153,7 +151,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
 
           titleCheck(expectedTitle)
           h1Check(expectedTitle)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample1, paragraphSelector(3))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample2, paragraphSelector(4))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample3, paragraphSelector(5))
@@ -181,7 +179,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
 
           titleCheck(expectedTitle)
           h1Check(expectedTitle)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample1, paragraphSelector(3))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample2, paragraphSelector(4))
           textOnPageCheck(user.specificExpectedResults.get.expectedExample3, paragraphSelector(5))

@@ -41,7 +41,6 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
   private val newAmount: BigDecimal = 500.55
 
   object Selectors {
-    val captionSelector = "#main-content > div > div > form > div > label > header > p"
     val ifItWasNotTextSelector = "#previous-amount-text"
     val enterTotalSelector = "#enter-total-text"
     val hintTextSelector = "#amount-hint"
@@ -161,10 +160,11 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amount), ifItWasNotTextSelector)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -190,10 +190,11 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             elementNotOnPageCheck(ifItWasNotTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -220,10 +221,11 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, amountInModel.toString())
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -248,10 +250,11 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, amountInModel.toString())
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -346,10 +349,11 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -375,10 +379,11 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, incorrectFormatAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)
@@ -404,10 +409,11 @@ class NonTaxableCostsBenefitsAmountControllerISpec extends IntegrationTest with 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(ifItWasNotText(amountInModel), ifItWasNotTextSelector)
             textOnPageCheck(enterTotalText, enterTotalSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
+            textOnPageCheck(currencyPrefix, prefixedCurrencySelector)
             inputFieldValueCheck(amountInputName, inputSelector, overMaximumAmount)
             buttonCheck(continueButtonText, continueButtonSelector)
             formPostLinkCheck(nonTaxableCostsBenefitsAmountUrl(taxYearEOY, employmentId), formSelector)

@@ -38,9 +38,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
   private val employmentId = "employmentId"
 
   object Selectors {
-    val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
     val formSelector = "#main-content > div > div > form"
     val continueButtonSelector = "#continue"
     val contentSelector = "#main-content > div > div > form > div > fieldset > legend > p"

@@ -21,7 +21,7 @@ import builders.models.UserBuilder.aUserRequest
 import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import forms.YesNoForm
-import models.expenses.{Expenses, ExpensesViewModel}
+import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -38,11 +38,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
   private def expensesUserData(isPrior: Boolean, hasPriorExpenses: Boolean, expensesCyaModel: ExpensesCYAModel): ExpensesUserData =
     ExpensesUserData(sessionId, mtditid, nino, taxYear - 1, isPriorSubmission = isPrior, hasPriorExpenses, expensesCyaModel)
 
-  def cyaModel(isUsingCustomerData: Boolean, expenses: Expenses): ExpensesCYAModel =
-    ExpensesCYAModel.makeModel(expenses, isUsingCustomerData, submittedOn = None)
-
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val canClaimParagraphSelector: String = "#main-content > div > div > form > div > fieldset > legend > p:nth-child(2)"
     val thisIncludesSelector: String = "#main-content > div > div > form > div > fieldset > legend > p:nth-child(3)"
     val thisIncludesExample1Selector: String = "#main-content > div > div > form > div > fieldset > legend > ul > li:nth-child(1)"
@@ -53,7 +49,6 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
   }
 
   trait SpecificExpectedResults {
@@ -170,7 +165,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedCanClaim, canClaimParagraphSelector)
           textOnPageCheck(expectedThisIncludes, thisIncludesSelector)
           textOnPageCheck(expectedThisIncludesExample1, thisIncludesExample1Selector)
@@ -206,7 +201,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedCanClaim, canClaimParagraphSelector)
           textOnPageCheck(expectedThisIncludes, thisIncludesSelector)
           textOnPageCheck(expectedThisIncludesExample1, thisIncludesExample1Selector)
@@ -244,7 +239,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          textOnPageCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.expectedCanClaim, canClaimParagraphSelector)
           textOnPageCheck(expectedThisIncludes, thisIncludesSelector)
           textOnPageCheck(expectedThisIncludesExample1, thisIncludesExample1Selector)
@@ -315,7 +310,7 @@ class EmploymentExpensesControllerISpec extends IntegrationTest with ViewHelpers
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            textOnPageCheck(expectedCaption, captionSelector)
+            captionCheck(expectedCaption)
             textOnPageCheck(user.specificExpectedResults.get.expectedCanClaim, canClaimParagraphSelector)
             textOnPageCheck(expectedThisIncludes, thisIncludesSelector)
             textOnPageCheck(expectedThisIncludesExample1, thisIncludesExample1Selector)

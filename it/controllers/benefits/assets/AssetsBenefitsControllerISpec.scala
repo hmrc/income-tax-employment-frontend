@@ -37,10 +37,8 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
   private val employmentId: String = "employmentId"
 
   object Selectors {
-    val captionSelector = "#main-content > div > div > form > div > fieldset > legend > header > p"
     val youCanUseTextSelector = "#main-content > div > div > form > div > fieldset > legend > p"
     val yesSelector = "#value"
-    val noSelector = "#value-no"
     val continueButtonSelector = "#continue"
     val formSelector = "#main-content > div > div > form"
   }
@@ -143,7 +141,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.youCanUseText, youCanUseTextSelector)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)
@@ -170,7 +168,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.youCanUseText, youCanUseTextSelector)
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
@@ -198,7 +196,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.youCanUseText, youCanUseTextSelector)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = true)
@@ -280,7 +278,7 @@ class AssetsBenefitsControllerISpec extends IntegrationTest with ViewHelpers wit
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption, captionSelector)
+          captionCheck(expectedCaption)
           textOnPageCheck(user.specificExpectedResults.get.youCanUseText, youCanUseTextSelector)
           radioButtonCheck(yesText, 1, checked = false)
           radioButtonCheck(noText, 2, checked = false)

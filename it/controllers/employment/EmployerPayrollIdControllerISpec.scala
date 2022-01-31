@@ -48,7 +48,6 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     val continueButtonSelector = "#continue"
     val continueButtonFormSelector = "#main-content > div > div > form"
     val expectedErrorHref = "#payrollId"
-    val inputAmountField = "#payrollId"
 
     def bulletSelector(bulletNumber: Int): String =
       s"#main-content > div > div > form > div > label > ul > li:nth-child($bulletNumber)"
@@ -78,7 +77,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: String = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption: String = s"Employment details for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
     val hintText = "For example, 123456"
     val bullet1: String = "upper and lower case letters (a to z)"
@@ -88,7 +87,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: String = s"Employment for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
+    val expectedCaption: String = s"Employment details for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
     val hintText = "For example, 123456"
     val bullet1: String = "upper and lower case letters (a to z)"

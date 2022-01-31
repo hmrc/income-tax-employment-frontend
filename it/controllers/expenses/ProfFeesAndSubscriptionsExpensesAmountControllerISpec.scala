@@ -50,14 +50,10 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
     anExpensesViewModel.copy(professionalSubscriptions = profFeesAndSubscriptions, otherAndCapitalAllowancesQuestion = None, otherAndCapitalAllowances = None)
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > label > header > p"
     val continueButtonSelector: String = "#continue"
     val formSelector: String = "#main-content > div > div > form"
-    val yesSelector = "#value"
-    val noSelector = "#value-no"
     val replayTextSelector = "#main-content > div > div > form > div > label > p"
     val hintTextSelector = "#amount-hint"
-    val currencyPrefixSelector = "#main-content > div > div > form > div > div.govuk-input__wrapper > div"
     val amountFieldSelector = "#amount"
     val poundPrefixSelector = ".govuk-input__prefix"
   }
@@ -170,7 +166,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           elementNotOnPageCheck(replayTextSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountFieldName, amountFieldSelector, "")
@@ -199,7 +195,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedReplayText(newAmount), replayTextSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountFieldName, amountFieldSelector, newAmount.toString())
@@ -227,7 +223,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
-          captionCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           textOnPageCheck(user.specificExpectedResults.get.expectedReplayText(amount), replayTextSelector)
           textOnPageCheck(expectedHintText, hintTextSelector)
           inputFieldValueCheck(amountFieldName, amountFieldSelector, amount.toString())
@@ -312,7 +308,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(user.specificExpectedResults.get.expectedReplayText(amount), replayTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
             inputFieldValueCheck(amountFieldName, amountFieldSelector, "")
@@ -342,7 +338,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(user.specificExpectedResults.get.expectedReplayText(amount), replayTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
             inputFieldValueCheck(amountFieldName, amountFieldSelector, "abc")
@@ -372,7 +368,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
-            captionCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             textOnPageCheck(user.specificExpectedResults.get.expectedReplayText(amount), replayTextSelector)
             textOnPageCheck(expectedHintText, hintTextSelector)
             inputFieldValueCheck(amountFieldName, amountFieldSelector, maxLimit)

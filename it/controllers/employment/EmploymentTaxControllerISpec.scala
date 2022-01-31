@@ -28,9 +28,9 @@ import models.mongo.EmploymentUserData
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
-import play.api.http.Status.{OK, SEE_OTHER}
+import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.PageUrls.{checkYourDetailsUrl, fullUrl, howMuchTaxUrl}
+import utils.PageUrls.{checkYourDetailsUrl, fullUrl, howMuchTaxUrl, overviewUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -40,33 +40,46 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
   private val amountInputName = "amount"
 
   trait CommonExpectedResults {
+    val expectedCaption: Int => String
     val hint: String
     val continue: String
     val amount: String
+    val expectedErrorInvalidFormat: String
+    val expectedErrorMaxLimit: String
   }
 
   trait SpecificExpectedResults {
     val expectedTitle: String
     val expectedH1: String
+    val expectedErrorTitle: String
+    val expectedErrorNoEntry: String
     val expectedPTextNoData: String
     val expectedPTextWithData: String
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val hint: String = "For example, £600 or £193.54"
     val continue: String = "Continue"
     val amount: String = "amount"
+    val expectedErrorInvalidFormat = "Enter the amount of UK tax in the correct format"
+    val expectedErrorMaxLimit = "The amount of UK tax must be less than £100,000,000,000"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val hint: String = "For example, £600 or £193.54"
     val continue: String = "Continue"
     val amount: String = "amount"
+    val expectedErrorInvalidFormat = "Enter the amount of UK tax in the correct format"
+    val expectedErrorMaxLimit = "The amount of UK tax must be less than £100,000,000,000"
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
     val expectedH1: String = s"How much UK tax was taken from your maggie earnings?"
     val expectedTitle: String = s"How much UK tax was taken from your earnings?"
+    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorNoEntry = "Enter the amount of UK tax taken from your earnings"
     val expectedPTextNoData: String = "You can usually find this amount in the ‘Pay and Income Tax details’ section of your P60."
     val expectedPTextWithData: String = s"If £200 was not taken in UK tax, tell us the correct amount."
   }
@@ -74,6 +87,8 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
   object ExpectedAgentEN extends SpecificExpectedResults {
     val expectedH1: String = s"How much UK tax was taken from your client’s maggie earnings?"
     val expectedTitle: String = s"How much UK tax was taken from your client’s earnings?"
+    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorNoEntry = "Enter the amount of UK tax taken from your client’s earnings"
     val expectedPTextNoData: String = "You can usually find this amount in the ‘Pay and Income Tax details’ section of your client’s P60."
     val expectedPTextWithData: String = s"If £200 was not taken in UK tax, tell us the correct amount."
   }
@@ -81,6 +96,8 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
   object ExpectedIndividualCY extends SpecificExpectedResults {
     val expectedH1: String = s"How much UK tax was taken from your maggie earnings?"
     val expectedTitle: String = s"How much UK tax was taken from your earnings?"
+    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorNoEntry = "Enter the amount of UK tax taken from your earnings"
     val expectedPTextNoData: String = "You can usually find this amount in the ‘Pay and Income Tax details’ section of your P60."
     val expectedPTextWithData: String = s"If £200 was not taken in UK tax, tell us the correct amount."
   }
@@ -88,6 +105,8 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
   object ExpectedAgentCY extends SpecificExpectedResults {
     val expectedH1: String = s"How much UK tax was taken from your client’s maggie earnings?"
     val expectedTitle: String = s"How much UK tax was taken from your client’s earnings?"
+    val expectedErrorTitle = s"Error: $expectedTitle"
+    val expectedErrorNoEntry = "Enter the amount of UK tax taken from your client’s earnings"
     val expectedPTextNoData: String = "You can usually find this amount in the ‘Pay and Income Tax details’ section of your client’s P60."
     val expectedPTextWithData: String = s"If £200 was not taken in UK tax, tell us the correct amount."
   }
@@ -102,9 +121,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
   object Selectors {
     val pText = "#main-content > div > div > form > div > label > p:nth-child(2)"
     val hintText = "#amount-hint"
-    val currencyBox = "#amount"
     val continueButton = "#continue"
-    val caption = "#main-content > div > div > form > div > label > header > p"
     val inputAmountField = "#amount"
   }
 
@@ -142,6 +159,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(user.specificExpectedResults.get.expectedPTextWithData, pText)
           buttonCheck(user.commonExpectedResults.continue, continueButton)
@@ -166,6 +184,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(user.commonExpectedResults.expectedCaption(taxYearEOY))
           welshToggleCheck(user.isWelsh)
           textOnPageCheck(user.specificExpectedResults.get.expectedPTextNoData, pText)
           buttonCheck(user.commonExpectedResults.continue, continueButton)
@@ -236,22 +255,177 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
             }
           }
         }
-        "redirect to the CheckYourEmploymentDetails page there is no CYA data" which {
-          lazy val result: WSResponse = {
-            authoriseAgentOrIndividual(user.isAgent)
-            dropEmploymentDB()
-            urlGet(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-          }
 
-          "has an SEE_OTHER status" in {
-            result.status shouldBe SEE_OTHER
-          }
-
-          "redirect to OtherPayments not on P60 page" in {
-            result.header(HeaderNames.LOCATION).contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
-          }
-        }
       }
     }
+    "redirect to the CheckYourEmploymentDetails page there is no CYA data" which {
+      lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        urlGet(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an SEE_OTHER status" in {
+        result.status shouldBe SEE_OTHER
+      }
+
+      "redirect to CheckYourEmploymentDetails page" in {
+        result.header(HeaderNames.LOCATION).contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
+      }
+    }
+
+    "redirect to the overview page when it is not end of year" which {
+      lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        insertCyaData(cya(), aUserRequest)
+        urlGet(fullUrl(howMuchTaxUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
+
+      "has an SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
+      }
+    }
+
+  }
+
+  ".submit" should {
+
+    userScenarios.foreach { user =>
+      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+
+        s"return a BAD_REQUEST($BAD_REQUEST) status" when {
+
+          "an empty form is submitted" which {
+            implicit lazy val result: WSResponse = {
+              dropEmploymentDB()
+              authoriseAgentOrIndividual(user.isAgent)
+              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+              insertCyaData(cya(), aUserRequest)
+              urlPost(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            }
+
+            "has the correct status" in {
+              result.status shouldBe BAD_REQUEST
+            }
+
+            implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+            import Selectors._
+            import user.commonExpectedResults._
+
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            h1Check(user.specificExpectedResults.get.expectedH1)
+            captionCheck(expectedCaption(taxYearEOY))
+            textOnPageCheck(user.specificExpectedResults.get.expectedPTextWithData, pText)
+            buttonCheck(user.commonExpectedResults.continue, continueButton)
+            textOnPageCheck(user.commonExpectedResults.hint, hintText)
+            inputFieldValueCheck(amountInputName, inputAmountField, "")
+
+            errorSummaryCheck(user.specificExpectedResults.get.expectedErrorNoEntry, inputAmountField)
+            errorAboveElementCheck(user.specificExpectedResults.get.expectedErrorNoEntry, Some(amount))
+
+          }
+
+          "a form is submitted with an invalid amount" which {
+            implicit lazy val result: WSResponse = {
+              dropEmploymentDB()
+              authoriseAgentOrIndividual(user.isAgent)
+              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+              insertCyaData(cya(), aUserRequest)
+              urlPost(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), body = Map("amount" -> "abc123"),
+                welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            }
+
+            "has the correct status" in {
+              result.status shouldBe BAD_REQUEST
+            }
+
+            implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+            import Selectors._
+            import user.commonExpectedResults._
+
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            h1Check(user.specificExpectedResults.get.expectedH1)
+            captionCheck(expectedCaption(taxYearEOY))
+            textOnPageCheck(user.specificExpectedResults.get.expectedPTextWithData, pText)
+            buttonCheck(user.commonExpectedResults.continue, continueButton)
+            textOnPageCheck(user.commonExpectedResults.hint, hintText)
+            inputFieldValueCheck(amountInputName, inputAmountField, "abc123")
+
+            errorSummaryCheck(expectedErrorInvalidFormat, inputAmountField)
+            errorAboveElementCheck(expectedErrorInvalidFormat, Some(amount))
+
+          }
+
+          "a form is submitted with an amount over the maximum limit" which {
+            implicit lazy val result: WSResponse = {
+              dropEmploymentDB()
+              authoriseAgentOrIndividual(user.isAgent)
+              userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
+              insertCyaData(cya(), aUserRequest)
+              urlPost(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), body = Map("amount" -> "9999999999999999999999999999"),
+                welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+            }
+
+            "has the correct status" in {
+              result.status shouldBe BAD_REQUEST
+            }
+
+            implicit def document: () => Document = () => Jsoup.parse(result.body)
+
+            import Selectors._
+            import user.commonExpectedResults._
+
+            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+            h1Check(user.specificExpectedResults.get.expectedH1)
+            captionCheck(expectedCaption(taxYearEOY))
+            textOnPageCheck(user.specificExpectedResults.get.expectedPTextWithData, pText)
+            buttonCheck(user.commonExpectedResults.continue, continueButton)
+            textOnPageCheck(user.commonExpectedResults.hint, hintText)
+            inputFieldValueCheck(amountInputName, inputAmountField, "9999999999999999999999999999")
+
+            errorSummaryCheck(expectedErrorMaxLimit, inputAmountField)
+            errorAboveElementCheck(expectedErrorMaxLimit, Some(amount))
+
+          }
+        }
+
+      }
+    }
+
+    "redirect to check employment details page when a valid form is submitted" when {
+      implicit lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        insertCyaData(cya(), aUserRequest)
+        urlPost(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), follow = false,
+          headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
+      }
+
+      "has an SEE_OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location").contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        cyaModel.employment.employmentDetails.totalTaxToDate shouldBe Some(100)
+      }
+    }
+
+    "redirect to the overview page when it is not end of year" which {
+      lazy val result: WSResponse = {
+        authoriseAgentOrIndividual(isAgent = false)
+        dropEmploymentDB()
+        insertCyaData(cya(), aUserRequest)
+        urlPost(fullUrl(howMuchTaxUrl(taxYear, employmentId)), body = Map("amount" -> "100"), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
+      }
+
+      "has an SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
+      }
+    }
+
   }
 }

@@ -40,7 +40,7 @@
  @contentHtml = {
  <div class="govuk-panel govuk-panel--interruption">
         @formHelper(action = controllers.expenses.routes.BusinessTravelOvernightExpensesController.show(taxYear)) {
-            @heading(headingForUse, Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-5")
+            @heading(headingForUse, Some(messages("expenses.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-5")
             <p class="govuk-body">@{messages(s"expenses.startEmploymentExpenses.details1.${if(user.isAgent) "agent" else "individual"}")}</p>
             <p class="govuk-body">@{messages(s"expenses.startEmploymentExpenses.details2.${if(user.isAgent) "agent" else "individual"}")}</p>
             <p class="govuk-body">@{messages(s"expenses.startEmploymentExpenses.details3.${if(user.isAgent) "agent" else "individual"}")}</p>

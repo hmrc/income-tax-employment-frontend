@@ -44,7 +44,6 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
   private def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc))
 
   object Selectors {
-    val captionSelector: String = "#main-content > div > div > form > div > label > header > p"
     val inputSelector: String = "#name"
     val continueButtonSelector: String = "#continue"
     val continueButtonFormSelector: String = "#main-content > div > div > form"
@@ -105,7 +104,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
   }
 
   object CommonExpectedEN extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
     val expectedErrorCharLimit = "The employer name must be 74 characters or fewer"
     val expectedErrorDuplicateName = "You cannot add 2 employers with the same name"
@@ -116,7 +115,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
-    val expectedCaption: Int => String = (taxYear: Int) => s"Employment for 6 April ${taxYear - 1} to 5 April $taxYear"
+    val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
     val expectedButtonText = "Continue"
     val expectedErrorCharLimit = "The employer name must be 74 characters or fewer"
     val expectedErrorDuplicateName = "You cannot add 2 employers with the same name"
@@ -156,7 +155,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           inputFieldValueCheck(amountInputName, inputSelector, "")
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(employerNameUrl(taxYearEOY, employmentId), continueButtonFormSelector)
@@ -186,7 +185,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
-          textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+          captionCheck(expectedCaption(taxYearEOY))
           inputFieldValueCheck(amountInputName, inputSelector, employerName)
           buttonCheck(expectedButtonText, continueButtonSelector)
           formPostLinkCheck(employerNameUrl(taxYearEOY, employmentId), continueButtonFormSelector)
@@ -242,7 +241,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             inputFieldValueCheck(amountInputName, inputSelector, "")
             buttonCheck(expectedButtonText, continueButtonSelector)
             welshToggleCheck(user.isWelsh)
@@ -271,7 +270,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             inputFieldValueCheck(amountInputName, inputSelector, "~name~")
             buttonCheck(expectedButtonText, continueButtonSelector)
             welshToggleCheck(user.isWelsh)
@@ -300,7 +299,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedH1)
-            textOnPageCheck(expectedCaption(taxYearEOY), captionSelector)
+            captionCheck(expectedCaption(taxYearEOY))
             inputFieldValueCheck(amountInputName, inputSelector, charLimit)
             buttonCheck(expectedButtonText, continueButtonSelector)
             welshToggleCheck(user.isWelsh)
