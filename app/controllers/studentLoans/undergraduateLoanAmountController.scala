@@ -18,7 +18,7 @@ package controllers.studentLoans
 
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthorisedAction, InYearAction, TaxYearAction}
-import forms.AmountForm
+import forms.{AmountForm, FormUtils}
 import javax.inject.Inject
 import models.User
 import models.mongo.{EmploymentDetails, EmploymentUserData}
@@ -35,51 +35,65 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class undergraduateLoanAmountController @Inject()(implicit val cc: MessagesControllerComponents,
                                                   authAction: AuthorisedAction,
-                                                  undergraduateLoanAmountView: UndergraduateLoanAmountView,
+                                                  view: UndergraduateLoanAmountView,
                                                   inYearAction: InYearAction,
                                                   appConfig: AppConfig,
-                                                  employmentSessionService: EmploymentSessionService,
+                                                  val employmentSessionService: EmploymentSessionService,
                                                   studentLoansService: StudentLoansService,
                                                   errorHandler: ErrorHandler,
-                                                  clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                                  clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
   private implicit val executionContext: ExecutionContext = cc.executionContext
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
-    inYearAction.notInYear(taxYear) {
+  import config.{AppConfig, ErrorHandler}
+  import controllers.predicates.{AuthorisedAction, InYearAction, TaxYearAction}
+  import forms.{AmountForm, FormUtils}
+  import models.User
+  import play.api.data.Form
+  import play.api.i18n.I18nSupport
+  import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+  import services.EmploymentSessionService
+  import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+  import utils.{Clock, SessionHelper}
+  import views.html.studentLoans.UndergraduateLoanAmountView
 
-      employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
-        cya match {
-          case Some(cya) =>
-            val cyaAmount = cya.employment.studentLoansCYAModel.flatMap()
-            lazy val unfilledForm = buildForm(user.isAgent, )
-            val form: Form[BigDecimal] = cyaAmount.fold(unfilledForm)(
-              cyaPay => if (prior.exists(_.equals(cyaPay))) unfilledForm else buildForm(user.isAgent).fill(cyaPay))
+  import javax.inject.Inject
+  import scala.concurrent.{ExecutionContext, Future}
 
-            Future.successful(Ok(undergraduateLoanAmountView(form, taxYear,
-              data.employment.employmentDetails.employerName, employmentId, data.employment.studentLoansCYAModel.uglDeductionAmount)))
+  class PglAmountController @Inject()(implicit val mcc: MessagesControllerComponents,
+                                      authAction: AuthorisedAction,
+                                      inYearAction: InYearAction,
+                                      val employmentSessionService: EmploymentSessionService,
+                                      view: UndergraduateLoanAmountView,
+                                      appConfig: AppConfig,
+                                      errorHandler: ErrorHandler,
+                                      ec: ExecutionContext,
+                                      clock: Clock) extends FrontendController(mcc) with I18nSupport with SessionHelper with FormUtils {
 
-          case None => Future.successful(
-            Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId)))
-        }
-      }
-    }
-  }
+    def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit user =>
 
-  def submit(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, uglAmount: BigDecimal): Action[AnyContent] = authAction.async { implicit user =>
-    inYearAction.notInYear(taxYear) {
       if(appConfig.studentLoansEnabled) {
-        studentLoansService.updateUglDeductionAmount(taxYear, employmentId, employmentUserData, uglAmount) { data =>
-          buildForm(user.isAgent, data).bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(undergraduateLoanAmountView(formWithErrors, taxYear,
-              data.employment.employmentDetails.employerName, employmentId, data.employment.studentLoansCYAModel.uglDeductionAmount))),
-            amount => handleSuccessForm(taxYear, employmentId, data, amount)
+        employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
+
+          val cyaData = optCya.flatMap(_.employment.studentLoansCYAModel.flatMap(_.pglDeductionAmount))
+
+          val form = fillFormFromPriorAndCYA(buildForm, prior, cyaData, employmentId)(
+            employment => employment.employmentData.flatMap(_.deductions.flatMap(_.studentLoans.flatMap(_.uglDeductionAmount)))
           )
+          Future.successful(Ok(view(taxYear, form, cyaData, employmentId)))
         }
       } else {
         Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
       }
+
     }
-  }
+
+    def submit(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit user =>
+
+      if(appConfig.studentLoansEnabled) {
+
+      }
+
+    }
 
 
 
@@ -91,8 +105,8 @@ class undergraduateLoanAmountController @Inject()(implicit val cc: MessagesContr
     }
   }
 
-  private def buildForm(isAgent: Boolean, employmentDetails: EmploymentDetails): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"studentLoans.undergraduateLoanAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
+  private def buildForm(implicit user: User[_]): Form[BigDecimal] = AmountForm.amountForm(
+    emptyFieldKey = s"studentLoans.undergraduateLoanAmount.error.noEntry.${if (user.isAgent) "agent" else "individual"}",
     emptyFieldArguments = Seq(employmentDetails.employerName),
     wrongFormatKey = "studentLoans.undergraduateLoanAmount.error.invalidFormat"
   )

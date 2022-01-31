@@ -65,7 +65,7 @@ messages(s"studentLoans.undergraduateLoanAmount.title.${if(user.isAgent) "agent"
             name = "amount",
             heading = headingForUse,
             headingClasses = "govuk-!-margin-bottom-2",
-            subheading = Some(messages("studentLoans.caption", (taxYear - 1).toString, taxYear.toString)),
+            subheading = Some(messages("studentLoans.subheading", (taxYear - 1).toString, taxYear.toString)),
             content = Some(contentHtml),
             hint = Some(Html(messages("common.currency.hint"))),
             isPageHeading = false,
