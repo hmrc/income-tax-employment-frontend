@@ -16,9 +16,9 @@
 
 package controllers.expenses
 
+import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes.OtherEquipmentController
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import models.User
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
@@ -30,7 +30,7 @@ import services.EmploymentSessionService
 import services.ExpensesRedirectService.{expensesSubmitRedirect, professionalSubscriptionsAmountRedirects, redirectBasedOnCurrentAnswers}
 import services.expenses.ExpensesService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.expenses.ProfFeesAndSubscriptionsExpensesAmountView
 
 import javax.inject.Inject
@@ -38,7 +38,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ProfFeesAndSubscriptionsExpensesAmountController @Inject()(implicit val cc: MessagesControllerComponents,
                                                                  authAction: AuthorisedAction,
-                                                                 inYearAction: InYearAction,
+                                                                 inYearAction: InYearUtil,
                                                                  profSubscriptionsExpensesAmountView: ProfFeesAndSubscriptionsExpensesAmountView,
                                                                  appConfig: AppConfig,
                                                                  val employmentSessionService: EmploymentSessionService,

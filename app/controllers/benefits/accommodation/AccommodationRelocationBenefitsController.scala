@@ -16,10 +16,10 @@
 
 package controllers.benefits.accommodation
 
+import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.accommodation.routes._
 import controllers.benefits.travel.routes._
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
 import models.employment.EmploymentBenefitsType
@@ -32,7 +32,7 @@ import services.EmploymentSessionService
 import services.RedirectService._
 import services.benefits.AccommodationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.benefits.accommodation.AccommodationRelocationBenefitsView
 
 import javax.inject.Inject
@@ -40,7 +40,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AccommodationRelocationBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
                                                           authAction: AuthorisedAction,
-                                                          inYearAction: InYearAction,
+                                                          inYearAction: InYearUtil,
                                                           accommodationRelocationBenefitsView: AccommodationRelocationBenefitsView,
                                                           appConfig: AppConfig,
                                                           employmentSessionService: EmploymentSessionService,

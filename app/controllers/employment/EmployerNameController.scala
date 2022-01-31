@@ -16,9 +16,9 @@
 
 package controllers.employment
 
+import actions.AuthorisedAction
 import common.SessionValues
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.employment.EmployerNameForm
 import models.User
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -28,7 +28,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import services.RedirectService.employmentDetailsRedirect
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.employment.EmployerNameView
 
 import javax.inject.Inject
@@ -38,7 +38,7 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
                                        val mcc: MessagesControllerComponents,
                                        implicit val appConfig: AppConfig,
                                        employerNameView: EmployerNameView,
-                                       inYearAction: InYearAction,
+                                       inYearAction: InYearUtil,
                                        errorHandler: ErrorHandler,
                                        employmentSessionService: EmploymentSessionService,
                                        implicit val clock: Clock,

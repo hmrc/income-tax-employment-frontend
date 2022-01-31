@@ -16,9 +16,9 @@
 
 package controllers.benefits.fuel
 
+import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.fuel.routes.{CompanyCarBenefitsAmountController, CompanyVanBenefitsController}
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
 import models.employment.EmploymentBenefitsType
@@ -31,7 +31,7 @@ import services.EmploymentSessionService
 import services.RedirectService.{benefitsSubmitRedirect, carBenefitsRedirects, redirectBasedOnCurrentAnswers}
 import services.benefits.FuelService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.benefits.fuel.CompanyCarBenefitsView
 
 import javax.inject.Inject
@@ -40,7 +40,7 @@ import scala.concurrent.{ExecutionContext, Future}
 // TODO: This controller does not have enough test coverage in CompanyCarBenefitsControllerISpec
 class CompanyCarBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
                                              authAction: AuthorisedAction,
-                                             inYearAction: InYearAction,
+                                             inYearAction: InYearUtil,
                                              companyCarBenefitsView: CompanyCarBenefitsView,
                                              appConfig: AppConfig,
                                              employmentSessionService: EmploymentSessionService,

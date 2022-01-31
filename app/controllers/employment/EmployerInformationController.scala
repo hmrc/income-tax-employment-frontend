@@ -16,14 +16,14 @@
 
 package controllers.employment
 
+import actions.AuthorisedAction
 import config.AppConfig
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import models.employment.EmploymentSourceOrigin
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.SessionHelper
+import utils.{InYearUtil, SessionHelper}
 import views.html.employment.EmployerInformationView
 
 import javax.inject.Inject
@@ -32,7 +32,7 @@ import scala.concurrent.ExecutionContext
 class EmployerInformationController @Inject()(implicit val cc: MessagesControllerComponents,
                                               authAction: AuthorisedAction,
                                               employerInformationView: EmployerInformationView,
-                                              inYearAction: InYearAction,
+                                              inYearAction: InYearUtil,
                                               implicit val appConfig: AppConfig,
                                               employmentSessionService: EmploymentSessionService,
                                               implicit val ec: ExecutionContext

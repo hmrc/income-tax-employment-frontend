@@ -16,8 +16,8 @@
 
 package controllers.employment
 
+import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
 import models.mongo.EmploymentUserData
@@ -28,7 +28,7 @@ import services.EmploymentSessionService
 import services.RedirectService.employmentDetailsRedirect
 import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.employment.StillWorkingForEmployerView
 
 import javax.inject.Inject
@@ -38,7 +38,7 @@ class StillWorkingForEmployerController @Inject()(authorisedAction: AuthorisedAc
                                                   val mcc: MessagesControllerComponents,
                                                   implicit val appConfig: AppConfig,
                                                   stillWorkingForEmployerView: StillWorkingForEmployerView,
-                                                  inYearAction: InYearAction,
+                                                  inYearAction: InYearUtil,
                                                   errorHandler: ErrorHandler,
                                                   employmentSessionService: EmploymentSessionService,
                                                   employmentService: EmploymentService,

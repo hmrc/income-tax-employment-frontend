@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-package controllers.predicates
+package actions
 
-import config.{AppConfig}
-import controllers.predicates.TaxYearAction.taxYearAction
+import actions.TaxYearAction.taxYearAction
+import config.AppConfig
 import models.User
 import play.api.mvc.{ActionBuilder, AnyContent, MessagesControllerComponents}
 
-class CommonPredicates(taxYear: Int) {
-  def predicateList()
-                   (implicit authorisedAction: AuthorisedAction, appConfig: AppConfig, mcc: MessagesControllerComponents): ActionBuilder[User, AnyContent] =
-    authorisedAction andThen
-      taxYearAction(taxYear)(appConfig, mcc.messagesApi)
-}
-
-object CommonPredicates {
-  def commonPredicates(taxYear: Int)(
+object AuthorisedTaxYearAction {
+  def authorisedTaxYearAction(taxYear: Int)(
     implicit authAction: AuthorisedAction, appConfig: AppConfig, mcc: MessagesControllerComponents
-  ): ActionBuilder[User, AnyContent] = new CommonPredicates(taxYear).predicateList
+  ): ActionBuilder[User, AnyContent] = authAction andThen taxYearAction(taxYear)(appConfig, mcc.messagesApi)
 }

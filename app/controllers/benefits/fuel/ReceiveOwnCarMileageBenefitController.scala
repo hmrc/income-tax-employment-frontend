@@ -16,11 +16,11 @@
 
 package controllers.benefits.fuel
 
+import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.accommodation.routes.AccommodationRelocationBenefitsController
 import controllers.benefits.fuel.routes.MileageBenefitAmountController
 import controllers.employment.routes.CheckYourBenefitsController
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
 import models.employment.EmploymentBenefitsType
@@ -32,7 +32,7 @@ import services.EmploymentSessionService
 import services.RedirectService._
 import services.benefits.FuelService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.benefits.fuel.ReceiveOwnCarMileageBenefitView
 
 import javax.inject.Inject
@@ -40,7 +40,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ReceiveOwnCarMileageBenefitController @Inject()(implicit val cc: MessagesControllerComponents,
                                                       authAction: AuthorisedAction,
-                                                      inYearAction: InYearAction,
+                                                      inYearAction: InYearUtil,
                                                       receiveOwnCarMileageBenefitView: ReceiveOwnCarMileageBenefitView,
                                                       appConfig: AppConfig,
                                                       employmentSessionService: EmploymentSessionService,

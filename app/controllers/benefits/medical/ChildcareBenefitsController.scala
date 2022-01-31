@@ -16,9 +16,9 @@
 
 package controllers.benefits.medical
 
+import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.medical.routes.{ChildcareBenefitsAmountController, EducationalServicesBenefitsController}
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
 import models.employment.EmploymentBenefitsType
@@ -30,7 +30,7 @@ import services.EmploymentSessionService
 import services.RedirectService.{benefitsSubmitRedirect, childcareRedirects, redirectBasedOnCurrentAnswers}
 import services.benefits.MedicalService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.benefits.medical.ChildcareBenefitsView
 
 import javax.inject.Inject
@@ -38,7 +38,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ChildcareBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
                                             authAction: AuthorisedAction,
-                                            inYearAction: InYearAction,
+                                            inYearAction: InYearUtil,
                                             childcareBenefitsView: ChildcareBenefitsView,
                                             appConfig: AppConfig,
                                             employmentSessionService: EmploymentSessionService,

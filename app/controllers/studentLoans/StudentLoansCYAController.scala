@@ -16,13 +16,13 @@
 
 package controllers.studentLoans
 
+import actions.{AuthorisedAction, TaxYearAction}
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthorisedAction, InYearAction, TaxYearAction}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.studentLoans.StudentLoansCYAService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.Clock
+import utils.{Clock, InYearUtil}
 import views.html.studentLoans.StudentLoansCYAView
 
 import javax.inject.Inject
@@ -33,7 +33,7 @@ class StudentLoansCYAController @Inject()(
                                            view: StudentLoansCYAView,
                                            service: StudentLoansCYAService,
                                            authAction: AuthorisedAction,
-                                           inYearAction: InYearAction,
+                                           inYearAction: InYearUtil,
                                            errorHandler: ErrorHandler,
                                            implicit val appConfig: AppConfig,
                                            implicit val ec: ExecutionContext,

@@ -16,9 +16,9 @@
 
 package controllers.benefits.assets
 
+import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.assets.routes.{AssetTransfersBenefitsController, AssetsBenefitsAmountController}
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
 import models.employment.EmploymentBenefitsType
@@ -31,7 +31,7 @@ import services.EmploymentSessionService
 import services.RedirectService.{benefitsSubmitRedirect, commonAssetsModelRedirects, redirectBasedOnCurrentAnswers}
 import services.benefits.AssetsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.benefits.assets.AssetsBenefitsView
 
 import javax.inject.Inject
@@ -39,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AssetsBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
                                          authAction: AuthorisedAction,
-                                         inYearAction: InYearAction,
+                                         inYearAction: InYearUtil,
                                          assetsBenefitsView: AssetsBenefitsView,
                                          appConfig: AppConfig,
                                          employmentSessionService: EmploymentSessionService,

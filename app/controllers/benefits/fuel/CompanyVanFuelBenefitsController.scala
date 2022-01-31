@@ -16,10 +16,10 @@
 
 package controllers.benefits.fuel
 
+import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.fuel.routes.{CompanyVanFuelBenefitsAmountController, ReceiveOwnCarMileageBenefitController}
 import controllers.employment.routes.CheckYourBenefitsController
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.YesNoForm
 import models.User
 import models.employment.EmploymentBenefitsType
@@ -31,7 +31,7 @@ import services.EmploymentSessionService
 import services.RedirectService.{benefitsSubmitRedirect, redirectBasedOnCurrentAnswers, vanFuelBenefitsRedirects}
 import services.benefits.FuelService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.benefits.fuel.CompanyVanFuelBenefitsView
 
 import javax.inject.Inject
@@ -39,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class CompanyVanFuelBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
                                                  authAction: AuthorisedAction,
-                                                 inYearAction: InYearAction,
+                                                 inYearAction: InYearUtil,
                                                  companyVanFuelBenefitsView: CompanyVanFuelBenefitsView,
                                                  appConfig: AppConfig,
                                                  employmentSessionService: EmploymentSessionService,

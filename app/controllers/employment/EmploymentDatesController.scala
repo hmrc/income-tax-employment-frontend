@@ -16,9 +16,9 @@
 
 package controllers.employment
 
+import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes.CheckEmploymentDetailsController
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.employment.EmploymentDatesForm
 import models.employment.EmploymentDates
 import play.api.data.Form
@@ -28,7 +28,7 @@ import services.EmploymentSessionService
 import services.RedirectService.employmentDetailsRedirect
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.DateTimeUtil.localDateTimeFormat
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.employment.EmploymentDatesView
 
 import java.time.LocalDate
@@ -39,7 +39,7 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
                                           val mcc: MessagesControllerComponents,
                                           implicit val appConfig: AppConfig,
                                           employmentDatesView: EmploymentDatesView,
-                                          inYearAction: InYearAction,
+                                          inYearAction: InYearUtil,
                                           errorHandler: ErrorHandler,
                                           employmentSessionService: EmploymentSessionService,
                                           implicit val clock: Clock,

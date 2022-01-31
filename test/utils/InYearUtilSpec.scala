@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package controllers.predicates
+package utils
 
 import config.AppConfig
-import play.api.http.{HeaderNames, Status}
+import play.api.http.HeaderNames
 import play.api.mvc.{Result, Results}
 import play.api.test.Helpers._
-import utils.UnitTest
 
 import java.time.LocalDateTime
 import scala.concurrent.Future
 
-class InYearActionSpec extends UnitTest {
+class InYearUtilSpec extends UnitTest {
   val year2021: Int = 2021
   val year2022: Int = 2022
   val month4: Int = 4

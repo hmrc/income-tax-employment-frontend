@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package controllers.predicates
+package actions
 
 import common.SessionValues
 import common.SessionValues._
 import config.AppConfig
-import javax.inject.Inject
 import models.User
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Results.Redirect
 import play.api.mvc._
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TaxYearAction @Inject()(taxYear: Int, missingTaxYearReset: Boolean)(

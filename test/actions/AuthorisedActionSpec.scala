@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.predicates
+package actions
 
 import common.{EnrolmentIdentifiers, EnrolmentKeys}
 import models.User

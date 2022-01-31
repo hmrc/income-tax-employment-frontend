@@ -16,10 +16,10 @@
 
 package controllers.benefits.utilities
 
+import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.medical.routes.MedicalDentalChildcareBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
-import controllers.predicates.{AuthorisedAction, InYearAction}
 import forms.{AmountForm, FormUtils}
 import models.User
 import models.employment.EmploymentBenefitsType
@@ -31,7 +31,7 @@ import services.EmploymentSessionService
 import services.RedirectService.{benefitsSubmitRedirect, redirectBasedOnCurrentAnswers, servicesBenefitsAmountRedirects}
 import services.benefits.UtilitiesService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.benefits.utilities.OtherServicesBenefitsAmountView
 
 import javax.inject.Inject
@@ -39,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class OtherServicesBenefitsAmountController @Inject()(implicit val cc: MessagesControllerComponents,
                                                       authAction: AuthorisedAction,
-                                                      inYearAction: InYearAction,
+                                                      inYearAction: InYearUtil,
                                                       appConfig: AppConfig,
                                                       otherServicesBenefitsAmountView: OtherServicesBenefitsAmountView,
                                                       val employmentSessionService: EmploymentSessionService,
