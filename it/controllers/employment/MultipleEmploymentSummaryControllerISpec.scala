@@ -25,8 +25,13 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.OK
 import play.api.libs.ws.WSResponse
+import play.api.mvc.Result
+import play.api.test.FakeRequest
+import play.api.test.Helpers.route
 import utils.PageUrls.{checkYourExpensesUrl, claimEmploymentExpensesUrl, employerInformationUrl, employerNameUrlWithoutEmploymentId, employmentSummaryUrl, fullUrl, removeEmploymentUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
+
+import scala.concurrent.Future
 
 class MultipleEmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -71,6 +76,7 @@ class MultipleEmploymentSummaryControllerISpec extends IntegrationTest with View
 
   trait SpecificExpectedResults {
     val yourEmpInfo: String
+    val yourEmpInfoStudentLoansUnreleased: String
     val cannotUpdateInfo: String
     val cannotAdd: String
   }
@@ -142,25 +148,29 @@ class MultipleEmploymentSummaryControllerISpec extends IntegrationTest with View
   }
 
   object ExpectedIndividualEN extends SpecificExpectedResults {
-    val yourEmpInfo: String = "Your employment information is based on the information we already hold about you. It includes employment details and benefits."
+    val yourEmpInfo: String = "Your employment information is based on the information we already hold about you. It includes employment details, benefits and student loans contributions."
+    val yourEmpInfoStudentLoansUnreleased: String = "Your employment information is based on the information we already hold about you. It includes employment details and benefits."
     val cannotUpdateInfo: String = s"You cannot change your employment information until 6 April $taxYear."
     val cannotAdd: String = s"You cannot add expenses until 6 April $taxYear."
   }
 
   object ExpectedAgentEN extends SpecificExpectedResults {
-    val yourEmpInfo: String = "Your client’s employment information is based on the information we already hold about them. It includes employment details and benefits."
+    val yourEmpInfo: String = "Your client’s employment information is based on the information we already hold about them. It includes employment details, benefits and student loans contributions."
+    val yourEmpInfoStudentLoansUnreleased: String = "Your client’s employment information is based on the information we already hold about them. It includes employment details and benefits."
     val cannotUpdateInfo: String = s"You cannot change your client’s employment information until 6 April $taxYear."
     val cannotAdd: String = s"You cannot add your client’s expenses until 6 April $taxYear."
   }
 
   object ExpectedIndividualCY extends SpecificExpectedResults {
-    val yourEmpInfo: String = "Your employment information is based on the information we already hold about you. It includes employment details and benefits."
+    val yourEmpInfo: String = "Your employment information is based on the information we already hold about you. It includes employment details, benefits and student loans contributions."
+    val yourEmpInfoStudentLoansUnreleased: String = "Your employment information is based on the information we already hold about you. It includes employment details and benefits."
     val cannotUpdateInfo: String = s"You cannot change your employment information until 6 April $taxYear."
     val cannotAdd: String = s"You cannot add expenses until 6 April $taxYear."
   }
 
   object ExpectedAgentCY extends SpecificExpectedResults {
-    val yourEmpInfo: String = "Your client’s employment information is based on the information we already hold about them. It includes employment details and benefits."
+    val yourEmpInfo: String = "Your client’s employment information is based on the information we already hold about them. It includes employment details, benefits and student loans contributions."
+    val yourEmpInfoStudentLoansUnreleased: String = "Your client’s employment information is based on the information we already hold about them. It includes employment details and benefits."
     val cannotUpdateInfo: String = s"You cannot change your client’s employment information until 6 April $taxYear."
     val cannotAdd: String = s"You cannot add your client’s expenses until 6 April $taxYear."
   }
@@ -313,6 +323,37 @@ class MultipleEmploymentSummaryControllerISpec extends IntegrationTest with View
             textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
             textOnPageCheck(noExpensesAdded, noExpensesAddedSelector)
             linkCheck(add, addSelector, claimEmploymentExpensesUrl(taxYearEOY))
+            buttonCheck(returnToOverview)
+          }
+        }
+
+        "return the multiple employment summary EOY page without references to student loans" when {
+
+          "the student loans feature switch is false" which {
+            val headers = if (user.isWelsh){
+              Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY), HeaderNames.ACCEPT_LANGUAGE -> "cy")
+            } else {
+              Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY))
+            }
+
+            val request = FakeRequest("GET", employmentSummaryUrl(taxYearEOY)).withHeaders(headers: _*)
+
+            lazy val result: Future[Result] = {
+              authoriseAgentOrIndividual(user.isAgent)
+              userDataStub(multipleEmpsWithExpenses, nino, taxYearEOY)
+              route(appWithFeatureSwitchesOff, request, "{}").get
+            }
+
+            implicit def document: () => Document = () => Jsoup.parse(bodyOf(result))
+
+            "status OK" in {
+              status(result) shouldBe OK
+            }
+
+            welshToggleCheck(user.isWelsh)
+            titleCheck(expectedTitle)
+            h1Check(expectedH1)
+            textOnPageCheck(specific.yourEmpInfoStudentLoansUnreleased, yourEmpInfoSelector(3))
             buttonCheck(returnToOverview)
           }
         }

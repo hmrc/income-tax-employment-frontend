@@ -24,6 +24,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.HeaderNames
 import play.api.libs.ws.{BodyWritable, WSClient, WSResponse}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import utils.PageUrls.appWithFeatureSwitchesOff
 
 trait ViewHelpers {
   self: AnyWordSpec with Matchers with WireMockHelper =>
@@ -50,6 +51,8 @@ trait ViewHelpers {
                                                                           specificExpectedResults: Option[SpecificExpectedResults] = None)
 
   val userScenarios: Seq[UserScenario[_, _]]
+
+  lazy val wsClientFeatureSwitchOff: WSClient = appWithFeatureSwitchesOff.injector.instanceOf[WSClient]
 
   def urlGet(url: String, welsh: Boolean = false, follow: Boolean = true, headers: Seq[(String, String)] = Seq())(implicit wsClient: WSClient): WSResponse = {
 

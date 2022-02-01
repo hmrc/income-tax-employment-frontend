@@ -57,7 +57,12 @@
         }
     }
     <h2 class="govuk-heading-m govuk-!-margin-top-6">@messages("employment.employmentSummary.employers")</h2>
-    <p class="govuk-body">@messages(s"employment.employmentSummary.content.${if(user.isAgent) "agent" else "individual"}")</p>
+
+    @if(appConfig.studentLoansEnabled) {
+        <p class="govuk-body">@messages(s"employment.employmentSummary.content.${if(user.isAgent) "agent" else "individual"}")</p>
+    } else {
+        <p class="govuk-body">@messages(s"employment.employmentSummary.content.studentLoansUnreleased.${if(user.isAgent) "agent" else "individual"}")</p>
+    }
 
     @{
 
