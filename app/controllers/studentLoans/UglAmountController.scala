@@ -17,7 +17,7 @@
 package controllers.studentLoans
 
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthorisedAction, InYearAction, TaxYearAction}
+import actions.{AuthorisedAction, TaxYearAction}
 import forms.{AmountForm, FormUtils}
 import models.User
 import controllers.studentLoans.routes.StudentLoansCYAController
@@ -37,7 +37,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class UglAmountController @Inject()(implicit val mcc: MessagesControllerComponents,
                                     authAction: AuthorisedAction,
-                                    inYearAction: InYearAction,
                                     val employmentSessionService: EmploymentSessionService,
                                     val studentLoansService: StudentLoansService,
                                     employmentUserDataRepository: EmploymentUserDataRepository,
