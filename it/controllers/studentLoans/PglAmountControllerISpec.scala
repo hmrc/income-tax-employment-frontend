@@ -24,14 +24,15 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, SEE_OTHER}
 import play.api.libs.ws.{WSClient, WSResponse}
-import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
+import play.api.test.Helpers.route
 import utils.PageUrls.{fullUrl, pglAmountPage, studentLoansCyaPage}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
-class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
+import scala.concurrent.Future
 
-  lazy val wsClientFeatureSwitchOff: WSClient = appWithFeatureSwitchesOff.injector.instanceOf[WSClient]
+class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   val employmentId: String = "1234567890-0987654321"
 
@@ -139,14 +140,15 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
     "redirect to the overview page" when {
 
       "the student loans feature switch is off" in {
+        val request = FakeRequest("GET", pglAmountPage(taxYear, employmentId)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear))
 
-        val result = {
+        lazy val result: Future[Result] = {
           dropEmploymentDB()
           authoriseIndividual()
-          await(wsClientFeatureSwitchOff.url(url(taxYear)).withFollowRedirects(false).get())
+          route(appWithFeatureSwitchesOff, request, "{}").get
         }
 
-        result.headers("Location").headOption shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
       }
     }
 
@@ -247,20 +249,6 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   ".submit" should {
-
-    "redirect the user back to the overview page " when {
-
-      "the student loans feature switch is off" in {
-
-        val result = {
-          dropEmploymentDB()
-          authoriseIndividual()
-          await(wsClientFeatureSwitchOff.url(url(taxYear)).withFollowRedirects(false).get())
-        }
-
-        result.headers("Location").headOption shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
-      }
-    }
 
     userScenarios.foreach { scenarioData =>
 
