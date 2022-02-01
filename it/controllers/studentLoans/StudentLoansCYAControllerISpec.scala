@@ -16,9 +16,8 @@
 
 package controllers.studentLoans
 
-import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import models.employment._
-import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
+import models.employment.createUpdate.{CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import models.{IncomeTaxUserData, User}
 import org.joda.time.DateTime
@@ -27,15 +26,16 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, NO_CONTENT}
 import play.api.libs.json.Json
-import play.api.libs.ws.{WSClient, WSResponse}
-import play.api.mvc.AnyContentAsEmpty
+import play.api.libs.ws.WSResponse
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
+import play.api.test.Helpers.route
 import utils.PageUrls._
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
-class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
+import scala.concurrent.Future
 
-  lazy val wsClientFeatureSwitchOff: WSClient = appWithFeatureSwitchesOff.injector.instanceOf[WSClient]
+class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
   val employmentId: String = "1234567890-0987654321"
 
@@ -218,13 +218,15 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     "immediately redirect the user to the overview page" when {
 
       "the student loans feature switch is off" in {
-        val result = {
+        val request = FakeRequest("GET", studentLoansCyaPage(taxYear, employmentId)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear))
+
+        lazy val result: Future[Result] = {
           dropEmploymentDB()
           authoriseIndividual()
-          await(wsClientFeatureSwitchOff.url(url(taxYear)).withFollowRedirects(false).get())
+          route(appWithFeatureSwitchesOff, request, "{}").get
         }
 
-        result.headers("Location").headOption shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
       }
 
     }
