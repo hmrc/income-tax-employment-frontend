@@ -15,8 +15,8 @@
  *@
 
 @import views.html.templates.Layout
-@import views.html.templates.helpers.{Button, ErrorSummary, Heading, InputRadio, InputText}
-@import utils.ViewUtils.bigDecimalCurrency
+@import views.html.templates.helpers.{Button, ErrorSummary, Heading, InputText}
+@import utils.ViewUtils._
 
 @this(
     layout: Layout,
@@ -24,27 +24,15 @@
     errorSummary: ErrorSummary,
     button: Button,
     heading: Heading,
-    inputRadio: InputRadio,
     inputText: InputText
 )
-@(form: Form[BigDecimal], taxYear: Int, employerName: String, employmentId:String, amount: Option[BigDecimal])(implicit user: User[_], messages: Messages, appConfig: AppConfig)
-
-@hasFormErrors = @{form.hasErrors}
-
-@titleForUse = @{
-messages(s"studentLoans.undergraduateLoanAmount.title.${if(user.isAgent) "agent" else "individual"}", employerName)
-}
+@(taxYear: Int, form: Form[BigDecimal], employmentId: String, employerName: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
 @headingForUse = @{
     messages(s"studentLoans.undergraduateLoanAmount.heading.${if(user.isAgent) "agent" else "individual"}", employerName)
 }
 
 @contentHtml = {
-    @if(amount.isDefined){
-    <p>
-        @messages("common.ifItWasNot", bigDecimalCurrency(amount.get.toString))
-    </p>
-    }
     <p>
         @messages(s"studentLoans.undergraduateLoanAmount.check.${if(user.isAgent) "agent" else "individual"}")
     </p>
@@ -54,11 +42,11 @@ messages(s"studentLoans.undergraduateLoanAmount.title.${if(user.isAgent) "agent"
 }
 
 
-@layout(pageTitle = headingForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
+@layout(pageTitle = headingForUse, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
 
-    @errorSummary(form.errors.distinct)
+    @errorSummary(form.errors)
 
-    @formWithCsrf(controllers.studentLoans.routes.undergraduateLoanAmountController.submit(taxYear, empId)) {
+    @formWithCSRF(controllers.studentLoans.routes.UglAmountController.submit(taxYear, employmentId)) {
         @inputText(
             form,
             id = "amount",

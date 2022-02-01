@@ -1330,5 +1330,3 @@ studentLoans.undergraduateLoanAmount.coursesExample = Undergraduate loan covers 
 studentLoans.undergraduateLoanAmount.error.noEntry.individual = Enter the amount of undergraduate loan you repaid while employed by {0}
 studentLoans.undergraduateLoanAmount.error.noEntry.agent = Enter the amount of undergraduate loan your client repaid while employed by {0}
 studentLoans.undergraduateLoanAmount.error.invalidFormat = Enter the amount of undergraduate loan in the correct format
-studentLoans.undergraduateLoanAmount.title.individual = How much student loan repayment have you made?
-studentLoans.undergraduateLoanAmount.title.agent = How much student loan repayment has your client made?

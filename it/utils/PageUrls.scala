@@ -191,5 +191,6 @@ object PageUrls extends IntegrationTest {
 //  *****************       Student loans pages      *********************
   
   def studentLoansCyaPage(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/student-loans/check-student-loans-repayments?employmentId=$employmentId"
+  def studentLoansUglAmountUrl(taxYear: Int, employmentId: String): String = s"$appUrl/$taxYear/student-loans/undergraduate-repayment-amount?employmentId=$employmentId"
 }
 //scalastyle:on number.of.methods
