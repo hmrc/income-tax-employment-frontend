@@ -18,6 +18,7 @@ package utils
 
 import models.User
 import models.mongo.{EmploymentUserData, ExpensesUserData}
+import org.mongodb.scala.bson.collection.immutable.Document
 import repositories.{EmploymentUserDataRepositoryImpl, ExpensesUserDataRepositoryImpl}
 
 trait EmploymentDatabaseHelper {
@@ -26,29 +27,24 @@ trait EmploymentDatabaseHelper {
   lazy val employmentDatabase: EmploymentUserDataRepositoryImpl = app.injector.instanceOf[EmploymentUserDataRepositoryImpl]
   lazy val expensesDatabase: ExpensesUserDataRepositoryImpl = app.injector.instanceOf[ExpensesUserDataRepositoryImpl]
 
-  //noinspection ScalaStyle
   def dropEmploymentDB(): Unit = {
-    await(employmentDatabase.collection.drop().toFutureOption())
+    await(employmentDatabase.collection.deleteMany(filter = Document()).toFuture())
     await(employmentDatabase.ensureIndexes)
   }
 
-  //noinspection ScalaStyle
   def dropExpensesDB(): Unit = {
-    await(expensesDatabase.collection.drop().toFutureOption())
+    await(expensesDatabase.collection.deleteMany(filter = Document()).toFuture())
     await(expensesDatabase.ensureIndexes)
   }
 
-  //noinspection ScalaStyle
-  def insertCyaData(cya: EmploymentUserData, user: User[_]) {
+  def insertCyaData(cya: EmploymentUserData, user: User[_]): Unit = {
     await(employmentDatabase.createOrUpdate(cya)(user))
   }
 
-  //noinspection ScalaStyle
-  def insertExpensesCyaData(cya: ExpensesUserData, user: User[_]) {
+  def insertExpensesCyaData(cya: ExpensesUserData, user: User[_]): Unit = {
     await(expensesDatabase.createOrUpdate(cya)(user))
   }
 
-  //noinspection ScalaStyle
   def findCyaData(taxYear: Int, employmentId: String, user: User[_]): Option[EmploymentUserData] = {
     await(employmentDatabase.find(taxYear, employmentId)(user).map {
       case Left(_) => None
@@ -56,7 +52,6 @@ trait EmploymentDatabaseHelper {
     })
   }
 
-  //noinspection ScalaStyle
   def findExpensesCyaData(taxYear: Int, user: User[_]): Option[ExpensesUserData] = {
     await(expensesDatabase.find(taxYear)(user).map {
       case Left(_) => None
