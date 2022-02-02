@@ -17,23 +17,29 @@
 package connectors
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
+import config.MockAppConfig
 import models.{APIErrorBodyModel, APIErrorModel, IncomeTaxUserData}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.test.Helpers.OK
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
-import utils.IntegrationTest
+import utils.ConnectorIntegrationTest
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
-class IncomeTaxUserDataConnectorSpec extends IntegrationTest {
+class IncomeTaxUserDataConnectorSpec extends ConnectorIntegrationTest {
 
-  private lazy val connector: IncomeTaxUserDataConnector = app.injector.instanceOf[IncomeTaxUserDataConnector]
-  private lazy val externalConnector: IncomeTaxUserDataConnector = appWithFakeExternalCall.injector.instanceOf[IncomeTaxUserDataConnector]
+  private val mtditid = "some-mtditid"
+  private val sessionId = "some-sessionId"
+  private val nino = "some-nino"
+  private val taxYear = 2022
 
-  implicit override val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
+  implicit private val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
+
+  private lazy val underTest = new IncomeTaxUserDataConnector(httpClient, new MockAppConfig().config())
+  private lazy val externalConnector = new IncomeTaxUserDataConnector(httpClient, new MockAppConfig().config())
 
   "IncomeTaxUserDataConnector" should {
     "Return a success result" when {
@@ -41,16 +47,14 @@ class IncomeTaxUserDataConnectorSpec extends IntegrationTest {
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", NO_CONTENT,
           "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result: IncomeTaxUserDataResponse = Await.result(connector.get(nino, taxYear), Duration.Inf)
-        result shouldBe Right(IncomeTaxUserData())
+        Await.result(underTest.get(nino, taxYear), Duration.Inf) shouldBe Right(IncomeTaxUserData())
       }
 
       "submission returns a 200" in {
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,
           Json.toJson(anIncomeTaxUserData).toString(), "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result: IncomeTaxUserDataResponse = Await.result(connector.get(nino, taxYear), Duration.Inf)
-        result shouldBe Right(anIncomeTaxUserData)
+        Await.result(underTest.get(nino, taxYear), Duration.Inf) shouldBe Right(anIncomeTaxUserData)
       }
     }
 
@@ -61,40 +65,35 @@ class IncomeTaxUserDataConnectorSpec extends IntegrationTest {
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,
           Json.toJson(anIncomeTaxUserData).toString(), "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result: IncomeTaxUserDataResponse = Await.result(externalConnector.get(nino, taxYear)(hc), Duration.Inf)
-        result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))
+        Await.result(externalConnector.get(nino, taxYear)(hc), Duration.Inf) shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))
       }
 
       "submission returns a 200 but invalid json" in {
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", OK,
           Json.toJson("""{"invalid": true}""").toString(), "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result: IncomeTaxUserDataResponse = Await.result(connector.get(nino, taxYear), Duration.Inf)
-        result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))
+        Await.result(underTest.get(nino, taxYear), Duration.Inf) shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))
       }
 
       "submission returns a 500" in {
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", INTERNAL_SERVER_ERROR,
           """{"code": "FAILED", "reason": "failed"}""", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result: IncomeTaxUserDataResponse = Await.result(connector.get(nino, taxYear), Duration.Inf)
-        result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel("FAILED", "failed")))
+        Await.result(underTest.get(nino, taxYear), Duration.Inf) shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel("FAILED", "failed")))
       }
 
       "submission returns a 503" in {
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", SERVICE_UNAVAILABLE,
           """{"code": "FAILED", "reason": "failed"}""", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result: IncomeTaxUserDataResponse = Await.result(connector.get(nino, taxYear), Duration.Inf)
-        result shouldBe Left(APIErrorModel(SERVICE_UNAVAILABLE, APIErrorBodyModel("FAILED", "failed")))
+        Await.result(underTest.get(nino, taxYear), Duration.Inf) shouldBe Left(APIErrorModel(SERVICE_UNAVAILABLE, APIErrorBodyModel("FAILED", "failed")))
       }
 
       "submission returns an unexpected result" in {
         stubGetWithHeadersCheck(s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear", BAD_REQUEST,
           """{"code": "FAILED", "reason": "failed"}""", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result: IncomeTaxUserDataResponse = Await.result(connector.get(nino, taxYear), Duration.Inf)
-        result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel("FAILED", "failed")))
+        Await.result(underTest.get(nino, taxYear), Duration.Inf) shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel("FAILED", "failed")))
       }
     }
   }

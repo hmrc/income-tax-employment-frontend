@@ -32,5 +32,4 @@ class NrsConnector @Inject()(val http: HttpClient,
     val url: String = config.nrsProxyBaseUrl + s"/income-tax-nrs-proxy/$nino/itsa-personal-income-submission"
     http.POST[A, NrsSubmissionResponse](url, payload)
   }
-
 }

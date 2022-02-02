@@ -16,23 +16,30 @@
 
 package connectors
 
-import com.github.tomakehurst.wiremock.http.HttpHeader
+import config.MockAppConfig
 import models.employment.{DecodedCreateNewEmploymentDetailsPayload, DecodedNewEmploymentData, DecodedPriorEmploymentInfo}
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.libs.json.{JsString, Writes}
 import play.mvc.Http.Status._
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
-import utils.IntegrationTest
+import utils.ConnectorIntegrationTest
 
-class NrsConnectorSpec extends IntegrationTest {
+import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
 
-  lazy val connector: NrsConnector = app.injector.instanceOf[NrsConnector]
+class NrsConnectorSpec extends ConnectorIntegrationTest {
 
-  implicit val headerCarrierWithSession: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sessionId)))
+  private val sessionId = "some-sessionId"
+  private val nino = "some-nino"
+  private val url: String = s"/income-tax-nrs-proxy/$nino/itsa-personal-income-submission"
 
-  implicit val writesObject: Writes[DecodedCreateNewEmploymentDetailsPayload] = (o: DecodedCreateNewEmploymentDetailsPayload) => JsString(o.toString)
+  implicit private val headerCarrierWithSession: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sessionId)))
+  implicit private val writesObject: Writes[DecodedCreateNewEmploymentDetailsPayload] = (o: DecodedCreateNewEmploymentDetailsPayload) => JsString(o.toString)
 
-  val payloadModel = DecodedCreateNewEmploymentDetailsPayload(
+  private lazy val underTest = new NrsConnector(httpClient, new MockAppConfig().config())
+
+  private val payloadModel = DecodedCreateNewEmploymentDetailsPayload(
     employmentData = DecodedNewEmploymentData(
       employerName = Some("Name"),
       employerRef = Some("123/12345"),
@@ -43,57 +50,40 @@ class NrsConnectorSpec extends IntegrationTest {
       payrollId = Some("1235")
     ),
     existingEmployments = Seq(
-      DecodedPriorEmploymentInfo(
-        "Wow Name", Some("123/12345")
-      ),DecodedPriorEmploymentInfo(
-        "Wow Name 2", Some("222/12345")
-      )
+      DecodedPriorEmploymentInfo("Wow Name", Some("123/12345")),
+      DecodedPriorEmploymentInfo("Wow Name 2", Some("222/12345"))
     )
   )
 
-  val expectedHeaders = Seq(new HttpHeader("mtditid", mtditid))
-
-  val url: String = s"/income-tax-nrs-proxy/$nino/itsa-personal-income-submission"
-
   ".NrsConnector" should {
-
     "return an OK response when successful" in {
-
       stubPost(url, OK, "{}")
-      val result = await(connector.postNrsConnector(nino, payloadModel))
 
-      result shouldBe Right()
+      Await.result(underTest.postNrsConnector(nino, payloadModel), Duration.Inf) shouldBe Right()
     }
 
     "return an InternalServerError" in {
-
       val expectedResult = APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel("INTERNAL_SERVER_ERROR", "Internal Server Error"))
 
       stubPost(url, INTERNAL_SERVER_ERROR, expectedResult.toJson.toString())
-      val result = await(connector.postNrsConnector(nino, payloadModel))
 
-      result shouldBe Left(expectedResult)
+      Await.result(underTest.postNrsConnector(nino, payloadModel), Duration.Inf) shouldBe Left(expectedResult)
     }
 
     "return a NotFound error" in {
-
       val expectedResult = APIErrorModel(NOT_FOUND, APIErrorBodyModel("NOT_FOUND", "NRS returning not found error"))
 
       stubPost(url, NOT_FOUND, expectedResult.toJson.toString())
-      val result = await(connector.postNrsConnector(nino, payloadModel))
 
-      result shouldBe Left(expectedResult)
+      Await.result(underTest.postNrsConnector(nino, payloadModel), Duration.Inf) shouldBe Left(expectedResult)
     }
 
     "return a ParsingError when an unexpected error has occurred" in {
-
       val expectedResult = APIErrorModel(CONFLICT, APIErrorBodyModel("PARSING_ERROR", "Error parsing response from API"))
 
       stubPost(url, CONFLICT, expectedResult.toJson.toString())
-      val result = await(connector.postNrsConnector(nino, payloadModel))
 
-      result shouldBe Left(expectedResult)
+      Await.result(underTest.postNrsConnector(nino, payloadModel), Duration.Inf) shouldBe Left(expectedResult)
     }
-
   }
 }

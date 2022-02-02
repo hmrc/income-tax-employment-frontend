@@ -38,9 +38,10 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
 @Singleton
-class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig: AppConfig,
-                                                 encryptionService: EncryptionService)(implicit ec: ExecutionContext
-                                                ) extends PlayMongoRepository[EncryptedEmploymentUserData](
+class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
+                                                 appConfig: AppConfig,
+                                                 encryptionService: EncryptionService)
+                                                (implicit ec: ExecutionContext) extends PlayMongoRepository[EncryptedEmploymentUserData](
   mongoComponent = mongo,
   collectionName = "employmentUserData",
   domainFormat = EncryptedEmploymentUserData.formats,

@@ -29,7 +29,6 @@ class CreateOrAmendExpensesConnector @Inject()(val http: HttpClient,
 
   def createOrAmendExpenses(nino: String, taxYear: Int, createUpdateExpensesRequest: CreateUpdateExpensesRequest)
                            (implicit hc: HeaderCarrier): Future[CreateOrAmendExpensesResponse] = {
-
     val url: String = config.incomeTaxExpensesBEUrl + s"/income-tax/nino/$nino/sources?taxYear=$taxYear"
 
     http.PUT[CreateUpdateExpensesRequest, CreateOrAmendExpensesResponse](url, createUpdateExpensesRequest)
