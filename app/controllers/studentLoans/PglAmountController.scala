@@ -18,14 +18,13 @@ package controllers.studentLoans
 
 import actions.{AuthorisedAction, TaxYearAction}
 import config.{AppConfig, ErrorHandler}
+import controllers.studentLoans.routes.StudentLoansCYAController
 import forms.{AmountForm, FormUtils}
 import models.User
-import controllers.studentLoans.routes.StudentLoansCYAController
 import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import repositories.EmploymentUserDataRepository
 import services.EmploymentSessionService
 import services.studentLoans.StudentLoansService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -39,7 +38,6 @@ class PglAmountController @Inject()(implicit val mcc: MessagesControllerComponen
                                     authAction: AuthorisedAction,
                                     val employmentSessionService: EmploymentSessionService,
                                     val studentLoansService: StudentLoansService,
-                                    employmentUserDataRepository: EmploymentUserDataRepository,
                                     view: PglAmountView,
                                     appConfig: AppConfig,
                                     errorHandler: ErrorHandler,
@@ -48,25 +46,31 @@ class PglAmountController @Inject()(implicit val mcc: MessagesControllerComponen
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit user =>
 
-    if (appConfig.studentLoansEnabled) {
-      employmentUserDataRepository.find(taxYear, employmentId).map {
+    if(appConfig.studentLoansEnabled) {
+      employmentSessionService.getSessionData(taxYear, employmentId).map {
         case Left(_) => errorHandler.internalServerError()
         case Right(optionCyaData) =>
           optionCyaData match {
             case Some(cyaData) =>
-              val pglAmount = cyaData.employment.studentLoans.flatMap(_.pglDeductionAmount)
-              val employerName = cyaData.employment.employmentDetails.employerName
+              val questionAnswer: Boolean = cyaData.employment.studentLoans.map(_.pglDeduction).fold(false)(value => value)
 
-              val form = pglAmount.fold(amountForm(employerName)
-              )(amountForm(employerName).fill _)
-              Ok(view(taxYear, form, employmentId, employerName))
-            case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+              if (questionAnswer) {
+                val pglAmount = cyaData.employment.studentLoans.flatMap(_.pglDeductionAmount)
+                val employerName = cyaData.employment.employmentDetails.employerName
+
+                val form = pglAmount.fold(amountForm(employerName)
+                )(amountForm(employerName).fill _)
+                Ok(view(taxYear, form, employmentId, employerName))
+
+              } else {
+                Redirect(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYear, employmentId))
+              }
+
+            case None => Redirect(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYear, employmentId))
           }
 
       }
-    }
-
-    else {
+    } else {
       Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     }
   }
