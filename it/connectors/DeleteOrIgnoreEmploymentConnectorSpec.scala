@@ -16,57 +16,55 @@
 
 package connectors
 
-import connectors.parsers.DeleteOrIgnoreEmploymentHttpParser.DeleteOrIgnoreEmploymentResponse
+import config.MockAppConfig
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status._
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.IntegrationTest
+import utils.ConnectorIntegrationTest
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
-class DeleteOrIgnoreEmploymentConnectorSpec extends IntegrationTest {
+class DeleteOrIgnoreEmploymentConnectorSpec extends ConnectorIntegrationTest {
 
-  lazy val connector: DeleteOrIgnoreEmploymentConnector = app.injector.instanceOf[DeleteOrIgnoreEmploymentConnector]
-  lazy val externalConnector: DeleteOrIgnoreEmploymentConnector = appWithFakeExternalCall.injector.instanceOf[DeleteOrIgnoreEmploymentConnector]
+  private val mtditid = "some-mtditid"
+  private val sessionId = "some-sessionId"
+  private val nino = "some-nino"
+  private val taxYear = 2022
+  private val employmentId = "001"
+  private val url = s"/income-tax-employment/income-tax/nino/$nino/sources/$employmentId/ALL\\?taxYear=$taxYear"
 
-  implicit override val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
+  implicit private val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
 
-  val employmentId: String = "001"
-
-  val url: String = s"/income-tax-employment/income-tax/nino/$nino/sources/$employmentId/ALL\\?taxYear=$taxYear"
+  private lazy val underTest = new DeleteOrIgnoreEmploymentConnector(httpClient, new MockAppConfig().config())
 
   "DeleteOrIgnoreEmploymentConnector" should {
-
     "Return a success result" when {
       "employment returns a 204 (NO CONTENT)" in {
-
         stubDeleteWithHeadersCheck(url, NO_CONTENT, "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.deleteOrIgnoreEmployment(nino, taxYear, employmentId, "ALL"), Duration.Inf)
-        result shouldBe Right(())
-
+        Await.result(underTest.deleteOrIgnoreEmployment(nino, taxYear, employmentId, "ALL"), Duration.Inf) shouldBe Right(())
       }
     }
+
     "Return an error result" when {
       Seq(BAD_REQUEST, NOT_FOUND, FORBIDDEN, UNPROCESSABLE_ENTITY, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE).foreach { status =>
 
         s"expenses returns a $status" in {
           stubDeleteWithHeadersCheck(url, status, APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-          val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.deleteOrIgnoreEmployment(nino, taxYear, employmentId, "ALL"), Duration.Inf)
-          result shouldBe Left(APIErrorModel(status, APIErrorBodyModel.parsingError))
+          Await.result(underTest.deleteOrIgnoreEmployment(nino, taxYear, employmentId, "ALL"), Duration.Inf) shouldBe
+            Left(APIErrorModel(status, APIErrorBodyModel.parsingError))
         }
       }
 
       s"employment returns an unexpected result" in {
-
         stubDeleteWithHeadersCheck(url, TOO_MANY_REQUESTS, APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result: DeleteOrIgnoreEmploymentResponse = Await.result(connector.deleteOrIgnoreEmployment(nino, taxYear, employmentId, "ALL"), Duration.Inf)
-        result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))
+        Await.result(underTest.deleteOrIgnoreEmployment(nino, taxYear, employmentId, "ALL"), Duration.Inf) shouldBe
+          Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))
       }
-
     }
   }
 }

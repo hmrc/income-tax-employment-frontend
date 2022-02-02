@@ -17,127 +17,109 @@
 package connectors
 
 import builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
-import connectors.parsers.DeleteOrIgnoreEmploymentHttpParser.DeleteOrIgnoreEmploymentResponse
+import config.MockAppConfig
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.IntegrationTest
+import utils.ConnectorIntegrationTest
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
-class CreateUpdateEmploymentDataConnectorSpec extends IntegrationTest {
+class CreateUpdateEmploymentDataConnectorSpec extends ConnectorIntegrationTest {
 
-  lazy val connector: CreateUpdateEmploymentDataConnector = app.injector.instanceOf[CreateUpdateEmploymentDataConnector]
-  lazy val externalConnector: CreateUpdateEmploymentDataConnector = appWithFakeExternalCall.injector.instanceOf[CreateUpdateEmploymentDataConnector]
+  private val mtditid = "some-mtditid"
+  private val sessionId = "some-sessionId"
+  private val nino = "some-nino"
+  private val taxYear: Int = 2022
+  private val employmentId = "001"
+  private val url = s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYear"
 
-  implicit override val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
+  implicit private val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
 
-  val employmentId: String = "001"
-  val model = CreateUpdateEmploymentRequest(
+  private val createUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
     Some(employmentId),
-    employment = Some(
-      CreateUpdateEmployment(
-        Some("123/12345"),
-        "Misery Loves Company",
-        "2020-11-11",
-        None,
-        None
-      )
-    ),
-    employmentData = Some(
-      CreateUpdateEmploymentData(
-        CreateUpdatePay(
-          564563456345.55,
-          34523523454.44
-        ),
-        None,
-        benefitsInKind = anEmploymentBenefits.benefits
-      )
-    ),
+    employment = Some(CreateUpdateEmployment(Some("123/12345"), "Misery Loves Company", "2020-11-11")),
+    employmentData = Some(CreateUpdateEmploymentData(CreateUpdatePay(564563456345.55, 34523523454.44), benefitsInKind = anEmploymentBenefits.benefits)),
     hmrcEmploymentIdToIgnore = None
   )
-  val url: String = s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYear"
+
+  private val underTest = new CreateUpdateEmploymentDataConnector(httpClient, new MockAppConfig().config())
 
   "CreateUpdateEmploymentDataConnector" should {
-
     "Return a success result" when {
       "employment returns a 204 (NO CONTENT)" in {
+        stubPostWithHeadersCheck(url, NO_CONTENT, Json.toJson(createUpdateEmploymentRequest).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        stubPostWithHeadersCheck(url, NO_CONTENT, Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
-
-        val result = Await.result(connector.createUpdateEmploymentData(nino, taxYear, model), Duration.Inf)
-        result shouldBe Right(None)
-
+        Await.result(underTest.createUpdateEmploymentData(nino, taxYear, createUpdateEmploymentRequest), Duration.Inf) shouldBe Right(None)
       }
+
       "employment returns a 201 (CREATED)" in {
+        stubPostWithHeadersCheck(url, CREATED, Json.toJson(createUpdateEmploymentRequest).toString(), """{"employmentId":"1234567890"}""", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        stubPostWithHeadersCheck(url, CREATED, Json.toJson(model).toString(), """{"employmentId":"1234567890"}""", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
-
-        val result = Await.result(connector.createUpdateEmploymentData(nino, taxYear, model), Duration.Inf)
-        result shouldBe Right(Some("1234567890"))
-
+        Await.result(underTest.createUpdateEmploymentData(nino, taxYear, createUpdateEmploymentRequest), Duration.Inf) shouldBe Right(Some("1234567890"))
       }
     }
+
     "Return an error result" when {
       s"employment returns a $BAD_REQUEST" in {
-        stubPostWithHeadersCheck(url, BAD_REQUEST, Json.toJson(model).toString(),
+        stubPostWithHeadersCheck(url, BAD_REQUEST, Json.toJson(createUpdateEmploymentRequest).toString(),
           APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result = Await.result(connector.createUpdateEmploymentData(nino, taxYear, model), Duration.Inf)
-        result shouldBe Left(APIErrorModel(BAD_REQUEST, APIErrorBodyModel.parsingError))
+        Await.result(underTest.createUpdateEmploymentData(nino, taxYear, createUpdateEmploymentRequest), Duration.Inf) shouldBe
+          Left(APIErrorModel(BAD_REQUEST, APIErrorBodyModel.parsingError))
       }
 
       s"employment returns a $NOT_FOUND" in {
-        stubPostWithHeadersCheck(url, NOT_FOUND, Json.toJson(model).toString(),
+        stubPostWithHeadersCheck(url, NOT_FOUND, Json.toJson(createUpdateEmploymentRequest).toString(),
           APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result = Await.result(connector.createUpdateEmploymentData(nino, taxYear, model), Duration.Inf)
-        result shouldBe Left(APIErrorModel(NOT_FOUND, APIErrorBodyModel.parsingError))
+        Await.result(underTest.createUpdateEmploymentData(nino, taxYear, createUpdateEmploymentRequest), Duration.Inf) shouldBe
+          Left(APIErrorModel(NOT_FOUND, APIErrorBodyModel.parsingError))
       }
 
       s"employment returns a $FORBIDDEN" in {
-        stubPostWithHeadersCheck(url, FORBIDDEN, Json.toJson(model).toString(),
+        stubPostWithHeadersCheck(url, FORBIDDEN, Json.toJson(createUpdateEmploymentRequest).toString(),
           APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result = Await.result(connector.createUpdateEmploymentData(nino, taxYear, model), Duration.Inf)
-        result shouldBe Left(APIErrorModel(FORBIDDEN, APIErrorBodyModel.parsingError))
+        Await.result(underTest.createUpdateEmploymentData(nino, taxYear, createUpdateEmploymentRequest), Duration.Inf) shouldBe
+          Left(APIErrorModel(FORBIDDEN, APIErrorBodyModel.parsingError))
       }
 
       s"employment returns a $UNPROCESSABLE_ENTITY" in {
-        stubPostWithHeadersCheck(url, UNPROCESSABLE_ENTITY, Json.toJson(model).toString(),
+        stubPostWithHeadersCheck(url, UNPROCESSABLE_ENTITY, Json.toJson(createUpdateEmploymentRequest).toString(),
           APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result = Await.result(connector.createUpdateEmploymentData(nino, taxYear, model), Duration.Inf)
-        result shouldBe Left(APIErrorModel(UNPROCESSABLE_ENTITY, APIErrorBodyModel.parsingError))
+        Await.result(underTest.createUpdateEmploymentData(nino, taxYear, createUpdateEmploymentRequest), Duration.Inf) shouldBe
+          Left(APIErrorModel(UNPROCESSABLE_ENTITY, APIErrorBodyModel.parsingError))
       }
 
       s"employment returns a $INTERNAL_SERVER_ERROR" in {
-        stubPostWithHeadersCheck(url, INTERNAL_SERVER_ERROR, Json.toJson(model).toString(),
+        stubPostWithHeadersCheck(url, INTERNAL_SERVER_ERROR, Json.toJson(createUpdateEmploymentRequest).toString(),
           APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result = Await.result(connector.createUpdateEmploymentData(nino, taxYear, model), Duration.Inf)
-        result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))
+        Await.result(underTest.createUpdateEmploymentData(nino, taxYear, createUpdateEmploymentRequest), Duration.Inf) shouldBe
+          Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))
       }
 
       s"employment returns a $SERVICE_UNAVAILABLE" in {
-        stubPostWithHeadersCheck(url, SERVICE_UNAVAILABLE, Json.toJson(model).toString(),
+        stubPostWithHeadersCheck(url, SERVICE_UNAVAILABLE, Json.toJson(createUpdateEmploymentRequest).toString(),
           APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result = Await.result(connector.createUpdateEmploymentData(nino, taxYear, model), Duration.Inf)
-        result shouldBe Left(APIErrorModel(SERVICE_UNAVAILABLE, APIErrorBodyModel.parsingError))
+        Await.result(underTest.createUpdateEmploymentData(nino, taxYear, createUpdateEmploymentRequest), Duration.Inf) shouldBe
+          Left(APIErrorModel(SERVICE_UNAVAILABLE, APIErrorBodyModel.parsingError))
       }
 
       s"employment returns an unexpected result" in {
-        stubPostWithHeadersCheck(url, TOO_MANY_REQUESTS, Json.toJson(model).toString(),
+        stubPostWithHeadersCheck(url, TOO_MANY_REQUESTS, Json.toJson(createUpdateEmploymentRequest).toString(),
           APIErrorBodyModel.parsingError.toString, "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        val result = Await.result(connector.createUpdateEmploymentData(nino, taxYear, model), Duration.Inf)
-        result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))
+        Await.result(underTest.createUpdateEmploymentData(nino, taxYear, createUpdateEmploymentRequest), Duration.Inf) shouldBe
+          Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))
       }
-
     }
   }
 }

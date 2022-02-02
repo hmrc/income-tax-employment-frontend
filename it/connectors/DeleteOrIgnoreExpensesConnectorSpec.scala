@@ -17,25 +17,28 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.http.HttpHeader
-import connectors.parsers.CreateOrAmendExpensesHttpParser.CreateOrAmendExpensesResponse
+import config.MockAppConfig
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status._
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.IntegrationTest
+import utils.ConnectorIntegrationTest
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
-class DeleteOrIgnoreExpensesConnectorSpec extends IntegrationTest {
+class DeleteOrIgnoreExpensesConnectorSpec extends ConnectorIntegrationTest {
 
-  lazy val connector: DeleteOrIgnoreExpensesConnector = app.injector.instanceOf[DeleteOrIgnoreExpensesConnector]
-  lazy val externalConnector: DeleteOrIgnoreExpensesConnector = appWithFakeExternalCall.injector.instanceOf[DeleteOrIgnoreExpensesConnector]
-
-  implicit override val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
-
+  private val mtditid = "some-mtditid"
+  private val sessionId = "some-sessionId"
+  private val nino = "some-nino"
+  private val taxYear = 2022
   private val validToRemove = "HMRC-HELD"
-
   private val url: String = s"/income-tax-expenses/income-tax/nino/$nino/sources/$validToRemove\\?taxYear=$taxYear"
+
+  implicit private val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
+
+  private lazy val underTest = new DeleteOrIgnoreExpensesConnector(httpClient, new MockAppConfig().config())
 
   "DeleteOrIgnoreExpensesConnector - deleteOrIgnoreExpenses" should {
     val headers = Seq(new HttpHeader("X-Session-ID", sessionId), new HttpHeader("mtditid", mtditid))
@@ -44,27 +47,26 @@ class DeleteOrIgnoreExpensesConnectorSpec extends IntegrationTest {
       "expenses returns a 204 (NO CONTENT)" in {
         stubDeleteWithoutResponseBody(url, NO_CONTENT, headers)
 
-        val result: CreateOrAmendExpensesResponse = Await.result(connector.deleteOrIgnoreExpenses(nino, taxYear, validToRemove), Duration.Inf)
-        result shouldBe Right(())
+        Await.result(underTest.deleteOrIgnoreExpenses(nino, taxYear, validToRemove), Duration.Inf) shouldBe Right(())
       }
     }
 
     "Return an error result" when {
-
       Seq(BAD_REQUEST, NOT_FOUND, FORBIDDEN, UNPROCESSABLE_ENTITY, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE).foreach { status =>
+
         s"expenses returns a $status" in {
           stubDeleteWithResponseBody(url, status, APIErrorBodyModel.parsingError.toString, headers)
 
-          val result: CreateOrAmendExpensesResponse = Await.result(connector.deleteOrIgnoreExpenses(nino, taxYear, validToRemove), Duration.Inf)
-          result shouldBe Left(APIErrorModel(status, APIErrorBodyModel.parsingError))
+          Await.result(underTest.deleteOrIgnoreExpenses(nino, taxYear, validToRemove), Duration.Inf) shouldBe
+            Left(APIErrorModel(status, APIErrorBodyModel.parsingError))
         }
       }
 
       s"expenses returns an unexpected result" in {
         stubDeleteWithResponseBody(url, TOO_MANY_REQUESTS, APIErrorBodyModel.parsingError.toString, headers)
 
-        val result: CreateOrAmendExpensesResponse = Await.result(connector.deleteOrIgnoreExpenses(nino, taxYear, validToRemove), Duration.Inf)
-        result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))
+        Await.result(underTest.deleteOrIgnoreExpenses(nino, taxYear, validToRemove), Duration.Inf) shouldBe
+          Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))
       }
     }
   }
