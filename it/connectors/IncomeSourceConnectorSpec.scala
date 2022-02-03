@@ -17,39 +17,45 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.http.HttpHeader
+import config.MockAppConfig
 import models.requests.RefreshIncomeSourceRequest
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.IntegrationTest
+import utils.ConnectorIntegrationTest
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
-class IncomeSourceConnectorSpec extends IntegrationTest {
+class IncomeSourceConnectorSpec extends ConnectorIntegrationTest {
 
-  private lazy val connector = app.injector.instanceOf[IncomeSourceConnector]
-
-  implicit override val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
-
-  private val url: String = s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear"
+  private val mtditid = "some-mtditid"
+  private val sessionId = "some-sessionId"
+  private val nino = "some-nino"
+  private val taxYear = 2022
   private val headers = Seq(new HttpHeader("X-Session-ID", sessionId), new HttpHeader("mtditid", mtditid))
   private val incomeSource = "some-income-source"
   private val requestBodyJson = Json.toJson(RefreshIncomeSourceRequest(incomeSource)).toString()
+  private val url = s"/income-tax-submission-service/income-tax/nino/$nino/sources/session\\?taxYear=$taxYear"
+
+  implicit private val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
+
+  private lazy val underTest = new IncomeSourceConnector(httpClient, new MockAppConfig().config())
 
   "get" should {
     "continue successfully" when {
       "submission returns a 204" in {
         stubPutWithoutResponseBody(url, requestBodyJson, NO_CONTENT, headers)
 
-        Await.result(connector.put(taxYear, nino, incomeSource), Duration.Inf) shouldBe Right()
+        Await.result(underTest.put(taxYear, nino, incomeSource), Duration.Inf) shouldBe Right()
       }
 
       "submission returns a 404" in {
         stubPutWithoutResponseBody(url, requestBodyJson, NOT_FOUND, headers)
 
-        Await.result(connector.put(taxYear, nino, incomeSource), Duration.Inf) shouldBe Right()
+        Await.result(underTest.put(taxYear, nino, incomeSource), Duration.Inf) shouldBe Right()
       }
     }
 
@@ -59,7 +65,7 @@ class IncomeSourceConnectorSpec extends IntegrationTest {
           stubPutWithResponseBody(url, requestBodyJson, APIErrorBodyModel.parsingError.toString, status, headers)
 
           val expectedStatus = if (!Seq(BAD_REQUEST, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE).contains(status)) INTERNAL_SERVER_ERROR else status
-          Await.result(connector.put(taxYear, nino, incomeSource), Duration.Inf) shouldBe Left(APIErrorModel(expectedStatus, APIErrorBodyModel.parsingError))
+          Await.result(underTest.put(taxYear, nino, incomeSource), Duration.Inf) shouldBe Left(APIErrorModel(expectedStatus, APIErrorBodyModel.parsingError))
         }
       }
     }

@@ -19,9 +19,8 @@ package repositories
 import com.mongodb.client.model.ReturnDocument
 import com.mongodb.client.model.Updates.set
 import config.AppConfig
-import javax.inject.{Inject, Singleton}
 import models.User
-import models.mongo.{DataNotUpdated, DatabaseError, EncryptedExpensesUserData, ExpensesUserData, MongoError}
+import models.mongo._
 import org.joda.time.{DateTime, DateTimeZone}
 import org.mongodb.scala.MongoException
 import org.mongodb.scala.model.{FindOneAndReplaceOptions, FindOneAndUpdateOptions}
@@ -34,17 +33,19 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJodaFormats
 import utils.PagerDutyHelper.PagerDutyKeys.{FAILED_TO_CREATE_UPDATE_EXPENSES_DATA, FAILED_TO_ClEAR_EXPENSES_DATA, FAILED_TO_FIND_EXPENSES_DATA}
 import utils.PagerDutyHelper.{PagerDutyKeys, pagerDutyLog}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
 @Singleton
-class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig: AppConfig,
-                                               encryptionService: EncryptionService)(implicit ec: ExecutionContext
-) extends PlayMongoRepository[EncryptedExpensesUserData](
+class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
+                                               appConfig: AppConfig,
+                                               encryptionService: EncryptionService)
+                                              (implicit ec: ExecutionContext) extends PlayMongoRepository[EncryptedExpensesUserData](
   mongoComponent = mongo,
   collectionName = "expensesUserData",
-  domainFormat   = EncryptedExpensesUserData.format,
-  indexes        = ExpensesUserDataIndexes.indexes(appConfig)
+  domainFormat = EncryptedExpensesUserData.format,
+  indexes = ExpensesUserDataIndexes.indexes(appConfig)
 ) with Repository with ExpensesUserDataRepository with Logging {
 
   def find[T](taxYear: Int)(implicit user: User[T]): Future[Either[DatabaseError, Option[ExpensesUserData]]] = {
@@ -128,6 +129,8 @@ class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent, appConfig:
 
 trait ExpensesUserDataRepository {
   def createOrUpdate[T](expensesUserData: ExpensesUserData)(implicit user: User[T]): Future[Either[DatabaseError, Unit]]
+
   def find[T](taxYear: Int)(implicit user: User[T]): Future[Either[DatabaseError, Option[ExpensesUserData]]]
+
   def clear[T](taxYear: Int)(implicit user: User[T]): Future[Boolean]
 }

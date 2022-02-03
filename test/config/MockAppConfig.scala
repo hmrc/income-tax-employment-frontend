@@ -26,8 +26,6 @@ class MockAppConfig extends MockFactory {
     override lazy val signInContinueUrl: String = "/continue"
     override lazy val signInUrl: String = "/signIn"
 
-    override lazy val nrsProxyBaseUrl: String = "/nrsProxyBaseUrl"
-
     override lazy val defaultTaxYear: Int = 2022
 
     override def incomeTaxSubmissionOverviewUrl(taxYear: Int): String = "/overview"
@@ -58,6 +56,11 @@ class MockAppConfig extends MockFactory {
     override def incomeTaxSubmissionBaseUrl: String = ""
 
     override def incomeTaxSubmissionIvRedirect: String = "/update-and-submit-income-tax-return/iv-uplift"
+
+    override lazy val incomeTaxExpensesBEUrl: String = "http://localhost:11111/income-tax-expenses"
+    override lazy val incomeTaxEmploymentBEUrl: String = "http://localhost:11111/income-tax-employment"
+    override lazy val incomeTaxSubmissionBEBaseUrl: String = "http://localhost:11111/income-tax-submission-service"
+    override lazy val nrsProxyBaseUrl: String = "http://localhost:11111"
 
     override lazy val encryptionKey: String = "encryptionKey12345"
     override lazy val useEncryption: Boolean = encrypt

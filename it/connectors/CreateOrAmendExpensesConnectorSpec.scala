@@ -18,25 +18,30 @@ package connectors
 
 import builders.models.expenses.ExpensesBuilder.anExpenses
 import com.github.tomakehurst.wiremock.http.HttpHeader
-import connectors.parsers.CreateOrAmendExpensesHttpParser.CreateOrAmendExpensesResponse
+import config.MockAppConfig
 import models.requests.CreateUpdateExpensesRequest
 import models.{APIErrorBodyModel, APIErrorModel}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.IntegrationTest
+import utils.ConnectorIntegrationTest
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 
-class CreateOrAmendExpensesConnectorSpec extends IntegrationTest {
+class CreateOrAmendExpensesConnectorSpec extends ConnectorIntegrationTest {
 
-  private lazy val connector: CreateOrAmendExpensesConnector = app.injector.instanceOf[CreateOrAmendExpensesConnector]
-
-  implicit override val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
-
-  private val url: String = s"/income-tax-expenses/income-tax/nino/$nino/sources\\?taxYear=$taxYear"
+  private val mtditid = "some-mtditid"
+  private val sessionId = "some-sessionId"
+  private val nino = "some-nino"
+  private val taxYear = 2022
+  private val url = s"/income-tax-expenses/income-tax/nino/$nino/sources\\?taxYear=$taxYear"
   private val createExpensesRequestModel = CreateUpdateExpensesRequest(Some(false), anExpenses)
+
+  implicit private val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders("mtditid" -> mtditid, "X-Session-ID" -> sessionId)
+
+  private val underTest = new CreateOrAmendExpensesConnector(httpClient, new MockAppConfig().config())
 
   "CreateOrAmendExpensesConnector - createOrAmendExpenses" should {
     val requestBodyJson = Json.toJson(createExpensesRequestModel).toString()
@@ -46,28 +51,25 @@ class CreateOrAmendExpensesConnectorSpec extends IntegrationTest {
       "expenses returns a 204 (NO CONTENT)" in {
         stubPutWithResponseBody(url, requestBodyJson, APIErrorBodyModel.parsingError.toString, NO_CONTENT, headers)
 
-        val result: CreateOrAmendExpensesResponse = Await.result(connector.createOrAmendExpenses(nino, taxYear, createExpensesRequestModel), Duration.Inf)
-        result shouldBe Right(())
-
+        Await.result(underTest.createOrAmendExpenses(nino, taxYear, createExpensesRequestModel), Duration.Inf) shouldBe Right(())
       }
     }
 
     "Return an error result" when {
-
       Seq(BAD_REQUEST, NOT_FOUND, FORBIDDEN, UNPROCESSABLE_ENTITY, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE).foreach { status =>
         s"expenses returns a $status" in {
           stubPutWithResponseBody(url, requestBodyJson, APIErrorBodyModel.parsingError.toString, status, headers)
 
-          val result: CreateOrAmendExpensesResponse = Await.result(connector.createOrAmendExpenses(nino, taxYear, createExpensesRequestModel), Duration.Inf)
-          result shouldBe Left(APIErrorModel(status, APIErrorBodyModel.parsingError))
+          Await.result(underTest.createOrAmendExpenses(nino, taxYear, createExpensesRequestModel), Duration.Inf) shouldBe
+            Left(APIErrorModel(status, APIErrorBodyModel.parsingError))
         }
       }
 
       s"expenses returns an unexpected result" in {
         stubPutWithResponseBody(url, requestBodyJson, APIErrorBodyModel.parsingError.toString, TOO_MANY_REQUESTS, headers)
 
-        val result: CreateOrAmendExpensesResponse = Await.result(connector.createOrAmendExpenses(nino, taxYear, createExpensesRequestModel), Duration.Inf)
-        result shouldBe Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))
+        Await.result(underTest.createOrAmendExpenses(nino, taxYear, createExpensesRequestModel), Duration.Inf) shouldBe
+          Left(APIErrorModel(INTERNAL_SERVER_ERROR, APIErrorBodyModel.parsingError))
       }
     }
   }
