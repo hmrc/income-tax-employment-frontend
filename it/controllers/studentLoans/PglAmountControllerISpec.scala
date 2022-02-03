@@ -23,11 +23,11 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, SEE_OTHER}
-import play.api.libs.ws.{WSClient, WSResponse}
+import play.api.libs.ws.WSResponse
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.route
-import utils.PageUrls.{fullUrl, pglAmountPage, studentLoansCyaPage}
+import utils.PageUrls.{fullUrl, pglAmountUrl, studentLoansCyaPage}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 import scala.concurrent.Future
@@ -36,7 +36,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
 
   val employmentId: String = "1234567890-0987654321"
 
-  def url(taxYearUnique: Int): String = fullUrl(pglAmountPage(taxYearUnique, employmentId))
+  def url(taxYearUnique: Int): String = fullUrl(pglAmountUrl(taxYearUnique, employmentId))
 
   val pglDeductionAmount: BigDecimal = 22500.00
 
@@ -140,7 +140,8 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
     "redirect to the overview page" when {
 
       "the student loans feature switch is off" in {
-        val request = FakeRequest("GET", pglAmountPage(taxYear, employmentId)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear))
+        val request = FakeRequest("GET", pglAmountUrl(ExpectedResultsIndividualEN.taxYearEOY, employmentId))
+          .withHeaders(HeaderNames.COOKIE -> playSessionCookies(ExpectedResultsIndividualEN.taxYearEOY))
 
         lazy val result: Future[Result] = {
           dropEmploymentDB()
@@ -148,7 +149,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           route(appWithFeatureSwitchesOff, request, "{}").get
         }
 
-        await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
+        await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(ExpectedResultsIndividualEN.taxYearEOY)
       }
     }
 
@@ -161,7 +162,83 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
 
         def user: User[AnyContentAsEmpty.type] = User(mtditid, None, nino, sessionId, affinityGroup)(FakeRequest())
 
-        "render the Postgraduate amount page with no value when there is prior data no cya data" which {
+        "render the postgraduate amount page when there is no prior or cya data" which {
+
+
+          lazy val result = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(scenarioData.isAgent)
+            insertCyaData(EmploymentUserData(
+              sessionId,
+              mtditid,
+              nino,
+              scenarioData.commonExpectedResults.taxYearEOY,
+              employmentId, isPriorSubmission = false, hasPriorBenefits = false,
+              EmploymentCYAModel(
+                EmploymentDetails(
+                  employerName = "Whiterun Guards",
+                  employerRef = Some("223/AB12399"),
+                  startDate = Some("2022-04-01"),
+                  cessationDateQuestion = Some(false),
+                  taxablePayToDate = Some(3000.00),
+                  totalTaxToDate = Some(300.00),
+                  currentDataIsHmrcHeld = false
+                ),
+                studentLoans = Some(StudentLoansCYAModel(
+                  uglDeduction = false, uglDeductionAmount = None, pglDeduction = true, pglDeductionAmount = None))
+              )), user)
+            userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
+
+            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
+          }
+
+          implicit val document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(title)
+          h1Check(expectedH1)
+          captionCheck(expectedCaption)
+          textOnPageCheck(expectedParagraphText, paragraphSelector)
+          textOnPageCheck(hintText, hintTextSelector)
+          inputFieldValueCheck(inputFieldName, inputSelector, "")
+
+          buttonCheck(expectedButtonText, continueButtonSelector)
+
+        }
+
+        "redirect to student loans cya page when there is no student loans data" in {
+
+          lazy val result = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(scenarioData.isAgent)
+            insertCyaData(EmploymentUserData(
+              sessionId,
+              mtditid,
+              nino,
+              scenarioData.commonExpectedResults.taxYearEOY,
+              employmentId, isPriorSubmission = false, hasPriorBenefits = false,
+              EmploymentCYAModel(
+                EmploymentDetails(
+                  employerName = "Whiterun Guards",
+                  employerRef = Some("223/AB12399"),
+                  startDate = Some("2022-04-01"),
+                  cessationDateQuestion = Some(false),
+                  taxablePayToDate = Some(3000.00),
+                  totalTaxToDate = Some(300.00),
+                  currentDataIsHmrcHeld = false
+                )
+              )), user)
+            userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
+
+            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), follow = false, welsh = scenarioData.isWelsh,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
+          }
+
+          result.status shouldBe SEE_OTHER
+          result.headers("Location").headOption shouldBe Some(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYearEOY, employmentId).url)
+
+        }
+
+        "render the Postgraduate amount page with no value when there is prior data and no cya data" which {
 
           lazy val result = {
             dropEmploymentDB()
@@ -249,6 +326,20 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   }
 
   ".submit" should {
+
+    "redirect the user to the overview page" when {
+
+      "the student loans feature switch is off" in {
+        val result = {
+          dropEmploymentDB()
+          authoriseIndividual()
+          await(wsClientFeatureSwitchOff.url(url(ExpectedResultsIndividualEN.taxYearEOY)).withFollowRedirects(false).post("{}"))
+        }
+
+        result.headers("Location").headOption shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(ExpectedResultsIndividualEN.taxYearEOY))
+      }
+
+    }
 
     userScenarios.foreach { scenarioData =>
 

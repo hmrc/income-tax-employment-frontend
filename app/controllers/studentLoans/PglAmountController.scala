@@ -46,15 +46,15 @@ class PglAmountController @Inject()(implicit val mcc: MessagesControllerComponen
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit user =>
 
-    if(appConfig.studentLoansEnabled) {
+    if (appConfig.studentLoansEnabled) {
       employmentSessionService.getSessionData(taxYear, employmentId).map {
         case Left(_) => errorHandler.internalServerError()
         case Right(optionCyaData) =>
           optionCyaData match {
             case Some(cyaData) =>
-              val questionAnswer: Boolean = cyaData.employment.studentLoans.map(_.pglDeduction).fold(false)(value => value)
+              val pglQuestion: Boolean = cyaData.employment.studentLoans.fold(false)(_.pglDeduction)
 
-              if (questionAnswer) {
+              if (pglQuestion) {
                 val pglAmount = cyaData.employment.studentLoans.flatMap(_.pglDeductionAmount)
                 val employerName = cyaData.employment.employmentDetails.employerName
 
@@ -84,7 +84,14 @@ class PglAmountController @Inject()(implicit val mcc: MessagesControllerComponen
           formWithErrors => {
             Future.successful(BadRequest(view(taxYear, formWithErrors, employmentId, cya.employment.employmentDetails.employerName)))
           },
-          amount => handleSuccessForm(taxYear, employmentId, cya, amount)
+          amount => {
+            val pglQuestion: Boolean = cya.employment.studentLoans.fold(false)(_.pglDeduction)
+            if (pglQuestion) {
+              handleSuccessForm(taxYear, employmentId, cya, amount)
+            } else {
+              Future.successful(Redirect(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYear, employmentId)))
+            }
+          }
         )
       }
     } else {
