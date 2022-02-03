@@ -17,9 +17,11 @@
 package audit
 
 import models.benefits.Benefits
-import models.employment.EmploymentDetailsViewModel
+import models.employment.{Deductions, EmploymentDetailsViewModel}
 import models.expenses.Expenses
-import play.api.libs.json.{Json, OWrites}
+import play.api.libs.json.{JsNull, JsNumber, JsValue, Json, Writes}
+
+import utils.JsonUtils.jsonObjNoNulls
 
 case class DeleteEmploymentAudit(taxYear: Int,
                                  userType: String,
@@ -27,7 +29,8 @@ case class DeleteEmploymentAudit(taxYear: Int,
                                  mtditid: String,
                                  employmentData: EmploymentDetailsViewModel,
                                  benefits: Option[Benefits],
-                                 expenses: Option[Expenses]) {
+                                 expenses: Option[Expenses],
+                                 deductions: Option[Deductions]) {
 
   private def name = "DeleteEmployment"
 
@@ -44,5 +47,42 @@ case class DeleteEmploymentAudit(taxYear: Int,
 }
 
 object DeleteEmploymentAudit {
-  implicit def writes: OWrites[DeleteEmploymentAudit] = Json.writes[DeleteEmploymentAudit]
+  implicit def writes: Writes[DeleteEmploymentAudit] = (audit: DeleteEmploymentAudit) => {
+    Json.obj(
+      "taxYear" -> audit.taxYear,
+      "userType" -> audit.userType,
+      "nino" -> audit.nino,
+      "mtditid" -> audit.mtditid
+    ).++(
+      jsonObjNoNulls("employmentData" -> audit.employmentData)
+    ).++(
+      jsonObjNoNulls("benefits" -> audit.benefits)
+    ).++(
+      jsonObjNoNulls(
+        "expenses" -> jsonObjNoNulls(
+          "jobExpenses" -> audit.expenses.map(_.jobExpenses),
+          "flatRateJobExpenses" -> audit.expenses.map(_.flatRateJobExpenses),
+          "professionalSubscriptions" -> audit.expenses.map(_.professionalSubscriptions),
+          "otherAndCapitalAllowances" -> audit.expenses.map(_.otherAndCapitalAllowances)
+        )
+      )
+    ).++(
+      {
+        val studentLoans = audit.deductions.flatMap(_.studentLoans)
+        val uglDeductionAmount = studentLoans.flatMap(_.uglDeductionAmount)
+        val pglDeductionAmount = studentLoans.flatMap(_.pglDeductionAmount)
+
+        jsonObjNoNulls(
+          "deductions" ->
+            jsonObjNoNulls(
+              "studentLoans" ->
+                jsonObjNoNulls(
+                  "undergraduateLoanDeductionAmount" -> uglDeductionAmount.fold[JsValue](JsNull)(JsNumber),
+                  "postgraduateLoanDeductionAmount" -> pglDeductionAmount.fold[JsValue](JsNull)(JsNumber)
+                )
+            )
+        )
+      }
+    )
+  }
 }
