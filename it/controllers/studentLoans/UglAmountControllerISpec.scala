@@ -146,7 +146,8 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
     "redirect to the overview page" when {
 
       "the student loans feature switch is off" in {
-        val request = FakeRequest("GET", studentLoansUglAmountUrl(taxYear, employmentId)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear))
+        val request = FakeRequest("GET", studentLoansUglAmountUrl(ExpectedResultsIndividualEN.taxYearEOY, employmentId))
+          .withHeaders(HeaderNames.COOKIE -> playSessionCookies(ExpectedResultsIndividualEN.taxYearEOY))
 
         lazy val result: Future[Result] = {
           dropEmploymentDB()
@@ -154,7 +155,8 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           route(appWithFeatureSwitchesOff, request, "{}").get
         }
 
-        await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
+        await(result).header.headers("Location") shouldBe
+          appConfig.incomeTaxSubmissionOverviewUrl(ExpectedResultsIndividualEN.taxYearEOY)
       }
     }
 
@@ -167,49 +169,8 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
 
         def user: User[AnyContentAsEmpty.type] = User(mtditid, None, nino, sessionId, affinityGroup)(FakeRequest())
 
-        "render the Undergraduate amount page with no value when there is prior data no cya data" which {
+        "render the undergraduate amount page when there is no prior or cya data" which {
 
-          lazy val result = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(scenarioData.isAgent)
-            insertCyaData(EmploymentUserData(
-              sessionId,
-              mtditid,
-              nino,
-              scenarioData.commonExpectedResults.taxYearEOY,
-              employmentId, isPriorSubmission = true, hasPriorBenefits = false,
-              EmploymentCYAModel(
-                EmploymentDetails(
-                  employerName = "Falador Knights",
-                  employerRef = Some("223/AB12399"),
-                  startDate = Some("2022-04-01"),
-                  cessationDateQuestion = Some(false),
-                  taxablePayToDate = Some(3000.00),
-                  totalTaxToDate = Some(300.00),
-                  currentDataIsHmrcHeld = false
-                ),
-                studentLoans = Some(StudentLoansCYAModel(
-                  uglDeduction = true, uglDeductionAmount = Some(84.73), pglDeduction = false, pglDeductionAmount = None))
-              )), user)
-            userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
-
-            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
-          }
-
-          implicit val document: () => Document = () => Jsoup.parse(result.body)
-
-          titleCheck(title)
-          h1Check(expectedH1)
-          captionCheck(expectedCaption)
-          textOnPageCheck(expectedParagraphCheckText, paragraphCheckSelector)
-          textOnPageCheck(expectedParagraphExampleText, paragraphExampleSelector)
-          textOnPageCheck(hintText, hintTextSelector)
-          inputFieldValueCheck(inputFieldName, inputSelector, "84.73")
-
-          buttonCheck(expectedButtonText, continueButtonSelector)
-        }
-
-        "render the Undergraduate amount page when there is cya data for student loans but no prior data" which {
 
           lazy val result = {
             dropEmploymentDB()
@@ -231,8 +192,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                   currentDataIsHmrcHeld = false
                 ),
                 studentLoans = Some(StudentLoansCYAModel(
-                  uglDeduction = true, Some(1738), pglDeduction = true, Some(96000)
-                ))
+                  uglDeduction = true, uglDeductionAmount = None, pglDeduction = false, pglDeductionAmount = None))
               )), user)
             userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
 
@@ -247,9 +207,143 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           textOnPageCheck(expectedParagraphCheckText, paragraphCheckSelector)
           textOnPageCheck(expectedParagraphExampleText, paragraphExampleSelector)
           textOnPageCheck(hintText, hintTextSelector)
-          inputFieldValueCheck("amount", inputSelector, "1,738")
+          inputFieldValueCheck(inputFieldName, inputSelector, "")
 
           buttonCheck(expectedButtonText, continueButtonSelector)
+
+        }
+
+        "render the undergraduate amount page with no value when there is prior data and no cya data" which {
+
+          lazy val result = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(scenarioData.isAgent)
+            insertCyaData(EmploymentUserData(
+              sessionId,
+              mtditid,
+              nino,
+              scenarioData.commonExpectedResults.taxYearEOY,
+              employmentId, isPriorSubmission = true, hasPriorBenefits = false,
+              EmploymentCYAModel(
+                EmploymentDetails(
+                  employerName = "Falador Knights",
+                  employerRef = Some("223/AB12399"),
+                  startDate = Some("2022-04-01"),
+                  cessationDateQuestion = Some(false),
+                  taxablePayToDate = Some(3000.00),
+                  totalTaxToDate = Some(300.00),
+                  currentDataIsHmrcHeld = false
+                ),
+                studentLoans = Some(StudentLoansCYAModel(
+                  uglDeduction = true, uglDeductionAmount = Some(100.00), pglDeduction = false, pglDeductionAmount = None))
+              )), user)
+            userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
+
+            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), scenarioData.isWelsh, headers =
+              Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
+          }
+
+          implicit val document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(title)
+          h1Check(expectedH1)
+          captionCheck(expectedCaption)
+          textOnPageCheck(expectedParagraphCheckText, paragraphCheckSelector)
+          textOnPageCheck(expectedParagraphExampleText, paragraphExampleSelector)
+          textOnPageCheck(hintText, hintTextSelector)
+          inputFieldValueCheck(inputFieldName, inputSelector, "100")
+
+          buttonCheck(expectedButtonText, continueButtonSelector)
+        }
+
+        "render the undergraduate amount page when there is cya data for student loans but no prior data" which {
+
+          lazy val result = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(scenarioData.isAgent)
+            insertCyaData(EmploymentUserData(
+              sessionId,
+              mtditid,
+              nino,
+              scenarioData.commonExpectedResults.taxYearEOY,
+              employmentId, isPriorSubmission = false, hasPriorBenefits = false,
+              EmploymentCYAModel(
+                EmploymentDetails(
+                  employerName = "Falador Knights",
+                  employerRef = Some("223/AB12399"),
+                  startDate = Some("2022-04-01"),
+                  cessationDateQuestion = Some(false),
+                  taxablePayToDate = Some(3000.00),
+                  totalTaxToDate = Some(300.00),
+                  currentDataIsHmrcHeld = false
+                ),
+                studentLoans = Some(StudentLoansCYAModel(
+                  uglDeduction = true, uglDeductionAmount = Some(84.73), pglDeduction = true, pglDeductionAmount = Some(1000.00)))
+              )), user)
+            userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
+
+            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
+          }
+
+          implicit val document: () => Document = () => Jsoup.parse(result.body)
+
+          titleCheck(title)
+          h1Check(expectedH1)
+          captionCheck(expectedCaption)
+          textOnPageCheck(expectedParagraphCheckText, paragraphCheckSelector)
+          textOnPageCheck(expectedParagraphExampleText, paragraphExampleSelector)
+          textOnPageCheck(hintText, hintTextSelector)
+          inputFieldValueCheck("amount", inputSelector, "84.73")
+
+          buttonCheck(expectedButtonText, continueButtonSelector)
+        }
+
+        "redirect to student loans cya page when there is no student loans data" in {
+
+          lazy val result = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(scenarioData.isAgent)
+            insertCyaData(EmploymentUserData(
+              sessionId,
+              mtditid,
+              nino,
+              scenarioData.commonExpectedResults.taxYearEOY,
+              employmentId, isPriorSubmission = false, hasPriorBenefits = false,
+              EmploymentCYAModel(
+                EmploymentDetails(
+                  employerName = "Falador Knights",
+                  employerRef = Some("223/AB12399"),
+                  startDate = Some("2022-04-01"),
+                  cessationDateQuestion = Some(false),
+                  taxablePayToDate = Some(3000.00),
+                  totalTaxToDate = Some(300.00),
+                  currentDataIsHmrcHeld = false
+                )
+              )), user)
+            userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
+
+            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), follow = false, welsh = scenarioData.isWelsh,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
+          }
+
+          result.status shouldBe SEE_OTHER
+          result.headers("Location").headOption shouldBe Some(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYearEOY, employmentId).url)
+
+        }
+
+
+        "redirect to student loans cya page when there is no employment user data returned" in {
+
+          lazy val result = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(scenarioData.isAgent)
+
+            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), follow = false, welsh = scenarioData.isWelsh,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
+          }
+
+          result.status shouldBe SEE_OTHER
+          result.headers("Location").headOption shouldBe Some(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYearEOY, employmentId).url)
         }
       }
 
@@ -378,7 +472,7 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           }
         }
 
-        "render the Undergraduate loans repayment amount page when there is an invalid format entry in the amount field" when {
+        "render the undergraduate loans repayment amount page when there is an invalid format entry in the amount field" when {
           lazy val result = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
@@ -429,6 +523,25 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           "result should be BadRequest" in {
             result.status shouldBe BAD_REQUEST
           }
+        }
+        "The user is taken to the overview page when the student loans feature switch is off" in {
+          val headers = if (scenarioData.isWelsh) {
+            Seq(HeaderNames.COOKIE -> playSessionCookies(ExpectedResultsIndividualEN.taxYearEOY), HeaderNames.ACCEPT_LANGUAGE -> "cy", "Csrf-Token" -> "nocheck")
+          } else {
+            Seq(HeaderNames.COOKIE -> playSessionCookies(ExpectedResultsIndividualEN.taxYearEOY), "Csrf-Token" -> "nocheck")
+          }
+
+          val request = FakeRequest("POST", studentLoansUglAmountUrl(ExpectedResultsIndividualEN.taxYearEOY, employmentId)).withHeaders(headers: _*)
+
+          val result: Future[Result] = {
+            dropEmploymentDB()
+            authoriseIndividual()
+            route(appWithFeatureSwitchesOff, request, "{}").get
+          }
+
+          status(result) shouldBe SEE_OTHER
+          await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(ExpectedResultsIndividualEN.taxYearEOY)
+
         }
       }
     }

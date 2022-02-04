@@ -25,7 +25,6 @@ import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import repositories.EmploymentUserDataRepository
 import services.EmploymentSessionService
 import services.studentLoans.StudentLoansService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -39,7 +38,6 @@ class UglAmountController @Inject()(implicit val mcc: MessagesControllerComponen
                                     authAction: AuthorisedAction,
                                     val employmentSessionService: EmploymentSessionService,
                                     val studentLoansService: StudentLoansService,
-                                    employmentUserDataRepository: EmploymentUserDataRepository,
                                     view: UglAmountView,
                                     appConfig: AppConfig,
                                     errorHandler: ErrorHandler,
@@ -49,24 +47,30 @@ class UglAmountController @Inject()(implicit val mcc: MessagesControllerComponen
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit user =>
 
     if (appConfig.studentLoansEnabled) {
-      employmentUserDataRepository.find(taxYear, employmentId).map {
+      employmentSessionService.getSessionData(taxYear, employmentId).map {
         case Left(_) => errorHandler.internalServerError()
         case Right(optionCyaData) =>
           optionCyaData match {
             case Some(cyaData) =>
-              val uglAmount = cyaData.employment.studentLoans.flatMap(_.uglDeductionAmount)
-              val employerName = cyaData.employment.employmentDetails.employerName
+              val uglQuestion: Boolean = cyaData.employment.studentLoans.fold(false)(_.uglDeduction)
 
-              val form = uglAmount.fold(amountForm(employerName)
-              )(amountForm(employerName).fill _)
-              Ok(view(taxYear, form, employmentId, employerName))
-            case None => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+              if (uglQuestion) {
+                val uglAmount = cyaData.employment.studentLoans.flatMap(_.uglDeductionAmount)
+                val employerName = cyaData.employment.employmentDetails.employerName
+
+                val form = uglAmount.fold(amountForm(employerName)
+                )(amountForm(employerName).fill _)
+                Ok(view(taxYear, form, employmentId, employerName))
+
+              } else {
+                Redirect(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYear, employmentId))
+              }
+
+            case None => Redirect(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYear, employmentId))
           }
 
       }
-    }
-
-    else {
+    } else {
       Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     }
   }
@@ -80,7 +84,14 @@ class UglAmountController @Inject()(implicit val mcc: MessagesControllerComponen
           formWithErrors => {
             Future.successful(BadRequest(view(taxYear, formWithErrors, employmentId, cya.employment.employmentDetails.employerName)))
           },
-          amount => handleSuccessForm(taxYear, employmentId, cya, amount)
+          amount => {
+            val uglQuestion: Boolean = cya.employment.studentLoans.fold(false)(_.uglDeduction)
+            if (uglQuestion) {
+              handleSuccessForm(taxYear, employmentId, cya, amount)
+            } else {
+              Future.successful(Redirect(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYear, employmentId)))
+            }
+          }
         )
       }
     } else {
