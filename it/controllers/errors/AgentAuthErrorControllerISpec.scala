@@ -76,7 +76,8 @@ class AgentAuthErrorControllerISpec extends IntegrationTest with ViewHelpers {
             urlGet(fullUrl(youNeedClientAuthUrl), welsh = user.isWelsh)
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an UNAUTHORIZED(401) status" in {
             result.status shouldBe UNAUTHORIZED

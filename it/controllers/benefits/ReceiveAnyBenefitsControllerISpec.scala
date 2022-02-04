@@ -123,7 +123,8 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             result.status shouldBe 200
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)
           titleCheck(specific.expectedTitle)
@@ -150,7 +151,8 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             result.status shouldBe 200
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)
           titleCheck(specific.expectedTitle)
@@ -222,7 +224,8 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             result.status shouldBe BAD_REQUEST
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)
           titleCheck(specific.expectedErrorTitle)

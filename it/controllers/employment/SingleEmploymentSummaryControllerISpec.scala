@@ -186,7 +186,8 @@ class SingleEmploymentSummaryControllerISpec extends IntegrationTest with ViewHe
               urlGet(fullUrl(employmentSummaryUrl(taxYearEOY)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             "status OK" in {
               result.status shouldBe OK
@@ -216,7 +217,8 @@ class SingleEmploymentSummaryControllerISpec extends IntegrationTest with ViewHe
               urlGet(fullUrl(employmentSummaryUrl(taxYearEOY)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             "status OK" in {
               result.status shouldBe OK
@@ -248,7 +250,8 @@ class SingleEmploymentSummaryControllerISpec extends IntegrationTest with ViewHe
               urlGet(fullUrl(employmentSummaryUrl(taxYear)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             "status OK" in {
               result.status shouldBe OK
@@ -277,7 +280,8 @@ class SingleEmploymentSummaryControllerISpec extends IntegrationTest with ViewHe
               urlGet(fullUrl(employmentSummaryUrl(taxYear)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             "status OK" in {
               result.status shouldBe OK

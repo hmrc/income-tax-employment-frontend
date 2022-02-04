@@ -117,7 +117,8 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
             urlGet(fullUrl(incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
           import user.commonExpectedResults._
@@ -145,7 +146,8 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
             urlGet(fullUrl(incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
           import user.commonExpectedResults._
@@ -174,7 +176,8 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
             urlGet(fullUrl(incomeTaxOrIncurredCostsBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
           import user.commonExpectedResults._
@@ -252,7 +255,8 @@ class IncomeTaxOrIncurredCostsBenefitsControllerISpec extends IntegrationTest wi
             result.status shouldBe BAD_REQUEST
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
           import user.commonExpectedResults._

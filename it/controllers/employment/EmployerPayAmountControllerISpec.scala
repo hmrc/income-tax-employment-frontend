@@ -159,7 +159,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
             result.status shouldBe OK
@@ -187,7 +188,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
             result.status shouldBe OK
@@ -218,7 +220,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
                 urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
-              implicit def document: () => Document = () => Jsoup.parse(result.body)
+              lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputSelector, "")
             }
@@ -233,7 +236,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
                 urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
-              implicit def document: () => Document = () => Jsoup.parse(result.body)
+              lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputSelector, "")
             }
@@ -249,7 +253,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
                 urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
-              implicit def document: () => Document = () => Jsoup.parse(result.body)
+              lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputSelector, "110")
             }
@@ -263,7 +268,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
                 urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
-              implicit def document: () => Document = () => Jsoup.parse(result.body)
+              lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputSelector, "100")
             }
@@ -321,7 +327,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             urlPost(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST
@@ -341,7 +348,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             urlPost(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "|"))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST
@@ -362,7 +370,8 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
               body = Map("amount" -> "9999999999999999999999999999"))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST

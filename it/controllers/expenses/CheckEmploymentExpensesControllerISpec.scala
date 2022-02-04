@@ -257,7 +257,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
             urlGet(fullUrl(checkYourExpensesUrl(taxYear)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -295,7 +296,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           val commonResults = user.commonExpectedResults
           val specificResults = user.specificExpectedResults.get
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(specificResults.expectedTitle)
           h1Check(specificResults.expectedH1)
@@ -336,7 +338,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
             urlGet(fullUrl(checkYourExpensesUrl(taxYearEOY)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(specificResults.expectedTitle)
           h1Check(specificResults.expectedH1)
@@ -357,7 +360,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
             urlGet(fullUrl(checkYourExpensesUrl(taxYearEOY)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -386,7 +390,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           val commonResults = user.commonExpectedResults
           val specificResults = user.specificExpectedResults.get
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -424,7 +429,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
             urlGet(fullUrl(checkYourExpensesUrl(taxYear)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -464,7 +470,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           val commonResults = user.commonExpectedResults
           val specificResults = user.specificExpectedResults.get
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -504,7 +511,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
           val commonResults = user.commonExpectedResults
           val specificResults = user.specificExpectedResults.get
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -599,7 +607,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         urlPost(fullUrl(checkYourExpensesUrl(taxYear)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
-      implicit def document: () => Document = () => Jsoup.parse(result.body)
+      lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
       "has a url of overview page" in {
         result.status shouldBe SEE_OTHER
@@ -615,7 +624,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
-      implicit def document: () => Document = () => Jsoup.parse(result.body)
+      lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
       "has a url of expenses show method" in {
         result.status shouldBe SEE_OTHER
@@ -636,7 +646,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
 
-      implicit def document: () => Document = () => Jsoup.parse(result.body)
+      lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
       "has a url of expenses show method" in {
         result.status shouldBe SEE_OTHER
