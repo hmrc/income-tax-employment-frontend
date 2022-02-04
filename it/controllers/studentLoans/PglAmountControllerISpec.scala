@@ -205,39 +205,6 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
 
         }
 
-        "redirect to student loans cya page when there is no student loans data" in {
-
-          lazy val result = {
-            dropEmploymentDB()
-            authoriseAgentOrIndividual(scenarioData.isAgent)
-            insertCyaData(EmploymentUserData(
-              sessionId,
-              mtditid,
-              nino,
-              scenarioData.commonExpectedResults.taxYearEOY,
-              employmentId, isPriorSubmission = false, hasPriorBenefits = false,
-              EmploymentCYAModel(
-                EmploymentDetails(
-                  employerName = "Whiterun Guards",
-                  employerRef = Some("223/AB12399"),
-                  startDate = Some("2022-04-01"),
-                  cessationDateQuestion = Some(false),
-                  taxablePayToDate = Some(3000.00),
-                  totalTaxToDate = Some(300.00),
-                  currentDataIsHmrcHeld = false
-                )
-              )), user)
-            userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
-
-            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), follow = false, welsh = scenarioData.isWelsh,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
-          }
-
-          result.status shouldBe SEE_OTHER
-          result.headers("Location").headOption shouldBe Some(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYearEOY, employmentId).url)
-
-        }
-
         "render the Postgraduate amount page with no value when there is prior data and no cya data" which {
 
           lazy val result = {
@@ -320,6 +287,55 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
 
           buttonCheck(expectedButtonText, continueButtonSelector)
         }
+
+        "redirect to student loans cya page when there is no student loans data" in {
+
+          lazy val result = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(scenarioData.isAgent)
+            insertCyaData(EmploymentUserData(
+              sessionId,
+              mtditid,
+              nino,
+              scenarioData.commonExpectedResults.taxYearEOY,
+              employmentId, isPriorSubmission = false, hasPriorBenefits = false,
+              EmploymentCYAModel(
+                EmploymentDetails(
+                  employerName = "Whiterun Guards",
+                  employerRef = Some("223/AB12399"),
+                  startDate = Some("2022-04-01"),
+                  cessationDateQuestion = Some(false),
+                  taxablePayToDate = Some(3000.00),
+                  totalTaxToDate = Some(300.00),
+                  currentDataIsHmrcHeld = false
+                )
+              )), user)
+            userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
+
+            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), follow = false, welsh = scenarioData.isWelsh,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
+          }
+
+          result.status shouldBe SEE_OTHER
+          result.headers("Location").headOption shouldBe Some(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYearEOY, employmentId).url)
+
+        }
+
+
+        "redirect to student loans cya page when there is no employment user data returned" in {
+
+          lazy val result = {
+            dropEmploymentDB()
+            authoriseAgentOrIndividual(scenarioData.isAgent)
+
+            urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), follow = false, welsh = scenarioData.isWelsh,
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
+          }
+
+          result.status shouldBe SEE_OTHER
+          result.headers("Location").headOption shouldBe Some(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYearEOY, employmentId).url)
+
+        }
       }
 
     }
@@ -336,7 +352,8 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
           await(wsClientFeatureSwitchOff.url(url(ExpectedResultsIndividualEN.taxYearEOY)).withFollowRedirects(false).post("{}"))
         }
 
-        result.headers("Location").headOption shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(ExpectedResultsIndividualEN.taxYearEOY))
+        result.status shouldBe 303
+        result.header("Location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(ExpectedResultsIndividualEN.taxYearEOY))
       }
 
     }
