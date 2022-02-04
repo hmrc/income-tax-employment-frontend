@@ -27,7 +27,7 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.route
-import utils.PageUrls.{fullUrl, pglAmountUrl, studentLoansCyaPage}
+import utils.PageUrls.{employerInformationUrl, fullUrl, pglAmountUrl, studentLoansCyaPage}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 import scala.concurrent.Future
@@ -343,21 +343,6 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
 
   ".submit" should {
 
-    "redirect the user to the overview page" when {
-
-      "the student loans feature switch is off" in {
-        val result = {
-          dropEmploymentDB()
-          authoriseIndividual()
-          await(wsClientFeatureSwitchOff.url(url(ExpectedResultsIndividualEN.taxYearEOY)).withFollowRedirects(false).post("{}"))
-        }
-
-        result.status shouldBe 303
-        result.header("Location") shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(ExpectedResultsIndividualEN.taxYearEOY))
-      }
-
-    }
-
     userScenarios.foreach { scenarioData =>
 
       s"The language is ${welshTest(scenarioData.isWelsh)} and the request is from an ${scenarioData.isAgent}" should {
@@ -528,8 +513,27 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
             result.status shouldBe BAD_REQUEST
           }
         }
+
+        "The user is taken to the overview page when the student loans feature switch is off" in {
+          val headers = if (scenarioData.isWelsh) {
+            Seq(HeaderNames.COOKIE -> playSessionCookies(ExpectedResultsIndividualEN.taxYearEOY), HeaderNames.ACCEPT_LANGUAGE -> "cy", "Csrf-Token" -> "nocheck")
+          } else {
+            Seq(HeaderNames.COOKIE -> playSessionCookies(ExpectedResultsIndividualEN.taxYearEOY), "Csrf-Token" -> "nocheck")
+          }
+
+          val request = FakeRequest("POST", pglAmountUrl(ExpectedResultsIndividualEN.taxYearEOY, employmentId)).withHeaders(headers: _*)
+
+          val result: Future[Result] = {
+            dropEmploymentDB()
+            authoriseIndividual()
+            route(appWithFeatureSwitchesOff, request, "{}").get
+          }
+
+          status(result) shouldBe SEE_OTHER
+          await(result).header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(ExpectedResultsIndividualEN.taxYearEOY)
+
+        }
       }
     }
   }
-
 }
