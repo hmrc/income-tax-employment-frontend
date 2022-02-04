@@ -318,6 +318,9 @@ GET         /:taxYear/employment/expenses/start-employment-expenses             
 GET         /:taxYear/student-loans/check-student-loans-repayments                   controllers.studentLoans.StudentLoansCYAController.show(taxYear: Int, employmentId: String)
 POST        /:taxYear/student-loans/check-student-loans-repayments                   controllers.studentLoans.StudentLoansCYAController.submit(taxYear: Int, employmentId: String)
 
+GET         /:taxYear/student-loans/postgraduate-repayment-amount                    controllers.studentLoans.PglAmountController.show(taxYear: Int, employmentId: String)
+POST        /:taxYear/student-loans/postgraduate-repayment-amount                    controllers.studentLoans.PglAmountController.submit(taxYear: Int, employmentId: String)
+
 ###########################     Error pages     ####################################
 
 GET         /error/you-need-to-sign-up                                               controllers.errors.IndividualAuthErrorController.show
