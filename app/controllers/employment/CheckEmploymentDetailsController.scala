@@ -20,9 +20,11 @@ import actions.AuthorisedAction
 import actions.AuthorisedTaxYearAction.authorisedTaxYearAction
 import common.{EmploymentSection, SessionValues}
 import config.{AppConfig, ErrorHandler}
-import controllers.employment.routes.CheckEmploymentDetailsController
+import controllers.employment.routes.{CheckEmploymentDetailsController, CheckYourBenefitsController, EmployerInformationController}
+import javax.inject.Inject
 import models.User
 import models.employment._
+import models.employment.createUpdate.CreateUpdateEmploymentRequest
 import models.mongo.EmploymentCYAModel
 import play.api.Logging
 import play.api.i18n.I18nSupport
@@ -34,7 +36,6 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.employment.CheckEmploymentDetailsView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesControllerComponents,
@@ -96,22 +97,40 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
-          case Some(cya) => employmentSessionService.createModelAndReturnResult(cya, prior, taxYear, EmploymentSection.EMPLOYMENT_DETAILS) { model =>
-            employmentSessionService.createOrUpdateEmploymentResult(taxYear, model).flatMap {
+          case Some(cya) =>
+            employmentSessionService.createModelOrReturnResult(cya, prior, taxYear, EmploymentSection.EMPLOYMENT_DETAILS) match {
               case Left(result) => Future.successful(result)
-              case Right(result) => checkEmploymentDetailsService.performSubmitAudits(model, employmentId, taxYear, prior)
-                if (appConfig.nrsEnabled) {
-                  checkEmploymentDetailsService.performSubmitNrsPayload(model, employmentId, prior)
-                }
-                employmentSessionService.clear(taxYear, employmentId).map {
-                  case Left(_) => errorHandler.internalServerError()
-                  case Right(_) => result.removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)
-                }
+              case Right(model) => employmentSessionService.createOrUpdateEmploymentResult(taxYear, model).flatMap {
+                case Left(result) => Future.successful(result)
+                case Right(returnedEmploymentId) =>
+                  checkEmploymentDetailsService.performSubmitAudits(model, employmentId, taxYear, prior)
+                  if (appConfig.nrsEnabled) {
+                    checkEmploymentDetailsService.performSubmitNrsPayload(model, employmentId, prior)
+                  }
+                  employmentSessionService.clear(taxYear, employmentId).map {
+                    case Left(_) => errorHandler.internalServerError()
+                    case Right(_) => getResultFromResponse(returnedEmploymentId, taxYear, model, cya.hasPriorBenefits, employmentId)
+                  }
+              }
             }
-          }
           case None => Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
         }
       }
+    }
+  }
+
+  def getResultFromResponse(returnedEmploymentId: Option[String], taxYear: Int,
+                            model: CreateUpdateEmploymentRequest, hasPriorBenefits: Boolean, employmentId: String)(implicit user: User[_]): Result = {
+    returnedEmploymentId match {
+      case Some(employmentId) =>
+        if (hasPriorBenefits || model.hmrcEmploymentIdToIgnore.isDefined){
+          Redirect(EmployerInformationController.show(taxYear, employmentId))
+        } else {
+          Redirect(CheckYourBenefitsController.show(taxYear, employmentId))
+            .removingFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID)
+            .addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId)
+        }
+      case None => Redirect(EmployerInformationController.show(taxYear, employmentId))
     }
   }
 
@@ -120,7 +139,7 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
     employmentData.eoyEmploymentSourceWith(employmentId) match {
       case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>
         employmentSessionService.createOrUpdateSessionData(employmentId, EmploymentCYAModel.apply(source, isUsingCustomerData),
-          taxYear, isPriorSubmission = true, source.hasPriorBenefits
+          taxYear, isPriorSubmission = true, source.hasPriorBenefits, source.hasPriorStudentLoans
         )(errorHandler.internalServerError()) {
           val viewModel = source.toEmploymentDetailsViewModel(isUsingCustomerData)
           val isSingleEmploymentValue = checkEmploymentDetailsService.isSingleEmploymentAndAudit(viewModel, taxYear, isInYear = false, Some(employmentData))

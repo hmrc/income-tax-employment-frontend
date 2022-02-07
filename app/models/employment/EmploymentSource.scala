@@ -37,6 +37,9 @@ case class EmploymentSource(employmentId: String,
   def hasPriorBenefits: Boolean =
     employmentBenefits.exists(_.benefits.exists(_.hasBenefitsPopulated))
 
+  def hasPriorStudentLoans: Boolean =
+    employmentData.exists(_.deductions.exists(_.studentLoans.exists(sl => sl.pglDeductionAmount.isDefined || sl.uglDeductionAmount.isDefined)))
+
   def dataHasNotChanged(createUpdateEmployment: CreateUpdateEmployment): Boolean = {
     employerRef == createUpdateEmployment.employerRef &&
       employerName == createUpdateEmployment.employerName &&

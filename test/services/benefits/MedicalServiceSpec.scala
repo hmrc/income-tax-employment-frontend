@@ -37,7 +37,7 @@ class MedicalServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefits = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(sectionQuestion = Some(true))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefits)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = true, hasPriorBenefits = true, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateSectionQuestion(taxYear, employmentId, employmentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
@@ -48,7 +48,7 @@ class MedicalServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefits = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(MedicalChildcareEducationModel.clear))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefits).copy(hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = true, hasPriorBenefits = true, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateSectionQuestion(taxYear, employmentId, employmentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
@@ -59,7 +59,7 @@ class MedicalServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefits = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(MedicalChildcareEducationModel(sectionQuestion = Some(false))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefits)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = true, hasPriorBenefits = true, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateSectionQuestion(taxYear, employmentId, employmentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
@@ -73,7 +73,7 @@ class MedicalServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefits = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(medicalInsuranceQuestion = Some(true))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefits).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateMedicalInsuranceQuestion(taxYear, employmentId, givenEmploymentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
@@ -85,7 +85,7 @@ class MedicalServiceSpec extends UnitTest with MockEmploymentSessionService {
         .copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(medicalInsuranceQuestion = Some(false), medicalInsurance = None)))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefitsViewModel).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = true, hasPriorBenefits = true, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateMedicalInsuranceQuestion(taxYear, employmentId, givenEmploymentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
@@ -98,7 +98,7 @@ class MedicalServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(medicalInsurance = Some(123))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefitsViewModel).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateMedicalInsurance(taxYear, employmentId, givenEmploymentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
     }
@@ -111,7 +111,7 @@ class MedicalServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefits = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(nurseryPlacesQuestion = Some(true))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefits).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateNurseryPlacesQuestion(taxYear, employmentId, givenEmploymentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
@@ -123,7 +123,7 @@ class MedicalServiceSpec extends UnitTest with MockEmploymentSessionService {
         .copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(nurseryPlacesQuestion = Some(false), nurseryPlaces = None)))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefitsViewModel).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = true, hasPriorBenefits = true, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateNurseryPlacesQuestion(taxYear, employmentId, givenEmploymentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
@@ -136,7 +136,7 @@ class MedicalServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(nurseryPlaces = Some(123))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefitsViewModel).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateNurseryPlaces(taxYear, employmentId, givenEmploymentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
     }
@@ -149,7 +149,7 @@ class MedicalServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefits = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(educationalServicesQuestion = Some(true))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefits).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateEducationalServicesQuestion(taxYear, employmentId, givenEmploymentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
@@ -161,7 +161,7 @@ class MedicalServiceSpec extends UnitTest with MockEmploymentSessionService {
         .copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(educationalServicesQuestion = Some(false), educationalServices = None)))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefitsViewModel).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = true, hasPriorBenefits = true, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateEducationalServicesQuestion(taxYear, employmentId, givenEmploymentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
@@ -174,7 +174,7 @@ class MedicalServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(educationalServices = Some(123))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefitsViewModel).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateEducationalServices(taxYear, employmentId, givenEmploymentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
     }
@@ -187,7 +187,7 @@ class MedicalServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefits = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(beneficialLoanQuestion = Some(true))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefits).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateBeneficialLoanQuestion(taxYear, employmentId, givenEmploymentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
@@ -199,7 +199,7 @@ class MedicalServiceSpec extends UnitTest with MockEmploymentSessionService {
         .copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(beneficialLoanQuestion = Some(false), beneficialLoan = None)))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefitsViewModel).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = true, hasPriorBenefits = true, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateBeneficialLoanQuestion(taxYear, employmentId, givenEmploymentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
@@ -212,7 +212,7 @@ class MedicalServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(beneficialLoan = Some(123))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefitsViewModel).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateBeneficialLoan(taxYear, employmentId, givenEmploymentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
     }

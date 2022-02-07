@@ -24,9 +24,10 @@ import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import builders.models.employment.StudentLoansBuilder.aStudentLoans
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
+import common.SessionValues
 import helpers.SessionCookieCrumbler.getSessionMap
 import models.benefits.{AccommodationRelocationModel, Benefits, BenefitsViewModel}
-import models.employment.createUpdate.{CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
+import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
 import models.employment.{Deductions, EmploymentBenefits}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
@@ -1256,7 +1257,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         "return only the relevant data on the page when other certain data items are in CYA for EOY, customerData = true " +
           "to check help text isn't shown" which {
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-            EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
+            EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employmentCyaModel)
 
           def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
             EmploymentCYAModel(
@@ -1384,7 +1385,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
         "return a page with only the benefits received subheading when its EOY and only the benefits question answered as no" which {
           def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-            EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
+            EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employmentCyaModel)
 
           def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
             EmploymentCYAModel(
@@ -1530,7 +1531,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
     "redirect to the Did your client receive any benefits page when its EOY and theres no benefits model in the session data" in {
       def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-        EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
+        EmploymentUserData(sessionId, mtditid, nino, taxYear - 1, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employmentCyaModel)
 
       def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel =
         EmploymentCYAModel(
@@ -1647,13 +1648,92 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYearEOY", NO_CONTENT,
           Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY,
+          extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
       }
 
       "return a redirect to the check employment expenses page" in {
         result.status shouldBe SEE_OTHER
         result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
         getSessionMap(result, "mdtp").get("TEMP_NEW_EMPLOYMENT_ID") shouldBe Some(employmentId)
+      }
+    }
+
+    "create a model when adding employment benefits for the first time but employment existed before" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        val customerEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData.copy(hasPriorBenefits = false, employment = anEmploymentCYAModel).copy(employmentId = employmentId), aUserRequest)
+
+        val model = CreateUpdateEmploymentRequest(
+          Some(employmentId),
+          None,
+          Some(
+            CreateUpdateEmploymentData(
+              pay = CreateUpdatePay(
+                anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate))).get,
+                anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))).get
+              ),
+              deductions = Some(Deductions(Some(aStudentLoans))),
+              benefitsInKind = anEmploymentCYAModel.employmentBenefits.map(_.toBenefits)
+            )
+          )
+        )
+
+        stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYearEOY", NO_CONTENT,
+          Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+
+        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "return a redirect to the check employment information page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location").contains(employerInformationUrl(taxYearEOY,employmentId)) shouldBe true
+      }
+    }
+    "create a model when adding employment benefits for the first time but hmrc employment existed before" which {
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        val hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = hmrcEmploymentData))), nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData.copy(hasPriorBenefits = false, employment = anEmploymentCYAModel).copy(employmentId = employmentId), aUserRequest)
+
+        val model = CreateUpdateEmploymentRequest(
+          None,
+          Some(
+            CreateUpdateEmployment(
+              anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employerRef),
+              anAllEmploymentData.eoyEmploymentSourceWith(employmentId).map(_.employmentSource.employerName).get,
+              anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.startDate).get,
+              anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.cessationDate),
+              anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.payrollId)
+            )
+          ),
+          Some(
+            CreateUpdateEmploymentData(
+              pay = CreateUpdatePay(
+                anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate))).get,
+                anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))).get
+              ),
+              deductions = Some(Deductions(Some(aStudentLoans))),
+              benefitsInKind = anEmploymentCYAModel.employmentBenefits.map(_.toBenefits)
+            )
+          ),
+          Some(employmentId)
+        )
+
+        stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYearEOY", CREATED,
+          Json.toJson(model).toString(), """{"employmentId":"id"}""", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+
+        urlPost(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "return a redirect to the check employment information page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location").contains(employerInformationUrl(taxYearEOY,"id")) shouldBe true
       }
     }
 

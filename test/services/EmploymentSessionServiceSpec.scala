@@ -21,6 +21,7 @@ import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import common.EmploymentSection
 import config._
 import controllers.employment.routes.{CheckEmploymentDetailsController, CheckYourBenefitsController}
+import controllers.studentLoans.routes.StudentLoansCYAController
 import models.benefits.{AssetsModel, Benefits, BenefitsViewModel}
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
@@ -153,7 +154,8 @@ class EmploymentSessionServiceSpec extends UnitTest
 
   private val employmentDataFull: EmploymentUserData = {
     EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", isPriorSubmission = true,
-      hasPriorBenefits = true, employmentCYA, testClock.now())
+      hasPriorBenefits = true,
+              hasPriorStudentLoans = true, employmentCYA, testClock.now())
   }
 
   private val createUpdateEmploymentRequest: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
@@ -236,35 +238,24 @@ class EmploymentSessionServiceSpec extends UnitTest
   }
 
   "createOrUpdateEmploymentResult" should {
-    "use the request model to make the api call and return the correct redirect when" when {
+    "use the request model to make the api call and return the response" when {
       "request has no employmentId" in {
         val requestWithoutEmploymentId = createUpdateEmploymentRequest.copy(employmentId = None)
         mockCreateUpdateEmploymentData(nino, taxYear, requestWithoutEmploymentId)(Right(None))
 
         val response = service.createOrUpdateEmploymentResult(taxYear, requestWithoutEmploymentId)
 
-        status(response.map(_.right.get)) shouldBe SEE_OTHER
-        redirectUrl(response.map(_.right.get)) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYear/employment-summary"
+        await(response) shouldBe Right(None)
       }
 
       "request has employmentId" in {
         val requestWithEmploymentId = createUpdateEmploymentRequest.copy(employmentId = Some("some-employment-id"))
-        mockCreateUpdateEmploymentData(nino, taxYear, requestWithEmploymentId)(Right(None))
+        mockCreateUpdateEmploymentData(nino, taxYear, requestWithEmploymentId)(Right(Some("some-employment-id")))
 
         val response = service.createOrUpdateEmploymentResult(taxYear, requestWithEmploymentId)
 
-        status(response.map(_.right.get)) shouldBe SEE_OTHER
-        redirectUrl(response.map(_.right.get)) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYear/employer-information?employmentId=some-employment-id"
+        await(response) shouldBe Right(Some("some-employment-id"))
       }
-    }
-
-    "use the request model to make the api call and return the correct redirect when it is an add case" in {
-      mockCreateUpdateEmploymentData(nino, taxYear, createUpdateEmploymentRequest)(Right(Some("473474747")))
-
-      val response = service.createOrUpdateEmploymentResult(taxYear, createUpdateEmploymentRequest)
-
-      status(response.map(_.right.get)) shouldBe SEE_OTHER
-      redirectUrl(response.map(_.right.get)) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYear/check-employment-benefits?employmentId=473474747"
     }
 
     "use the request model to make the api call  and handle an error" in {
@@ -278,16 +269,16 @@ class EmploymentSessionServiceSpec extends UnitTest
 
   "createModelAndReturnResult" should {
     "return JourneyNotFinished redirect from an exception when an update is being made to student loans but no prior" in {
-      lazy val response = service.createModelAndReturnResult(
+      lazy val response = service.createModelOrReturnResult(
         employmentDataFull, None, taxYear, EmploymentSection.STUDENT_LOANS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe CheckEmploymentDetailsController.show(taxYear,employmentDataFull.employmentId).url
+      status(Future.successful(response.left.get)) shouldBe SEE_OTHER
+      redirectUrl(Future.successful(response.left.get)) shouldBe StudentLoansCYAController.show(taxYear,employmentDataFull.employmentId).url
     }
 
     "return JourneyNotFinished redirect from an exception when an update is being made to student loans but no pay info in the prior employment" in {
-      lazy val response = service.createModelAndReturnResult(
+      lazy val response = service.createModelOrReturnResult(
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(
@@ -306,14 +297,14 @@ class EmploymentSessionServiceSpec extends UnitTest
             ), None, Seq(), None
           )
         ), taxYear, EmploymentSection.STUDENT_LOANS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe CheckEmploymentDetailsController.show(taxYear,employmentDataFull.employmentId).url
+      status(Future.successful(response.left.get)) shouldBe SEE_OTHER
+      redirectUrl(Future.successful(response.left.get)) shouldBe StudentLoansCYAController.show(taxYear,employmentDataFull.employmentId).url
     }
 
     "return redirect when an update is being made to student loans and a prior hmrc employment" in {
-      lazy val response = service.createModelAndReturnResult(
+      lazy val response = service.createModelOrReturnResult(
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(
@@ -339,13 +330,14 @@ class EmploymentSessionServiceSpec extends UnitTest
             ), None, Seq(), None
           )
         ), taxYear, EmploymentSection.STUDENT_LOANS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      response.right.get shouldBe CreateUpdateEmploymentRequest(
+        None,Some(CreateUpdateEmployment(Some("123/12345"),"Employer Name","2020-11-11",None,None)),Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99,3453453.0),Some(Deductions(Some(StudentLoans(Some(20000.0),Some(30000.0))))),None)),Some("employmentId")
+      )
     }
     "return redirect when an update is being made to student loans and a prior hmrc employment that has benefits" in {
-      lazy val response = service.createModelAndReturnResult(
+      lazy val response = service.createModelOrReturnResult(
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(
@@ -376,14 +368,16 @@ class EmploymentSessionServiceSpec extends UnitTest
             ), None, Seq(), None
           )
         ), taxYear, EmploymentSection.STUDENT_LOANS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      response.right.get shouldBe CreateUpdateEmploymentRequest(
+        None,Some(CreateUpdateEmployment(Some("123/12345"),"Employer Name","2020-11-11",None,None)),Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99,3453453.0),Some(Deductions(Some(StudentLoans(Some(20000.0),Some(30000.0))))),
+          Some(Benefits(None,Some(100.0),Some(100.0),None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None)))),Some("employmentId")
+      )
     }
 
     "return redirect when an update is being made to student loans and a prior customer employment" in {
-      lazy val response = service.createModelAndReturnResult(
+      lazy val response = service.createModelOrReturnResult(
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(), None,
@@ -410,13 +404,14 @@ class EmploymentSessionServiceSpec extends UnitTest
             ), None
           )
         ), taxYear, EmploymentSection.STUDENT_LOANS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      response.right.get shouldBe CreateUpdateEmploymentRequest(
+        Some("employmentId"),None,Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99,3453453.0),Some(Deductions(Some(StudentLoans(Some(20000.0),Some(30000.0))))),None)),None
+      )
     }
     "return redirect when an update is being made to student loans and a prior customer employment which has benefits" in {
-      lazy val response = service.createModelAndReturnResult(
+      lazy val response = service.createModelOrReturnResult(
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(), None,
@@ -448,13 +443,15 @@ class EmploymentSessionServiceSpec extends UnitTest
             ), None
           )
         ), taxYear, EmploymentSection.STUDENT_LOANS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      response.right.get shouldBe CreateUpdateEmploymentRequest(
+        Some("employmentId"),None,Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99,3453453.0),Some(Deductions(Some(StudentLoans(Some(20000.0),Some(30000.0))))),
+          Some(Benefits(None,Some(100.0),Some(100.0),None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None)))),None
+      )
     }
     "return redirect when an update is being made to remove student loans and has a prior customer employment which has benefits" in {
-      lazy val response = service.createModelAndReturnResult(
+      lazy val response = service.createModelOrReturnResult(
         employmentDataFull.copy(
           employment = employmentDataFull.employment.copy(
             studentLoans = None
@@ -496,14 +493,16 @@ class EmploymentSessionServiceSpec extends UnitTest
             ), None
           )
         ), taxYear, EmploymentSection.STUDENT_LOANS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      response.right.get shouldBe CreateUpdateEmploymentRequest(
+        Some("employmentId"),None,Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99,3453453.0),None,
+          Some(Benefits(None,Some(100.0),Some(100.0),None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None)))),None
+      )
     }
 
     "return JourneyNotFinished redirect when an update is being made to student loans and a prior customer employment does not have pay details" in {
-      lazy val response = service.createModelAndReturnResult(
+      lazy val response = service.createModelOrReturnResult(
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(), None,
@@ -528,23 +527,23 @@ class EmploymentSessionServiceSpec extends UnitTest
             ), None
           )
         ), taxYear, EmploymentSection.STUDENT_LOANS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe CheckEmploymentDetailsController.show(taxYear,employmentDataFull.employmentId).url
+      status(Future.successful(response.left.get)) shouldBe SEE_OTHER
+      redirectUrl(Future.successful(response.left.get)) shouldBe StudentLoansCYAController.show(taxYear,employmentDataFull.employmentId).url
     }
 
     "return JourneyNotFinished redirect from an exception when an update is being made to benefits but no prior" in {
-      lazy val response = service.createModelAndReturnResult(
+      lazy val response = service.createModelOrReturnResult(
         employmentDataFull, None, taxYear, EmploymentSection.EMPLOYMENT_BENEFITS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear,employmentDataFull.employmentId).url
+      status(Future.successful(response.left.get)) shouldBe SEE_OTHER
+      redirectUrl(Future.successful(response.left.get)) shouldBe CheckYourBenefitsController.show(taxYear,employmentDataFull.employmentId).url
     }
 
     "return JourneyNotFinished redirect from an exception when an update is being made to benefits but no pay info in the prior employment" in {
-      lazy val response = service.createModelAndReturnResult(
+      lazy val response = service.createModelOrReturnResult(
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(
@@ -563,14 +562,14 @@ class EmploymentSessionServiceSpec extends UnitTest
             ), None, Seq(), None
           )
         ), taxYear, EmploymentSection.EMPLOYMENT_BENEFITS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear,employmentDataFull.employmentId).url
+      status(Future.successful(response.left.get)) shouldBe SEE_OTHER
+      redirectUrl(Future.successful(response.left.get)) shouldBe CheckYourBenefitsController.show(taxYear,employmentDataFull.employmentId).url
     }
 
     "return redirect when an update is being made to benefits and a prior hmrc employment" in {
-      lazy val response = service.createModelAndReturnResult(
+      lazy val response = service.createModelOrReturnResult(
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(
@@ -596,14 +595,16 @@ class EmploymentSessionServiceSpec extends UnitTest
             ), None, Seq(), None
           )
         ), taxYear, EmploymentSection.EMPLOYMENT_BENEFITS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      response.right.get shouldBe CreateUpdateEmploymentRequest(
+        None,Some(CreateUpdateEmployment(Some("123/12345"),"Employer Name","2020-11-11",None,None)),Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99,3453453.0),None,
+          Some(Benefits(None,Some(100.0),Some(100.0),None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None)))),Some("employmentId")
+      )
     }
 
     "return redirect when an update is being made to benefits and a prior customer employment" in {
-      lazy val response = service.createModelAndReturnResult(
+      lazy val response = service.createModelOrReturnResult(
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(), None,
@@ -630,13 +631,15 @@ class EmploymentSessionServiceSpec extends UnitTest
             ), None
           )
         ), taxYear, EmploymentSection.EMPLOYMENT_BENEFITS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      response.right.get shouldBe CreateUpdateEmploymentRequest(
+        Some("employmentId"),None,Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99,3453453.0),None,
+          Some(Benefits(None,Some(100.0),Some(100.0),None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None)))),None
+      )
     }
     "return redirect when an update is being made to benefits and a prior customer employment which has student loans" in {
-      lazy val response = service.createModelAndReturnResult(
+      lazy val response = service.createModelOrReturnResult(
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(), None,
@@ -669,13 +672,15 @@ class EmploymentSessionServiceSpec extends UnitTest
             ), None
           )
         ), taxYear, EmploymentSection.EMPLOYMENT_BENEFITS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      response.right.get shouldBe CreateUpdateEmploymentRequest(
+        Some("employmentId"),None,Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99,3453453.0),Some(Deductions(Some(StudentLoans(Some(5466.77),Some(32545.55))))),
+          Some(Benefits(None,Some(100.0),Some(100.0),None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None)))),None
+      )
     }
     "return redirect when an update is being made to remove benefits and has a prior customer employment which has student loans" in {
-      lazy val response = service.createModelAndReturnResult(
+      lazy val response = service.createModelOrReturnResult(
         employmentDataFull.copy(
           employment = employmentDataFull.employment.copy(
             employmentBenefits = Some(
@@ -716,14 +721,15 @@ class EmploymentSessionServiceSpec extends UnitTest
             ), None
           )
         ), taxYear, EmploymentSection.EMPLOYMENT_BENEFITS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      response.right.get shouldBe CreateUpdateEmploymentRequest(
+        Some("employmentId"),None,Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99,3453453.0),Some(Deductions(Some(StudentLoans(Some(5466.77),Some(32545.55))))),None)),None
+      )
     }
 
     "return JourneyNotFinished redirect when an update is being made to benefits and a prior customer employment does not have pay details" in {
-      lazy val response = service.createModelAndReturnResult(
+      lazy val response = service.createModelOrReturnResult(
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(), None,
@@ -748,15 +754,15 @@ class EmploymentSessionServiceSpec extends UnitTest
             ), None
           )
         ), taxYear, EmploymentSection.EMPLOYMENT_BENEFITS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe CheckYourBenefitsController.show(taxYear,employmentDataFull.employmentId).url
+      status(Future.successful(response.left.get)) shouldBe SEE_OTHER
+      redirectUrl(Future.successful(response.left.get)) shouldBe CheckYourBenefitsController.show(taxYear,employmentDataFull.employmentId).url
     }
 
     "return to employment details when nothing to update" in {
 
-      lazy val response = service.createModelAndReturnResult(
+      lazy val response = service.createModelOrReturnResult(
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(
@@ -783,57 +789,63 @@ class EmploymentSessionServiceSpec extends UnitTest
             ), None, Seq(), None
           )
         ), taxYear, EmploymentSection.EMPLOYMENT_DETAILS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYear/employer-information?employmentId=${employmentDataFull.employmentId}"
+      status(Future.successful(response.left.get)) shouldBe SEE_OTHER
+      redirectUrl(Future.successful(response.left.get)) shouldBe s"/update-and-submit-income-tax-return/employment-income/$taxYear/employer-information?employmentId=${employmentDataFull.employmentId}"
     }
 
     "create the model to send and return the correct result" in {
-      val response = service.createModelAndReturnResult(
+      val response = service.createModelOrReturnResult(
         employmentDataFull, Some(allEmploymentData), taxYear, EmploymentSection.EMPLOYMENT_DETAILS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      response.right.get shouldBe CreateUpdateEmploymentRequest(
+        None,Some(CreateUpdateEmployment(Some("123/12345"),"Employer Name","2020-11-11",None,None)),Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99,3453453.0),None,None)),None
+      )
     }
 
     "create the model to send and return the correct result when there is no prior customer employment data" in {
-      val response = service.createModelAndReturnResult(
+      val response = service.createModelOrReturnResult(
         employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = allEmploymentData.hmrcEmploymentData
           .map(_.copy(employmentId = "employmentId", employmentData = None, employmentBenefits = Some(EmploymentBenefits(
             "2020-04-04T01:01:01Z", Some(Benefits(Some(100.00)))
           )))))), taxYear, EmploymentSection.EMPLOYMENT_DETAILS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      response.right.get shouldBe CreateUpdateEmploymentRequest(
+        None,Some(CreateUpdateEmployment(Some("123/12345"),"Employer Name","2020-11-11",None,None)),Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99,3453453.0),None,
+          Some(Benefits(Some(100.0), None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None)))),Some("employmentId")
+      )
     }
 
     "create the model to send and return the correct result when there are benefits already" in {
-      val response = service.createModelAndReturnResult(
+      val response = service.createModelOrReturnResult(
         employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = allEmploymentData.hmrcEmploymentData
           .map(_.copy(employmentId = "employmentId", employmentBenefits = Some(EmploymentBenefits(
             "2020-04-04T01:01:01Z", Some(Benefits(Some(100.00)))
           )))))), taxYear, EmploymentSection.EMPLOYMENT_DETAILS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      response.right.get shouldBe CreateUpdateEmploymentRequest(
+        None,Some(CreateUpdateEmployment(Some("123/12345"),"Employer Name","2020-11-11",None,None)),Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99,3453453.0),Some(Deductions(Some(StudentLoans(Some(100.0),Some(100.0))))),
+          Some(Benefits(Some(100.0),None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None)))),Some("employmentId")
+      )
     }
 
     "create the model to send and return the correct result when its a customer update" in {
-      val response = service.createModelAndReturnResult(
+      val response = service.createModelOrReturnResult(
         employmentDataFull, Some(allEmploymentData.copy(hmrcEmploymentData = Seq(), customerEmploymentData = allEmploymentData.hmrcEmploymentData.map(_.copy(employmentId = "employmentId")))), taxYear,
         EmploymentSection.EMPLOYMENT_DETAILS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      response.right.get shouldBe CreateUpdateEmploymentRequest(
+        Some("employmentId"),Some(CreateUpdateEmployment(Some("123/12345"),"Employer Name","2020-11-11",None,None)),Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99,3453453.0),Some(Deductions(Some(StudentLoans(Some(100.0),Some(100.0))))), None)),None
+      )
     }
 
     "create the model to send and return the correct result when its a customer update for just employment info" in {
-      lazy val response = service.createModelAndReturnResult(
+      lazy val response = service.createModelOrReturnResult(
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(),
@@ -862,14 +874,15 @@ class EmploymentSessionServiceSpec extends UnitTest
             ), None
           )
         ), taxYear, EmploymentSection.EMPLOYMENT_DETAILS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      response.right.get shouldBe CreateUpdateEmploymentRequest(
+        Some("employmentId"),Some(CreateUpdateEmployment(Some("123/12345"),"Employer Name","2020-11-11",None,None)),None,None
+      )
     }
 
     "create the model to send and return the correct result when its a customer update for just employment data info" in {
-      lazy val response = service.createModelAndReturnResult(
+      lazy val response = service.createModelOrReturnResult(
         employmentDataFull, Some(
           AllEmploymentData(
             Seq(),
@@ -898,14 +911,16 @@ class EmploymentSessionServiceSpec extends UnitTest
             ), None
           )
         ), taxYear, EmploymentSection.EMPLOYMENT_DETAILS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "303"
+      response.right.get shouldBe CreateUpdateEmploymentRequest(
+        Some("employmentId"),None,Some(CreateUpdateEmploymentData(CreateUpdatePay(55.99,3453453.0),None,
+          Some(Benefits(None,Some(100.0),Some(100.0),None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None)))),None
+      )
     }
 
     "create the model to send and return a redirect when no finished" in {
-      val response = service.createModelAndReturnResult(
+      val response = service.createModelOrReturnResult(
         employmentDataFull.copy(
           employment = employmentDataFull.employment.copy(
             employmentDetails = employmentDataFull.employment.employmentDetails.copy(
@@ -913,10 +928,10 @@ class EmploymentSessionServiceSpec extends UnitTest
             )
           )
         ), Some(allEmploymentData), taxYear, EmploymentSection.EMPLOYMENT_DETAILS
-      )(_ => Future.successful(Redirect("303")))
+      )
 
-      status(response) shouldBe SEE_OTHER
-      redirectUrl(response) shouldBe "/update-and-submit-income-tax-return/employment-income/2022/check-employment-details?employmentId=employmentId"
+      status(Future.successful(response.left.get)) shouldBe SEE_OTHER
+      redirectUrl(Future.successful(response.left.get)) shouldBe "/update-and-submit-income-tax-return/employment-income/2022/check-employment-details?employmentId=employmentId"
     }
   }
 
@@ -926,7 +941,8 @@ class EmploymentSessionServiceSpec extends UnitTest
       None
     )
     val employmentData: EmploymentUserData = EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", isPriorSubmission = true,
-      hasPriorBenefits = true, cya, testClock.now())
+      hasPriorBenefits = true,
+              hasPriorStudentLoans = true, cya, testClock.now())
 
     "return SEE_OTHER(303) status when createOrUpdate succeeds" in {
       mockCreateOrUpdate(employmentData, Right())
@@ -934,6 +950,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       val response = service.createOrUpdateSessionData(
         "employmentId", cya, taxYear, isPriorSubmission = true,
         hasPriorBenefits = true,
+              hasPriorStudentLoans = true,
       )(Redirect("400"))(Redirect("303"))
 
       status(response) shouldBe SEE_OTHER
@@ -950,7 +967,7 @@ class EmploymentSessionServiceSpec extends UnitTest
 
       val response = service.createOrUpdateSessionData(
         "employmentId", cya, taxYear, isPriorSubmission = true,
-        hasPriorBenefits = true
+        hasPriorBenefits = true, hasPriorStudentLoans = true,
       )(Redirect("400"))(Redirect("303"))
 
       status(response) shouldBe SEE_OTHER
@@ -967,14 +984,14 @@ class EmploymentSessionServiceSpec extends UnitTest
         taxYear,
         "employmentId",
         isPriorSubmission = true,
-        hasPriorBenefits = false,
+        hasPriorBenefits = true,hasPriorStudentLoans = true,
         employment = anEmploymentCYAModel,
         testClock.now()
       )
 
       mockCreateOrUpdate(expected, Right())
 
-      val response = service.createOrUpdateEmploymentUserDataWith(taxYear, "employmentId", isPriorSubmission = true, hasPriorBenefits = false, anEmploymentCYAModel)
+      val response = service.createOrUpdateEmploymentUserDataWith(taxYear, "employmentId", expected, anEmploymentCYAModel)
 
       await(response) shouldBe Right(expected)
     }
@@ -988,13 +1005,14 @@ class EmploymentSessionServiceSpec extends UnitTest
         "employmentId",
         isPriorSubmission = true,
         hasPriorBenefits = false,
+        hasPriorStudentLoans = false,
         employment = anEmploymentCYAModel,
         testClock.now()
       )
 
       mockCreateOrUpdate(expected, Left(DataNotUpdated))
 
-      val response = service.createOrUpdateEmploymentUserDataWith(taxYear, "employmentId", isPriorSubmission = true, hasPriorBenefits = false, anEmploymentCYAModel)
+      val response = service.createOrUpdateEmploymentUserDataWith(taxYear, "employmentId", expected, anEmploymentCYAModel)
 
       await(response) shouldBe Left()
     }
@@ -1046,7 +1064,7 @@ class EmploymentSessionServiceSpec extends UnitTest
       None
     )
     val employmentData: EmploymentUserData = EmploymentUserData(sessionId, "1234567890", nino, taxYear, "employmentId", isPriorSubmission = true,
-      hasPriorBenefits = true, cya, testClock.now())
+      hasPriorBenefits = true, hasPriorStudentLoans = false, cya, testClock.now())
 
     "redirect when data is retrieved" in {
       mockFind(taxYear, "employmentId", Right(Some(employmentData)))

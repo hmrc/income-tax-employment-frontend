@@ -40,7 +40,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
   private val amountInputName = "amount"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employment = employmentCyaModel)
+    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employment = employmentCyaModel)
 
   object Selectors {
     val contentSelector = "#main-content > div > div > form > div > label > p"

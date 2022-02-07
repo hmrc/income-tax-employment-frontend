@@ -179,7 +179,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   object CyaModel {
-    val cya: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = true, hasPriorBenefits = true,
+    val cya: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = true, hasPriorBenefits = true, hasPriorStudentLoans = true,
       EmploymentCYAModel(
         EmploymentDetails(employerName, startDate = Some("2020-01-01"), currentDataIsHmrcHeld = false),
         None

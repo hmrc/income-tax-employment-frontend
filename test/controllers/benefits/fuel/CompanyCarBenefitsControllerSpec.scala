@@ -43,7 +43,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
     taxYear,
     employmentId,
     true,
-    hasPriorBenefits = true,
+    hasPriorBenefits = true,hasPriorStudentLoans = true,
     EmploymentCYAModel(anEmploymentSource, isUsingCustomerData = false)
   )
 
@@ -54,7 +54,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
     taxYear,
     employmentId,
     isPriorSubmission = false,
-    hasPriorBenefits = false,
+    hasPriorBenefits = false,hasPriorStudentLoans = true,
     employment = EmploymentCYAModel(anEmploymentSource.copy(employmentBenefits = None), isUsingCustomerData = false)
   )
 

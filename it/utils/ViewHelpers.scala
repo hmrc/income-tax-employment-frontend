@@ -199,11 +199,7 @@ trait ViewHelpers {
         if (isExactUrlMatch) {
           document().select(selector).attr("href") shouldBe href
         } else {
-          println(s"href = ${href}")
-
           val str = document().select(selector).attr("href")
-
-          println(s"str = ${str}")
           str.contains(href) shouldBe true
         }
       }

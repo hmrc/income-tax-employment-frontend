@@ -38,7 +38,7 @@ class ReimbursedCostsVouchersAndNonCashBenefitsControllerISpec extends Integrati
   private val employmentId: String = "employmentId"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employment = employmentCyaModel)
+    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employment = employmentCyaModel)
 
   object Selectors {
     val continueButtonSelector: String = "#continue"

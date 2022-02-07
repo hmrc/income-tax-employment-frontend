@@ -45,13 +45,7 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateAccommodationQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
@@ -70,13 +64,7 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateAccommodation(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
@@ -89,13 +77,7 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
       employmentBenefits = benefits.map(_.copy(accommodationRelocationModel = accommodationRelocation.map(_.copy(accommodation = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateQualifyingExpensesQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
@@ -118,13 +100,7 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
           }
       )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateQualifyingExpenses(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
@@ -134,13 +110,7 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
     val updatedEmployment = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(accommodationRelocationModel =
       accommodationRelocation.map(_.copy(qualifyingRelocationExpenses = Some(amount))))))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateNonQualifyingExpensesQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
@@ -161,13 +131,7 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateNonQualifyingExpenses(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
@@ -181,12 +145,6 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
         accommodationRelocationModel = accommodationRelocation.map(_.copy(nonQualifyingRelocationExpenses = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 }

@@ -48,13 +48,7 @@ class IncomeService @Inject()(employmentSessionService: EmploymentSessionService
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateIncomeTaxPaidByDirectorQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
@@ -71,13 +65,7 @@ class IncomeService @Inject()(employmentSessionService: EmploymentSessionService
           incomeTaxPaidByDirectorQuestion = Some(false), incomeTaxPaidByDirector = None)))))
       }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateIncomeTaxPaidByDirector(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
@@ -90,13 +78,7 @@ class IncomeService @Inject()(employmentSessionService: EmploymentSessionService
       employmentBenefits = benefits.map(_.copy(incomeTaxAndCostsModel = incomeTaxModel.map(_.copy(incomeTaxPaidByDirector = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updatePaymentsOnEmployeesBehalfQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
@@ -112,13 +94,7 @@ class IncomeService @Inject()(employmentSessionService: EmploymentSessionService
         incomeTaxAndCostsModel = incomeTaxModel.map(_.copy(paymentsOnEmployeesBehalfQuestion = Some(false), paymentsOnEmployeesBehalf = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updatePaymentsOnEmployeesBehalf(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
@@ -131,12 +107,6 @@ class IncomeService @Inject()(employmentSessionService: EmploymentSessionService
       employmentBenefits = benefits.map(_.copy(incomeTaxAndCostsModel = incomeTaxModel.map(_.copy(paymentsOnEmployeesBehalf = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 }

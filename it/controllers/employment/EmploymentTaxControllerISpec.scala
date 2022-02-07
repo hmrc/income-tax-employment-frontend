@@ -129,6 +129,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
     anEmploymentUserData.copy(
       isPriorSubmission = isPriorSubmission,
       hasPriorBenefits = isPriorSubmission,
+              hasPriorStudentLoans = isPriorSubmission,
       employment = anEmploymentCYAModel.copy(anEmploymentDetails.copy("maggie", totalTaxToDate = taxToDate, currentDataIsHmrcHeld = false))
     )
 

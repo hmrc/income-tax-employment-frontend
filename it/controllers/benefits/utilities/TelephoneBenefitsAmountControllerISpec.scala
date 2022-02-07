@@ -39,7 +39,7 @@ class TelephoneBenefitsAmountControllerISpec extends IntegrationTest with ViewHe
   private val employmentId = "employmentId"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employment = employmentCyaModel)
+    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employment = employmentCyaModel)
 
   object Selectors {
     val contentSelector = "#main-content > div > div > form > div > label > p"

@@ -24,6 +24,7 @@ import builders.models.employment.PayBuilder.aPay
 import builders.models.employment.StudentLoansBuilder.aStudentLoans
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
+import common.SessionValues
 import models.User
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
@@ -35,7 +36,7 @@ import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.FakeRequest
-import utils.PageUrls.{checkYourDetailsUrl, employerNameUrl, employerPayeReferenceUrl, employmentDatesUrl, employmentStartDateUrl, employmentSummaryUrl, fullUrl, howMuchPayUrl, howMuchTaxUrl, overviewUrl, payrollIdUrl, stillWorkingForUrl}
+import utils.PageUrls.{checkYourBenefitsUrl, checkYourDetailsUrl, employerInformationUrl, employerNameUrl, employerPayeReferenceUrl, employmentDatesUrl, employmentStartDateUrl, employmentSummaryUrl, fullUrl, howMuchPayUrl, howMuchTaxUrl, overviewUrl, payrollIdUrl, stillWorkingForUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
@@ -347,6 +348,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
               employmentId,
               isPriorSubmission = true,
               hasPriorBenefits = true,
+              hasPriorStudentLoans = true,
               EmploymentCYAModel(
                 anEmploymentSource.toEmploymentDetails(isUsingCustomerData = false).copy(cessationDateQuestion = Some(false)),
                 None
@@ -673,7 +675,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           2021,
           employmentId,
           isPriorSubmission = false,
-          hasPriorBenefits = true,
+          hasPriorBenefits = true, hasPriorStudentLoans = false,
           EmploymentCYAModel(
             anEmploymentSource.toEmploymentDetails(false).copy(employerRef = None),
             None
@@ -750,7 +752,49 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(anEmploymentUserData.copy(employment = employmentData).copy(employmentId = employmentId), aUserRequest)
+        insertCyaData(anEmploymentUserData.copy(employment = employmentData).copy(employmentId = employmentId, hasPriorBenefits = false), aUserRequest)
+        val hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = hmrcEmploymentData))), nino, 2021)
+
+        val model = CreateUpdateEmploymentRequest(
+          None,
+          Some(
+            CreateUpdateEmployment(
+              employmentData.employmentDetails.employerRef,
+              employmentData.employmentDetails.employerName,
+              employmentData.employmentDetails.startDate.get
+            )
+          ),
+          Some(
+            CreateUpdateEmploymentData(
+              pay = CreateUpdatePay(
+                employmentData.employmentDetails.taxablePayToDate.get,
+                employmentData.employmentDetails.totalTaxToDate.get,
+              ),
+              deductions = Some(Deductions(Some(aStudentLoans)))
+            )
+          ),
+          Some(employmentId)
+        )
+
+        stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=2021", CREATED,
+          Json.toJson(model).toString(), """{"employmentId":"id"}""", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+
+        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
+      }
+
+      "has an SEE OTHER status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location").contains(employerInformationUrl(taxYearEOY, "id")) shouldBe true
+        findCyaData(taxYear, employmentId, aUserRequest) shouldBe None
+      }
+    }
+    "create the model to update the data and return the correct redirect and return to employer information page" which {
+      val employmentData: EmploymentCYAModel = anEmploymentCYAModel.copy(employmentBenefits = None)
+      implicit lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        insertCyaData(anEmploymentUserData.copy(employment = employmentData).copy(employmentId = employmentId, hasPriorBenefits = false), aUserRequest)
         val hmrcEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcEmploymentData = hmrcEmploymentData))), nino, 2021)
 
@@ -783,7 +827,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location").contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
+        result.header("location").contains(employerInformationUrl(taxYearEOY, employmentId)) shouldBe true
         findCyaData(taxYear, employmentId, aUserRequest) shouldBe None
       }
     }
@@ -792,7 +836,7 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(anEmploymentUserData, aUserRequest)
+        insertCyaData(anEmploymentUserData.copy(hasPriorBenefits = false), aUserRequest)
         noUserDataStub(nino, 2021)
 
         val model = CreateUpdateEmploymentRequest(
@@ -810,15 +854,16 @@ class CheckEmploymentDetailsControllerISpec extends IntegrationTest with ViewHel
           ))
         )
 
-        stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=2021", NO_CONTENT,
-          Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+        stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=2021", CREATED,
+          Json.toJson(model).toString(), """{"employmentId": "id"}""", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
 
-        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021)), body = "{}")
+        urlPost(fullUrl(checkYourDetailsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(2021,
+          extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))), body = "{}")
       }
 
       "has an SEE OTHER status" in {
         result.status shouldBe SEE_OTHER
-        result.header("location").contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
+        result.header("location").contains(checkYourBenefitsUrl(taxYearEOY, "id")) shouldBe true
         findCyaData(taxYear, employmentId, aUserRequest) shouldBe None
       }
     }

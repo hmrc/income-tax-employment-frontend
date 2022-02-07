@@ -39,7 +39,7 @@ class EmployerNameControllerISpec extends IntegrationTest with ViewHelpers with 
   private val charLimit: String = "ukHzoBYHkKGGk2V5iuYgS137gN7EB7LRw3uD3vujYg00ZtHwo3s0kyOOCEoAK9vuPiP374QKOe9o"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employmentCyaModel)
 
   private def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc))
 

@@ -141,7 +141,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
   }
 
   def cya(isPriorSubmission: Boolean = true): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission, hasPriorBenefits = isPriorSubmission,
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission, hasPriorBenefits = isPriorSubmission, hasPriorStudentLoans = isPriorSubmission,
       EmploymentCYAModel(
         EmploymentDetails("maggie", currentDataIsHmrcHeld = false),
         None
@@ -149,7 +149,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
     )
 
   def cyaWithPayrollId(isPriorSubmission: Boolean = true): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission, hasPriorBenefits = isPriorSubmission,
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission, hasPriorBenefits = isPriorSubmission, hasPriorStudentLoans = isPriorSubmission,
       EmploymentCYAModel(
         EmploymentDetails("maggie", payrollId = Some("123456"), currentDataIsHmrcHeld = false),
         None

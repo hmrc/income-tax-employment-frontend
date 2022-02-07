@@ -37,7 +37,7 @@ class IncomeServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefits = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(anIncomeTaxAndCostsModel.copy(sectionQuestion = Some(true))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefits)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = true, hasPriorBenefits = true, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateSectionQuestion(taxYear, employmentId, employmentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
@@ -48,7 +48,7 @@ class IncomeServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefits = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(IncomeTaxAndCostsModel.clear))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefits).copy(hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = true, hasPriorBenefits = true, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateSectionQuestion(taxYear, employmentId, employmentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
@@ -59,7 +59,7 @@ class IncomeServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefits = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(IncomeTaxAndCostsModel(sectionQuestion = Some(false))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefits)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = true, hasPriorBenefits = true, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateSectionQuestion(taxYear, employmentId, employmentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
@@ -73,7 +73,7 @@ class IncomeServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefits = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(anIncomeTaxAndCostsModel.copy(incomeTaxPaidByDirectorQuestion = Some(true))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefits).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateIncomeTaxPaidByDirectorQuestion(taxYear, employmentId, givenEmploymentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
@@ -85,7 +85,7 @@ class IncomeServiceSpec extends UnitTest with MockEmploymentSessionService {
         .copy(incomeTaxAndCostsModel = Some(anIncomeTaxAndCostsModel.copy(incomeTaxPaidByDirectorQuestion = Some(false), incomeTaxPaidByDirector = None)))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefitsViewModel).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = true, hasPriorBenefits = true, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateIncomeTaxPaidByDirectorQuestion(taxYear, employmentId, givenEmploymentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
@@ -98,7 +98,7 @@ class IncomeServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(anIncomeTaxAndCostsModel.copy(incomeTaxPaidByDirector = Some(123))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefitsViewModel).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateIncomeTaxPaidByDirector(taxYear, employmentId, givenEmploymentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
     }
@@ -111,7 +111,7 @@ class IncomeServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefits = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(anIncomeTaxAndCostsModel.copy(paymentsOnEmployeesBehalfQuestion = Some(true))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefits).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updatePaymentsOnEmployeesBehalfQuestion(taxYear, employmentId, givenEmploymentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
@@ -123,7 +123,7 @@ class IncomeServiceSpec extends UnitTest with MockEmploymentSessionService {
         .copy(incomeTaxAndCostsModel = Some(anIncomeTaxAndCostsModel.copy(paymentsOnEmployeesBehalfQuestion = Some(false), paymentsOnEmployeesBehalf = None)))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefitsViewModel).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = true, hasPriorBenefits = true, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updatePaymentsOnEmployeesBehalfQuestion(taxYear, employmentId, givenEmploymentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
@@ -136,7 +136,7 @@ class IncomeServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(anIncomeTaxAndCostsModel.copy(paymentsOnEmployeesBehalf = Some(123))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefitsViewModel).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData,expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updatePaymentsOnEmployeesBehalf(taxYear, employmentId, givenEmploymentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
     }

@@ -43,13 +43,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
         Some(ReimbursedCostsVouchersAndNonCashModel(sectionQuestion = Some(questionValue))))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateExpensesQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
@@ -66,13 +60,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
         reimbursedCostsVouchersAndNonCashModel.map(_.copy(expensesQuestion = Some(false), expenses = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateExpenses(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
@@ -85,13 +73,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
       reimbursedCostsVouchersAndNonCashModel.map(_.copy(expenses = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateTaxableExpensesQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
@@ -108,13 +90,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
         reimbursedModel.map(_.copy(taxableExpensesQuestion = Some(false), taxableExpenses = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateTaxableExpenses(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
@@ -127,13 +103,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
       reimbursedCostsVouchersAndNonCashModel = reimbursedCostsVouchersAndNonCashModel.map(_.copy(taxableExpenses = Some(amount)))
     )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateVouchersAndCreditCardsQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
@@ -150,13 +120,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
         reimbursedCostsVouchersAndNonCashModel.map(_.copy(vouchersAndCreditCardsQuestion = Some(false), vouchersAndCreditCards = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateVouchersAndCreditCards(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
@@ -169,13 +133,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
       reimbursedCostsVouchersAndNonCashModel = reimbursedCostsVouchersAndNonCashModel.map(_.copy(vouchersAndCreditCards = Some(amount)))
     )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateNonCashQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
@@ -192,13 +150,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
         reimbursedCostsVouchersAndNonCashModel.map(_.copy(nonCashQuestion = Some(false), nonCash = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateNonCash(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
@@ -211,13 +163,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
       reimbursedCostsVouchersAndNonCashModel = reimbursedCostsVouchersAndNonCashModel.map(_.copy(nonCash = Some(amount)))
     )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateOtherItemsQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
@@ -234,13 +180,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
         reimbursedCostsVouchersAndNonCashModel.map(_.copy(otherItemsQuestion = Some(false), otherItems = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateOtherItems(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
@@ -253,12 +193,6 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
       reimbursedCostsVouchersAndNonCashModel = reimbursedCostsVouchersAndNonCashModel.map(_.copy(otherItems = Some(amount)))
     )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 }

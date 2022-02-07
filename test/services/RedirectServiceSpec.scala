@@ -143,7 +143,7 @@ class RedirectServiceSpec extends UnitTest {
 
   private val employmentId = "001"
   private val employmentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false, employmentCYA)
+    EmploymentUserData(sessionId, mtditid, nino, taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false, employmentCYA)
 
   "benefitsSubmitRedirect" should {
     "redirect to the CYA page if the journey is finished" in {

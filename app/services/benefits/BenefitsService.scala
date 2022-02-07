@@ -42,12 +42,6 @@ class BenefitsService @Inject()(employmentSessionService: EmploymentSessionServi
       originalEmploymentUserData.employment.copy(employmentBenefits = Some(newBenefits))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 }

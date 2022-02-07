@@ -38,6 +38,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
       employmentId = userData.employmentId,
       isPriorSubmission = userData.isPriorSubmission,
       hasPriorBenefits = userData.hasPriorBenefits,
+      hasPriorStudentLoans = userData.hasPriorStudentLoans,
       employment = encryptEmployment(userData.employment),
       lastUpdated = userData.lastUpdated
     )
@@ -470,6 +471,7 @@ class EncryptionService @Inject()(secureGCMCipher: SecureGCMCipher, appConfig: A
       employmentId = userData.employmentId,
       isPriorSubmission = userData.isPriorSubmission,
       hasPriorBenefits = userData.hasPriorBenefits,
+      hasPriorStudentLoans = userData.hasPriorStudentLoans,
       employment = decryptEmployment(userData.employment),
       lastUpdated = userData.lastUpdated
     )

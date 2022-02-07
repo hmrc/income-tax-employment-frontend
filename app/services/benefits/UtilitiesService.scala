@@ -43,13 +43,7 @@ class UtilitiesService @Inject()(employmentSessionService: EmploymentSessionServ
       ))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateTelephoneQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
@@ -66,13 +60,7 @@ class UtilitiesService @Inject()(employmentSessionService: EmploymentSessionServ
         utilitiesAndServicesModel = utilitiesModel.map(_.copy(telephoneQuestion = Some(false), telephone = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateTelephone(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
@@ -83,13 +71,7 @@ class UtilitiesService @Inject()(employmentSessionService: EmploymentSessionServ
     val updatedEmployment = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(utilitiesAndServicesModel =
       utilitiesAndServices.map(_.copy(telephone = Some(amount))))))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateEmployerProvidedServicesQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
@@ -106,13 +88,7 @@ class UtilitiesService @Inject()(employmentSessionService: EmploymentSessionServ
         utilitiesModel.map(_.copy(employerProvidedServicesQuestion = Some(false), employerProvidedServices = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateEmployerProvidedServices(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
@@ -123,13 +99,7 @@ class UtilitiesService @Inject()(employmentSessionService: EmploymentSessionServ
     val updatedEmployment = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(utilitiesAndServicesModel =
       utilitiesAndServices.map(_.copy(employerProvidedServices = Some(amount))))))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateEmployerProvidedProfessionalSubscriptionsQuestion(taxYear: Int,
@@ -149,13 +119,7 @@ class UtilitiesService @Inject()(employmentSessionService: EmploymentSessionServ
         employerProvidedProfessionalSubscriptionsQuestion = Some(false), employerProvidedProfessionalSubscriptions = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateEmployerProvidedProfessionalSubscriptions(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
@@ -165,13 +129,7 @@ class UtilitiesService @Inject()(employmentSessionService: EmploymentSessionServ
     val updatedEmployment = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(utilitiesAndServicesModel =
       utilitiesAndServices.map(_.copy(employerProvidedProfessionalSubscriptions = Some(amount))))))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateServiceQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
@@ -188,13 +146,7 @@ class UtilitiesService @Inject()(employmentSessionService: EmploymentSessionServ
         utilitiesAndServicesModel.map(_.copy(serviceQuestion = Some(false), service = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateService(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
@@ -207,12 +159,6 @@ class UtilitiesService @Inject()(employmentSessionService: EmploymentSessionServ
       utilitiesAndServicesModel = utilitiesServices.map(_.copy(service = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 }

@@ -40,7 +40,7 @@ class OtherBenefitsAmountControllerISpec extends IntegrationTest with ViewHelper
   private val amountInputName = "amount"
   
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel) =
-    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employment = employmentCyaModel)
+    anEmploymentUserData.copy(isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employment = employmentCyaModel)
 
   object Selectors {
     val previousAmountTextSelector = "#previous-amount-text"
