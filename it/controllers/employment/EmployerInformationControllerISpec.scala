@@ -147,7 +147,8 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
             urlGet(fullUrl(employerInformationUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -183,7 +184,8 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
             urlGet(fullUrl(employerInformationUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -222,7 +224,8 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
             urlGet(fullUrl(employerInformationUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -258,7 +261,8 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
             urlGet(fullUrl(employerInformationUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -294,7 +298,8 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
             urlGet(fullUrl(employerInformationUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)
@@ -328,7 +333,8 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
             urlGet(fullUrl(employerInformationUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)

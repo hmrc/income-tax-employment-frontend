@@ -164,7 +164,8 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
             urlGet(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
 
@@ -188,7 +189,8 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
             urlGet(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
 
@@ -212,7 +214,8 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
             urlGet(fullUrl(carBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
 
@@ -349,7 +352,8 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
 
@@ -375,7 +379,8 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
 
@@ -401,7 +406,8 @@ class CompanyCarBenefitsAmountControllerISpec extends IntegrationTest with ViewH
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
 

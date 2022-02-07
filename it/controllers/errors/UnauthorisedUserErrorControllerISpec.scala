@@ -85,7 +85,8 @@ class UnauthorisedUserErrorControllerISpec extends IntegrationTest with ViewHelp
             urlGet(fullUrl(notAuthorisedUrl), welsh = user.isWelsh)
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an UNAUTHORIZED(401) status" in {
             result.status shouldBe UNAUTHORIZED

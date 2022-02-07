@@ -203,7 +203,8 @@ class MultipleEmploymentSummaryControllerISpec extends IntegrationTest with View
               urlGet(fullUrl(employmentSummaryUrl(taxYear)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             "status OK" in {
               result.status shouldBe OK
@@ -234,7 +235,8 @@ class MultipleEmploymentSummaryControllerISpec extends IntegrationTest with View
               urlGet(fullUrl(employmentSummaryUrl(taxYear)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             "status OK" in {
               result.status shouldBe OK
@@ -267,7 +269,8 @@ class MultipleEmploymentSummaryControllerISpec extends IntegrationTest with View
               urlGet(fullUrl(employmentSummaryUrl(taxYearEOY)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             "status OK" in {
               result.status shouldBe OK
@@ -301,7 +304,8 @@ class MultipleEmploymentSummaryControllerISpec extends IntegrationTest with View
               urlGet(fullUrl(employmentSummaryUrl(taxYearEOY)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             "status OK" in {
               result.status shouldBe OK

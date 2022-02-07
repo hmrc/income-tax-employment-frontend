@@ -138,7 +138,8 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             result.status shouldBe 200
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)
           titleCheck(specific.expectedTitle)
@@ -165,7 +166,8 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             result.status shouldBe 200
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)
           titleCheck(specific.expectedTitle)
@@ -243,7 +245,8 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             result.status shouldBe BAD_REQUEST
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)
           titleCheck(specific.expectedErrorTitle)

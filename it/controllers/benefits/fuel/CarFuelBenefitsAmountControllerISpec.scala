@@ -175,7 +175,8 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
             urlGet(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
             result.status shouldBe OK
@@ -204,7 +205,8 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
             urlGet(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
             result.status shouldBe OK
@@ -232,7 +234,8 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
             urlGet(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
             result.status shouldBe OK
@@ -373,7 +376,8 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
             urlPost(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = errorForm)
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST
@@ -405,7 +409,8 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
             urlPost(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = errorForm)
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST
@@ -438,7 +443,8 @@ class CarFuelBenefitsAmountControllerISpec extends IntegrationTest with ViewHelp
             urlPost(fullUrl(carFuelBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = errorForm)
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST

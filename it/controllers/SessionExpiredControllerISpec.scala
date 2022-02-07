@@ -67,7 +67,8 @@ class SessionExpiredControllerISpec extends IntegrationTest with ViewHelpers {
             urlGet(fullUrl(timeoutUrl), welsh = user.isWelsh)
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
             result.status shouldBe OK

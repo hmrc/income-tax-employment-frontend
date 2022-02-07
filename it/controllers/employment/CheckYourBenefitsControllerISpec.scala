@@ -145,6 +145,7 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
 
   trait CommonExpectedResults {
     def expectedCaption(year: Int = taxYear): String
+
     val employerName: String
     val changeText: String
     val vehicleHeader: String
@@ -711,7 +712,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             urlGet(fullUrl(checkYourBenefitsUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(specific.expectedTitle)
           h1Check(specific.expectedH1)
@@ -878,7 +880,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             urlGet(fullUrl(checkYourBenefitsUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(specific.expectedTitle)
           h1Check(specific.expectedH1)
@@ -1036,7 +1039,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(specific.expectedTitle)
           h1Check(specific.expectedH1)
@@ -1167,7 +1171,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(specific.expectedTitle)
           h1Check(specific.expectedH1)
@@ -1220,31 +1225,31 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           welshToggleCheck(user.isWelsh)
 
           s"should not display the following values" in {
-            document().body().toString.contains(common.companyCarAmount) shouldBe false
-            document().body().toString.contains(common.fuelForCompanyCarAmount) shouldBe false
-            document().body().toString.contains(common.accommodationAmount) shouldBe false
-            document().body().toString.contains(common.qualifyingRelocationCostsAmount) shouldBe false
-            document().body().toString.contains(common.nonQualifyingRelocationCostsAmount) shouldBe false
-            document().body().toString.contains(common.travelAndSubsistenceAmount) shouldBe false
-            document().body().toString.contains(common.personalCostsAmount) shouldBe false
-            document().body().toString.contains(common.entertainmentAmount) shouldBe false
-            document().body().toString.contains(common.telephoneAmount) shouldBe false
-            document().body().toString.contains(common.servicesProvidedAmount) shouldBe false
-            document().body().toString.contains(common.profSubscriptionsAmount) shouldBe false
-            document().body().toString.contains(common.otherServicesAmount) shouldBe false
-            document().body().toString.contains(common.medicalInsAmount) shouldBe false
-            document().body().toString.contains(common.nurseryAmount) shouldBe false
-            document().body().toString.contains(common.beneficialLoansAmount) shouldBe false
-            document().body().toString.contains(common.educationalAmount) shouldBe false
-            document().body().toString.contains(common.incomeTaxPaidAmount) shouldBe false
-            document().body().toString.contains(common.incurredCostsPaidAmount) shouldBe false
-            document().body().toString.contains(common.nonTaxableAmount) shouldBe false
-            document().body().toString.contains(common.taxableCostsAmount) shouldBe false
-            document().body().toString.contains(common.vouchersAmount) shouldBe false
-            document().body().toString.contains(common.nonCashAmount) shouldBe false
-            document().body().toString.contains(common.otherBenefitsAmount) shouldBe false
-            document().body().toString.contains(common.assetsAmount) shouldBe false
-            document().body().toString.contains(common.assetTransfersAmount) shouldBe false
+            document.body().toString.contains(common.companyCarAmount) shouldBe false
+            document.body().toString.contains(common.fuelForCompanyCarAmount) shouldBe false
+            document.body().toString.contains(common.accommodationAmount) shouldBe false
+            document.body().toString.contains(common.qualifyingRelocationCostsAmount) shouldBe false
+            document.body().toString.contains(common.nonQualifyingRelocationCostsAmount) shouldBe false
+            document.body().toString.contains(common.travelAndSubsistenceAmount) shouldBe false
+            document.body().toString.contains(common.personalCostsAmount) shouldBe false
+            document.body().toString.contains(common.entertainmentAmount) shouldBe false
+            document.body().toString.contains(common.telephoneAmount) shouldBe false
+            document.body().toString.contains(common.servicesProvidedAmount) shouldBe false
+            document.body().toString.contains(common.profSubscriptionsAmount) shouldBe false
+            document.body().toString.contains(common.otherServicesAmount) shouldBe false
+            document.body().toString.contains(common.medicalInsAmount) shouldBe false
+            document.body().toString.contains(common.nurseryAmount) shouldBe false
+            document.body().toString.contains(common.beneficialLoansAmount) shouldBe false
+            document.body().toString.contains(common.educationalAmount) shouldBe false
+            document.body().toString.contains(common.incomeTaxPaidAmount) shouldBe false
+            document.body().toString.contains(common.incurredCostsPaidAmount) shouldBe false
+            document.body().toString.contains(common.nonTaxableAmount) shouldBe false
+            document.body().toString.contains(common.taxableCostsAmount) shouldBe false
+            document.body().toString.contains(common.vouchersAmount) shouldBe false
+            document.body().toString.contains(common.nonCashAmount) shouldBe false
+            document.body().toString.contains(common.otherBenefitsAmount) shouldBe false
+            document.body().toString.contains(common.assetsAmount) shouldBe false
+            document.body().toString.contains(common.assetTransfersAmount) shouldBe false
           }
         }
 
@@ -1274,7 +1279,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(specific.expectedTitle)
           h1Check(specific.expectedH1)
@@ -1324,55 +1330,55 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           welshToggleCheck(user.isWelsh)
 
           s"should not display the following values" in {
-            document().body().toString.contains(specific.expectedP1) shouldBe false
-            document().body().toString.contains(common.companyCar) shouldBe false
-            document().body().toString.contains(common.fuelForCompanyCar) shouldBe false
-            document().body().toString.contains(common.companyVan) shouldBe false
-            document().body().toString.contains(common.fuelForCompanyVan) shouldBe false
-            document().body().toString.contains(common.mileageBenefit) shouldBe false
-            document().body().toString.contains(common.travelAndSubsistence) shouldBe false
-            document().body().toString.contains(common.personalCosts) shouldBe false
-            document().body().toString.contains(common.entertainment) shouldBe false
-            document().body().toString.contains(common.telephone) shouldBe false
-            document().body().toString.contains(common.servicesProvided) shouldBe false
-            document().body().toString.contains(common.profSubscriptions) shouldBe false
-            document().body().toString.contains(common.otherServices) shouldBe false
-            document().body().toString.contains(common.nursery) shouldBe false
-            document().body().toString.contains(common.beneficialLoans) shouldBe false
-            document().body().toString.contains(common.educational) shouldBe false
-            document().body().toString.contains(common.incomeTaxPaid) shouldBe false
-            document().body().toString.contains(common.incurredCostsPaid) shouldBe false
-            document().body().toString.contains(common.nonTaxable) shouldBe false
-            document().body().toString.contains(common.taxableCosts) shouldBe false
-            document().body().toString.contains(common.vouchers) shouldBe false
-            document().body().toString.contains(common.nonCash) shouldBe false
-            document().body().toString.contains(common.otherBenefits) shouldBe false
-            document().body().toString.contains(common.assetTransfers) shouldBe false
-            document().body().toString.contains(common.companyCarAmount) shouldBe false
-            document().body().toString.contains(common.fuelForCompanyCarAmount) shouldBe false
-            document().body().toString.contains(common.companyVanAmount) shouldBe false
-            document().body().toString.contains(common.fuelForCompanyVanAmount) shouldBe false
-            document().body().toString.contains(common.mileageBenefitAmount) shouldBe false
-            document().body().toString.contains(common.travelAndSubsistenceAmount) shouldBe false
-            document().body().toString.contains(common.personalCostsAmount) shouldBe false
-            document().body().toString.contains(common.entertainmentAmount) shouldBe false
-            document().body().toString.contains(common.telephoneAmount) shouldBe false
-            document().body().toString.contains(common.servicesProvidedAmount) shouldBe false
-            document().body().toString.contains(common.profSubscriptionsAmount) shouldBe false
-            document().body().toString.contains(common.otherServicesAmount) shouldBe false
-            document().body().toString.contains(common.medicalInsAmount) shouldBe false
-            document().body().toString.contains(common.nurseryAmount) shouldBe false
-            document().body().toString.contains(common.beneficialLoansAmount) shouldBe false
-            document().body().toString.contains(common.educationalAmount) shouldBe false
-            document().body().toString.contains(common.incomeTaxPaidAmount) shouldBe false
-            document().body().toString.contains(common.incurredCostsPaidAmount) shouldBe false
-            document().body().toString.contains(common.nonTaxableAmount) shouldBe false
-            document().body().toString.contains(common.taxableCostsAmount) shouldBe false
-            document().body().toString.contains(common.vouchersAmount) shouldBe false
-            document().body().toString.contains(common.nonCashAmount) shouldBe false
-            document().body().toString.contains(common.otherBenefitsAmount) shouldBe false
-            document().body().toString.contains(common.assetsAmount) shouldBe false
-            document().body().toString.contains(common.assetTransfersAmount) shouldBe false
+            document.body().toString.contains(specific.expectedP1) shouldBe false
+            document.body().toString.contains(common.companyCar) shouldBe false
+            document.body().toString.contains(common.fuelForCompanyCar) shouldBe false
+            document.body().toString.contains(common.companyVan) shouldBe false
+            document.body().toString.contains(common.fuelForCompanyVan) shouldBe false
+            document.body().toString.contains(common.mileageBenefit) shouldBe false
+            document.body().toString.contains(common.travelAndSubsistence) shouldBe false
+            document.body().toString.contains(common.personalCosts) shouldBe false
+            document.body().toString.contains(common.entertainment) shouldBe false
+            document.body().toString.contains(common.telephone) shouldBe false
+            document.body().toString.contains(common.servicesProvided) shouldBe false
+            document.body().toString.contains(common.profSubscriptions) shouldBe false
+            document.body().toString.contains(common.otherServices) shouldBe false
+            document.body().toString.contains(common.nursery) shouldBe false
+            document.body().toString.contains(common.beneficialLoans) shouldBe false
+            document.body().toString.contains(common.educational) shouldBe false
+            document.body().toString.contains(common.incomeTaxPaid) shouldBe false
+            document.body().toString.contains(common.incurredCostsPaid) shouldBe false
+            document.body().toString.contains(common.nonTaxable) shouldBe false
+            document.body().toString.contains(common.taxableCosts) shouldBe false
+            document.body().toString.contains(common.vouchers) shouldBe false
+            document.body().toString.contains(common.nonCash) shouldBe false
+            document.body().toString.contains(common.otherBenefits) shouldBe false
+            document.body().toString.contains(common.assetTransfers) shouldBe false
+            document.body().toString.contains(common.companyCarAmount) shouldBe false
+            document.body().toString.contains(common.fuelForCompanyCarAmount) shouldBe false
+            document.body().toString.contains(common.companyVanAmount) shouldBe false
+            document.body().toString.contains(common.fuelForCompanyVanAmount) shouldBe false
+            document.body().toString.contains(common.mileageBenefitAmount) shouldBe false
+            document.body().toString.contains(common.travelAndSubsistenceAmount) shouldBe false
+            document.body().toString.contains(common.personalCostsAmount) shouldBe false
+            document.body().toString.contains(common.entertainmentAmount) shouldBe false
+            document.body().toString.contains(common.telephoneAmount) shouldBe false
+            document.body().toString.contains(common.servicesProvidedAmount) shouldBe false
+            document.body().toString.contains(common.profSubscriptionsAmount) shouldBe false
+            document.body().toString.contains(common.otherServicesAmount) shouldBe false
+            document.body().toString.contains(common.medicalInsAmount) shouldBe false
+            document.body().toString.contains(common.nurseryAmount) shouldBe false
+            document.body().toString.contains(common.beneficialLoansAmount) shouldBe false
+            document.body().toString.contains(common.educationalAmount) shouldBe false
+            document.body().toString.contains(common.incomeTaxPaidAmount) shouldBe false
+            document.body().toString.contains(common.incurredCostsPaidAmount) shouldBe false
+            document.body().toString.contains(common.nonTaxableAmount) shouldBe false
+            document.body().toString.contains(common.taxableCostsAmount) shouldBe false
+            document.body().toString.contains(common.vouchersAmount) shouldBe false
+            document.body().toString.contains(common.nonCashAmount) shouldBe false
+            document.body().toString.contains(common.otherBenefitsAmount) shouldBe false
+            document.body().toString.contains(common.assetsAmount) shouldBe false
+            document.body().toString.contains(common.assetTransfersAmount) shouldBe false
           }
         }
 
@@ -1394,7 +1400,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             urlGet(fullUrl(checkYourBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(specific.expectedTitle)
           h1Check(specific.expectedH1)
@@ -1408,14 +1415,14 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           welshToggleCheck(user.isWelsh)
 
           s"should not display the following values" in {
-            document().body().toString.contains(common.carSubheading) shouldBe false
-            document().body().toString.contains(common.accommodationSubheading) shouldBe false
-            document().body().toString.contains(common.travelSubheading) shouldBe false
-            document().body().toString.contains(common.utilitiesSubheading) shouldBe false
-            document().body().toString.contains(common.medicalSubheading) shouldBe false
-            document().body().toString.contains(common.incomeTaxSubheading) shouldBe false
-            document().body().toString.contains(common.reimbursedSubheading) shouldBe false
-            document().body().toString.contains(common.assetsSubheading) shouldBe false
+            document.body().toString.contains(common.carSubheading) shouldBe false
+            document.body().toString.contains(common.accommodationSubheading) shouldBe false
+            document.body().toString.contains(common.travelSubheading) shouldBe false
+            document.body().toString.contains(common.utilitiesSubheading) shouldBe false
+            document.body().toString.contains(common.medicalSubheading) shouldBe false
+            document.body().toString.contains(common.incomeTaxSubheading) shouldBe false
+            document.body().toString.contains(common.reimbursedSubheading) shouldBe false
+            document.body().toString.contains(common.assetsSubheading) shouldBe false
           }
         }
 
@@ -1428,7 +1435,8 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             urlGet(fullUrl(checkYourBenefitsUrl(taxYear, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(specific.expectedTitle)
           h1Check(specific.expectedH1)
@@ -1463,34 +1471,34 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           welshToggleCheck(user.isWelsh)
 
           s"should not display the following values" in {
-            document().body().toString.contains(common.accommodationHeader) shouldBe false
-            document().body().toString.contains(common.qualifyingRelocationCosts) shouldBe false
-            document().body().toString.contains(common.nonQualifyingRelocationCosts) shouldBe false
-            document().body().toString.contains(common.travelHeader) shouldBe false
-            document().body().toString.contains(common.travelAndSubsistence) shouldBe false
-            document().body().toString.contains(common.personalCosts) shouldBe false
-            document().body().toString.contains(common.entertainment) shouldBe false
-            document().body().toString.contains(common.utilitiesHeader) shouldBe false
-            document().body().toString.contains(common.telephone) shouldBe false
-            document().body().toString.contains(common.servicesProvided) shouldBe false
-            document().body().toString.contains(common.profSubscriptions) shouldBe false
-            document().body().toString.contains(common.otherServices) shouldBe false
-            document().body().toString.contains(common.medicalHeader) shouldBe false
-            document().body().toString.contains(common.nursery) shouldBe false
-            document().body().toString.contains(common.beneficialLoans) shouldBe false
-            document().body().toString.contains(common.educational) shouldBe false
-            document().body().toString.contains(common.incomeTaxHeader) shouldBe false
-            document().body().toString.contains(common.incomeTaxPaid) shouldBe false
-            document().body().toString.contains(common.incurredCostsPaid) shouldBe false
-            document().body().toString.contains(common.reimbursedHeader) shouldBe false
-            document().body().toString.contains(common.nonTaxable) shouldBe false
-            document().body().toString.contains(common.taxableCosts) shouldBe false
-            document().body().toString.contains(common.vouchers) shouldBe false
-            document().body().toString.contains(common.nonCash) shouldBe false
-            document().body().toString.contains(common.otherBenefits) shouldBe false
-            document().body().toString.contains(common.assetsHeader) shouldBe false
-            document().body().toString.contains(common.assetsHeader) shouldBe false
-            document().body().toString.contains(common.assetTransfers) shouldBe false
+            document.body().toString.contains(common.accommodationHeader) shouldBe false
+            document.body().toString.contains(common.qualifyingRelocationCosts) shouldBe false
+            document.body().toString.contains(common.nonQualifyingRelocationCosts) shouldBe false
+            document.body().toString.contains(common.travelHeader) shouldBe false
+            document.body().toString.contains(common.travelAndSubsistence) shouldBe false
+            document.body().toString.contains(common.personalCosts) shouldBe false
+            document.body().toString.contains(common.entertainment) shouldBe false
+            document.body().toString.contains(common.utilitiesHeader) shouldBe false
+            document.body().toString.contains(common.telephone) shouldBe false
+            document.body().toString.contains(common.servicesProvided) shouldBe false
+            document.body().toString.contains(common.profSubscriptions) shouldBe false
+            document.body().toString.contains(common.otherServices) shouldBe false
+            document.body().toString.contains(common.medicalHeader) shouldBe false
+            document.body().toString.contains(common.nursery) shouldBe false
+            document.body().toString.contains(common.beneficialLoans) shouldBe false
+            document.body().toString.contains(common.educational) shouldBe false
+            document.body().toString.contains(common.incomeTaxHeader) shouldBe false
+            document.body().toString.contains(common.incomeTaxPaid) shouldBe false
+            document.body().toString.contains(common.incurredCostsPaid) shouldBe false
+            document.body().toString.contains(common.reimbursedHeader) shouldBe false
+            document.body().toString.contains(common.nonTaxable) shouldBe false
+            document.body().toString.contains(common.taxableCosts) shouldBe false
+            document.body().toString.contains(common.vouchers) shouldBe false
+            document.body().toString.contains(common.nonCash) shouldBe false
+            document.body().toString.contains(common.otherBenefits) shouldBe false
+            document.body().toString.contains(common.assetsHeader) shouldBe false
+            document.body().toString.contains(common.assetsHeader) shouldBe false
+            document.body().toString.contains(common.assetTransfers) shouldBe false
           }
         }
 

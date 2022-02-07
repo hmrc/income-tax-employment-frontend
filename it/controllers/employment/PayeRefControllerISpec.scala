@@ -152,7 +152,8 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
             urlGet(fullUrl(employerPayeReferenceUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
             result.status shouldBe OK
@@ -179,7 +180,8 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
             urlGet(fullUrl(employerPayeReferenceUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
             result.status shouldBe OK
@@ -209,7 +211,8 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
                 urlGet(fullUrl(employerPayeReferenceUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
               }
 
-              implicit def document: () => Document = () => Jsoup.parse(result.body)
+              lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputSelector, "")
             }
@@ -224,7 +227,8 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
                 urlGet(fullUrl(employerPayeReferenceUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
               }
 
-              implicit def document: () => Document = () => Jsoup.parse(result.body)
+              lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputSelector, "")
             }
@@ -240,7 +244,8 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
                 urlGet(fullUrl(employerPayeReferenceUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
               }
 
-              implicit def document: () => Document = () => Jsoup.parse(result.body)
+              lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputSelector, "123/BB124")
             }
@@ -254,7 +259,8 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
                 urlGet(fullUrl(employerPayeReferenceUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
-              implicit def document: () => Document = () => Jsoup.parse(result.body)
+              lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputSelector, "123/BB124")
             }
@@ -311,7 +317,8 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
             urlPost(fullUrl(employerPayeReferenceUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST
@@ -334,7 +341,8 @@ class PayeRefControllerISpec extends IntegrationTest with ViewHelpers with Emplo
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("payeRef" -> invalidPaye))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST

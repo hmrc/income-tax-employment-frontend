@@ -159,7 +159,8 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
             urlGet(fullUrl(travelAmountExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
             result.status shouldBe OK
@@ -186,7 +187,8 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
             urlGet(fullUrl(travelAmountExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
             result.status shouldBe OK
@@ -269,7 +271,8 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
             urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST
@@ -300,7 +303,8 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
             urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST
@@ -331,7 +335,8 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
             urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST

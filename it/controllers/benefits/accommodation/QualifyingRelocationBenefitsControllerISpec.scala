@@ -133,7 +133,8 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
             urlGet(fullUrl(qualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           s"has an OK($OK) status" in {
             result.status shouldBe OK
@@ -175,7 +176,8 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
           radioButtonCheck(yesText, 1, checked = true)
           radioButtonCheck(noText, 2, checked = false)
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           s"has an OK($OK) status" in {
             result.status shouldBe OK
@@ -193,7 +195,8 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
               urlGet(fullUrl(qualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             s"has an OK($OK) status" in {
               result.status shouldBe OK
@@ -222,7 +225,8 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
               urlGet(fullUrl(qualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             s"has an OK($OK) status" in {
               result.status shouldBe OK
@@ -324,7 +328,8 @@ class QualifyingRelocationBenefitsControllerISpec extends IntegrationTest with V
             result.status shouldBe BAD_REQUEST
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedH1)

@@ -120,7 +120,8 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             urlGet(fullUrl(vanBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
           import user.commonExpectedResults._
@@ -143,7 +144,8 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             urlGet(fullUrl(vanBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
           import user.commonExpectedResults._
@@ -212,7 +214,8 @@ class CompanyVanBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             result.status shouldBe BAD_REQUEST
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)

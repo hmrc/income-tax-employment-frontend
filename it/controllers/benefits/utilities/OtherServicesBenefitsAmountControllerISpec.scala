@@ -142,7 +142,8 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
             urlGet(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
           import Selectors._
           import user.commonExpectedResults._
 
@@ -170,7 +171,8 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
             urlGet(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
           import user.commonExpectedResults._
@@ -199,7 +201,8 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
             urlGet(fullUrl(otherServicesBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
           import user.commonExpectedResults._
@@ -313,7 +316,8 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST
@@ -343,7 +347,8 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "abc"))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST
@@ -374,7 +379,8 @@ class OtherServicesBenefitsAmountControllerISpec extends IntegrationTest with Vi
               body = Map("amount" -> "9999999999999999999999999999"))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
             result.status shouldBe BAD_REQUEST

@@ -77,7 +77,8 @@ class TaxYearErrorControllerISpec extends IntegrationTest with ViewHelpers {
             urlGet(fullUrl(wrongTaxYearUrl), welsh = user.isWelsh)
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
             result.status shouldBe OK

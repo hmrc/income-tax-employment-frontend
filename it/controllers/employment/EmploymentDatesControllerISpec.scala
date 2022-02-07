@@ -268,7 +268,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
             urlGet(fullUrl(employmentDatesUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
           import user.commonExpectedResults._
@@ -305,7 +306,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
         urlGet(fullUrl(employmentDatesUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
-      implicit def document: () => Document = () => Jsoup.parse(result.body)
+      lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
       "has an SEE_OTHER(303) status" in {
         result.status shouldBe SEE_OTHER
@@ -354,7 +356,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -396,7 +399,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
                 result.status shouldBe BAD_REQUEST
               }
 
-              implicit def document: () => Document = () => Jsoup.parse(result.body)
+              lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
               import Selectors._
               import user.commonExpectedResults._
@@ -438,7 +442,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -480,7 +485,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -522,7 +528,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -564,7 +571,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -606,7 +614,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -648,7 +657,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -690,7 +700,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -732,7 +743,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -774,7 +786,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -816,7 +829,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -858,7 +872,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -904,7 +919,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -944,7 +960,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               urlPost(fullUrl(employmentDatesUrl(taxYearEOY, employmentId)), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -993,7 +1010,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1035,7 +1053,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1077,7 +1096,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1119,7 +1139,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1161,7 +1182,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1203,7 +1225,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1245,7 +1268,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1287,7 +1311,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1329,7 +1354,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1371,7 +1397,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1413,7 +1440,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1455,7 +1483,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1497,7 +1526,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._
@@ -1540,7 +1570,8 @@ class EmploymentDatesControllerISpec extends IntegrationTest with ViewHelpers wi
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             import Selectors._
             import user.commonExpectedResults._

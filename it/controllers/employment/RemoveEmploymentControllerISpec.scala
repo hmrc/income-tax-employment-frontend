@@ -146,7 +146,8 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
             result.status shouldBe OK
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)
 
@@ -171,7 +172,8 @@ class RemoveEmploymentControllerISpec extends IntegrationTest with ViewHelpers w
             result.status shouldBe OK
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)
 

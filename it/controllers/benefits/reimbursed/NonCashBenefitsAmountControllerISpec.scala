@@ -149,7 +149,8 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
               result.status shouldBe OK
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
@@ -178,7 +179,8 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
               result.status shouldBe OK
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
@@ -208,7 +210,8 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
               result.status shouldBe OK
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
@@ -236,7 +239,8 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
               result.status shouldBe OK
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             titleCheck(user.specificExpectedResults.get.expectedTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
@@ -334,7 +338,8 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
               result.status shouldBe BAD_REQUEST
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
@@ -364,7 +369,8 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
               urlPost(fullUrl(nonCashBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
@@ -393,7 +399,8 @@ class NonCashBenefitsAmountControllerISpec extends IntegrationTest with Employme
               urlPost(fullUrl(nonCashBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
-            implicit def document: () => Document = () => Jsoup.parse(result.body)
+            lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)

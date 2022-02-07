@@ -137,7 +137,8 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
             result.status shouldBe OK
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
@@ -165,7 +166,8 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
             result.status shouldBe OK
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
@@ -192,7 +194,8 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
             result.status shouldBe OK
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
@@ -288,7 +291,8 @@ class EmployerProvidedServicesBenefitsControllerISpec extends IntegrationTest wi
             result.status shouldBe BAD_REQUEST
           }
 
-          implicit def document: () => Document = () => Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+          implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
           h1Check(user.specificExpectedResults.get.expectedHeading)
