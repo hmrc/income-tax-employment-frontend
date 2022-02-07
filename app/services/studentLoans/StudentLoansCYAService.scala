@@ -18,8 +18,7 @@ package services.studentLoans
 
 import common.EmploymentSection
 import config.{AppConfig, ErrorHandler}
-import connectors.CreateUpdateEmploymentDataConnector
-import connectors.parsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmploymentDataResponse
+import javax.inject.Inject
 import models.User
 import models.employment.{AllEmploymentData, EmploymentSource, StudentLoansCYAModel}
 import models.mongo.EmploymentCYAModel
@@ -31,17 +30,13 @@ import services.EmploymentSessionService
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Clock
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class StudentLoansCYAService @Inject()(
-                                        employmentConnector: CreateUpdateEmploymentDataConnector,
-                                        employmentSessionService: EmploymentSessionService,
-                                        appConfig: AppConfig,
-                                        errorHandler: ErrorHandler,
-                                        implicit val ec: ExecutionContext,
-                                        implicit val clock: Clock
-                                      ) {
+class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessionService,
+                                       appConfig: AppConfig,
+                                       errorHandler: ErrorHandler,
+                                       implicit val ec: ExecutionContext,
+                                       implicit val clock: Clock) {
 
   lazy val logger: slf4j.Logger = Logger.apply(this.getClass).logger
 
@@ -76,10 +71,10 @@ class StudentLoansCYAService @Inject()(
         case (_, Some(alLEmploymentData), isCustomerHeld) =>
           logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] No CYA data. Constructing CYA from prior data.")
           extractEmploymentInformation(alLEmploymentData, employmentId, isCustomerHeld)
-            .map(source => (EmploymentCYAModel(source, isCustomerHeld), source.hasPriorBenefits))
-            .fold(Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))) { case (employmentCya, hasPriorBenefits) =>
+            .map(source => (EmploymentCYAModel(source, isCustomerHeld), source.hasPriorBenefits, source.hasPriorStudentLoans))
+            .fold(Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))) { case (employmentCya, hasPriorBenefits, hasPriorStudentLoans) =>
               employmentSessionService.createOrUpdateSessionData(
-                employmentId, employmentCya, taxYear, isPriorSubmission = true, hasPriorBenefits = hasPriorBenefits
+                employmentId, employmentCya, taxYear, isPriorSubmission = true, hasPriorBenefits = hasPriorBenefits, hasPriorStudentLoans = hasPriorStudentLoans
               )(errorHandler.internalServerError()) {
                 block(employmentCya.studentLoans.map(cya => (cya, isCustomerHeld)))
               }
@@ -92,17 +87,26 @@ class StudentLoansCYAService @Inject()(
     }
   }
 
-  def submitStudentLoans(taxYear: Int, employmentId: String)(block: CreateUpdateEmploymentDataResponse => Result)
+  def submitStudentLoans(taxYear: Int, employmentId: String, result: Option[String] => Result)
                         (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
 
     employmentSessionService.getAndHandle(taxYear, employmentId) { case (employment, allEmploymentData) =>
       employment.fold(Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))))(employmentData => {
-        employmentSessionService.createModelAndReturnResult(
-          employmentData, allEmploymentData, taxYear, EmploymentSection.STUDENT_LOANS
-        ) { createUpdateRequest =>
-          employmentConnector.createUpdateEmploymentData(
-            user.nino, taxYear, createUpdateRequest
-          )(hc.withExtraHeaders("mtditid" -> user.mtditid)).map(response => block(response))
+
+        employmentSessionService.createModelOrReturnResult(employmentData, allEmploymentData, taxYear, EmploymentSection.STUDENT_LOANS) match {
+
+          case Left(result) => Future.successful(result)
+          case Right(model) =>
+
+            employmentSessionService.createOrUpdateEmploymentResult(taxYear, model).flatMap {
+              case Left(result) => Future.successful(result)
+              case Right(returnedEmploymentId) =>
+
+                employmentSessionService.clear(taxYear, employmentId).map {
+                  case Left(_) => errorHandler.internalServerError()
+                  case Right(_) => result(returnedEmploymentId)
+                }
+            }
         }
       })
     }

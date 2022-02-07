@@ -17,15 +17,18 @@
 package controllers.studentLoans
 
 import actions.{AuthorisedAction, TaxYearAction}
-import config.{AppConfig, ErrorHandler}
+import common.SessionValues
+import config.AppConfig
+import controllers.employment.routes.EmployerInformationController
+import controllers.expenses.routes.CheckEmploymentExpensesController
+import javax.inject.Inject
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.studentLoans.StudentLoansCYAService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil}
+import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.studentLoans.StudentLoansCYAView
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class StudentLoansCYAController @Inject()(
@@ -34,11 +37,10 @@ class StudentLoansCYAController @Inject()(
                                            service: StudentLoansCYAService,
                                            authAction: AuthorisedAction,
                                            inYearAction: InYearUtil,
-                                           errorHandler: ErrorHandler,
                                            implicit val appConfig: AppConfig,
                                            implicit val ec: ExecutionContext,
                                            implicit val clock: Clock
-                                         ) extends FrontendController(mcc) with I18nSupport {
+                                         ) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
 
@@ -57,13 +59,22 @@ class StudentLoansCYAController @Inject()(
   
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
     if(appConfig.studentLoansEnabled) {
-      service.submitStudentLoans(taxYear, employmentId) {
-        case Right(_) => Redirect(controllers.employment.routes.EmploymentSummaryController.show(taxYear))
-        case Left(_) => errorHandler.internalServerError()
+
+      def getResultFromResponse(returnedEmploymentId: Option[String]): Result = {
+        Redirect(returnedEmploymentId match {
+          case Some(employmentId) => EmployerInformationController.show(taxYear, employmentId)
+          case None =>
+            getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID) match {
+              case Some(sessionEmploymentId) if sessionEmploymentId == employmentId => CheckEmploymentExpensesController.show(taxYear)
+              case None => EmployerInformationController.show(taxYear, employmentId)
+            }
+        })
       }
+
+      service.submitStudentLoans(taxYear, employmentId, getResultFromResponse)
+
     } else {
       Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     }
   }
-  
 }

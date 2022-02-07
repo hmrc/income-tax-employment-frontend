@@ -85,7 +85,7 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
             )
 
             employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission,
-              data.hasPriorBenefits)(errorHandler.internalServerError()) {
+              data.hasPriorBenefits, data.hasPriorStudentLoans)(errorHandler.internalServerError()) {
               employmentDetailsRedirect(updatedCya,taxYear,employmentId,data.isPriorSubmission,isStandaloneQuestion = false)
             }
           }

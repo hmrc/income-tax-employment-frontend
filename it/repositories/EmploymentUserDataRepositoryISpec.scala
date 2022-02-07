@@ -74,7 +74,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     taxYear,
     employmentIdOne,
     isPriorSubmission = true,
-    hasPriorBenefits = true,
+    hasPriorBenefits = true, hasPriorStudentLoans = true,
     EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = true), None),
     lastUpdated = now
   )
@@ -99,7 +99,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     taxYear,
     employmentIdOne,
     isPriorSubmission = true,
-    hasPriorBenefits = true,
+    hasPriorBenefits = true, hasPriorStudentLoans = true,
     EmploymentCYAModel(
       EmploymentDetails(
         employerName = "Name",
@@ -129,7 +129,7 @@ class EmploymentUserDataRepositoryISpec extends IntegrationTest with FutureAwait
     taxYear,
     employmentIdTwo,
     isPriorSubmission = true,
-    hasPriorBenefits = true,
+    hasPriorBenefits = true, hasPriorStudentLoans = true,
     EmploymentCYAModel(
       EmploymentDetails("Argos", currentDataIsHmrcHeld = true),
       None

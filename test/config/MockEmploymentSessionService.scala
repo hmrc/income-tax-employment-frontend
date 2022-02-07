@@ -86,14 +86,13 @@ trait MockEmploymentSessionService extends MockFactory {
 
   def mockCreateOrUpdateUserDataWith(taxYear: Int,
                                      employmentId: String,
-                                     isPriorSubmission: Boolean,
-                                     hasPriorBenefits: Boolean,
+                                     employmentUserData: EmploymentUserData,
                                      employmentCYAModel: EmploymentCYAModel,
                                      result: Either[Unit, EmploymentUserData])
-                                    (implicit executionContext: ExecutionContext): CallHandler7[Int, String, Boolean, Boolean, EmploymentCYAModel, User[_], Clock,
+                                    (implicit executionContext: ExecutionContext): CallHandler6[Int, String, EmploymentUserData, EmploymentCYAModel, User[_], Clock,
     Future[Either[Unit, EmploymentUserData]]] = {
-    (mockEmploymentSessionService.createOrUpdateEmploymentUserDataWith(_: Int, _: String, _: Boolean, _: Boolean, _: EmploymentCYAModel)(_: User[_], _: Clock))
-      .expects(taxYear, employmentId, isPriorSubmission, hasPriorBenefits, employmentCYAModel, *, *)
+    (mockEmploymentSessionService.createOrUpdateEmploymentUserDataWith(_: Int, _: String, _: EmploymentUserData, _: EmploymentCYAModel)(_: User[_], _: Clock))
+      .expects(taxYear, employmentId, *, employmentCYAModel, *, *)
       .returns(Future(result))
       .once()
   }

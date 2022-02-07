@@ -16,18 +16,16 @@
 
 package services.studentLoans
 
-import connectors.CreateUpdateEmploymentDataConnector
 import models.employment.{AllEmploymentData, EmploymentSource}
 import services.EmploymentSessionService
 import utils.UnitTest
 
 class StudentLoansCYAServiceSpec extends UnitTest {
 
-  lazy val connector: CreateUpdateEmploymentDataConnector = mock[CreateUpdateEmploymentDataConnector]
   lazy val session: EmploymentSessionService = mock[EmploymentSessionService]
   
   lazy val service = new StudentLoansCYAService(
-    connector, session, mockAppConfig, mockErrorHandler, mockExecutionContext, testClock
+    session, mockAppConfig, mockErrorHandler, mockExecutionContext, testClock
   )
   
   lazy val employerId = "1234567890"

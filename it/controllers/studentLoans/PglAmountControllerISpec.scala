@@ -173,7 +173,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
               mtditid,
               nino,
               scenarioData.commonExpectedResults.taxYearEOY,
-              employmentId, isPriorSubmission = false, hasPriorBenefits = false,
+              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
               EmploymentCYAModel(
                 EmploymentDetails(
                   employerName = "Whiterun Guards",
@@ -215,7 +215,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
               mtditid,
               nino,
               scenarioData.commonExpectedResults.taxYearEOY,
-              employmentId, isPriorSubmission = true, hasPriorBenefits = false,
+              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
               EmploymentCYAModel(
                 EmploymentDetails(
                   employerName = "Whiterun Guards",
@@ -256,7 +256,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
               mtditid,
               nino,
               scenarioData.commonExpectedResults.taxYearEOY,
-              employmentId, isPriorSubmission = false, hasPriorBenefits = false,
+              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
               EmploymentCYAModel(
                 EmploymentDetails(
                   employerName = "Whiterun Guards",
@@ -298,7 +298,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
               mtditid,
               nino,
               scenarioData.commonExpectedResults.taxYearEOY,
-              employmentId, isPriorSubmission = false, hasPriorBenefits = false,
+              employmentId, isPriorSubmission = true, hasPriorBenefits = false, hasPriorStudentLoans = true,
               EmploymentCYAModel(
                 EmploymentDetails(
                   employerName = "Whiterun Guards",
@@ -378,7 +378,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
                 mtditid,
                 nino,
                 scenarioData.commonExpectedResults.taxYearEOY,
-                employmentId, isPriorSubmission = false, hasPriorBenefits = false,
+                employmentId, isPriorSubmission = true, hasPriorBenefits = false, hasPriorStudentLoans = true,
                 EmploymentCYAModel(
                   EmploymentDetails(
                     employerName = "Whiterun Guards",
@@ -419,7 +419,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
               mtditid,
               nino,
               scenarioData.commonExpectedResults.taxYearEOY,
-              employmentId, isPriorSubmission = false, hasPriorBenefits = false,
+              employmentId, isPriorSubmission = true, hasPriorBenefits = false, hasPriorStudentLoans = true,
               EmploymentCYAModel(
                 EmploymentDetails(
                   employerName = "Whiterun Guards",
@@ -471,7 +471,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
               mtditid,
               nino,
               scenarioData.commonExpectedResults.taxYearEOY,
-              employmentId, isPriorSubmission = false, hasPriorBenefits = false,
+              employmentId, isPriorSubmission = true, hasPriorBenefits = false, hasPriorStudentLoans = true,
               EmploymentCYAModel(
                 EmploymentDetails(
                   employerName = "Whiterun Guards",

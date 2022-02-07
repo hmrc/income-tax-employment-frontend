@@ -30,7 +30,7 @@ object EmploymentUserDataBuilder {
     taxYear = 2021,
     employmentId = "employmentId",
     isPriorSubmission = true,
-    hasPriorBenefits = true,
+    hasPriorBenefits = true, hasPriorStudentLoans = true,
     employment = anEmploymentCYAModel
   )
 

@@ -38,6 +38,7 @@ class EncryptionServiceTest extends IntegrationTest {
         employmentId = data.employmentId,
         isPriorSubmission = data.isPriorSubmission,
         hasPriorBenefits = data.isPriorSubmission,
+        hasPriorStudentLoans = data.hasPriorStudentLoans,
         employment = result.employment,
         lastUpdated = result.lastUpdated
       )

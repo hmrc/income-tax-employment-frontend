@@ -21,6 +21,7 @@ import connectors.parsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmplo
 import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import connectors.{CreateUpdateEmploymentDataConnector, IncomeSourceConnector, IncomeTaxUserDataConnector}
 import controllers.employment.routes.{CheckEmploymentDetailsController, CheckYourBenefitsController, EmployerInformationController, EmploymentSummaryController}
+import controllers.studentLoans.routes.StudentLoansCYAController
 import models.benefits.Benefits
 import models.employment._
 import models.employment.createUpdate._
@@ -112,7 +113,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   //scalastyle:off
-  def createOrUpdateSessionData[A](employmentId: String, cyaModel: EmploymentCYAModel, taxYear: Int, isPriorSubmission: Boolean, hasPriorBenefits: Boolean)
+  def createOrUpdateSessionData[A](employmentId: String, cyaModel: EmploymentCYAModel, taxYear: Int, isPriorSubmission: Boolean, hasPriorBenefits: Boolean, hasPriorStudentLoans: Boolean)
                                   (onFail: A)(onSuccess: A)(implicit user: User[_], clock: Clock): Future[A] = {
 
     val userData = EmploymentUserData(
@@ -123,6 +124,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       employmentId,
       isPriorSubmission,
       hasPriorBenefits = hasPriorBenefits,
+      hasPriorStudentLoans = hasPriorStudentLoans,
       cyaModel,
       clock.now(DateTimeZone.UTC)
     )
@@ -135,9 +137,24 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
   def createOrUpdateEmploymentUserDataWith(taxYear: Int,
                                            employmentId: String,
-                                           isPriorSubmission: Boolean,
-                                           hasPriorBenefits: Boolean,
+                                           originalEmploymentUserData: EmploymentUserData,
                                            employment: EmploymentCYAModel)(implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+    createOrUpdateEmploymentUserDataWith(
+      taxYear,
+      employmentId,
+      originalEmploymentUserData.isPriorSubmission,
+      originalEmploymentUserData.hasPriorBenefits,
+      originalEmploymentUserData.hasPriorStudentLoans,
+      employment
+    )
+  }
+
+  private def createOrUpdateEmploymentUserDataWith(taxYear: Int,
+                                                   employmentId: String,
+                                                   isPriorSubmission: Boolean,
+                                                   hasPriorBenefits: Boolean,
+                                                   hasPriorStudentLoans: Boolean,
+                                                   employment: EmploymentCYAModel)(implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
 
     val employmentUserData = EmploymentUserData(
       user.sessionId,
@@ -147,6 +164,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
       employmentId,
       isPriorSubmission = isPriorSubmission,
       hasPriorBenefits = hasPriorBenefits,
+      hasPriorStudentLoans = hasPriorStudentLoans,
       employment = employment,
       clock.now(DateTimeZone.UTC)
     )
@@ -198,24 +216,23 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
   }
 
-  def createModelAndReturnResult(cya: EmploymentUserData, prior: Option[AllEmploymentData], taxYear: Int, section: EmploymentSection.Value)
-                                (result: CreateUpdateEmploymentRequest => Future[Result])(implicit user: User[_]): Future[Result] = {
+  def createModelOrReturnResult(cya: EmploymentUserData, prior: Option[AllEmploymentData], taxYear: Int, section: EmploymentSection.Value)
+                               (implicit user: User[_]): Either[Result,CreateUpdateEmploymentRequest] = {
 
     val notFinishedRedirect = {
-      Future.successful(section match {
+      Left(section match {
         case common.EmploymentSection.EMPLOYMENT_DETAILS => Redirect(CheckEmploymentDetailsController.show(taxYear, cya.employmentId))
         case common.EmploymentSection.EMPLOYMENT_BENEFITS => Redirect(CheckYourBenefitsController.show(taxYear, cya.employmentId))
-        //TODO Update to student loans CYA page
-        case common.EmploymentSection.STUDENT_LOANS => Redirect(CheckEmploymentDetailsController.show(taxYear, cya.employmentId))
+        case common.EmploymentSection.STUDENT_LOANS => Redirect(StudentLoansCYAController.show(taxYear, cya.employmentId))
       })
     }
 
     cyaAndPriorToCreateUpdateEmploymentRequest(cya, prior, section) match {
-      case Left(NothingToUpdate) => Future.successful(Redirect(EmployerInformationController.show(taxYear, cya.employmentId)))
+      case Left(NothingToUpdate) => Left(Redirect(EmployerInformationController.show(taxYear, cya.employmentId)))
       case Left(JourneyNotFinished) =>
         //TODO Route to: journey not finished page / show banner saying not finished / hide submit button when not complete?
         notFinishedRedirect
-      case Right(model) => result(model)
+      case Right(model) => Right(model)
     }
   }
 
@@ -346,14 +363,10 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   def createOrUpdateEmploymentResult(taxYear: Int, employmentRequest: CreateUpdateEmploymentRequest)
-                                    (implicit user: User[_], hc: HeaderCarrier): Future[Either[Result, Result]] = {
+                                    (implicit user: User[_], hc: HeaderCarrier): Future[Either[Result, Option[String]]] = {
     createOrUpdateEmployment(taxYear, employmentRequest).map {
       case Left(error) => Left(errorHandler.handleError(error.status))
-      case Right(None) => employmentRequest.employmentId match {
-        case Some(employmentId) => Right(Redirect(EmployerInformationController.show(taxYear, employmentId)))
-        case None => Right(Redirect(EmploymentSummaryController.show(taxYear)))
-      }
-      case Right(Some(employmentId)) => Right(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
+      case Right(employmentId) => Right(employmentId)
     }
   }
 

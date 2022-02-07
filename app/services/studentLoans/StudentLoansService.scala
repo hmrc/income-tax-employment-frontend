@@ -39,13 +39,7 @@ class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionS
       })
     val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoans = newStudentLoans)
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
   def updatePglQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, pgl: Boolean)
                            (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
@@ -58,13 +52,7 @@ class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionS
       })
     val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoans = newStudentLoans)
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateUglDeductionAmount(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, uglAmount: BigDecimal)
@@ -74,13 +62,7 @@ class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionS
       map(studentLoan => studentLoan.copy(uglDeductionAmount = Some(uglAmount)))
     val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoans = newStudentLoans)
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updatePglDeductionAmount(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, pglAmount: BigDecimal)
@@ -90,12 +72,6 @@ class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionS
       map(studentLoan => studentLoan.copy(pglDeductionAmount = Some(pglAmount)))
     val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoans = newStudentLoans)
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      updatedEmployment
-    )
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 }

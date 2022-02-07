@@ -40,7 +40,7 @@ class IncidentalOvernightCostEmploymentBenefitsControllerISpec extends Integrati
   private val employmentId: String = "employmentIdo"
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    anEmploymentUserData.copy(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, employmentCyaModel)
+    anEmploymentUserData.copy(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
 
   object Selectors {
     val costInformationSelector: String = "#main-content > div > div > form > div > fieldset > legend > p:nth-child(2)"
