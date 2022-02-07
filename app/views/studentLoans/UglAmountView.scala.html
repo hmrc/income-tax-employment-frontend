@@ -15,7 +15,7 @@
  *@
 
 @import views.html.templates.Layout
-@import views.html.templates.helpers.{Button, ErrorSummary, Heading, InputText}
+@import views.html.templates.helpers.{Button, ErrorSummary, Heading, InputTextAlt, P}
 @import utils.ViewUtils._
 
 @this(
@@ -24,7 +24,8 @@
     errorSummary: ErrorSummary,
     button: Button,
     heading: Heading,
-    inputText: InputText
+    inputTextAlt: InputTextAlt,
+    p: P
 )
 @(taxYear: Int, form: Form[BigDecimal], employmentId: String, employerName: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
 
@@ -32,31 +33,24 @@
     messages(s"studentLoans.undergraduateLoanAmount.heading.${if(user.isAgent) "agent" else "individual"}", employerName)
 }
 
-@contentHtml = {
-    <p>
-        @messages(s"studentLoans.undergraduateLoanAmount.check.${if(user.isAgent) "agent" else "individual"}")
-    </p>
-    <p>
-        @messages("studentLoans.undergraduateLoanAmount.coursesExample")
-    </p>
-}
-
-
 @layout(pageTitle = headingForUse, taxYear = Some(taxYear), hasErrors = form.hasErrors) {
 
     @errorSummary(form.errors)
 
+    @heading(headingForUse, Some(messages("studentLoans.subheading", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
+
+    @p(Html(messages(s"studentLoans.undergraduateLoanAmount.check.${if(user.isAgent) "agent" else "individual"}")))
+    @p(Html(messages("studentLoans.undergraduateLoanAmount.coursesExample")))
+
+
     @formWithCSRF(controllers.studentLoans.routes.UglAmountController.submit(taxYear, employmentId)) {
-        @inputText(
+        @inputTextAlt(
             form,
             id = "amount",
             name = "amount",
-            heading = headingForUse,
-            headingClasses = "govuk-!-margin-bottom-2",
-            subheading = Some(messages("studentLoans.subheading", (taxYear - 1).toString, taxYear.toString)),
-            content = Some(contentHtml),
-            hint = Some(Html(messages("common.currency.hint"))),
-            isPageHeading = false,
+            hint = Some(messages("common.currency.hint")),
+            label = headingForUse,
+            labelHidden = true,
             currency = true
         )
         @button()
