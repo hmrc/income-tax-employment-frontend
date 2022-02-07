@@ -75,7 +75,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption = s"Employment details for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
-    val hintText = "For example, £600 or £193.54"
+    val hintText = "For example, £193.52"
     val wrongFormatErrorText: String = "Enter the amount paid in the correct format"
     val maxAmountErrorText: String = "The amount paid must be less than £100,000,000,000"
   }
@@ -83,7 +83,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment details for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
-    val hintText = "For example, £600 or £193.54"
+    val hintText = "For example, £193.52"
     val wrongFormatErrorText: String = "Enter the amount paid in the correct format"
     val maxAmountErrorText: String = "The amount paid must be less than £100,000,000,000"
   }

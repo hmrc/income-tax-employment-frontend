@@ -70,7 +70,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   object ExpectedResultsIndividualEN extends CommonExpectedResults {
     override val expectedCaption: String = "Student Loans for 6 April 2020 to 5 April 2021"
     override val expectedButtonText: String = "Continue"
-    override val hintText: String = "For example, £600 or £193.54"
+    override val hintText: String = "For example, £193.52"
     override val taxYearEOY: Int = 2021
     override val title: String = "How much postgraduate loan did you repay while employed by Whiterun Guards?"
     override val expectedH1: String = "How much postgraduate loan did you repay while employed by Whiterun Guards?"
@@ -85,7 +85,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   object ExpectedResultsIndividualCY extends CommonExpectedResults {
     override val expectedCaption: String = "Student Loans for 6 April 2020 to 5 April 2021"
     override val expectedButtonText: String = "Continue"
-    override val hintText: String = "For example, £600 or £193.54"
+    override val hintText: String = "For example, £193.52"
     override val taxYearEOY: Int = 2021
     override val title: String = "How much postgraduate loan did you repay while employed by Whiterun Guards?"
     override val expectedH1: String = "How much postgraduate loan did you repay while employed by Whiterun Guards?"
@@ -100,7 +100,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   object ExpectedResultsAgentEN extends CommonExpectedResults {
     override val expectedCaption: String = "Student Loans for 6 April 2020 to 5 April 2021"
     override val expectedButtonText: String = "Continue"
-    override val hintText: String = "For example, £600 or £193.54"
+    override val hintText: String = "For example, £193.52"
     override val taxYearEOY: Int = 2021
     override val title: String = "How much postgraduate loan did your client repay while employed by Whiterun Guards?"
     override val expectedH1: String = "How much postgraduate loan did your client repay while employed by Whiterun Guards?"
@@ -115,7 +115,7 @@ class PglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
   object ExpectedResultsAgentCY extends CommonExpectedResults {
     override val expectedCaption: String = "Student Loans for 6 April 2020 to 5 April 2021"
     override val expectedButtonText: String = "Continue"
-    override val hintText: String = "For example, £600 or £193.54"
+    override val hintText: String = "For example, £193.52"
     override val taxYearEOY: Int = 2021
     override val title: String = "How much postgraduate loan did your client repay while employed by Whiterun Guards?"
     override val expectedH1: String = "How much postgraduate loan did your client repay while employed by Whiterun Guards?"
