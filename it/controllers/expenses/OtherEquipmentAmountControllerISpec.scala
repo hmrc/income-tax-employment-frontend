@@ -123,13 +123,13 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
-    val hintText = "For example, £600 or £193.54"
+    val hintText = "For example, £193.52"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
-    val hintText = "For example, £600 or £193.54"
+    val hintText = "For example, £193.52"
   }
 
   val userScenarios: Seq[UserScenario[CommonExpectedResults, SpecificExpectedResults]] = {

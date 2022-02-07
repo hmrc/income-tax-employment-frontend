@@ -123,7 +123,7 @@
 //    val expectedButtonText = "Continue"
 //    val expectedErrorCharLimit = "The amount of payments must be less than £100,000,000,000"
 //    val expectedErrorInvalidAmount = "Enter the amount of payments in the correct format"
-//    val expectedForExample = "For example, £600 or £193.54"
+//    val expectedForExample = "For example, £193.52"
 //    val expectedIfItWasNot = s"If it was not £$amount, tell us the correct amount."
 //  }
 //
@@ -133,7 +133,7 @@
 //    val expectedButtonText = "Continue"
 //    val expectedErrorCharLimit = "The amount of payments must be less than £100,000,000,000"
 //    val expectedErrorInvalidAmount = "Enter the amount of payments in the correct format"
-//    val expectedForExample = "For example, £600 or £193.54"
+//    val expectedForExample = "For example, £193.52"
 //    val expectedIfItWasNot = s"If it was not £$amount, tell us the correct amount."
 //  }
 //

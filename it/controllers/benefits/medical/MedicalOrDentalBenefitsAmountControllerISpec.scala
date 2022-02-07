@@ -74,14 +74,14 @@ class MedicalOrDentalBenefitsAmountControllerISpec extends IntegrationTest with 
   object CommonExpectedEN extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
 
-    val hintText = "For example, £600 or £193.54"
+    val hintText = "For example, £193.52"
     val continueButtonText = "Continue"
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     def expectedCaption(taxYear: Int): String = s"Employment benefits for 6 April ${taxYear - 1} to 5 April $taxYear"
 
-    val hintText = "For example, £600 or £193.54"
+    val hintText = "For example, £193.52"
     val continueButtonText = "Continue"
   }
 

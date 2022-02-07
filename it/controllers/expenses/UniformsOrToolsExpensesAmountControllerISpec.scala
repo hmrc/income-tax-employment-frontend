@@ -125,14 +125,14 @@ class UniformsOrToolsExpensesAmountControllerISpec extends IntegrationTest with 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
-    val hintText = "For example, £600 or £193.54"
+    val hintText = "For example, £193.52"
     val expectedCannotClaim = "You cannot claim for the initial cost of buying small tools or clothing for work."
   }
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption = s"Employment expenses for 6 April ${taxYearEOY - 1} to 5 April $taxYearEOY"
     val continueButtonText = "Continue"
-    val hintText = "For example, £600 or £193.54"
+    val hintText = "For example, £193.52"
     val expectedCannotClaim = "You cannot claim for the initial cost of buying small tools or clothing for work."
   }
 

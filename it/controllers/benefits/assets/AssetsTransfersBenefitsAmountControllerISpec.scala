@@ -76,7 +76,7 @@ class AssetsTransfersBenefitsAmountControllerISpec extends IntegrationTest with 
 
     def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
 
-    val expectedHintText = "For example, £600 or £193.54"
+    val expectedHintText = "For example, £193.52"
     val currencyPrefix = "£"
     val continueButtonText = "Continue"
     val enterTotalText = "Enter the total."
@@ -87,7 +87,7 @@ class AssetsTransfersBenefitsAmountControllerISpec extends IntegrationTest with 
 
     def optionalParagraphText(amount: BigDecimal): String = s"If it was not £$amount, tell us the correct amount."
 
-    val expectedHintText = "For example, £600 or £193.54"
+    val expectedHintText = "For example, £193.52"
     val currencyPrefix = "£"
     val continueButtonText = "Continue"
     val enterTotalText = "Enter the total."

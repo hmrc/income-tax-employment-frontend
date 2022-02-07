@@ -59,7 +59,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
 
   object CommonExpectedEN extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val hint: String = "For example, £600 or £193.54"
+    val hint: String = "For example, £193.52"
     val continue: String = "Continue"
     val amount: String = "amount"
     val expectedErrorInvalidFormat = "Enter the amount of UK tax in the correct format"
@@ -68,7 +68,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
 
   object CommonExpectedCY extends CommonExpectedResults {
     val expectedCaption: Int => String = (taxYear: Int) => s"Employment details for 6 April ${taxYear - 1} to 5 April $taxYear"
-    val hint: String = "For example, £600 or £193.54"
+    val hint: String = "For example, £193.52"
     val continue: String = "Continue"
     val amount: String = "amount"
     val expectedErrorInvalidFormat = "Enter the amount of UK tax in the correct format"
