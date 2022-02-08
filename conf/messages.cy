@@ -1320,10 +1320,19 @@ studentLoans.p.individual = Your student loan repayment details are based on the
 studentLoans.p.agent = Your client’s student loan repayment details are based on the information we already hold about them.
 studentLoans.inset.individual = You cannot update your student loan details until 6 April {0}.
 studentLoans.inset.agent = You cannot update your client’s student loan details until 6 April {0}.
+
+studentLoans.common.checkWith.individual = Check with the Student Loans Company, your payslips or P60.
+studentLoans.common.checkWith.agent = Check with the Student Loans Company, your client’s payslips or P60.
+
 studentLoans.pglAmount.error.noEntry.agent = Enter the amount of postgraduate loan your client repaid while employed by {0}
 studentLoans.pglAmount.error.noEntry.individual = Enter the amount of postgraduate loan you repaid while employed by {0}
 studentLoans.pglAmount.error.invalidFormat = Enter the amount of postgraduate loan in the correct format
 studentLoans.pglAmount.title.agent = How much postgraduate loan did your client repay while employed by {0}?
 studentLoans.pglAmount.title.individual = How much postgraduate loan did you repay while employed by {0}?
-studentLoans.pglAmount.checkWith.agent = Check with the Student Loans Company, your client’s payslips or P60.
-studentLoans.pglAmount.checkWith.individual = Check with the Student Loans Company, your payslips or P60.
+
+studentLoans.undergraduateLoanAmount.heading.individual = How much undergraduate loan did you repay while employed by {0}?
+studentLoans.undergraduateLoanAmount.heading.agent = How much undergraduate loan did your client repay while employed by {0}?
+studentLoans.undergraduateLoanAmount.coursesExample = Undergraduate loan covers courses like undergraduate degrees (BA, BSc), foundation degrees or Certificates of Higher Education (CertHE).
+studentLoans.undergraduateLoanAmount.error.noEntry.individual = Enter the amount of undergraduate loan you repaid while employed by {0}
+studentLoans.undergraduateLoanAmount.error.noEntry.agent = Enter the amount of undergraduate loan your client repaid while employed by {0}
+studentLoans.undergraduateLoanAmount.error.invalidFormat = Enter the amount of undergraduate loan in the correct format
