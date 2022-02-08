@@ -321,6 +321,9 @@ POST        /:taxYear/student-loans/check-student-loans-repayments              
 GET         /:taxYear/student-loans/postgraduate-repayment-amount                    controllers.studentLoans.PglAmountController.show(taxYear: Int, employmentId: String)
 POST        /:taxYear/student-loans/postgraduate-repayment-amount                    controllers.studentLoans.PglAmountController.submit(taxYear: Int, employmentId: String)
 
+GET         /:taxYear/student-loans/undergraduate-repayment-amount                   controllers.studentLoans.UglAmountController.show(taxYear: Int, employmentId: String)
+POST        /:taxYear/student-loans/undergraduate-repayment-amount                   controllers.studentLoans.UglAmountController.submit(taxYear: Int, employmentId: String)
+
 ###########################     Error pages     ####################################
 
 GET         /error/you-need-to-sign-up                                               controllers.errors.IndividualAuthErrorController.show
