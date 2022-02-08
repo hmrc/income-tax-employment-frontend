@@ -53,6 +53,7 @@ common.and = and
 common.notProvided = Not provided
 common.add = Add
 common.employer = Employer
+common.or = or
 
 #################   Subheadings/Captions    ##################################
 
@@ -1336,3 +1337,20 @@ studentLoans.undergraduateLoanAmount.coursesExample = Undergraduate loan covers 
 studentLoans.undergraduateLoanAmount.error.noEntry.individual = Enter the amount of undergraduate loan you repaid while employed by {0}
 studentLoans.undergraduateLoanAmount.error.noEntry.agent = Enter the amount of undergraduate loan your client repaid while employed by {0}
 studentLoans.undergraduateLoanAmount.error.invalidFormat = Enter the amount of undergraduate loan in the correct format
+
+#####################    Student Loans Question messages    #####################
+
+studentLoansQuestion.title.individual = Did you repay any student loan while employed by ABC Digital Ltd?
+studentLoansQuestion.title.agent = Did your client repay any student loan while employed by ABC Digital Ltd?
+studentLoansQuestion.inset.individual = We only need to know about payments your employer deducted from your salary
+studentLoansQuestion.inset.agent = We only need to know about payments their employer deducted from their salary
+studentLoansQuestion.inset.2.individual = The Student Loans Company would have told you. Check your payslips or P60 for student loan deductions.
+studentLoansQuestion.inset.2.agent = The Student Loans Company would have told your client. Check your client’s payslips or P60 for student loan deductions.
+studentLoansQuestion.checkbox.hint = Select all that apply.
+studentLoansQuestion.checkbox.1 = Yes, undergraduate repayments
+studentLoansQuestion.checkbox.1.hint = This covers courses like undergraduate degrees (BA, BSc), foundation degrees or Certificates of Higher Education (CertHE).
+studentLoansQuestion.checkbox.2 = Yes, postgraduate repayments
+studentLoansQuestion.checkbox.2.hint = This covers courses like master’s or doctorates.
+studentLoansQuestion.checkbox.error.individual = Select the types of student loan you repaid, or select "No"
+studentLoansQuestion.checkbox.error.agent = Select the types of student loan your client repaid, or select "No"
+
