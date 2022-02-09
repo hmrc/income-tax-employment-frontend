@@ -1342,8 +1342,8 @@ studentLoans.undergraduateLoanAmount.error.invalidFormat = Enter the amount of u
 
 studentLoansQuestion.title.individual = Did you repay any student loan while employed by ABC Digital Ltd?
 studentLoansQuestion.title.agent = Did your client repay any student loan while employed by ABC Digital Ltd?
-studentLoansQuestion.inset.individual = We only need to know about payments your employer deducted from your salary
-studentLoansQuestion.inset.agent = We only need to know about payments their employer deducted from their salary
+studentLoansQuestion.inset.individual = We only need to know about payments your employer deducted from your salary.
+studentLoansQuestion.inset.agent = We only need to know about payments their employer deducted from their salary.
 studentLoansQuestion.inset.2.individual = The Student Loans Company would have told you. Check your payslips or P60 for student loan deductions.
 studentLoansQuestion.inset.2.agent = The Student Loans Company would have told your client. Check your client’s payslips or P60 for student loan deductions.
 studentLoansQuestion.checkbox.hint = Select all that apply.

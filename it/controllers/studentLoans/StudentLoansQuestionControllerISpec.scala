@@ -60,7 +60,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
   object ExpectedResultsEnglish extends CommonExpectedResults {
     override val title: String = "Did you repay any student loan while employed by ABC Digital Ltd?"
     override val caption: String = s"Student Loans for 6 April ${taxYear - 1} to 5 April $taxYear"
-    override val paragraphText_1: String = "We only need to know about payments your employer deducted from your salary"
+    override val paragraphText_1: String = "We only need to know about payments your employer deducted from your salary."
     override val paragraphText_2: String = "The Student Loans Company would have told you. Check your payslips or P60 for student loan deductions."
     override val checkboxHint: String = "Select all that apply."
     override val checkboxUgl: String = "Yes, undergraduate repayments"
@@ -77,7 +77,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
   object ExpectedResultsEnglishAgent extends CommonExpectedResults {
     override val title: String = "Did your client repay any student loan while employed by ABC Digital Ltd?"
     override val caption: String = s"Student Loans for 6 April ${taxYear - 1} to 5 April $taxYear"
-    override val paragraphText_1: String = "We only need to know about payments their employer deducted from their salary"
+    override val paragraphText_1: String = "We only need to know about payments their employer deducted from their salary."
     override val paragraphText_2: String = "The Student Loans Company would have told your client. Check your client’s payslips or P60 for student loan deductions."
     override val checkboxHint: String = "Select all that apply."
     override val checkboxUgl: String = "Yes, undergraduate repayments"
