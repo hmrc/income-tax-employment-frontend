@@ -25,7 +25,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{InYearUtil, SessionHelper}
-import views.html.employment.{MultipleEmploymentsSummaryView, SingleEmploymentSummaryView, SingleEmploymentSummaryViewEOY}
+import views.html.employment.EmploymentSummaryView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,9 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class EmploymentSummaryController @Inject()(implicit val mcc: MessagesControllerComponents,
                                             authAction: AuthorisedAction,
                                             implicit val appConfig: AppConfig,
-                                            singleEmploymentSummaryView: SingleEmploymentSummaryView,
-                                            multipleEmploymentsSummaryView: MultipleEmploymentsSummaryView,
-                                            singleEmploymentSummaryEOYView: SingleEmploymentSummaryViewEOY,
+                                            employmentSummaryView: EmploymentSummaryView,
                                             employmentSessionService: EmploymentSessionService,
                                             inYearAction: InYearUtil
                                            ) extends FrontendController(mcc) with I18nSupport with SessionHelper {
@@ -59,9 +57,7 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
       employmentData match {
         case Seq() if isInYear => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
         case Seq() if !isInYear => Redirect(AddEmploymentController.show(taxYear))
-        case Seq(employment) if isInYear => Ok(singleEmploymentSummaryView(taxYear, employment, doExpensesExist))
-        case Seq(employment) if !isInYear => Ok(singleEmploymentSummaryEOYView(taxYear, employment, doExpensesExist))
-        case _ => Ok(multipleEmploymentsSummaryView(taxYear, employmentData, doExpensesExist, isInYear))
+        case _ => Ok(employmentSummaryView(taxYear, employmentData, doExpensesExist, isInYear))
       }
     }
   }

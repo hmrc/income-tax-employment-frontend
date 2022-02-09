@@ -23,7 +23,7 @@ import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Result
 import play.api.mvc.Results.{Ok, Redirect}
 import utils.UnitTestWithApp
-import views.html.employment.{MultipleEmploymentsSummaryView, SingleEmploymentSummaryView, SingleEmploymentSummaryViewEOY}
+import views.html.employment.EmploymentSummaryView
 
 import scala.concurrent.Future
 
@@ -103,17 +103,13 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
     )
   }
 
-  private val singleView: SingleEmploymentSummaryView = app.injector.instanceOf[SingleEmploymentSummaryView]
-  private val singleEOYView: SingleEmploymentSummaryViewEOY = app.injector.instanceOf[SingleEmploymentSummaryViewEOY]
-  private val multipleView: MultipleEmploymentsSummaryView = app.injector.instanceOf[MultipleEmploymentsSummaryView]
+  private val employmentSummaryView = app.injector.instanceOf[EmploymentSummaryView]
 
   private lazy val controller = new EmploymentSummaryController()(
     mockMessagesControllerComponents,
     authorisedAction,
     mockAppConfig,
-    singleView,
-    multipleView,
-    singleEOYView,
+    employmentSummaryView,
     mockEmploymentSessionService,
     inYearAction
   )
@@ -123,7 +119,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
   ".show" should {
     "render single employment summary view when there is only one employment" which {
       s"has an OK($OK) status" in new TestWithAuth {
-        mockFind(taxYear, Ok(singleView(taxYear, FullModel.employmentSource1, expensesExist = false)))
+        mockFind(taxYear, Ok(employmentSummaryView(taxYear, Seq(FullModel.employmentSource1), expensesExist = false, isInYear = true)))
 
         val result: Future[Result] = controller.show(taxYear)(fakeRequest)
         status(result) shouldBe OK
@@ -133,7 +129,7 @@ class EmploymentSummaryControllerSpec extends UnitTestWithApp with MockEmploymen
 
     "render multiple employment summary view when there are two employments" which {
       s"has an OK($OK) status" in new TestWithAuth {
-        mockFind(taxYear, Ok(multipleView(taxYear, Seq(FullModel.employmentSource1, FullModel.employmentSource2), expensesExist = false, isInYear = false)))
+        mockFind(taxYear, Ok(employmentSummaryView(taxYear, Seq(FullModel.employmentSource1, FullModel.employmentSource2), expensesExist = false, isInYear = false)))
 
         val result: Future[Result] = controller.show(taxYear)(fakeRequest)
         status(result) shouldBe OK
