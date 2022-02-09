@@ -47,7 +47,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
   private def stubEmploymentPost(request: CreateUpdateEmploymentRequest, taxYear: Int, employmentIdResponse: String = default) =
     stubPostWithHeadersCheck(
       s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYear",
-      if(employmentIdResponse == default) NO_CONTENT else CREATED,
+      if (employmentIdResponse == default) NO_CONTENT else CREATED,
       Json.toJson(request).toString(),
       employmentIdResponse,
       "X-Session-ID" -> sessionId,
@@ -254,7 +254,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
               mtditid,
               nino,
               scenarioData.commonExpectedResults.taxYear,
-              employmentId, isPriorSubmission = hasPrior, hasPriorBenefits = false,hasPriorStudentLoans = true,
+              employmentId, isPriorSubmission = hasPrior, hasPriorBenefits = false, hasPriorStudentLoans = true,
               EmploymentCYAModel(
                 EmploymentDetails(
                   employerName = "Whiterun Guards",
@@ -294,12 +294,56 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
         }
       }
 
-      s"redirect the user to the overview page for $inYearText for an $affinityText when there is $prior" when {
+      s"redirect the user to the select student loans contributions for $inYearText for an $affinityText when there is $prior" when {
 
-        "there is no CYA data but there is Prior data that does not contain Student Loans information" in {
+        if (scenarioData.commonExpectedResults.hasPrior) {
+          "there is no CYA data but there is Prior data that does not contain Student Loans information" in {
+            lazy val result = {
+              dropEmploymentDB()
+              authoriseAgentOrIndividual(scenarioData.isAgent)
+              userDataStub(IncomeTaxUserData(Some(AllEmploymentData(
+                Seq(EmploymentSource(
+                  employmentId, "Whiterun Guards", None, None, None, None, None, None, Some(EmploymentData(
+                    "2022-01-01", None, None, None, None, None, None, None, None
+                  )), None
+                )), None,
+                Seq(), None
+              ))), nino, scenarioData.commonExpectedResults.taxYear)
+
+              urlGet(
+                url(scenarioData.commonExpectedResults.taxYear), scenarioData.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYear))
+              )
+            }
+
+            result.headers("Location").headOption shouldBe Some(studentLoansQuestionPage(scenarioData.commonExpectedResults.taxYear, employmentId))
+          }
+        }
+
+        "there is CYA data but it does not contain Student Loans information" in {
+          def user: User[AnyContentAsEmpty.type] = User(mtditid, None, nino, sessionId, affinityGroup)(FakeRequest())
+          
           lazy val result = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
+            insertCyaData(EmploymentUserData(
+              sessionId,
+              mtditid,
+              nino,
+              scenarioData.commonExpectedResults.taxYear,
+              employmentId, isPriorSubmission = true, hasPriorBenefits = false, hasPriorStudentLoans = true,
+              EmploymentCYAModel(
+                EmploymentDetails(
+                  employerName = "Whiterun Guards",
+                  employerRef = Some("223/AB12399"),
+                  startDate = Some("2022-04-01"),
+                  cessationDateQuestion = Some(false),
+                  taxablePayToDate = Some(3000.00),
+                  totalTaxToDate = Some(300.00),
+                  currentDataIsHmrcHeld = false
+                ),
+                studentLoans = None
+              )
+            ), user)
             userDataStub(IncomeTaxUserData(Some(AllEmploymentData(
               Seq(EmploymentSource(
                 employmentId, "Whiterun Guards", None, None, None, None, None, None, Some(EmploymentData(
@@ -314,13 +358,18 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
             )
           }
 
-          result.headers("Location").headOption shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(scenarioData.commonExpectedResults.taxYear))
+          result.headers("Location").headOption shouldBe Some(studentLoansQuestionPage(scenarioData.commonExpectedResults.taxYear, employmentId))
         }
+        
+      }
 
+      s"redirect the user to the overview page for $inYearText for an $affinityText when there is $prior" when {
+        
         "there is no data in session" in {
           val request = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
+            userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYear)
             urlGet(
               url(scenarioData.commonExpectedResults.taxYear),
               scenarioData.isWelsh,
@@ -342,13 +391,15 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
     "immediately redirect the user to the overview page" when {
 
       "the student loans feature switch is off" in {
-        val result = {
+        val request = FakeRequest("POST", studentLoansCyaPage(taxYear, employmentId)).withHeaders(HeaderNames.COOKIE -> playSessionCookies(taxYear), "Csrf-Token" -> "nocheck")
+
+        lazy val result: Result = {
           dropEmploymentDB()
           authoriseIndividual()
-          await(wsClientFeatureSwitchOff.url(url(taxYear)).withFollowRedirects(false).post("{}"))
+          await(route(appWithFeatureSwitchesOff, request, "{}").get)
         }
 
-        result.headers("Location").headOption shouldBe Some(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
+        result.header.headers("Location") shouldBe appConfig.incomeTaxSubmissionOverviewUrl(taxYear)
       }
 
     }
@@ -424,7 +475,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
             )
           }
 
-          result.headers("Location").headOption shouldBe Some(employerInformationUrl(scenarioData.commonExpectedResults.taxYear,employmentId))
+          result.headers("Location").headOption shouldBe Some(employerInformationUrl(scenarioData.commonExpectedResults.taxYear, employmentId))
         }
 
       }
@@ -475,7 +526,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
               "{}",
               scenarioData.isWelsh,
               follow = false,
-              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYear,extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId)))
+              headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYear, extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId)))
             )
           }
 
@@ -539,7 +590,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
             )
 
             userDataStub(data, nino, scenarioData.commonExpectedResults.taxYear)
-            stubEmploymentPost(createUpdateRequest, scenarioData.commonExpectedResults.taxYear,"""{"employmentId":"id"}""")
+            stubEmploymentPost(createUpdateRequest, scenarioData.commonExpectedResults.taxYear, """{"employmentId":"id"}""")
 
             urlPost(
               url(scenarioData.commonExpectedResults.taxYear),
@@ -550,7 +601,7 @@ class StudentLoansCYAControllerISpec extends IntegrationTest with ViewHelpers wi
             )
           }
 
-          result.headers("Location").headOption shouldBe Some(employerInformationUrl(scenarioData.commonExpectedResults.taxYear,"id"))
+          result.headers("Location").headOption shouldBe Some(employerInformationUrl(scenarioData.commonExpectedResults.taxYear, "id"))
         }
 
       }
