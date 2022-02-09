@@ -1,0 +1,98 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.templates.Layout
+@import models.employment.StudentLoansCYAModel
+@import views.html.templates.helpers.Heading
+@import views.html.templates.helpers.Button
+@import views.html.templates.helpers.ErrorSummary
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import forms.studentLoans.StudentLoanQuestionForm.StudentLoansQuestionModel
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.Implicits.RichCheckboxes
+
+@this(
+        layout: Layout,
+        errorSummary: ErrorSummary,
+        heading: Heading,
+        button: Button,
+        govukInsetText: GovukInsetText,
+        govukCheckboxes : GovukCheckboxes,
+        formWithCsrf : FormWithCSRF
+)
+@(taxYear: Int, employmentId: String, inYear: Boolean = false, form: Form[StudentLoansQuestionModel], cyaData: Option[StudentLoansCYAModel] = None)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+
+@agentOrIndividual = @{
+    if(user.isAgent) "agent" else "individual"
+}
+
+@layout(messages("studentLoansQuestion.title." + agentOrIndividual), taxYear = Some(taxYear), hasErrors = form.hasErrors) {
+
+    @errorSummary(form.errors, Some("studentLoans"))
+
+    @heading(messages("studentLoansQuestion.title." + agentOrIndividual), Some(messages("studentLoans.subheading", Seq((taxYear - 1).toString, taxYear.toString): _*)))
+
+    <p class="govuk-body govuk-!-margin-top-6">@messages("studentLoansQuestion.inset." + agentOrIndividual, taxYear.toString)</p>
+
+    <p class="govuk-body">@messages("studentLoansQuestion.inset.2." + agentOrIndividual, taxYear.toString)</p>
+
+
+    @formWithCsrf(controllers.studentLoans.routes.StudentLoansQuestionController.submit(taxYear, employmentId)) {
+
+        @govukCheckboxes(Checkboxes(
+            hint = Some(Hint(
+                content = Text(messages("studentLoansQuestion.checkbox.hint"))
+            )),
+            errorMessage = form.errors.headOption.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*)))),
+            idPrefix = Some("studentLoans"),
+            name = "studentLoans[]",
+            items = Seq(
+                CheckboxItem(
+                    content = Text(messages("studentLoansQuestion.checkbox.1")),
+                    value = "ugl",
+                    hint = Some(Hint(
+                        content = Text(messages("studentLoansQuestion.checkbox.1.hint"))
+                    )),
+                    checked = cyaData.fold(false)(data => data.uglDeduction)
+                ),
+                CheckboxItem(
+                    content = Text(messages("studentLoansQuestion.checkbox.2")),
+                    value = "pgl",
+                    hint = Some(Hint(
+                        content = Text(messages("studentLoansQuestion.checkbox.2.hint"))
+                    )),
+                    checked = cyaData.fold(false)(data => data.pglDeduction)
+                ),
+                CheckboxItem(
+                    divider = Some(messages("common.or"))
+                ),
+                CheckboxItem(
+                    content = Text(messages("common.no")),
+                    value = "none",
+                    behaviour = Some(ExclusiveCheckbox),
+                    checked = cyaData.fold(false)(data => !data.pglDeduction && !data.uglDeduction)
+                )
+            )
+        ))
+        @button(alternativeText = "common.saveAndContinue", classes = Some("govuk-!-margin-top-6"))
+    }
+
+}
+
+@{
+    // $COVERAGE-OFF$
+}
