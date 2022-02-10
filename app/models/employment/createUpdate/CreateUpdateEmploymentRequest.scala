@@ -46,7 +46,6 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
       existingEmployments = existingEmployments
     )
   }
-
   def toAmendAuditModel(employmentId: String, taxYear: Int, priorData: EmploymentSource)(implicit user: User[_]): AmendEmploymentDetailsUpdateAudit = {
 
     def currentOrPrior[T](data: Option[T], priorData: Option[T]): Option[T] ={
@@ -56,7 +55,6 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
         case _ => None
       }
     }
-
     AmendEmploymentDetailsUpdateAudit(
       taxYear = taxYear,
       userType = user.affinityGroup.toLowerCase,
