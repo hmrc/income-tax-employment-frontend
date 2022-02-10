@@ -76,7 +76,8 @@ class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: Delet
     val benefits = employmentSource.employmentBenefits.flatMap(_.benefits)
     val employmentExpenses = if (isUsingCustomerData) employmentData.customerExpenses else employmentData.hmrcExpenses
     val expenses = employmentExpenses.flatMap(_.expenses)
-    val auditModel = DeleteEmploymentAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, employmentDetailsViewModel, benefits, expenses)
+    val deductions = employmentSource.employmentData.flatMap(_.deductions)
+    val auditModel = DeleteEmploymentAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, employmentDetailsViewModel, benefits, expenses, deductions)
 
     auditService.sendAudit[DeleteEmploymentAudit](auditModel.toAuditModel)
   }
