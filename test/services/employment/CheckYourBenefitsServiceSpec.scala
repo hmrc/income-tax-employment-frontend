@@ -16,15 +16,25 @@
 
 package services.employment
 
+import audit.{AmendEmploymentBenefitsUpdateAudit, CreateNewEmploymentBenefitsAudit}
+import builders.models.benefits.BenefitsBuilder.aBenefits
+import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
+import builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
+import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
+import builders.models.employment.PayBuilder.aPay
 import config.{MockAuditService, MockEmploymentSessionService, MockNrsService}
 import models.benefits.{Benefits, DecodedAmendBenefitsPayload, DecodedCreateNewBenefitsPayload}
 import models.employment._
 import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmploymentData, CreateUpdateEmploymentRequest, CreateUpdatePay}
+import uk.gov.hmrc.play.audit.http.connector.AuditResult
+import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import utils.UnitTest
+
+import scala.concurrent.Future
 
 class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionService with MockNrsService with MockAuditService {
 
-  private val underTest = new CheckYourBenefitsService(mockNrsService)
+  private val underTest = new CheckYourBenefitsService(mockNrsService, mockAuditService)
 
   "performSubmitNrsPayload" should {
     "send the event from the model when it's a create" in {
@@ -222,6 +232,124 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
       ))
 
       await(underTest.performSubmitNrsPayload(model, "001", Some(priorData))) shouldBe Right()
+    }
+  }
+
+  "performSubmitAudits"should {
+    "send an audit from the request model when it's a create" in {
+      val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
+        Some(anEmploymentSource.employmentId),
+        Some(
+          CreateUpdateEmployment(
+            Some(anEmploymentSource.employerRef.get),
+            anEmploymentSource.employerName,
+            anEmploymentSource.startDate.get
+          )
+        ),
+        Some(
+          CreateUpdateEmploymentData(
+            pay = CreateUpdatePay(
+              4354,
+              564
+            ),
+            deductions = Some(
+              Deductions(
+                Some(StudentLoans(
+                  Some(100),
+                  Some(100)
+                ))
+              )
+            ),
+            Some(allBenefits)
+          )
+        ),
+        Some("employmentId")
+      )
+
+      val createNewEmploymentsAudit = CreateNewEmploymentBenefitsAudit(2021, user.affinityGroup.toLowerCase, user.nino,
+        user.mtditid, anEmploymentSource.employerName, Some(anEmploymentSource.employerRef.get), allBenefits)
+
+      mockAuditSendEvent(createNewEmploymentsAudit.toAuditModel)
+
+      val customerEmploymentData = anEmploymentSource.copy(employmentBenefits = None)
+      val employmentDataWithoutBenefits = anAllEmploymentData.copy(customerEmploymentData = Seq(customerEmploymentData))
+      val expected: AuditResult = Success
+
+      val result = underTest.performSubmitAudits(model, employmentId = anEmploymentSource.employmentId, taxYear = 2021, Some(employmentDataWithoutBenefits)).get
+      await(result) shouldBe expected
+    }
+
+    "send an audit from the request model when it's an amend" in {
+      val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
+        Some(anEmploymentSource.employmentId),
+        Some(
+          CreateUpdateEmployment(
+            Some(anEmploymentSource.employerRef.get),
+            anEmploymentSource.employerName,
+            anEmploymentSource.startDate.get
+          )
+        ),
+        Some(
+          CreateUpdateEmploymentData(
+            pay = CreateUpdatePay(
+              4354,
+              564
+            ),
+            deductions = Some(
+              Deductions(
+                Some(StudentLoans(
+                  Some(100),
+                  Some(100)
+                ))
+              )
+            ),
+            Some(amendBenefits)
+          )
+        ),
+        Some("employmentId")
+      )
+
+      val amendAudit = AmendEmploymentBenefitsUpdateAudit(2021, user.affinityGroup.toLowerCase, user.nino, user.mtditid,
+        aBenefits, amendBenefits)
+      mockAuditSendEvent(amendAudit.toAuditModel)
+
+      val expected: AuditResult = Success
+      val result = underTest.performSubmitAudits(model, employmentId = anEmploymentSource.employmentId, taxYear = 2021, Some(anAllEmploymentData)).get
+      await(result) shouldBe expected
+    }
+
+    "not send an audit when it cannot find prior data" in {
+      val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
+        Some("id"),
+        Some(
+          CreateUpdateEmployment(
+            Some("employerRef"),
+            "name",
+            "2000-10-10"
+          )
+        ),
+        Some(
+          CreateUpdateEmploymentData(
+            pay = CreateUpdatePay(
+              4354,
+              564
+            ),
+            deductions = Some(
+              Deductions(
+                Some(StudentLoans(
+                  Some(100),
+                  Some(100)
+                ))
+              )
+            ),
+            Some(allBenefits)
+          )
+        ),
+        Some("001")
+      )
+      val expected: AuditResult = (Success)
+      val result = underTest.performSubmitAudits(model, employmentId = "003", taxYear = 2021, Some(employmentsModel))
+      result shouldBe None
     }
   }
 }

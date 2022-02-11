@@ -18,7 +18,7 @@ package controllers.employment
 
 import actions.AuthorisedAction
 import actions.AuthorisedTaxYearAction.authorisedTaxYearAction
-import audit.{AuditService, ViewEmploymentBenefitsAudit}
+import audit.{AmendEmploymentBenefitsUpdateAudit, AuditService, CreateNewEmploymentBenefitsAudit, ViewEmploymentBenefitsAudit}
 import common.{EmploymentSection, SessionValues}
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.routes.ReceiveAnyBenefitsController
@@ -33,6 +33,7 @@ import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
+import services.employment.CheckYourBenefitsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{Clock, InYearUtil, SessionHelper}
 import views.html.employment.{CheckYourBenefitsView, CheckYourBenefitsViewEOY}
@@ -45,6 +46,7 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
                                             checkYourBenefitsView: CheckYourBenefitsView,
                                             checkYourBenefitsViewEOY: CheckYourBenefitsViewEOY,
                                             employmentSessionService: EmploymentSessionService,
+                                            checkYourBenefitsService: CheckYourBenefitsService,
                                             auditService: AuditService,
                                             inYearAction: InYearUtil,
                                             errorHandler: ErrorHandler,
@@ -112,9 +114,14 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
           case Some(cya) =>
             employmentSessionService.createModelOrReturnResult(cya, prior, taxYear, EmploymentSection.EMPLOYMENT_BENEFITS) match {
               case Left(result) => Future.successful(result)
-              case Right(model) => employmentSessionService.createOrUpdateEmploymentResult(taxYear, model).flatMap {
+              case Right(model) =>
+                employmentSessionService.createOrUpdateEmploymentResult(taxYear, model).flatMap {
                 case Left(result) => Future.successful(result)
                 case Right(returnedEmploymentId) =>
+                  checkYourBenefitsService.performSubmitAudits(model, employmentId, taxYear, prior)
+                  if (appConfig.nrsEnabled) {
+                    checkYourBenefitsService.performSubmitNrsPayload(model, employmentId, prior)
+                  }
                   employmentSessionService.clear(taxYear, employmentId).map {
                     case Left(_) => errorHandler.internalServerError()
                     case Right(_) => getResultFromResponse(returnedEmploymentId, taxYear, employmentId)

@@ -16,6 +16,7 @@
 
 package services.employment
 
+import audit._
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import models.User
 import models.benefits.{DecodedAmendBenefitsPayload, DecodedCreateNewBenefitsPayload}
@@ -24,11 +25,13 @@ import models.employment.createUpdate.CreateUpdateEmploymentRequest
 import play.api.mvc.Request
 import services.NrsService
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.http.connector.AuditResult
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class CheckYourBenefitsService @Inject()(nrsService: NrsService) {
+class CheckYourBenefitsService @Inject()(nrsService: NrsService,
+                                         auditService: AuditService) {
 
   def performSubmitNrsPayload(model: CreateUpdateEmploymentRequest, employmentId: String, prior: Option[AllEmploymentData])
                              (implicit user: User[_], request: Request[_], hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
@@ -42,6 +45,42 @@ class CheckYourBenefitsService @Inject()(nrsService: NrsService) {
     nrsPayload match {
       case Left(amend) => nrsService.submit(user.nino, amend, user.mtditid)
       case Right(create) => nrsService.submit(user.nino, create, user.mtditid)
+    }
+  }
+
+  def performSubmitAudits(model: CreateUpdateEmploymentRequest, employmentId: String, taxYear: Int, prior: Option[AllEmploymentData])
+                         (implicit user: User[_], hc: HeaderCarrier, ec: ExecutionContext): Option[Future[AuditResult]] = {
+
+      prior.flatMap {
+      prior =>
+        val priorData = prior.eoyEmploymentSourceWith(employmentId)
+        priorData.flatMap {
+          prior => {
+            val benefitsData: DecodedAmendBenefitsPayload = model.toAmendDecodedBenefitsPayloadModel(prior.employmentSource)
+            if (benefitsData.priorEmploymentBenefitsData.hasBenefitsPopulated) {
+              val amendEvent = AmendEmploymentBenefitsUpdateAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid,
+                benefitsData.priorEmploymentBenefitsData, benefitsData.employmentBenefitsData
+              ).toAuditModel
+              Some(auditService.sendAudit(amendEvent))
+            } else {
+              val data = model.toCreateDecodedBenefitsPayloadModel().employmentBenefitsData
+              if (data.hasBenefitsPopulated) {
+                val createEvent = CreateNewEmploymentBenefitsAudit(
+                  taxYear = taxYear,
+                  userType = user.affinityGroup.toLowerCase,
+                  nino = user.nino,
+                  mtditid = user.mtditid,
+                  employerName = prior.employmentSource.employerName,
+                  employerRef = prior.employmentSource.employerRef,
+                  employmentBenefitsData = data
+                ).toAuditModel
+                Some(auditService.sendAudit(createEvent))
+              }else{
+                None
+              }
+            }
+          }
+        }
     }
   }
 }

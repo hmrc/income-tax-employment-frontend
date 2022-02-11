@@ -19,7 +19,7 @@ package audit
 import play.api.libs.json.{Json, OWrites}
 
 case class AuditNewEmploymentData(employerName: Option[String],
-                                  employerRef: Option[String],
+                                   employerRef: Option[String],
                                   startDate: Option[String],
                                   cessationDate: Option[String],
                                   taxablePayToDate: Option[BigDecimal],
