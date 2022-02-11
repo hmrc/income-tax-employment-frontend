@@ -21,12 +21,12 @@ import config.ErrorHandler
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import connectors.{DeleteOrIgnoreExpensesConnector, IncomeSourceConnector}
 import controllers.employment.routes.EmploymentSummaryController
-import models.User
+import models.AuthorisationRequest
 import models.employment.AllEmploymentData
 import models.expenses.DecodedDeleteEmploymentExpensesPayload
 import play.api.Logging
-import play.api.mvc.{Request, Result}
 import play.api.mvc.Results.Redirect
+import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
@@ -40,7 +40,7 @@ class DeleteOrIgnoreExpensesService @Inject()(deleteOverrideExpensesConnector: D
                                               implicit val executionContext: ExecutionContext) extends Logging {
 
   def deleteOrIgnoreExpenses(employmentData: AllEmploymentData, taxYear: Int)(result: Result)
-                            (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
+                            (implicit authorisationRequest: AuthorisationRequest[_], hc: HeaderCarrier): Future[Result] = {
 
     val hmrcExpenses = employmentData.hmrcExpenses.filter(_.dateIgnored.isEmpty)
     val customerExpenses = employmentData.customerExpenses
@@ -56,31 +56,31 @@ class DeleteOrIgnoreExpensesService @Inject()(deleteOverrideExpensesConnector: D
         handleConnectorCall(taxYear, customer)(result)
       case (None, None) =>
         logger.info(s"[DeleteOrIgnoreExpensesService][deleteOrIgnoreExpenses]" +
-          s" No expenses data found for user and employmentId. SessionId: ${user.sessionId}")
+          s" No expenses data found for user and employmentId. SessionId: ${authorisationRequest.user.sessionId}")
         Future(Redirect(EmploymentSummaryController.show(taxYear)))
     }
 
     eventualResult.flatMap { result =>
-      incomeSourceConnector.put(taxYear, user.nino, "employment")(hc.withExtraHeaders("mtditid" -> user.mtditid)).map {
+      incomeSourceConnector.put(taxYear, authorisationRequest.user.nino, "employment")(hc.withExtraHeaders("mtditid" -> authorisationRequest.user.mtditid)).map {
         case Left(error) => errorHandler.handleError(error.status)
         case _ => result
       }
     }
   }
 
-  def performSubmitNrsPayload(employmentData: AllEmploymentData)(implicit request: Request[_], user: User[_],
+  def performSubmitNrsPayload(employmentData: AllEmploymentData)(implicit request: Request[_], authorisationRequest: AuthorisationRequest[_],
                                                                  hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
 
-   val latestExpenses = employmentData.latestEOYExpenses.map(expensesData =>
-     DecodedDeleteEmploymentExpensesPayload(expensesData.latestExpenses.expenses).toNrsPayloadModel)
+    val latestExpenses = employmentData.latestEOYExpenses.map(expensesData =>
+      DecodedDeleteEmploymentExpensesPayload(expensesData.latestExpenses.expenses).toNrsPayloadModel)
 
-    nrsService.submit(user.nino, latestExpenses, user.mtditid)
+    nrsService.submit(authorisationRequest.user.nino, latestExpenses, authorisationRequest.user.mtditid)
 
   }
 
   private def handleConnectorCall(taxYear: Int, toRemove: String)(result: Result)
-                                 (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
-    deleteOverrideExpensesConnector.deleteOrIgnoreExpenses(user.nino, taxYear, toRemove)(hc.withExtraHeaders("mtditid" -> user.mtditid)).map {
+                                 (implicit authorisationRequest: AuthorisationRequest[_], hc: HeaderCarrier): Future[Result] = {
+    deleteOverrideExpensesConnector.deleteOrIgnoreExpenses(authorisationRequest.user.nino, taxYear, toRemove)(hc.withExtraHeaders("mtditid" -> authorisationRequest.user.mtditid)).map {
       case Left(error) => errorHandler.handleError(error.status)
       case Right(_) => result
     }

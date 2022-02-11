@@ -16,18 +16,19 @@
 
 package controllers.studentLoans
 
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
+import models.IncomeTaxUserData
 import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
-import models.{IncomeTaxUserData, User}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.route
-import utils.PageUrls.{fullUrl, studentLoansUglAmountUrl, studentLoansCyaPage}
+import utils.PageUrls.{fullUrl, studentLoansCyaPage, studentLoansUglAmountUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 import scala.concurrent.Future
@@ -166,34 +167,29 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
         import Selectors._
         import scenarioData.commonExpectedResults._
 
-
-        def user: User[AnyContentAsEmpty.type] = User(mtditid, None, nino, sessionId, affinityGroup)(FakeRequest())
-
         "render the undergraduate amount page when there is no prior or cya data" which {
-
-
           lazy val result = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-              sessionId,
-              mtditid,
-              nino,
-              scenarioData.commonExpectedResults.taxYearEOY,
-              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-              EmploymentCYAModel(
-                EmploymentDetails(
-                  employerName = "Falador Knights",
-                  employerRef = Some("223/AB12399"),
-                  startDate = Some("2022-04-01"),
-                  cessationDateQuestion = Some(false),
-                  taxablePayToDate = Some(3000.00),
-                  totalTaxToDate = Some(300.00),
-                  currentDataIsHmrcHeld = false
-                ),
-                studentLoans = Some(StudentLoansCYAModel(
-                  uglDeduction = true, uglDeductionAmount = None, pglDeduction = false, pglDeductionAmount = None))
-              )), user)
+                          sessionId,
+                          mtditid,
+                          nino,
+                          scenarioData.commonExpectedResults.taxYearEOY,
+                          employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                          EmploymentCYAModel(
+                            EmploymentDetails(
+                              employerName = "Falador Knights",
+                              employerRef = Some("223/AB12399"),
+                              startDate = Some("2022-04-01"),
+                              cessationDateQuestion = Some(false),
+                              taxablePayToDate = Some(3000.00),
+                              totalTaxToDate = Some(300.00),
+                              currentDataIsHmrcHeld = false
+                            ),
+                            studentLoans = Some(StudentLoansCYAModel(
+                              uglDeduction = true, uglDeductionAmount = None, pglDeduction = false, pglDeductionAmount = None))
+                          )))
             userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
 
             urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
@@ -219,24 +215,24 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-              sessionId,
-              mtditid,
-              nino,
-              scenarioData.commonExpectedResults.taxYearEOY,
-              employmentId, isPriorSubmission = true, hasPriorBenefits = false, hasPriorStudentLoans = false,
-              EmploymentCYAModel(
-                EmploymentDetails(
-                  employerName = "Falador Knights",
-                  employerRef = Some("223/AB12399"),
-                  startDate = Some("2022-04-01"),
-                  cessationDateQuestion = Some(false),
-                  taxablePayToDate = Some(3000.00),
-                  totalTaxToDate = Some(300.00),
-                  currentDataIsHmrcHeld = false
-                ),
-                studentLoans = Some(StudentLoansCYAModel(
-                  uglDeduction = true, uglDeductionAmount = Some(100.00), pglDeduction = false, pglDeductionAmount = None))
-              )), user)
+                          sessionId,
+                          mtditid,
+                          nino,
+                          scenarioData.commonExpectedResults.taxYearEOY,
+                          employmentId, isPriorSubmission = true, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                          EmploymentCYAModel(
+                            EmploymentDetails(
+                              employerName = "Falador Knights",
+                              employerRef = Some("223/AB12399"),
+                              startDate = Some("2022-04-01"),
+                              cessationDateQuestion = Some(false),
+                              taxablePayToDate = Some(3000.00),
+                              totalTaxToDate = Some(300.00),
+                              currentDataIsHmrcHeld = false
+                            ),
+                            studentLoans = Some(StudentLoansCYAModel(
+                              uglDeduction = true, uglDeductionAmount = Some(100.00), pglDeduction = false, pglDeductionAmount = None))
+                          )))
             userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
 
             urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), scenarioData.isWelsh, headers =
@@ -262,24 +258,24 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-              sessionId,
-              mtditid,
-              nino,
-              scenarioData.commonExpectedResults.taxYearEOY,
-              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-              EmploymentCYAModel(
-                EmploymentDetails(
-                  employerName = "Falador Knights",
-                  employerRef = Some("223/AB12399"),
-                  startDate = Some("2022-04-01"),
-                  cessationDateQuestion = Some(false),
-                  taxablePayToDate = Some(3000.00),
-                  totalTaxToDate = Some(300.00),
-                  currentDataIsHmrcHeld = false
-                ),
-                studentLoans = Some(StudentLoansCYAModel(
-                  uglDeduction = true, uglDeductionAmount = Some(84.73), pglDeduction = true, pglDeductionAmount = Some(1000.00)))
-              )), user)
+                          sessionId,
+                          mtditid,
+                          nino,
+                          scenarioData.commonExpectedResults.taxYearEOY,
+                          employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                          EmploymentCYAModel(
+                            EmploymentDetails(
+                              employerName = "Falador Knights",
+                              employerRef = Some("223/AB12399"),
+                              startDate = Some("2022-04-01"),
+                              cessationDateQuestion = Some(false),
+                              taxablePayToDate = Some(3000.00),
+                              totalTaxToDate = Some(300.00),
+                              currentDataIsHmrcHeld = false
+                            ),
+                            studentLoans = Some(StudentLoansCYAModel(
+                              uglDeduction = true, uglDeductionAmount = Some(84.73), pglDeduction = true, pglDeductionAmount = Some(1000.00)))
+                          )))
             userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
 
             urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), scenarioData.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY)))
@@ -304,22 +300,22 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-              sessionId,
-              mtditid,
-              nino,
-              scenarioData.commonExpectedResults.taxYearEOY,
-              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = true,
-              EmploymentCYAModel(
-                EmploymentDetails(
-                  employerName = "Falador Knights",
-                  employerRef = Some("223/AB12399"),
-                  startDate = Some("2022-04-01"),
-                  cessationDateQuestion = Some(false),
-                  taxablePayToDate = Some(3000.00),
-                  totalTaxToDate = Some(300.00),
-                  currentDataIsHmrcHeld = false
-                )
-              )), user)
+                          sessionId,
+                          mtditid,
+                          nino,
+                          scenarioData.commonExpectedResults.taxYearEOY,
+                          employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = true,
+                          EmploymentCYAModel(
+                            EmploymentDetails(
+                              employerName = "Falador Knights",
+                              employerRef = Some("223/AB12399"),
+                              startDate = Some("2022-04-01"),
+                              cessationDateQuestion = Some(false),
+                              taxablePayToDate = Some(3000.00),
+                              totalTaxToDate = Some(300.00),
+                              currentDataIsHmrcHeld = false
+                            )
+                          )))
             userDataStub(IncomeTaxUserData(), nino, scenarioData.commonExpectedResults.taxYearEOY)
 
             urlGet(url(scenarioData.commonExpectedResults.taxYearEOY), follow = false, welsh = scenarioData.isWelsh,
@@ -358,9 +354,6 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
         import Selectors._
         import scenarioData.commonExpectedResults._
 
-
-        def user: User[AnyContentAsEmpty.type] = User(mtditid, None, nino, sessionId, affinityGroup)(FakeRequest())
-
         lazy val incomeTaxUserData = IncomeTaxUserData(Some(AllEmploymentData(
           Seq(),
           None,
@@ -383,26 +376,26 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
               dropEmploymentDB()
               authoriseAgentOrIndividual(scenarioData.isAgent)
               insertCyaData(EmploymentUserData(
-                sessionId,
-                mtditid,
-                nino,
-                scenarioData.commonExpectedResults.taxYearEOY,
-                employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = true,
-                EmploymentCYAModel(
-                  EmploymentDetails(
-                    employerName = "Falador Knights",
-                    employerRef = Some("223/AB12399"),
-                    startDate = Some("2022-04-01"),
-                    cessationDateQuestion = Some(false),
-                    taxablePayToDate = Some(3000.00),
-                    totalTaxToDate = Some(300.00),
-                    currentDataIsHmrcHeld = false
-                  ),
-                  studentLoans = Some(StudentLoansCYAModel(
-                    uglDeduction = true, Some(2000.00), pglDeduction = true, Some(4000.00)
-                  ))
-                )
-              ), user)
+                              sessionId,
+                              mtditid,
+                              nino,
+                              scenarioData.commonExpectedResults.taxYearEOY,
+                              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = true,
+                              EmploymentCYAModel(
+                                EmploymentDetails(
+                                  employerName = "Falador Knights",
+                                  employerRef = Some("223/AB12399"),
+                                  startDate = Some("2022-04-01"),
+                                  cessationDateQuestion = Some(false),
+                                  taxablePayToDate = Some(3000.00),
+                                  totalTaxToDate = Some(300.00),
+                                  currentDataIsHmrcHeld = false
+                                ),
+                                studentLoans = Some(StudentLoansCYAModel(
+                                  uglDeduction = true, Some(2000.00), pglDeduction = true, Some(4000.00)
+                                ))
+                              )
+                            ))
 
               userDataStub(incomeTaxUserData, nino, scenarioData.commonExpectedResults.taxYearEOY)
               urlPost(
@@ -424,26 +417,26 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-              sessionId,
-              mtditid,
-              nino,
-              scenarioData.commonExpectedResults.taxYearEOY,
-              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = true,
-              EmploymentCYAModel(
-                EmploymentDetails(
-                  employerName = "Falador Knights",
-                  employerRef = Some("223/AB12399"),
-                  startDate = Some("2022-04-01"),
-                  cessationDateQuestion = Some(false),
-                  taxablePayToDate = Some(90000.00),
-                  totalTaxToDate = Some(111),
-                  currentDataIsHmrcHeld = false
-                ),
-                studentLoans = Some(StudentLoansCYAModel(
-                  uglDeduction = true, Some(20000), pglDeduction = true, Some(60000)
-                ))
-              )
-            ), user)
+                          sessionId,
+                          mtditid,
+                          nino,
+                          scenarioData.commonExpectedResults.taxYearEOY,
+                          employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = true,
+                          EmploymentCYAModel(
+                            EmploymentDetails(
+                              employerName = "Falador Knights",
+                              employerRef = Some("223/AB12399"),
+                              startDate = Some("2022-04-01"),
+                              cessationDateQuestion = Some(false),
+                              taxablePayToDate = Some(90000.00),
+                              totalTaxToDate = Some(111),
+                              currentDataIsHmrcHeld = false
+                            ),
+                            studentLoans = Some(StudentLoansCYAModel(
+                              uglDeduction = true, Some(20000), pglDeduction = true, Some(60000)
+                            ))
+                          )
+                        ))
 
             userDataStub(incomeTaxUserData, nino, scenarioData.commonExpectedResults.taxYearEOY)
             urlPost(
@@ -477,26 +470,26 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-              sessionId,
-              mtditid,
-              nino,
-              scenarioData.commonExpectedResults.taxYearEOY,
-              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = true,
-              EmploymentCYAModel(
-                EmploymentDetails(
-                  employerName = "Falador Knights",
-                  employerRef = Some("223/AB12399"),
-                  startDate = Some("2022-04-01"),
-                  cessationDateQuestion = Some(false),
-                  taxablePayToDate = Some(9000.00),
-                  totalTaxToDate = Some(3),
-                  currentDataIsHmrcHeld = false
-                ),
-                studentLoans = Some(StudentLoansCYAModel(
-                  uglDeduction = true, Some(420.00), pglDeduction = true, Some(39000)
-                ))
-              )
-            ), user)
+                          sessionId,
+                          mtditid,
+                          nino,
+                          scenarioData.commonExpectedResults.taxYearEOY,
+                          employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = true,
+                          EmploymentCYAModel(
+                            EmploymentDetails(
+                              employerName = "Falador Knights",
+                              employerRef = Some("223/AB12399"),
+                              startDate = Some("2022-04-01"),
+                              cessationDateQuestion = Some(false),
+                              taxablePayToDate = Some(9000.00),
+                              totalTaxToDate = Some(3),
+                              currentDataIsHmrcHeld = false
+                            ),
+                            studentLoans = Some(StudentLoansCYAModel(
+                              uglDeduction = true, Some(420.00), pglDeduction = true, Some(39000)
+                            ))
+                          )
+                        ))
 
             userDataStub(incomeTaxUserData, nino, scenarioData.commonExpectedResults.taxYearEOY)
             urlPost(

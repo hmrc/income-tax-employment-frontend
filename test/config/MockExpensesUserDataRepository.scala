@@ -18,7 +18,7 @@ package config
 
 import models.User
 import models.mongo.{DatabaseError, ExpensesUserData}
-import org.scalamock.handlers.CallHandler2
+import org.scalamock.handlers.{CallHandler1, CallHandler2}
 import org.scalamock.scalatest.MockFactory
 import repositories.ExpensesUserDataRepository
 
@@ -29,24 +29,25 @@ trait MockExpensesUserDataRepository extends MockFactory {
   val mockExpensesUserDataRepository: ExpensesUserDataRepository = mock[ExpensesUserDataRepository]
 
   def mockFind(taxYear: Int,
-               response: Either[DatabaseError, Option[ExpensesUserData]]): CallHandler2[Int, User[_], Future[Either[DatabaseError, Option[ExpensesUserData]]]] = {
-    (mockExpensesUserDataRepository.find(_: Int)(_: User[_]))
-      .expects(taxYear, *)
+               user: User,
+               response: Either[DatabaseError, Option[ExpensesUserData]]): CallHandler2[Int, User, Future[Either[DatabaseError, Option[ExpensesUserData]]]] = {
+    (mockExpensesUserDataRepository.find(_: Int, _: User))
+      .expects(taxYear, user)
       .returns(Future.successful(response))
       .anyNumberOfTimes()
   }
 
   def mockCreateOrUpdateExpenses(expenses: ExpensesUserData,
-                                 response: Either[DatabaseError, Unit]): CallHandler2[ExpensesUserData, User[_], Future[Either[DatabaseError, Unit]]] = {
-    (mockExpensesUserDataRepository.createOrUpdate(_: ExpensesUserData)(_: User[_]))
-      .expects(expenses, *)
+                                 response: Either[DatabaseError, Unit]): CallHandler1[ExpensesUserData, Future[Either[DatabaseError, Unit]]] = {
+    (mockExpensesUserDataRepository.createOrUpdate(_: ExpensesUserData))
+      .expects(expenses)
       .returns(Future.successful(response))
       .anyNumberOfTimes()
   }
 
-  def mockClear(taxYear: Int, response: Boolean): Unit = {
-    (mockExpensesUserDataRepository.clear(_: Int)(_: User[_]))
-      .expects(taxYear, *)
+  def mockClear(taxYear: Int, user: User, response: Boolean): Unit = {
+    (mockExpensesUserDataRepository.clear(_: Int, _: User))
+      .expects(taxYear, user)
       .returns(Future.successful(response))
       .anyNumberOfTimes()
   }

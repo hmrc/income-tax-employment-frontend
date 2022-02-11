@@ -31,10 +31,10 @@
         govukInsetText: GovukInsetText,
         govUkButton: GovukButton
 )
-@(employmentDetails: EmploymentDetailsViewModel, taxYear: Int, isInYear: Boolean, isSingleEmployment: Boolean)(implicit user: User[AnyContent], messages: Messages, appConfig: AppConfig)
+@(employmentDetails: EmploymentDetailsViewModel, taxYear: Int, isInYear: Boolean, isSingleEmployment: Boolean)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @headingForUse = @{
-    messages(s"employment.employmentDetails.heading.${if(user.isAgent) "agent" else "individual"}")
+    messages(s"employment.employmentDetails.heading.${if(request.user.isAgent) "agent" else "individual"}")
 }
 
 @margin = @{
@@ -51,17 +51,17 @@
         }
 }
 
-@layout(pageTitle = headingForUse, taxYear = Some(taxYear), isAgent = user.isAgent) {
+@layout(pageTitle = headingForUse, taxYear = Some(taxYear), isAgent = request.user.isAgent) {
 
     @heading(headingForUse, Some(messages("employmentDetails.caption", (taxYear - 1).toString, taxYear.toString)), margin)
 
     @if(!employmentDetails.isUsingCustomerData){
-        <p class="govuk-body">@messages(s"employment.employmentInformation.content.${if(user.isAgent) "agent" else "individual"}")</p>
+        <p class="govuk-body">@messages(s"employment.employmentInformation.content.${if(request.user.isAgent) "agent" else "individual"}")</p>
     }
 
     @if(isInYear){
         @govukInsetText(InsetText(
-            content = Text(messages(s"employment.employmentDetails.insetText.${if(user.isAgent) "agent" else "individual"}", taxYear.toString))
+            content = Text(messages(s"employment.employmentDetails.insetText.${if(request.user.isAgent) "agent" else "individual"}", taxYear.toString))
         ))
     }
 
@@ -82,20 +82,20 @@
             messages(s"$msgKeyGeneric.stillWorkingForEmployer"),
             Some(if(employmentDetails.cessationDateQuestion.contains(false)) {messages("common.no")} else{messages("common.yes")}),
             controllers.employment.routes.StillWorkingForEmployerController.show(taxYear, employmentDetails.employmentId),
-            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.stillWorkingForEmployer", user.isAgent), employmentDetails.employerName)
+            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.stillWorkingForEmployer", request.user.isAgent), employmentDetails.employerName)
         )
 
         val employmentStartDate = EmploymentDataForView(
             messages(s"$msgKeyGeneric.startDate"),
             employmentDetails.startDate.flatMap(dateFormatter),
             controllers.employment.routes.EmployerStartDateController.show(taxYear, employmentDetails.employmentId),
-            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", user.isAgent), employmentDetails.employerName)
+            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.startDate", request.user.isAgent), employmentDetails.employerName)
         )
 
         val employmentDates = EmploymentDataForView(messages(s"$msgKeyGeneric.employmentDates"),
         employmentDatesFormatter(employmentDetails.startDate.flatMap(dateFormatter), employmentDetails.cessationDate.flatMap(dateFormatter)),
         controllers.employment.routes.EmploymentDatesController.show(taxYear, employmentDetails.employmentId),
-        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.employmentDates", user.isAgent)))
+        messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.employmentDates", request.user.isAgent)))
 
         val datesLineItemToUse = if(employmentDetails.cessationDateQuestion.contains(false)) employmentDates else employmentStartDate
 
@@ -103,7 +103,7 @@
             messages(msgKeyGeneric + ".payeRef"),
             employmentDetails.employerRef,
             controllers.employment.routes.PayeRefController.show(taxYear, employmentDetails.employmentId),
-            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payeRef", user.isAgent))
+            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payeRef", request.user.isAgent))
         )
 
         val payrollId = EmploymentDataForView(
@@ -117,14 +117,14 @@
             messages(msgKeyGeneric + ".payReceived"),
             employmentDetails.taxablePayToDate.map(amount => bigDecimalCurrency(amount.toString)),
             controllers.employment.routes.EmployerPayAmountController.show(taxYear, employmentDetails.employmentId),
-            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payReceived", user.isAgent), employmentDetails.employerName)
+            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.payReceived", request.user.isAgent), employmentDetails.employerName)
         )
 
         val totalTaxToDate = EmploymentDataForView(
             messages(msgKeyGeneric + ".totalTaxToDate"),
             employmentDetails.totalTaxToDate.map(amount => bigDecimalCurrency(amount.toString)),
             employmentTaxCall,
-            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.totalTaxToDate", user.isAgent))
+            messages(getAgentDynamicContent(s"$msgKeyGeneric.hiddenText.totalTaxToDate", request.user.isAgent))
         )
 
         val employmentDataFields = List(

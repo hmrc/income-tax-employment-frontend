@@ -21,7 +21,7 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.assets.routes.AssetsOrAssetTransfersBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.{AmountForm, FormUtils}
-import models.User
+import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
@@ -32,7 +32,7 @@ import services.EmploymentSessionService
 import services.RedirectService.{benefitsSubmitRedirect, otherItemsAmountRedirects, redirectBasedOnCurrentAnswers}
 import services.benefits.ReimbursedService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.reimbursed.OtherBenefitsAmountView
 
 import javax.inject.Inject
@@ -46,16 +46,14 @@ class OtherBenefitsAmountController @Inject()(implicit val cc: MessagesControlle
                                               val employmentSessionService: EmploymentSessionService,
                                               reimbursedService: ReimbursedService,
                                               errorHandler: ErrorHandler,
-                                              ec: ExecutionContext,
-                                              clock: Clock
-                                             ) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+                                              ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel.flatMap(_.otherItems))
-          val form = fillFormFromPriorAndCYA(buildForm(user.isAgent), prior, cyaAmount, employmentId)(employment =>
+          val form = fillFormFromPriorAndCYA(buildForm(request.user.isAgent), prior, cyaAmount, employmentId)(employment =>
             employment.employmentBenefits.flatMap(_.benefits.flatMap(_.otherItems))
           )
 
@@ -65,12 +63,12 @@ class OtherBenefitsAmountController @Inject()(implicit val cc: MessagesControlle
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(CheckYourBenefitsController.show(taxYear, employmentId).url) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
-          buildForm(user.isAgent).bindFromRequest().fold(
+          buildForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val fillValue = cya.employment.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel).flatMap(_.otherItems)
               Future.successful(BadRequest(pageView(taxYear, formWithErrors, fillValue, employmentId)))
@@ -82,8 +80,8 @@ class OtherBenefitsAmountController @Inject()(implicit val cc: MessagesControlle
   }
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
-                               (implicit user: User[_]): Future[Result] = {
-    reimbursedService.updateOtherItems(taxYear, employmentId, employmentUserData, amount).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    reimbursedService.updateOtherItems(request.user, taxYear, employmentId, employmentUserData, amount).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         val nextPage = AssetsOrAssetTransfersBenefitsController.show(taxYear, employmentId)

@@ -20,7 +20,6 @@ import models.User
 import models.employment.EmploymentDate
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import services.EmploymentSessionService
-import utils.Clock
 
 import java.time.LocalDate
 import javax.inject.Inject
@@ -29,16 +28,22 @@ import scala.concurrent.{ExecutionContext, Future}
 class EmploymentService @Inject()(employmentSessionService: EmploymentSessionService,
                                   implicit val ec: ExecutionContext) {
 
-  def updateEmployerRef(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, payeRef: String)
-                       (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateEmployerRef(user: User,
+                        taxYear: Int,
+                        employmentId: String,
+                        originalEmploymentUserData: EmploymentUserData,
+                        payeRef: String): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val updatedEmployment: EmploymentCYAModel = cya.copy(cya.employmentDetails.copy(employerRef = Some(payeRef)))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateStartDate(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, startedDate: EmploymentDate)
-                     (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateStartDate(user: User,
+                      taxYear: Int,
+                      employmentId: String,
+                      originalEmploymentUserData: EmploymentUserData,
+                      startedDate: EmploymentDate): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val leaveDate = cya.employmentDetails.cessationDate
     lazy val leaveDateLocalDate = LocalDate.parse(leaveDate.get)
@@ -55,49 +60,64 @@ class EmploymentService @Inject()(employmentSessionService: EmploymentSessionSer
       cessationDate = resetLeaveDateIfNowInvalid)
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updatePayrollId(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, payrollId: String)
-                     (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updatePayrollId(user: User,
+                      taxYear: Int,
+                      employmentId: String,
+                      originalEmploymentUserData: EmploymentUserData,
+                      payrollId: String): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val updatedEmployment = cya.copy(cya.employmentDetails.copy(payrollId = Some(payrollId)))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateCessationDateQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                                 (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateCessationDateQuestion(user: User,
+                                  taxYear: Int,
+                                  employmentId: String,
+                                  originalEmploymentUserData: EmploymentUserData,
+                                  questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val cessationDateUpdated = {
       if (questionValue) None else cya.employmentDetails.cessationDate
     }
     val updatedEmployment = cya.copy(cya.employmentDetails.copy(cessationDateQuestion = Some(questionValue), cessationDate = cessationDateUpdated))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateCessationDate(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, cessationDate: String)
-                         (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateCessationDate(user: User,
+                          taxYear: Int,
+                          employmentId: String,
+                          originalEmploymentUserData: EmploymentUserData,
+                          cessationDate: String): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val updatedEmployment = cya.copy(cya.employmentDetails.copy(cessationDate = Some(cessationDate)))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateTaxablePayToDate(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                            (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateTaxablePayToDate(user: User,
+                             taxYear: Int,
+                             employmentId: String,
+                             originalEmploymentUserData: EmploymentUserData,
+                             amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val updatedEmployment = cya.copy(employmentDetails = cya.employmentDetails.copy(taxablePayToDate = Some(amount)))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateTotalTaxToDate(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                          (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateTotalTaxToDate(user: User,
+                           taxYear: Int,
+                           employmentId: String,
+                           originalEmploymentUserData: EmploymentUserData,
+                           amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val updatedEmployment = originalEmploymentUserData.employment.copy(employmentDetails =
       originalEmploymentUserData.employment.employmentDetails.copy(totalTaxToDate = Some(amount)))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 }

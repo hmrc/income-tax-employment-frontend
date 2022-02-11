@@ -27,15 +27,15 @@
     inputRadio: InputRadio,
     inputText: InputText
 )
-@(form: Form[BigDecimal], taxYear: Int, employmentId:String, amount: Option[BigDecimal])(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[BigDecimal], taxYear: Int, employmentId:String, amount: Option[BigDecimal])(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @hasFormErrors = @{form.hasErrors}
 
 @headingForUse = @{
-    messages(s"otherPaymentsAmount.heading.${if(user.isAgent) "agent" else "individual"}")
+    messages(s"otherPaymentsAmount.heading.${if(request.user.isAgent) "agent" else "individual"}")
 }
 
-@layout(pageTitle = headingForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
+@layout(pageTitle = headingForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = request.user.isAgent) {
 
 @errorSummary(form.errors.distinct)
 

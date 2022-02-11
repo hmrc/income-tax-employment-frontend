@@ -19,7 +19,7 @@ package controllers.employment
 import actions.AuthorisedAction
 import config.AppConfig
 import controllers.employment.routes.AddEmploymentController
-import models.User
+import models.AuthorisationRequest
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -40,16 +40,16 @@ class EmploymentSummaryController @Inject()(implicit val mcc: MessagesController
 
   private implicit val executionContext: ExecutionContext = mcc.executionContext
 
-  def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     val isInYear: Boolean = inYearAction.inYear(taxYear)
     findPriorDataAndReturnResult(taxYear, isInYear)
   }
 
   private def findPriorDataAndReturnResult(taxYear: Int, isInYear: Boolean)
-                                          (implicit user: User[_]): Future[Result] = {
+                                          (implicit request: AuthorisationRequest[_]): Future[Result] = {
     val overrideRedirect = if (isInYear) None else Some(Redirect(AddEmploymentController.show(taxYear)))
 
-    employmentSessionService.findPreviousEmploymentUserData(user, taxYear, overrideRedirect) { allEmploymentData =>
+    employmentSessionService.findPreviousEmploymentUserData(request.user, taxYear, overrideRedirect) { allEmploymentData =>
       val latestExpenses = if (isInYear) allEmploymentData.latestInYearExpenses else allEmploymentData.latestEOYExpenses
       val doExpensesExist = latestExpenses.isDefined
       val employmentData = if (isInYear) allEmploymentData.latestInYearEmployments else allEmploymentData.latestEOYEmployments

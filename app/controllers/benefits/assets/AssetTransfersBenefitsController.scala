@@ -21,7 +21,7 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.assets.routes.AssetsTransfersBenefitsAmountController
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
-import models.User
+import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
 import play.api.data.Form
@@ -31,7 +31,7 @@ import services.EmploymentSessionService
 import services.RedirectService.{assetTransferRedirects, benefitsSubmitRedirect, redirectBasedOnCurrentAnswers}
 import services.benefits.AssetsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.assets.AssetTransfersBenefitsView
 
 import javax.inject.Inject
@@ -45,27 +45,27 @@ class AssetTransfersBenefitsController @Inject()(implicit val cc: MessagesContro
                                                  employmentSessionService: EmploymentSessionService,
                                                  assetsService: AssetsService,
                                                  errorHandler: ErrorHandler,
-                                                 ec: ExecutionContext,
-                                                 clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                                 ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(assetTransferRedirects(_, taxYear, employmentId)) { cya =>
           cya.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assetTransferQuestion)) match {
-            case Some(questionResult) => Future.successful(Ok(view(yesNoForm.fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(view(yesNoForm, taxYear, employmentId)))
+            case Some(questionResult) =>
+              Future.successful(Ok(view(yesNoForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => Future.successful(Ok(view(yesNoForm(request.user.isAgent), taxYear, employmentId)))
           }
         }
       }
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(assetTransferRedirects(_, taxYear, employmentId)) { data =>
-          yesNoForm.bindFromRequest().fold(
+          yesNoForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(view(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
@@ -75,8 +75,8 @@ class AssetTransfersBenefitsController @Inject()(implicit val cc: MessagesContro
   }
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
-                               (implicit user: User[_]): Future[Result] = {
-    assetsService.updateAssetTransferQuestion(taxYear, employmentId, employmentUserData, questionValue).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    assetsService.updateAssetTransferQuestion(request.user, taxYear, employmentId, employmentUserData, questionValue).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         val nextPage = if (questionValue) {
@@ -88,7 +88,7 @@ class AssetTransfersBenefitsController @Inject()(implicit val cc: MessagesContro
     }
   }
 
-  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.assetTransfers.error.${if (user.isAgent) "agent" else "individual"}"
+  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"benefits.assetTransfers.error.${if (isAgent) "agent" else "individual"}"
   )
 }

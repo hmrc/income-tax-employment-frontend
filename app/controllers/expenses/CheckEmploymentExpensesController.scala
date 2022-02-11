@@ -16,12 +16,12 @@
 
 package controllers.expenses
 
+import actions.AuthorisedAction
 import actions.AuthorisedTaxYearAction.authorisedTaxYearAction
-import actions.{AuthorisedAction, TaxYearAction}
 import common.SessionValues
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes.{CheckEmploymentExpensesController, EmploymentExpensesController}
-import models.User
+import models.AuthorisationRequest
 import models.employment.AllEmploymentData.employmentIdExists
 import models.employment.{EmploymentExpenses, LatestExpensesOrigin}
 import models.expenses.{Expenses, ExpensesViewModel}
@@ -31,7 +31,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.expenses.CheckEmploymentExpensesService
 import services.{CreateOrAmendExpensesService, EmploymentSessionService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.expenses.{CheckEmploymentExpensesView, CheckEmploymentExpensesViewEOY}
 
 import javax.inject.Inject
@@ -45,14 +45,13 @@ class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: Aut
                                                   checkEmploymentExpensesService: CheckEmploymentExpensesService,
                                                   inYearAction: InYearUtil,
                                                   errorHandler: ErrorHandler,
-                                                  implicit val clock: Clock,
                                                   implicit val appConfig: AppConfig,
                                                   implicit val mcc: MessagesControllerComponents,
                                                   implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int): Action[AnyContent] = authorisedTaxYearAction(taxYear).async { implicit user =>
+  def show(taxYear: Int): Action[AnyContent] = authorisedTaxYearAction(taxYear).async { implicit request =>
     if (inYearAction.inYear(taxYear)) {
-      employmentSessionService.findPreviousEmploymentUserData(user, taxYear)(allEmploymentData =>
+      employmentSessionService.findPreviousEmploymentUserData(request.user, taxYear)(allEmploymentData =>
         allEmploymentData.latestInYearExpenses match {
           case Some(LatestExpensesOrigin(EmploymentExpenses(_, _, _, Some(expenses)), isUsingCustomerData)) => performAuditAndRenderView(expenses,
             taxYear, isInYear = true, isUsingCustomerData = isUsingCustomerData)
@@ -74,7 +73,7 @@ class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: Aut
                 allEmploymentData.latestEOYExpenses match {
                   case Some(LatestExpensesOrigin(EmploymentExpenses(submittedOn, _, _, Some(expenses)), isUsingCustomerData)) =>
                     employmentSessionService.createOrUpdateExpensesSessionData(ExpensesCYAModel.makeModel(expenses, isUsingCustomerData, submittedOn),
-                      taxYear, isPriorSubmission = true, hasPriorExpenses = true)(errorHandler.internalServerError()) {
+                      taxYear, isPriorSubmission = true, hasPriorExpenses = true, request.user)(errorHandler.internalServerError()) {
                       if (employmentIdExists(allEmploymentData, getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID))) {
                         //TODO: add a redirect for "do you need to add any additional/new expenses?" page when available
                         Redirect(EmploymentExpensesController.show(taxYear))
@@ -105,18 +104,18 @@ class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: Aut
     }
   }
 
-  def submit(taxYear: Int): Action[AnyContent] = authorisedAction.async { implicit user =>
+  def submit(taxYear: Int): Action[AnyContent] = authorisedAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandleExpenses(taxYear) { (cya, prior) =>
         cya match {
           case Some(cya) => cya.expensesCya.expenses.expensesIsFinished(taxYear) match {
             // TODO: potentially navigate elsewhere - design to confirm
             case Some(unfinishedRedirect) => Future.successful(Redirect(unfinishedRedirect))
-            case _ => createOrAmendExpensesService.createExpensesModelAndReturnResult(cya, prior, taxYear) { model =>
+            case _ => createOrAmendExpensesService.createExpensesModelAndReturnResult(request.user, cya, prior, taxYear) { model =>
               createOrAmendExpensesService.createOrUpdateExpensesResult(taxYear, model).flatMap {
                 case Left(result) => Future.successful(result)
                 case Right(result) =>
-                  checkEmploymentExpensesService.performSubmitAudits(model, taxYear, prior)
+                  checkEmploymentExpensesService.performSubmitAudits(request.user, model, taxYear, prior)
 
                   if (appConfig.nrsEnabled) checkEmploymentExpensesService.performSubmitNrsPayload(model, prior)
 
@@ -134,8 +133,8 @@ class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: Aut
                                         taxYear: Int,
                                         isInYear: Boolean,
                                         isUsingCustomerData: Boolean,
-                                        cya: Option[ExpensesViewModel] = None)(implicit user: User[_]): Result = {
-    checkEmploymentExpensesService.sendViewEmploymentExpensesAudit(taxYear, expenses)
+                                        cya: Option[ExpensesViewModel] = None)(implicit request: AuthorisationRequest[_]): Result = {
+    checkEmploymentExpensesService.sendViewEmploymentExpensesAudit(request.user, taxYear, expenses)
     if (isInYear) {
       Ok(checkEmploymentExpensesView(taxYear, expenses.toExpensesViewModel(isUsingCustomerData, cyaExpenses = cya), isInYear))
     } else {

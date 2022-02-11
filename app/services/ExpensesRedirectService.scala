@@ -16,10 +16,7 @@
 
 package services
 
-import controllers.employment.routes._
 import controllers.expenses.routes._
-import models.User
-import models.employment.EmploymentType
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import models.redirects.ConditionalRedirect
@@ -27,7 +24,6 @@ import play.api.Logging
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Call, Result}
 
-import javax.print.attribute.standard.JobName
 import scala.concurrent.Future
 
 object ExpensesRedirectService extends Logging {
@@ -153,13 +149,13 @@ object ExpensesRedirectService extends Logging {
     }
   }
 
-  def expensesSubmitRedirect(cya: ExpensesCYAModel, nextPage: Call)(_taxYear: Int)(implicit user: User[_]): Result = {
+  def expensesSubmitRedirect(cya: ExpensesCYAModel, nextPage: Call)(_taxYear: Int): Result = {
     implicit val taxYear: Int = _taxYear
 
     val expensesViewModel: ExpensesViewModel = cya.expenses
     val expensesFinished = expensesViewModel.expensesIsFinished
 
-    if(expensesFinished.isEmpty) {
+    if (expensesFinished.isEmpty) {
       logger.info("[ExpensesRedirectService][expensesSubmitRedirect] User has completed all sections - Routing to expenses CYA page")
       Redirect(CheckEmploymentExpensesController.show(taxYear))
     } else {

@@ -23,10 +23,10 @@
 
 @this(layout: Layout, formWithCsrf: FormWithCSRF, inputText: InputText, heading: Heading, button: Button, errorSummary: ErrorSummary)
 
-@(form: Form[BigDecimal], taxYear: Int, employmentId: String, previousAmount: Option[BigDecimal])(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[BigDecimal], taxYear: Int, employmentId: String, previousAmount: Option[BigDecimal])(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleText = @{
-    messages(s"benefits.companyCarBenefitsAmount.title.${if(user.isAgent) "agent" else "individual"}")
+    messages(s"benefits.companyCarBenefitsAmount.title.${if(request.user.isAgent) "agent" else "individual"}")
 }
 
 @optionalText = @{
@@ -36,7 +36,7 @@
 @headingText = @{titleText}
 
 @paragraphText = @{
-    messages(s"benefits.companyCarBenefitsAmount.paragraph.${if (user.isAgent) "agent" else "individual"}")
+    messages(s"benefits.companyCarBenefitsAmount.paragraph.${if (request.user.isAgent) "agent" else "individual"}")
 }
 
 @contentHtml = {

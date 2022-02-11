@@ -27,7 +27,7 @@
    dateInput: DateInput,
    inputText: InputText
 )
-@(form: Form[EmploymentDates], taxYear: Int, employmentId:String, employerName: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[EmploymentDates], taxYear: Int, employmentId:String, employerName: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @hasFormErrors = @{form.hasErrors}
 
@@ -37,7 +37,7 @@
 
 @contentHtml = {
     @heading(messages(headingForUse), Some(messages("employmentDetails.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
-    <p class="govuk-body">@{messages(s"employment.employmentDates.tellUs.${if(user.isAgent) "agent" else "individual"}", employerName)}</p>
+    <p class="govuk-body">@{messages(s"employment.employmentDates.tellUs.${if(request.user.isAgent) "agent" else "individual"}", employerName)}</p>
     <h2 class="govuk-label--s govuk-!-margin-top-2">@{messages("employment.employmentDates.startDate")}</h2>
 }
 
@@ -45,7 +45,7 @@
     <h2 class="govuk-label--s govuk-!-margin-top-6">@{messages("employment.employmentDates.endDate")}</h2>
 }
 
-@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
+@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = request.user.isAgent) {
 
     @errorSummary(form.errors)
 

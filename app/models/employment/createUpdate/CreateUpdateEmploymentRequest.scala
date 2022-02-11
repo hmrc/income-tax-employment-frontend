@@ -25,10 +25,9 @@ import play.api.libs.json.{Json, OFormat}
 case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
                                          employment: Option[CreateUpdateEmployment] = None,
                                          employmentData: Option[CreateUpdateEmploymentData] = None,
-                                         hmrcEmploymentIdToIgnore: Option[String] = None){
+                                         hmrcEmploymentIdToIgnore: Option[String] = None) {
 
-  def toCreateAuditModel(taxYear: Int, existingEmployments: Seq[PriorEmploymentAuditInfo])(implicit user: User[_]): CreateNewEmploymentDetailsAudit = {
-
+  def toCreateAuditModel(user: User, taxYear: Int, existingEmployments: Seq[PriorEmploymentAuditInfo]): CreateNewEmploymentDetailsAudit = {
     CreateNewEmploymentDetailsAudit(
       taxYear = taxYear,
       userType = user.affinityGroup.toLowerCase,
@@ -46,15 +45,16 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
       existingEmployments = existingEmployments
     )
   }
-  def toAmendAuditModel(employmentId: String, taxYear: Int, priorData: EmploymentSource)(implicit user: User[_]): AmendEmploymentDetailsUpdateAudit = {
 
-    def currentOrPrior[T](data: Option[T], priorData: Option[T]): Option[T] ={
+  def toAmendAuditModel(user: User, employmentId: String, taxYear: Int, priorData: EmploymentSource): AmendEmploymentDetailsUpdateAudit = {
+    def currentOrPrior[T](data: Option[T], priorData: Option[T]): Option[T] = {
       (data, priorData) match {
         case (data@Some(_), _) => data
         case (_, priorData@Some(_)) => priorData
         case _ => None
       }
     }
+
     AmendEmploymentDetailsUpdateAudit(
       taxYear = taxYear,
       userType = user.affinityGroup.toLowerCase,
@@ -76,15 +76,14 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
         employmentId = employmentId,
         startDate = currentOrPrior(employment.map(_.startDate), priorData.startDate),
         cessationDate = currentOrPrior(employment.flatMap(_.cessationDate), priorData.cessationDate),
-        taxablePayToDate =  currentOrPrior(employmentData.map(_.pay.taxablePayToDate), priorData.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate))),
+        taxablePayToDate = currentOrPrior(employmentData.map(_.pay.taxablePayToDate), priorData.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate))),
         totalTaxToDate = currentOrPrior(employmentData.map(_.pay.totalTaxToDate), priorData.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))),
         payrollId = currentOrPrior(employment.flatMap(_.payrollId), priorData.payrollId)
       )
     )
   }
 
-  def toCreateDecodedPayloadModel(existingEmployments: Seq[DecodedPriorEmploymentInfo])(implicit user: User[_]): DecodedCreateNewEmploymentDetailsPayload = {
-
+  def toCreateDecodedPayloadModel(existingEmployments: Seq[DecodedPriorEmploymentInfo]): DecodedCreateNewEmploymentDetailsPayload = {
     DecodedCreateNewEmploymentDetailsPayload(
       employmentData = DecodedNewEmploymentData(
         employerName = employment.map(_.employerName),
@@ -99,9 +98,8 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
     )
   }
 
-  def toAmendDecodedPayloadModel(employmentId: String, priorData: EmploymentSource)(implicit user: User[_]): DecodedAmendEmploymentDetailsPayload = {
-
-    def currentOrPrior[T](data: Option[T], priorData: Option[T]): Option[T] ={
+  def toAmendDecodedPayloadModel(employmentId: String, priorData: EmploymentSource): DecodedAmendEmploymentDetailsPayload = {
+    def currentOrPrior[T](data: Option[T], priorData: Option[T]): Option[T] = {
       (data, priorData) match {
         case (data@Some(_), _) => data
         case (_, priorData@Some(_)) => priorData
@@ -126,15 +124,14 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
         employmentId = employmentId,
         startDate = currentOrPrior(employment.map(_.startDate), priorData.startDate),
         cessationDate = currentOrPrior(employment.flatMap(_.cessationDate), priorData.cessationDate),
-        taxablePayToDate =  currentOrPrior(employmentData.map(_.pay.taxablePayToDate), priorData.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate))),
+        taxablePayToDate = currentOrPrior(employmentData.map(_.pay.taxablePayToDate), priorData.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate))),
         totalTaxToDate = currentOrPrior(employmentData.map(_.pay.totalTaxToDate), priorData.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))),
         payrollId = currentOrPrior(employment.flatMap(_.payrollId), priorData.payrollId)
       )
     )
   }
 
-  def toCreateDecodedBenefitsPayloadModel()(implicit user: User[_]): DecodedCreateNewBenefitsPayload = {
-
+  def toCreateDecodedBenefitsPayloadModel(): DecodedCreateNewBenefitsPayload = {
     DecodedCreateNewBenefitsPayload(
       employerName = employment.map(_.employerName),
       employerRef = employment.flatMap(_.employerRef),
@@ -171,9 +168,7 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
     )
   }
 
-  def toAmendDecodedBenefitsPayloadModel(priorData: EmploymentSource)(implicit user: User[_]): DecodedAmendBenefitsPayload = {
-
-
+  def toAmendDecodedBenefitsPayloadModel(priorData: EmploymentSource): DecodedAmendBenefitsPayload = {
     DecodedAmendBenefitsPayload(
       priorEmploymentBenefitsData = Benefits(
         accommodation = priorData.employmentBenefits.flatMap(_.benefits.flatMap(_.accommodation)),
@@ -220,7 +215,7 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
         service = employmentData.flatMap(_.benefitsInKind.flatMap(_.service)),
         taxableExpenses = employmentData.flatMap(_.benefitsInKind.flatMap(_.taxableExpenses)),
         van = employmentData.flatMap(_.benefitsInKind.flatMap(_.van)),
-        vanFuel =  employmentData.flatMap(_.benefitsInKind.flatMap(_.vanFuel)),
+        vanFuel = employmentData.flatMap(_.benefitsInKind.flatMap(_.vanFuel)),
         mileage = employmentData.flatMap(_.benefitsInKind.flatMap(_.mileage)),
         nonQualifyingRelocationExpenses = employmentData.flatMap(_.benefitsInKind.flatMap(_.nonQualifyingRelocationExpenses)),
         nurseryPlaces = employmentData.flatMap(_.benefitsInKind.flatMap(_.nurseryPlaces)),
@@ -237,7 +232,6 @@ case class CreateUpdateEmploymentRequest(employmentId: Option[String] = None,
       )
     )
   }
-
 }
 
 object CreateUpdateEmploymentRequest {

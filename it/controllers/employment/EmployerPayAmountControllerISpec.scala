@@ -16,13 +16,14 @@
 
 package controllers.employment
 
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import builders.models.mongo.EmploymentDetailsBuilder.anEmploymentDetails
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithDetails
-import models.User
 import models.mongo.EmploymentUserData
+import models.{AuthorisationRequest, User}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -40,7 +41,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
   private val employmentId = "employmentId"
 
   private implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  private val userRequest: User[_] = User(mtditid, None, nino, sessionId, affinityGroup)
+  private val userRequest: AuthorisationRequest[_] = anAuthorisationRequest
 
   object Selectors {
     val contentSelector = "#main-content > div > div > form > div > label > p"
@@ -155,11 +156,12 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(cya(), User(mtditid, None, nino, sessionId, "agent"))
+            insertCyaData(cya())
             urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -184,11 +186,12 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(cya(None), User(mtditid, None, nino, sessionId, "agent"))
+            insertCyaData(cya(None))
             urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -216,12 +219,13 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 noUserDataStub(nino, taxYearEOY)
-                insertCyaData(cya(payToDate = None, isPriorSubmission = false), User(mtditid, None, nino, sessionId, "agent"))
+                insertCyaData(cya(payToDate = None, isPriorSubmission = false))
                 urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
               lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+              implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputSelector, "")
             }
@@ -232,12 +236,13 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYearEOY)
-                insertCyaData(cya(), User(mtditid, None, nino, sessionId, "agent"))
+                insertCyaData(cya())
                 urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
               lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+              implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputSelector, "")
             }
@@ -249,12 +254,13 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYearEOY)
-                insertCyaData(cya(Some(110.00)), User(mtditid, None, nino, sessionId, "agent"))
+                insertCyaData(cya(Some(110.00)))
                 urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
               lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+              implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputSelector, "110")
             }
@@ -264,12 +270,13 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 noUserDataStub(nino, taxYearEOY)
-                insertCyaData(cya(Some(100.00), isPriorSubmission = false), User(mtditid, None, nino, sessionId, "agent"))
+                insertCyaData(cya(Some(100.00), isPriorSubmission = false))
                 urlGet(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
               }
 
               lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+              implicit def documentSupplier: () => Document = () => document
 
               inputFieldValueCheck(amountInputName, inputSelector, "100")
             }
@@ -293,7 +300,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(cya(), User(mtditid, None, nino, sessionId, "agent"))
+            insertCyaData(cya())
             val inYearUrl = s"$appUrl/$taxYear/how-much-pay?employmentId=$employmentId"
             urlGet(inYearUrl, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
@@ -323,11 +330,12 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(cya(), User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
+            insertCyaData(cya())
             urlPost(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -344,11 +352,12 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(cya(), User(mtditid, None, nino, sessionId, "agent"))
+            insertCyaData(cya())
             urlPost(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "|"))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -365,12 +374,13 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(cya(), User(mtditid, None, nino, sessionId, "agent"))
+            insertCyaData(cya())
             urlPost(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)),
               body = Map("amount" -> "9999999999999999999999999999"))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an BAD_REQUEST status" in {
@@ -386,7 +396,7 @@ class EmployerPayAmountControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(cya(), userRequest)
+            insertCyaData(cya())
             urlPost(fullUrl(howMuchPayUrl(taxYearEOY, employmentId)), follow = false,
               welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
           }

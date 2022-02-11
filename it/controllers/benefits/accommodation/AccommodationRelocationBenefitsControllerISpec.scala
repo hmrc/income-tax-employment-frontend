@@ -16,8 +16,8 @@
 
 package controllers.benefits.accommodation
 
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.UserBuilder.aUserRequest
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
@@ -28,8 +28,8 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 import utils.PageUrls.{accommodationRelocationBenefitsUrl, checkYourBenefitsUrl, fullUrl, livingAccommodationBenefitsUrl, overviewUrl, travelOrEntertainmentBenefitsUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class AccommodationRelocationBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -113,12 +113,13 @@ class AccommodationRelocationBenefitsControllerISpec extends IntegrationTest wit
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlGet(fullUrl(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -142,12 +143,13 @@ class AccommodationRelocationBenefitsControllerISpec extends IntegrationTest wit
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(anEmploymentUserData, aUserRequest)
+            insertCyaData(anEmploymentUserData)
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlGet(fullUrl(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           import Selectors._
@@ -186,7 +188,7 @@ class AccommodationRelocationBenefitsControllerISpec extends IntegrationTest wit
         lazy val result: WSResponse = {
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
-          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
           urlGet(fullUrl(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
         s"has an SEE_OTHER($SEE_OTHER) status" in {
@@ -210,113 +212,114 @@ class AccommodationRelocationBenefitsControllerISpec extends IntegrationTest wit
 
   }
 
-    ".submit" should {
-      userScenarios.foreach { user =>
-        s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
+  ".submit" should {
+    userScenarios.foreach { user =>
+      s"language is ${welshTest(user.isWelsh)} and request is from an ${agentTest(user.isAgent)}" should {
 
-          "Return BAD_REQUEST when no value is submitted" which {
-            lazy val form = Map(YesNoForm.yesNo -> "")
-            lazy val result: WSResponse = {
-              dropEmploymentDB()
-              val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
-              insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-              authoriseAgentOrIndividual(user.isAgent)
-              urlPost(fullUrl(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form,
-                user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-            }
+        "Return BAD_REQUEST when no value is submitted" which {
+          lazy val form = Map(YesNoForm.yesNo -> "")
+          lazy val result: WSResponse = {
+            dropEmploymentDB()
+            val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
+            authoriseAgentOrIndividual(user.isAgent)
+            urlPost(fullUrl(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form,
+              user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+          }
 
-            "has the correct status" in {
-              result.status shouldBe BAD_REQUEST
-            }
+          "has the correct status" in {
+            result.status shouldBe BAD_REQUEST
+          }
 
-            lazy val document = Jsoup.parse(result.body)
+          lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
-            import Selectors._
-            import user.commonExpectedResults._
+          import Selectors._
+          import user.commonExpectedResults._
 
-            titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
-            h1Check(user.specificExpectedResults.get.expectedH1)
-            captionCheck(expectedCaption(taxYearEOY))
-            radioButtonCheck(yesText, 1, checked = false)
-            radioButtonCheck(noText, 2, checked = false)
-            buttonCheck(expectedButtonText, continueButtonSelector)
-            formPostLinkCheck(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
-            welshToggleCheck(user.isWelsh)
-            errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
-            errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
-          }
-        }
-      }
-
-      "Redirect to overview page if it is not EOY" which {
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(accommodationRelocationBenefitsUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
-        }
-        "has an SEE_OTHER(303) status" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location").contains(overviewUrl(taxYear)) shouldBe true
-        }
-      }
-
-      "Update the Accommodation or Relocation Question to 'Yes' when user selects yes and there is previous cya data" which {
-        lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = Some(false))))
-          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-          authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        "redirects to living accommodation Benefits page" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location").contains(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
-          cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.sectionQuestion) shouldBe Some(true)
-        }
-      }
-
-      "Update the Accommodation or Relocation Question to 'No' and remove accommodation/relocation data when user selects no" which {
-        lazy val form = Map(YesNoForm.yesNo -> YesNoForm.no)
-        lazy val result: WSResponse = {
-          dropEmploymentDB()
-          val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = None)
-          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-          authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        "redirects to travel entertainment page" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location").contains(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
-
-          cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).get shouldBe AccommodationRelocationModel(Some(false))
-        }
-      }
-
-      "Create new AccommodationRelocationModel and redirect to Check Employment Benefits page when user selects 'yes' and no prior benefits" which {
-        lazy val form = Map(YesNoForm.yesNo -> YesNoForm.yes)
-        lazy val result = {
-          dropEmploymentDB()
-          val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
-          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
-          authoriseAgentOrIndividual(isAgent = false)
-          urlPost(fullUrl(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
-        }
-
-        "has an SEE_OTHER(303) status and redirects to living accommodation page" in {
-          result.status shouldBe SEE_OTHER
-          result.header("location").contains(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-        }
-
-        "updates only accommodationRelocationQuestion to yes" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
-          cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).get shouldBe AccommodationRelocationModel(Some(true))
+          titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
+          h1Check(user.specificExpectedResults.get.expectedH1)
+          captionCheck(expectedCaption(taxYearEOY))
+          radioButtonCheck(yesText, 1, checked = false)
+          radioButtonCheck(noText, 2, checked = false)
+          buttonCheck(expectedButtonText, continueButtonSelector)
+          formPostLinkCheck(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId), continueButtonFormSelector)
+          welshToggleCheck(user.isWelsh)
+          errorSummaryCheck(user.specificExpectedResults.get.expectedError, Selectors.yesSelector)
+          errorAboveElementCheck(user.specificExpectedResults.get.expectedError, Some("value"))
         }
       }
     }
+
+    "Redirect to overview page if it is not EOY" which {
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(accommodationRelocationBenefitsUrl(taxYear, employmentId)), body = "", headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), follow = false)
+      }
+      "has an SEE_OTHER(303) status" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location").contains(overviewUrl(taxYear)) shouldBe true
+      }
+    }
+
+    "Update the Accommodation or Relocation Question to 'Yes' when user selects yes and there is previous cya data" which {
+      lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = Some(false))))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "redirects to living accommodation Benefits page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location").contains(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).flatMap(_.sectionQuestion) shouldBe Some(true)
+      }
+    }
+
+    "Update the Accommodation or Relocation Question to 'No' and remove accommodation/relocation data when user selects no" which {
+      lazy val form = Map(YesNoForm.yesNo -> YesNoForm.no)
+      lazy val result: WSResponse = {
+        dropEmploymentDB()
+        val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = None)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "redirects to travel entertainment page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location").contains(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
+
+        cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).get shouldBe AccommodationRelocationModel(Some(false))
+      }
+    }
+
+    "Create new AccommodationRelocationModel and redirect to Check Employment Benefits page when user selects 'yes' and no prior benefits" which {
+      lazy val form = Map(YesNoForm.yesNo -> YesNoForm.yes)
+      lazy val result = {
+        dropEmploymentDB()
+        val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
+        authoriseAgentOrIndividual(isAgent = false)
+        urlPost(fullUrl(accommodationRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
+      }
+
+      "has an SEE_OTHER(303) status and redirects to living accommodation page" in {
+        result.status shouldBe SEE_OTHER
+        result.header("location").contains(livingAccommodationBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
+      }
+
+      "updates only accommodationRelocationQuestion to yes" in {
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
+        cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel).get shouldBe AccommodationRelocationModel(Some(true))
+      }
+    }
+  }
 }

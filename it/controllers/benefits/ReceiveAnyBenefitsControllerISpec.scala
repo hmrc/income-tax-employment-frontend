@@ -16,7 +16,7 @@
 
 package controllers.benefits
 
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 import common.SessionValues
 import forms.YesNoForm
@@ -26,8 +26,8 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 import utils.PageUrls.{carVanFuelBenefitsUrl, checkYourBenefitsUrl, companyBenefitsUrl, fullUrl, overviewUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -115,7 +115,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+            insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
             urlGet(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -124,6 +124,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)
@@ -142,7 +143,8 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = false, isBenefitsReceived = true)
-            insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+            val employmentCYAModel = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))
+            insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = employmentCYAModel))
             urlGet(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY, Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "fake-id"))))
           }
@@ -152,6 +154,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)
@@ -187,7 +190,8 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       implicit lazy val result: WSResponse = {
         dropEmploymentDB()
         val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = false, isBenefitsReceived = true)
-        insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        val employmentCYAModel = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))
+        insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = employmentCYAModel))
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(fullUrl(companyBenefitsUrl(taxYear, defaultUser.employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
@@ -216,7 +220,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+            insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
             urlPost(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), body = yesNoFormEmpty, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -225,6 +229,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)
@@ -243,7 +248,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = false)
-        insertCyaData(defaultUser.copy(isPriorSubmission = true, hasPriorBenefits = true, employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        insertCyaData(defaultUser.copy(isPriorSubmission = true, hasPriorBenefits = true, employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
         urlPost(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), follow = false, body = yesNoFormYes, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -253,7 +258,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       }
 
       "update the isBenefitsReceived value to true" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, defaultUser.employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, defaultUser.employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.map(_.isBenefitsReceived) shouldBe Some(true)
       }
     }
@@ -263,7 +268,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = false)
-        insertCyaData(defaultUser.copy(isPriorSubmission = true, hasPriorBenefits = true, employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        insertCyaData(defaultUser.copy(isPriorSubmission = true, hasPriorBenefits = true, employment = anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
         urlPost(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), follow = false, body = yesNoFormYes, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -273,7 +278,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       }
 
       "update the isBenefitsReceived value to true" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, defaultUser.employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, defaultUser.employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.map(_.isBenefitsReceived) shouldBe Some(true)
       }
     }
@@ -282,7 +287,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+        insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
         urlPost(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), follow = false, body = yesNoFormYes, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -292,7 +297,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       }
 
       "update the isBenefitsReceived value to true" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, defaultUser.employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, defaultUser.employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.map(_.isBenefitsReceived) shouldBe Some(true)
       }
     }
@@ -301,7 +306,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+        insertCyaData(defaultUser.copy(isPriorSubmission = false, hasPriorBenefits = false, employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
         urlPost(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), follow = false, body = yesNoFormNo, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -311,7 +316,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       }
 
       "update the isBenefitsReceived value to false" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, defaultUser.employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, defaultUser.employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.map(_.isBenefitsReceived) shouldBe Some(false)
       }
     }
@@ -320,7 +325,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(defaultUser.copy(isPriorSubmission = true, hasPriorBenefits = true, employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+        insertCyaData(defaultUser.copy(isPriorSubmission = true, hasPriorBenefits = true, employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
         urlPost(fullUrl(companyBenefitsUrl(taxYearEOY, defaultUser.employmentId)), follow = false, body = yesNoFormNo, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -330,7 +335,7 @@ class ReceiveAnyBenefitsControllerISpec extends IntegrationTest with ViewHelpers
       }
 
       "update the isBenefitsReceived value to false" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, defaultUser.employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, defaultUser.employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.map(_.isBenefitsReceived) shouldBe Some(false)
       }
     }

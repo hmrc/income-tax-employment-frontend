@@ -20,7 +20,6 @@ import models.User
 import models.benefits.AssetsModel
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import services.EmploymentSessionService
-import utils.Clock
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,8 +27,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class AssetsService @Inject()(employmentSessionService: EmploymentSessionService,
                               implicit val ec: ExecutionContext) {
 
-  def updateSectionQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                           (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateSectionQuestion(user: User,
+                            taxYear: Int,
+                            employmentId: String,
+                            originalEmploymentUserData: EmploymentUserData,
+                            questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val assetsModel = benefits.flatMap(_.assetsModel)
@@ -41,11 +43,14 @@ class AssetsService @Inject()(employmentSessionService: EmploymentSessionService
       case _ => cya.copy(employmentBenefits = benefits.map(_.copy(assetsModel = Some(AssetsModel(sectionQuestion = Some(questionValue))))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateAssetsQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                          (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateAssetsQuestion(user: User,
+                           taxYear: Int,
+                           employmentId: String,
+                           originalEmploymentUserData: EmploymentUserData,
+                           questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val assetsModel = benefits.flatMap(_.assetsModel)
@@ -59,11 +64,14 @@ class AssetsService @Inject()(employmentSessionService: EmploymentSessionService
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateAssets(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                  (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateAssets(user: User,
+                   taxYear: Int,
+                   employmentId: String,
+                   originalEmploymentUserData: EmploymentUserData,
+                   amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val benefits = cyaModel.employmentBenefits
     val assetsModel = benefits.flatMap(_.assetsModel)
@@ -72,11 +80,14 @@ class AssetsService @Inject()(employmentSessionService: EmploymentSessionService
       employmentBenefits = benefits.map(_.copy(assetsModel = assetsModel.map(_.copy(assets = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateAssetTransferQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                                 (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateAssetTransferQuestion(user: User,
+                                  taxYear: Int,
+                                  employmentId: String,
+                                  originalEmploymentUserData: EmploymentUserData,
+                                  questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val assetsModel = benefits.flatMap(_.assetsModel)
@@ -88,11 +99,14 @@ class AssetsService @Inject()(employmentSessionService: EmploymentSessionService
         assetsModel = assetsModel.map(_.copy(assetTransferQuestion = Some(false), assetTransfer = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateAssetTransfer(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                         (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateAssetTransfer(user: User,
+                          taxYear: Int,
+                          employmentId: String,
+                          originalEmploymentUserData: EmploymentUserData,
+                          amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val benefits = cyaModel.employmentBenefits
     val assetsModel = benefits.flatMap(_.assetsModel)
@@ -101,6 +115,6 @@ class AssetsService @Inject()(employmentSessionService: EmploymentSessionService
       employmentBenefits = benefits.map(_.copy(assetsModel = assetsModel.map(_.copy(assetTransfer = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 }

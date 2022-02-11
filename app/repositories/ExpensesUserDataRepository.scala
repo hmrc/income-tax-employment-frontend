@@ -48,7 +48,7 @@ class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
   indexes = ExpensesUserDataIndexes.indexes(appConfig)
 ) with Repository with ExpensesUserDataRepository with Logging {
 
-  def find[T](taxYear: Int)(implicit user: User[T]): Future[Either[DatabaseError, Option[ExpensesUserData]]] = {
+  def find[T](taxYear: Int, user: User): Future[Either[DatabaseError, Option[ExpensesUserData]]] = {
 
     lazy val start = "[ExpensesUserDataRepositoryImpl][find]"
 
@@ -79,8 +79,7 @@ class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
     }
   }
 
-  def createOrUpdate[T](expensesUserData: ExpensesUserData)(implicit user: User[T]): Future[Either[DatabaseError, Unit]] = {
-
+  def createOrUpdate[T](expensesUserData: ExpensesUserData): Future[Either[DatabaseError, Unit]] = {
     lazy val start = "[ExpensesUserDataRepositoryImpl][update]"
 
     Try {
@@ -106,14 +105,15 @@ class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
     }
   }
 
-  def clear[T](taxYear: Int)(implicit user: User[T]): Future[Boolean] =
+  def clear[T](taxYear: Int, user: User): Future[Boolean] =
     collection.deleteOne(filterExpenses(user.sessionId, user.mtditid, user.nino, taxYear))
       .toFutureOption()
-      .recover(mongoRecover("Clear", FAILED_TO_ClEAR_EXPENSES_DATA))
+      .recover(mongoRecover("Clear", FAILED_TO_ClEAR_EXPENSES_DATA, user))
       .map(_.exists(_.wasAcknowledged()))
 
-  def mongoRecover[T](operation: String, pagerDutyKey: PagerDutyKeys.Value)
-                     (implicit user: User[_]): PartialFunction[Throwable, Option[T]] = new PartialFunction[Throwable, Option[T]] {
+  def mongoRecover[T](operation: String,
+                      pagerDutyKey: PagerDutyKeys.Value,
+                      user: User): PartialFunction[Throwable, Option[T]] = new PartialFunction[Throwable, Option[T]] {
 
     override def isDefinedAt(x: Throwable): Boolean = x.isInstanceOf[MongoException]
 
@@ -128,9 +128,9 @@ class ExpensesUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
 }
 
 trait ExpensesUserDataRepository {
-  def createOrUpdate[T](expensesUserData: ExpensesUserData)(implicit user: User[T]): Future[Either[DatabaseError, Unit]]
+  def createOrUpdate[T](expensesUserData: ExpensesUserData): Future[Either[DatabaseError, Unit]]
 
-  def find[T](taxYear: Int)(implicit user: User[T]): Future[Either[DatabaseError, Option[ExpensesUserData]]]
+  def find[T](taxYear: Int, user: User): Future[Either[DatabaseError, Option[ExpensesUserData]]]
 
-  def clear[T](taxYear: Int)(implicit user: User[T]): Future[Boolean]
+  def clear[T](taxYear: Int, user: User): Future[Boolean]
 }

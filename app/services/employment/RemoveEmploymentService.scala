@@ -23,7 +23,7 @@ import config.ErrorHandler
 import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
 import connectors.{DeleteOrIgnoreEmploymentConnector, IncomeSourceConnector}
 import controllers.employment.routes.EmploymentSummaryController
-import models.User
+import models.AuthorisationRequest
 import models.employment.{AllEmploymentData, DecodedDeleteEmploymentPayload, EmploymentSource}
 import play.api.Logging
 import play.api.mvc.Results.Redirect
@@ -43,7 +43,7 @@ class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: Delet
                                         implicit val ec: ExecutionContext) extends Logging {
 
   def deleteOrIgnoreEmployment(employmentData: AllEmploymentData, taxYear: Int, employmentId: String)(result: Result)
-                              (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
+                              (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Result] = {
     val hmrcDataSource = employmentData.hmrcEmploymentData.find(_.employmentId.equals(employmentId))
     val customerDataSource = employmentData.customerEmploymentData.find(_.employmentId.equals(employmentId))
 
@@ -51,19 +51,19 @@ class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: Delet
       case (_, Some(hmrcEmploymentSource)) =>
         sendAuditEvent(employmentData, taxYear, hmrcEmploymentSource, isUsingCustomerData = false)
         performSubmitNrsPayload(employmentData, hmrcEmploymentSource, isUsingCustomerData = false)
-        handleConnectorCall(user, taxYear, employmentId, hmrcHeld)(result)
+        handleConnectorCall(request, taxYear, employmentId, hmrcHeld)(result)
       case (Some(customerEmploymentSource), _) =>
         sendAuditEvent(employmentData, taxYear, customerEmploymentSource, isUsingCustomerData = true)
         performSubmitNrsPayload(employmentData, customerEmploymentSource, isUsingCustomerData = true)
-        handleConnectorCall(user, taxYear, employmentId, customer)(result)
+        handleConnectorCall(request, taxYear, employmentId, customer)(result)
       case (None, None) =>
         logger.info(s"[DeleteOrIgnoreEmploymentService][deleteOrIgnoreEmployment]" +
-          s" No employment data found for user and employmentId. SessionId: ${user.sessionId}")
+          s" No employment data found for user and employmentId. SessionId: ${request.user.sessionId}")
         Future(Redirect(EmploymentSummaryController.show(taxYear)))
     }
 
     eventualResult.flatMap { result =>
-      incomeSourceConnector.put(taxYear, user.nino, "employment")(hc.withExtraHeaders("mtditid" -> user.mtditid)).map {
+      incomeSourceConnector.put(taxYear, request.user.nino, "employment")(hc.withExtraHeaders("mtditid" -> request.user.mtditid)).map {
         case Left(error) => errorHandler.handleError(error.status)
         case _ => result
       }
@@ -71,20 +71,20 @@ class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: Delet
   }
 
   private def sendAuditEvent(employmentData: AllEmploymentData, taxYear: Int, employmentSource: EmploymentSource, isUsingCustomerData: Boolean)
-                            (implicit user: User[_], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
+                            (implicit request: AuthorisationRequest[_], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     val employmentDetailsViewModel = employmentSource.toEmploymentDetailsViewModel(isUsingCustomerData = isUsingCustomerData)
     val benefits = employmentSource.employmentBenefits.flatMap(_.benefits)
     val employmentExpenses = if (isUsingCustomerData) employmentData.customerExpenses else employmentData.hmrcExpenses
     val expenses = employmentExpenses.flatMap(_.expenses)
     val deductions = employmentSource.employmentData.flatMap(_.deductions)
-    val auditModel = DeleteEmploymentAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, employmentDetailsViewModel, benefits, expenses, deductions)
+    val auditModel = DeleteEmploymentAudit(taxYear, request.user.affinityGroup.toLowerCase, request.user.nino, request.user.mtditid, employmentDetailsViewModel, benefits, expenses, deductions)
 
     auditService.sendAudit[DeleteEmploymentAudit](auditModel.toAuditModel)
   }
 
   def performSubmitNrsPayload(employmentData: AllEmploymentData, employmentSource: EmploymentSource,
-                                      isUsingCustomerData: Boolean)
-                                     (implicit user: User[_], request: Request[_], hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
+                              isUsingCustomerData: Boolean)
+                             (implicit authorisationRequest: AuthorisationRequest[_], request: Request[_], hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
 
     val employmentDetailsViewModel = employmentSource.toEmploymentDetailsViewModel(isUsingCustomerData = isUsingCustomerData)
     val employmentExpenses = if (isUsingCustomerData) employmentData.customerExpenses else employmentData.hmrcExpenses
@@ -92,13 +92,13 @@ class RemoveEmploymentService @Inject()(deleteOrIgnoreEmploymentConnector: Delet
     val benefits = employmentSource.employmentBenefits.flatMap(_.benefits)
     val nrsPayload = DecodedDeleteEmploymentPayload(employmentDetailsViewModel, benefits, expenses)
 
-    nrsService.submit(user.nino, nrsPayload.toNrsPayloadModel, user.mtditid)
+    nrsService.submit(authorisationRequest.user.nino, nrsPayload.toNrsPayloadModel, authorisationRequest.user.mtditid)
   }
 
-  private def handleConnectorCall(user: User[_], taxYear: Int, employmentId: String, toRemove: String)(result: Result)
+  private def handleConnectorCall(authorisationRequest: AuthorisationRequest[_], taxYear: Int, employmentId: String, toRemove: String)(result: Result)
                                  (implicit request: Request[_], hc: HeaderCarrier): Future[Result] = {
 
-    deleteOrIgnoreEmploymentConnector.deleteOrIgnoreEmployment(user.nino, taxYear, employmentId, toRemove)(hc.withExtraHeaders("mtditid" -> user.mtditid)).map {
+    deleteOrIgnoreEmploymentConnector.deleteOrIgnoreEmployment(authorisationRequest.user.nino, taxYear, employmentId, toRemove)(hc.withExtraHeaders("mtditid" -> authorisationRequest.user.mtditid)).map {
       case Left(error) => errorHandler.handleError(error.status)
       case Right(_) => result
     }

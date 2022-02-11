@@ -21,7 +21,7 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.accommodation.routes._
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.{AmountForm, FormUtils}
-import models.User
+import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
@@ -32,7 +32,7 @@ import services.RedirectService.{benefitsSubmitRedirect, redirectBasedOnCurrentA
 import services.benefits.AccommodationService
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.accommodation.LivingAccommodationBenefitAmountView
 
 import javax.inject.Inject
@@ -46,15 +46,14 @@ class LivingAccommodationBenefitAmountController @Inject()(implicit val cc: Mess
                                                            val employmentSessionService: EmploymentSessionService,
                                                            accommodationService: AccommodationService,
                                                            errorHandler: ErrorHandler,
-                                                           ec: ExecutionContext,
-                                                           clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+                                                           ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodation))
-          val form = fillFormFromPriorAndCYA(buildForm(user.isAgent), prior, cyaAmount, employmentId)(
+          val form = fillFormFromPriorAndCYA(buildForm(request.user.isAgent), prior, cyaAmount, employmentId)(
             employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.accommodation))
           )
           Future(Ok(livingAccommodationBenefitAmountView(taxYear, form, cyaAmount, employmentId)))
@@ -63,13 +62,13 @@ class LivingAccommodationBenefitAmountController @Inject()(implicit val cc: Mess
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       val redirectUrl = CheckYourBenefitsController.show(taxYear, employmentId).url
 
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya), EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-          buildForm(user.isAgent).bindFromRequest().fold(
+          buildForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val cyaLivingAccommodationAmount = cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodation))
               Future.successful(BadRequest(livingAccommodationBenefitAmountView(taxYear, formWithErrors, cyaLivingAccommodationAmount, employmentId)))
@@ -82,8 +81,8 @@ class LivingAccommodationBenefitAmountController @Inject()(implicit val cc: Mess
   }
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
-                               (implicit user: User[_]): Future[Result] = {
-    accommodationService.updateAccommodation(taxYear, employmentId, employmentUserData, amount).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    accommodationService.updateAccommodation(request.user, taxYear, employmentId, employmentUserData, amount).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         val nextPage = QualifyingRelocationBenefitsController.show(taxYear, employmentId)

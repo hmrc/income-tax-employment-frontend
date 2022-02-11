@@ -20,7 +20,7 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.income.routes.IncomeTaxOrIncurredCostsBenefitsController
 import forms.{AmountForm, FormUtils}
-import models.User
+import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
@@ -31,7 +31,7 @@ import services.EmploymentSessionService
 import services.RedirectService.{beneficialLoansAmountRedirects, benefitsSubmitRedirect, redirectBasedOnCurrentAnswers}
 import services.benefits.MedicalService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.medical.BeneficialLoansAmountView
 
 import javax.inject.Inject
@@ -45,17 +45,16 @@ class BeneficialLoansAmountController @Inject()(implicit val cc: MessagesControl
                                                 val employmentSessionService: EmploymentSessionService,
                                                 medicalService: MedicalService,
                                                 errorHandler: ErrorHandler,
-                                                ec: ExecutionContext,
-                                                clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+                                                ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoan))
 
-          val form = fillFormFromPriorAndCYA(amountForm, prior, cyaAmount, employmentId)(
+          val form = fillFormFromPriorAndCYA(amountForm(request.user.isAgent), prior, cyaAmount, employmentId)(
             employment => employment.employmentBenefits.flatMap(_.benefits.flatMap(_.beneficialLoan))
           )
           Future.successful(Ok(beneficialLoansAmountView(taxYear, form, cyaAmount, employmentId)))
@@ -64,12 +63,12 @@ class BeneficialLoansAmountController @Inject()(implicit val cc: MessagesControl
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { cya =>
 
         redirectBasedOnCurrentAnswers(taxYear, employmentId, cya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-          amountForm.bindFromRequest().fold(
+          amountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val cyaAmount = cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.beneficialLoan))
               Future.successful(BadRequest(beneficialLoansAmountView(taxYear, formWithErrors, cyaAmount, employmentId)))
@@ -82,8 +81,8 @@ class BeneficialLoansAmountController @Inject()(implicit val cc: MessagesControl
   }
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
-                               (implicit user: User[_]): Future[Result] = {
-    medicalService.updateBeneficialLoan(taxYear, employmentId, employmentUserData, amount).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    medicalService.updateBeneficialLoan(request.user, taxYear, employmentId, employmentUserData, amount).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         val nextPage = IncomeTaxOrIncurredCostsBenefitsController.show(taxYear, employmentId)
@@ -91,10 +90,10 @@ class BeneficialLoansAmountController @Inject()(implicit val cc: MessagesControl
     }
   }
 
-  private def amountForm(implicit user: User[_]): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"benefits.beneficialLoansAmount.error.noEntry.${if (user.isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"benefits.beneficialLoansAmount.error.incorrectFormat.${if (user.isAgent) "agent" else "individual"}",
-    exceedsMaxAmountKey = s"benefits.beneficialLoansAmount.error.overMaximum.${if (user.isAgent) "agent" else "individual"}"
+  private def amountForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
+    emptyFieldKey = s"benefits.beneficialLoansAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
+    wrongFormatKey = s"benefits.beneficialLoansAmount.error.incorrectFormat.${if (isAgent) "agent" else "individual"}",
+    exceedsMaxAmountKey = s"benefits.beneficialLoansAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}"
   )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {

@@ -16,7 +16,7 @@
 
 package config
 
-import models.User
+import models.AuthorisationRequest
 import models.employment.AllEmploymentData
 import org.scalamock.handlers.CallHandler5
 import org.scalamock.scalatest.MockFactory
@@ -30,8 +30,8 @@ trait MockDeleteOrIgnoreExpensesService extends MockFactory {
 
   val mockDeleteOrIgnoreExpensesService: DeleteOrIgnoreExpensesService = mock[DeleteOrIgnoreExpensesService]
 
-  def mockDeleteOrIgnoreExpenses(user: User[_], employmentData: AllEmploymentData, taxYear: Int)(result: Result): CallHandler5[AllEmploymentData, Int, Result, User[_], HeaderCarrier, Future[Result]] = {
-    (mockDeleteOrIgnoreExpensesService.deleteOrIgnoreExpenses(_: AllEmploymentData, _: Int)(_: Result)(_: User[_], _:HeaderCarrier))
+  def mockDeleteOrIgnoreExpenses(user: AuthorisationRequest[_], employmentData: AllEmploymentData, taxYear: Int)(result: Result): CallHandler5[AllEmploymentData, Int, Result, AuthorisationRequest[_], HeaderCarrier, Future[Result]] = {
+    (mockDeleteOrIgnoreExpensesService.deleteOrIgnoreExpenses(_: AllEmploymentData, _: Int)(_: Result)(_: AuthorisationRequest[_], _:HeaderCarrier))
       .expects(employmentData, taxYear, result, user, *)
       .returns(Future.successful(result))
       .anyNumberOfTimes()

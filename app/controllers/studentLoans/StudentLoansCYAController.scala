@@ -19,32 +19,29 @@ package controllers.studentLoans
 import actions.{AuthorisedAction, TaxYearAction}
 import common.SessionValues
 import config.AppConfig
-import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.studentLoans.StudentLoansCYAService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.studentLoans.StudentLoansCYAView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class StudentLoansCYAController @Inject()(
-                                           mcc: MessagesControllerComponents,
-                                           view: StudentLoansCYAView,
-                                           service: StudentLoansCYAService,
-                                           authAction: AuthorisedAction,
-                                           inYearAction: InYearUtil,
-                                           implicit val appConfig: AppConfig,
-                                           implicit val ec: ExecutionContext,
-                                           implicit val clock: Clock
-                                         ) extends FrontendController(mcc) with I18nSupport with SessionHelper {
+class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
+                                          view: StudentLoansCYAView,
+                                          service: StudentLoansCYAService,
+                                          authAction: AuthorisedAction,
+                                          inYearAction: InYearUtil,
+                                          implicit val appConfig: AppConfig,
+                                          implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
 
-    if(appConfig.studentLoansEnabled) {
+    if (appConfig.studentLoansEnabled) {
       val inYear: Boolean = inYearAction.inYear(taxYear)
-      
+
       service.retrieveCyaDataAndIsCustomerHeld(taxYear, employmentId) { case (cya, isCustomer) =>
         Ok(view(taxYear, employmentId, cya, isCustomer, inYear))
       }
@@ -52,12 +49,12 @@ class StudentLoansCYAController @Inject()(
       Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
     }
   }
-  
+
   def submit(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
     lazy val employerInformationControllerReverseRoute = controllers.employment.routes.EmployerInformationController
     lazy val checkEmploymentExpensesControllerReverseRoute = controllers.expenses.routes.CheckEmploymentExpensesController
-    
-    if(appConfig.studentLoansEnabled) {
+
+    if (appConfig.studentLoansEnabled) {
 
       def getResultFromResponse(returnedEmploymentId: Option[String]): Result = {
         Redirect(returnedEmploymentId match {

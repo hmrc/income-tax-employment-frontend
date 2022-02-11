@@ -43,8 +43,7 @@ class CheckEmploymentDetailsControllerSpec extends UnitTestWithApp
     mockEmploymentSessionService,
     mockCheckEmploymentDetailsService,
     ec,
-    mockErrorHandler,
-    testClock
+    mockErrorHandler
   )
   private val taxYear = mockAppConfig.defaultTaxYear
   private val employmentId = "223/AB12399"

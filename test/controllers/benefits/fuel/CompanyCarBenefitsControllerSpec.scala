@@ -43,7 +43,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
     taxYear,
     employmentId,
     true,
-    hasPriorBenefits = true,hasPriorStudentLoans = true,
+    hasPriorBenefits = true, hasPriorStudentLoans = true,
     EmploymentCYAModel(anEmploymentSource, isUsingCustomerData = false)
   )
 
@@ -54,7 +54,8 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
     taxYear,
     employmentId,
     isPriorSubmission = false,
-    hasPriorBenefits = false,hasPriorStudentLoans = true,
+    hasPriorBenefits = false,
+    hasPriorStudentLoans = true,
     employment = EmploymentCYAModel(anEmploymentSource.copy(employmentBenefits = None), isUsingCustomerData = false)
   )
 
@@ -66,8 +67,7 @@ class CompanyCarBenefitsControllerSpec extends UnitTestWithApp
     mockAppConfig,
     mockEmploymentSessionService,
     mockFuelService,
-    mockErrorHandler,
-    testClock)
+    mockErrorHandler)
 
   ".show" should {
     "get user session data and return the result from the given execution block" in new TestWithAuth {

@@ -20,7 +20,6 @@ import models.User
 import models.benefits.{BenefitsViewModel, CarVanFuelModel}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import services.EmploymentSessionService
-import utils.Clock
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,8 +27,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class FuelService @Inject()(employmentSessionService: EmploymentSessionService,
                             implicit val ec: ExecutionContext) {
 
-  def updateSectionQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                           (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateSectionQuestion(user: User,
+                            taxYear: Int,
+                            employmentId: String,
+                            originalEmploymentUserData: EmploymentUserData,
+                            questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val carVanFuel = cya.employmentBenefits.flatMap(_.carVanFuelModel)
@@ -45,11 +47,14 @@ class FuelService @Inject()(employmentSessionService: EmploymentSessionService,
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateCarQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                       (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateCarQuestion(user: User,
+                        taxYear: Int,
+                        employmentId: String,
+                        originalEmploymentUserData: EmploymentUserData,
+                        questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val carVanFuel = cya.employmentBenefits.flatMap(_.carVanFuelModel)
@@ -63,11 +68,14 @@ class FuelService @Inject()(employmentSessionService: EmploymentSessionService,
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateCar(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-               (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateCar(user: User,
+                taxYear: Int,
+                employmentId: String,
+                originalEmploymentUserData: EmploymentUserData,
+                amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val benefits = cyaModel.employmentBenefits
     val carVanFuel = benefits.flatMap(_.carVanFuelModel)
@@ -76,11 +84,14 @@ class FuelService @Inject()(employmentSessionService: EmploymentSessionService,
       employmentBenefits = benefits.map(_.copy(carVanFuelModel = carVanFuel.map(_.copy(car = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateCarFuelQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                           (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateCarFuelQuestion(user: User,
+                            taxYear: Int,
+                            employmentId: String,
+                            originalEmploymentUserData: EmploymentUserData,
+                            questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val carVanFuel = benefits.flatMap(_.carVanFuelModel)
@@ -94,11 +105,14 @@ class FuelService @Inject()(employmentSessionService: EmploymentSessionService,
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateCarFuel(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                   (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateCarFuel(user: User,
+                    taxYear: Int,
+                    employmentId: String,
+                    originalEmploymentUserData: EmploymentUserData,
+                    amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val benefits = cyaModel.employmentBenefits
     val carVanFuel = benefits.flatMap(_.carVanFuelModel)
@@ -107,11 +121,14 @@ class FuelService @Inject()(employmentSessionService: EmploymentSessionService,
       employmentBenefits = benefits.map(_.copy(carVanFuelModel = carVanFuel.map(_.copy(carFuel = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateVanQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                       (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateVanQuestion(user: User,
+                        taxYear: Int,
+                        employmentId: String,
+                        originalEmploymentUserData: EmploymentUserData,
+                        questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val carVanFuel = benefits.flatMap(_.carVanFuelModel)
@@ -124,11 +141,14 @@ class FuelService @Inject()(employmentSessionService: EmploymentSessionService,
           carVanFuelModel = carVanFuel.map(_.copy(vanQuestion = Some(false), van = None, vanFuelQuestion = None, vanFuel = None)))))
       }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateVan(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-               (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateVan(user: User,
+                taxYear: Int,
+                employmentId: String,
+                originalEmploymentUserData: EmploymentUserData,
+                amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val benefits = cyaModel.employmentBenefits
     val carVanFuel = cyaModel.employmentBenefits.flatMap(_.carVanFuelModel)
@@ -137,11 +157,14 @@ class FuelService @Inject()(employmentSessionService: EmploymentSessionService,
       employmentBenefits = benefits.map(_.copy(carVanFuelModel = carVanFuel.map(_.copy(van = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateVanFuelQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                           (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateVanFuelQuestion(user: User,
+                            taxYear: Int,
+                            employmentId: String,
+                            originalEmploymentUserData: EmploymentUserData,
+                            questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel: EmploymentCYAModel = originalEmploymentUserData.employment
     val benefits: Option[BenefitsViewModel] = cyaModel.employmentBenefits
     val carVanFuelModel: Option[CarVanFuelModel] = cyaModel.employmentBenefits.flatMap(_.carVanFuelModel)
@@ -156,11 +179,14 @@ class FuelService @Inject()(employmentSessionService: EmploymentSessionService,
           }
       )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateVanFuel(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                   (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateVanFuel(user: User,
+                    taxYear: Int,
+                    employmentId: String,
+                    originalEmploymentUserData: EmploymentUserData,
+                    amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val benefits = cyaModel.employmentBenefits
     val carVanFuel = cyaModel.employmentBenefits.flatMap(_.carVanFuelModel)
@@ -169,11 +195,14 @@ class FuelService @Inject()(employmentSessionService: EmploymentSessionService,
       employmentBenefits = benefits.map(_.copy(carVanFuelModel = carVanFuel.map(_.copy(vanFuel = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateMileageQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                           (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateMileageQuestion(user: User,
+                            taxYear: Int,
+                            employmentId: String,
+                            originalEmploymentUserData: EmploymentUserData,
+                            questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel: EmploymentCYAModel = originalEmploymentUserData.employment
     val benefits: Option[BenefitsViewModel] = cyaModel.employmentBenefits
     val carVanFuelModel: Option[CarVanFuelModel] = cyaModel.employmentBenefits.flatMap(_.carVanFuelModel)
@@ -187,11 +216,14 @@ class FuelService @Inject()(employmentSessionService: EmploymentSessionService,
         }
       )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateMileage(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                   (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateMileage(user: User,
+                    taxYear: Int,
+                    employmentId: String,
+                    originalEmploymentUserData: EmploymentUserData,
+                    amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val benefits = cyaModel.employmentBenefits
     val carVanFuel = cyaModel.employmentBenefits.flatMap(_.carVanFuelModel)
@@ -200,6 +232,6 @@ class FuelService @Inject()(employmentSessionService: EmploymentSessionService,
       employmentBenefits = benefits.map(_.copy(carVanFuelModel = carVanFuel.map(_.copy(mileage = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 }

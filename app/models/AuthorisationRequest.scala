@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-package builders.models
+package models
 
-import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
-import models.User
-import play.api.mvc.AnyContentAsEmpty
-import play.api.test.FakeRequest
+import play.api.mvc.{Request, WrappedRequest}
 
-object UserBuilder {
-  val aUserRequest: User[AnyContentAsEmpty.type] = User(
-    mtditid = anEmploymentUserData.mtdItId,
-    arn = None,
-    nino = anEmploymentUserData.nino,
-    sessionId = anEmploymentUserData.sessionId,
-    affinityGroup = "affinityGroup")(FakeRequest())
-}
+case class AuthorisationRequest[T](user: User, request: Request[T]) extends WrappedRequest[T](request)

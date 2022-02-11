@@ -23,15 +23,15 @@
 
 @this(layout: Layout, formWithCsrf: FormWithCSRF, inputText: InputText, heading: Heading, button: Button, errorSummary: ErrorSummary)
 
-@(taxYear: Int, form: Form[BigDecimal], preAmount: Option[BigDecimal])(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, form: Form[BigDecimal], preAmount: Option[BigDecimal])(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleText = @{
-    messages(s"expenses.otherEquipmentAmount.title.${if(user.isAgent) "agent" else "individual"}")
+    messages(s"expenses.otherEquipmentAmount.title.${if(request.user.isAgent) "agent" else "individual"}")
 }
 
 @contentHtml = {
     @if(preAmount.isDefined){
-        <p id="previous-amount" class="govuk-body">@messages(s"expenses.otherEquipmentAmount.wantToClaim.${if(user.isAgent) "agent" else "individual"}",
+        <p id="previous-amount" class="govuk-body">@messages(s"expenses.otherEquipmentAmount.wantToClaim.${if(request.user.isAgent) "agent" else "individual"}",
             bigDecimalCurrency(preAmount.get.toString))</p>
     }
 }

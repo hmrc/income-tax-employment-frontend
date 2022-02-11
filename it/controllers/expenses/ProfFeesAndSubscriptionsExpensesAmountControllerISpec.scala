@@ -17,7 +17,7 @@
 package controllers.expenses
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
 import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
@@ -154,7 +154,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
             dropExpensesDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              ExpensesCYAModel(expensesViewModel(profFeesAndSubscriptions = None))), aUserRequest)
+                          ExpensesCYAModel(expensesViewModel(profFeesAndSubscriptions = None))))
             urlGet(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -184,7 +184,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
             dropExpensesDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-              anExpensesCYAModel.copy(expensesViewModel(Some(newAmount)))), aUserRequest)
+                          anExpensesCYAModel.copy(expensesViewModel(Some(newAmount)))))
             urlGet(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -213,7 +213,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
             dropExpensesDB()
             val allEmploymentData = anAllEmploymentData.copy(hmrcExpenses = None)
             userDataStub(anIncomeTaxUserData.copy(Some(allEmploymentData)), nino, taxYearEOY)
-            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
             urlGet(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -243,7 +243,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
         authoriseAgentOrIndividual(isAgent = false)
         dropExpensesDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
         urlGet(fullUrl(professionalFeesExpensesAmountUrl(taxYear)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
       s"has an SEE OTHER($SEE_OTHER) status" in {
@@ -273,7 +273,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
           authoriseAgentOrIndividual(isAgent = false)
           dropExpensesDB()
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-            anExpensesCYAModel.copy(expensesViewModel(profFeesAndSubscriptions = None).copy(professionalSubscriptionsQuestion = Some(false)))), aUserRequest)
+                      anExpensesCYAModel.copy(expensesViewModel(profFeesAndSubscriptions = None).copy(professionalSubscriptionsQuestion = Some(false)))))
           urlGet(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
         s"has an SEE OTHER($SEE_OTHER) status" in {
@@ -299,7 +299,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
               authoriseAgentOrIndividual(user.isAgent)
               dropExpensesDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
+              insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
               urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), body = "", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -330,7 +330,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
               authoriseAgentOrIndividual(user.isAgent)
               dropExpensesDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
+              insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
               urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -361,7 +361,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
               authoriseAgentOrIndividual(user.isAgent)
               dropExpensesDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
+              insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
               urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -392,7 +392,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
         authoriseAgentOrIndividual(isAgent = false)
         dropExpensesDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
         urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYear)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
       s"has an SEE OTHER($SEE_OTHER) status" in {
@@ -424,7 +424,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
         authoriseAgentOrIndividual(isAgent = false)
         dropExpensesDB()
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-          anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))), aUserRequest)
+                  anExpensesCYAModel.copy(expenses = anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))))
         urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -440,7 +440,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropExpensesDB()
-        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, ExpensesCYAModel(expensesViewModel())), aUserRequest)
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, ExpensesCYAModel(expensesViewModel())))
         urlPost(fullUrl(professionalFeesExpensesAmountUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -450,7 +450,7 @@ class ProfFeesAndSubscriptionsExpensesAmountControllerISpec extends IntegrationT
       }
 
       "updates professionalSubscriptions to the new value" in {
-        lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
+        lazy val cyaModel = findExpensesCyaData(taxYearEOY, anAuthorisationRequest).get
         cyaModel.expensesCya.expenses.professionalSubscriptions shouldBe Some(newAmount)
       }
     }

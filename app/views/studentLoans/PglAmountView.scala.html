@@ -23,14 +23,14 @@
 
 @this(layout: Layout, formWithCsrf: FormWithCSRF, inputText: InputText, heading: Heading, button: Button, errorSummary: ErrorSummary)
 
-@(taxYear: Int, form: Form[BigDecimal], employmentId: String, employerName: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, form: Form[BigDecimal], employmentId: String, employerName: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleText = @{
-    messages(s"studentLoans.pglAmount.title.${if (user.isAgent) "agent" else "individual"}", employerName)
+    messages(s"studentLoans.pglAmount.title.${if (request.user.isAgent) "agent" else "individual"}", employerName)
 }
 
 @contentHtml = {
-    <p class="govuk-body">@messages(s"studentLoans.common.checkWith.${if (user.isAgent) "agent" else "individual"}")</p>
+    <p class="govuk-body">@messages(s"studentLoans.common.checkWith.${if (request.user.isAgent) "agent" else "individual"}")</p>
 }
 
 @layout(pageTitle = titleText, taxYear = Some(taxYear), hasErrors = form.hasErrors) {

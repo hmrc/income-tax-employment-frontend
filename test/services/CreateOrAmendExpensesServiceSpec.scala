@@ -22,7 +22,7 @@ import models.employment._
 import models.expenses.{Expenses, ExpensesViewModel}
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import models.requests
-import models.requests.{CreateUpdateExpensesRequest, CreateUpdateExpensesRequestError, NothingToUpdate}
+import models.requests.{CreateUpdateExpensesRequest, NothingToUpdate}
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, SEE_OTHER}
 import play.api.i18n.MessagesApi
 import play.api.mvc.Result
@@ -114,10 +114,10 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
 
     "return to employment summary when there is nothing changed in relation to the hmrc expenses and customer expenses" in {
       lazy val response = service.createExpensesModelAndReturnResult(
-        expensesUserData(), Some(
-          AllEmpDataHmrcExpensesCustomerAndUnchangedCustomerExpenses
-        ), taxYear
-      )(_ => Future.successful(Redirect("303")))
+        authorisationRequest.user,
+        expensesUserData(),
+        Some(AllEmpDataHmrcExpensesCustomerAndUnchangedCustomerExpenses),
+        taxYear)(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
       redirectUrl(response) shouldBe EmploymentSummaryController.show(taxYear).url
@@ -125,10 +125,10 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
 
     "return to employment summary when there is nothing changed in relation to the customer expenses when no hmrc expenses" in {
       lazy val response = service.createExpensesModelAndReturnResult(
-        expensesUserData(), Some(
-          AllEmpDataNoHmrcExpensesAndUnchangedCustomerExpenses
-        ), taxYear
-      )(_ => Future.successful(Redirect("303")))
+        authorisationRequest.user,
+        expensesUserData(),
+        Some(AllEmpDataNoHmrcExpensesAndUnchangedCustomerExpenses),
+        taxYear)(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
       redirectUrl(response) shouldBe EmploymentSummaryController.show(taxYear).url
@@ -136,10 +136,10 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
 
     "return to employment summary when there is nothing changed in relation to the hmrc expenses when no customer expenses" in {
       lazy val response = service.createExpensesModelAndReturnResult(
-        expensesUserData(), Some(
-          AllEmpDataNoCustomerAndUnchangedHmrcExpenses
-        ), taxYear
-      )(_ => Future.successful(Redirect("303")))
+        authorisationRequest.user,
+        expensesUserData(),
+        Some(AllEmpDataNoCustomerAndUnchangedHmrcExpenses),
+        taxYear)(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
       redirectUrl(response) shouldBe EmploymentSummaryController.show(taxYear).url
@@ -147,15 +147,10 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
 
     "redirect after successfully posting changed expensesUserData when there are no prior customer expenses or hmrc expenses" in {
       lazy val response = service.createExpensesModelAndReturnResult(
-        expensesUserData(), Some(
-          AllEmploymentData(
-            Seq.empty,
-            None,
-            Seq(),
-            None
-          )
-        ), taxYear
-      )(_ => Future.successful(Redirect("303")))
+        authorisationRequest.user,
+        expensesUserData(),
+        Some(AllEmploymentData(Seq.empty, None, Seq(), None)),
+        taxYear)(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
       redirectUrl(response) shouldBe "303"
@@ -163,15 +158,10 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
 
     "redirect after successfully posting expensesUserData with no expenses when there are no prior customer expenses or hmrc expenses" in {
       lazy val response = service.createExpensesModelAndReturnResult(
-        expensesUserData().copy(expensesCya = expensesCyaDataWithNoExpenses), Some(
-          AllEmploymentData(
-            Seq.empty,
-            None,
-            Seq(),
-            None
-          )
-        ), taxYear
-      )(_ => Future.successful(Redirect("303")))
+        authorisationRequest.user,
+        expensesUserData().copy(expensesCya = expensesCyaDataWithNoExpenses),
+        Some(AllEmploymentData(Seq.empty, None, Seq(), None)),
+        taxYear)(_ => Future.successful(Redirect("303")))
 
       status(response) shouldBe SEE_OTHER
       redirectUrl(response) shouldBe "303"
@@ -181,15 +171,10 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
       "there is no prior customer expenses but hmrc expenses exists with a date ignored" in {
 
         lazy val response = service.createExpensesModelAndReturnResult(
-          expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))), Some(
-            AllEmploymentData(
-              Seq.empty,
-              Some(EmploymentExpenses(None, dateIgnored = Some("2021-01-01"), None, Some(expensesCyaData.expenses.toExpenses))),
-              Seq(),
-              None
-            )
-          ), taxYear
-        )(_ => Future.successful(Redirect("303")))
+          authorisationRequest.user,
+          expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))),
+          Some(AllEmploymentData(Seq.empty, Some(EmploymentExpenses(None, dateIgnored = Some("2021-01-01"), None, Some(expensesCyaData.expenses.toExpenses))), Seq(), None)),
+          taxYear)(_ => Future.successful(Redirect("303")))
 
         status(response) shouldBe SEE_OTHER
         redirectUrl(response) shouldBe "303"
@@ -200,15 +185,10 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
       "there is no prior customer expenses  but prior hmrc expenses exists with date ignored is empty" in {
 
         lazy val response = service.createExpensesModelAndReturnResult(
-          expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))), Some(
-            AllEmploymentData(
-              Seq.empty,
-              Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))),
-              Seq(),
-              None
-            )
-          ), taxYear
-        )(_ => Future.successful(Redirect("303")))
+          authorisationRequest.user,
+          expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))),
+          Some(AllEmploymentData(Seq.empty, Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))), Seq(), None)),
+          taxYear)(_ => Future.successful(Redirect("303")))
 
         status(response) shouldBe SEE_OTHER
         redirectUrl(response) shouldBe "303"
@@ -220,15 +200,10 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
 
         val newAmount = BigDecimal("950.11")
         lazy val response = service.createExpensesModelAndReturnResult(
-          expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))), Some(
-            AllEmploymentData(
-              Seq.empty,
-              Some(EmploymentExpenses(None, dateIgnored = Some("2021-01-01"), None, Some(expensesCyaData.expenses.toExpenses))),
-              Seq(),
-              None
-            )
-          ), taxYear
-        )(_ => Future.successful(Redirect("303")))
+          authorisationRequest.user,
+          expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))),
+          Some(AllEmploymentData(Seq.empty, Some(EmploymentExpenses(None, dateIgnored = Some("2021-01-01"), None, Some(expensesCyaData.expenses.toExpenses))), Seq(), None)),
+          taxYear)(_ => Future.successful(Redirect("303")))
 
         status(response) shouldBe SEE_OTHER
         redirectUrl(response) shouldBe "303"
@@ -239,7 +214,6 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
   "createOrUpdateExpensesResult" should {
     "return a successful result using the request model to make the api call and return the correct redirect" when {
       "hmrc expenses data has ignoreExpenses(true)" in {
-
         mockCreateOrAmendExpensesSuccess(nino, taxYear, requests.CreateUpdateExpensesRequest(Some(true), expensesModel))
 
         val response: Future[Either[Result, Result]] = service.createOrUpdateExpensesResult(
@@ -282,74 +256,63 @@ class CreateOrAmendExpensesServiceSpec extends UnitTest with MockCreateOrAmendEx
 
   "cyaAndPriorToCreateUpdateExpensesRequest" should {
     "return a Left(NothingToUpdate) if there are no customer expenses and cya data is unchanged in relation to hmrc expenses" in {
-      val result: Either[CreateUpdateExpensesRequestError, CreateUpdateExpensesRequest] = service.cyaAndPriorToCreateUpdateExpensesRequest(
-        expensesUserData(), Some(
-          AllEmpDataNoCustomerAndUnchangedHmrcExpenses
-        )
+      val result = service.cyaAndPriorToCreateUpdateExpensesRequest(
+        authorisationRequest.user,
+        expensesUserData(),
+        Some(AllEmpDataNoCustomerAndUnchangedHmrcExpenses)
       )
+
       result shouldBe Left(NothingToUpdate)
     }
 
     "return a Left(NothingToUpdate) if cya data is unchanged in relation to customer expenses when hmrc expenses also present" in {
-      val result: Either[CreateUpdateExpensesRequestError, CreateUpdateExpensesRequest] = service.cyaAndPriorToCreateUpdateExpensesRequest(
-        expensesUserData(), Some(
-          AllEmpDataHmrcExpensesCustomerAndUnchangedCustomerExpenses
-        )
+      val result = service.cyaAndPriorToCreateUpdateExpensesRequest(
+        authorisationRequest.user,
+        expensesUserData(),
+        Some(AllEmpDataHmrcExpensesCustomerAndUnchangedCustomerExpenses)
       )
+
       result shouldBe Left(NothingToUpdate)
     }
 
     "return a Left(NothingToUpdate) if cya data is unchanged in relation to customer expenses when no hmrc expenses" in {
-      val result: Either[CreateUpdateExpensesRequestError, CreateUpdateExpensesRequest] = service.cyaAndPriorToCreateUpdateExpensesRequest(
-        expensesUserData(), Some(
-          AllEmpDataNoHmrcExpensesAndUnchangedCustomerExpenses
-        )
+      val result = service.cyaAndPriorToCreateUpdateExpensesRequest(
+        authorisationRequest.user,
+        expensesUserData(),
+        Some(AllEmpDataNoHmrcExpensesAndUnchangedCustomerExpenses)
       )
+
       result shouldBe Left(NothingToUpdate)
     }
 
     "return a Right when no customer expenses but there are cya data changes in relation to hmrc expenses" in {
-      val result: Either[CreateUpdateExpensesRequestError, CreateUpdateExpensesRequest] = service.cyaAndPriorToCreateUpdateExpensesRequest(
-        expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))), Some(
-          AllEmploymentData(
-            Seq.empty,
-            Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))),
-            Seq(),
-            None
-          )
-        )
+      val result = service.cyaAndPriorToCreateUpdateExpensesRequest(
+        authorisationRequest.user,
+        expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))),
+        Some(AllEmploymentData(Seq.empty, Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))), Seq(), None))
       )
+
       result.isRight shouldBe true
     }
 
     "return a Right when no hmrc expenses but there are changes in relation to customer expenses" in {
-      val result: Either[CreateUpdateExpensesRequestError, CreateUpdateExpensesRequest] = service.cyaAndPriorToCreateUpdateExpensesRequest(
-        expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))), Some(
-          AllEmploymentData(
-            Seq.empty,
-            None,
-            Seq(),
-            Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses))),
-          )
-        )
+      val result = service.cyaAndPriorToCreateUpdateExpensesRequest(
+        authorisationRequest.user,
+        expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))),
+        Some(AllEmploymentData(Seq.empty, None, Seq(), Some(EmploymentExpenses(None, None, None, Some(expensesCyaData.expenses.toExpenses)))))
       )
+
       result.isRight shouldBe true
     }
 
     "return a Right when there are prior hmrc expenses or customer expenses but updated cya data" in {
-      val result: Either[CreateUpdateExpensesRequestError, CreateUpdateExpensesRequest] = service.cyaAndPriorToCreateUpdateExpensesRequest(
-        expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))), Some(
-          AllEmploymentData(
-            Seq.empty,
-            None,
-            Seq(),
-            None,
-          )
-        )
+      val result = service.cyaAndPriorToCreateUpdateExpensesRequest(
+        authorisationRequest.user,
+        expensesUserData(expensesCyaData.copy(expensesViewModel.copy(flatRateJobExpenses = Some(newAmount)))),
+        Some(AllEmploymentData(Seq.empty, None, Seq(), None))
       )
+
       result.isRight shouldBe true
     }
-
   }
-
 }

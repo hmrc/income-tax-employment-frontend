@@ -59,7 +59,7 @@
 //                                        ec: ExecutionContext,
 //                                        clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
 //
-//  def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
+//  def yesNoForm(implicit request: AuthorisationRequest[_]): Form[Boolean] = YesNoForm.yesNoForm(
 //    missingInputError = s"employment.other-payments.errors.noRadioSelected.${if (user.isAgent) "agent" else "individual"}"
 //  )
 //

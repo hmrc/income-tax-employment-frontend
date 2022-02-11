@@ -16,8 +16,9 @@
 
 package controllers.employment
 
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import models.User
+import models.AuthorisationRequest
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -26,8 +27,8 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 import utils.PageUrls.{checkYourDetailsUrl, fullUrl, overviewUrl, payrollIdUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -36,7 +37,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
   val employmentId = "001"
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-  private val userRequest: User[_] = User(mtditid, None, nino, sessionId, affinityGroup)
+  private val userRequest: AuthorisationRequest[_] = anAuthorisationRequest
 
   object Selectors {
     val paragraph1Selector = "#main-content > div > div > form > div > label > p:nth-child(2)"
@@ -174,12 +175,13 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(cya(false), userRequest)
+            insertCyaData(cya(false))
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlGet(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -206,12 +208,13 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(cyaWithPayrollId(), userRequest)
+            insertCyaData(cyaWithPayrollId())
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlGet(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -252,7 +255,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(cya(), userRequest)
+            insertCyaData(cya())
             urlGet(fullUrl(payrollIdUrl(taxYear, employmentId)), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
@@ -284,12 +287,13 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(cya(), userRequest)
+            insertCyaData(cya())
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlPost(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), body, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has a BAD_REQUEST status" in {
@@ -322,12 +326,13 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(cya(), userRequest)
+            insertCyaData(cya())
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlPost(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), body, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has a BAD_REQUEST status" in {
@@ -360,12 +365,13 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(cya(), userRequest)
+            insertCyaData(cya())
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlPost(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), body, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has a BAD_REQUEST status" in {
@@ -397,7 +403,7 @@ class EmployerPayrollIdControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(cya(), userRequest)
+            insertCyaData(cya())
             urlPost(fullUrl(payrollIdUrl(taxYearEOY, employmentId)), body, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 

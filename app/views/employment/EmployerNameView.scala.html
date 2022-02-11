@@ -28,9 +28,9 @@
     heading: Heading
 )
 
-@(form: Form[String], taxYear: Int, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[String], taxYear: Int, employmentId: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
-@headingForUse = @{messages(getAgentDynamicContent("employment.employerName.heading", user.isAgent))}
+@headingForUse = @{messages(getAgentDynamicContent("employment.employerName.heading", request.user.isAgent))}
 
 @titleForUse = @{(headingForUse)}
 

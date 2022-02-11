@@ -17,7 +17,7 @@
 package controllers.expenses
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
 import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
@@ -139,7 +139,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))), aUserRequest)
+                          anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))))
             urlGet(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -171,7 +171,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
             urlGet(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -204,7 +204,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = Some(false)))), aUserRequest)
+                          anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = Some(false)))))
             urlGet(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -267,7 +267,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-          anExpensesCYAModel.copy(ExpensesViewModel(claimingEmploymentExpenses = true, isUsingCustomerData = true))), aUserRequest)
+                  anExpensesCYAModel.copy(ExpensesViewModel(claimingEmploymentExpenses = true, isUsingCustomerData = true))))
         urlGet(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -289,7 +289,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           lazy val result: WSResponse = {
             dropExpensesDB()
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))), aUserRequest)
+                          anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptionsQuestion = None))))
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -330,7 +330,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYear)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-          anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptions = None))), aUserRequest)
+                  anExpensesCYAModel.copy(anExpensesViewModel.copy(professionalSubscriptions = None))))
         urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -340,7 +340,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
       }
 
       "updates professionalSubscriptionQuestion to Some(true)" in {
-        lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
+        lazy val cyaModel = findExpensesCyaData(taxYearEOY, anAuthorisationRequest).get
         cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
         cyaModel.expensesCya.expenses.professionalSubscriptionsQuestion shouldBe Some(true)
       }
@@ -353,7 +353,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
           dropExpensesDB()
           authoriseAgentOrIndividual(isAgent = false)
           userDataStub(anIncomeTaxUserData, nino, taxYear)
-          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
+          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
           urlPost(fullUrl(professionalFeesExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -363,7 +363,7 @@ class ProfessionalFeesAndSubscriptionsExpensesControllerISpec extends Integratio
         }
 
         "update professionalSubscriptionQuestion to Some(false) and wipes jobExpenses amount" in {
-          lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
+          lazy val cyaModel = findExpensesCyaData(taxYearEOY, anAuthorisationRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
           cyaModel.expensesCya.expenses.professionalSubscriptionsQuestion shouldBe Some(false)

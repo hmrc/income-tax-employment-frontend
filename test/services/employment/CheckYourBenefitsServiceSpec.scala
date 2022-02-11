@@ -19,9 +19,7 @@ package services.employment
 import audit.{AmendEmploymentBenefitsUpdateAudit, CreateNewEmploymentBenefitsAudit}
 import builders.models.benefits.BenefitsBuilder.aBenefits
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
-import builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
 import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
-import builders.models.employment.PayBuilder.aPay
 import config.{MockAuditService, MockEmploymentSessionService, MockNrsService}
 import models.benefits.{Benefits, DecodedAmendBenefitsPayload, DecodedCreateNewBenefitsPayload}
 import models.employment._
@@ -29,8 +27,6 @@ import models.employment.createUpdate.{CreateUpdateEmployment, CreateUpdateEmplo
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import utils.UnitTest
-
-import scala.concurrent.Future
 
 class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionService with MockNrsService with MockAuditService {
 
@@ -98,7 +94,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
           nonCash = allBenefits.nonCash
         )))
 
-      await(underTest.performSubmitNrsPayload(model, "001", prior = None)) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(authorisationRequest.user, model, "001", prior = None)) shouldBe Right()
 
     }
 
@@ -231,11 +227,11 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
         )
       ))
 
-      await(underTest.performSubmitNrsPayload(model, "001", Some(priorData))) shouldBe Right()
+      await(underTest.performSubmitNrsPayload(authorisationRequest.user, model, "001", Some(priorData))) shouldBe Right()
     }
   }
 
-  "performSubmitAudits"should {
+  "performSubmitAudits" should {
     "send an audit from the request model when it's a create" in {
       val model: CreateUpdateEmploymentRequest = CreateUpdateEmploymentRequest(
         Some(anEmploymentSource.employmentId),
@@ -266,8 +262,13 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
         Some("employmentId")
       )
 
-      val createNewEmploymentsAudit = CreateNewEmploymentBenefitsAudit(2021, user.affinityGroup.toLowerCase, user.nino,
-        user.mtditid, anEmploymentSource.employerName, Some(anEmploymentSource.employerRef.get), allBenefits)
+      val createNewEmploymentsAudit = CreateNewEmploymentBenefitsAudit(2021,
+        authorisationRequest.user.affinityGroup.toLowerCase,
+        authorisationRequest.user.nino,
+        authorisationRequest.user.mtditid,
+        anEmploymentSource.employerName,
+        Some(anEmploymentSource.employerRef.get),
+        allBenefits)
 
       mockAuditSendEvent(createNewEmploymentsAudit.toAuditModel)
 
@@ -275,7 +276,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
       val employmentDataWithoutBenefits = anAllEmploymentData.copy(customerEmploymentData = Seq(customerEmploymentData))
       val expected: AuditResult = Success
 
-      val result = underTest.performSubmitAudits(model, employmentId = anEmploymentSource.employmentId, taxYear = 2021, Some(employmentDataWithoutBenefits)).get
+      val result = underTest.performSubmitAudits(authorisationRequest.user, model, employmentId = anEmploymentSource.employmentId, taxYear = 2021, Some(employmentDataWithoutBenefits)).get
       await(result) shouldBe expected
     }
 
@@ -309,12 +310,17 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
         Some("employmentId")
       )
 
-      val amendAudit = AmendEmploymentBenefitsUpdateAudit(2021, user.affinityGroup.toLowerCase, user.nino, user.mtditid,
-        aBenefits, amendBenefits)
+      val amendAudit = AmendEmploymentBenefitsUpdateAudit(
+        2021,
+        authorisationRequest.user.affinityGroup.toLowerCase,
+        authorisationRequest.user.nino,
+        authorisationRequest.user.mtditid,
+        aBenefits,
+        amendBenefits)
       mockAuditSendEvent(amendAudit.toAuditModel)
 
       val expected: AuditResult = Success
-      val result = underTest.performSubmitAudits(model, employmentId = anEmploymentSource.employmentId, taxYear = 2021, Some(anAllEmploymentData)).get
+      val result = underTest.performSubmitAudits(authorisationRequest.user, model, employmentId = anEmploymentSource.employmentId, taxYear = 2021, Some(anAllEmploymentData)).get
       await(result) shouldBe expected
     }
 
@@ -347,8 +353,7 @@ class CheckYourBenefitsServiceSpec extends UnitTest with MockEmploymentSessionSe
         ),
         Some("001")
       )
-      val expected: AuditResult = (Success)
-      val result = underTest.performSubmitAudits(model, employmentId = "003", taxYear = 2021, Some(employmentsModel))
+      val result = underTest.performSubmitAudits(authorisationRequest.user, model, employmentId = "003", taxYear = 2021, Some(employmentsModel))
       result shouldBe None
     }
   }

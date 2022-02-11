@@ -23,9 +23,9 @@
 
 @this(layout: Layout, formWithCsrf: FormWithCSRF, inputText: InputText, heading: Heading, button: Button, errorSummary: ErrorSummary)
 
-@(taxYear: Int, form: Form[BigDecimal], preAmount: Option[BigDecimal], empId:String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, form: Form[BigDecimal], preAmount: Option[BigDecimal], empId:String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
-@titleText = @{messages(s"benefits.incidentalCostsBenefitsAmount.title.${if(user.isAgent) "agent" else "individual"}")}
+@titleText = @{messages(s"benefits.incidentalCostsBenefitsAmount.title.${if(request.user.isAgent) "agent" else "individual"}")}
 
 @contentHtml = {
     @if(preAmount.isDefined){

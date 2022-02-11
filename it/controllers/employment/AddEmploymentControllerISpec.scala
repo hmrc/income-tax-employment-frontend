@@ -16,8 +16,8 @@
 
 package controllers.employment
 
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.UserBuilder.aUserRequest
 import common.{SessionValues, UUID}
 import forms.YesNoForm
 import models.IncomeTaxUserData
@@ -103,7 +103,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
   private val employmentId = UUID.randomUUID
 
   private def employmentUserData(isPrior: Boolean, employmentCyaModel: EmploymentCYAModel): EmploymentUserData =
-    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior,employmentCyaModel)
+    EmploymentUserData(sessionId, mtditid, nino, taxYearEOY, employmentId, isPriorSubmission = isPrior, hasPriorBenefits = isPrior, hasPriorStudentLoans = isPrior, employmentCyaModel)
 
   def cyaModel(employerName: String, hmrc: Boolean): EmploymentCYAModel = EmploymentCYAModel(EmploymentDetails(employerName, currentDataIsHmrcHeld = hmrc))
 
@@ -139,6 +139,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)
@@ -158,7 +159,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             userDataStub(IncomeTaxUserData(None), nino, taxYear)
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)))
             urlGet(fullUrl(addEmploymentUrl(taxYear)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear, Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> "fake-id"))))
           }
 
@@ -167,6 +168,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)
@@ -246,6 +248,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           welshToggleCheck(user.isWelsh)
@@ -313,7 +316,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)))
             userDataStub(IncomeTaxUserData(None), nino, taxYear - 1)
             urlPost(fullUrl(addEmploymentUrl(taxYearEOY)), follow = false, body = yesNoFormYes, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
@@ -331,7 +334,7 @@ class AddEmploymentControllerISpec extends IntegrationTest with ViewHelpers with
           lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel("test", hmrc = true)))
             userDataStub(IncomeTaxUserData(None), nino, taxYear - 1)
             urlPost(fullUrl(addEmploymentUrl(taxYearEOY)), follow = false, body = yesNoFormNo, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY,
               extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))

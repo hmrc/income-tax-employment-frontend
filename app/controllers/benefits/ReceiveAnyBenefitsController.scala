@@ -21,7 +21,7 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.fuel.routes.CarVanFuelBenefitsController
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
-import models.User
+import models.AuthorisationRequest
 import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -30,7 +30,7 @@ import services.EmploymentSessionService
 import services.RedirectService.benefitsSubmitRedirect
 import services.benefits.BenefitsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.ReceiveAnyBenefitsView
 
 import javax.inject.Inject
@@ -44,27 +44,26 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
                                              employmentSessionService: EmploymentSessionService,
                                              benefitsService: BenefitsService,
                                              errorHandler: ErrorHandler,
-                                             ec: ExecutionContext,
-                                             clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                             ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataResult(taxYear, employmentId) {
-        case Some(cya) =>
-          cya.employment.employmentBenefits match {
-            case Some(model) => Future.successful(Ok(receiveAnyBenefitsView(yesNoForm.fill(model.isBenefitsReceived), taxYear, employmentId)))
-            case None => Future.successful(Ok(receiveAnyBenefitsView(yesNoForm, taxYear, employmentId)))
-          }
+        case Some(cya: EmploymentUserData) => cya.employment.employmentBenefits match {
+          case Some(model) =>
+            Future.successful(Ok(receiveAnyBenefitsView(yesNoForm(request.user.isAgent).fill(model.isBenefitsReceived), taxYear, employmentId)))
+          case None => Future.successful(Ok(receiveAnyBenefitsView(yesNoForm(request.user.isAgent), taxYear, employmentId)))
+        }
         case None => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
       }
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataResult(taxYear, employmentId) {
         case Some(cya) =>
-          yesNoForm.bindFromRequest().fold(
+          yesNoForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(receiveAnyBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, cya, yesNo)
           )
@@ -74,8 +73,8 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
   }
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
-                               (implicit user: User[_]): Future[Result] = {
-    benefitsService.updateIsBenefitsReceived(taxYear, employmentId, employmentUserData, questionValue).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    benefitsService.updateIsBenefitsReceived(request.user, taxYear, employmentId, employmentUserData, questionValue).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) => if (questionValue) {
         benefitsSubmitRedirect(employmentUserData.employment, CarVanFuelBenefitsController.show(taxYear, employmentId))(taxYear, employmentId)
@@ -85,7 +84,7 @@ class ReceiveAnyBenefitsController @Inject()(implicit val cc: MessagesController
     }
   }
 
-  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"receiveAnyBenefits.errors.noRadioSelected.${if (user.isAgent) "agent" else "individual"}"
+  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"receiveAnyBenefits.errors.noRadioSelected.${if (isAgent) "agent" else "individual"}"
   )
 }

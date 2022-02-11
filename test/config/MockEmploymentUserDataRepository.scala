@@ -18,7 +18,7 @@ package config
 
 import models.User
 import models.mongo.{DatabaseError, EmploymentUserData}
-import org.scalamock.handlers.{CallHandler2, CallHandler3}
+import org.scalamock.handlers.{CallHandler1, CallHandler3}
 import org.scalamock.scalatest.MockFactory
 import repositories.EmploymentUserDataRepository
 
@@ -31,23 +31,23 @@ trait MockEmploymentUserDataRepository extends MockFactory {
   def mockFind(taxYear: Int,
                id: String,
                repositoryResponse: Either[DatabaseError, Option[EmploymentUserData]]
-              ): CallHandler3[Int, String, User[_], Future[Either[DatabaseError, Option[EmploymentUserData]]]] = {
-    (mockEmploymentUserDataRepository.find(_: Int, _: String)(_: User[_]))
+              ): CallHandler3[Int, String, User, Future[Either[DatabaseError, Option[EmploymentUserData]]]] = {
+    (mockEmploymentUserDataRepository.find(_: Int, _: String, _: User))
       .expects(taxYear, id, *)
       .returns(Future.successful(repositoryResponse))
       .anyNumberOfTimes()
   }
 
   def mockCreateOrUpdate(employmentUserData: EmploymentUserData,
-                         response: Either[DatabaseError, Unit]): CallHandler2[EmploymentUserData, User[_], Future[Either[DatabaseError, Unit]]] = {
-    (mockEmploymentUserDataRepository.createOrUpdate(_: EmploymentUserData)(_: User[_]))
-      .expects(employmentUserData, *)
+                         response: Either[DatabaseError, Unit]): CallHandler1[EmploymentUserData, Future[Either[DatabaseError, Unit]]] = {
+    (mockEmploymentUserDataRepository.createOrUpdate(_: EmploymentUserData))
+      .expects(employmentUserData)
       .returns(Future.successful(response))
       .anyNumberOfTimes()
   }
 
   def mockClear(taxYear: Int, employmentId: String, response: Boolean): Unit = {
-    (mockEmploymentUserDataRepository.clear(_: Int, _: String)(_: User[_]))
+    (mockEmploymentUserDataRepository.clear(_: Int, _: String, _: User))
       .expects(taxYear, employmentId, *)
       .returns(Future.successful(response))
       .anyNumberOfTimes()

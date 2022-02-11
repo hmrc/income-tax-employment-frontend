@@ -20,7 +20,6 @@ import models.User
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import services.EmploymentSessionService
-import utils.Clock
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,8 +27,10 @@ import scala.concurrent.{ExecutionContext, Future}
 class ExpensesService @Inject()(employmentSessionService: EmploymentSessionService,
                                 implicit val ec: ExecutionContext) {
 
-  def updateClaimingEmploymentExpenses(taxYear: Int, originalExpensesUserData: ExpensesUserData, questionValue: Boolean)
-                                      (implicit user: User[_], clock: Clock): Future[Either[Unit, ExpensesUserData]] = {
+  def updateClaimingEmploymentExpenses(user: User,
+                                       taxYear: Int,
+                                       originalExpensesUserData: ExpensesUserData,
+                                       questionValue: Boolean): Future[Either[Unit, ExpensesUserData]] = {
     val expensesCYAModel = originalExpensesUserData.expensesCya
     val expenses = expensesCYAModel.expenses
 
@@ -40,6 +41,7 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
     }
 
     employmentSessionService.createOrUpdateExpensesUserDataWith(
+      user,
       taxYear,
       originalExpensesUserData.isPriorSubmission,
       originalExpensesUserData.isPriorSubmission,
@@ -47,8 +49,10 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
     )
   }
 
-  def updateJobExpensesQuestion(taxYear: Int, originalExpensesUserData: ExpensesUserData, questionValue: Boolean)
-                               (implicit user: User[_], clock: Clock): Future[Either[Unit, ExpensesUserData]] = {
+  def updateJobExpensesQuestion(user: User,
+                                taxYear: Int,
+                                originalExpensesUserData: ExpensesUserData,
+                                questionValue: Boolean): Future[Either[Unit, ExpensesUserData]] = {
     val expensesCYAModel = originalExpensesUserData.expensesCya
     val expenses = originalExpensesUserData.expensesCya.expenses
 
@@ -59,6 +63,7 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
     }
 
     employmentSessionService.createOrUpdateExpensesUserDataWith(
+      user,
       taxYear,
       originalExpensesUserData.isPriorSubmission,
       originalExpensesUserData.isPriorSubmission,
@@ -66,13 +71,13 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
     )
   }
 
-  def updateJobExpenses(taxYear: Int, originalExpensesUserData: ExpensesUserData, amount: BigDecimal)
-                       (implicit user: User[_], clock: Clock): Future[Either[Unit, ExpensesUserData]] = {
+  def updateJobExpenses(user: User, taxYear: Int, originalExpensesUserData: ExpensesUserData, amount: BigDecimal): Future[Either[Unit, ExpensesUserData]] = {
     val expensesCYAModel = originalExpensesUserData.expensesCya
     val cya = expensesCYAModel.expenses
     val updatedExpenses: ExpensesCYAModel = expensesCYAModel.copy(expenses = cya.copy(jobExpenses = Some(amount)))
 
     employmentSessionService.createOrUpdateExpensesUserDataWith(
+      user,
       taxYear,
       originalExpensesUserData.isPriorSubmission,
       originalExpensesUserData.isPriorSubmission,
@@ -80,8 +85,10 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
     )
   }
 
-  def updateFlatRateJobExpensesQuestion(taxYear: Int, originalExpensesUserData: ExpensesUserData, questionValue: Boolean)
-                                       (implicit user: User[_], clock: Clock): Future[Either[Unit, ExpensesUserData]] = {
+  def updateFlatRateJobExpensesQuestion(user: User,
+                                        taxYear: Int,
+                                        originalExpensesUserData: ExpensesUserData,
+                                        questionValue: Boolean): Future[Either[Unit, ExpensesUserData]] = {
     val expensesCYAModel = originalExpensesUserData.expensesCya
     val expensesViewModel = expensesCYAModel.expenses
     val updatedExpenses = if (questionValue) {
@@ -91,6 +98,7 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
     }
 
     employmentSessionService.createOrUpdateExpensesUserDataWith(
+      user,
       taxYear,
       originalExpensesUserData.isPriorSubmission,
       originalExpensesUserData.isPriorSubmission,
@@ -98,13 +106,16 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
     )
   }
 
-  def updateFlatRateJobExpenses(taxYear: Int, originalExpensesUserData: ExpensesUserData, amount: BigDecimal)
-                               (implicit user: User[_], clock: Clock): Future[Either[Unit, ExpensesUserData]] = {
+  def updateFlatRateJobExpenses(user: User,
+                                taxYear: Int,
+                                originalExpensesUserData: ExpensesUserData,
+                                amount: BigDecimal): Future[Either[Unit, ExpensesUserData]] = {
     val expensesCYAModel = originalExpensesUserData.expensesCya
     val expensesViewModel = expensesCYAModel.expenses
     val updatedExpenses = expensesCYAModel.copy(expenses = expensesViewModel.copy(flatRateJobExpenses = Some(amount)))
 
     employmentSessionService.createOrUpdateExpensesUserDataWith(
+      user,
       taxYear,
       originalExpensesUserData.isPriorSubmission,
       originalExpensesUserData.isPriorSubmission,
@@ -112,8 +123,10 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
     )
   }
 
-  def updateProfessionalSubscriptionsQuestion(taxYear: Int, originalExpensesUserData: ExpensesUserData, questionValue: Boolean)
-                                             (implicit user: User[_], clock: Clock): Future[Either[Unit, ExpensesUserData]] = {
+  def updateProfessionalSubscriptionsQuestion(user: User,
+                                              taxYear: Int,
+                                              originalExpensesUserData: ExpensesUserData,
+                                              questionValue: Boolean): Future[Either[Unit, ExpensesUserData]] = {
     val expensesCYAModel = originalExpensesUserData.expensesCya
     val expensesCyaModel = expensesCYAModel.expenses
     val updatedExpenses: ExpensesCYAModel = if (questionValue) {
@@ -123,6 +136,7 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
     }
 
     employmentSessionService.createOrUpdateExpensesUserDataWith(
+      user,
       taxYear,
       originalExpensesUserData.isPriorSubmission,
       originalExpensesUserData.isPriorSubmission,
@@ -130,13 +144,16 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
     )
   }
 
-  def updateProfessionalSubscriptions(taxYear: Int, originalExpensesUserData: ExpensesUserData, amount: BigDecimal)
-                                     (implicit user: User[_], clock: Clock): Future[Either[Unit, ExpensesUserData]] = {
+  def updateProfessionalSubscriptions(user: User,
+                                      taxYear: Int,
+                                      originalExpensesUserData: ExpensesUserData,
+                                      amount: BigDecimal): Future[Either[Unit, ExpensesUserData]] = {
     val cyaModel = originalExpensesUserData.expensesCya
     val expenses = cyaModel.expenses
     val updatedExpenses = cyaModel.copy(expenses = expenses.copy(professionalSubscriptions = Some(amount)))
 
     employmentSessionService.createOrUpdateExpensesUserDataWith(
+      user,
       taxYear,
       originalExpensesUserData.isPriorSubmission,
       originalExpensesUserData.isPriorSubmission,
@@ -144,8 +161,10 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
     )
   }
 
-  def updateOtherAndCapitalAllowancesQuestion(taxYear: Int, originalExpensesUserData: ExpensesUserData, questionValue: Boolean)
-                                             (implicit user: User[_], clock: Clock): Future[Either[Unit, ExpensesUserData]] = {
+  def updateOtherAndCapitalAllowancesQuestion(user: User,
+                                              taxYear: Int,
+                                              originalExpensesUserData: ExpensesUserData,
+                                              questionValue: Boolean): Future[Either[Unit, ExpensesUserData]] = {
     val expensesCYAModel = originalExpensesUserData.expensesCya
     val expenses = expensesCYAModel.expenses
     val updatedExpenses: ExpensesCYAModel = if (questionValue) {
@@ -155,6 +174,7 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
     }
 
     employmentSessionService.createOrUpdateExpensesUserDataWith(
+      user,
       taxYear,
       originalExpensesUserData.isPriorSubmission,
       originalExpensesUserData.isPriorSubmission,
@@ -162,13 +182,16 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
     )
   }
 
-  def updateOtherAndCapitalAllowances(taxYear: Int, originalExpensesUserData: ExpensesUserData, amount: BigDecimal)
-                                     (implicit user: User[_], clock: Clock): Future[Either[Unit, ExpensesUserData]] = {
+  def updateOtherAndCapitalAllowances(user: User,
+                                      taxYear: Int,
+                                      originalExpensesUserData: ExpensesUserData,
+                                      amount: BigDecimal): Future[Either[Unit, ExpensesUserData]] = {
     val expensesCYAModel = originalExpensesUserData.expensesCya
     val expensesViewModel = expensesCYAModel.expenses
     val updatedExpenses = expensesCYAModel.copy(expenses = expensesViewModel.copy(otherAndCapitalAllowances = Some(amount)))
 
     employmentSessionService.createOrUpdateExpensesUserDataWith(
+      user,
       taxYear,
       originalExpensesUserData.isPriorSubmission,
       originalExpensesUserData.isPriorSubmission,

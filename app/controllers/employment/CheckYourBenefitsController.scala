@@ -18,14 +18,13 @@ package controllers.employment
 
 import actions.AuthorisedAction
 import actions.AuthorisedTaxYearAction.authorisedTaxYearAction
-import audit.{AmendEmploymentBenefitsUpdateAudit, AuditService, CreateNewEmploymentBenefitsAudit, ViewEmploymentBenefitsAudit}
+import audit.{AuditService, ViewEmploymentBenefitsAudit}
 import common.{EmploymentSection, SessionValues}
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.routes.ReceiveAnyBenefitsController
 import controllers.employment.routes.{CheckYourBenefitsController, EmployerInformationController}
 import controllers.expenses.routes.CheckEmploymentExpensesController
-import javax.inject.Inject
-import models.User
+import models.AuthorisationRequest
 import models.benefits.Benefits
 import models.employment.{AllEmploymentData, EmploymentSourceOrigin}
 import models.mongo.EmploymentCYAModel
@@ -35,9 +34,10 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import services.employment.CheckYourBenefitsService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.employment.{CheckYourBenefitsView, CheckYourBenefitsViewEOY}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
@@ -50,21 +50,20 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
                                             auditService: AuditService,
                                             inYearAction: InYearUtil,
                                             errorHandler: ErrorHandler,
-                                            implicit val clock: Clock,
                                             implicit val ec: ExecutionContext
                                            ) extends FrontendController(mcc) with I18nSupport with SessionHelper with Logging {
 
   //scalastyle:off
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedTaxYearAction(taxYear).async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedTaxYearAction(taxYear).async { implicit request =>
     if (inYearAction.inYear(taxYear)) {
-      employmentSessionService.findPreviousEmploymentUserData(user, taxYear) { allEmploymentData: AllEmploymentData =>
+      employmentSessionService.findPreviousEmploymentUserData(request.user, taxYear) { allEmploymentData: AllEmploymentData =>
         val redirect = Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
         allEmploymentData.inYearEmploymentSourceWith(employmentId) match {
           case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>
             source.employmentBenefits.flatMap(_.benefits) match {
               case None => redirect
               case Some(benefits) =>
-                val auditModel = ViewEmploymentBenefitsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, benefits)
+                val auditModel = ViewEmploymentBenefitsAudit(taxYear, request.user.affinityGroup.toLowerCase, request.user.nino, request.user.mtditid, benefits)
                 auditService.sendAudit[ViewEmploymentBenefitsAudit](auditModel.toAuditModel)
                 Ok(checkYourBenefitsView(taxYear, source.employerName, benefits.toBenefitsViewModel(isUsingCustomerData), allEmploymentData.isLastInYearEmployment, employmentId))
             }
@@ -88,7 +87,7 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
           case None => prior.get.eoyEmploymentSourceWith(employmentId) match {
             case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>
               employmentSessionService.createOrUpdateSessionData(employmentId, EmploymentCYAModel(source, isUsingCustomerData),
-                taxYear, isPriorSubmission = true, source.hasPriorBenefits, source.hasPriorStudentLoans
+                taxYear, isPriorSubmission = true, source.hasPriorBenefits, source.hasPriorStudentLoans, request.user
               )(errorHandler.internalServerError()) {
                 val benefits: Option[Benefits] = source.employmentBenefits.flatMap(_.benefits)
                 benefits match {
@@ -99,7 +98,7 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
               }
             case None =>
               logger.info(s"[CheckYourBenefitsController][saveCYAAndReturnEndOfYearResult] No prior employment data exists with employmentId." +
-                s"Redirecting to overview page. SessionId: ${user.sessionId}")
+                s"Redirecting to overview page. SessionId: ${request.user.sessionId}")
               Future(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
           }
         }
@@ -107,26 +106,26 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
         cya match {
           case Some(cya) =>
-            employmentSessionService.createModelOrReturnResult(cya, prior, taxYear, EmploymentSection.EMPLOYMENT_BENEFITS) match {
+            employmentSessionService.createModelOrReturnResult(request.user, cya, prior, taxYear, EmploymentSection.EMPLOYMENT_BENEFITS) match {
               case Left(result) => Future.successful(result)
               case Right(model) =>
                 employmentSessionService.createOrUpdateEmploymentResult(taxYear, model).flatMap {
-                case Left(result) => Future.successful(result)
-                case Right(returnedEmploymentId) =>
-                  checkYourBenefitsService.performSubmitAudits(model, employmentId, taxYear, prior)
-                  if (appConfig.nrsEnabled) {
-                    checkYourBenefitsService.performSubmitNrsPayload(model, employmentId, prior)
-                  }
-                  employmentSessionService.clear(taxYear, employmentId).map {
-                    case Left(_) => errorHandler.internalServerError()
-                    case Right(_) => getResultFromResponse(returnedEmploymentId, taxYear, employmentId)
-                  }
-              }
+                  case Left(result) => Future.successful(result)
+                  case Right(returnedEmploymentId) =>
+                    checkYourBenefitsService.performSubmitAudits(request.user, model, employmentId, taxYear, prior)
+                    if (appConfig.nrsEnabled) {
+                      checkYourBenefitsService.performSubmitNrsPayload(request.user, model, employmentId, prior)
+                    }
+                    employmentSessionService.clear(request.user, taxYear, employmentId).map {
+                      case Left(_) => errorHandler.internalServerError()
+                      case Right(_) => getResultFromResponse(returnedEmploymentId, taxYear, employmentId)
+                    }
+                }
             }
           case None => Future.successful(Redirect(CheckYourBenefitsController.show(taxYear, employmentId)))
         }
@@ -134,12 +133,12 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
     }
   }
 
-  def getResultFromResponse(returnedEmploymentId: Option[String], taxYear: Int, employmentId: String)(implicit user: User[_]): Result = {
+  def getResultFromResponse(returnedEmploymentId: Option[String], taxYear: Int, employmentId: String)(implicit request: AuthorisationRequest[_]): Result = {
     Redirect(returnedEmploymentId match {
       case Some(employmentId) => EmployerInformationController.show(taxYear, employmentId)
       case None =>
         getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID) match {
-            //TODO go to student loans if enabled
+          //TODO go to student loans if enabled
           case Some(sessionEmploymentId) if sessionEmploymentId == employmentId => CheckEmploymentExpensesController.show(taxYear)
           case _ => EmployerInformationController.show(taxYear, employmentId)
         }

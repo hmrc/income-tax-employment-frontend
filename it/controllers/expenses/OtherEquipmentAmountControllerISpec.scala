@@ -17,7 +17,7 @@
 package controllers.expenses
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
 import builders.models.expenses.ExpensesBuilder.anExpenses
@@ -154,7 +154,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
             val employmentData = anAllEmploymentData.copy(hmrcExpenses = Some(anEmploymentExpenses.copy(expenses = Some(anExpenses.copy(otherAndCapitalAllowances = None)))))
             userDataStub(anIncomeTaxUserData.copy(Some(employmentData)), nino, taxYearEOY)
             val expensesCYAModel = anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(otherAndCapitalAllowances = None))
-            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, expensesCYAModel), aUserRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, expensesCYAModel))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), user.isWelsh, follow = false,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -185,7 +185,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(otherAndCapitalAllowances = Some(newAmount)))), aUserRequest)
+                          anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(otherAndCapitalAllowances = Some(newAmount)))))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -214,7 +214,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -248,7 +248,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
         lazy val result: WSResponse = {
           dropExpensesDB()
           userDataStub(anIncomeTaxUserData, nino, taxYear)
-          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
+          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
           authoriseAgentOrIndividual(user.isAgent)
           urlGet(fullUrl(otherEquipmentExpensesAmountUrl(taxYear)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
@@ -280,7 +280,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           authoriseAgentOrIndividual(user.isAgent)
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-            anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(otherAndCapitalAllowancesQuestion = Some(false)))), aUserRequest)
+                      anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(otherAndCapitalAllowancesQuestion = Some(false)))))
           authoriseAgentOrIndividual(user.isAgent)
           urlGet(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -310,7 +310,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           lazy val result: WSResponse = {
             dropExpensesDB()
             userDataStub(anIncomeTaxUserData, nino, taxYear)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
 
@@ -341,7 +341,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           lazy val result: WSResponse = {
             dropExpensesDB()
             userDataStub(anIncomeTaxUserData, nino, taxYear)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -371,7 +371,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           lazy val result: WSResponse = {
             dropExpensesDB()
             userDataStub(anIncomeTaxUserData, nino, taxYear)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -406,7 +406,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
         lazy val result: WSResponse = {
           dropExpensesDB()
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
+          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -414,7 +414,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
-          lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
+          lazy val cyaModel = findExpensesCyaData(taxYearEOY, anAuthorisationRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
           cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(true)
@@ -438,7 +438,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           dropExpensesDB()
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-            anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(otherAndCapitalAllowancesQuestion = None))), aUserRequest)
+                      anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(otherAndCapitalAllowancesQuestion = None))))
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -455,7 +455,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
         lazy val result: WSResponse = {
           dropExpensesDB()
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
+          insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYearEOY)), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -465,7 +465,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
           result.status shouldBe SEE_OTHER
 
           result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
-          lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
+          lazy val cyaModel = findExpensesCyaData(taxYearEOY, anAuthorisationRequest).get
 
           cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
           cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(true)
@@ -487,7 +487,7 @@ class OtherEquipmentAmountControllerISpec extends IntegrationTest with ViewHelpe
         lazy val result: WSResponse = {
           dropExpensesDB()
           userDataStub(anIncomeTaxUserData, nino, taxYear)
-          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
+          insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(fullUrl(otherEquipmentExpensesAmountUrl(taxYear)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }

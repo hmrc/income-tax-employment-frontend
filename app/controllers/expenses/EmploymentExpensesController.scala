@@ -20,7 +20,7 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes.{CheckEmploymentExpensesController, ExpensesInterruptPageController}
 import forms.YesNoForm
-import models.User
+import models.AuthorisationRequest
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import org.joda.time.DateTimeZone
@@ -48,20 +48,21 @@ class EmploymentExpensesController @Inject()(implicit val cc: MessagesController
                                              ec: ExecutionContext,
                                              clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getExpensesSessionDataResult(taxYear) {
-        case Some(data) => Future.successful(Ok(employmentExpensesView(yesNoForm.fill(data.expensesCya.expenses.claimingEmploymentExpenses), taxYear)))
-        case None => Future.successful(Ok(employmentExpensesView(yesNoForm, taxYear)))
+        case Some(data) =>
+          Future.successful(Ok(employmentExpensesView(yesNoForm(request.user.isAgent).fill(data.expensesCya.expenses.claimingEmploymentExpenses), taxYear)))
+        case None => Future.successful(Ok(employmentExpensesView(yesNoForm(request.user.isAgent), taxYear)))
       }
     }
   }
 
-  def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getExpensesSessionDataResult(taxYear) { data =>
-        yesNoForm.bindFromRequest().fold(
+        yesNoForm(request.user.isAgent).bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(employmentExpensesView(formWithErrors, taxYear))),
           yesNo => handleSuccessForm(taxYear, data, yesNo)
         )
@@ -70,11 +71,11 @@ class EmploymentExpensesController @Inject()(implicit val cc: MessagesController
   }
 
   private def handleSuccessForm(taxYear: Int, data: Option[ExpensesUserData], questionValue: Boolean)
-                               (implicit user: User[_]): Future[Result] = {
-    val expensesUserData = data.getOrElse(ExpensesUserData(user.sessionId, user.mtditid, user.nino, taxYear, isPriorSubmission = false,
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    val expensesUserData = data.getOrElse(ExpensesUserData(request.user.sessionId, request.user.mtditid, request.user.nino, taxYear, isPriorSubmission = false,
       hasPriorExpenses = false, ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = true)), clock.now(DateTimeZone.UTC))
     )
-    expensesService.updateClaimingEmploymentExpenses(taxYear, expensesUserData, questionValue).map {
+    expensesService.updateClaimingEmploymentExpenses(request.user, taxYear, expensesUserData, questionValue).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(expensesUserData) =>
         val nextPage = if (questionValue) {
@@ -86,7 +87,7 @@ class EmploymentExpensesController @Inject()(implicit val cc: MessagesController
     }
   }
 
-  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"expenses.claimEmploymentExpenses.error.noEntry.${if (user.isAgent) "agent" else "individual"}"
+  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"expenses.claimEmploymentExpenses.error.noEntry.${if (isAgent) "agent" else "individual"}"
   )
 }

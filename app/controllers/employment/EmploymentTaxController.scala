@@ -20,7 +20,7 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.employment.routes._
 import forms.AmountForm
-import models.User
+import models.AuthorisationRequest
 import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -29,7 +29,7 @@ import services.EmploymentSessionService
 import services.RedirectService.employmentDetailsRedirect
 import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.employment.EmploymentTaxView
 
 import javax.inject.Inject
@@ -42,12 +42,11 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
                                         employmentSessionService: EmploymentSessionService,
                                         employmentService: EmploymentService,
                                         inYearAction: InYearUtil,
-                                        errorHandler: ErrorHandler,
-                                        implicit val clock: Clock) extends FrontendController(mcc) with I18nSupport with SessionHelper {
+                                        errorHandler: ErrorHandler) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
   private implicit val ec: ExecutionContext = mcc.executionContext
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
@@ -56,9 +55,9 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
             val cyaTax = cya.employment.employmentDetails.totalTaxToDate
             val priorEmployment = prior.map(priorEmp => priorEmp.latestEOYEmployments.filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
             val priorTax = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate)))
-            lazy val unfilledForm = buildForm(user.isAgent)
+            lazy val unfilledForm = buildForm(request.user.isAgent)
             val form: Form[BigDecimal] = cyaTax.fold(unfilledForm)(
-              cyaTaxed => if (priorTax.exists(_.equals(cyaTaxed))) unfilledForm else buildForm(user.isAgent).fill(cyaTaxed))
+              cyaTaxed => if (priorTax.exists(_.equals(cyaTaxed))) unfilledForm else buildForm(request.user.isAgent).fill(cyaTaxed))
             Future.successful(Ok(employmentTaxView(taxYear, employmentId, cya.employment.employmentDetails.employerName, form, cyaTax)))
 
           case None => Future.successful(
@@ -69,12 +68,12 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
   }
 
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       val redirectUrl = CheckEmploymentDetailsController.show(taxYear, employmentId).url
 
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
-        buildForm(user.isAgent).bindFromRequest().fold(
+        buildForm(request.user.isAgent).bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(employmentTaxView(taxYear, employmentId, cya.employment.employmentDetails.employerName,
             formWithErrors, cya.employment.employmentDetails.totalTaxToDate))),
           completeForm => handleSuccessForm(taxYear, employmentId, cya, completeForm)
@@ -84,8 +83,8 @@ class EmploymentTaxController @Inject()(implicit val mcc: MessagesControllerComp
   }
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, totalTaxToDate: BigDecimal)
-                               (implicit user: User[_]): Future[Result] = {
-    employmentService.updateTotalTaxToDate(taxYear, employmentId, employmentUserData, totalTaxToDate).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    employmentService.updateTotalTaxToDate(request.user, taxYear, employmentId, employmentUserData, totalTaxToDate).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) => employmentDetailsRedirect(employmentUserData.employment, taxYear, employmentId, employmentUserData.isPriorSubmission)
     }

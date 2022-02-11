@@ -21,7 +21,7 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.accommodation.routes._
 import controllers.benefits.travel.routes._
 import forms.YesNoForm
-import models.User
+import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
@@ -32,7 +32,7 @@ import services.EmploymentSessionService
 import services.RedirectService._
 import services.benefits.AccommodationService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.accommodation.AccommodationRelocationBenefitsView
 
 import javax.inject.Inject
@@ -46,25 +46,24 @@ class AccommodationRelocationBenefitsController @Inject()(implicit val cc: Messa
                                                           employmentSessionService: EmploymentSessionService,
                                                           accommodationService: AccommodationService,
                                                           errorHandler: ErrorHandler,
-                                                          ec: ExecutionContext,
-                                                          clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                                          ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-
-      employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
-        redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
-
-          cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.sectionQuestion)) match {
-            case Some(questionResult) => Future.successful(Ok(accommodationRelocationBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(accommodationRelocationBenefitsView(yesNoForm, taxYear, employmentId)))
+      employmentSessionService.findEmploymentUserData(taxYear, employmentId, request.user).flatMap {
+        case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+        case Right(optEmploymentUserData) =>
+          redirectBasedOnCurrentAnswers(taxYear, employmentId, optEmploymentUserData, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+            cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.sectionQuestion)) match {
+              case Some(questionResult) => Future.successful(Ok(accommodationRelocationBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
+              case None => Future.successful(Ok(accommodationRelocationBenefitsView(yesNoForm, taxYear, employmentId)))
+            }
           }
-        }
       }
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
@@ -79,8 +78,8 @@ class AccommodationRelocationBenefitsController @Inject()(implicit val cc: Messa
     }
   }
 
-  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.accommodationRelocation.error.${if (user.isAgent) "agent" else "individual"}"
+  private def yesNoForm(implicit request: AuthorisationRequest[_]): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"benefits.accommodationRelocation.error.${if (request.user.isAgent) "agent" else "individual"}"
   )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
@@ -88,8 +87,8 @@ class AccommodationRelocationBenefitsController @Inject()(implicit val cc: Messa
   }
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, sectionQuestionValue: Boolean)
-                               (implicit user: User[_]): Future[Result] = {
-    accommodationService.updateSectionQuestion(taxYear, employmentId, employmentUserData, sectionQuestionValue).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    accommodationService.updateSectionQuestion(request.user, taxYear, employmentId, employmentUserData, sectionQuestionValue).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         val nextPage = if (sectionQuestionValue) {

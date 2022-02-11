@@ -41,13 +41,13 @@
     govukSummaryList: GovukSummaryList
 )
 
-@(taxYear: Int, employerName: String, benefits: BenefitsViewModel, employmentId: String, isUsingCustomerData: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, employerName: String, benefits: BenefitsViewModel, employmentId: String, isUsingCustomerData: Boolean)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
-@headingForUse = @{messages(s"checkYourBenefits.heading.${if(user.isAgent) "agent" else "individual"}")}
+@headingForUse = @{messages(s"checkYourBenefits.heading.${if(request.user.isAgent) "agent" else "individual"}")}
 
-@titleForUse = @{messages(s"checkYourBenefits.heading.${if(user.isAgent) "agent" else "individual"}")}
+@titleForUse = @{messages(s"checkYourBenefits.heading.${if(request.user.isAgent) "agent" else "individual"}")}
 
-@hiddenText(item:String) = @{Some(messages(s"$item.hiddenText.${if(user.isAgent) "agent" else "individual"}"))}
+@hiddenText(item:String) = @{Some(messages(s"$item.hiddenText.${if(request.user.isAgent) "agent" else "individual"}"))}
 
 @showRows(item: String, value: BigDecimal, route: Call = CheckYourBenefitsController.show(taxYear, employmentId)) = @{
     summaryListRow(HtmlContent(messages(item)),HtmlContent(bigDecimalCurrency(value.toString)),actions = Seq((route, messages("common.change"), hiddenText(item))), keyClasses="govuk-!-width-two-thirds")
@@ -62,7 +62,7 @@
     @heading(headingForUse, Some(messages("benefits.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-5")
 
     @if(!isUsingCustomerData){
-        <p class="govuk-body">@messages(s"checkYourBenefits.p1.${if(user.isAgent) "agent" else "individual"}")</p>
+        <p class="govuk-body">@messages(s"checkYourBenefits.p1.${if(request.user.isAgent) "agent" else "individual"}")</p>
     }
 
     <h2 class="govuk-label--m govuk-!-margin-top-9">@employerName</h2>

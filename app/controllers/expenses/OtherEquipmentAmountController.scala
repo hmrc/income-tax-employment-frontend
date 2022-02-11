@@ -20,7 +20,7 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes.CheckEmploymentExpensesController
 import forms.{AmountForm, FormUtils}
-import models.User
+import models.AuthorisationRequest
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import models.redirects.ConditionalRedirect
 import play.api.data.Form
@@ -30,7 +30,7 @@ import services.ExpensesRedirectService.{otherAllowanceAmountRedirects, redirect
 import services.expenses.ExpensesService
 import services.{EmploymentSessionService, ExpensesRedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.expenses.OtherEquipmentAmountView
 
 import javax.inject.Inject
@@ -45,15 +45,14 @@ class OtherEquipmentAmountController @Inject()(implicit val cc: MessagesControll
                                                val employmentSessionService: EmploymentSessionService,
                                                expensesService: ExpensesService,
                                                errorHandler: ErrorHandler,
-                                               ec: ExecutionContext,
-                                               clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+                                               ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
-  def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandleExpenses(taxYear) { (optCya, prior) =>
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { cyaData =>
           val cyaAmount = cyaData.expensesCya.expenses.otherAndCapitalAllowances
-          val form = fillExpensesFormFromPriorAndCYA(buildForm(user.isAgent), prior, cyaAmount) { employmentExpenses =>
+          val form = fillExpensesFormFromPriorAndCYA(buildForm(request.user.isAgent), prior, cyaAmount) { employmentExpenses =>
             employmentExpenses.expenses.flatMap(_.otherAndCapitalAllowances)
           }
 
@@ -63,11 +62,11 @@ class OtherEquipmentAmountController @Inject()(implicit val cc: MessagesControll
     }
   }
 
-  def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getExpensesSessionDataResult(taxYear) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, cya)(redirects(_, taxYear)) { data =>
-          buildForm(user.isAgent).bindFromRequest().fold(
+          buildForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val fillValue = data.expensesCya.expenses.otherAndCapitalAllowances
               Future.successful(BadRequest(otherEquipmentAmountView(taxYear, formWithErrors, fillValue)))
@@ -80,8 +79,8 @@ class OtherEquipmentAmountController @Inject()(implicit val cc: MessagesControll
   }
 
   private def handleSuccessForm(taxYear: Int, expensesUserData: ExpensesUserData, amount: BigDecimal)
-                               (implicit user: User[_]): Future[Result] = {
-    expensesService.updateOtherAndCapitalAllowances(taxYear, expensesUserData, amount).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    expensesService.updateOtherAndCapitalAllowances(request.user, taxYear, expensesUserData, amount).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(expensesUserData) =>
         val nextPage = CheckEmploymentExpensesController.show(taxYear)

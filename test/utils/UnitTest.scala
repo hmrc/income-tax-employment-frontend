@@ -24,7 +24,7 @@ import config.{AppConfig, ErrorHandler, MockAppConfig}
 import models.benefits.Benefits
 import models.employment._
 import models.expenses.Expenses
-import models.{IncomeTaxUserData, User}
+import models.{AuthorisationRequest, IncomeTaxUserData}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
@@ -85,7 +85,8 @@ trait UnitTest extends AnyWordSpec with Matchers with MockFactory with BeforeAnd
   val agentAuthErrorPageView: AgentAuthErrorPageView = app.injector.instanceOf[AgentAuthErrorPageView]
 
   implicit lazy val mockMessagesControllerComponents: MessagesControllerComponents = Helpers.stubMessagesControllerComponents()
-  implicit lazy val user: User[AnyContent] = new User[AnyContent]("1234567890", None, "AA123456A", sessionId, AffinityGroup.Individual.toString)(fakeRequest)
+  implicit lazy val authorisationRequest: AuthorisationRequest[AnyContent] =
+    new AuthorisationRequest[AnyContent](models.User("1234567890", None, "AA123456A", sessionId, AffinityGroup.Individual.toString), fakeRequest)
 
   val authorisedAction = new AuthorisedAction(mockAppConfig)(mockAuthService, stubMessagesControllerComponents())
 

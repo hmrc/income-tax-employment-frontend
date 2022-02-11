@@ -20,7 +20,7 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.medical.routes._
 import forms.{AmountForm, FormUtils}
-import models.User
+import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
@@ -31,7 +31,7 @@ import services.RedirectService.{medicalInsuranceAmountRedirects, redirectBasedO
 import services.benefits.MedicalService
 import services.{EmploymentSessionService, RedirectService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.medical.MedicalOrDentalBenefitsAmountView
 
 import javax.inject.Inject
@@ -45,15 +45,14 @@ class MedicalOrDentalBenefitsAmountController @Inject()(implicit val cc: Message
                                                         val employmentSessionService: EmploymentSessionService,
                                                         medicalService: MedicalService,
                                                         errorHandler: ErrorHandler,
-                                                        ec: ExecutionContext,
-                                                        clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+                                                        ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandle(taxYear, employmentId) { (optCya, prior) =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
           val cyaAmount = cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.medicalInsurance))
-          val form = fillFormFromPriorAndCYA(buildForm(user.isAgent), prior, cyaAmount, employmentId) { employment =>
+          val form = fillFormFromPriorAndCYA(buildForm(request.user.isAgent), prior, cyaAmount, employmentId) { employment =>
             employment.employmentBenefits.flatMap(_.benefits.flatMap(_.medicalInsurance))
           }
           Future(Ok(medicalOrDentalBenefitsAmountView(taxYear, form, cyaAmount, employmentId)))
@@ -62,13 +61,13 @@ class MedicalOrDentalBenefitsAmountController @Inject()(implicit val cc: Message
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, cya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
-          buildForm(user.isAgent).bindFromRequest().fold(
+          buildForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val fillValue = cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel).flatMap(_.medicalInsurance)
               Future.successful(BadRequest(medicalOrDentalBenefitsAmountView(taxYear, formWithErrors, fillValue, employmentId)))
@@ -81,8 +80,8 @@ class MedicalOrDentalBenefitsAmountController @Inject()(implicit val cc: Message
   }
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
-                               (implicit user: User[_]): Future[Result] = {
-    medicalService.updateMedicalInsurance(taxYear, employmentId, employmentUserData, amount).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    medicalService.updateMedicalInsurance(request.user, taxYear, employmentId, employmentUserData, amount).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         val nextPage = ChildcareBenefitsController.show(taxYear, employmentId)

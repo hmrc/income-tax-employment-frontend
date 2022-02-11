@@ -18,8 +18,9 @@ package controllers.employment
 
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
+import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.AmountForm
-import models.User
+import models.AuthorisationRequest
 import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -28,7 +29,7 @@ import services.EmploymentSessionService
 import services.RedirectService.employmentDetailsRedirect
 import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.employment.EmployerPayAmountView
 
 import javax.inject.Inject
@@ -41,11 +42,10 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
                                             appConfig: AppConfig,
                                             employmentSessionService: EmploymentSessionService,
                                             employmentService: EmploymentService,
-                                            errorHandler: ErrorHandler,
-                                            clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                            errorHandler: ErrorHandler) extends FrontendController(cc) with I18nSupport with SessionHelper {
   private implicit val executionContext: ExecutionContext = cc.executionContext
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getAndHandle(taxYear, employmentId) { (cya, prior) =>
@@ -54,26 +54,24 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
             val cyaAmount = cya.employment.employmentDetails.taxablePayToDate
             val priorEmployment = prior.map(priorEmp => priorEmp.latestEOYEmployments.filter(_.employmentId.equals(employmentId))).getOrElse(Seq.empty)
             val priorAmount = priorEmployment.headOption.flatMap(_.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate)))
-            lazy val unfilledForm = buildForm(user.isAgent)
+            lazy val unfilledForm = buildForm(request.user.isAgent)
             val form: Form[BigDecimal] = cyaAmount.fold(unfilledForm)(
-              cyaPay => if (priorAmount.exists(_.equals(cyaPay))) unfilledForm else buildForm(user.isAgent).fill(cyaPay))
+              cyaPay => if (priorAmount.exists(_.equals(cyaPay))) unfilledForm else buildForm(request.user.isAgent).fill(cyaPay))
 
             Future.successful(Ok(employerPayAmountView(taxYear, form,
               cyaAmount, cya.employment.employmentDetails.employerName, employmentId)))
 
           case None => Future.successful(
-            Redirect(controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId)))
+            Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
         }
       }
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      val redirectUrl = controllers.employment.routes.CheckEmploymentDetailsController.show(taxYear, employmentId).url
-
-      employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { data =>
-        buildForm(user.isAgent).bindFromRequest().fold(
+      employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(CheckEmploymentDetailsController.show(taxYear, employmentId).url) { data =>
+        buildForm(request.user.isAgent).bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(employerPayAmountView(taxYear, formWithErrors,
             data.employment.employmentDetails.taxablePayToDate, data.employment.employmentDetails.employerName, employmentId))),
           amount => handleSuccessForm(taxYear, employmentId, data, amount)
@@ -83,8 +81,8 @@ class EmployerPayAmountController @Inject()(implicit val cc: MessagesControllerC
   }
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
-                               (implicit user: User[_]): Future[Result] = {
-    employmentService.updateTaxablePayToDate(taxYear, employmentId, employmentUserData, amount).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    employmentService.updateTaxablePayToDate(request.user, taxYear, employmentId, employmentUserData, amount).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) => employmentDetailsRedirect(employmentUserData.employment, taxYear, employmentId, employmentUserData.isPriorSubmission)
     }

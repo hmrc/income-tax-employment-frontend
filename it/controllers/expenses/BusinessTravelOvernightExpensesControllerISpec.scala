@@ -17,7 +17,7 @@
 package controllers.expenses
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.expenses.ExpensesUserDataBuilder.anExpensesUserData
 import builders.models.expenses.ExpensesViewModelBuilder.anExpensesViewModel
 import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
@@ -199,7 +199,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             val expensesViewModel = anExpensesViewModel.copy(jobExpensesQuestion = None)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel.copy(expensesViewModel)), aUserRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel.copy(expensesViewModel)))
             urlGet(fullUrl(businessTravelExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -249,7 +249,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
             urlGet(fullUrl(businessTravelExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -300,7 +300,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             val expensesViewModel = anExpensesViewModel.copy(jobExpensesQuestion = Some(false))
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel.copy(expensesViewModel)), aUserRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel.copy(expensesViewModel)))
             urlGet(fullUrl(businessTravelExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -386,7 +386,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
           lazy val result: WSResponse = {
             dropExpensesDB()
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              anExpensesCYAModel.copy(anExpensesViewModel.copy(jobExpensesQuestion = None))), aUserRequest)
+                          anExpensesCYAModel.copy(anExpensesViewModel.copy(jobExpensesQuestion = None))))
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(businessTravelExpensesUrl(taxYearEOY)), body = form, welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -443,7 +443,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val expensesViewModel = ExpensesViewModel(claimingEmploymentExpenses = true, Some(true), isUsingCustomerData = false)
-        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(expensesViewModel)), aUserRequest)
+        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(expensesViewModel)))
         urlPost(fullUrl(businessTravelExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -453,13 +453,13 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
       }
 
       "updates jobExpensesQuestion to Some(true)" in {
-        lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
+        lazy val cyaModel = findExpensesCyaData(taxYearEOY, anAuthorisationRequest).get
         cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
         cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(true)
       }
     }
     "updates jobExpensesQuestion to Some(true)" in {
-      lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
+      lazy val cyaModel = findExpensesCyaData(taxYearEOY, anAuthorisationRequest).get
       cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
       cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(true)
     }
@@ -473,7 +473,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
         dropExpensesDB()
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYear)
-        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
+        insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
         urlPost(fullUrl(businessTravelExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -483,7 +483,7 @@ class BusinessTravelOvernightExpensesControllerISpec extends IntegrationTest wit
       }
 
       "update jobExpensesQuestion to Some(false) and wipes jobExpenses amount" in {
-        lazy val cyaModel = findExpensesCyaData(taxYearEOY, aUserRequest).get
+        lazy val cyaModel = findExpensesCyaData(taxYearEOY, anAuthorisationRequest).get
 
         cyaModel.expensesCya.expenses.claimingEmploymentExpenses shouldBe true
         cyaModel.expensesCya.expenses.jobExpensesQuestion shouldBe Some(false)

@@ -17,7 +17,7 @@
 package controllers.expenses
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
 import builders.models.expenses.ExpensesBuilder.anExpenses
@@ -155,7 +155,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
             authoriseAgentOrIndividual(user.isAgent)
             val employmentData = anAllEmploymentData.copy(hmrcExpenses = Some(anEmploymentExpenses.copy(expenses = Some(anExpenses.copy(jobExpenses = None)))))
             userDataStub(anIncomeTaxUserData.copy(Some(employmentData)), nino, taxYearEOY)
-            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel.copy(expensesViewModel(Some(true)))), aUserRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel.copy(expensesViewModel(Some(true)))))
             urlGet(fullUrl(travelAmountExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -183,7 +183,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-              ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = true)).copy(expensesViewModel(Some(true)).copy(jobExpenses = Some(newAmount)))), aUserRequest)
+                          ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = true)).copy(expensesViewModel(Some(true)).copy(jobExpenses = Some(newAmount)))))
             urlGet(fullUrl(travelAmountExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -214,7 +214,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
         authoriseAgentOrIndividual(isAgent = false)
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-          anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(jobExpensesQuestion = Some(false)))), aUserRequest)
+                  anExpensesCYAModel.copy(expenses = anExpensesCYAModel.expenses.copy(jobExpensesQuestion = Some(false)))))
         urlGet(fullUrl(travelAmountExpensesUrl(taxYearEOY)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -243,7 +243,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
         dropExpensesDB()
         userDataStub(anIncomeTaxUserData, nino, taxYear)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-          anExpensesCYAModel), aUserRequest)
+                  anExpensesCYAModel))
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(fullUrl(travelAmountExpensesUrl(taxYear)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
@@ -266,7 +266,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           lazy val result: WSResponse = {
             dropExpensesDB()
             userDataStub(anIncomeTaxUserData, nino, taxYear)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -298,7 +298,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           lazy val result: WSResponse = {
             dropExpensesDB()
             userDataStub(anIncomeTaxUserData, nino, taxYear)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -330,7 +330,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
           lazy val result: WSResponse = {
             dropExpensesDB()
             userDataStub(anIncomeTaxUserData, nino, taxYear)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -362,7 +362,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
       lazy val result: WSResponse = {
         dropExpensesDB()
         userDataStub(anIncomeTaxUserData, nino, taxYear)
-        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel), aUserRequest)
+        insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, anExpensesCYAModel))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(travelAmountExpensesUrl(taxYear)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
@@ -373,7 +373,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
       }
 
       "not update the CYA model" in {
-        findExpensesCyaData(taxYearEOY, aUserRequest).get.expensesCya.expenses.jobExpenses shouldBe Some(BigDecimal(200))
+        findExpensesCyaData(taxYearEOY, anAuthorisationRequest).get.expensesCya.expenses.jobExpenses shouldBe Some(BigDecimal(200))
       }
     }
 
@@ -391,7 +391,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
       }
 
       "not update the CYA model" in {
-        findExpensesCyaData(taxYearEOY, aUserRequest) shouldBe None
+        findExpensesCyaData(taxYearEOY, anAuthorisationRequest) shouldBe None
       }
     }
 
@@ -401,9 +401,9 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
         dropExpensesDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-          anExpensesCYAModel.copy(expensesViewModel(Some(true)))), aUserRequest)
+                  anExpensesCYAModel.copy(expensesViewModel(Some(true)))))
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-          anExpensesCYAModel.copy(anExpensesViewModel.copy(flatRateJobExpensesQuestion = None))), aUserRequest)
+                  anExpensesCYAModel.copy(anExpensesViewModel.copy(flatRateJobExpensesQuestion = None))))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -414,7 +414,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
       }
 
       "update the CYA model" in {
-        findExpensesCyaData(taxYearEOY, aUserRequest).get.expensesCya.expenses.jobExpenses shouldBe Some(newAmount)
+        findExpensesCyaData(taxYearEOY, anAuthorisationRequest).get.expensesCya.expenses.jobExpenses shouldBe Some(newAmount)
       }
     }
 
@@ -425,7 +425,7 @@ class TravelAndOvernightAmountControllerISpec extends IntegrationTest with ViewH
         dropExpensesDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-          ExpensesCYAModel(expensesViewModel(None))), aUserRequest)
+                  ExpensesCYAModel(expensesViewModel(None))))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(travelAmountExpensesUrl(taxYearEOY)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }

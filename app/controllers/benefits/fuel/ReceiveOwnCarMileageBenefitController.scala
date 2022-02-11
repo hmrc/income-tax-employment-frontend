@@ -22,7 +22,7 @@ import controllers.benefits.accommodation.routes.AccommodationRelocationBenefits
 import controllers.benefits.fuel.routes.MileageBenefitAmountController
 import controllers.employment.routes.CheckYourBenefitsController
 import forms.YesNoForm
-import models.User
+import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
 import play.api.data.Form
@@ -32,7 +32,7 @@ import services.EmploymentSessionService
 import services.RedirectService._
 import services.benefits.FuelService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.fuel.ReceiveOwnCarMileageBenefitView
 
 import javax.inject.Inject
@@ -46,10 +46,9 @@ class ReceiveOwnCarMileageBenefitController @Inject()(implicit val cc: MessagesC
                                                       employmentSessionService: EmploymentSessionService,
                                                       fuelService: FuelService,
                                                       errorHandler: ErrorHandler,
-                                                      ec: ExecutionContext,
-                                                      clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                                      ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
 
@@ -59,8 +58,9 @@ class ReceiveOwnCarMileageBenefitController @Inject()(implicit val cc: MessagesC
             cya.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.mileageQuestion))
 
           mileageBenefitQuestion match {
-            case Some(questionResult) => Future.successful(Ok(receiveOwnCarMileageBenefitView(yesNoForm.fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(receiveOwnCarMileageBenefitView(yesNoForm, taxYear, employmentId)))
+            case Some(questionResult) =>
+              Future.successful(Ok(receiveOwnCarMileageBenefitView(yesNoForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => Future.successful(Ok(receiveOwnCarMileageBenefitView(yesNoForm(request.user.isAgent), taxYear, employmentId)))
           }
 
         }
@@ -68,7 +68,7 @@ class ReceiveOwnCarMileageBenefitController @Inject()(implicit val cc: MessagesC
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       val redirectUrl: String = CheckYourBenefitsController.show(taxYear, employmentId).url
 
@@ -77,7 +77,7 @@ class ReceiveOwnCarMileageBenefitController @Inject()(implicit val cc: MessagesC
         redirectBasedOnCurrentAnswers(taxYear, employmentId, Some(cya),
           EmploymentBenefitsType)(mileageBenefitsRedirects(_, taxYear, employmentId)) { cya =>
 
-          yesNoForm.bindFromRequest().fold(
+          yesNoForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(receiveOwnCarMileageBenefitView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, cya, yesNo)
           )
@@ -87,8 +87,8 @@ class ReceiveOwnCarMileageBenefitController @Inject()(implicit val cc: MessagesC
   }
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
-                               (implicit user: User[_]): Future[Result] = {
-    fuelService.updateMileageQuestion(taxYear, employmentId, employmentUserData, questionValue).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    fuelService.updateMileageQuestion(request.user, taxYear, employmentId, employmentUserData, questionValue).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         val nextPage = {
@@ -102,7 +102,7 @@ class ReceiveOwnCarMileageBenefitController @Inject()(implicit val cc: MessagesC
     }
   }
 
-  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.receiveOwnCarMileageBenefit.error.${if (user.isAgent) "agent" else "individual"}"
+  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"benefits.receiveOwnCarMileageBenefit.error.${if (isAgent) "agent" else "individual"}"
   )
 }
