@@ -18,11 +18,11 @@ package actions
 
 import actions.TaxYearAction.taxYearAction
 import config.AppConfig
-import models.User
+import models.AuthorisationRequest
 import play.api.mvc.{ActionBuilder, AnyContent, MessagesControllerComponents}
 
 object AuthorisedTaxYearAction {
   def authorisedTaxYearAction(taxYear: Int)(
     implicit authAction: AuthorisedAction, appConfig: AppConfig, mcc: MessagesControllerComponents
-  ): ActionBuilder[User, AnyContent] = authAction andThen taxYearAction(taxYear)(appConfig, mcc.messagesApi)
+  ): ActionBuilder[AuthorisationRequest, AnyContent] = authAction andThen taxYearAction(taxYear)(appConfig, mcc.messagesApi)
 }

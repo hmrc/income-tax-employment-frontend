@@ -16,7 +16,7 @@
 
 package controllers.benefits.medical
 
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.MedicalChildcareEducationModelBuilder.aMedicalChildcareEducationModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
@@ -132,7 +132,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(nurseryPlacesQuestion = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
             urlGet(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -163,7 +163,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         "render the 'Did you get childcare benefits' page with the correct content with yes value pre-filled" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(anEmploymentUserData, aUserRequest)
+            insertCyaData(anEmploymentUserData)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -196,7 +196,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(aMedicalChildcareEducationModel.copy(nurseryPlacesQuestion = Some(false))))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -244,7 +244,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       "redirect to the check employment benefits page when theres no CYA data" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(anEmploymentUserData.copy(isPriorSubmission = true, hasPriorBenefits = true, employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          insertCyaData(anEmploymentUserData.copy(isPriorSubmission = true, hasPriorBenefits = true, employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
           authoriseAgentOrIndividual(isAgent = false)
           urlGet(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -255,7 +255,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         }
 
         "doesn't create any benefits data" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
           cyaModel.employment.employmentBenefits shouldBe None
         }
       }
@@ -265,7 +265,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(MedicalChildcareEducationModel(sectionQuestion = Some(false))))
-          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
           urlGet(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -280,7 +280,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = true)
-          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
           urlGet(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -299,7 +299,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(anEmploymentUserData, aUserRequest)
+            insertCyaData(anEmploymentUserData)
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -338,7 +338,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = None)
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -349,7 +349,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
       "update the NurseryPlacesQuestion to true" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.nurseryPlacesQuestion)) shouldBe Some(true)
       }
     }
@@ -360,7 +360,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = None)
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlPost(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -370,7 +370,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
       "update the NurseryPlacesQuestion to false, and nurseryPlaces to None" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.nurseryPlacesQuestion)) shouldBe Some(false)
         cyaModel.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.nurseryPlaces)) shouldBe None
       }
@@ -382,7 +382,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = None)
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
         urlPost(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -396,7 +396,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
-        insertCyaData(anEmploymentUserData, aUserRequest)
+        insertCyaData(anEmploymentUserData)
         urlPost(fullUrl(childcareBenefitsUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -410,7 +410,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -421,7 +421,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
       }
 
       "doesn't create any benefits data" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits shouldBe None
       }
     }
@@ -432,7 +432,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = Some(MedicalChildcareEducationModel(sectionQuestion = Some(false))))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlPost(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -448,7 +448,7 @@ class ChildcareBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = true)
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlPost(fullUrl(childcareBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 

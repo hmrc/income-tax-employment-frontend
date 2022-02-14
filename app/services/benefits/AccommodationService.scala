@@ -20,7 +20,6 @@ import models.User
 import models.benefits.{AccommodationRelocationModel, BenefitsViewModel}
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import services.EmploymentSessionService
-import utils.Clock
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,8 +27,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class AccommodationService @Inject()(employmentSessionService: EmploymentSessionService,
                                      implicit val ec: ExecutionContext) {
 
-  def updateSectionQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                           (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateSectionQuestion(user: User,
+                            taxYear: Int,
+                            employmentId: String,
+                            originalEmploymentUserData: EmploymentUserData,
+                            questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val accommodationRelocation = cya.employmentBenefits.flatMap(_.accommodationRelocationModel)
@@ -45,11 +47,14 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateAccommodationQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                                 (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateAccommodationQuestion(user: User,
+                                  taxYear: Int,
+                                  employmentId: String,
+                                  originalEmploymentUserData: EmploymentUserData,
+                                  questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val accommodationRelocation = benefits.flatMap(_.accommodationRelocationModel)
@@ -64,11 +69,14 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateAccommodation(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                         (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateAccommodation(user: User,
+                          taxYear: Int,
+                          employmentId: String,
+                          originalEmploymentUserData: EmploymentUserData,
+                          amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val benefits = cyaModel.employmentBenefits
     val accommodationRelocation = benefits.flatMap(_.accommodationRelocationModel)
@@ -77,11 +85,14 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
       employmentBenefits = benefits.map(_.copy(accommodationRelocationModel = accommodationRelocation.map(_.copy(accommodation = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateQualifyingExpensesQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                                      (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateQualifyingExpensesQuestion(user: User,
+                                       taxYear: Int,
+                                       employmentId: String,
+                                       originalEmploymentUserData: EmploymentUserData,
+                                       questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel: EmploymentCYAModel = originalEmploymentUserData.employment
     val benefits: Option[BenefitsViewModel] = cyaModel.employmentBenefits
     val accommodationRelocationModel: Option[AccommodationRelocationModel] = cyaModel.employmentBenefits.flatMap(_.accommodationRelocationModel)
@@ -100,21 +111,27 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
           }
       )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateQualifyingExpenses(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                              (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateQualifyingExpenses(user: User,
+                               taxYear: Int,
+                               employmentId: String,
+                               originalEmploymentUserData: EmploymentUserData,
+                               amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val accommodationRelocation: Option[AccommodationRelocationModel] = cyaModel.employmentBenefits.flatMap(_.accommodationRelocationModel)
     val updatedEmployment = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(accommodationRelocationModel =
       accommodationRelocation.map(_.copy(qualifyingRelocationExpenses = Some(amount))))))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateNonQualifyingExpensesQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                                         (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateNonQualifyingExpensesQuestion(user: User,
+                                          taxYear: Int,
+                                          employmentId: String,
+                                          originalEmploymentUserData: EmploymentUserData,
+                                          questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val accommodationRelocation = cya.employmentBenefits.flatMap(_.accommodationRelocationModel)
@@ -131,11 +148,14 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateNonQualifyingExpenses(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                                 (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateNonQualifyingExpenses(user: User,
+                                  taxYear: Int,
+                                  employmentId: String,
+                                  originalEmploymentUserData: EmploymentUserData,
+                                  amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val benefits = cyaModel.employmentBenefits
     val accommodationRelocation = cyaModel.employmentBenefits.flatMap(_.accommodationRelocationModel)
@@ -145,6 +165,6 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
         accommodationRelocationModel = accommodationRelocation.map(_.copy(nonQualifyingRelocationExpenses = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 }

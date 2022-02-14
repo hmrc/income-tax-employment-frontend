@@ -20,7 +20,6 @@ import models.User
 import models.benefits.BenefitsViewModel
 import models.mongo.EmploymentUserData
 import services.EmploymentSessionService
-import utils.Clock
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,8 +27,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class BenefitsService @Inject()(employmentSessionService: EmploymentSessionService,
                                 implicit val ec: ExecutionContext) {
 
-  def updateIsBenefitsReceived(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                              (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateIsBenefitsReceived(user: User,
+                               taxYear: Int,
+                               employmentId: String,
+                               originalEmploymentUserData: EmploymentUserData,
+                               questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val updatedEmployment = if (questionValue) {
       val newBenefits = originalEmploymentUserData.employment.employmentBenefits match {
         case Some(benefits) => benefits.copy(isBenefitsReceived = true)
@@ -42,6 +44,6 @@ class BenefitsService @Inject()(employmentSessionService: EmploymentSessionServi
       originalEmploymentUserData.employment.copy(employmentBenefits = Some(newBenefits))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 }

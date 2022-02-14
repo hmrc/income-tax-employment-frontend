@@ -16,16 +16,16 @@
 
 package controllers.studentLoans
 
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import forms.studentLoans.StudentLoanQuestionForm
+import models.IncomeTaxUserData
 import models.employment._
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
-import models.{IncomeTaxUserData, User}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status._
-import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.route
 import utils.PageUrls._
@@ -151,35 +151,31 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
     userScenarios.foreach { scenarioData =>
       import scenarioData.commonExpectedResults._
       s"render the page for isAgent: ${scenarioData.isAgent} isWelsh: ${scenarioData.isWelsh} content" when {
-
         "there is cya data in session with previous studentLoans" which {
-
-          def user: User[AnyContentAsEmpty.type] = User(mtditid, None, nino, sessionId, affinityGroup)(FakeRequest())
-
           lazy val result = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-              sessionId,
-              mtditid,
-              nino,
-              taxYear,
-              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-              EmploymentCYAModel(
-                EmploymentDetails(
-                  employerName = "Whiterun Guards",
-                  employerRef = Some("223/AB12399"),
-                  startDate = Some("2022-04-01"),
-                  cessationDateQuestion = Some(false),
-                  taxablePayToDate = Some(3000.00),
-                  totalTaxToDate = Some(300.00),
-                  currentDataIsHmrcHeld = false
-                ),
-                studentLoans = Some(StudentLoansCYAModel(
-                  uglDeduction = true, Some(1000.22), pglDeduction = true, Some(3000.22)
-                ))
-              )
-            ), user)
+                          sessionId,
+                          mtditid,
+                          nino,
+                          taxYear,
+                          employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                          EmploymentCYAModel(
+                            EmploymentDetails(
+                              employerName = "Whiterun Guards",
+                              employerRef = Some("223/AB12399"),
+                              startDate = Some("2022-04-01"),
+                              cessationDateQuestion = Some(false),
+                              taxablePayToDate = Some(3000.00),
+                              totalTaxToDate = Some(300.00),
+                              currentDataIsHmrcHeld = false
+                            ),
+                            studentLoans = Some(StudentLoansCYAModel(
+                              uglDeduction = true, Some(1000.22), pglDeduction = true, Some(3000.22)
+                            ))
+                          )
+                        ))
             userDataStub(IncomeTaxUserData(), nino, taxYear)
 
 
@@ -208,30 +204,27 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
     }
     "render the page" when {
       "there is cya in session without studentLoans" which {
-
-        def user: User[AnyContentAsEmpty.type] = User(mtditid, None, nino, sessionId, affinityGroup)(FakeRequest())
-
         lazy val result = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
-            sessionId,
-            mtditid,
-            nino,
-            taxYear,
-            employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-            EmploymentCYAModel(
-              EmploymentDetails(
-                employerName = "Whiterun Guards",
-                employerRef = Some("223/AB12399"),
-                startDate = Some("2022-04-01"),
-                cessationDateQuestion = Some(false),
-                taxablePayToDate = Some(3000.00),
-                totalTaxToDate = Some(300.00),
-                currentDataIsHmrcHeld = false
-              ),
-            )
-          ), user)
+                      sessionId,
+                      mtditid,
+                      nino,
+                      taxYear,
+                      employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                      EmploymentCYAModel(
+                        EmploymentDetails(
+                          employerName = "Whiterun Guards",
+                          employerRef = Some("223/AB12399"),
+                          startDate = Some("2022-04-01"),
+                          cessationDateQuestion = Some(false),
+                          taxablePayToDate = Some(3000.00),
+                          totalTaxToDate = Some(300.00),
+                          currentDataIsHmrcHeld = false
+                        ),
+                      )
+                    ))
 
 
           urlGet(url(taxYear), headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
@@ -284,36 +277,33 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
 
     }
 
-    "redirect and update cya data correctly" when{
+    "redirect and update cya data correctly" when {
       "there is cya data in session with previous amounts" in {
-
-        def user: User[AnyContentAsEmpty.type] = User(mtditid, None, nino, sessionId, affinityGroup)(FakeRequest())
         lazy val form = Map(s"${StudentLoanQuestionForm.studentLoans}[]" -> Seq("ugl"))
-
         lazy val result = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
-            sessionId,
-            mtditid,
-            nino,
-            taxYear,
-            employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-            EmploymentCYAModel(
-              EmploymentDetails(
-                employerName = "Whiterun Guards",
-                employerRef = Some("223/AB12399"),
-                startDate = Some("2022-04-01"),
-                cessationDateQuestion = Some(false),
-                taxablePayToDate = Some(3000.00),
-                totalTaxToDate = Some(300.00),
-                currentDataIsHmrcHeld = false
-              ),
-              studentLoans = Some(StudentLoansCYAModel(
-                uglDeduction = true, Some(1000.22), pglDeduction = true, Some(3000.22)
-              ))
-            )
-          ), user)
+                      sessionId,
+                      mtditid,
+                      nino,
+                      taxYear,
+                      employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                      EmploymentCYAModel(
+                        EmploymentDetails(
+                          employerName = "Whiterun Guards",
+                          employerRef = Some("223/AB12399"),
+                          startDate = Some("2022-04-01"),
+                          cessationDateQuestion = Some(false),
+                          taxablePayToDate = Some(3000.00),
+                          totalTaxToDate = Some(300.00),
+                          currentDataIsHmrcHeld = false
+                        ),
+                        studentLoans = Some(StudentLoansCYAModel(
+                          uglDeduction = true, Some(1000.22), pglDeduction = true, Some(3000.22)
+                        ))
+                      )
+                    ))
           userDataStub(IncomeTaxUserData(), nino, taxYear)
 
 
@@ -323,37 +313,34 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
         result.status shouldBe SEE_OTHER
         result.header(HeaderNames.LOCATION).contains(studentLoansCyaPage(taxYear, employmentId)) shouldBe true
 
-        lazy val cyaModel = findCyaData(taxYear, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYear, employmentId, anAuthorisationRequest).get
         cyaModel.employment.studentLoans.get shouldBe
           StudentLoansCYAModel(uglDeduction = true, Some(1000.22), pglDeduction = false, None)
 
       }
       "there is cya data in session without StudentLoans (ugl)" in {
-
-        def user: User[AnyContentAsEmpty.type] = User(mtditid, None, nino, sessionId, affinityGroup)(FakeRequest())
         lazy val form = Map(s"${StudentLoanQuestionForm.studentLoans}[]" -> Seq("ugl"))
-
         lazy val result = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
-            sessionId,
-            mtditid,
-            nino,
-            taxYear,
-            employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-            EmploymentCYAModel(
-              EmploymentDetails(
-                employerName = "Whiterun Guards",
-                employerRef = Some("223/AB12399"),
-                startDate = Some("2022-04-01"),
-                cessationDateQuestion = Some(false),
-                taxablePayToDate = Some(3000.00),
-                totalTaxToDate = Some(300.00),
-                currentDataIsHmrcHeld = false
-              )
-            )
-          ), user)
+                      sessionId,
+                      mtditid,
+                      nino,
+                      taxYear,
+                      employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                      EmploymentCYAModel(
+                        EmploymentDetails(
+                          employerName = "Whiterun Guards",
+                          employerRef = Some("223/AB12399"),
+                          startDate = Some("2022-04-01"),
+                          cessationDateQuestion = Some(false),
+                          taxablePayToDate = Some(3000.00),
+                          totalTaxToDate = Some(300.00),
+                          currentDataIsHmrcHeld = false
+                        )
+                      )
+                    ))
           userDataStub(IncomeTaxUserData(), nino, taxYear)
 
 
@@ -362,37 +349,34 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
 
         result.status shouldBe OK
 
-        lazy val cyaModel = findCyaData(taxYear, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYear, employmentId, anAuthorisationRequest).get
         cyaModel.employment.studentLoans.get shouldBe
           StudentLoansCYAModel(uglDeduction = true, None, pglDeduction = false, None)
 
       }
       "there is cya data in session without StudentLoans (pgl)" in {
-
-        def user: User[AnyContentAsEmpty.type] = User(mtditid, None, nino, sessionId, affinityGroup)(FakeRequest())
         lazy val form = Map(s"${StudentLoanQuestionForm.studentLoans}[]" -> Seq("pgl"))
-
         lazy val result = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
-            sessionId,
-            mtditid,
-            nino,
-            taxYear,
-            employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-            EmploymentCYAModel(
-              EmploymentDetails(
-                employerName = "Whiterun Guards",
-                employerRef = Some("223/AB12399"),
-                startDate = Some("2022-04-01"),
-                cessationDateQuestion = Some(false),
-                taxablePayToDate = Some(3000.00),
-                totalTaxToDate = Some(300.00),
-                currentDataIsHmrcHeld = false
-              )
-            )
-          ), user)
+                      sessionId,
+                      mtditid,
+                      nino,
+                      taxYear,
+                      employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                      EmploymentCYAModel(
+                        EmploymentDetails(
+                          employerName = "Whiterun Guards",
+                          employerRef = Some("223/AB12399"),
+                          startDate = Some("2022-04-01"),
+                          cessationDateQuestion = Some(false),
+                          taxablePayToDate = Some(3000.00),
+                          totalTaxToDate = Some(300.00),
+                          currentDataIsHmrcHeld = false
+                        )
+                      )
+                    ))
           userDataStub(IncomeTaxUserData(), nino, taxYear)
 
 
@@ -402,37 +386,34 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
         result.status shouldBe SEE_OTHER
         result.header(HeaderNames.LOCATION).contains(pglAmountUrl(taxYear, employmentId)) shouldBe true
 
-        lazy val cyaModel = findCyaData(taxYear, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYear, employmentId, anAuthorisationRequest).get
         cyaModel.employment.studentLoans.get shouldBe
           StudentLoansCYAModel(uglDeduction = false, None, pglDeduction = true, None)
 
       }
       "there is cya data in session without StudentLoans (none)" in {
-
-        def user: User[AnyContentAsEmpty.type] = User(mtditid, None, nino, sessionId, affinityGroup)(FakeRequest())
         lazy val form = Map(s"${StudentLoanQuestionForm.studentLoans}[]" -> Seq("none"))
-
         lazy val result = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
-            sessionId,
-            mtditid,
-            nino,
-            taxYear,
-            employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-            EmploymentCYAModel(
-              EmploymentDetails(
-                employerName = "Whiterun Guards",
-                employerRef = Some("223/AB12399"),
-                startDate = Some("2022-04-01"),
-                cessationDateQuestion = Some(false),
-                taxablePayToDate = Some(3000.00),
-                totalTaxToDate = Some(300.00),
-                currentDataIsHmrcHeld = false
-              )
-            )
-          ), user)
+                      sessionId,
+                      mtditid,
+                      nino,
+                      taxYear,
+                      employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                      EmploymentCYAModel(
+                        EmploymentDetails(
+                          employerName = "Whiterun Guards",
+                          employerRef = Some("223/AB12399"),
+                          startDate = Some("2022-04-01"),
+                          cessationDateQuestion = Some(false),
+                          taxablePayToDate = Some(3000.00),
+                          totalTaxToDate = Some(300.00),
+                          currentDataIsHmrcHeld = false
+                        )
+                      )
+                    ))
           userDataStub(IncomeTaxUserData(), nino, taxYear)
 
 
@@ -442,37 +423,34 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
         result.status shouldBe SEE_OTHER
         result.header(HeaderNames.LOCATION).contains(studentLoansCyaPage(taxYear, employmentId)) shouldBe true
 
-        lazy val cyaModel = findCyaData(taxYear, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYear, employmentId, anAuthorisationRequest).get
         cyaModel.employment.studentLoans.get shouldBe
           StudentLoansCYAModel(uglDeduction = false, None, pglDeduction = false, None)
 
       }
       "there is cya data in session without StudentLoans (ugl, pgl)" in {
-
-        def user: User[AnyContentAsEmpty.type] = User(mtditid, None, nino, sessionId, affinityGroup)(FakeRequest())
         lazy val form = Map(s"${StudentLoanQuestionForm.studentLoans}[]" -> Seq("ugl", "pgl"))
-
         lazy val result = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(isAgent = false)
           insertCyaData(EmploymentUserData(
-            sessionId,
-            mtditid,
-            nino,
-            taxYear,
-            employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-            EmploymentCYAModel(
-              EmploymentDetails(
-                employerName = "Whiterun Guards",
-                employerRef = Some("223/AB12399"),
-                startDate = Some("2022-04-01"),
-                cessationDateQuestion = Some(false),
-                taxablePayToDate = Some(3000.00),
-                totalTaxToDate = Some(300.00),
-                currentDataIsHmrcHeld = false
-              )
-            )
-          ), user)
+                      sessionId,
+                      mtditid,
+                      nino,
+                      taxYear,
+                      employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                      EmploymentCYAModel(
+                        EmploymentDetails(
+                          employerName = "Whiterun Guards",
+                          employerRef = Some("223/AB12399"),
+                          startDate = Some("2022-04-01"),
+                          cessationDateQuestion = Some(false),
+                          taxablePayToDate = Some(3000.00),
+                          totalTaxToDate = Some(300.00),
+                          currentDataIsHmrcHeld = false
+                        )
+                      )
+                    ))
           userDataStub(IncomeTaxUserData(), nino, taxYear)
 
 
@@ -481,7 +459,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
 
         result.status shouldBe OK
 
-        lazy val cyaModel = findCyaData(taxYear, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYear, employmentId, anAuthorisationRequest).get
         cyaModel.employment.studentLoans.get shouldBe
           StudentLoansCYAModel(uglDeduction = true, None, pglDeduction = true, None)
 
@@ -492,32 +470,28 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
       import scenarioData.commonExpectedResults._
       "return form errors" when {
         s"no option has been selected for isAgent: ${scenarioData.isAgent} isWelsh: ${scenarioData.isWelsh}" which {
-
-          def user: User[AnyContentAsEmpty.type] = User(mtditid, None, nino, sessionId, affinityGroup)(FakeRequest())
-
           lazy val form = Map(s"${StudentLoanQuestionForm.studentLoans}[]" -> Seq())
-
           lazy val result = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-              sessionId,
-              mtditid,
-              nino,
-              taxYear,
-              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-              EmploymentCYAModel(
-                EmploymentDetails(
-                  employerName = "Whiterun Guards",
-                  employerRef = Some("223/AB12399"),
-                  startDate = Some("2022-04-01"),
-                  cessationDateQuestion = Some(false),
-                  taxablePayToDate = Some(3000.00),
-                  totalTaxToDate = Some(300.00),
-                  currentDataIsHmrcHeld = false
-                )
-              )
-            ), user)
+                          sessionId,
+                          mtditid,
+                          nino,
+                          taxYear,
+                          employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                          EmploymentCYAModel(
+                            EmploymentDetails(
+                              employerName = "Whiterun Guards",
+                              employerRef = Some("223/AB12399"),
+                              startDate = Some("2022-04-01"),
+                              cessationDateQuestion = Some(false),
+                              taxablePayToDate = Some(3000.00),
+                              totalTaxToDate = Some(300.00),
+                              currentDataIsHmrcHeld = false
+                            )
+                          )
+                        ))
             userDataStub(IncomeTaxUserData(), nino, taxYear)
 
 
@@ -537,32 +511,28 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
 
         }
         s"all options have been selected for isAgent: ${scenarioData.isAgent} isWelsh: ${scenarioData.isWelsh}" which {
-
-          def user: User[AnyContentAsEmpty.type] = User(mtditid, None, nino, sessionId, affinityGroup)(FakeRequest())
-
           lazy val form = Map(s"${StudentLoanQuestionForm.studentLoans}[]" -> Seq("ugl", "pgl", "none"))
-
           lazy val result = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(scenarioData.isAgent)
             insertCyaData(EmploymentUserData(
-              sessionId,
-              mtditid,
-              nino,
-              taxYear,
-              employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
-              EmploymentCYAModel(
-                EmploymentDetails(
-                  employerName = "Whiterun Guards",
-                  employerRef = Some("223/AB12399"),
-                  startDate = Some("2022-04-01"),
-                  cessationDateQuestion = Some(false),
-                  taxablePayToDate = Some(3000.00),
-                  totalTaxToDate = Some(300.00),
-                  currentDataIsHmrcHeld = false
-                )
-              )
-            ), user)
+                          sessionId,
+                          mtditid,
+                          nino,
+                          taxYear,
+                          employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,
+                          EmploymentCYAModel(
+                            EmploymentDetails(
+                              employerName = "Whiterun Guards",
+                              employerRef = Some("223/AB12399"),
+                              startDate = Some("2022-04-01"),
+                              cessationDateQuestion = Some(false),
+                              taxablePayToDate = Some(3000.00),
+                              totalTaxToDate = Some(300.00),
+                              currentDataIsHmrcHeld = false
+                            )
+                          )
+                        ))
             userDataStub(IncomeTaxUserData(), nino, taxYear)
 
 
@@ -585,7 +555,6 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
     }
 
   }
-
 
 
 }

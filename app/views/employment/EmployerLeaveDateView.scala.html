@@ -27,19 +27,19 @@
    dateInput: DateInput,
    inputText: InputText
 )
-@(form: Form[EmploymentDate], taxYear: Int, employmentId:String, employerName: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[EmploymentDate], taxYear: Int, employmentId:String, employerName: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @hasFormErrors = @{form.hasErrors}
 
 @headingForUse = @{
-messages(s"employment.employmentLeaveDate.heading.${if(user.isAgent) "agent" else "individual"}", employerName)
+messages(s"employment.employmentLeaveDate.heading.${if(request.user.isAgent) "agent" else "individual"}", employerName)
 }
 
 @titleForUse = @{
-messages(s"employment.employmentLeaveDate.title.${if(user.isAgent) "agent" else "individual"}", employerName)
+messages(s"employment.employmentLeaveDate.title.${if(request.user.isAgent) "agent" else "individual"}", employerName)
 }
 
-@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
+@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = request.user.isAgent) {
 
     @errorSummary(form.errors.distinct.map{ error =>
         error.key match {

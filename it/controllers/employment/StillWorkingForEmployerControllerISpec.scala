@@ -16,7 +16,7 @@
 
 package controllers.employment
 
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import forms.YesNoForm
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import org.jsoup.Jsoup
@@ -120,7 +120,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
         "render the 'still working for employer' page with the correct content" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, hmrc = true)), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, hmrc = true)))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -149,7 +149,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = Some("2021-01-01"),
-              cessationDateQuestion = Some(false), hmrc = true)), aUserRequest)
+                          cessationDateQuestion = Some(false), hmrc = true)))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -178,7 +178,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = None,
-              cessationDateQuestion = Some(true), hmrc = true)), aUserRequest)
+                          cessationDateQuestion = Some(true), hmrc = true)))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -206,7 +206,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
         "render the 'still working for employer' page for prior year with correct content and default yes value when cessation date is not present" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDateQuestion = None, hmrc = true)), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDateQuestion = None, hmrc = true)))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -235,7 +235,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, cessationDate = cessationDate,
-              cessationDateQuestion = None, hmrc = true)), aUserRequest)
+                          cessationDateQuestion = None, hmrc = true)))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -300,7 +300,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, cessationDate = cessationDate,
-              cessationDateQuestion = None, hmrc = true)), aUserRequest)
+                          cessationDateQuestion = None, hmrc = true)))
 
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
@@ -310,7 +310,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           "redirects to the how much pay page" in {
             result.status shouldBe SEE_OTHER
             result.header("location").contains(howMuchPayUrl(taxYearEOY, employmentId)) shouldBe true
-            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
             cyaModel.employment.employmentDetails.cessationDate shouldBe None
             cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(true)
 
@@ -325,7 +325,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, cessationDate = cessationDate,
-              cessationDateQuestion = None, hmrc = true)), aUserRequest)
+                          cessationDateQuestion = None, hmrc = true)))
 
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
@@ -336,7 +336,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           "redirects to the how much pay details page" in {
             result.status shouldBe SEE_OTHER
             result.header("location").contains(howMuchPayUrl(taxYearEOY, employmentId)) shouldBe true
-            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
             cyaModel.employment.employmentDetails.cessationDate shouldBe cessationDate
             cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)
 
@@ -351,7 +351,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = false, cyaModel(employerName, startDate = None, cessationDate = cessationDate,
-              cessationDateQuestion = None, hmrc = true)), aUserRequest)
+                          cessationDateQuestion = None, hmrc = true)))
 
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
@@ -361,7 +361,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
           "redirects to the missing start date page page" in {
             result.status shouldBe SEE_OTHER
             result.header("location").contains(employmentStartDateUrl(taxYearEOY, employmentId)) shouldBe true
-            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+            lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
             cyaModel.employment.employmentDetails.cessationDate shouldBe cessationDate
             cyaModel.employment.employmentDetails.cessationDateQuestion shouldBe Some(false)
 
@@ -376,7 +376,7 @@ class StillWorkingForEmployerControllerISpec extends IntegrationTest with ViewHe
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)), aUserRequest)
+              insertCyaData(employmentUserData(isPrior = true, cyaModel(employerName, hmrc = true)))
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(fullUrl(stillWorkingForUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))

@@ -17,7 +17,7 @@
 package controllers.benefits.fuel
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithBenefits
@@ -104,7 +104,7 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(carQuestion = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlGet(fullUrl(carBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -131,7 +131,7 @@ class CompanyCarBenefitsControllerISpec extends IntegrationTest with ViewHelpers
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(carQuestion = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             urlPost(fullUrl(carBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = form)

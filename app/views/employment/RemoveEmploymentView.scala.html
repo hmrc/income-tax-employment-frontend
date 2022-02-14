@@ -26,7 +26,7 @@
     formWithCsrf: FormWithCSRF,
     govUkButton: GovukButton
 )
-@(taxYear: Int, employmentId:String, employerName: String, lastEmployment: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, employmentId:String, employerName: String, lastEmployment: Boolean)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @titleForUse = @{
     messages("employment.removeEmployment.title")
@@ -36,7 +36,7 @@
     messages("employment.removeEmployment.heading", employerName)
 }
 
-@layout(pageTitle = titleForUse, taxYear = Some(taxYear), isAgent = user.isAgent) {
+@layout(pageTitle = titleForUse, taxYear = Some(taxYear), isAgent = request.user.isAgent) {
     @formWithCsrf(action = RemoveEmploymentController.submit(taxYear, employmentId)) {
         @heading(headingForUse, Some(messages("employment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-3")
 

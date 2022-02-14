@@ -42,8 +42,7 @@ class MileageBenefitAmountControllerSpec extends UnitTestWithApp
     mockAppConfig,
     mockEmploymentSessionService,
     mockFuelService,
-    mockErrorHandler,
-    testClock
+    mockErrorHandler
   )
   val taxYear = 2021
   val employmentId = "12345"

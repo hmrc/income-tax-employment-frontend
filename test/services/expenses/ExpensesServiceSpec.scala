@@ -38,7 +38,7 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = true, hasPriorExpenses = true, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateClaimingEmploymentExpenses(taxYear, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateClaimingEmploymentExpenses(authorisationRequest.user, taxYear, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
     }
 
     "clear expenses model when claimingEmploymentExpenses is set to false" in {
@@ -48,7 +48,7 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = true, hasPriorExpenses = true, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateClaimingEmploymentExpenses(taxYear, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateClaimingEmploymentExpenses(authorisationRequest.user, taxYear, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
     }
   }
 
@@ -61,7 +61,7 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateJobExpensesQuestion(taxYear, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateJobExpensesQuestion(authorisationRequest.user, taxYear, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
     }
 
     "set jobExpensesQuestion to false and jobExpenses value is cleared when false" in {
@@ -72,7 +72,7 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateJobExpensesQuestion(taxYear, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateJobExpensesQuestion(authorisationRequest.user, taxYear, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
     }
   }
 
@@ -85,7 +85,7 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateJobExpenses(taxYear, employmentUserData, amount = 123)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateJobExpenses(authorisationRequest.user, taxYear, employmentUserData, amount = 123)) shouldBe Right(expectedExpensesUserData)
     }
   }
 
@@ -98,7 +98,7 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateFlatRateJobExpensesQuestion(taxYear, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateFlatRateJobExpensesQuestion(authorisationRequest.user, taxYear, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
     }
 
     "set flatRateJobExpensesQuestion to false and flatRateJobExpenses value is cleared when false" in {
@@ -109,7 +109,7 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateFlatRateJobExpensesQuestion(taxYear, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateFlatRateJobExpensesQuestion(authorisationRequest.user, taxYear, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
     }
   }
 
@@ -122,7 +122,7 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateFlatRateJobExpenses(taxYear, employmentUserData, amount = 123)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateFlatRateJobExpenses(authorisationRequest.user, taxYear, employmentUserData, amount = 123)) shouldBe Right(expectedExpensesUserData)
     }
   }
 
@@ -135,7 +135,7 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateProfessionalSubscriptionsQuestion(taxYear, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateProfessionalSubscriptionsQuestion(authorisationRequest.user, taxYear, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
     }
 
     "set professionalSubscriptionsQuestion to false and professionalSubscriptions value is cleared when false" in {
@@ -146,7 +146,7 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateProfessionalSubscriptionsQuestion(taxYear, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateProfessionalSubscriptionsQuestion(authorisationRequest.user, taxYear, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
     }
   }
 
@@ -159,7 +159,7 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateProfessionalSubscriptions(taxYear, employmentUserData, amount = 123)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateProfessionalSubscriptions(authorisationRequest.user, taxYear, employmentUserData, amount = 123)) shouldBe Right(expectedExpensesUserData)
     }
   }
 
@@ -172,7 +172,7 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateOtherAndCapitalAllowancesQuestion(taxYear, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateOtherAndCapitalAllowancesQuestion(authorisationRequest.user, taxYear, employmentUserData, questionValue = true)) shouldBe Right(expectedExpensesUserData)
     }
 
     "set otherAndCapitalAllowancesQuestion to false and otherAndCapitalAllowances value is cleared when false" in {
@@ -183,7 +183,7 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateOtherAndCapitalAllowancesQuestion(taxYear, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateOtherAndCapitalAllowancesQuestion(authorisationRequest.user, taxYear, employmentUserData, questionValue = false)) shouldBe Right(expectedExpensesUserData)
     }
   }
 
@@ -196,7 +196,7 @@ class ExpensesServiceSpec extends UnitTest with MockEmploymentSessionService {
 
       mockCreateOrUpdateUserDataWith(taxYear, isPriorSubmission = false, hasPriorExpenses = false, expectedExpensesUserData.expensesCya, Right(expectedExpensesUserData))
 
-      await(underTest.updateOtherAndCapitalAllowances(taxYear, employmentUserData, amount = 123)) shouldBe Right(expectedExpensesUserData)
+      await(underTest.updateOtherAndCapitalAllowances(authorisationRequest.user, taxYear, employmentUserData, amount = 123)) shouldBe Right(expectedExpensesUserData)
     }
   }
 }

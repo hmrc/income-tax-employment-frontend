@@ -17,7 +17,7 @@
 package controllers.benefits.utilities
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.UtilitiesAndServicesModelBuilder.aUtilitiesAndServicesModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
@@ -135,7 +135,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(employerProvidedServices = None)))
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(employerProvidedServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
               welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -163,7 +163,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
           lazy val result: WSResponse = {
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(employerProvidedServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -213,7 +213,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = Some(aUtilitiesAndServicesModel.copy(employerProvidedServices = None)))
-        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
         urlGet(fullUrl(employerProvidedServicesBenefitsAmountUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -234,7 +234,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
             urlPost(fullUrl(employerProvidedServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
           }
@@ -265,7 +265,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
             urlPost(fullUrl(employerProvidedServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "abc"))
           }
@@ -296,7 +296,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
             urlPost(fullUrl(employerProvidedServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "9999999999999999999999999999"))
           }
@@ -330,7 +330,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
-        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
         urlPost(fullUrl(employerProvidedServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
       }
@@ -341,7 +341,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
       }
 
       "updates the CYA model with the new value" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         val employerProvidedServicesAmount = cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServices))
         employerProvidedServicesAmount shouldBe Some(100.0)
       }
@@ -352,7 +352,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(medicalChildcareEducationModel = None)
-        insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+        insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
         urlPost(fullUrl(employerProvidedServicesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
       }
@@ -363,7 +363,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
       }
 
       "updates the CYA model with the new value" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         val employerProvidedServicesAmount = cyaModel.employment.employmentBenefits.flatMap(_.utilitiesAndServicesModel.flatMap(_.employerProvidedServices))
         employerProvidedServicesAmount shouldBe Some(100.0)
       }
@@ -387,7 +387,7 @@ class EmployerProvidedServicesBenefitsAmountControllerISpec extends IntegrationT
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+        insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
         urlPost(fullUrl(employerProvidedServicesBenefitsAmountUrl(taxYear, employmentId)), follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "100"))
       }

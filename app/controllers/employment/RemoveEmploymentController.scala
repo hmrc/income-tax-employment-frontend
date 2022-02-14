@@ -43,9 +43,9 @@ class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerCo
                                            ec: ExecutionContext
                                           ) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.findPreviousEmploymentUserData(user, taxYear) { allEmploymentData =>
+      employmentSessionService.findPreviousEmploymentUserData(request.user, taxYear) { allEmploymentData =>
         allEmploymentData.eoyEmploymentSourceWith(employmentId) match {
           case Some(EmploymentSourceOrigin(source, _)) => val employerName = source.employerName
             Ok(removeEmploymentView(taxYear, employmentId, employerName, allEmploymentData.isLastEOYEmployment))
@@ -55,9 +55,9 @@ class RemoveEmploymentController @Inject()(implicit val cc: MessagesControllerCo
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getPriorData(taxYear).flatMap {
+      employmentSessionService.getPriorData(request.user, taxYear).flatMap {
         case Left(error) => Future.successful(errorHandler.handleError(error.status))
         case Right(IncomeTaxUserData(None)) => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
         case Right(IncomeTaxUserData(Some(allEmploymentData))) =>

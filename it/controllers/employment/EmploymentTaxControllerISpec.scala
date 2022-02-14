@@ -17,7 +17,7 @@
 package controllers.employment
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
@@ -148,7 +148,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(cya(), aUserRequest)
+            insertCyaData(cya())
             urlGet(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -174,7 +174,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
           implicit lazy val result: WSResponse = {
             dropEmploymentDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertCyaData(cya(None), aUserRequest)
+            insertCyaData(cya(None))
             urlGet(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -204,7 +204,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 noUserDataStub(nino, taxYearEOY)
-                insertCyaData(cya(None, isPriorSubmission = false), aUserRequest)
+                insertCyaData(cya(None, isPriorSubmission = false))
                 urlGet(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
               }
 
@@ -219,7 +219,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYearEOY)
-                insertCyaData(cya(), aUserRequest)
+                insertCyaData(cya())
                 urlGet(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
               }
 
@@ -236,7 +236,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 userDataStub(anIncomeTaxUserData.copy(Some(multipleEmployments)), nino, taxYearEOY)
-                insertCyaData(cya(Some(100.00)), aUserRequest)
+                insertCyaData(cya(Some(100.00)))
                 urlGet(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
               }
 
@@ -251,7 +251,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
                 authoriseAgentOrIndividual(user.isAgent)
                 dropEmploymentDB()
                 noUserDataStub(nino, taxYearEOY)
-                insertCyaData(cya(Some(100.00), isPriorSubmission = false), aUserRequest)
+                insertCyaData(cya(Some(100.00), isPriorSubmission = false))
                 urlGet(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
               }
 
@@ -285,7 +285,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        insertCyaData(cya(), aUserRequest)
+        insertCyaData(cya())
         urlGet(fullUrl(howMuchTaxUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -309,7 +309,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(cya(), aUserRequest)
+              insertCyaData(cya())
               urlPost(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -341,7 +341,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(cya(), aUserRequest)
+              insertCyaData(cya())
               urlPost(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), body = Map("amount" -> "abc123"),
                 welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -374,7 +374,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
               dropEmploymentDB()
               authoriseAgentOrIndividual(user.isAgent)
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(cya(), aUserRequest)
+              insertCyaData(cya())
               urlPost(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), body = Map("amount" -> "9999999999999999999999999999"),
                 welsh = user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -410,7 +410,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        insertCyaData(cya(), aUserRequest)
+        insertCyaData(cya())
         urlPost(fullUrl(howMuchTaxUrl(taxYearEOY, employmentId)), follow = false,
           headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
       }
@@ -418,7 +418,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
       "has an SEE_OTHER status" in {
         result.status shouldBe SEE_OTHER
         result.header("location").contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentDetails.totalTaxToDate shouldBe Some(100)
       }
     }
@@ -427,7 +427,7 @@ class EmploymentTaxControllerISpec extends IntegrationTest with ViewHelpers with
       lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        insertCyaData(cya(), aUserRequest)
+        insertCyaData(cya())
         urlPost(fullUrl(howMuchTaxUrl(taxYear, employmentId)), body = Map("amount" -> "100"), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 

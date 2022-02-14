@@ -48,8 +48,7 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
   indexes = EmploymentUserDataIndexes.indexes(appConfig)
 ) with Repository with EmploymentUserDataRepository with Logging {
 
-  def find[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Either[DatabaseError, Option[EmploymentUserData]]] = {
-
+  def find[T](taxYear: Int, employmentId: String, user: User): Future[Either[DatabaseError, Option[EmploymentUserData]]] = {
     lazy val start = "[EmploymentUserDataRepositoryImpl][find]"
 
     val queryFilter = filter(user.sessionId, user.mtditid, user.nino, taxYear, employmentId)
@@ -74,7 +73,7 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
     }
   }
 
-  def createOrUpdate[T](userData: EmploymentUserData)(implicit user: User[T]): Future[Either[DatabaseError, Unit]] = {
+  def createOrUpdate[T](userData: EmploymentUserData): Future[Either[DatabaseError, Unit]] = {
 
     lazy val start = "[EmploymentUserDataRepositoryImpl][update]"
 
@@ -101,14 +100,15 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
     }
   }
 
-  def clear[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Boolean] =
+  def clear[T](taxYear: Int, employmentId: String, user: User): Future[Boolean] =
     collection.deleteOne(filter(user.sessionId, user.mtditid, user.nino, taxYear, employmentId))
       .toFutureOption()
-      .recover(mongoRecover("Clear", FAILED_TO_ClEAR_EMPLOYMENT_DATA))
+      .recover(mongoRecover("Clear", FAILED_TO_ClEAR_EMPLOYMENT_DATA, user))
       .map(_.exists(_.wasAcknowledged()))
 
-  def mongoRecover[T](operation: String, pagerDutyKey: PagerDutyKeys.Value)
-                     (implicit user: User[_]): PartialFunction[Throwable, Option[T]] = new PartialFunction[Throwable, Option[T]] {
+  def mongoRecover[T](operation: String,
+                      pagerDutyKey: PagerDutyKeys.Value,
+                      user: User): PartialFunction[Throwable, Option[T]] = new PartialFunction[Throwable, Option[T]] {
 
     override def isDefinedAt(x: Throwable): Boolean = x.isInstanceOf[MongoException]
 
@@ -123,9 +123,9 @@ class EmploymentUserDataRepositoryImpl @Inject()(mongo: MongoComponent,
 }
 
 trait EmploymentUserDataRepository {
-  def createOrUpdate[T](userData: EmploymentUserData)(implicit user: User[T]): Future[Either[DatabaseError, Unit]]
+  def createOrUpdate[T](userData: EmploymentUserData): Future[Either[DatabaseError, Unit]]
 
-  def find[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Either[DatabaseError, Option[EmploymentUserData]]]
+  def find[T](taxYear: Int, employmentId: String, user: User): Future[Either[DatabaseError, Option[EmploymentUserData]]]
 
-  def clear[T](taxYear: Int, employmentId: String)(implicit user: User[T]): Future[Boolean]
+  def clear[T](taxYear: Int, employmentId: String, user: User): Future[Boolean]
 }

@@ -30,9 +30,9 @@
     details: Details
 )
 
-@(form: Form[Boolean], taxYear: Int, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[Boolean], taxYear: Int, employmentId: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
-@titleForUse = @{messages(getAgentDynamicContent("benefits.livingAccommodationBenefits.title", user.isAgent))}
+@titleForUse = @{messages(getAgentDynamicContent("benefits.livingAccommodationBenefits.title", request.user.isAgent))}
 @headingForUse = @{titleForUse}
 
 @contentHtml = {
@@ -41,13 +41,13 @@
 
 @detailsHtml = {
     <p class="govuk-body">@messages("benefits.livingAccommodationBenefits.details.1")</p>
-    <p class="govuk-body">@messages(s"benefits.livingAccommodationBenefits.details.2.${if(user.isAgent) "agent" else "individual"}")</p>
+    <p class="govuk-body">@messages(s"benefits.livingAccommodationBenefits.details.2.${if(request.user.isAgent) "agent" else "individual"}")</p>
     <p class="govuk-body">@messages("benefits.livingAccommodationBenefits.details.3")</p>
 }
 
 @hasFormErrors = @{form.hasErrors}
 
-@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
+@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = request.user.isAgent) {
 
     @errorSummary(form.errors.distinct)
 

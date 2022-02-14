@@ -19,7 +19,7 @@ package controllers.employment
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import forms.employment.EmploymentDateForm
-import models.User
+import models.AuthorisationRequest
 import models.employment.EmploymentDate
 import models.mongo.EmploymentUserData
 import play.api.data.Form
@@ -30,7 +30,7 @@ import services.RedirectService.employmentDetailsRedirect
 import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.DateTimeUtil.localDateTimeFormat
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.employment.EmployerStartDateView
 
 import java.time.LocalDate
@@ -45,10 +45,9 @@ class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
                                             errorHandler: ErrorHandler,
                                             employmentSessionService: EmploymentSessionService,
                                             employmentService: EmploymentService,
-                                            implicit val clock: Clock,
                                             implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
         data.employment.employmentDetails.startDate match {
@@ -64,11 +63,11 @@ class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
         val newForm = form.bindFromRequest()
-        newForm.copy(errors = EmploymentDateForm.verifyStartDate(newForm.get, taxYear, user.isAgent, EmploymentDateForm.startDate)).fold(
+        newForm.copy(errors = EmploymentDateForm.verifyStartDate(newForm.get, taxYear, request.user.isAgent, EmploymentDateForm.startDate)).fold(
           formWithErrors =>
             Future.successful(BadRequest(employerStartDateView(formWithErrors, taxYear, employmentId, data.employment.employmentDetails.employerName))),
           submittedDate => handleSuccessForm(taxYear, employmentId, data, submittedDate)
@@ -78,8 +77,8 @@ class EmployerStartDateController @Inject()(authorisedAction: AuthorisedAction,
   }
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, startedDate: EmploymentDate)
-                               (implicit user: User[_]): Future[Result] = {
-    employmentService.updateStartDate(taxYear, employmentId, employmentUserData, startedDate).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    employmentService.updateStartDate(request.user, taxYear, employmentId, employmentUserData, startedDate).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         employmentDetailsRedirect(employmentUserData.employment, taxYear, employmentId, employmentUserData.isPriorSubmission, isStandaloneQuestion = false)

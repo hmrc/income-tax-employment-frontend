@@ -21,25 +21,21 @@ import config.AppConfig
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.expenses.ExpensesInterruptPageView
 
 import javax.inject.Inject
 import scala.concurrent.Future
 
-class ExpensesInterruptPageController @Inject() (implicit val cc: MessagesControllerComponents,
-                                                 authAction: AuthorisedAction,
-                                                 inYearAction: InYearUtil,
-                                                 expensesInterruptPageView: ExpensesInterruptPageView,
-                                                 appConfig: AppConfig,
-                                                 clock: Clock
-                                                )extends FrontendController(cc) with I18nSupport with SessionHelper{
+class ExpensesInterruptPageController @Inject()(implicit val cc: MessagesControllerComponents,
+                                                authAction: AuthorisedAction,
+                                                inYearAction: InYearUtil,
+                                                expensesInterruptPageView: ExpensesInterruptPageView,
+                                                appConfig: AppConfig) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
-
-   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-        Future.successful(Ok(expensesInterruptPageView(taxYear)))
-      }
+      Future.successful(Ok(expensesInterruptPageView(taxYear)))
     }
-
+  }
 }

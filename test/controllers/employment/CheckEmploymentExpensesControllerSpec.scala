@@ -49,7 +49,6 @@ class CheckEmploymentExpensesControllerSpec extends UnitTestWithApp
     mockCheckEmploymentExpensesService,
     inYearAction,
     mockErrorHandler,
-    testClock,
     mockAppConfig,
     mockMessagesControllerComponents,
     ec

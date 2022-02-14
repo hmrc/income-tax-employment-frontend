@@ -17,7 +17,7 @@
 package controllers.expenses
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.mongo.ExpensesCYAModelBuilder.anExpensesCYAModel
 import models.expenses.ExpensesViewModel
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
@@ -109,7 +109,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = false))), aUserRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false, ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = false))))
             urlGet(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -137,7 +137,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
           lazy val result: WSResponse = {
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
-            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel), aUserRequest)
+            insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel))
             urlGet(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -166,7 +166,7 @@ class ExpensesInterruptPageControllerISpec extends IntegrationTest with ViewHelp
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = false, hasPriorExpenses = false,
-              ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = false))), aUserRequest)
+                          ExpensesCYAModel(ExpensesViewModel(isUsingCustomerData = false))))
             urlGet(fullUrl(startEmploymentExpensesUrl(taxYearEOY)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 

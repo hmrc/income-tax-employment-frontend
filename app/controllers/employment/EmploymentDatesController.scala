@@ -28,7 +28,7 @@ import services.EmploymentSessionService
 import services.RedirectService.employmentDetailsRedirect
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.DateTimeUtil.localDateTimeFormat
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.employment.EmploymentDatesView
 
 import java.time.LocalDate
@@ -42,23 +42,22 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
                                           inYearAction: InYearUtil,
                                           errorHandler: ErrorHandler,
                                           employmentSessionService: EmploymentSessionService,
-                                          implicit val clock: Clock,
                                           implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
 
   def datesForm: Form[EmploymentDates] = EmploymentDatesForm.employmentDatesForm
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
-        (data.employment.employmentDetails.startDate, data.employment.employmentDetails.cessationDate)  match {
+        (data.employment.employmentDetails.startDate, data.employment.employmentDetails.cessationDate) match {
           case (Some(startDate), Some(endDate)) =>
             val parsedStartDate: LocalDate = LocalDate.parse(startDate, localDateTimeFormat)
             val parsedEndDate: LocalDate = LocalDate.parse(endDate, localDateTimeFormat)
             val filledForm: Form[EmploymentDates] = datesForm.fill(
               EmploymentDates(
-                parsedStartDate.getDayOfMonth.toString,parsedStartDate.getMonthValue.toString, parsedStartDate.getYear.toString,
-                parsedEndDate.getDayOfMonth.toString,parsedEndDate.getMonthValue.toString, parsedEndDate.getYear.toString))
+                parsedStartDate.getDayOfMonth.toString, parsedStartDate.getMonthValue.toString, parsedStartDate.getYear.toString,
+                parsedEndDate.getDayOfMonth.toString, parsedEndDate.getMonthValue.toString, parsedEndDate.getYear.toString))
             Future.successful(Ok(employmentDatesView(filledForm, taxYear, employmentId, data.employment.employmentDetails.employerName)))
           case _ =>
             Future.successful(Redirect(CheckEmploymentDetailsController.show(taxYear, employmentId)))
@@ -67,26 +66,24 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
         val newForm = datesForm.bindFromRequest()
-          newForm.copy(errors = EmploymentDatesForm.verifyDates(newForm.get, taxYear, user.isAgent)).fold(
+        newForm.copy(errors = EmploymentDatesForm.verifyDates(newForm.get, taxYear, request.user.isAgent)).fold(
           { formWithErrors =>
             Future.successful(BadRequest(employmentDatesView(formWithErrors, taxYear, employmentId, data.employment.employmentDetails.employerName)))
           },
           { submittedDate =>
             val cya = data.employment
-            val leaveDate = cya.employmentDetails.cessationDate
-
             val updatedCya = cya.copy(cya.employmentDetails.copy(
               startDate = Some(submittedDate.startDateToLocalDate.toString),
               cessationDate = Some(submittedDate.endDateToLocalDate.toString))
             )
 
             employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission,
-              data.hasPriorBenefits, data.hasPriorStudentLoans)(errorHandler.internalServerError()) {
-              employmentDetailsRedirect(updatedCya,taxYear,employmentId,data.isPriorSubmission,isStandaloneQuestion = false)
+              data.hasPriorBenefits, data.hasPriorStudentLoans, request.user)(errorHandler.internalServerError()) {
+              employmentDetailsRedirect(updatedCya, taxYear, employmentId, data.isPriorSubmission, isStandaloneQuestion = false)
             }
           }
         )

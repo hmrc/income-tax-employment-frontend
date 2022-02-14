@@ -27,19 +27,19 @@
     button: Button
 )
 
-@(form: Form[Boolean], taxYear: Int, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[Boolean], taxYear: Int, employmentId: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
-@titleForUse = @{messages(s"benefits.incidentalOvernightCostEmploymentBenefits.title.${if(user.isAgent) "agent" else "individual"}")}
+@titleForUse = @{messages(s"benefits.incidentalOvernightCostEmploymentBenefits.title.${if(request.user.isAgent) "agent" else "individual"}")}
 @headingForUse = @{titleForUse}
 
 @hasFormErrors = @{form.hasErrors}
 
 @contentHtml = {
-        <p class="govuk-body">@{messages(s"benefits.incidentalOvernightCostEmploymentBenefits.costInformation.${if(user.isAgent) "agent" else "individual"}")}</p>
+        <p class="govuk-body">@{messages(s"benefits.incidentalOvernightCostEmploymentBenefits.costInformation.${if(request.user.isAgent) "agent" else "individual"}")}</p>
         <p class="govuk-body">@{messages("benefits.incidentalOvernightCostEmploymentBenefits.allowanceInformation")}</p>
 }
 
-@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
+@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = request.user.isAgent) {
 
     @errorSummary(form.errors.distinct)
 

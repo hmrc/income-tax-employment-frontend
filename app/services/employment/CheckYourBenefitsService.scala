@@ -33,14 +33,17 @@ import scala.concurrent.{ExecutionContext, Future}
 class CheckYourBenefitsService @Inject()(nrsService: NrsService,
                                          auditService: AuditService) {
 
-  def performSubmitNrsPayload(model: CreateUpdateEmploymentRequest, employmentId: String, prior: Option[AllEmploymentData])
-                             (implicit user: User[_], request: Request[_], hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
+  def performSubmitNrsPayload(user: User,
+                              createUpdateEmploymentRequest: CreateUpdateEmploymentRequest,
+                              employmentId: String, prior:
+                              Option[AllEmploymentData])
+                             (implicit request: Request[_], hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
 
     val nrsPayload: Either[DecodedAmendBenefitsPayload, DecodedCreateNewBenefitsPayload] = prior.flatMap {
       prior =>
         val priorData = prior.eoyEmploymentSourceWith(employmentId)
-        priorData.map(prior => model.toAmendDecodedBenefitsPayloadModel(prior.employmentSource))
-    }.map(Left(_)).getOrElse(Right(model.toCreateDecodedBenefitsPayloadModel()))
+        priorData.map(prior => createUpdateEmploymentRequest.toAmendDecodedBenefitsPayloadModel(prior.employmentSource))
+    }.map(Left(_)).getOrElse(Right(createUpdateEmploymentRequest.toCreateDecodedBenefitsPayloadModel()))
 
     nrsPayload match {
       case Left(amend) => nrsService.submit(user.nino, amend, user.mtditid)
@@ -48,22 +51,26 @@ class CheckYourBenefitsService @Inject()(nrsService: NrsService,
     }
   }
 
-  def performSubmitAudits(model: CreateUpdateEmploymentRequest, employmentId: String, taxYear: Int, prior: Option[AllEmploymentData])
-                         (implicit user: User[_], hc: HeaderCarrier, ec: ExecutionContext): Option[Future[AuditResult]] = {
+  def performSubmitAudits(user: User,
+                          createUpdateEmploymentRequest: CreateUpdateEmploymentRequest,
+                          employmentId: String,
+                          taxYear: Int,
+                          prior: Option[AllEmploymentData])
+                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Option[Future[AuditResult]] = {
 
-      prior.flatMap {
+    prior.flatMap {
       prior =>
         val priorData = prior.eoyEmploymentSourceWith(employmentId)
         priorData.flatMap {
           prior => {
-            val benefitsData: DecodedAmendBenefitsPayload = model.toAmendDecodedBenefitsPayloadModel(prior.employmentSource)
+            val benefitsData: DecodedAmendBenefitsPayload = createUpdateEmploymentRequest.toAmendDecodedBenefitsPayloadModel(prior.employmentSource)
             if (benefitsData.priorEmploymentBenefitsData.hasBenefitsPopulated) {
               val amendEvent = AmendEmploymentBenefitsUpdateAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid,
                 benefitsData.priorEmploymentBenefitsData, benefitsData.employmentBenefitsData
               ).toAuditModel
               Some(auditService.sendAudit(amendEvent))
             } else {
-              val data = model.toCreateDecodedBenefitsPayloadModel().employmentBenefitsData
+              val data = createUpdateEmploymentRequest.toCreateDecodedBenefitsPayloadModel().employmentBenefitsData
               if (data.hasBenefitsPopulated) {
                 val createEvent = CreateNewEmploymentBenefitsAudit(
                   taxYear = taxYear,
@@ -75,7 +82,7 @@ class CheckYourBenefitsService @Inject()(nrsService: NrsService,
                   employmentBenefitsData = data
                 ).toAuditModel
                 Some(auditService.sendAudit(createEvent))
-              }else{
+              } else {
                 None
               }
             }

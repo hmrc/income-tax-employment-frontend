@@ -20,16 +20,17 @@ import models.User
 import models.employment.StudentLoansCYAModel
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import services.EmploymentSessionService
-import utils.Clock
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionService,
-                                    implicit val ec: ExecutionContext) {
+class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionService) {
 
-  def updateUglQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, ugl: Boolean)
-                           (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateUglQuestion(user: User,
+                        taxYear: Int,
+                        employmentId: String,
+                        originalEmploymentUserData: EmploymentUserData,
+                        ugl: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val newStudentLoans: Option[StudentLoansCYAModel] = originalEmploymentUserData.employment.studentLoans.
       map(studentLoan => if (ugl) {
@@ -39,10 +40,14 @@ class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionS
       })
     val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoans = newStudentLoans)
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
-  def updatePglQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, pgl: Boolean)
-                           (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+
+  def updatePglQuestion(user: User,
+                        taxYear: Int,
+                        employmentId: String,
+                        originalEmploymentUserData: EmploymentUserData,
+                        pgl: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val newStudentLoans: Option[StudentLoansCYAModel] = originalEmploymentUserData.employment.studentLoans.
       map(studentLoan => if (pgl) {
@@ -52,26 +57,32 @@ class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionS
       })
     val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoans = newStudentLoans)
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateUglDeductionAmount(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, uglAmount: BigDecimal)
-                       (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateUglDeductionAmount(user: User,
+                               taxYear: Int,
+                               employmentId: String,
+                               originalEmploymentUserData: EmploymentUserData,
+                               uglAmount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val newStudentLoans: Option[StudentLoansCYAModel] = originalEmploymentUserData.employment.studentLoans.
       map(studentLoan => studentLoan.copy(uglDeductionAmount = Some(uglAmount)))
     val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoans = newStudentLoans)
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updatePglDeductionAmount(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, pglAmount: BigDecimal)
-                              (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updatePglDeductionAmount(user: User,
+                               taxYear: Int,
+                               employmentId: String,
+                               originalEmploymentUserData: EmploymentUserData,
+                               pglAmount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val newStudentLoans: Option[StudentLoansCYAModel] = originalEmploymentUserData.employment.studentLoans.
       map(studentLoan => studentLoan.copy(pglDeductionAmount = Some(pglAmount)))
     val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoans = newStudentLoans)
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 }

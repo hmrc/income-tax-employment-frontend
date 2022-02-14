@@ -18,9 +18,9 @@ package repositories
 
 import com.mongodb.MongoTimeoutException
 import common.UUID
-import models.User
 import models.expenses.ExpensesViewModel
 import models.mongo._
+import models.{AuthorisationRequest, User}
 import org.joda.time.{DateTime, DateTimeZone}
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.{MongoException, MongoInternalException, MongoWriteException}
@@ -96,14 +96,14 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
 
   implicit val request: FakeRequest[AnyContent] = FakeRequest()
 
-  private val userOne = User(expensesUserDataOne.mtdItId, None, expensesUserDataOne.nino, expensesUserDataOne.sessionId, AffinityGroup.Individual.toString)
+  private val authorisationRequestOne = AuthorisationRequest(User(expensesUserDataOne.mtdItId, None, expensesUserDataOne.nino, expensesUserDataOne.sessionId, AffinityGroup.Individual.toString), request)
 
   private val repoWithInvalidEncryption = appWithInvalidEncryptionKey.injector.instanceOf[ExpensesUserDataRepositoryImpl]
 
   "update with invalid encryption" should {
     "fail to add data" in new EmptyDatabase {
       countFromOtherDatabase mustBe 0
-      val res: Either[DatabaseError, Unit] = await(repoWithInvalidEncryption.createOrUpdate(expensesUserDataOne)(userOne))
+      val res: Either[DatabaseError, Unit] = await(repoWithInvalidEncryption.createOrUpdate(expensesUserDataOne))
       res mustBe Left(EncryptionDecryptionError(
         "Key being used is not valid. It could be due to invalid encoding, wrong length or uninitialized for encrypt Invalid AES key length: 2 bytes"))
     }
@@ -114,7 +114,7 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
       countFromOtherDatabase mustBe 0
       await(repoWithInvalidEncryption.collection.insertOne(encryptionService.encryptExpenses(expensesUserDataOne)).toFuture())
       countFromOtherDatabase mustBe 1
-      private val res = await(repoWithInvalidEncryption.find(expensesUserDataOne.taxYear)(userOne))
+      private val res = await(repoWithInvalidEncryption.find(expensesUserDataOne.taxYear, authorisationRequestOne.user))
       res mustBe Left(EncryptionDecryptionError(
         "Key being used is not valid. It could be due to invalid encoding, wrong length or uninitialized for decrypt Invalid AES key length: 2 bytes"))
     }
@@ -131,10 +131,10 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
   "clear" should {
     "remove a record" in new EmptyDatabase {
       count mustBe 0
-      await(repo.createOrUpdate(expensesUserDataOne)(userOne)) mustBe Right()
+      await(repo.createOrUpdate(expensesUserDataOne)) mustBe Right()
       count mustBe 1
 
-      val clearAttempt: Boolean = await(repo.clear(taxYear)(userOne))
+      val clearAttempt: Boolean = await(repo.clear(taxYear, authorisationRequestOne.user))
       clearAttempt mustBe true
       count mustBe 0
     }
@@ -153,22 +153,22 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
       await(ensureIndexes)
       count mustBe 0
 
-      private val res = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
+      private val res = await(repo.createOrUpdate(expensesUserDataOne))
       res mustBe Right()
       count mustBe 1
 
-      private val res2 = await(repo.createOrUpdate(expensesUserDataOne.copy(sessionId = "1234567890"))(userOne))
+      private val res2 = await(repo.createOrUpdate(expensesUserDataOne.copy(sessionId = "1234567890")))
       res2.left.get.message must include("Command failed with error 11000 (DuplicateKey)")
       count mustBe 1
     }
 
     "create a document in collection when one does not exist" in new EmptyDatabase {
-      await(repo.createOrUpdate(expensesUserDataOne)(userOne)) mustBe Right()
+      await(repo.createOrUpdate(expensesUserDataOne)) mustBe Right()
       count mustBe 1
     }
 
     "update a document in collection when one already exists" in new EmptyDatabase {
-      private val createAttempt = await(repo.createOrUpdate(expensesUserDataOne)(userOne))
+      private val createAttempt = await(repo.createOrUpdate(expensesUserDataOne))
       createAttempt mustBe Right()
       count mustBe 1
 
@@ -176,7 +176,7 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
       private val updatedEmploymentCyaModel = expensesUserDataOne.expensesCya.copy(expenses = updatedEmploymentDetails)
       private val updatedEmploymentUserData = expensesUserDataOne.copy(expensesCya = updatedEmploymentCyaModel)
 
-      await(repo.createOrUpdate(updatedEmploymentUserData)(userOne)) mustBe Right()
+      await(repo.createOrUpdate(updatedEmploymentUserData)) mustBe Right()
       count mustBe 1
     }
   }
@@ -186,10 +186,10 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
       private val now = DateTime.now(DateTimeZone.UTC)
       private val data = expensesUserDataOne.copy(lastUpdated = now)
 
-      await(repo.createOrUpdate(data)(userOne)) mustBe Right()
+      await(repo.createOrUpdate(data)) mustBe Right()
       count mustBe 1
 
-      private val findResult = await(repo.find(data.taxYear)(userOne))
+      private val findResult = await(repo.find(data.taxYear, authorisationRequestOne.user))
 
       findResult.right.get.map(_.copy(lastUpdated = data.lastUpdated)) mustBe Some(data)
       findResult.right.get.map(_.lastUpdated.isAfter(data.lastUpdated)) mustBe Some(true)
@@ -197,13 +197,13 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
 
     "return None when find operation succeeds but no data is found for the given inputs" in new EmptyDatabase {
       val taxYear = 2021
-      await(repo.find(taxYear)(userOne)) mustBe Right(None)
+      await(repo.find(taxYear, authorisationRequestOne.user)) mustBe Right(None)
     }
   }
 
   "the set indexes" should {
     "enforce uniqueness" in new EmptyDatabase {
-      await(repo.createOrUpdate(expensesUserDataOne)(userOne)) mustBe Right()
+      await(repo.createOrUpdate(expensesUserDataOne)) mustBe Right()
       count mustBe 1
 
       private val encryptedExpensesUserData: EncryptedExpensesUserData = encryptionService.encryptExpenses(expensesUserDataOne)
@@ -219,7 +219,7 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
       s"recover when the exception is a MongoException or a subclass of MongoException - ${exception.getClass.getSimpleName}" in {
         val result =
           Future.failed(exception)
-            .recover(repo.mongoRecover[Int]("CreateOrUpdate", FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA)(userOne))
+            .recover(repo.mongoRecover[Int]("CreateOrUpdate", FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA, authorisationRequestOne.user))
 
         await(result) mustBe None
       }
@@ -229,7 +229,7 @@ class ExpensesUserDataRepositoryISpec extends IntegrationTest with FutureAwaits 
       s"not recover when the exception is not a subclass of MongoException - ${exception.getClass.getSimpleName}" in {
         val result =
           Future.failed(exception)
-            .recover(repo.mongoRecover[Int]("CreateOrUpdate", FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA)(userOne))
+            .recover(repo.mongoRecover[Int]("CreateOrUpdate", FAILED_TO_CREATE_UPDATE_EMPLOYMENT_DATA, authorisationRequestOne.user))
 
         assertThrows[RuntimeException] {
           await(result)

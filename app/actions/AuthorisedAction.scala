@@ -18,7 +18,7 @@ package actions
 
 import common.{EnrolmentIdentifiers, EnrolmentKeys, SessionValues}
 import config.AppConfig
-import models.User
+import models.AuthorisationRequest
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Results._
@@ -36,7 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class AuthorisedAction @Inject()(appConfig: AppConfig)
                                 (implicit val authService: AuthService,
                                  val mcc: MessagesControllerComponents
-                                ) extends ActionBuilder[User, AnyContent] with I18nSupport {
+                                ) extends ActionBuilder[AuthorisationRequest, AnyContent] with I18nSupport {
 
   implicit val executionContext: ExecutionContext = mcc.executionContext
   lazy val logger: Logger = Logger.apply(this.getClass)
@@ -47,9 +47,9 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
 
   val minimumConfidenceLevel: Int = ConfidenceLevel.L200.level
 
-  override def invokeBlock[A](request: Request[A], block: User[A] => Future[Result]): Future[Result] = {
+  override def invokeBlock[A](request: Request[A], block: AuthorisationRequest[A] => Future[Result]): Future[Result] = {
 
-    implicit lazy val headerCarrier: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request,request.session)
+    implicit lazy val headerCarrier: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     authService.authorised.retrieve(affinityGroup) {
       case Some(AffinityGroup.Agent) => agentAuthentication(block)(request, headerCarrier)
@@ -75,7 +75,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
     }
   }
 
-  def individualAuthentication[A](block: User[A] => Future[Result], affinityGroup: AffinityGroup)
+  def individualAuthentication[A](block: AuthorisationRequest[A] => Future[Result], affinityGroup: AffinityGroup)
                                  (implicit request: Request[A], hc: HeaderCarrier): Future[Result] = {
 
     authService.authorised.retrieve(allEnrolments and confidenceLevel) {
@@ -91,7 +91,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
               logger.info(s"[AuthorisedAction][individualAuthentication] - No session id in request")
               Future.successful(Redirect(appConfig.signInUrl))
             } { sessionId =>
-              block(User(mtdItId, None, nino, sessionId, affinityGroup.toString))
+              block(AuthorisationRequest(models.User(mtdItId, None, nino, sessionId, affinityGroup.toString), request))
             }
 
           case (_, None) =>
@@ -107,8 +107,8 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
     }
   }
 
-  private[actions] def agentAuthentication[A](block: User[A] => Future[Result])
-                                                (implicit request: Request[A], hc: HeaderCarrier): Future[Result] = {
+  private[actions] def agentAuthentication[A](block: AuthorisationRequest[A] => Future[Result])
+                                             (implicit request: Request[A], hc: HeaderCarrier): Future[Result] = {
 
     lazy val agentDelegatedAuthRuleKey = "mtd-it-auth"
 
@@ -133,7 +133,7 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
                   logger.info(s"[AuthorisedAction][agentAuthentication] - No session id in request")
                   Future(Redirect(appConfig.signInUrl))
                 } { sessionId =>
-                  block(User(mtdItId, Some(arn), nino, sessionId, AffinityGroup.Agent.toString))
+                  block(AuthorisationRequest(models.User(mtdItId, Some(arn), nino, sessionId, AffinityGroup.Agent.toString), request))
                 }
 
               case None =>
@@ -156,10 +156,10 @@ class AuthorisedAction @Inject()(appConfig: AppConfig)
   }
 
   private[actions] def enrolmentGetIdentifierValue(
-                                                       checkedKey: String,
-                                                       checkedIdentifier: String,
-                                                       enrolments: Enrolments
-                                                     ): Option[String] = enrolments.enrolments.collectFirst {
+                                                    checkedKey: String,
+                                                    checkedIdentifier: String,
+                                                    enrolments: Enrolments
+                                                  ): Option[String] = enrolments.enrolments.collectFirst {
     case Enrolment(`checkedKey`, enrolmentIdentifiers, _, _) => enrolmentIdentifiers.collectFirst {
       case EnrolmentIdentifier(`checkedIdentifier`, identifierValue) => identifierValue
     }

@@ -16,12 +16,12 @@
 
 package controllers.benefits.fuel
 
+import builders.models.AuthorisationRequestBuilder.{anAuthorisationRequest, anIndividualRequest}
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.UserBuilder.aUserRequest
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserDataWithBenefits
 import forms.YesNoForm
-import models.User
 import models.benefits.{BenefitsViewModel, CarVanFuelModel}
+import models.{AuthorisationRequest, User}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
@@ -29,8 +29,8 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 import utils.PageUrls.{checkYourBenefitsUrl, fullUrl, mileageBenefitsUrl, overviewUrl, vanFuelBenefitsAmountUrl, vanFuelBenefitsUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -137,11 +137,12 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyVanFuel), User(mtditid, None, nino, sessionId, affinityGroup))
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyVanFuel))
             urlGet(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -164,11 +165,12 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithVanFuelYes(), isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, affinityGroup))
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithVanFuelYes(), isPriorSubmission = false, hasPriorBenefits = false))
             urlGet(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -191,12 +193,12 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithVanFuelYes(vanFuelAmount = None), isPriorSubmission = false, hasPriorBenefits = false),
-              User(mtditid, None, nino, sessionId, affinityGroup))
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithVanFuelYes(vanFuelAmount = None), isPriorSubmission = false, hasPriorBenefits = false))
             urlGet(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -220,11 +222,12 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithVanFuelNo, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, affinityGroup))
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithVanFuelNo, isPriorSubmission = false, hasPriorBenefits = false))
             urlGet(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           "has an OK status" in {
@@ -247,7 +250,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithVanFuelNo, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, "agent"))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithVanFuelNo, isPriorSubmission = false, hasPriorBenefits = false))
         urlGet(fullUrl(vanFuelBenefitsUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -274,7 +277,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoBenefitsReceived, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, "agent"))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoBenefitsReceived, isPriorSubmission = false, hasPriorBenefits = false))
         urlGet(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -293,8 +296,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
           val form: Map[String, String] = Map[String, String]()
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyVanFuel, isPriorSubmission = false, hasPriorBenefits = false),
-              User(mtditid, None, nino, sessionId, agentTest(user.isAgent)))
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyVanFuel, isPriorSubmission = false, hasPriorBenefits = false))
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -304,6 +306,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
@@ -321,7 +324,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyVanFuel), User(mtditid, None, nino, sessionId, agentTest(isAgent = false)))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyVanFuel))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -332,7 +335,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       }
 
       "update the vanFuelQuestion to false and vanFuel to none" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuelQuestion)) shouldBe Some(false)
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuel)) shouldBe None
       }
@@ -342,7 +345,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.no)
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyVanFuel, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, agentTest(isAgent = false)))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyVanFuel, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -353,7 +356,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       }
 
       "update the vanFuelQuestion to false and vanFuel to none" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuelQuestion)) shouldBe Some(false)
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuel)) shouldBe None
       }
@@ -363,7 +366,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyVanFuel, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, agentTest(isAgent = false)))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyVanFuel, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -374,7 +377,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       }
 
       "update the vanFuelQuestion to true" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuelQuestion)) shouldBe Some(true)
       }
     }
@@ -383,7 +386,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyVanFuel), User(mtditid, None, nino, sessionId, agentTest(isAgent = false)))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithEmptyVanFuel))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -394,7 +397,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       }
 
       "update the vanFuelQuestion to true" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.vanFuelQuestion)) shouldBe Some(true)
       }
     }
@@ -418,7 +421,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithVanFuelNo, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, "agent"))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithVanFuelNo, isPriorSubmission = false, hasPriorBenefits = false))
         urlPost(fullUrl(vanFuelBenefitsUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = form)
       }
 
@@ -433,7 +436,7 @@ class CompanyVanFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       implicit lazy val result: WSResponse = {
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoBenefitsReceived, isPriorSubmission = false, hasPriorBenefits = false), User(mtditid, None, nino, sessionId, "agent"))
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsWithNoBenefitsReceived, isPriorSubmission = false, hasPriorBenefits = false))
         urlPost(fullUrl(vanFuelBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = form)
       }
 

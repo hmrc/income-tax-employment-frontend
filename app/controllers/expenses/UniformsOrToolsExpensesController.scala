@@ -20,7 +20,7 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes._
 import forms.YesNoForm
-import models.User
+import models.AuthorisationRequest
 import models.mongo.ExpensesUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -29,7 +29,7 @@ import services.EmploymentSessionService
 import services.ExpensesRedirectService.{expensesSubmitRedirect, flatRateRedirects, redirectBasedOnCurrentAnswers}
 import services.expenses.ExpensesService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.expenses.UniformsOrToolsExpensesView
 
 import javax.inject.Inject
@@ -43,30 +43,29 @@ class UniformsOrToolsExpensesController @Inject()(implicit val cc: MessagesContr
                                                   employmentSessionService: EmploymentSessionService,
                                                   expensesService: ExpensesService,
                                                   errorHandler: ErrorHandler,
-                                                  ec: ExecutionContext,
-                                                  clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                                  ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getExpensesSessionDataResult(taxYear) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, optCya)(flatRateRedirects(_, taxYear)) { data =>
 
           data.expensesCya.expenses.flatRateJobExpensesQuestion match {
-            case Some(questionResult) => Future.successful(Ok(pageView(yesNoForm.fill(questionResult), taxYear)))
-            case None => Future.successful(Ok(pageView(yesNoForm, taxYear)))
+            case Some(questionResult) => Future.successful(Ok(pageView(yesNoForm(request.user.isAgent).fill(questionResult), taxYear)))
+            case None => Future.successful(Ok(pageView(yesNoForm(request.user.isAgent), taxYear)))
           }
         }
       }
     }
   }
 
-  def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getExpensesSessionDataResult(taxYear) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, optCya)(flatRateRedirects(_, taxYear)) { data =>
 
-          yesNoForm.bindFromRequest().fold(
+          yesNoForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear))),
             yesNo => handleSuccessForm(taxYear, data, yesNo)
           )
@@ -76,8 +75,8 @@ class UniformsOrToolsExpensesController @Inject()(implicit val cc: MessagesContr
   }
 
   private def handleSuccessForm(taxYear: Int, expensesUserData: ExpensesUserData, questionValue: Boolean)
-                               (implicit user: User[_]): Future[Result] = {
-    expensesService.updateFlatRateJobExpensesQuestion(taxYear, expensesUserData, questionValue).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    expensesService.updateFlatRateJobExpensesQuestion(request.user, taxYear, expensesUserData, questionValue).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(expensesUserData) =>
         val nextPage = if (questionValue) {
@@ -89,7 +88,7 @@ class UniformsOrToolsExpensesController @Inject()(implicit val cc: MessagesContr
     }
   }
 
-  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"expenses.uniformsWorkClothesTools.error.noEntry.${if (user.isAgent) "agent" else "individual"}"
+  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"expenses.uniformsWorkClothesTools.error.noEntry.${if (isAgent) "agent" else "individual"}"
   )
 }

@@ -22,31 +22,33 @@ import models.User
 import models.employment._
 import models.employment.createUpdate.CreateUpdateEmploymentRequest
 import play.api.mvc.Request
-import services.{EmploymentSessionService, NrsService}
+import services.NrsService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CheckEmploymentDetailsService @Inject()(employmentSessionService: EmploymentSessionService,
-                                              nrsService: NrsService,
-                                              auditService: AuditService) {
+class CheckEmploymentDetailsService @Inject()(nrsService: NrsService, auditService: AuditService) {
 
-  def performSubmitAudits(model: CreateUpdateEmploymentRequest, employmentId: String, taxYear: Int, prior: Option[AllEmploymentData])
-                         (implicit user: User[_], hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
+  def performSubmitAudits(user: User,
+                          createUpdateEmploymentRequest: CreateUpdateEmploymentRequest,
+                          employmentId: String,
+                          taxYear: Int,
+                          prior: Option[AllEmploymentData])
+                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
 
     val audit: Either[AuditModel[AmendEmploymentDetailsUpdateAudit], AuditModel[CreateNewEmploymentDetailsAudit]] = prior.flatMap {
       prior =>
         val priorData = prior.eoyEmploymentSourceWith(employmentId)
-        priorData.map(prior => model.toAmendAuditModel(employmentId, taxYear, prior.employmentSource).toAuditModel)
+        priorData.map(prior => createUpdateEmploymentRequest.toAmendAuditModel(user, employmentId, taxYear, prior.employmentSource).toAuditModel)
     }.map(Left(_)).getOrElse {
 
       val existingEmployments = prior.map(
         prior => prior.latestEOYEmployments.map(employment => PriorEmploymentAuditInfo(employment.employerName, employment.employerRef))
       ).getOrElse(Seq.empty)
 
-      Right(model.toCreateAuditModel(taxYear, existingEmployments = existingEmployments).toAuditModel)
+      Right(createUpdateEmploymentRequest.toCreateAuditModel(user, taxYear, existingEmployments = existingEmployments).toAuditModel)
     }
 
     audit match {
@@ -55,18 +57,21 @@ class CheckEmploymentDetailsService @Inject()(employmentSessionService: Employme
     }
   }
 
-  def performSubmitNrsPayload(model: CreateUpdateEmploymentRequest, employmentId: String, prior: Option[AllEmploymentData])
-                             (implicit user: User[_], request: Request[_], hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
+  def performSubmitNrsPayload(user: User,
+                              createUpdateEmploymentRequest: CreateUpdateEmploymentRequest,
+                              employmentId: String,
+                              prior: Option[AllEmploymentData])
+                             (implicit request: Request[_], hc: HeaderCarrier): Future[NrsSubmissionResponse] = {
     val nrsPayload: Either[DecodedAmendEmploymentDetailsPayload, DecodedCreateNewEmploymentDetailsPayload] = prior.flatMap {
       prior =>
         val priorData = prior.eoyEmploymentSourceWith(employmentId)
-        priorData.map(prior => model.toAmendDecodedPayloadModel(employmentId, prior.employmentSource))
+        priorData.map(prior => createUpdateEmploymentRequest.toAmendDecodedPayloadModel(employmentId, prior.employmentSource))
     }.map(Left(_)).getOrElse {
       val existingEmployments = prior.map(prior => prior.latestEOYEmployments.map(
         employment => DecodedPriorEmploymentInfo(employment.employerName, employment.employerRef)
       )).getOrElse(Seq.empty)
 
-      Right(model.toCreateDecodedPayloadModel(existingEmployments))
+      Right(createUpdateEmploymentRequest.toCreateDecodedPayloadModel(existingEmployments))
     }
 
     nrsPayload match {
@@ -75,11 +80,12 @@ class CheckEmploymentDetailsService @Inject()(employmentSessionService: Employme
     }
   }
 
-  def isSingleEmploymentAndAudit(employmentDetails: EmploymentDetailsViewModel,
+  def isSingleEmploymentAndAudit(user: User,
+                                 employmentDetails: EmploymentDetailsViewModel,
                                  taxYear: Int,
                                  isInYear: Boolean,
                                  allEmploymentData: Option[AllEmploymentData])
-                                (implicit user: User[_], hc: HeaderCarrier, ec: ExecutionContext): Boolean = {
+                                (implicit hc: HeaderCarrier, ec: ExecutionContext): Boolean = {
     val auditModel = ViewEmploymentDetailsAudit(taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, employmentDetails)
     auditService.sendAudit[ViewEmploymentDetailsAudit](auditModel.toAuditModel)
 

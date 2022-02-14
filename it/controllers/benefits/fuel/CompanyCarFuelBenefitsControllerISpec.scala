@@ -16,7 +16,7 @@
 
 package controllers.benefits.fuel
 
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
@@ -111,7 +111,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
           lazy val result: WSResponse = {
             dropEmploymentDB()
             val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(carFuelQuestion = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(carFuelBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -139,7 +139,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
         "Render the 'Did you receive car fuel benefits' page with the correct content with cya data and the yes value pre-filled" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(anEmploymentUserData, aUserRequest)
+            insertCyaData(anEmploymentUserData)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(carFuelBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -187,7 +187,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
           lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+            insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(carFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -203,7 +203,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
           lazy val result: WSResponse = {
             dropEmploymentDB()
             val benefitsViewModel = aBenefitsViewModel.copy(carVanFuelModel = Some(aCarVanFuelModel.copy(carFuelQuestion = None)), isBenefitsReceived = true)
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
             authoriseAgentOrIndividual(user.isAgent)
             urlPost(fullUrl(carFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -244,7 +244,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       lazy val result: WSResponse = {
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(carFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -255,7 +255,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       }
 
       "updates the carFuelQuestion to false and carFuel to None" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) shouldBe Some(false)
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuel)) shouldBe None
@@ -267,7 +267,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       lazy val result: WSResponse = {
         dropEmploymentDB()
         val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = None)
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(carFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -278,7 +278,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       }
 
       "updates the carFuelQuestion to false and carFuel to None" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) shouldBe Some(false)
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuel)) shouldBe None
@@ -292,7 +292,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
         val benefitsViewModel = aBenefitsViewModel
           .copy(carVanFuelModel = Some(aCarVanFuelModel.copy(carFuelQuestion = Some(false))))
           .copy(accommodationRelocationModel = None)
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(carFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -303,7 +303,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       }
 
       "updates the car fuel question to be true" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) shouldBe Some(true)
       }
@@ -316,7 +316,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
         val benefitsViewModel = aBenefitsViewModel
           .copy(carVanFuelModel = Some(aCarVanFuelModel.copy(carFuelQuestion = Some(false))))
           .copy(accommodationRelocationModel = None)
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(carFuelBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -327,7 +327,7 @@ class CompanyCarFuelBenefitsControllerISpec extends IntegrationTest with ViewHel
       }
 
       "updates the car fuel question to be true" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cyaModel.employment.employmentBenefits.flatMap(_.carVanFuelModel.flatMap(_.carFuelQuestion)) shouldBe Some(true)
       }

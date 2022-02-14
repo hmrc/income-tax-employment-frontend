@@ -28,16 +28,16 @@
   button: Button
 )
 
-@(form: Form[Boolean], taxYear: Int, employmentId: String)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[Boolean], taxYear: Int, employmentId: String)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
-@titleForUse = @{messages(getAgentDynamicContent("receiveAnyBenefits.title", user.isAgent))}
+@titleForUse = @{messages(getAgentDynamicContent("receiveAnyBenefits.title", request.user.isAgent))}
 @headingForUse = @{titleForUse}
 
 @paragraphText = {<p class="govuk-body">@messages("receiveAnyBenefits.paragraph")</p>}
 
 @hasFormErrors = @{form.hasErrors}
 
-@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
+@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = request.user.isAgent) {
 
   @errorSummary(form.errors.distinct)
 

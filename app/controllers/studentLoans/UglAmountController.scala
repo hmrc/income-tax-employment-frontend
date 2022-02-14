@@ -16,11 +16,11 @@
 
 package controllers.studentLoans
 
-import config.{AppConfig, ErrorHandler}
 import actions.{AuthorisedAction, TaxYearAction}
-import forms.{AmountForm, FormUtils}
-import models.User
+import config.{AppConfig, ErrorHandler}
 import controllers.studentLoans.routes.StudentLoansCYAController
+import forms.{AmountForm, FormUtils}
+import models.AuthorisationRequest
 import models.mongo.EmploymentUserData
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -28,7 +28,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import services.studentLoans.StudentLoansService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, SessionHelper}
+import utils.SessionHelper
 import views.html.studentLoans.UglAmountView
 
 import javax.inject.Inject
@@ -41,10 +41,9 @@ class UglAmountController @Inject()(implicit val mcc: MessagesControllerComponen
                                     view: UglAmountView,
                                     appConfig: AppConfig,
                                     errorHandler: ErrorHandler,
-                                    ec: ExecutionContext,
-                                    clock: Clock) extends FrontendController(mcc) with I18nSupport with SessionHelper with FormUtils {
+                                    ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper with FormUtils {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
 
     if (appConfig.studentLoansEnabled) {
       employmentSessionService.getSessionData(taxYear, employmentId).map {
@@ -58,8 +57,8 @@ class UglAmountController @Inject()(implicit val mcc: MessagesControllerComponen
                 val uglAmount = cyaData.employment.studentLoans.flatMap(_.uglDeductionAmount)
                 val employerName = cyaData.employment.employmentDetails.employerName
 
-                val form = uglAmount.fold(amountForm(employerName)
-                )(amountForm(employerName).fill _)
+                val form = uglAmount.fold(amountForm(employerName, request.user.isAgent)
+                )(amountForm(employerName, request.user.isAgent).fill _)
                 Ok(view(taxYear, form, employmentId, employerName))
 
               } else {
@@ -75,12 +74,12 @@ class UglAmountController @Inject()(implicit val mcc: MessagesControllerComponen
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
 
     if (appConfig.studentLoansEnabled) {
       val redirectUrl = StudentLoansCYAController.show(taxYear, employmentId).url
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)(redirectUrl) { cya =>
-        amountForm(cya.employment.employmentDetails.employerName).bindFromRequest().fold(
+        amountForm(cya.employment.employmentDetails.employerName, request.user.isAgent).bindFromRequest().fold(
           formWithErrors => {
             Future.successful(BadRequest(view(taxYear, formWithErrors, employmentId, cya.employment.employmentDetails.employerName)))
           },
@@ -100,17 +99,16 @@ class UglAmountController @Inject()(implicit val mcc: MessagesControllerComponen
   }
 
 
-
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, amount: BigDecimal)
-                               (implicit user: User[_]): Future[Result] = {
-    studentLoansService.updateUglDeductionAmount(taxYear, employmentId, employmentUserData, amount).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    studentLoansService.updateUglDeductionAmount(request.user, taxYear, employmentId, employmentUserData, amount).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(_) => Redirect(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYear, employmentId))
     }
   }
 
-  private def amountForm(employerName: String)(implicit user: User[_]): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"studentLoans.undergraduateLoanAmount.error.noEntry.${if (user.isAgent) "agent" else "individual"}",
+  private def amountForm(employerName: String, isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
+    emptyFieldKey = s"studentLoans.undergraduateLoanAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
     wrongFormatKey = "studentLoans.undergraduateLoanAmount.error.invalidFormat",
     emptyFieldArguments = Seq(employerName)
   )

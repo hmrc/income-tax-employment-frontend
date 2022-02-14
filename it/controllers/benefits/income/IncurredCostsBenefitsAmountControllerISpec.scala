@@ -17,7 +17,7 @@
 package controllers.benefits.income
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.IncomeTaxAndCostsModelBuilder.anIncomeTaxAndCostsModel
 import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
@@ -146,7 +146,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(anIncomeTaxAndCostsModel.copy(paymentsOnEmployeesBehalf = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
             urlGet(fullUrl(incurredCostsBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -174,7 +174,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(anEmploymentUserData, aUserRequest)
+            insertCyaData(anEmploymentUserData)
             urlGet(fullUrl(incurredCostsBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -202,7 +202,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(anEmploymentUserData.copy(hasPriorBenefits = false), aUserRequest)
+            insertCyaData(anEmploymentUserData.copy(hasPriorBenefits = false))
             urlGet(fullUrl(incurredCostsBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -233,7 +233,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        insertCyaData(anEmploymentUserData, aUserRequest)
+        insertCyaData(anEmploymentUserData)
         urlGet(fullUrl(incurredCostsBenefitsAmountUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -262,7 +262,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(anIncomeTaxAndCostsModel.copy(paymentsOnEmployeesBehalfQuestion = Some(false), paymentsOnEmployeesBehalf = None)))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlGet(fullUrl(incurredCostsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -278,7 +278,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(IncomeTaxAndCostsModel(sectionQuestion = Some(false))))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlGet(fullUrl(incurredCostsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -294,7 +294,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = true)
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlGet(fullUrl(incurredCostsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -317,7 +317,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(anEmploymentUserData, aUserRequest)
+              insertCyaData(anEmploymentUserData)
               urlPost(fullUrl(incurredCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -351,7 +351,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(anEmploymentUserData, aUserRequest)
+              insertCyaData(anEmploymentUserData)
               urlPost(fullUrl(incurredCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -385,7 +385,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(anEmploymentUserData, aUserRequest)
+              insertCyaData(anEmploymentUserData)
               urlPost(fullUrl(incurredCostsBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -422,7 +422,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        insertCyaData(anEmploymentUserData, aUserRequest)
+        insertCyaData(anEmploymentUserData)
         urlPost(fullUrl(incurredCostsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -432,7 +432,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
       }
 
       "update the paymentsOnEmployeesBehalf value to the new amount" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalf)) shouldBe Some(newAmount)
       }
     }
@@ -445,7 +445,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(reimbursedCostsVouchersAndNonCashModel = None)
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlPost(fullUrl(incurredCostsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -455,7 +455,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
       }
 
       "update the paymentsOnEmployeesBehalf value to the new amount" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalf)) shouldBe Some(newAmount)
       }
     }
@@ -465,7 +465,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        insertCyaData(anEmploymentUserData, aUserRequest)
+        insertCyaData(anEmploymentUserData)
         urlPost(fullUrl(incurredCostsBenefitsAmountUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -496,7 +496,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(anIncomeTaxAndCostsModel.copy(paymentsOnEmployeesBehalfQuestion = Some(false), paymentsOnEmployeesBehalf = None)))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlPost(fullUrl(incurredCostsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -514,7 +514,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(incomeTaxAndCostsModel = Some(IncomeTaxAndCostsModel(sectionQuestion = Some(false))))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlPost(fullUrl(incurredCostsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -532,7 +532,7 @@ class IncurredCostsBenefitsAmountControllerISpec extends IntegrationTest with Vi
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = true)
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlPost(fullUrl(incurredCostsBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 

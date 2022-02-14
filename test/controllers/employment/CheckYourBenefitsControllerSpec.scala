@@ -47,7 +47,6 @@ class CheckYourBenefitsControllerSpec extends UnitTestWithApp
     mockAuditService,
     inYearAction,
     mockErrorHandler,
-    testClock,
     ec
   )
 

@@ -16,7 +16,7 @@
 
 package controllers.employment
 
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.mongo.EmploymentUserDataBuilder.anEmploymentUserData
 import forms.employment.EmploymentDateForm
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -195,7 +195,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
         "render the 'start date' page with the correct content" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
+            insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -227,7 +227,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(CyaModel.cya, aUserRequest)
+            insertCyaData(CyaModel.cya)
             urlGet(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -285,7 +285,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
+              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)))
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -321,7 +321,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
+              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)))
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -357,7 +357,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
+              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)))
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -393,7 +393,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
+              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)))
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -429,7 +429,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
+              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)))
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -465,7 +465,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
+              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)))
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -501,7 +501,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
+              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)))
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -537,7 +537,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
+              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)))
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -573,7 +573,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
+              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)))
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -609,7 +609,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
+              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)))
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -645,7 +645,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
+              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)))
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -681,7 +681,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
+              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)))
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -717,7 +717,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
+              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)))
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -756,7 +756,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
+              insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)))
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
@@ -812,7 +812,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
       lazy val result: WSResponse = {
         dropEmploymentDB()
         insertCyaData(anEmploymentUserData.copy(employment = cya.copy(employmentDetails = cya.employmentDetails.copy(
-          cessationDateQuestion = Some(false), cessationDate = Some(s"${taxYearEOY - 1}-11-10")))), aUserRequest)
+                  cessationDateQuestion = Some(false), cessationDate = Some(s"${taxYearEOY - 1}-11-10")))))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -831,7 +831,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
 
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)), aUserRequest)
+        insertCyaData(anEmploymentUserData.copy(employment = cyaModel(employerName, hmrc = true)))
         authoriseAgentOrIndividual(isAgent = false)
         urlPost(fullUrl(employmentStartDateUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
@@ -839,7 +839,7 @@ class EmployerStartDateControllerISpec extends IntegrationTest with ViewHelpers 
       "redirects to the check your details page" in {
         result.status shouldBe SEE_OTHER
         result.header("location").contains(checkYourDetailsUrl(taxYearEOY, employmentId)) shouldBe true
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentDetails.startDate shouldBe Some(employmentStartDate)
       }
 

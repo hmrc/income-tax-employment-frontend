@@ -39,14 +39,14 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
       val prior = None
 
       mockAuditSendEvent(CreateNewEmploymentExpensesAudit(
-        taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, AuditNewEmploymentExpensesData(
+        taxYear, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditNewEmploymentExpensesData(
           expenses.jobExpenses,
           expenses.flatRateJobExpenses,
           expenses.professionalSubscriptions,
           expenses.otherAndCapitalAllowances
         )
       ).toAuditModel)
-      await(underTest.performSubmitAudits(model, taxYear, prior)) shouldBe AuditResult.Success
+      await(underTest.performSubmitAudits(authorisationRequest.user, model, taxYear, prior)) shouldBe AuditResult.Success
     }
 
     "send the audit events from the model when it's a create and theres existing data" in {
@@ -60,14 +60,14 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
       )
 
       mockAuditSendEvent(CreateNewEmploymentExpensesAudit(
-        taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid, AuditNewEmploymentExpensesData(
+        taxYear, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid, AuditNewEmploymentExpensesData(
           expenses.jobExpenses,
           expenses.flatRateJobExpenses,
           expenses.professionalSubscriptions,
           expenses.otherAndCapitalAllowances
         )
       ).toAuditModel)
-      await(underTest.performSubmitAudits(model, taxYear, Some(prior))) shouldBe AuditResult.Success
+      await(underTest.performSubmitAudits(authorisationRequest.user, model, taxYear, Some(prior))) shouldBe AuditResult.Success
     }
   }
 
@@ -90,7 +90,7 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
     )
 
     mockAuditSendEvent(AmendEmploymentExpensesUpdateAudit(
-      taxYear, user.affinityGroup.toLowerCase, user.nino, user.mtditid,
+      taxYear, authorisationRequest.user.affinityGroup.toLowerCase, authorisationRequest.user.nino, authorisationRequest.user.mtditid,
       priorEmploymentExpensesData = AuditEmploymentExpensesData(
         priorCustomerEmploymentExpenses.expenses.get.jobExpenses,
         priorCustomerEmploymentExpenses.expenses.get.flatRateJobExpenses,
@@ -105,7 +105,7 @@ class CheckEmploymentExpensesServiceSpec extends UnitTest with MockAuditService 
         expenses.otherAndCapitalAllowances
       )
     ).toAuditModel)
-    await(underTest.performSubmitAudits(model, taxYear, Some(prior))) shouldBe AuditResult.Success
+    await(underTest.performSubmitAudits(authorisationRequest.user, model, taxYear, Some(prior))) shouldBe AuditResult.Success
   }
 
   ".performSubmitNrsPayload" should {

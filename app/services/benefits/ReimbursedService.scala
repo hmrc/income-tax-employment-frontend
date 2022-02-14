@@ -20,7 +20,6 @@ import models.User
 import models.benefits.ReimbursedCostsVouchersAndNonCashModel
 import models.mongo.EmploymentUserData
 import services.EmploymentSessionService
-import utils.Clock
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,8 +27,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionService,
                                   implicit val ec: ExecutionContext) {
 
-  def updateSectionQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                           (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateSectionQuestion(user: User,
+                            taxYear: Int,
+                            employmentId: String,
+                            originalEmploymentUserData: EmploymentUserData,
+                            questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val reimbursedCostsModel = cya.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel)
@@ -43,11 +45,14 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
         Some(ReimbursedCostsVouchersAndNonCashModel(sectionQuestion = Some(questionValue))))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateExpensesQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                            (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateExpensesQuestion(user: User,
+                             taxYear: Int,
+                             employmentId: String,
+                             originalEmploymentUserData: EmploymentUserData,
+                             questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val reimbursedCostsVouchersAndNonCashModel = benefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel)
@@ -60,11 +65,14 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
         reimbursedCostsVouchersAndNonCashModel.map(_.copy(expensesQuestion = Some(false), expenses = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateExpenses(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                    (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateExpenses(user: User,
+                     taxYear: Int,
+                     employmentId: String,
+                     originalEmploymentUserData: EmploymentUserData,
+                     amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val benefits = cyaModel.employmentBenefits
     val reimbursedCostsVouchersAndNonCashModel = benefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel)
@@ -73,11 +81,14 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
       reimbursedCostsVouchersAndNonCashModel.map(_.copy(expenses = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateTaxableExpensesQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                                   (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateTaxableExpensesQuestion(user: User,
+                                    taxYear: Int,
+                                    employmentId: String,
+                                    originalEmploymentUserData: EmploymentUserData,
+                                    questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val reimbursedModel = cya.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel)
@@ -90,11 +101,14 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
         reimbursedModel.map(_.copy(taxableExpensesQuestion = Some(false), taxableExpenses = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateTaxableExpenses(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                           (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateTaxableExpenses(user: User,
+                            taxYear: Int,
+                            employmentId: String,
+                            originalEmploymentUserData: EmploymentUserData,
+                            amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val benefits = cyaModel.employmentBenefits
     val reimbursedCostsVouchersAndNonCashModel = cyaModel.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel)
@@ -103,11 +117,14 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
       reimbursedCostsVouchersAndNonCashModel = reimbursedCostsVouchersAndNonCashModel.map(_.copy(taxableExpenses = Some(amount)))
     )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateVouchersAndCreditCardsQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                                          (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateVouchersAndCreditCardsQuestion(user: User,
+                                           taxYear: Int,
+                                           employmentId: String,
+                                           originalEmploymentUserData: EmploymentUserData,
+                                           questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val reimbursedCostsVouchersAndNonCashModel = benefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel)
@@ -120,11 +137,14 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
         reimbursedCostsVouchersAndNonCashModel.map(_.copy(vouchersAndCreditCardsQuestion = Some(false), vouchersAndCreditCards = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateVouchersAndCreditCards(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                                  (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateVouchersAndCreditCards(user: User,
+                                   taxYear: Int,
+                                   employmentId: String,
+                                   originalEmploymentUserData: EmploymentUserData,
+                                   amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val benefits = cyaModel.employmentBenefits
     val reimbursedCostsVouchersAndNonCashModel = cyaModel.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel)
@@ -133,11 +153,14 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
       reimbursedCostsVouchersAndNonCashModel = reimbursedCostsVouchersAndNonCashModel.map(_.copy(vouchersAndCreditCards = Some(amount)))
     )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateNonCashQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                           (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateNonCashQuestion(user: User,
+                            taxYear: Int,
+                            employmentId: String,
+                            originalEmploymentUserData: EmploymentUserData,
+                            questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val reimbursedCostsVouchersAndNonCashModel = benefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel)
@@ -150,11 +173,14 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
         reimbursedCostsVouchersAndNonCashModel.map(_.copy(nonCashQuestion = Some(false), nonCash = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateNonCash(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                   (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateNonCash(user: User,
+                    taxYear: Int,
+                    employmentId: String,
+                    originalEmploymentUserData: EmploymentUserData,
+                    amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val benefits = cyaModel.employmentBenefits
     val reimbursedCostsVouchersAndNonCashModel = benefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel)
@@ -163,11 +189,14 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
       reimbursedCostsVouchersAndNonCashModel = reimbursedCostsVouchersAndNonCashModel.map(_.copy(nonCash = Some(amount)))
     )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateOtherItemsQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                              (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateOtherItemsQuestion(user: User,
+                               taxYear: Int,
+                               employmentId: String,
+                               originalEmploymentUserData: EmploymentUserData,
+                               questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val reimbursedCostsVouchersAndNonCashModel = benefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel)
@@ -180,11 +209,14 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
         reimbursedCostsVouchersAndNonCashModel.map(_.copy(otherItemsQuestion = Some(false), otherItems = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateOtherItems(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                      (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateOtherItems(user: User,
+                       taxYear: Int,
+                       employmentId: String,
+                       originalEmploymentUserData: EmploymentUserData,
+                       amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val benefits = cyaModel.employmentBenefits
     val reimbursedCostsVouchersAndNonCashModel = cyaModel.employmentBenefits.flatMap(_.reimbursedCostsVouchersAndNonCashModel)
@@ -193,6 +225,6 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
       reimbursedCostsVouchersAndNonCashModel = reimbursedCostsVouchersAndNonCashModel.map(_.copy(otherItems = Some(amount)))
     )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 }

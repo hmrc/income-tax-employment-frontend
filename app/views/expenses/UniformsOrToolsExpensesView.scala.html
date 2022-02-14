@@ -29,9 +29,9 @@
         link: Link
 )
 
-@(form: Form[Boolean], taxYear: Int)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[Boolean], taxYear: Int)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
-@titleForUse = @{messages(s"expenses.uniformsWorkClothesTools.title.${if(user.isAgent) "agent" else "individual"}")}
+@titleForUse = @{messages(s"expenses.uniformsWorkClothesTools.title.${if(request.user.isAgent) "agent" else "individual"}")}
 @headingForUse = @{titleForUse}
 
 @hasFormErrors = @{form.hasErrors}
@@ -39,18 +39,18 @@
  @contentHtml = {
     <p class="govuk-body">@{messages("expenses.uniformsWorkClothesTools.canClaim")}</p>
     <ul class="govuk-list govuk-list--bullet">
-        <li>@{messages(s"expenses.uniformsWorkClothesTools.canClaim.example1.${if(user.isAgent) "agent" else "individual"}")}</li>
+        <li>@{messages(s"expenses.uniformsWorkClothesTools.canClaim.example1.${if(request.user.isAgent) "agent" else "individual"}")}</li>
         <li>@{messages("expenses.uniformsWorkClothesTools.canClaim.example2")}</li>
     </ul>
 
     <p class="govuk-body">@{messages("expenses.uniformsWorkClothesTools.flatRateExpense")}</p>
 
      <p class="govuk-body">
-         @link("https://www.gov.uk/guidance/job-expenses-for-uniforms-work-clothing-and-tools",s"expenses.uniformsWorkClothesTools.checkIfYouCanClaimLink.${if(user.isAgent) "agent" else "individual"}",Some("uniforms-and-tools-link"),true,fullStop=true)
+         @link("https://www.gov.uk/guidance/job-expenses-for-uniforms-work-clothing-and-tools",s"expenses.uniformsWorkClothesTools.checkIfYouCanClaimLink.${if(request.user.isAgent) "agent" else "individual"}",Some("uniforms-and-tools-link"),true,fullStop=true)
      </p>
 }
 
-@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
+@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = request.user.isAgent) {
 
     @errorSummary(form.errors.distinct)
 

@@ -35,19 +35,19 @@
     govukInsetText: GovukInsetText,
     govUkButton: GovukButton
 )
-@(taxYear: Int, employments: Seq[EmploymentSource], expensesExist: Boolean, isInYear: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, employments: Seq[EmploymentSource], expensesExist: Boolean, isInYear: Boolean)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @headingForUse = @{
     messages("employment.employmentSummary.heading")
 }
 
-@layout(pageTitle = headingForUse, taxYear = Some(taxYear), isAgent = user.isAgent) {
+@layout(pageTitle = headingForUse, taxYear = Some(taxYear), isAgent = request.user.isAgent) {
 
     @heading(headingForUse, Some(messages("payeEmployment.caption", (taxYear - 1).toString, taxYear.toString)), "govuk-!-margin-bottom-2")
 
     @if(isInYear) {
         @govukInsetText(InsetText(
-            content = Text(messages(s"employment.employmentInfo.p1.${if(user.isAgent) "agent" else "individual"}", taxYear.toString))
+            content = Text(messages(s"employment.employmentInfo.p1.${if(request.user.isAgent) "agent" else "individual"}", taxYear.toString))
         ))
     }
 
@@ -57,9 +57,9 @@
     }
 
     @if(appConfig.studentLoansEnabled) {
-        <p class="govuk-body">@messages(s"employment.employmentSummary.content.${if(user.isAgent) "agent" else "individual"}")</p>
+        <p class="govuk-body">@messages(s"employment.employmentSummary.content.${if(request.user.isAgent) "agent" else "individual"}")</p>
     } else {
-        <p class="govuk-body">@messages(s"employment.employmentSummary.content.studentLoansUnreleased.${if(user.isAgent) "agent" else "individual"}")</p>
+        <p class="govuk-body">@messages(s"employment.employmentSummary.content.studentLoansUnreleased.${if(request.user.isAgent) "agent" else "individual"}")</p>
     }
 
     @{
@@ -105,7 +105,7 @@
         }
     } else {
         @if(isInYear) {
-            <p class="govuk-body">@messages(s"employment.employmentSummary.cannotAdd.${if(user.isAgent) "agent" else "individual"}", taxYear.toString)</p>
+            <p class="govuk-body">@messages(s"employment.employmentSummary.cannotAdd.${if(request.user.isAgent) "agent" else "individual"}", taxYear.toString)</p>
         } else {
             @{
                 val row = summaryListRow(

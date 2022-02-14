@@ -30,26 +30,26 @@
         govUkButton: GovukButton
 )
 
-@(taxYear: Int, expenses: ExpensesViewModel, isInYear: Boolean)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(taxYear: Int, expenses: ExpensesViewModel, isInYear: Boolean)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
 @mapToYesNo(value: Boolean) = @{
     if(value){messages("common.yes")} else {messages("common.no")}
 }
 
-@layout(pageTitle = messages(s"checkYourExpenses.heading.${if(user.isAgent) "agent" else "individual"}"), taxYear = Some(taxYear), isAgent = user.isAgent) {
+@layout(pageTitle = messages(s"checkYourExpenses.heading.${if(request.user.isAgent) "agent" else "individual"}"), taxYear = Some(taxYear), isAgent = request.user.isAgent) {
     @heading(
-        messages(s"checkYourExpenses.heading.${if(user.isAgent) "agent" else "individual"}"),
+        messages(s"checkYourExpenses.heading.${if(request.user.isAgent) "agent" else "individual"}"),
         Some(messages(s"expenses.caption", (taxYear - 1).toString, taxYear.toString)),
         "govuk-!-margin-bottom-3"
     )
 
     <p class="govuk-body">
-        @messages(s"checkYourExpenses.sub-heading.${if(user.isAgent) "agent" else "individual"}")
+        @messages(s"checkYourExpenses.sub-heading.${if(request.user.isAgent) "agent" else "individual"}")
     </p>
 
     @{
         govukInsetText(InsetText(
-            content = Text(messages(s"checkYourExpenses.inYearInfo.${if(user.isAgent) "agent" else "individual"}", taxYear.toString))
+            content = Text(messages(s"checkYourExpenses.inYearInfo.${if(request.user.isAgent) "agent" else "individual"}", taxYear.toString))
         ))
     }
 

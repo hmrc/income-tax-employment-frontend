@@ -16,8 +16,8 @@
 
 package controllers.benefits.assets
 
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.UserBuilder.aUserRequest
 import builders.models.benefits.AssetsModelBuilder.anAssetsModel
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
@@ -28,8 +28,8 @@ import org.jsoup.nodes.Document
 import play.api.http.HeaderNames
 import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.libs.ws.WSResponse
-import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 import utils.PageUrls.{assetsForUseBenefitsAmountUrl, assetsToKeepBenefitsUrl, checkYourBenefitsUrl, fullUrl, overviewUrl}
+import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpers with EmploymentDatabaseHelper {
 
@@ -154,7 +154,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assets = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
             urlGet(fullUrl(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -163,6 +163,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -185,7 +186,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(anEmploymentUserData, aUserRequest)
+            insertCyaData(anEmploymentUserData)
             urlGet(fullUrl(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -194,6 +195,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -215,7 +217,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
+            insertCyaData(anEmploymentUserData.copy(isPriorSubmission = false, hasPriorBenefits = false))
             urlGet(fullUrl(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
 
@@ -224,6 +226,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
           }
 
           lazy val document = Jsoup.parse(result.body)
+
           implicit def documentSupplier: () => Document = () => document
 
           titleCheck(user.specificExpectedResults.get.expectedTitle)
@@ -248,7 +251,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        insertCyaData(anEmploymentUserData, aUserRequest)
+        insertCyaData(anEmploymentUserData)
         urlGet(fullUrl(assetsForUseBenefitsAmountUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -277,7 +280,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(sectionQuestion = Some(true), assetsQuestion = Some(false))))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlGet(fullUrl(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -293,7 +296,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(sectionQuestion = Some(false))))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlGet(fullUrl(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -309,7 +312,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(isBenefitsReceived = false)
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlGet(fullUrl(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -332,7 +335,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(anEmploymentUserData, aUserRequest)
+              insertCyaData(anEmploymentUserData)
               urlPost(fullUrl(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -341,7 +344,8 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
@@ -369,7 +373,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(anEmploymentUserData, aUserRequest)
+              insertCyaData(anEmploymentUserData)
               urlPost(fullUrl(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -378,7 +382,8 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
@@ -406,7 +411,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
               authoriseAgentOrIndividual(user.isAgent)
               dropEmploymentDB()
               userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-              insertCyaData(anEmploymentUserData, aUserRequest)
+              insertCyaData(anEmploymentUserData)
               urlPost(fullUrl(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId)), body = form, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
             }
 
@@ -415,7 +420,8 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
             }
 
             lazy val document = Jsoup.parse(result.body)
-          implicit def documentSupplier: () => Document = () => document
+
+            implicit def documentSupplier: () => Document = () => document
 
             titleCheck(user.specificExpectedResults.get.expectedErrorTitle)
             h1Check(user.specificExpectedResults.get.expectedHeading)
@@ -446,7 +452,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        insertCyaData(anEmploymentUserData, aUserRequest)
+        insertCyaData(anEmploymentUserData)
         urlPost(fullUrl(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -456,7 +462,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
       }
 
       "update the assets value to the new amount" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assets)) shouldBe Some(newAmount)
       }
     }
@@ -470,16 +476,17 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(assetsSoFar))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlPost(fullUrl(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, body = form, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
       "redirect to the assets transferred page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location").contains(assetsToKeepBenefitsUrl(taxYearEOY, employmentId)) shouldBe true      }
+        result.header("location").contains(assetsToKeepBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
+      }
 
       "update the assets value to the new amount" in {
-        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cyaModel.employment.employmentBenefits.flatMap(_.assetsModel.flatMap(_.assets)) shouldBe Some(newAmount)
       }
     }
@@ -489,7 +496,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
         authoriseAgentOrIndividual(isAgent = false)
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-        insertCyaData(anEmploymentUserData, aUserRequest)
+        insertCyaData(anEmploymentUserData)
         urlPost(fullUrl(assetsForUseBenefitsAmountUrl(taxYear, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
 
@@ -518,7 +525,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assetsQuestion = Some(false))))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlPost(fullUrl(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -534,7 +541,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(sectionQuestion = Some(false))))
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlPost(fullUrl(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -550,7 +557,7 @@ class AssetsBenefitsAmountControllerISpec extends IntegrationTest with ViewHelpe
         dropEmploymentDB()
         userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
         val benefitsViewModel = aBenefitsViewModel.copy(isBenefitsReceived = false)
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlPost(fullUrl(assetsForUseBenefitsAmountUrl(taxYearEOY, employmentId)), body = "", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 

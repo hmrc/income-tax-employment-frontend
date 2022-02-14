@@ -24,8 +24,7 @@ import play.api.libs.json.{Json, OFormat}
 
 case class CreateUpdateExpensesRequest(ignoreExpenses: Option[Boolean], expenses: Expenses) {
 
-  def toAmendAuditModel(taxYear: Int, priorData: EmploymentExpenses)(implicit user: User[_]): AmendEmploymentExpensesUpdateAudit = {
-
+  def toAmendAuditModel(user: User, taxYear: Int, priorData: EmploymentExpenses): AmendEmploymentExpensesUpdateAudit = {
     AmendEmploymentExpensesUpdateAudit(
       taxYear = taxYear,
       userType = user.affinityGroup.toLowerCase,
@@ -46,8 +45,7 @@ case class CreateUpdateExpensesRequest(ignoreExpenses: Option[Boolean], expenses
     )
   }
 
-  def toCreateAuditModel(taxYear: Int)(implicit user: User[_]): CreateNewEmploymentExpensesAudit = {
-
+  def toCreateAuditModel(user: User, taxYear: Int): CreateNewEmploymentExpensesAudit = {
     CreateNewEmploymentExpensesAudit(
       taxYear = taxYear,
       userType = user.affinityGroup.toLowerCase,
@@ -62,8 +60,7 @@ case class CreateUpdateExpensesRequest(ignoreExpenses: Option[Boolean], expenses
     )
   }
 
-  def toCreateDecodedExpensesPayloadModel()(implicit user: User[_]): DecodedCreateNewExpensesPayload = {
-
+  def toCreateDecodedExpensesPayloadModel(): DecodedCreateNewExpensesPayload = {
     DecodedCreateNewExpensesPayload(
       employmentExpensesData = Expenses(
         businessTravelCosts = expenses.businessTravelCosts,
@@ -79,8 +76,7 @@ case class CreateUpdateExpensesRequest(ignoreExpenses: Option[Boolean], expenses
   }
 
 
-  def toAmendDecodedExpensesPayloadModel(priorData: EmploymentExpenses)(implicit user: User[_]): DecodedAmendExpensesPayload = {
-
+  def toAmendDecodedExpensesPayloadModel(priorData: EmploymentExpenses): DecodedAmendExpensesPayload = {
     DecodedAmendExpensesPayload(
       priorEmploymentExpensesData = Expenses(
         businessTravelCosts = priorData.expenses.flatMap(_.businessTravelCosts),
@@ -89,7 +85,7 @@ case class CreateUpdateExpensesRequest(ignoreExpenses: Option[Boolean], expenses
         professionalSubscriptions = priorData.expenses.flatMap(_.professionalSubscriptions),
         hotelAndMealExpenses = priorData.expenses.flatMap(_.hotelAndMealExpenses),
         otherAndCapitalAllowances = priorData.expenses.flatMap(_.otherAndCapitalAllowances),
-        vehicleExpenses =  priorData.expenses.flatMap(_.vehicleExpenses),
+        vehicleExpenses = priorData.expenses.flatMap(_.vehicleExpenses),
         mileageAllowanceRelief = priorData.expenses.flatMap(_.mileageAllowanceRelief)
       ),
       employmentExpensesData = Expenses(

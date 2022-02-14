@@ -17,7 +17,7 @@
 package controllers.benefits.accommodation
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.benefits.AccommodationRelocationModelBuilder.anAccommodationRelocationModel
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.mongo.EmploymentUserDataBuilder.{anEmploymentUserData, anEmploymentUserDataWithBenefits}
@@ -130,7 +130,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(nonQualifyingRelocationExpenses = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -158,7 +158,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           lazy val result: WSResponse = {
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(anEmploymentUserData, aUserRequest)
+            insertCyaData(anEmploymentUserData)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -188,7 +188,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
         "render the non-qualifying relocation benefits amount page with the amount field pre-filled with prior benefits data" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(anEmploymentUserData, aUserRequest)
+            insertCyaData(anEmploymentUserData)
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -236,7 +236,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           dropEmploymentDB()
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(nonQualifyingRelocationExpenses = None)))
-          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
           authoriseAgentOrIndividual(isAgent = false)
           urlGet(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -252,7 +252,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(nonQualifyingRelocationExpensesQuestion = Some(false))))
-          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
           urlGet(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -268,7 +268,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(nonQualifyingRelocationExpensesQuestion = None)))
-          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
           urlGet(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -283,7 +283,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = true)
-          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
+          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
           urlGet(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -305,7 +305,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(anEmploymentUserData, aUserRequest)
+            insertCyaData(anEmploymentUserData)
             urlPost(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
           }
@@ -336,7 +336,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(anEmploymentUserData, aUserRequest)
+            insertCyaData(anEmploymentUserData)
             urlPost(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "abc"))
           }
@@ -367,7 +367,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(anEmploymentUserData, aUserRequest)
+            insertCyaData(anEmploymentUserData)
             urlPost(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "9999999999999999999999999999"))
           }
@@ -402,7 +402,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = None)
-          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
           urlPost(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.23"))
         }
@@ -413,7 +413,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
         }
 
         "updates the CYA model with the new value" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
           val nonQualifyingAmount = cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses))
           nonQualifyingAmount shouldBe Some(100.23)
         }
@@ -424,7 +424,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = None)
-          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
+          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
           urlPost(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.11"))
         }
@@ -435,7 +435,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
         }
 
         "updates the CYA model with the new value" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
           val nonQualifyingRelocationAmount = cyaModel.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpenses))
           nonQualifyingRelocationAmount shouldBe Some(100.11)
         }
@@ -459,7 +459,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
         lazy val result: WSResponse = {
           dropEmploymentDB()
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-          insertCyaData(anEmploymentUserData, aUserRequest)
+          insertCyaData(anEmploymentUserData)
           authoriseAgentOrIndividual(isAgent = false)
           urlPost(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYear, employmentId)), follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.22"))
@@ -476,7 +476,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(nonQualifyingRelocationExpensesQuestion = Some(false))))
-          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
           urlPost(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
         }
@@ -493,7 +493,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(nonQualifyingRelocationExpensesQuestion = None)))
-          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
+          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
           urlPost(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
         }
@@ -509,7 +509,7 @@ class NonQualifyingRelocationBenefitsAmountControllerISpec extends IntegrationTe
           authoriseAgentOrIndividual(isAgent = false)
           dropEmploymentDB()
           val benefitsViewModel = BenefitsViewModel(isUsingCustomerData = true)
-          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
+          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
 
           urlPost(fullUrl(nonQualifyingRelocationBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))

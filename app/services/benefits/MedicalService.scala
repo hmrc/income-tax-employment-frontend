@@ -20,7 +20,6 @@ import models.User
 import models.benefits.MedicalChildcareEducationModel
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import services.EmploymentSessionService
-import utils.Clock
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,8 +27,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class MedicalService @Inject()(employmentSessionService: EmploymentSessionService,
                                implicit val ec: ExecutionContext) {
 
-  def updateSectionQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                           (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateSectionQuestion(user: User,
+                            taxYear: Int,
+                            employmentId: String,
+                            originalEmploymentUserData: EmploymentUserData,
+                            questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val medicalChildcareEducationModel = benefits.flatMap(_.medicalChildcareEducationModel)
@@ -42,11 +44,14 @@ class MedicalService @Inject()(employmentSessionService: EmploymentSessionServic
           .getOrElse(MedicalChildcareEducationModel(sectionQuestion = Some(questionValue)))))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateMedicalInsuranceQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                                    (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateMedicalInsuranceQuestion(user: User,
+                                     taxYear: Int,
+                                     employmentId: String,
+                                     originalEmploymentUserData: EmploymentUserData,
+                                     questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val medicalChildcareEducationModel = benefits.flatMap(_.medicalChildcareEducationModel)
@@ -59,22 +64,28 @@ class MedicalService @Inject()(employmentSessionService: EmploymentSessionServic
         medicalChildcareEducationModel.map(_.copy(medicalInsuranceQuestion = Some(false), medicalInsurance = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateMedicalInsurance(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                            (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateMedicalInsurance(user: User,
+                             taxYear: Int,
+                             employmentId: String,
+                             originalEmploymentUserData: EmploymentUserData,
+                             amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val medicalAndChildcare: Option[MedicalChildcareEducationModel] = cyaModel.employmentBenefits.flatMap(_.medicalChildcareEducationModel)
 
     val updatedEmployment = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(medicalChildcareEducationModel =
       medicalAndChildcare.map(_.copy(medicalInsurance = Some(amount))))))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateNurseryPlacesQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                                 (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateNurseryPlacesQuestion(user: User,
+                                  taxYear: Int,
+                                  employmentId: String,
+                                  originalEmploymentUserData: EmploymentUserData,
+                                  questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val medicalChildcareEducationModel = cya.employmentBenefits.flatMap(_.medicalChildcareEducationModel)
@@ -87,11 +98,14 @@ class MedicalService @Inject()(employmentSessionService: EmploymentSessionServic
         medicalChildcareEducationModel.map(_.copy(nurseryPlacesQuestion = Some(false), nurseryPlaces = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateNurseryPlaces(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                         (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateNurseryPlaces(user: User,
+                          taxYear: Int,
+                          employmentId: String,
+                          originalEmploymentUserData: EmploymentUserData,
+                          amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val benefits = cyaModel.employmentBenefits
     val medicalChildcareEducationModel = benefits.flatMap(_.medicalChildcareEducationModel)
@@ -100,11 +114,14 @@ class MedicalService @Inject()(employmentSessionService: EmploymentSessionServic
       employmentBenefits = benefits.map(_.copy(medicalChildcareEducationModel = medicalChildcareEducationModel.map(_.copy(nurseryPlaces = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateEducationalServicesQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                                       (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateEducationalServicesQuestion(user: User,
+                                        taxYear: Int,
+                                        employmentId: String,
+                                        originalEmploymentUserData: EmploymentUserData,
+                                        questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val medicalChildcareEducationModel = benefits.flatMap(_.medicalChildcareEducationModel)
@@ -118,11 +135,14 @@ class MedicalService @Inject()(employmentSessionService: EmploymentSessionServic
           medicalChildcareEducationModel.map(_.copy(educationalServicesQuestion = Some(false), educationalServices = None)))))
       }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateEducationalServices(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                               (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateEducationalServices(user: User,
+                                taxYear: Int,
+                                employmentId: String,
+                                originalEmploymentUserData: EmploymentUserData,
+                                amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val benefits = cyaModel.employmentBenefits
     val medicalChildcareEducationModel = cyaModel.employmentBenefits.flatMap(_.medicalChildcareEducationModel)
@@ -131,11 +151,14 @@ class MedicalService @Inject()(employmentSessionService: EmploymentSessionServic
       medicalChildcareEducationModel = medicalChildcareEducationModel.map(_.copy(educationalServices = Some(amount)))
     )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateBeneficialLoanQuestion(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, questionValue: Boolean)
-                                  (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateBeneficialLoanQuestion(user: User,
+                                   taxYear: Int,
+                                   employmentId: String,
+                                   originalEmploymentUserData: EmploymentUserData,
+                                   questionValue: Boolean): Future[Either[Unit, EmploymentUserData]] = {
     val cya = originalEmploymentUserData.employment
     val benefits = cya.employmentBenefits
     val medicalChildcareEducationModel = benefits.flatMap(_.medicalChildcareEducationModel)
@@ -150,11 +173,14 @@ class MedicalService @Inject()(employmentSessionService: EmploymentSessionServic
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 
-  def updateBeneficialLoan(taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, amount: BigDecimal)
-                          (implicit user: User[_], clock: Clock): Future[Either[Unit, EmploymentUserData]] = {
+  def updateBeneficialLoan(user: User,
+                           taxYear: Int,
+                           employmentId: String,
+                           originalEmploymentUserData: EmploymentUserData,
+                           amount: BigDecimal): Future[Either[Unit, EmploymentUserData]] = {
     val cyaModel = originalEmploymentUserData.employment
     val benefits = cyaModel.employmentBenefits
     val medicalChildcareEducationModel = benefits.flatMap(_.medicalChildcareEducationModel)
@@ -163,6 +189,6 @@ class MedicalService @Inject()(employmentSessionService: EmploymentSessionServic
       employmentBenefits = benefits.map(_.copy(medicalChildcareEducationModel = medicalChildcareEducationModel.map(_.copy(beneficialLoan = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
   }
 }

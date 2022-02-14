@@ -20,7 +20,7 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes.OtherEquipmentController
 import forms.{AmountForm, FormUtils}
-import models.User
+import models.AuthorisationRequest
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import models.redirects.ConditionalRedirect
 import play.api.data.Form
@@ -30,7 +30,7 @@ import services.EmploymentSessionService
 import services.ExpensesRedirectService.{expensesSubmitRedirect, professionalSubscriptionsAmountRedirects, redirectBasedOnCurrentAnswers}
 import services.expenses.ExpensesService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.expenses.ProfFeesAndSubscriptionsExpensesAmountView
 
 import javax.inject.Inject
@@ -44,17 +44,16 @@ class ProfFeesAndSubscriptionsExpensesAmountController @Inject()(implicit val cc
                                                                  val employmentSessionService: EmploymentSessionService,
                                                                  expensesService: ExpensesService,
                                                                  errorHandler: ErrorHandler,
-                                                                 ec: ExecutionContext,
-                                                                 clock: Clock
+                                                                 ec: ExecutionContext
                                                                 ) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
-  def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandleExpenses(taxYear) { (optCya, prior) =>
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { cyaData =>
 
           val cyaAmount = cyaData.expensesCya.expenses.professionalSubscriptions
-          val form = fillExpensesFormFromPriorAndCYA(amountForm(user.isAgent), prior, cyaAmount) { employmentExpenses =>
+          val form = fillExpensesFormFromPriorAndCYA(amountForm(request.user.isAgent), prior, cyaAmount) { employmentExpenses =>
             employmentExpenses.expenses.flatMap(_.professionalSubscriptions)
           }
           Future(Ok(profSubscriptionsExpensesAmountView(taxYear, form, cyaAmount)))
@@ -63,12 +62,12 @@ class ProfFeesAndSubscriptionsExpensesAmountController @Inject()(implicit val cc
     }
   }
 
-  def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getExpensesSessionDataResult(taxYear) { cya =>
         redirectBasedOnCurrentAnswers(taxYear, cya)(redirects(_, taxYear)) { data =>
 
-          amountForm(user.isAgent).bindFromRequest().fold(
+          amountForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => {
               val fillValue = data.expensesCya.expenses.professionalSubscriptions
               Future.successful(BadRequest(profSubscriptionsExpensesAmountView(taxYear, formWithErrors, fillValue)))
@@ -81,8 +80,8 @@ class ProfFeesAndSubscriptionsExpensesAmountController @Inject()(implicit val cc
   }
 
   private def handleSuccessForm(taxYear: Int, expensesUserData: ExpensesUserData, amount: BigDecimal)
-                               (implicit user: User[_]): Future[Result] = {
-    expensesService.updateProfessionalSubscriptions(taxYear, expensesUserData, amount).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    expensesService.updateProfessionalSubscriptions(request.user, taxYear, expensesUserData, amount).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(expensesUserData) => expensesSubmitRedirect(expensesUserData.expensesCya, OtherEquipmentController.show(taxYear))(taxYear)
     }

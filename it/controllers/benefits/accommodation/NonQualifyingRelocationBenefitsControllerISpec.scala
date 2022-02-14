@@ -17,7 +17,7 @@
 package controllers.benefits.accommodation
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.benefits.AccommodationRelocationModelBuilder.anAccommodationRelocationModel
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
@@ -134,7 +134,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
           lazy val result: WSResponse = {
             dropEmploymentDB()
             val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(nonQualifyingRelocationExpensesQuestion = None)))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -164,7 +164,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
           lazy val result: WSResponse = {
             dropEmploymentDB()
             val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(anAccommodationRelocationModel.copy(nonQualifyingRelocationExpensesQuestion = Some(true))))
-            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+            insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -196,7 +196,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
       "user has no benefits" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
           authoriseAgentOrIndividual(isAgent = false)
           urlGet(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -211,7 +211,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
         lazy val result: WSResponse = {
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(accommodationRelocationModel = Some(AccommodationRelocationModel(sectionQuestion = Some(false))))
-          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+          insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
           authoriseAgentOrIndividual(isAgent = false)
           urlGet(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -226,7 +226,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
     "redirect user to tax overview page if it's not EOY" which {
       lazy val result: WSResponse = {
         dropEmploymentDB()
-        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+        insertCyaData(anEmploymentUserData.copy(employment = anEmploymentCYAModel.copy(employmentBenefits = None)))
         authoriseAgentOrIndividual(isAgent = false)
         urlGet(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYear, employmentId)), follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
       }
@@ -246,7 +246,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
             lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(anEmploymentUserData, aUserRequest)
+              insertCyaData(anEmploymentUserData)
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false,
                 welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -287,7 +287,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = None)
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlPost(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -297,7 +297,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
       }
 
       "updates non-QualifyingRelocation Expenses Question to Yes" in {
-        lazy val cya = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cya = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpensesQuestion)) shouldBe Some(true)
       }
     }
@@ -308,7 +308,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = None)
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel))
         urlPost(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -318,7 +318,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
       }
 
       "updates non-QualifyingRelocation Expenses Question to No and removes non-QualifyingRelocation Expenses amount" in {
-        lazy val cya = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cya = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.sectionQuestion)) shouldBe Some(true)
         cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodationQuestion)) shouldBe Some(true)
         cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.accommodation)) shouldBe Some(100.00)
@@ -335,7 +335,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
         dropEmploymentDB()
         authoriseAgentOrIndividual(isAgent = false)
         val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = None)
-        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false), aUserRequest)
+        insertCyaData(anEmploymentUserDataWithBenefits(benefitsViewModel, isPriorSubmission = false, hasPriorBenefits = false))
         urlPost(fullUrl(nonQualifyingRelocationBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
       }
 
@@ -345,7 +345,7 @@ class NonQualifyingRelocationBenefitsControllerISpec extends IntegrationTest wit
       }
 
       "updates non-QualifyingRelocation Expenses Question to Yes" in {
-        lazy val cya = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+        lazy val cya = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
         cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.nonQualifyingRelocationExpensesQuestion)) shouldBe Some(true)
       }
     }

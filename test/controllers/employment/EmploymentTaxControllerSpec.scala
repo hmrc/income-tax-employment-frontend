@@ -20,7 +20,7 @@ import common.SessionValues
 import config.{MockEmploymentService, MockEmploymentSessionService}
 import controllers.employment.routes.CheckEmploymentDetailsController
 import forms.AmountForm
-import models.User
+import models.AuthorisationRequest
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.mvc.Result
@@ -43,7 +43,7 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp
       currentDataIsHmrcHeld = true
     )
     val employmentCyaModel: EmploymentCYAModel = EmploymentCYAModel(employmentSource1)
-    val employmentUserData: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false,employmentCyaModel)
+    val employmentUserData: EmploymentUserData = EmploymentUserData(sessionId, mtditid, nino, taxYear, employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = false, employmentCyaModel)
   }
 
   private val taxYear = 2021
@@ -59,8 +59,7 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp
     mockEmploymentSessionService,
     mockEmploymentService,
     inYearAction,
-    mockErrorHandler,
-    testClock
+    mockErrorHandler
   )
 
   ".show" should {
@@ -90,7 +89,7 @@ class EmploymentTaxControllerSpec extends UnitTestWithApp
           val redirect = CheckEmploymentDetailsController.show(taxYear, employmentId).url
 
           (mockEmploymentSessionService.getSessionDataAndReturnResult(_: Int, _: String)(_: String)(
-            _: EmploymentUserData => Future[Result])(_: User[_])).expects(taxYear, employmentId, redirect, *, *).returns(Future(Redirect(redirect)))
+            _: EmploymentUserData => Future[Result])(_: AuthorisationRequest[_])).expects(taxYear, employmentId, redirect, *, *).returns(Future(Redirect(redirect)))
 
           controller.submit(taxYear, employmentId = employmentId)(fakeRequest.withFormUrlEncodedBody("amount" -> "32").withSession(
             SessionValues.TAX_YEAR -> taxYear.toString

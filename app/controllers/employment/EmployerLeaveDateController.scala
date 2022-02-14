@@ -19,7 +19,7 @@ package controllers.employment
 import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import forms.employment.EmploymentDateForm
-import models.User
+import models.AuthorisationRequest
 import models.employment.EmploymentDate
 import models.mongo.EmploymentUserData
 import play.api.Logging
@@ -31,7 +31,7 @@ import services.RedirectService.employmentDetailsRedirect
 import services.employment.EmploymentService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.DateTimeUtil.localDateTimeFormat
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.employment.EmployerLeaveDateView
 
 import java.time.LocalDate
@@ -46,13 +46,12 @@ class EmployerLeaveDateController @Inject()(authorisedAction: AuthorisedAction,
                                             errorHandler: ErrorHandler,
                                             employmentSessionService: EmploymentSessionService,
                                             employmentService: EmploymentService,
-                                            implicit val clock: Clock,
                                             implicit val ec: ExecutionContext
                                            ) extends FrontendController(mcc) with I18nSupport with SessionHelper with Logging {
 
   private def form: Form[EmploymentDate] = EmploymentDateForm.employmentStartDateForm
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     val log = "[EmployerLeaveDateController][show]"
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getSessionDataAndReturnResult(taxYear, employmentId)() { data =>
@@ -81,7 +80,7 @@ class EmployerLeaveDateController @Inject()(authorisedAction: AuthorisedAction,
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     val log = "[EmployerLeaveDateController][submit]"
 
     inYearAction.notInYear(taxYear) {
@@ -98,7 +97,7 @@ class EmployerLeaveDateController @Inject()(authorisedAction: AuthorisedAction,
             Future.successful(employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission))
           case (Some(startDate), _) =>
             val newForm = form.bindFromRequest()
-            newForm.copy(errors = EmploymentDateForm.verifyLeaveDate(newForm.get, taxYear, user.isAgent, EmploymentDateForm.leaveDate, startDate)).fold(
+            newForm.copy(errors = EmploymentDateForm.verifyLeaveDate(newForm.get, taxYear, request.user.isAgent, EmploymentDateForm.leaveDate, startDate)).fold(
               formWithErrors =>
                 Future.successful(BadRequest(employerLeaveDateView(formWithErrors, taxYear, employmentId, data.employment.employmentDetails.employerName))),
               submittedDate => handleSuccessForm(taxYear, employmentId, data, submittedDate.toLocalDate.toString)
@@ -109,8 +108,8 @@ class EmployerLeaveDateController @Inject()(authorisedAction: AuthorisedAction,
   }
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, cessationDate: String)
-                               (implicit user: User[_]): Future[Result] = {
-    employmentService.updateCessationDate(taxYear, employmentId, employmentUserData, cessationDate).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    employmentService.updateCessationDate(request.user, taxYear, employmentId, employmentUserData, cessationDate).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) => employmentDetailsRedirect(employmentUserData.employment, taxYear, employmentId, employmentUserData.isPriorSubmission)
     }

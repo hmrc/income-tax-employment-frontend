@@ -20,7 +20,7 @@ import actions.AuthorisedAction
 import common.SessionValues
 import config.{AppConfig, ErrorHandler}
 import forms.employment.EmployerNameForm
-import models.User
+import models.AuthorisationRequest
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -28,7 +28,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
 import services.RedirectService.employmentDetailsRedirect
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.employment.EmployerNameView
 
 import javax.inject.Inject
@@ -41,35 +41,34 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
                                        inYearAction: InYearUtil,
                                        errorHandler: ErrorHandler,
                                        employmentSessionService: EmploymentSessionService,
-                                       implicit val clock: Clock,
                                        implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID).fold(
         handleSuccessfulGet(taxYear, employmentId).map(_.addingToSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))
-      )(employmentSessionService.clear(taxYear, _).flatMap {
+      )(employmentSessionService.clear(request.user, taxYear, _).flatMap {
         case Left(_) => Future.successful(errorHandler.internalServerError())
         case Right(_) => handleSuccessfulGet(taxYear, employmentId)
       })
     }
   }
 
-  private def handleSuccessfulGet(taxYear: Int, employmentId: String)(implicit user: User[_]): Future[Result] = {
+  private def handleSuccessfulGet(taxYear: Int, employmentId: String)(implicit request: AuthorisationRequest[_]): Future[Result] = {
     employmentSessionService.getSessionDataResult(taxYear, employmentId) {
       case Some(data) =>
         val employerName = data.employment.employmentDetails.employerName
-        val prefilledForm: Form[String] = EmployerNameForm.employerNameForm(user.isAgent).fill(employerName)
+        val prefilledForm: Form[String] = EmployerNameForm.employerNameForm(request.user.isAgent).fill(employerName)
         Future.successful(Ok(employerNameView(prefilledForm, taxYear, employmentId)))
       case None =>
-        val form: Form[String] = EmployerNameForm.employerNameForm(user.isAgent)
+        val form: Form[String] = EmployerNameForm.employerNameForm(request.user.isAgent)
         Future.successful(Ok(employerNameView(form, taxYear, employmentId)))
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authorisedAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      val form: Form[String] = EmployerNameForm.employerNameForm(user.isAgent)
+      val form: Form[String] = EmployerNameForm.employerNameForm(request.user.isAgent)
       form.bindFromRequest().fold(
         formWithErrors => Future.successful(BadRequest(employerNameView(formWithErrors, taxYear, employmentId))),
         submittedName => handleSuccessForm(taxYear, employmentId, submittedName)
@@ -78,19 +77,20 @@ class EmployerNameController @Inject()(authorisedAction: AuthorisedAction,
   }
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employerName: String)
-                               (implicit user: User[_]): Future[Result] = {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
     employmentSessionService.getSessionDataResult(taxYear, employmentId) {
       case Some(data: EmploymentUserData) =>
         val cya = data.employment
         val updatedCya = cya.copy(cya.employmentDetails.copy(employerName = employerName))
-        employmentSessionService.createOrUpdateSessionData(
-          employmentId, updatedCya, taxYear, data.isPriorSubmission, data.hasPriorBenefits, data.hasPriorStudentLoans)(errorHandler.internalServerError()) {
+        employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear,
+          data.isPriorSubmission, data.hasPriorBenefits, data.hasPriorStudentLoans, request.user)(errorHandler.internalServerError()) {
           employmentDetailsRedirect(data.employment, taxYear, employmentId, data.isPriorSubmission)
         }
       case None =>
         val isPrior = false
         val newCya = EmploymentCYAModel(EmploymentDetails(employerName = employerName, currentDataIsHmrcHeld = false))
-        employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear, isPrior, isPrior, isPrior)(errorHandler.internalServerError()) {
+        employmentSessionService.createOrUpdateSessionData(employmentId, newCya, taxYear, isPrior, isPrior,
+          isPrior, request.user)(errorHandler.internalServerError()) {
           employmentDetailsRedirect(newCya, taxYear, employmentId, isPrior)
         }
     }

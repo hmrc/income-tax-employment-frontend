@@ -21,7 +21,7 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.income.routes.IncurredCostsBenefitsAmountController
 import controllers.benefits.reimbursed.routes.ReimbursedCostsVouchersAndNonCashBenefitsController
 import forms.YesNoForm
-import models.User
+import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import play.api.data.Form
@@ -31,7 +31,7 @@ import services.EmploymentSessionService
 import services.RedirectService.{benefitsSubmitRedirect, incurredCostsPaidByEmployerRedirects, redirectBasedOnCurrentAnswers}
 import services.benefits.IncomeService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.income.IncurredCostsBenefitsView
 
 import javax.inject.Inject
@@ -44,34 +44,33 @@ class IncurredCostsBenefitsController @Inject()(implicit val cc: MessagesControl
                                                 appConfig: AppConfig,
                                                 employmentSessionService: EmploymentSessionService,
                                                 incomeService: IncomeService,
-                                                errorHandler: ErrorHandler,
-                                                clock: Clock
-                                               ) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                                errorHandler: ErrorHandler) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   private implicit val ec: ExecutionContext = cc.executionContext
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
 
           cya.employment.employmentBenefits.flatMap(_.incomeTaxAndCostsModel.flatMap(_.paymentsOnEmployeesBehalfQuestion)) match {
-            case Some(questionResult) => Future.successful(Ok(incurredCostsBenefitsView(buildForm.fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(incurredCostsBenefitsView(buildForm, taxYear, employmentId)))
+            case Some(questionResult) =>
+              Future.successful(Ok(incurredCostsBenefitsView(buildForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => Future.successful(Ok(incurredCostsBenefitsView(buildForm(request.user.isAgent), taxYear, employmentId)))
           }
         }
       }
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
-          buildForm.bindFromRequest().fold(
+          buildForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(incurredCostsBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
@@ -81,8 +80,8 @@ class IncurredCostsBenefitsController @Inject()(implicit val cc: MessagesControl
   }
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
-                               (implicit user: User[_]): Future[Result] = {
-    incomeService.updatePaymentsOnEmployeesBehalfQuestion(taxYear, employmentId, employmentUserData, questionValue).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    incomeService.updatePaymentsOnEmployeesBehalfQuestion(request.user, taxYear, employmentId, employmentUserData, questionValue).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         val nextPage = if (questionValue) {
@@ -94,8 +93,8 @@ class IncurredCostsBenefitsController @Inject()(implicit val cc: MessagesControl
     }
   }
 
-  private def buildForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.incurredCosts.error.${if (user.isAgent) "agent" else "individual"}"
+  private def buildForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"benefits.incurredCosts.error.${if (isAgent) "agent" else "individual"}"
   )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String) = {

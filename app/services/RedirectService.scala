@@ -26,7 +26,6 @@ import controllers.benefits.routes._
 import controllers.benefits.travel.routes._
 import controllers.benefits.utilities.routes._
 import controllers.employment.routes._
-import models.User
 import models.benefits._
 import models.employment.{EmploymentBenefitsType, EmploymentDetailsType, EmploymentType}
 import models.mongo.{EmploymentCYAModel, EmploymentDetails, EmploymentUserData}
@@ -746,7 +745,7 @@ object RedirectService extends Logging {
     }
   }
 
-  def benefitsSubmitRedirect(cya: EmploymentCYAModel, nextPage: Call)(_taxYear: Int, _employmentId: String)(implicit user: User[_]): Result = {
+  def benefitsSubmitRedirect(cya: EmploymentCYAModel, nextPage: Call)(_taxYear: Int, _employmentId: String): Result = {
     implicit val taxYear: Int = _taxYear
     implicit val employmentId: String = _employmentId
 
@@ -793,13 +792,13 @@ object RedirectService extends Logging {
 
   def questionRouting(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Call = {
     cya match {
-      case EmploymentCYAModel(EmploymentDetails(_, None, _, _, _, _, _, _, _, _, _, _), _,_) => PayeRefController.show(taxYear, employmentId)
-      case EmploymentCYAModel(EmploymentDetails(_, _, None, _, _, _, _, _, _, _, _, _), _,_) => EmployerStartDateController.show(taxYear, employmentId)
-      case EmploymentCYAModel(EmploymentDetails(_, _, _, _, None, _, _, _, _, _, _, _), _,_) => StillWorkingForEmployerController.show(taxYear, employmentId)
-      case EmploymentCYAModel(EmploymentDetails(_, _, _, _, Some(false), None, _, _, _, _, _, _), _,_) => EmployerLeaveDateController.show(taxYear, employmentId)
-      case EmploymentCYAModel(EmploymentDetails(_, _, _, None, _, _, _, _, _, _, _, _), _,_) => EmployerPayrollIdController.show(taxYear, employmentId)
-      case EmploymentCYAModel(EmploymentDetails(_, _, _, _, _, _, _, _, _, None, _, _), _,_) => EmployerPayAmountController.show(taxYear, employmentId)
-      case EmploymentCYAModel(EmploymentDetails(_, _, _, _, _, _, _, _, _, _, None, _), _,_) => EmploymentTaxController.show(taxYear, employmentId)
+      case EmploymentCYAModel(EmploymentDetails(_, None, _, _, _, _, _, _, _, _, _, _), _, _) => PayeRefController.show(taxYear, employmentId)
+      case EmploymentCYAModel(EmploymentDetails(_, _, None, _, _, _, _, _, _, _, _, _), _, _) => EmployerStartDateController.show(taxYear, employmentId)
+      case EmploymentCYAModel(EmploymentDetails(_, _, _, _, None, _, _, _, _, _, _, _), _, _) => StillWorkingForEmployerController.show(taxYear, employmentId)
+      case EmploymentCYAModel(EmploymentDetails(_, _, _, _, Some(false), None, _, _, _, _, _, _), _, _) => EmployerLeaveDateController.show(taxYear, employmentId)
+      case EmploymentCYAModel(EmploymentDetails(_, _, _, None, _, _, _, _, _, _, _, _), _, _) => EmployerPayrollIdController.show(taxYear, employmentId)
+      case EmploymentCYAModel(EmploymentDetails(_, _, _, _, _, _, _, _, _, None, _, _), _, _) => EmployerPayAmountController.show(taxYear, employmentId)
+      case EmploymentCYAModel(EmploymentDetails(_, _, _, _, _, _, _, _, _, _, None, _), _, _) => EmploymentTaxController.show(taxYear, employmentId)
       case _ => CheckEmploymentDetailsController.show(taxYear, employmentId)
     }
   }

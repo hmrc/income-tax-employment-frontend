@@ -16,7 +16,7 @@
 
 package controllers.benefits.travel
 
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.benefits.AccommodationRelocationModelBuilder.anAccommodationRelocationModel
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.CarVanFuelModelBuilder.aCarVanFuelModel
@@ -121,8 +121,8 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
           lazy val result: WSResponse = {
             dropEmploymentDB()
             insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(BenefitsViewModel(carVanFuelModel = Some(aCarVanFuelModel),
-              accommodationRelocationModel = Some(anAccommodationRelocationModel),
-              isUsingCustomerData = true, isBenefitsReceived = true)))), aUserRequest)
+                          accommodationRelocationModel = Some(anAccommodationRelocationModel),
+                          isUsingCustomerData = true, isBenefitsReceived = true)))))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -151,7 +151,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
         "render the 'Did you get travel or entertainment benefits' page with the correct content with cya data and the yes value pre-filled" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -185,7 +185,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)))
           authoriseAgentOrIndividual(user.isAgent)
           urlGet(fullUrl(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -200,7 +200,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
-          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = None)))
           authoriseAgentOrIndividual(user.isAgent)
           urlGet(fullUrl(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -228,7 +228,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(BenefitsViewModel(isUsingCustomerData = true)))), aUserRequest)
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(BenefitsViewModel(isUsingCustomerData = true)))))
           urlGet(fullUrl(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -242,7 +242,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           authoriseAgentOrIndividual(user.isAgent)
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
           urlGet(fullUrl(travelOrEntertainmentBenefitsUrl(taxYear, employmentId)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -255,7 +255,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
       "redirect to the check employment benefits page when theres no CYA data" which {
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)))
           authoriseAgentOrIndividual(user.isAgent)
           urlGet(fullUrl(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -266,7 +266,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
         }
 
         "doesn't create any benefits data" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
           cyaModel.employment.employmentBenefits shouldBe None
         }
       }
@@ -281,7 +281,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
             lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> "")
             lazy val result: WSResponse = {
               dropEmploymentDB()
-              insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+              insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
               authoriseAgentOrIndividual(user.isAgent)
               urlPost(fullUrl(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
                 headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -321,7 +321,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = None)
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(fullUrl(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -330,7 +330,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location").contains(utilitiesOrGeneralServicesBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
           cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel).get shouldBe TravelEntertainmentModel(Some(false))
         }
       }
@@ -340,7 +340,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(TravelEntertainmentModel(sectionQuestion = Some(false))))
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(fullUrl(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -349,7 +349,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
         "redirects to the check your details page" in {
           result.status shouldBe SEE_OTHER
           result.header("location").contains(travelSubsistenceBenefitsUrl(taxYearEOY, employmentId)) shouldBe true
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
           cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel).get shouldBe TravelEntertainmentModel(Some(true))
         }
       }
@@ -359,8 +359,8 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
         lazy val result: WSResponse = {
           dropEmploymentDB()
           insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(BenefitsViewModel(carVanFuelModel = Some(aCarVanFuelModel),
-            accommodationRelocationModel = Some(anAccommodationRelocationModel),
-            isUsingCustomerData = true, isBenefitsReceived = true)))), aUserRequest)
+                      accommodationRelocationModel = Some(anAccommodationRelocationModel),
+                      isUsingCustomerData = true, isBenefitsReceived = true)))))
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(fullUrl(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -372,7 +372,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
         }
 
         "update only the travelEntertainmentQuestion to true" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
           cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel).get shouldBe TravelEntertainmentModel(Some(true))
         }
       }
@@ -393,7 +393,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
         lazy val form: Map[String, String] = Map(YesNoForm.yesNo -> YesNoForm.yes)
         lazy val result: WSResponse = {
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)), aUserRequest)
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = None)))
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(fullUrl(travelOrEntertainmentBenefitsUrl(taxYearEOY, employmentId)), body = form, follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
@@ -405,7 +405,7 @@ class TravelOrEntertainmentBenefitsControllerISpec extends IntegrationTest with 
         }
 
         "doesn't create any benefits data" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
           cyaModel.employment.employmentBenefits shouldBe None
         }
       }

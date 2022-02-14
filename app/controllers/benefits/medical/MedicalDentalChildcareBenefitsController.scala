@@ -21,7 +21,7 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.income.routes._
 import controllers.benefits.medical.routes._
 import forms.YesNoForm
-import models.User
+import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.EmploymentUserData
 import play.api.data.Form
@@ -31,7 +31,7 @@ import services.EmploymentSessionService
 import services.RedirectService.{benefitsSubmitRedirect, medicalBenefitsRedirects, redirectBasedOnCurrentAnswers}
 import services.benefits.MedicalService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.benefits.medical.MedicalDentalChildcareBenefitsView
 
 import javax.inject.Inject
@@ -45,10 +45,9 @@ class MedicalDentalChildcareBenefitsController @Inject()(implicit val cc: Messag
                                                          employmentSessionService: EmploymentSessionService,
                                                          medicalService: MedicalService,
                                                          errorHandler: ErrorHandler,
-                                                         ec: ExecutionContext,
-                                                         clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper {
+                                                         ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
-  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
@@ -57,22 +56,22 @@ class MedicalDentalChildcareBenefitsController @Inject()(implicit val cc: Messag
 
           cya.employment.employmentBenefits.flatMap(_.medicalChildcareEducationModel.flatMap(_.sectionQuestion)) match {
             case Some(questionResult) =>
-              Future.successful(Ok(medicalDentalChildcareBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
-            case None => Future.successful(Ok(medicalDentalChildcareBenefitsView(yesNoForm, taxYear, employmentId)))
+              Future.successful(Ok(medicalDentalChildcareBenefitsView(yesNoForm(request.user.isAgent).fill(questionResult), taxYear, employmentId)))
+            case None => Future.successful(Ok(medicalDentalChildcareBenefitsView(yesNoForm(request.user.isAgent), taxYear, employmentId)))
           }
         }
       }
     }
   }
 
-  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit user =>
+  def submit(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
 
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya,
           EmploymentBenefitsType)(medicalBenefitsRedirects(_, taxYear, employmentId)) { data =>
 
-          yesNoForm.bindFromRequest().fold(
+          yesNoForm(request.user.isAgent).bindFromRequest().fold(
             formWithErrors => Future.successful(BadRequest(medicalDentalChildcareBenefitsView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
@@ -82,8 +81,8 @@ class MedicalDentalChildcareBenefitsController @Inject()(implicit val cc: Messag
   }
 
   private def handleSuccessForm(taxYear: Int, employmentId: String, employmentUserData: EmploymentUserData, questionValue: Boolean)
-                               (implicit user: User[_]): Future[Result] = {
-    medicalService.updateSectionQuestion(taxYear, employmentId, employmentUserData, questionValue).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    medicalService.updateSectionQuestion(request.user, taxYear, employmentId, employmentUserData, questionValue).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(employmentUserData) =>
         val nextPage = if (questionValue) {
@@ -95,8 +94,8 @@ class MedicalDentalChildcareBenefitsController @Inject()(implicit val cc: Messag
     }
   }
 
-  private def yesNoForm(implicit user: User[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.medicalDentalChildcare.error.noEntry.${if (user.isAgent) "agent" else "individual"}"
+  private def yesNoForm(isAgent: Boolean): Form[Boolean] = YesNoForm.yesNoForm(
+    missingInputError = s"benefits.medicalDentalChildcare.error.noEntry.${if (isAgent) "agent" else "individual"}"
   )
 }
 

@@ -17,7 +17,7 @@
 package controllers.benefits.travel
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.benefits.BenefitsViewModelBuilder.aBenefitsViewModel
 import builders.models.benefits.TravelEntertainmentModelBuilder.aTravelEntertainmentModel
 import builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
@@ -142,7 +142,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
             val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(entertaining = None)))
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(entertainmentExpensesBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -171,7 +171,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
           lazy val result: WSResponse = {
             dropEmploymentDB()
             userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(entertainmentExpensesBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -201,7 +201,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
         "render the entertainment benefits amount page with the amount field pre-filled with prior submitted data" which {
           lazy val result: WSResponse = {
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
             authoriseAgentOrIndividual(user.isAgent)
             urlGet(fullUrl(entertainmentExpensesBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
           }
@@ -250,7 +250,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
           dropEmploymentDB()
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
           val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(entertaining = None)))
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
           authoriseAgentOrIndividual(user.isAgent)
           urlGet(fullUrl(entertainmentExpensesBenefitsAmountUrl(taxYear, employmentId)), user.isWelsh, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -267,7 +267,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(entertainingQuestion = None)))
-          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
           urlGet(fullUrl(entertainmentExpensesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -282,7 +282,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(entertainingQuestion = Some(false))))
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
           urlGet(fullUrl(entertainmentExpensesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
 
@@ -296,7 +296,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = benefitsWithNoBenefitsReceived)), aUserRequest)
+          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = benefitsWithNoBenefitsReceived)))
 
           urlGet(fullUrl(entertainmentExpensesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)))
         }
@@ -318,7 +318,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
             urlPost(fullUrl(entertainmentExpensesBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map[String, String]())
           }
@@ -349,7 +349,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
             urlPost(fullUrl(entertainmentExpensesBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh,
               headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)), body = Map("amount" -> "abc"))
           }
@@ -380,7 +380,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
           implicit lazy val result: WSResponse = {
             authoriseAgentOrIndividual(user.isAgent)
             dropEmploymentDB()
-            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+            insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
             urlPost(fullUrl(entertainmentExpensesBenefitsAmountUrl(taxYearEOY, employmentId)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)),
               body = Map("amount" -> "9999999999999999999999999999"))
           }
@@ -416,7 +416,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = None)
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
           urlPost(fullUrl(entertainmentExpensesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.23"))
         }
@@ -427,7 +427,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
         }
 
         "updates the CYA model with the new value" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
           val entertainmentAmount = cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining))
           entertainmentAmount shouldBe Some(100.23)
         }
@@ -438,7 +438,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(utilitiesAndServicesModel = None)
-          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
           urlPost(fullUrl(entertainmentExpensesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.11"))
         }
@@ -449,7 +449,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
         }
 
         "updates the CYA model with the new value" in {
-          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, aUserRequest).get
+          lazy val cyaModel = findCyaData(taxYearEOY, employmentId, anAuthorisationRequest).get
           val entertainmentAmount = cyaModel.employment.employmentBenefits.flatMap(_.travelEntertainmentModel.flatMap(_.entertaining))
           entertainmentAmount shouldBe Some(100.11)
         }
@@ -473,7 +473,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
         lazy val result: WSResponse = {
           dropEmploymentDB()
           userDataStub(anIncomeTaxUserData, nino, taxYearEOY)
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))), aUserRequest)
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(aBenefitsViewModel))))
           authoriseAgentOrIndividual(user.isAgent)
           urlPost(fullUrl(entertainmentExpensesBenefitsAmountUrl(taxYear, employmentId)), follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100.22"))
@@ -491,7 +491,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(entertainingQuestion = None)))
-          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
           urlPost(fullUrl(entertainmentExpensesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
         }
@@ -507,7 +507,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
           val benefitsViewModel = aBenefitsViewModel.copy(travelEntertainmentModel = Some(aTravelEntertainmentModel.copy(entertainingQuestion = Some(false))))
-          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))), aUserRequest)
+          insertCyaData(employmentUserData(isPrior = true, anEmploymentCYAModel.copy(employmentBenefits = Some(benefitsViewModel))))
           urlPost(fullUrl(entertainmentExpensesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
         }
@@ -522,7 +522,7 @@ class EntertainmentBenefitsAmountControllerISpec extends IntegrationTest with Vi
         implicit lazy val result: WSResponse = {
           authoriseAgentOrIndividual(user.isAgent)
           dropEmploymentDB()
-          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = benefitsWithNoBenefitsReceived)), aUserRequest)
+          insertCyaData(employmentUserData(isPrior = false, anEmploymentCYAModel.copy(employmentBenefits = benefitsWithNoBenefitsReceived)))
           urlPost(fullUrl(entertainmentExpensesBenefitsAmountUrl(taxYearEOY, employmentId)), follow = false, welsh = user.isWelsh,
             headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY)), body = Map("amount" -> "100"))
         }

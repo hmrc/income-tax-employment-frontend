@@ -17,7 +17,7 @@
 package controllers.expenses
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.UserBuilder.aUserRequest
+import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.employment.EmploymentExpensesBuilder.anEmploymentExpenses
 import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
@@ -382,7 +382,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
             dropExpensesDB()
             authoriseAgentOrIndividual(user.isAgent)
             insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true, anExpensesCYAModel.copy(
-              anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))), aUserRequest)
+                          anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))))
             userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
             urlGet(fullUrl(checkYourExpensesUrl(taxYearEOY)), welsh = user.isWelsh, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
           }
@@ -641,7 +641,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
 
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined).copy(professionalSubscriptionsQuestion = None))), aUserRequest)
+                  ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined).copy(professionalSubscriptionsQuestion = None))))
 
         urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
@@ -663,8 +663,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
 
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-          ExpensesCYAModel(anExpensesViewModel.copy(
-            professionalSubscriptionsQuestion = None, otherAndCapitalAllowancesQuestion = None))), aUserRequest)
+                  ExpensesCYAModel(anExpensesViewModel.copy(
+                    professionalSubscriptionsQuestion = None, otherAndCapitalAllowancesQuestion = None))))
 
         urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
@@ -685,8 +685,8 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
 
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined).copy(
-            professionalSubscriptions = Some(newAmount)))), aUserRequest)
+                  ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined).copy(
+                    professionalSubscriptions = Some(newAmount)))))
 
         val model = CreateUpdateExpensesRequest(
           Some(true), anExpenses.copy(professionalSubscriptions = Some(newAmount))
@@ -701,7 +701,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
       "has an SEE OTHER status and cyaData cleared as data was submitted" in {
         result.status shouldBe SEE_OTHER
         result.header("location").contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
-        findExpensesCyaData(taxYear - 1, aUserRequest) shouldBe None
+        findExpensesCyaData(taxYear - 1, anAuthorisationRequest) shouldBe None
         getSessionMap(result, "mdtp").get("TEMP_NEW_EMPLOYMENT_ID") shouldBe None
       }
 
@@ -716,7 +716,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         userDataStub(anIncomeTaxUserData, nino, taxYear - 1)
 
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))), aUserRequest)
+                  ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))))
 
         urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
@@ -724,7 +724,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
       "has an SEE OTHER status and cyaData not cleared as no changes were made" in {
         result.status shouldBe SEE_OTHER
         result.header("location").contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
-        findExpensesCyaData(taxYear - 1, aUserRequest) shouldBe defined
+        findExpensesCyaData(taxYear - 1, anAuthorisationRequest) shouldBe defined
         getSessionMap(result, "mdtp").get("TEMP_NEW_EMPLOYMENT_ID") shouldBe None
       }
 
@@ -739,7 +739,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
         userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(hmrcExpenses = None, customerExpenses = Some(anEmploymentExpenses)))), nino, taxYear - 1)
 
         insertExpensesCyaData(expensesUserData(isPrior = true, hasPriorExpenses = true,
-          ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))), aUserRequest)
+                  ExpensesCYAModel(anExpenses.toExpensesViewModel(anAllEmploymentData.customerExpenses.isDefined))))
 
         urlPost(fullUrl(checkYourExpensesUrl(taxYearEOY)), body = "{}", follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear - 1)))
       }
@@ -747,7 +747,7 @@ class CheckEmploymentExpensesControllerISpec extends IntegrationTest with ViewHe
       "has an SEE OTHER status and cyaData not cleared as no changes were made" in {
         result.status shouldBe SEE_OTHER
         result.header("location").contains(employmentSummaryUrl(taxYearEOY)) shouldBe true
-        findExpensesCyaData(taxYear - 1, aUserRequest) shouldBe defined
+        findExpensesCyaData(taxYear - 1, anAuthorisationRequest) shouldBe defined
         getSessionMap(result, "mdtp").get("TEMP_NEW_EMPLOYMENT_ID") shouldBe None
       }
 

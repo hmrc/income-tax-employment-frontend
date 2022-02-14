@@ -29,15 +29,15 @@
         link: Link
 )
 
-@(form: Form[Boolean], taxYear: Int)(implicit user: User[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[Boolean], taxYear: Int)(implicit request: AuthorisationRequest[_], messages: Messages, appConfig: AppConfig)
 
-@titleForUse = @{messages(s"expenses.claimEmploymentExpenses.title.${if(user.isAgent) "agent" else "individual"}")}
+@titleForUse = @{messages(s"expenses.claimEmploymentExpenses.title.${if(request.user.isAgent) "agent" else "individual"}")}
 @headingForUse = @{titleForUse}
 
 @hasFormErrors = @{form.hasErrors}
 
  @contentHtml = {
-    <p class="govuk-body">@{messages(s"expenses.claimEmploymentExpenses.canClaim.${if(user.isAgent) "agent" else "individual"}")}</p>
+    <p class="govuk-body">@{messages(s"expenses.claimEmploymentExpenses.canClaim.${if(request.user.isAgent) "agent" else "individual"}")}</p>
     <p class="govuk-body">@{messages("expenses.claimEmploymentExpenses.thisIncludes")}</p>
     <ul class="govuk-list govuk-list--bullet">
         <li>@{messages("expenses.claimEmploymentExpenses.thisIncludes.example1")}</li>
@@ -50,7 +50,7 @@
      </p>
 }
 
-@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = user.isAgent) {
+@layout(pageTitle = titleForUse, taxYear = Some(taxYear), hasErrors = hasFormErrors, isAgent = request.user.isAgent) {
 
     @errorSummary(form.errors.distinct)
 

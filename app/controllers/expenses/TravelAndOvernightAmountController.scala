@@ -20,7 +20,7 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.expenses.routes.UniformsOrToolsExpensesController
 import forms.{AmountForm, FormUtils}
-import models.User
+import models.AuthorisationRequest
 import models.mongo.{ExpensesCYAModel, ExpensesUserData}
 import models.redirects.ConditionalRedirect
 import play.api.data.Form
@@ -30,7 +30,7 @@ import services.EmploymentSessionService
 import services.ExpensesRedirectService.{expensesSubmitRedirect, jobExpensesAmountRedirects, redirectBasedOnCurrentAnswers}
 import services.expenses.ExpensesService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{Clock, InYearUtil, SessionHelper}
+import utils.{InYearUtil, SessionHelper}
 import views.html.expenses.TravelAndOvernightAmountView
 
 import javax.inject.Inject
@@ -44,16 +44,15 @@ class TravelAndOvernightAmountController @Inject()(implicit val cc: MessagesCont
                                                    val employmentSessionService: EmploymentSessionService,
                                                    expensesService: ExpensesService,
                                                    errorHandler: ErrorHandler,
-                                                   ec: ExecutionContext,
-                                                   clock: Clock) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+                                                   ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
-  def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit user =>
+  def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
       employmentSessionService.getAndHandleExpenses(taxYear) { (optCya, prior) =>
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { data =>
           val cyaAmount = data.expensesCya.expenses.jobExpenses
 
-          val form = fillExpensesFormFromPriorAndCYA(amountForm, prior, cyaAmount)(
+          val form = fillExpensesFormFromPriorAndCYA(amountForm(request.user.isAgent), prior, cyaAmount)(
             expenses => expenses.expenses.flatMap(_.jobExpenses)
           )
           Future.successful(Ok(travelAndOvernightAmountView(taxYear, form, cyaAmount)))
@@ -62,35 +61,34 @@ class TravelAndOvernightAmountController @Inject()(implicit val cc: MessagesCont
     }
   }
 
-  def submit(taxYear: Int): Action[AnyContent] = authAction.async {
-    implicit user =>
-      inYearAction.notInYear(taxYear) {
+  def submit(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
+    inYearAction.notInYear(taxYear) {
 
-        employmentSessionService.getExpensesSessionDataResult(taxYear) { cya =>
-          redirectBasedOnCurrentAnswers(taxYear, cya)(redirects(_, taxYear)) { data =>
+      employmentSessionService.getExpensesSessionDataResult(taxYear) { cya =>
+        redirectBasedOnCurrentAnswers(taxYear, cya)(redirects(_, taxYear)) { data =>
 
-            amountForm.bindFromRequest().fold(
-              formWithErrors => Future.successful(BadRequest(travelAndOvernightAmountView(taxYear, formWithErrors, None))),
-              amount => handleSuccessForm(taxYear, data, amount)
-            )
-          }
-
+          amountForm(request.user.isAgent).bindFromRequest().fold(
+            formWithErrors => Future.successful(BadRequest(travelAndOvernightAmountView(taxYear, formWithErrors, None))),
+            amount => handleSuccessForm(taxYear, data, amount)
+          )
         }
+
       }
+    }
   }
 
   private def handleSuccessForm(taxYear: Int, expensesUserData: ExpensesUserData, amount: BigDecimal)
-                               (implicit user: User[_]): Future[Result] = {
-    expensesService.updateJobExpenses(taxYear, expensesUserData, amount).map {
+                               (implicit request: AuthorisationRequest[_]): Future[Result] = {
+    expensesService.updateJobExpenses(request.user, taxYear, expensesUserData, amount).map {
       case Left(_) => errorHandler.internalServerError()
       case Right(expensesUserData) => expensesSubmitRedirect(expensesUserData.expensesCya, UniformsOrToolsExpensesController.show(taxYear))(taxYear)
     }
   }
 
-  private def amountForm(implicit user: User[_]): Form[BigDecimal] = AmountForm.amountForm(
-    emptyFieldKey = s"expenses.businessTravelAndOvernightAmount.error.noEntry.${if (user.isAgent) "agent" else "individual"}",
-    wrongFormatKey = s"expenses.businessTravelAndOvernightAmount.error.incorrectFormat.${if (user.isAgent) "agent" else "individual"}",
-    exceedsMaxAmountKey = s"expenses.businessTravelAndOvernightAmount.error.overMaximum.${if (user.isAgent) "agent" else "individual"}"
+  private def amountForm(isAgent: Boolean): Form[BigDecimal] = AmountForm.amountForm(
+    emptyFieldKey = s"expenses.businessTravelAndOvernightAmount.error.noEntry.${if (isAgent) "agent" else "individual"}",
+    wrongFormatKey = s"expenses.businessTravelAndOvernightAmount.error.incorrectFormat.${if (isAgent) "agent" else "individual"}",
+    exceedsMaxAmountKey = s"expenses.businessTravelAndOvernightAmount.error.overMaximum.${if (isAgent) "agent" else "individual"}"
   )
 
   private def redirects(cya: ExpensesCYAModel, taxYear: Int): Seq[ConditionalRedirect] = {

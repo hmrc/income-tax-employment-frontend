@@ -38,7 +38,7 @@ class AccommodationServiceSpec extends UnitTest with MockEmploymentSessionServic
 
       mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, anEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateSectionQuestion(taxYear, employmentId, employmentUserDataWithFalseSectionQuestion, questionValue = true)) shouldBe
+      await(underTest.updateSectionQuestion(authorisationRequest.user, taxYear, employmentId, employmentUserDataWithFalseSectionQuestion, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
@@ -49,7 +49,7 @@ class AccommodationServiceSpec extends UnitTest with MockEmploymentSessionServic
 
       mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateSectionQuestion(taxYear, employmentId, employmentUserData, questionValue = false)) shouldBe
+      await(underTest.updateSectionQuestion(authorisationRequest.user, taxYear, employmentId, employmentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
@@ -60,7 +60,7 @@ class AccommodationServiceSpec extends UnitTest with MockEmploymentSessionServic
 
       mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateSectionQuestion(taxYear, employmentId, employmentUserDataWithNoAccommodationRelocationModel, questionValue = false)) shouldBe
+      await(underTest.updateSectionQuestion(authorisationRequest.user, taxYear, employmentId, employmentUserDataWithNoAccommodationRelocationModel, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
     }
   }
@@ -74,7 +74,7 @@ class AccommodationServiceSpec extends UnitTest with MockEmploymentSessionServic
 
       mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateAccommodationQuestion(taxYear, employmentId, employmentUserData, questionValue = true)) shouldBe
+      await(underTest.updateAccommodationQuestion(authorisationRequest.user, taxYear, employmentId, employmentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
@@ -84,7 +84,7 @@ class AccommodationServiceSpec extends UnitTest with MockEmploymentSessionServic
 
       mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateAccommodationQuestion(taxYear, employmentId, anEmploymentUserData, questionValue = false)) shouldBe
+      await(underTest.updateAccommodationQuestion(authorisationRequest.user, taxYear, employmentId, anEmploymentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
     }
   }
@@ -97,7 +97,7 @@ class AccommodationServiceSpec extends UnitTest with MockEmploymentSessionServic
 
       mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateAccommodation(taxYear, employmentId, employmentUserData, amount = 123)) shouldBe
+      await(underTest.updateAccommodation(authorisationRequest.user, taxYear, employmentId, employmentUserData, amount = 123)) shouldBe
         Right(expectedEmploymentUserData)
     }
   }
@@ -111,7 +111,7 @@ class AccommodationServiceSpec extends UnitTest with MockEmploymentSessionServic
 
       mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateQualifyingExpensesQuestion(taxYear, employmentId, employmentUserData, questionValue = true)) shouldBe
+      await(underTest.updateQualifyingExpensesQuestion(authorisationRequest.user, taxYear, employmentId, employmentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
@@ -122,7 +122,7 @@ class AccommodationServiceSpec extends UnitTest with MockEmploymentSessionServic
 
       mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateQualifyingExpensesQuestion(taxYear, employmentId, anEmploymentUserData, questionValue = false)) shouldBe
+      await(underTest.updateQualifyingExpensesQuestion(authorisationRequest.user, taxYear, employmentId, anEmploymentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
     }
   }
@@ -135,7 +135,7 @@ class AccommodationServiceSpec extends UnitTest with MockEmploymentSessionServic
 
       mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateQualifyingExpenses(taxYear, employmentId, employmentUserData, amount = 123)) shouldBe
+      await(underTest.updateQualifyingExpenses(authorisationRequest.user, taxYear, employmentId, employmentUserData, amount = 123)) shouldBe
         Right(expectedEmploymentUserData)
     }
   }
@@ -149,7 +149,7 @@ class AccommodationServiceSpec extends UnitTest with MockEmploymentSessionServic
 
       mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateNonQualifyingExpensesQuestion(taxYear, employmentId, employmentUserData, questionValue = true)) shouldBe
+      await(underTest.updateNonQualifyingExpensesQuestion(authorisationRequest.user, taxYear, employmentId, employmentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
     }
 
@@ -160,7 +160,7 @@ class AccommodationServiceSpec extends UnitTest with MockEmploymentSessionServic
 
       mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateNonQualifyingExpensesQuestion(taxYear, employmentId, anEmploymentUserData, questionValue = false)) shouldBe
+      await(underTest.updateNonQualifyingExpensesQuestion(authorisationRequest.user, taxYear, employmentId, anEmploymentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
     }
   }
@@ -173,7 +173,7 @@ class AccommodationServiceSpec extends UnitTest with MockEmploymentSessionServic
 
       mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
-      await(underTest.updateNonQualifyingExpenses(taxYear, employmentId, employmentUserData, amount = 123)) shouldBe
+      await(underTest.updateNonQualifyingExpenses(authorisationRequest.user, taxYear, employmentId, employmentUserData, amount = 123)) shouldBe
         Right(expectedEmploymentUserData)
     }
   }
