@@ -28,7 +28,7 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.route
-import utils.PageUrls.{fullUrl, studentLoansCyaPage, studentLoansUglAmountUrl}
+import utils.PageUrls.{fullUrl, pglAmountUrl, studentLoansCyaPage, studentLoansUglAmountUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 import scala.concurrent.Future
@@ -408,6 +408,47 @@ class UglAmountControllerISpec extends IntegrationTest with ViewHelpers with Emp
             }
             result.status shouldBe SEE_OTHER
             result.headers("Location").headOption shouldBe Some(studentLoansCyaPage(taxYearEOY, employmentId))
+          }
+        }
+        "redirect to the student loans postgraduate amount page when submission is successful" when {
+
+          "the submission is successful" in {
+            lazy val result: WSResponse = {
+              dropEmploymentDB()
+              authoriseAgentOrIndividual(scenarioData.isAgent)
+              insertCyaData(EmploymentUserData(
+                sessionId,
+                mtditid,
+                nino,
+                scenarioData.commonExpectedResults.taxYearEOY,
+                employmentId, isPriorSubmission = false, hasPriorBenefits = false, hasPriorStudentLoans = true,
+                EmploymentCYAModel(
+                  EmploymentDetails(
+                    employerName = "Falador Knights",
+                    employerRef = Some("223/AB12399"),
+                    startDate = Some("2022-04-01"),
+                    cessationDateQuestion = Some(false),
+                    taxablePayToDate = Some(90000.00),
+                    totalTaxToDate = Some(111),
+                    currentDataIsHmrcHeld = false
+                  ),
+                  studentLoans = Some(StudentLoansCYAModel(
+                    uglDeduction = true, Some(20000), pglDeduction = true, None
+                  ))
+                )
+              ))
+
+              userDataStub(incomeTaxUserData, nino, scenarioData.commonExpectedResults.taxYearEOY)
+              urlPost(
+                url(scenarioData.commonExpectedResults.taxYearEOY),
+                body = Map("amount" -> uglDeductionAmount.toString),
+                scenarioData.isWelsh,
+                follow = false,
+                headers = Seq(HeaderNames.COOKIE -> playSessionCookies(scenarioData.commonExpectedResults.taxYearEOY))
+              )
+            }
+            result.status shouldBe SEE_OTHER
+            result.headers("Location").headOption shouldBe Some(pglAmountUrl(taxYearEOY, employmentId))
           }
         }
 

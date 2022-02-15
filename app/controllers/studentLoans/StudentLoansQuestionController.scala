@@ -48,16 +48,16 @@ class StudentLoansQuestionController @Inject()(
     if (appConfig.studentLoansEnabled) {
       val inYear: Boolean = inYearAction.inYear(taxYear)
       employmentSessionService.getSessionDataResult(taxYear, employmentId) {
-        case Some(employmentData) => {
+        case Some(employmentData) =>
           employmentData.employment.studentLoans
             .fold(
-              Future.successful(Ok(view(taxYear, employmentId, inYear, StudentLoanQuestionForm.studentLoanForm(request.user.isAgent))))
+              Future.successful(Ok(view(taxYear, employmentId, employmentData.employment.employmentDetails.employerName,
+                inYear, StudentLoanQuestionForm.studentLoanForm(request.user.isAgent))))
             )(
-              studentLoans =>
-                Future.successful(Ok(view(taxYear, employmentId, inYear, StudentLoanQuestionForm.studentLoanForm(request.user.isAgent), Some(studentLoans))))
-            )
-
-        }
+            studentLoans =>
+              Future.successful(Ok(view(taxYear, employmentId, employmentData.employment.employmentDetails.employerName,
+                inYear, StudentLoanQuestionForm.studentLoanForm(request.user.isAgent), Some(studentLoans))))
+          )
         case _ => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
       }
     }
@@ -71,7 +71,11 @@ class StudentLoansQuestionController @Inject()(
       val inYear: Boolean = inYearAction.inYear(taxYear)
       StudentLoanQuestionForm.studentLoanForm(request.user.isAgent).bindFromRequest().fold(
         formWithErrors => {
-          Future.successful(BadRequest(view(taxYear, employmentId, inYear, formWithErrors)))
+          employmentSessionService.getSessionDataResult(taxYear, employmentId) {
+            case Some(employmentData) =>
+              Future.successful(BadRequest(view(taxYear, employmentId, employmentData.employment.employmentDetails.employerName, inYear, formWithErrors)))
+            case _ => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
+        }
         },
         result => {
           employmentSessionService.getSessionDataResult(taxYear, employmentId) {
@@ -103,7 +107,7 @@ class StudentLoansQuestionController @Inject()(
 
   def studentLoansRedirect(newStudentLoans: StudentLoansCYAModel, taxYear: Int, employmentId: String): Result = {
     newStudentLoans match {
-      case StudentLoansCYAModel(true, None, _, _) => Ok("uglAmount page")
+      case StudentLoansCYAModel(true, None, _ ,_) => Redirect(controllers.studentLoans.routes.UglAmountController.show(taxYear, employmentId))
       case StudentLoansCYAModel(_, _, true, None) => Redirect(controllers.studentLoans.routes.PglAmountController.show(taxYear, employmentId))
       case _ => Redirect(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYear, employmentId))
     }

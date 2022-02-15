@@ -25,6 +25,9 @@ import controllers.benefits.routes.ReceiveAnyBenefitsController
 import controllers.employment.routes.{CheckYourBenefitsController, EmployerInformationController}
 import controllers.expenses.routes.CheckEmploymentExpensesController
 import models.AuthorisationRequest
+import controllers.studentLoans.routes.StudentLoansCYAController
+import javax.inject.Inject
+import models.User
 import models.benefits.Benefits
 import models.employment.{AllEmploymentData, EmploymentSourceOrigin}
 import models.mongo.EmploymentCYAModel
@@ -138,8 +141,13 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
       case Some(employmentId) => EmployerInformationController.show(taxYear, employmentId)
       case None =>
         getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID) match {
-          //TODO go to student loans if enabled
-          case Some(sessionEmploymentId) if sessionEmploymentId == employmentId => CheckEmploymentExpensesController.show(taxYear)
+          case Some(sessionEmploymentId) if sessionEmploymentId == employmentId =>
+            if(appConfig.studentLoansEnabled) {
+              StudentLoansCYAController.show(taxYear, employmentId)
+            }
+            else{
+              CheckEmploymentExpensesController.show(taxYear)
+            }
           case _ => EmployerInformationController.show(taxYear, employmentId)
         }
     })

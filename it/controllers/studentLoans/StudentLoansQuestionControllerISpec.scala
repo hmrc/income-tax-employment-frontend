@@ -58,7 +58,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
   }
 
   object ExpectedResultsEnglish extends CommonExpectedResults {
-    override val title: String = "Did you repay any student loan while employed by ABC Digital Ltd?"
+    override val title: String = "Did you repay any student loan while employed by Whiterun Guards?"
     override val caption: String = s"Student Loans for 6 April ${taxYear - 1} to 5 April $taxYear"
     override val paragraphText_1: String = "We only need to know about payments your employer deducted from your salary."
     override val paragraphText_2: String = "The Student Loans Company would have told you. Check your payslips or P60 for student loan deductions."
@@ -75,7 +75,7 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
 
 
   object ExpectedResultsEnglishAgent extends CommonExpectedResults {
-    override val title: String = "Did your client repay any student loan while employed by ABC Digital Ltd?"
+    override val title: String = "Did your client repay any student loan while employed by Whiterun Guards?"
     override val caption: String = s"Student Loans for 6 April ${taxYear - 1} to 5 April $taxYear"
     override val paragraphText_1: String = "We only need to know about payments their employer deducted from their salary."
     override val paragraphText_2: String = "The Student Loans Company would have told your client. Check your client’s payslips or P60 for student loan deductions."
@@ -347,7 +347,8 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           urlPost(url(taxYear), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
-        result.status shouldBe OK
+        result.status shouldBe SEE_OTHER
+        result.header(HeaderNames.LOCATION).contains(studentLoansUglAmountUrl(taxYear, employmentId)) shouldBe true
 
         lazy val cyaModel = findCyaData(taxYear, employmentId, anAuthorisationRequest).get
         cyaModel.employment.studentLoans.get shouldBe
@@ -457,7 +458,8 @@ class StudentLoansQuestionControllerISpec extends IntegrationTest with ViewHelpe
           urlPost(url(taxYear), form, follow = false, headers = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYear)))
         }
 
-        result.status shouldBe OK
+        result.status shouldBe SEE_OTHER
+        result.header(HeaderNames.LOCATION).contains(studentLoansUglAmountUrl(taxYear, employmentId)) shouldBe true
 
         lazy val cyaModel = findCyaData(taxYear, employmentId, anAuthorisationRequest).get
         cyaModel.employment.studentLoans.get shouldBe

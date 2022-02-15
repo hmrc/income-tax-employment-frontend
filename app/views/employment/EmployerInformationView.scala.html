@@ -80,6 +80,14 @@
             if (studentLoansDefined){
                 Seq(toSummaryListRow(messages("common.studentLoans"), messages("common.status.updated"), Some(StudentLoansCYAController.show(taxYear, empId))))
             } else {
+                Seq(toSummaryListRow(messages("common.studentLoans"), messages("common.status.cannotUpdate"), None))
+            }
+        }
+
+        val studentLoansRowEOY: Seq[SummaryListRow] = {
+            if (studentLoansDefined){
+                Seq(toSummaryListRow(messages("common.studentLoans"), messages("common.status.updated"), Some(StudentLoansCYAController.show(taxYear, empId))))
+            } else {
                 Seq(toSummaryListRow(messages("common.studentLoans"), messages("common.status.notStarted"), Some(StudentLoansCYAController.show(taxYear, empId))))
             }
         }
@@ -101,7 +109,7 @@
                 SummaryList(
                     if(appConfig.studentLoansEnabled) {
                         Seq(toSummaryListRow(messages("common.employmentDetails"), messages("common.status.updated"),
-                        Some(CheckEmploymentDetailsController.show(taxYear, empId)))) ++ benefitsRowEOY ++ studentLoansRow
+                        Some(CheckEmploymentDetailsController.show(taxYear, empId)))) ++ benefitsRowEOY ++ studentLoansRowEOY
                     } else {
                         Seq(toSummaryListRow(messages("common.employmentDetails"), messages("common.status.updated"),
                         Some(CheckEmploymentDetailsController.show(taxYear, empId)))) ++ benefitsRowEOY
