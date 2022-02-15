@@ -17,7 +17,6 @@
 package controllers.employment
 
 import builders.models.IncomeTaxUserDataBuilder.anIncomeTaxUserData
-import builders.models.AuthorisationRequestBuilder.anAuthorisationRequest
 import builders.models.employment.AllEmploymentDataBuilder.anAllEmploymentData
 import builders.models.employment.EmploymentBenefitsBuilder.anEmploymentBenefits
 import builders.models.employment.EmploymentSourceBuilder.anEmploymentSource
@@ -37,6 +36,9 @@ import play.api.http.HeaderNames
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
+import play.api.mvc.Result
+import play.api.test.FakeRequest
+import play.api.test.Helpers.route
 import utils.PageUrls._
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
@@ -1652,10 +1654,48 @@ class CheckYourBenefitsControllerISpec extends IntegrationTest with ViewHelpers 
           extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))))
       }
 
-      "return a redirect to the check employment expenses page" in {
+      "return a redirect to the check studentLoans page" in {
         result.status shouldBe SEE_OTHER
-        result.header("location").contains(checkYourExpensesUrl(taxYearEOY)) shouldBe true
+        result.header("location").contains(studentLoansCyaPage(taxYearEOY,employmentId)) shouldBe true
         getSessionMap(result, "mdtp").get("TEMP_NEW_EMPLOYMENT_ID") shouldBe Some(employmentId)
+      }
+    }
+    "create a model when adding employment benefits for the first time (adding new employment journey - studentLoans Disabled)" which {
+      lazy val result: Result = {
+        dropEmploymentDB()
+        authoriseAgentOrIndividual(isAgent = false)
+        val customerEmploymentData = Seq(anEmploymentSource.copy(employmentBenefits = None))
+        userDataStub(anIncomeTaxUserData.copy(Some(anAllEmploymentData.copy(customerEmploymentData = customerEmploymentData))), nino, taxYearEOY)
+        insertCyaData(anEmploymentUserData.copy(hasPriorBenefits = false, employment = anEmploymentCYAModel).copy(employmentId = employmentId))
+
+        val model = CreateUpdateEmploymentRequest(
+          Some(employmentId),
+          None,
+          Some(
+            CreateUpdateEmploymentData(
+              pay = CreateUpdatePay(
+                anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.taxablePayToDate))).get,
+                anAllEmploymentData.eoyEmploymentSourceWith(employmentId).flatMap(_.employmentSource.employmentData.flatMap(_.pay.flatMap(_.totalTaxToDate))).get
+              ),
+              deductions = Some(Deductions(Some(aStudentLoans))),
+              benefitsInKind = anEmploymentCYAModel.employmentBenefits.map(_.toBenefits)
+            )
+          )
+        )
+
+        stubPostWithHeadersCheck(s"/income-tax-employment/income-tax/nino/$nino/sources\\?taxYear=$taxYearEOY", NO_CONTENT,
+          Json.toJson(model).toString(), "{}", "X-Session-ID" -> sessionId, "mtditid" -> mtditid)
+
+        val newHeaders = Seq(HeaderNames.COOKIE -> playSessionCookies(taxYearEOY,
+          extraData = Map(SessionValues.TEMP_NEW_EMPLOYMENT_ID -> employmentId))) ++ Seq("Csrf-Token" -> "nocheck")
+
+        val request = FakeRequest("POST", checkYourBenefitsUrl(taxYearEOY, employmentId)).withHeaders(newHeaders: _*)
+        await(route(appWithFeatureSwitchesOff, request, "{}").get)
+
+      }
+
+      "return a redirect to the check expenses page" in {
+        result.header.headers("Location") shouldBe controllers.expenses.routes.CheckEmploymentExpensesController.show(taxYearEOY).toString
       }
     }
 

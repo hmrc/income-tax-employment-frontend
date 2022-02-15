@@ -103,7 +103,13 @@ class UglAmountController @Inject()(implicit val mcc: MessagesControllerComponen
                                (implicit request: AuthorisationRequest[_]): Future[Result] = {
     studentLoansService.updateUglDeductionAmount(request.user, taxYear, employmentId, employmentUserData, amount).map {
       case Left(_) => errorHandler.internalServerError()
-      case Right(_) => Redirect(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYear, employmentId))
+      case Right(_) =>
+        if (employmentUserData.employment.studentLoans.fold(false)(data => data.pglDeduction && data.pglDeductionAmount.isEmpty)) {
+          Redirect(controllers.studentLoans.routes.PglAmountController.show(taxYear, employmentId))
+        }
+        else {
+          Redirect(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYear, employmentId))
+        }
     }
   }
 

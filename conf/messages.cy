@@ -1340,8 +1340,8 @@ studentLoans.undergraduateLoanAmount.error.invalidFormat = Enter the amount of u
 
 #####################    Student Loans Question messages    #####################
 
-studentLoansQuestion.title.individual = Did you repay any student loan while employed by ABC Digital Ltd?
-studentLoansQuestion.title.agent = Did your client repay any student loan while employed by ABC Digital Ltd?
+studentLoansQuestion.title.individual = Did you repay any student loan while employed by {0}?
+studentLoansQuestion.title.agent = Did your client repay any student loan while employed by {0}?
 studentLoansQuestion.inset.individual = We only need to know about payments your employer deducted from your salary.
 studentLoansQuestion.inset.agent = We only need to know about payments their employer deducted from their salary.
 studentLoansQuestion.inset.2.individual = The Student Loans Company would have told you. Check your payslips or P60 for student loan deductions.

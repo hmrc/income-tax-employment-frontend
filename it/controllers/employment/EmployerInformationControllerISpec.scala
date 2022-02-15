@@ -203,8 +203,7 @@ class EmployerInformationControllerISpec extends IntegrationTest with ViewHelper
           }
 
           "has a student loans section" which {
-            linkCheck(user.commonExpectedResults.fieldNames(2), studentLoansLinkSelector, checkYourStudentLoansUrl(taxYear, employmentId))
-            textOnPageCheck(user.commonExpectedResults.notStarted, summaryListStatusTagsSelector(3))
+            textOnPageCheck(user.commonExpectedResults.cannotUpdate, summaryListStatusTagsSelector(3))
           }
 
           buttonCheck(user.commonExpectedResults.buttonText, buttonSelector)

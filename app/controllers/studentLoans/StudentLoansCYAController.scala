@@ -41,9 +41,9 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
 
     if (appConfig.studentLoansEnabled) {
       val inYear: Boolean = inYearAction.inYear(taxYear)
-
-      service.retrieveCyaDataAndIsCustomerHeld(taxYear, employmentId) { case (cya, isCustomer) =>
-        Ok(view(taxYear, employmentId, cya, isCustomer, inYear))
+      
+      service.retrieveCyaDataAndIsCustomerHeld(taxYear, employmentId) { case (cya, isCustomer, isSingleEmployment) =>
+        Ok(view(taxYear, employmentId, cya, isCustomer, inYear, isSingleEmployment))
       }
     } else {
       Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))

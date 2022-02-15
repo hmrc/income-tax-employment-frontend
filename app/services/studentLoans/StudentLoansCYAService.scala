@@ -49,7 +49,7 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
   }
 
   //noinspection ScalaStyle
-  def retrieveCyaDataAndIsCustomerHeld(taxYear: Int, employmentId: String)(block: (StudentLoansCYAModel, Boolean) => Result)
+  def retrieveCyaDataAndIsCustomerHeld(taxYear: Int, employmentId: String)(block: (StudentLoansCYAModel, Boolean, Boolean) => Result)
                                       (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Result] = {
 
     employmentSessionService.getAndHandle(taxYear, employmentId) { case (employmentData, optionalAllEmploymentData) =>
@@ -64,7 +64,7 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
       (studentLoansCya, optionalAllEmploymentData, customerHeld) match {
         case (Some(cya), _, isCustomerHeld) =>
           logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] Student Loans CYA data found. Performing block action.")
-          Future.successful(block(cya, isCustomerHeld))
+          Future.successful(block(cya, isCustomerHeld, optionalAllEmploymentData.fold(false)(data => data.isLastInYearEmployment)))
         case (None, _, _) if employmentData.isDefined =>
           logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] No Student Loans CYA data exist, but employment CYA does. Redirecting to start of SL journey.")
           Future.successful(Redirect(controllers.studentLoans.routes.StudentLoansQuestionController.show(taxYear, employmentId)))
@@ -87,7 +87,7 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
                     Redirect(controllers.studentLoans.routes.StudentLoansQuestionController.show(taxYear, employmentId))
                   case Some(slCya) =>
                     logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] CYA data exist. Performing block action.")
-                    block(slCya, isCustomerHeld)
+                    block(slCya, isCustomerHeld, alLEmploymentData.isLastInYearEmployment)
                 }
               }
           }
