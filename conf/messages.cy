@@ -1354,3 +1354,9 @@ studentLoansQuestion.checkbox.2.hint = This covers courses like master’s or do
 studentLoansQuestion.checkbox.error.individual = Select the types of student loan you repaid, or select "No"
 studentLoansQuestion.checkbox.error.agent = Select the types of student loan your client repaid, or select "No"
 
+#################       Remove Expenses messages        ########################################
+
+expenses.removeExpenses.title.individual = Are you sure you want to remove your expenses?
+expenses.removeExpenses.title.agent = Are you sure you want to remove your client’s expenses?
+expenses.removeExpenses.remove-paragraph = This will remove expenses for all employment in this tax year.
+expenses.removeExpenses.button = Remove expenses

@@ -29,7 +29,7 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.route
-import utils.PageUrls.{addEmploymentUrl, checkYourExpensesUrl, claimEmploymentExpensesUrl, employerInformationUrl, employerNameUrlWithoutEmploymentId, employmentSummaryUrl, fullUrl, overviewUrl, removeEmploymentUrl}
+import utils.PageUrls.{addEmploymentUrl, checkYourExpensesUrl, claimEmploymentExpensesUrl, employerInformationUrl, employerNameUrlWithoutEmploymentId, employmentSummaryUrl, fullUrl, overviewUrl, removeEmploymentUrl, removeExpensesUrl}
 import utils.{EmploymentDatabaseHelper, IntegrationTest, ViewHelpers}
 
 import scala.concurrent.Future
@@ -229,7 +229,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             textOnPageCheck(expenses, expensesHeadingSelector, "as a heading")
             textOnPageCheck(expenses, expensesLineSelector, "as a line item")
             linkCheck(s"$change$change $expenses", changeExpensesSelector, checkYourExpensesUrl(taxYearEOY))
-            linkCheck(s"$remove $remove $expenses", removeExpensesSelector, checkYourExpensesUrl(taxYearEOY))
+            linkCheck(s"$remove $remove $expenses", removeExpensesSelector, removeExpensesUrl(taxYearEOY))
             buttonCheck(returnToOverview)
           }
 
@@ -456,7 +456,7 @@ class EmploymentSummaryControllerISpec extends IntegrationTest with ViewHelpers 
             textOnPageCheck(thisIsATotal, thisIsATotalSelector)
             textOnPageCheck(expenses, expensesLineSelector, "as a line item")
             linkCheck(s"$change$change $expenses", changeExpensesSelector, checkYourExpensesUrl(taxYearEOY))
-            linkCheck(s"$remove $remove $expenses", removeExpensesSelector, checkYourExpensesUrl(taxYearEOY))
+            linkCheck(s"$remove $remove $expenses", removeExpensesSelector, removeExpensesUrl(taxYearEOY))
             buttonCheck(returnToOverview)
           }
 

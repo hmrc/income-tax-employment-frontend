@@ -26,6 +26,7 @@
 @import controllers.expenses.routes.CheckEmploymentExpensesController
 @import controllers.expenses.routes.EmploymentExpensesController
 @import common.UUID
+@import controllers.expenses.routes.RemoveExpensesController
 
 @this(
     layout: Layout,
@@ -91,7 +92,7 @@
     @if(expensesExist) {
         @{
             val message = if (isInYear) messages("common.view") else messages("common.change")
-            val actions = if (isInYear) Seq() else Seq((CheckEmploymentExpensesController.show(taxYear), messages("common.remove"), Some(messages("common.remove") + " " + messages("employment.expenses.label"))))
+            val actions = if (isInYear) Seq() else Seq((RemoveExpensesController.show(taxYear), messages("common.remove"), Some(messages("common.remove") + " " + messages("employment.expenses.label"))))
 
             val expensesRow = summaryListRow(
                 key = HtmlContent(messages("employment.expenses.label")),
