@@ -231,4 +231,13 @@ trait IntegrationTest extends AnyWordSpec with Matchers with GuiceOneServerPerSu
       mtdidHeader = "mtditid" -> defaultUser.mtdItId
     )
   }
+
+  def userDataStubDeleteExpenses(userData: IncomeTaxUserData, nino: String, taxYear: Int, sourceType: String): StubMapping = {
+    stubDeleteWithHeadersCheck(
+      url = s"/income-tax-expenses/income-tax/nino/$nino/sources/$sourceType\\?taxYear=$taxYear", status = NO_CONTENT,
+      responseBody = Json.toJson(userData).toString(),
+      sessionHeader = "X-Session-ID" -> defaultUser.sessionId,
+      mtdidHeader = "mtditid" -> defaultUser.mtdItId
+    )
+  }
 }
