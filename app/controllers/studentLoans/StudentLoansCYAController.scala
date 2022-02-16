@@ -19,6 +19,7 @@ package controllers.studentLoans
 import actions.{AuthorisedAction, TaxYearAction}
 import common.SessionValues
 import config.AppConfig
+import play.api.{Logger, Logging}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.studentLoans.StudentLoansCYAService
@@ -35,7 +36,7 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
                                           authAction: AuthorisedAction,
                                           inYearAction: InYearUtil,
                                           implicit val appConfig: AppConfig,
-                                          implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper {
+                                          implicit val ec: ExecutionContext) extends FrontendController(mcc) with I18nSupport with SessionHelper with Logging {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = (authAction andThen TaxYearAction.taxYearAction(taxYear)).async { implicit request =>
 
@@ -55,10 +56,13 @@ class StudentLoansCYAController @Inject()(mcc: MessagesControllerComponents,
     lazy val checkEmploymentExpensesControllerReverseRoute = controllers.expenses.routes.CheckEmploymentExpensesController
 
     if (appConfig.studentLoansEnabled) {
-
+      logger.debug("[StudentLoansCYAController][submit] url employmentID " + employmentId)
+      logger.debug("[StudentLoansCYAController][submit] session TEMP_NEW_EMPLOYMENT_ID " + getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID))
       def getResultFromResponse(returnedEmploymentId: Option[String]): Result = {
         Redirect(returnedEmploymentId match {
-          case Some(employmentId) => employerInformationControllerReverseRoute.show(taxYear, employmentId)
+          case Some(employmentId) =>
+            logger.debug("[StudentLoansCYAController][submit] employmentId returned from create call  " + employmentId)
+            employerInformationControllerReverseRoute.show(taxYear, employmentId)
           case None =>
             getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID) match {
               case Some(sessionEmploymentId) if sessionEmploymentId == employmentId => checkEmploymentExpensesControllerReverseRoute.show(taxYear)
