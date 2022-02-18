@@ -44,6 +44,6 @@ class BenefitsService @Inject()(employmentSessionService: EmploymentSessionServi
       originalEmploymentUserData.employment.copy(employmentBenefits = Some(newBenefits))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 }

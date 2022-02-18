@@ -35,7 +35,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedEmploymentDetails = anEmploymentDetails.copy(employerRef = Some("employerRef"))
       val expectedEmploymentUserData = anEmploymentUserDataWithDetails(expectedEmploymentDetails).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateEmployerRef(authorisationRequest.user, taxYear, employmentId, givenEmploymentUserData, payeRef = "employerRef")) shouldBe Right(expectedEmploymentUserData)
     }
@@ -49,7 +49,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
         val expectedEmploymentDetails = anEmploymentDetails.copy(cessationDate = None, startDate = Some("2021-01-02"))
         val expectedEmploymentUserData = anEmploymentUserDataWithDetails(expectedEmploymentDetails).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-        mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+        mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
         await(underTest.updateStartDate(authorisationRequest.user, taxYear, employmentId, givenEmploymentUserData, startedDate = EmploymentDate("2", "1", "2021"))) shouldBe
           Right(expectedEmploymentUserData)
@@ -63,7 +63,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
         val expectedEmploymentDetails = anEmploymentDetails.copy(cessationDate = Some("2021-01-02"), startDate = Some("2021-01-02"))
         val expectedEmploymentUserData = anEmploymentUserDataWithDetails(expectedEmploymentDetails).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-        mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+        mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
         await(underTest.updateStartDate(authorisationRequest.user, taxYear, employmentId, givenEmploymentUserData, startedDate = EmploymentDate("2", "1", "2021"))) shouldBe
           Right(expectedEmploymentUserData)
@@ -77,7 +77,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedEmploymentDetails = anEmploymentDetails.copy(payrollId = Some("payrollId"))
       val expectedEmploymentUserData = anEmploymentUserDataWithDetails(expectedEmploymentDetails).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updatePayrollId(authorisationRequest.user, taxYear, employmentId, givenEmploymentUserData, payrollId = "payrollId")) shouldBe Right(expectedEmploymentUserData)
     }
@@ -90,7 +90,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedEmploymentDetails = anEmploymentDetails.copy(cessationDateQuestion = Some(true), cessationDate = None)
       val expectedEmploymentUserData = anEmploymentUserDataWithDetails(expectedEmploymentDetails).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateCessationDateQuestion(authorisationRequest.user, taxYear, employmentId, givenEmploymentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
@@ -102,7 +102,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedEmploymentDetails = anEmploymentDetails.copy(cessationDateQuestion = Some(false), cessationDate = Some("some-date"))
       val expectedEmploymentUserData = anEmploymentUserDataWithDetails(expectedEmploymentDetails)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateCessationDateQuestion(authorisationRequest.user, taxYear, employmentId, givenEmploymentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
@@ -115,7 +115,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedEmploymentDetails = anEmploymentDetails.copy(cessationDate = Some("some-date"))
       val expectedEmploymentUserData = anEmploymentUserDataWithDetails(expectedEmploymentDetails).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateCessationDate(authorisationRequest.user, taxYear, employmentId, givenEmploymentUserData, cessationDate = "some-date")) shouldBe Right(expectedEmploymentUserData)
     }
@@ -127,7 +127,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedEmploymentDetails = anEmploymentDetails.copy(taxablePayToDate = Some(123))
       val expectedEmploymentUserData = anEmploymentUserDataWithDetails(expectedEmploymentDetails).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateTaxablePayToDate(authorisationRequest.user, taxYear, employmentId, givenEmploymentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
     }
@@ -139,7 +139,7 @@ class EmploymentServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedEmploymentDetails = anEmploymentDetails.copy(totalTaxToDate = Some(123))
       val expectedEmploymentUserData = anEmploymentUserDataWithDetails(expectedEmploymentDetails).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateTotalTaxToDate(authorisationRequest.user, taxYear, employmentId, givenEmploymentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
     }

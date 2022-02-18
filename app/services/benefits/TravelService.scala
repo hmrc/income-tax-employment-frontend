@@ -46,7 +46,7 @@ class TravelService @Inject()(employmentSessionService: EmploymentSessionService
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateTravelAndSubsistenceQuestion(user: User,
@@ -66,7 +66,7 @@ class TravelService @Inject()(employmentSessionService: EmploymentSessionService
         _.copy(travelAndSubsistenceQuestion = Some(false), travelAndSubsistence = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateTravelAndSubsistence(user: User,
@@ -80,7 +80,7 @@ class TravelService @Inject()(employmentSessionService: EmploymentSessionService
     val updatedEmployment = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(travelEntertainmentModel =
       travelEntertainment.map(_.copy(travelAndSubsistence = Some(amount))))))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updatePersonalIncidentalExpensesQuestion(user: User,
@@ -100,7 +100,7 @@ class TravelService @Inject()(employmentSessionService: EmploymentSessionService
         _.copy(personalIncidentalExpensesQuestion = Some(false), personalIncidentalExpenses = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updatePersonalIncidentalExpenses(user: User,
@@ -116,7 +116,7 @@ class TravelService @Inject()(employmentSessionService: EmploymentSessionService
       employmentBenefits = benefits.map(_.copy(travelEntertainmentModel = travelEntertainment.map(_.copy(personalIncidentalExpenses = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateEntertainingQuestion(user: User,
@@ -136,7 +136,7 @@ class TravelService @Inject()(employmentSessionService: EmploymentSessionService
         travelEntertainmentModel = travelEntertainment.map(_.copy(entertainingQuestion = Some(false), entertaining = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateEntertaining(user: User,
@@ -152,6 +152,6 @@ class TravelService @Inject()(employmentSessionService: EmploymentSessionService
       employmentBenefits = benefits.map(_.copy(travelEntertainmentModel = travelEntertainment.map(_.copy(entertaining = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 }

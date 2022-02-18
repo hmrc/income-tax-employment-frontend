@@ -43,7 +43,7 @@ class AssetsService @Inject()(employmentSessionService: EmploymentSessionService
       case _ => cya.copy(employmentBenefits = benefits.map(_.copy(assetsModel = Some(AssetsModel(sectionQuestion = Some(questionValue))))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateAssetsQuestion(user: User,
@@ -64,7 +64,7 @@ class AssetsService @Inject()(employmentSessionService: EmploymentSessionService
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateAssets(user: User,
@@ -80,7 +80,7 @@ class AssetsService @Inject()(employmentSessionService: EmploymentSessionService
       employmentBenefits = benefits.map(_.copy(assetsModel = assetsModel.map(_.copy(assets = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateAssetTransferQuestion(user: User,
@@ -99,7 +99,7 @@ class AssetsService @Inject()(employmentSessionService: EmploymentSessionService
         assetsModel = assetsModel.map(_.copy(assetTransferQuestion = Some(false), assetTransfer = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateAssetTransfer(user: User,
@@ -115,6 +115,6 @@ class AssetsService @Inject()(employmentSessionService: EmploymentSessionService
       employmentBenefits = benefits.map(_.copy(assetsModel = assetsModel.map(_.copy(assetTransfer = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 }

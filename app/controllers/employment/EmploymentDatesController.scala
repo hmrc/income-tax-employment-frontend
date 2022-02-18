@@ -81,10 +81,10 @@ class EmploymentDatesController @Inject()(authorisedAction: AuthorisedAction,
               cessationDate = Some(submittedDate.endDateToLocalDate.toString))
             )
 
-            employmentSessionService.createOrUpdateSessionData(employmentId, updatedCya, taxYear, data.isPriorSubmission,
-              data.hasPriorBenefits, data.hasPriorStudentLoans, request.user)(errorHandler.internalServerError()) {
+            employmentSessionService.createOrUpdateSessionData(request.user, taxYear, employmentId, updatedCya, data.isPriorSubmission,
+              data.hasPriorBenefits, data.hasPriorStudentLoans)(errorHandler.internalServerError())(
               employmentDetailsRedirect(updatedCya, taxYear, employmentId, data.isPriorSubmission, isStandaloneQuestion = false)
-            }
+            )
           }
         )
       }

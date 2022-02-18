@@ -24,10 +24,8 @@ import config.{AppConfig, ErrorHandler}
 import controllers.benefits.routes.ReceiveAnyBenefitsController
 import controllers.employment.routes.{CheckYourBenefitsController, EmployerInformationController}
 import controllers.expenses.routes.CheckEmploymentExpensesController
-import models.AuthorisationRequest
 import controllers.studentLoans.routes.StudentLoansCYAController
-import javax.inject.Inject
-import models.User
+import models.AuthorisationRequest
 import models.benefits.Benefits
 import models.employment.{AllEmploymentData, EmploymentSourceOrigin}
 import models.mongo.EmploymentCYAModel
@@ -89,16 +87,15 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
             }
           case None => prior.get.eoyEmploymentSourceWith(employmentId) match {
             case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) =>
-              employmentSessionService.createOrUpdateSessionData(employmentId, EmploymentCYAModel(source, isUsingCustomerData),
-                taxYear, isPriorSubmission = true, source.hasPriorBenefits, source.hasPriorStudentLoans, request.user
-              )(errorHandler.internalServerError()) {
+              employmentSessionService.createOrUpdateSessionData(request.user, taxYear, employmentId, EmploymentCYAModel(source, isUsingCustomerData),
+                isPriorSubmission = true, source.hasPriorBenefits, source.hasPriorStudentLoans)(errorHandler.internalServerError())({
                 val benefits: Option[Benefits] = source.employmentBenefits.flatMap(_.benefits)
                 benefits match {
                   case None => Redirect(ReceiveAnyBenefitsController.show(taxYear, employmentId))
                   case Some(benefits) =>
                     Ok(checkYourBenefitsViewEOY(taxYear, source.employerName, benefits.toBenefitsViewModel(isUsingCustomerData), employmentId, isUsingCustomerData))
                 }
-              }
+              })
             case None =>
               logger.info(s"[CheckYourBenefitsController][saveCYAAndReturnEndOfYearResult] No prior employment data exists with employmentId." +
                 s"Redirecting to overview page. SessionId: ${request.user.sessionId}")
@@ -142,10 +139,10 @@ class CheckYourBenefitsController @Inject()(implicit val appConfig: AppConfig,
       case None =>
         getFromSession(SessionValues.TEMP_NEW_EMPLOYMENT_ID) match {
           case Some(sessionEmploymentId) if sessionEmploymentId == employmentId =>
-            if(appConfig.studentLoansEnabled) {
+            if (appConfig.studentLoansEnabled) {
               StudentLoansCYAController.show(taxYear, employmentId)
             }
-            else{
+            else {
               CheckEmploymentExpensesController.show(taxYear)
             }
           case _ => EmployerInformationController.show(taxYear, employmentId)

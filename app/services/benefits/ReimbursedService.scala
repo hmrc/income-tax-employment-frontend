@@ -45,7 +45,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
         Some(ReimbursedCostsVouchersAndNonCashModel(sectionQuestion = Some(questionValue))))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateExpensesQuestion(user: User,
@@ -65,7 +65,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
         reimbursedCostsVouchersAndNonCashModel.map(_.copy(expensesQuestion = Some(false), expenses = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateExpenses(user: User,
@@ -81,7 +81,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
       reimbursedCostsVouchersAndNonCashModel.map(_.copy(expenses = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateTaxableExpensesQuestion(user: User,
@@ -101,7 +101,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
         reimbursedModel.map(_.copy(taxableExpensesQuestion = Some(false), taxableExpenses = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateTaxableExpenses(user: User,
@@ -117,7 +117,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
       reimbursedCostsVouchersAndNonCashModel = reimbursedCostsVouchersAndNonCashModel.map(_.copy(taxableExpenses = Some(amount)))
     )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateVouchersAndCreditCardsQuestion(user: User,
@@ -137,7 +137,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
         reimbursedCostsVouchersAndNonCashModel.map(_.copy(vouchersAndCreditCardsQuestion = Some(false), vouchersAndCreditCards = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateVouchersAndCreditCards(user: User,
@@ -153,7 +153,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
       reimbursedCostsVouchersAndNonCashModel = reimbursedCostsVouchersAndNonCashModel.map(_.copy(vouchersAndCreditCards = Some(amount)))
     )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateNonCashQuestion(user: User,
@@ -173,7 +173,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
         reimbursedCostsVouchersAndNonCashModel.map(_.copy(nonCashQuestion = Some(false), nonCash = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateNonCash(user: User,
@@ -189,7 +189,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
       reimbursedCostsVouchersAndNonCashModel = reimbursedCostsVouchersAndNonCashModel.map(_.copy(nonCash = Some(amount)))
     )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateOtherItemsQuestion(user: User,
@@ -209,7 +209,7 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
         reimbursedCostsVouchersAndNonCashModel.map(_.copy(otherItemsQuestion = Some(false), otherItems = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateOtherItems(user: User,
@@ -225,6 +225,6 @@ class ReimbursedService @Inject()(employmentSessionService: EmploymentSessionSer
       reimbursedCostsVouchersAndNonCashModel = reimbursedCostsVouchersAndNonCashModel.map(_.copy(otherItems = Some(amount)))
     )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 }

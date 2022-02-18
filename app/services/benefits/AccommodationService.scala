@@ -47,7 +47,7 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateAccommodationQuestion(user: User,
@@ -69,7 +69,7 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateAccommodation(user: User,
@@ -85,7 +85,7 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
       employmentBenefits = benefits.map(_.copy(accommodationRelocationModel = accommodationRelocation.map(_.copy(accommodation = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateQualifyingExpensesQuestion(user: User,
@@ -111,7 +111,7 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
           }
       )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateQualifyingExpenses(user: User,
@@ -124,7 +124,7 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
     val updatedEmployment = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(accommodationRelocationModel =
       accommodationRelocation.map(_.copy(qualifyingRelocationExpenses = Some(amount))))))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateNonQualifyingExpensesQuestion(user: User,
@@ -148,7 +148,7 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateNonQualifyingExpenses(user: User,
@@ -165,6 +165,6 @@ class AccommodationService @Inject()(employmentSessionService: EmploymentSession
         accommodationRelocationModel = accommodationRelocation.map(_.copy(nonQualifyingRelocationExpenses = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 }

@@ -36,7 +36,7 @@ class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
       val employmentUserDataWithFalseSectionQuestion = anEmploymentUserDataWithBenefits(benefitsViewModel).copy(hasPriorBenefits = false)
       val expectedEmploymentUserData = anEmploymentUserData.copy(hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, anEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, anEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateSectionQuestion(authorisationRequest.user, taxYear, employmentId, employmentUserDataWithFalseSectionQuestion, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
@@ -47,7 +47,7 @@ class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
       val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(AssetsModel.clear))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(benefitsViewModel).copy(hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateSectionQuestion(authorisationRequest.user, taxYear, employmentId, employmentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
@@ -58,7 +58,7 @@ class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
       val benefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(AssetsModel.clear))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(benefitsViewModel)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateSectionQuestion(authorisationRequest.user, taxYear, employmentId, employmentUserDataWithNoAssetsModel, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
@@ -72,7 +72,7 @@ class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assetsQuestion = Some(true))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefitsViewModel).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateAssetsQuestion(authorisationRequest.user, taxYear, employmentId, employmentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
@@ -82,7 +82,7 @@ class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assetsQuestion = Some(false), assets = None)))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefitsViewModel).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateAssetsQuestion(authorisationRequest.user, taxYear, employmentId, anEmploymentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
@@ -95,7 +95,7 @@ class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assets = Some(123))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefitsViewModel).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateAssets(authorisationRequest.user, taxYear, employmentId, employmentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
     }
@@ -108,7 +108,7 @@ class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assetTransferQuestion = Some(true))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefitsViewModel).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateAssetTransferQuestion(authorisationRequest.user, taxYear, employmentId, employmentUserData, questionValue = true)) shouldBe
         Right(expectedEmploymentUserData)
@@ -118,7 +118,7 @@ class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assetTransferQuestion = Some(false), assetTransfer = None)))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefitsViewModel).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateAssetTransferQuestion(authorisationRequest.user, taxYear, employmentId, anEmploymentUserData, questionValue = false)) shouldBe
         Right(expectedEmploymentUserData)
@@ -131,7 +131,7 @@ class AssetsServiceSpec extends UnitTest with MockEmploymentSessionService {
       val expectedBenefitsViewModel = aBenefitsViewModel.copy(assetsModel = Some(anAssetsModel.copy(assetTransfer = Some(123))))
       val expectedEmploymentUserData = anEmploymentUserDataWithBenefits(expectedBenefitsViewModel).copy(isPriorSubmission = false, hasPriorBenefits = false)
 
-      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
+      mockCreateOrUpdateUserDataWith(taxYear, employmentId, expectedEmploymentUserData.employment, Right(expectedEmploymentUserData))
 
       await(underTest.updateAssetTransfer(authorisationRequest.user, taxYear, employmentId, employmentUserData, amount = 123)) shouldBe Right(expectedEmploymentUserData)
     }
