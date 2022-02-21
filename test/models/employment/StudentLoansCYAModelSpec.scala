@@ -55,8 +55,8 @@ class StudentLoansCYAModelSpec extends UnitTest {
           )
         )
       }
-      "return none" in {
-        StudentLoansCYAModel(uglDeduction = false, None, pglDeduction = false, None).toDeductions shouldBe None
+      "return empty deductions" in {
+        StudentLoansCYAModel(uglDeduction = false, None, pglDeduction = false, None).toDeductions shouldBe Some(Deductions(None))
       }
     }
   }

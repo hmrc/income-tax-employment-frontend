@@ -33,7 +33,7 @@ case class StudentLoansCYAModel(uglDeduction: Boolean,
         )
       )))
     } else {
-      None
+      Some(Deductions(None))
     }
   }
 }
