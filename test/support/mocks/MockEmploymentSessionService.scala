@@ -82,14 +82,14 @@ trait MockEmploymentSessionService extends MockFactory {
                         (implicit executionContext: ExecutionContext): CallHandler4[Int, String, Option[EmploymentUserData] => Future[Result], AuthorisationRequest[_], Future[Result]] = {
     (mockEmploymentSessionService.getSessionDataResult(_: Int, _: String)(_: Option[EmploymentUserData] => Future[Result])(_: AuthorisationRequest[_]))
       .expects(taxYear, employmentId, *, *)
-      .returns(Future(result))
+      .returns(Future.successful(result))
   }
 
   def mockGetSessionDataAndReturnResult(taxYear: Int, employmentId: String, result: Result)
                                        (implicit ec: ExecutionContext): CallHandler5[Int, String, String, EmploymentUserData => Future[Result], AuthorisationRequest[_], Future[Result]] = {
     (mockEmploymentSessionService.getSessionDataAndReturnResult(_: Int, _: String)(_: String)(_: EmploymentUserData => Future[Result])(_: AuthorisationRequest[_]))
       .expects(taxYear, employmentId, *, *, *)
-      .returns(Future(result))
+      .returns(Future.successful(result))
   }
 
   def mockCreateOrUpdateUserDataWith(taxYear: Int,
@@ -100,7 +100,7 @@ trait MockEmploymentSessionService extends MockFactory {
     ((user: User, taxYear: Int, employmentId: String, originalEmploymentUserData: EmploymentUserData, employment: EmploymentCYAModel) =>
       mockEmploymentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, employment))
       .expects(*, taxYear, employmentId, *, employmentCYAModel)
-      .returns(Future(result))
+      .returns(Future.successful(result))
       .once()
   }
 
@@ -145,7 +145,16 @@ trait MockEmploymentSessionService extends MockFactory {
                                     (implicit ec: ExecutionContext): CallHandler5[User, Int, Boolean, Boolean, ExpensesCYAModel, Future[Either[Unit, ExpensesUserData]]] = {
     (mockEmploymentSessionService.createOrUpdateExpensesUserData(_: User, _: Int, _: Boolean, _: Boolean, _: ExpensesCYAModel))
       .expects(*, taxYear, isPriorSubmission, hasPriorExpenses, expensesCYAModel)
-      .returns(Future(result))
+      .returns(Future.successful(result))
       .once()
+  }
+
+  def mockFindEmploymentUserData(taxYear: Int,
+                                 employmentId: String,
+                                 user: User,
+                                 result: Either[Unit, Option[EmploymentUserData]]): Unit = {
+    (mockEmploymentSessionService.findEmploymentUserData(_: Int, _: String, _: User))
+      .expects(taxYear, employmentId, user)
+      .returns(Future.successful(result))
   }
 }

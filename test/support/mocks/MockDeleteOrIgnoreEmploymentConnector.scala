@@ -49,5 +49,4 @@ trait MockDeleteOrIgnoreEmploymentConnector extends MockFactory {
       .returns(Future.successful(Left(APIErrorModel(BAD_REQUEST, APIErrorBodyModel("", "")))))
       .anyNumberOfTimes()
   }
-
 }

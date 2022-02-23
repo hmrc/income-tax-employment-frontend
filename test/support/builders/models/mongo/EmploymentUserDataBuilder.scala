@@ -16,17 +16,18 @@
 
 package support.builders.models.mongo
 
-import EmploymentCYAModelBuilder.anEmploymentCYAModel
 import models.benefits.BenefitsViewModel
 import models.employment.StudentLoansCYAModel
 import models.mongo.{EmploymentDetails, EmploymentUserData}
+import support.builders.models.UserBuilder.aUser
+import support.builders.models.mongo.EmploymentCYAModelBuilder.anEmploymentCYAModel
 
 object EmploymentUserDataBuilder {
 
   val anEmploymentUserData: EmploymentUserData = EmploymentUserData(
-    sessionId = "sessionId-eb3158c2-0aff-4ce8-8d1b-f2208ace52fe",
-    mtdItId = "1234567890",
-    nino = "AA123456A",
+    sessionId = aUser.sessionId,
+    mtdItId = aUser.mtditid,
+    nino = aUser.nino,
     taxYear = 2021,
     employmentId = "employmentId",
     isPriorSubmission = true,
@@ -53,9 +54,10 @@ object EmploymentUserDataBuilder {
       employment = anEmploymentCYAModel.copy(employmentDetails = employmentDetails)
     )
   }
+
   def anEmploymentUserDataWithStudentLoans(studentLoans: StudentLoansCYAModel,
-                                      isPriorSubmission: Boolean = true,
-                                      hasPriorBenefits: Boolean = true): EmploymentUserData = {
+                                           isPriorSubmission: Boolean = true,
+                                           hasPriorBenefits: Boolean = true): EmploymentUserData = {
     anEmploymentUserData.copy(
       isPriorSubmission = isPriorSubmission,
       hasPriorBenefits = hasPriorBenefits,

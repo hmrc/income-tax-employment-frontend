@@ -20,12 +20,11 @@ import actions.AuthorisedAction
 import config.{AppConfig, ErrorHandler}
 import controllers.benefits.accommodation.routes._
 import controllers.benefits.travel.routes._
-import forms.YesNoForm
+import forms.benefits.accommodation.AccommodationRelocationBenefitsFormMapper
 import models.AuthorisationRequest
 import models.employment.EmploymentBenefitsType
 import models.mongo.{EmploymentCYAModel, EmploymentUserData}
 import models.redirects.ConditionalRedirect
-import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.EmploymentSessionService
@@ -38,14 +37,15 @@ import views.html.benefits.accommodation.AccommodationRelocationBenefitsView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class AccommodationRelocationBenefitsController @Inject()(implicit val cc: MessagesControllerComponents,
-                                                          authAction: AuthorisedAction,
+class AccommodationRelocationBenefitsController @Inject()(authAction: AuthorisedAction,
                                                           inYearAction: InYearUtil,
-                                                          accommodationRelocationBenefitsView: AccommodationRelocationBenefitsView,
-                                                          appConfig: AppConfig,
-                                                          employmentSessionService: EmploymentSessionService,
+                                                          pageView: AccommodationRelocationBenefitsView,
                                                           accommodationService: AccommodationService,
+                                                          employmentSessionService: EmploymentSessionService,
                                                           errorHandler: ErrorHandler,
+                                                          formMapper: AccommodationRelocationBenefitsFormMapper)
+                                                         (implicit val cc: MessagesControllerComponents,
+                                                          appConfig: AppConfig,
                                                           ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper {
 
   def show(taxYear: Int, employmentId: String): Action[AnyContent] = authAction.async { implicit request =>
@@ -54,9 +54,10 @@ class AccommodationRelocationBenefitsController @Inject()(implicit val cc: Messa
         case Left(_) => Future.successful(errorHandler.handleError(INTERNAL_SERVER_ERROR))
         case Right(optEmploymentUserData) =>
           redirectBasedOnCurrentAnswers(taxYear, employmentId, optEmploymentUserData, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { cya =>
+            val yesNoForm = formMapper.yesNoForm(request.user.isAgent)
             cya.employment.employmentBenefits.flatMap(_.accommodationRelocationModel.flatMap(_.sectionQuestion)) match {
-              case Some(questionResult) => Future.successful(Ok(accommodationRelocationBenefitsView(yesNoForm.fill(questionResult), taxYear, employmentId)))
-              case None => Future.successful(Ok(accommodationRelocationBenefitsView(yesNoForm, taxYear, employmentId)))
+              case Some(questionResult) => Future.successful(Ok(pageView(yesNoForm.fill(questionResult), taxYear, employmentId)))
+              case None => Future.successful(Ok(pageView(yesNoForm, taxYear, employmentId)))
             }
           }
       }
@@ -69,18 +70,14 @@ class AccommodationRelocationBenefitsController @Inject()(implicit val cc: Messa
       employmentSessionService.getSessionDataResult(taxYear, employmentId) { optCya =>
         redirectBasedOnCurrentAnswers(taxYear, employmentId, optCya, EmploymentBenefitsType)(redirects(_, taxYear, employmentId)) { data =>
 
-          yesNoForm.bindFromRequest().fold(
-            formWithErrors => Future.successful(BadRequest(accommodationRelocationBenefitsView(formWithErrors, taxYear, employmentId))),
+          formMapper.yesNoForm(request.user.isAgent).bindFromRequest().fold(
+            formWithErrors => Future.successful(BadRequest(pageView(formWithErrors, taxYear, employmentId))),
             yesNo => handleSuccessForm(taxYear, employmentId, data, yesNo)
           )
         }
       }
     }
   }
-
-  private def yesNoForm(implicit request: AuthorisationRequest[_]): Form[Boolean] = YesNoForm.yesNoForm(
-    missingInputError = s"benefits.accommodationRelocation.error.${if (request.user.isAgent) "agent" else "individual"}"
-  )
 
   private def redirects(cya: EmploymentCYAModel, taxYear: Int, employmentId: String): Seq[ConditionalRedirect] = {
     accommodationRelocationBenefitsRedirects(cya, taxYear, employmentId)
@@ -93,8 +90,7 @@ class AccommodationRelocationBenefitsController @Inject()(implicit val cc: Messa
       case Right(employmentUserData) =>
         val nextPage = if (sectionQuestionValue) {
           LivingAccommodationBenefitsController.show(taxYear, employmentId)
-        }
-        else {
+        } else {
           TravelOrEntertainmentBenefitsController.show(taxYear, employmentId)
         }
         benefitsSubmitRedirect(employmentUserData.employment, nextPage)(taxYear, employmentId)

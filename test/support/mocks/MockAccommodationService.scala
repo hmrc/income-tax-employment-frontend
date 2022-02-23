@@ -16,23 +16,10 @@
 
 package support.mocks
 
-import connectors.parsers.NrsSubmissionHttpParser.NrsSubmissionResponse
-import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import play.api.libs.json.Writes
-import play.api.mvc.Request
-import services.NrsService
-import uk.gov.hmrc.http.HeaderCarrier
+import services.benefits.AccommodationService
 
-import scala.concurrent.Future
+trait MockAccommodationService extends MockFactory {
 
-trait MockNrsService extends MockFactory {
-
-  val mockNrsService: NrsService = mock[NrsService]
-
-  def verifySubmitEvent[T](event: T): CallHandler[Future[NrsSubmissionResponse]] = {
-    (mockNrsService.submit(_: String, _: T, _: String)(_: Request[_], _: HeaderCarrier, _: Writes[T]))
-      .expects(*, event, *, *, *, *)
-      .returning(Future.successful(Right()))
-  }
+  protected val mockAccommodationService: AccommodationService = mock[AccommodationService]
 }
