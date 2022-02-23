@@ -45,11 +45,12 @@ class UniformsOrToolsExpensesAmountController @Inject()(implicit val cc: Message
                                                         val employmentSessionService: EmploymentSessionService,
                                                         expensesService: ExpensesService,
                                                         errorHandler: ErrorHandler,
-                                                        ec: ExecutionContext) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
+                                                        ec: ExecutionContext
+                                                       ) extends FrontendController(cc) with I18nSupport with SessionHelper with FormUtils {
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandleExpenses(taxYear) { (optCya, prior) =>
+      employmentSessionService.getAndHandleExpenses(taxYear)({ (optCya, prior) =>
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { data =>
           val cyaAmount = data.expensesCya.expenses.flatRateJobExpenses
           val form = fillExpensesFormFromPriorAndCYA(buildForm(request.user.isAgent), prior, cyaAmount) { employmentExpenses =>
@@ -57,7 +58,7 @@ class UniformsOrToolsExpensesAmountController @Inject()(implicit val cc: Message
           }
           Future(Ok(uniformsOrToolsExpensesAmountView(taxYear, form, cyaAmount)))
         }
-      }
+      })
     }
   }
 

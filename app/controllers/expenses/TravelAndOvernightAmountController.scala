@@ -48,7 +48,7 @@ class TravelAndOvernightAmountController @Inject()(implicit val cc: MessagesCont
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandleExpenses(taxYear) { (optCya, prior) =>
+      employmentSessionService.getAndHandleExpenses(taxYear)({ (optCya, prior) =>
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { data =>
           val cyaAmount = data.expensesCya.expenses.jobExpenses
 
@@ -57,7 +57,7 @@ class TravelAndOvernightAmountController @Inject()(implicit val cc: MessagesCont
           )
           Future.successful(Ok(travelAndOvernightAmountView(taxYear, form, cyaAmount)))
         }
-      }
+      })
     }
   }
 

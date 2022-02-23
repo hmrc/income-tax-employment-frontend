@@ -77,10 +77,7 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
               logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] No employment CYA data extracted from prior data. Redirecting back to overview.")
               Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
             case Some((employmentCya, hasPriorBenefits, hasPriorStudentLoans)) =>
-              employmentSessionService.createOrUpdateSessionData(
-                employmentId, employmentCya, taxYear, isPriorSubmission = true, hasPriorBenefits = hasPriorBenefits,
-                hasPriorStudentLoans = hasPriorStudentLoans, request.user
-              )(errorHandler.internalServerError()) {
+              employmentSessionService.createOrUpdateSessionData(request.user, taxYear, employmentId, employmentCya, isPriorSubmission = true, hasPriorBenefits = hasPriorBenefits, hasPriorStudentLoans = hasPriorStudentLoans)(errorHandler.internalServerError())({
                 employmentCya.studentLoans match {
                   case None =>
                     logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] No SL CYA data exist, but there is prior data. Redirecting to the start of the SL journey.")
@@ -89,7 +86,7 @@ class StudentLoansCYAService @Inject()(employmentSessionService: EmploymentSessi
                     logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] CYA data exist. Performing block action.")
                     block(slCya, isCustomerHeld, alLEmploymentData.isLastInYearEmployment)
                 }
-              }
+              })
           }
         case _ =>
           logger.debug("[StudentLoansCYAService][retrieveCyaDataAndIsCustomerHeld] No CYA or prior data. Redirecting to the overview page.")

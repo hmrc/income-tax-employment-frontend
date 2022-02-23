@@ -49,7 +49,7 @@ class ProfFeesAndSubscriptionsExpensesAmountController @Inject()(implicit val cc
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandleExpenses(taxYear) { (optCya, prior) =>
+      employmentSessionService.getAndHandleExpenses(taxYear)({ (optCya, prior) =>
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { cyaData =>
 
           val cyaAmount = cyaData.expensesCya.expenses.professionalSubscriptions
@@ -58,7 +58,7 @@ class ProfFeesAndSubscriptionsExpensesAmountController @Inject()(implicit val cc
           }
           Future(Ok(profSubscriptionsExpensesAmountView(taxYear, form, cyaAmount)))
         }
-      }
+      })
     }
   }
 

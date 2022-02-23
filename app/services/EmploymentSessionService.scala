@@ -18,7 +18,6 @@ package services
 
 import common.EmploymentSection
 import config.{AppConfig, ErrorHandler}
-import connectors.parsers.CreateUpdateEmploymentDataHttpParser.CreateUpdateEmploymentDataResponse
 import connectors.parsers.IncomeTaxUserDataHttpParser.IncomeTaxUserDataResponse
 import connectors.{CreateUpdateEmploymentDataConnector, IncomeSourceConnector, IncomeTaxUserDataConnector}
 import controllers.employment.routes.{CheckEmploymentDetailsController, CheckYourBenefitsController, EmployerInformationController}
@@ -96,13 +95,6 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
   }
 
-  def getExpensesSessionData(taxYear: Int)(implicit request: AuthorisationRequest[_]): Future[Either[Result, Option[ExpensesUserData]]] = {
-    expensesUserDataRepository.find(taxYear, request.user).map {
-      case Left(_) => Left(errorHandler.handleError(INTERNAL_SERVER_ERROR))
-      case Right(value) => Right(value)
-    }
-  }
-
   def getExpensesSessionDataResult(taxYear: Int)(result: Option[ExpensesUserData] => Future[Result])
                                   (implicit authorisationRequest: AuthorisationRequest[_]): Future[Result] = {
     expensesUserDataRepository.find(taxYear, authorisationRequest.user).flatMap {
@@ -123,15 +115,14 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   }
 
   //scalastyle:off
-  def createOrUpdateSessionData[A](employmentId: String,
-                                   cyaModel: EmploymentCYAModel,
+  def createOrUpdateSessionData[A](user: User,
                                    taxYear: Int,
+                                   employmentId: String,
+                                   cyaModel: EmploymentCYAModel,
                                    isPriorSubmission: Boolean,
                                    hasPriorBenefits: Boolean,
-                                   hasPriorStudentLoans: Boolean,
-                                   user: User)
+                                   hasPriorStudentLoans: Boolean)
                                   (onFail: A)(onSuccess: A): Future[A] = {
-
     val userData = EmploymentUserData(
       user.sessionId,
       user.mtditid,
@@ -151,39 +142,20 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
   }
 
-  def createOrUpdateEmploymentUserDataWith(taxYear: Int,
-                                           employmentId: String,
-                                           user: User,
-                                           originalEmploymentUserData: EmploymentUserData,
-                                           employment: EmploymentCYAModel): Future[Either[Unit, EmploymentUserData]] = {
-    createOrUpdateEmploymentUserDataWith(
-      taxYear,
-      employmentId,
-      originalEmploymentUserData.isPriorSubmission,
-      originalEmploymentUserData.hasPriorBenefits,
-      originalEmploymentUserData.hasPriorStudentLoans,
-      employment,
-      user
-    )
-  }
-
-  private def createOrUpdateEmploymentUserDataWith(taxYear: Int,
-                                                   employmentId: String,
-                                                   isPriorSubmission: Boolean,
-                                                   hasPriorBenefits: Boolean,
-                                                   hasPriorStudentLoans: Boolean,
-                                                   employment: EmploymentCYAModel,
-                                                   user: User): Future[Either[Unit, EmploymentUserData]] = {
-
+  def createOrUpdateEmploymentUserData(user: User,
+                                       taxYear: Int,
+                                       employmentId: String,
+                                       originalEmploymentUserData: EmploymentUserData,
+                                       employment: EmploymentCYAModel): Future[Either[Unit, EmploymentUserData]] = {
     val employmentUserData = EmploymentUserData(
       user.sessionId,
       user.mtditid,
       user.nino,
       taxYear,
       employmentId,
-      isPriorSubmission = isPriorSubmission,
-      hasPriorBenefits = hasPriorBenefits,
-      hasPriorStudentLoans = hasPriorStudentLoans,
+      originalEmploymentUserData.isPriorSubmission,
+      originalEmploymentUserData.hasPriorBenefits,
+      originalEmploymentUserData.hasPriorStudentLoans,
       employment = employment,
       clock.now(DateTimeZone.UTC)
     )
@@ -217,11 +189,11 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
   }
 
-  def createOrUpdateExpensesUserDataWith(user: User,
-                                         taxYear: Int,
-                                         isPriorSubmission: Boolean,
-                                         hasPriorExpenses: Boolean,
-                                         expensesCYAModel: ExpensesCYAModel): Future[Either[Unit, ExpensesUserData]] = {
+  def createOrUpdateExpensesUserData(user: User,
+                                     taxYear: Int,
+                                     isPriorSubmission: Boolean,
+                                     hasPriorExpenses: Boolean,
+                                     expensesCYAModel: ExpensesCYAModel): Future[Either[Unit, ExpensesUserData]] = {
     val expensesUserData = ExpensesUserData(
       user.sessionId,
       user.mtditid,
@@ -341,7 +313,7 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
   private def formCreateUpdateEmploymentData(cya: EmploymentUserData, prior: Option[AllEmploymentData], section: EmploymentSection.Value): EmploymentDataAndDataRemainsUnchanged[CreateUpdateEmploymentData] = {
 
-    val priorEmployment = prior.flatMap(_.eoyEmploymentSourceWith(cya.employmentId).map(_.employmentSource))
+    val priorEmployment: Option[EmploymentSource] = prior.flatMap(_.eoyEmploymentSourceWith(cya.employmentId).map(_.employmentSource))
 
     def priorBenefits: Option[Benefits] = priorEmployment.flatMap(_.employmentBenefits.flatMap(_.benefits))
 
@@ -396,17 +368,13 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
 
   def createOrUpdateEmploymentResult(taxYear: Int, employmentRequest: CreateUpdateEmploymentRequest)
                                     (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Either[Result, Option[String]]] = {
-    createOrUpdateEmployment(request.user, taxYear, employmentRequest).map {
+    val headerCarrier = hc.withExtraHeaders("mtditid" -> request.user.mtditid)
+    val createUpdateEmploymentResponse = createUpdateEmploymentDataConnector.createUpdateEmploymentData(request.user.nino, taxYear, employmentRequest)(headerCarrier)
+
+    createUpdateEmploymentResponse.map {
       case Left(error) => Left(errorHandler.handleError(error.status))
       case Right(employmentId) => Right(employmentId)
     }
-  }
-
-  private def createOrUpdateEmployment(user: User,
-                                       taxYear: Int,
-                                       employmentRequest: CreateUpdateEmploymentRequest)
-                                      (implicit hc: HeaderCarrier): Future[CreateUpdateEmploymentDataResponse] = {
-    createUpdateEmploymentDataConnector.createUpdateEmploymentData(user.nino, taxYear, employmentRequest)(hc.withExtraHeaders("mtditid" -> user.mtditid))
   }
 
   def getAndHandle(taxYear: Int, employmentId: String, redirectWhenNoPrior: Boolean = false)
@@ -438,17 +406,16 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
   def getAndHandleExpenses(taxYear: Int)(block: (Option[ExpensesUserData], Option[AllEmploymentData]) => Future[Result])
                           (implicit request: AuthorisationRequest[_], hc: HeaderCarrier): Future[Result] = {
     val result = for {
-      optionalCya <- getExpensesSessionData(taxYear)
+      optExpensesUserData <- getExpensesSessionData(request.user, taxYear)
       priorDataResponse <- getPriorData(request.user, taxYear)
     } yield {
-
-      if (optionalCya.isRight) {
-        if (optionalCya.right.get.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandleExpenses] No employment expenses CYA data found for user. SessionId: ${request.user.sessionId}")
+      if (optExpensesUserData.isRight) {
+        if (optExpensesUserData.right.get.isEmpty) logger.info(s"[EmploymentSessionService][getAndHandleExpenses] No employment expenses CYA data found for user. SessionId: ${request.user.sessionId}")
       }
 
       val employmentDataResponse = priorDataResponse.map(_.employment)
 
-      (optionalCya, employmentDataResponse) match {
+      (optExpensesUserData, employmentDataResponse) match {
         case (Right(optionalCya), Right(employmentData)) => block(optionalCya, employmentData)
         case (_, Left(error)) => Future(errorHandler.handleError(error.status))
         case (Left(_), _) => Future(errorHandler.handleError(INTERNAL_SERVER_ERROR))
@@ -456,6 +423,13 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
 
     result.flatten
+  }
+
+  private def getExpensesSessionData(user: User, taxYear: Int)(implicit request: AuthorisationRequest[_]): Future[Either[Result, Option[ExpensesUserData]]] = {
+    expensesUserDataRepository.find(taxYear, user).map {
+      case Left(_) => Left(errorHandler.handleError(INTERNAL_SERVER_ERROR))
+      case Right(value) => Right(value)
+    }
   }
 
   def clear(user: User, taxYear: Int, employmentId: String)
@@ -479,5 +453,3 @@ class EmploymentSessionService @Inject()(employmentUserDataRepository: Employmen
     }
   }
 }
-
-

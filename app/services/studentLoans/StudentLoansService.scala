@@ -40,7 +40,7 @@ class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionS
       })
     val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoans = newStudentLoans)
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updatePglQuestion(user: User,
@@ -57,7 +57,7 @@ class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionS
       })
     val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoans = newStudentLoans)
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateUglDeductionAmount(user: User,
@@ -70,7 +70,7 @@ class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionS
       map(studentLoan => studentLoan.copy(uglDeductionAmount = Some(uglAmount)))
     val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoans = newStudentLoans)
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updatePglDeductionAmount(user: User,
@@ -83,6 +83,6 @@ class StudentLoansService @Inject()(employmentSessionService: EmploymentSessionS
       map(studentLoan => studentLoan.copy(pglDeductionAmount = Some(pglAmount)))
     val updatedEmployment: EmploymentCYAModel = cya.copy(studentLoans = newStudentLoans)
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 }

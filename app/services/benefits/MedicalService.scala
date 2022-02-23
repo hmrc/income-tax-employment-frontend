@@ -44,7 +44,7 @@ class MedicalService @Inject()(employmentSessionService: EmploymentSessionServic
           .getOrElse(MedicalChildcareEducationModel(sectionQuestion = Some(questionValue)))))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateMedicalInsuranceQuestion(user: User,
@@ -64,7 +64,7 @@ class MedicalService @Inject()(employmentSessionService: EmploymentSessionServic
         medicalChildcareEducationModel.map(_.copy(medicalInsuranceQuestion = Some(false), medicalInsurance = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateMedicalInsurance(user: User,
@@ -78,7 +78,7 @@ class MedicalService @Inject()(employmentSessionService: EmploymentSessionServic
     val updatedEmployment = cyaModel.copy(employmentBenefits = cyaModel.employmentBenefits.map(_.copy(medicalChildcareEducationModel =
       medicalAndChildcare.map(_.copy(medicalInsurance = Some(amount))))))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateNurseryPlacesQuestion(user: User,
@@ -98,7 +98,7 @@ class MedicalService @Inject()(employmentSessionService: EmploymentSessionServic
         medicalChildcareEducationModel.map(_.copy(nurseryPlacesQuestion = Some(false), nurseryPlaces = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateNurseryPlaces(user: User,
@@ -114,7 +114,7 @@ class MedicalService @Inject()(employmentSessionService: EmploymentSessionServic
       employmentBenefits = benefits.map(_.copy(medicalChildcareEducationModel = medicalChildcareEducationModel.map(_.copy(nurseryPlaces = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateEducationalServicesQuestion(user: User,
@@ -135,7 +135,7 @@ class MedicalService @Inject()(employmentSessionService: EmploymentSessionServic
           medicalChildcareEducationModel.map(_.copy(educationalServicesQuestion = Some(false), educationalServices = None)))))
       }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateEducationalServices(user: User,
@@ -151,7 +151,7 @@ class MedicalService @Inject()(employmentSessionService: EmploymentSessionServic
       medicalChildcareEducationModel = medicalChildcareEducationModel.map(_.copy(educationalServices = Some(amount)))
     )))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateBeneficialLoanQuestion(user: User,
@@ -173,7 +173,7 @@ class MedicalService @Inject()(employmentSessionService: EmploymentSessionServic
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateBeneficialLoan(user: User,
@@ -189,6 +189,6 @@ class MedicalService @Inject()(employmentSessionService: EmploymentSessionServic
       employmentBenefits = benefits.map(_.copy(medicalChildcareEducationModel = medicalChildcareEducationModel.map(_.copy(beneficialLoan = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 }

@@ -36,7 +36,7 @@ class EmploymentService @Inject()(employmentSessionService: EmploymentSessionSer
     val cya = originalEmploymentUserData.employment
     val updatedEmployment: EmploymentCYAModel = cya.copy(cya.employmentDetails.copy(employerRef = Some(payeRef)))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateStartDate(user: User,
@@ -60,7 +60,7 @@ class EmploymentService @Inject()(employmentSessionService: EmploymentSessionSer
       cessationDate = resetLeaveDateIfNowInvalid)
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updatePayrollId(user: User,
@@ -71,7 +71,7 @@ class EmploymentService @Inject()(employmentSessionService: EmploymentSessionSer
     val cya = originalEmploymentUserData.employment
     val updatedEmployment = cya.copy(cya.employmentDetails.copy(payrollId = Some(payrollId)))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateCessationDateQuestion(user: User,
@@ -85,7 +85,7 @@ class EmploymentService @Inject()(employmentSessionService: EmploymentSessionSer
     }
     val updatedEmployment = cya.copy(cya.employmentDetails.copy(cessationDateQuestion = Some(questionValue), cessationDate = cessationDateUpdated))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateCessationDate(user: User,
@@ -96,7 +96,7 @@ class EmploymentService @Inject()(employmentSessionService: EmploymentSessionSer
     val cya = originalEmploymentUserData.employment
     val updatedEmployment = cya.copy(cya.employmentDetails.copy(cessationDate = Some(cessationDate)))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateTaxablePayToDate(user: User,
@@ -107,7 +107,7 @@ class EmploymentService @Inject()(employmentSessionService: EmploymentSessionSer
     val cya = originalEmploymentUserData.employment
     val updatedEmployment = cya.copy(employmentDetails = cya.employmentDetails.copy(taxablePayToDate = Some(amount)))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateTotalTaxToDate(user: User,
@@ -118,6 +118,6 @@ class EmploymentService @Inject()(employmentSessionService: EmploymentSessionSer
     val updatedEmployment = originalEmploymentUserData.employment.copy(employmentDetails =
       originalEmploymentUserData.employment.employmentDetails.copy(totalTaxToDate = Some(amount)))
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 }

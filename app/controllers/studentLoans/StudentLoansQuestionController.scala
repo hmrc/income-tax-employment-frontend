@@ -54,10 +54,10 @@ class StudentLoansQuestionController @Inject()(
               Future.successful(Ok(view(taxYear, employmentId, employmentData.employment.employmentDetails.employerName,
                 inYear, StudentLoanQuestionForm.studentLoanForm(request.user.isAgent))))
             )(
-            studentLoans =>
-              Future.successful(Ok(view(taxYear, employmentId, employmentData.employment.employmentDetails.employerName,
-                inYear, StudentLoanQuestionForm.studentLoanForm(request.user.isAgent), Some(studentLoans))))
-          )
+              studentLoans =>
+                Future.successful(Ok(view(taxYear, employmentId, employmentData.employment.employmentDetails.employerName,
+                  inYear, StudentLoanQuestionForm.studentLoanForm(request.user.isAgent), Some(studentLoans))))
+            )
         case _ => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
       }
     }
@@ -75,7 +75,7 @@ class StudentLoansQuestionController @Inject()(
             case Some(employmentData) =>
               Future.successful(BadRequest(view(taxYear, employmentId, employmentData.employment.employmentDetails.employerName, inYear, formWithErrors)))
             case _ => Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
-        }
+          }
         },
         result => {
           employmentSessionService.getSessionDataResult(taxYear, employmentId) {
@@ -85,16 +85,9 @@ class StudentLoansQuestionController @Inject()(
               val newStudentLoans: StudentLoansCYAModel = result.toStudentLoansCyaModel(cya.studentLoans)
 
               val updatedCya = cya.copy(studentLoans = Some(newStudentLoans))
-              employmentSessionService.createOrUpdateSessionData(
-                employmentId,
-                updatedCya,
-                taxYear,
-                data.isPriorSubmission,
-                data.hasPriorBenefits,
-                data.hasPriorStudentLoans,
-                request.user)({
-                errorHandler.internalServerError()
-              })(studentLoansRedirect(newStudentLoans, taxYear, employmentId))
+              employmentSessionService.createOrUpdateSessionData(request.user, taxYear, employmentId, updatedCya, data.isPriorSubmission,
+                data.hasPriorBenefits, data.hasPriorStudentLoans)(errorHandler.internalServerError())(
+                studentLoansRedirect(newStudentLoans, taxYear, employmentId))
             case None =>
               Future.successful(Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear)))
           }
@@ -107,7 +100,7 @@ class StudentLoansQuestionController @Inject()(
 
   def studentLoansRedirect(newStudentLoans: StudentLoansCYAModel, taxYear: Int, employmentId: String): Result = {
     newStudentLoans match {
-      case StudentLoansCYAModel(true, None, _ ,_) => Redirect(controllers.studentLoans.routes.UglAmountController.show(taxYear, employmentId))
+      case StudentLoansCYAModel(true, None, _, _) => Redirect(controllers.studentLoans.routes.UglAmountController.show(taxYear, employmentId))
       case StudentLoansCYAModel(_, _, true, None) => Redirect(controllers.studentLoans.routes.PglAmountController.show(taxYear, employmentId))
       case _ => Redirect(controllers.studentLoans.routes.StudentLoansCYAController.show(taxYear, employmentId))
     }

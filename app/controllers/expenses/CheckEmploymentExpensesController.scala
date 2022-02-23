@@ -58,7 +58,7 @@ class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: Aut
           case _ => Redirect(appConfig.incomeTaxSubmissionOverviewUrl(taxYear))
         })
     } else {
-      employmentSessionService.getAndHandleExpenses(taxYear) { (cya, prior) =>
+      employmentSessionService.getAndHandleExpenses(taxYear)({ (cya, prior) =>
         cya match {
           case Some(cya: ExpensesUserData) =>
             Future(performAuditAndRenderView(
@@ -100,13 +100,13 @@ class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: Aut
               case None => Future(performAuditAndRenderView(Expenses(), taxYear, isInYear = false, isUsingCustomerData = true))
             }
         }
-      }
+      })
     }
   }
 
   def submit(taxYear: Int): Action[AnyContent] = authorisedAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandleExpenses(taxYear) { (cya, prior) =>
+      employmentSessionService.getAndHandleExpenses(taxYear)({ (cya, prior) =>
         cya match {
           case Some(cya) => cya.expensesCya.expenses.expensesIsFinished(taxYear) match {
             // TODO: potentially navigate elsewhere - design to confirm
@@ -125,7 +125,7 @@ class CheckEmploymentExpensesController @Inject()(implicit authorisedAction: Aut
           }
           case None => Future.successful(Redirect(CheckEmploymentExpensesController.show(taxYear)))
         }
-      }
+      })
     }
   }
 

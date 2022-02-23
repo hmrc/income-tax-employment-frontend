@@ -49,7 +49,7 @@ class OtherEquipmentAmountController @Inject()(implicit val cc: MessagesControll
 
   def show(taxYear: Int): Action[AnyContent] = authAction.async { implicit request =>
     inYearAction.notInYear(taxYear) {
-      employmentSessionService.getAndHandleExpenses(taxYear) { (optCya, prior) =>
+      employmentSessionService.getAndHandleExpenses(taxYear)({ (optCya, prior) =>
         redirectBasedOnCurrentAnswers(taxYear, optCya)(redirects(_, taxYear)) { cyaData =>
           val cyaAmount = cyaData.expensesCya.expenses.otherAndCapitalAllowances
           val form = fillExpensesFormFromPriorAndCYA(buildForm(request.user.isAgent), prior, cyaAmount) { employmentExpenses =>
@@ -58,7 +58,7 @@ class OtherEquipmentAmountController @Inject()(implicit val cc: MessagesControll
 
           Future.successful(Ok(otherEquipmentAmountView(taxYear, form, cyaAmount)))
         }
-      }
+      })
     }
   }
 

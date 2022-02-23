@@ -40,7 +40,7 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
       expensesCYAModel.copy(expenses = ExpensesViewModel.clear(expensesCYAModel.expenses.isUsingCustomerData))
     }
 
-    employmentSessionService.createOrUpdateExpensesUserDataWith(
+    employmentSessionService.createOrUpdateExpensesUserData(
       user,
       taxYear,
       originalExpensesUserData.isPriorSubmission,
@@ -62,7 +62,7 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
       expensesCYAModel.copy(expenses = expenses.copy(jobExpensesQuestion = Some(false), jobExpenses = None))
     }
 
-    employmentSessionService.createOrUpdateExpensesUserDataWith(
+    employmentSessionService.createOrUpdateExpensesUserData(
       user,
       taxYear,
       originalExpensesUserData.isPriorSubmission,
@@ -76,7 +76,7 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
     val cya = expensesCYAModel.expenses
     val updatedExpenses: ExpensesCYAModel = expensesCYAModel.copy(expenses = cya.copy(jobExpenses = Some(amount)))
 
-    employmentSessionService.createOrUpdateExpensesUserDataWith(
+    employmentSessionService.createOrUpdateExpensesUserData(
       user,
       taxYear,
       originalExpensesUserData.isPriorSubmission,
@@ -97,7 +97,7 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
       expensesCYAModel.copy(expenses = expensesViewModel.copy(flatRateJobExpensesQuestion = Some(false), flatRateJobExpenses = None))
     }
 
-    employmentSessionService.createOrUpdateExpensesUserDataWith(
+    employmentSessionService.createOrUpdateExpensesUserData(
       user,
       taxYear,
       originalExpensesUserData.isPriorSubmission,
@@ -114,7 +114,7 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
     val expensesViewModel = expensesCYAModel.expenses
     val updatedExpenses = expensesCYAModel.copy(expenses = expensesViewModel.copy(flatRateJobExpenses = Some(amount)))
 
-    employmentSessionService.createOrUpdateExpensesUserDataWith(
+    employmentSessionService.createOrUpdateExpensesUserData(
       user,
       taxYear,
       originalExpensesUserData.isPriorSubmission,
@@ -135,7 +135,7 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
       expensesCYAModel.copy(expenses = expensesCyaModel.copy(professionalSubscriptionsQuestion = Some(false), professionalSubscriptions = None))
     }
 
-    employmentSessionService.createOrUpdateExpensesUserDataWith(
+    employmentSessionService.createOrUpdateExpensesUserData(
       user,
       taxYear,
       originalExpensesUserData.isPriorSubmission,
@@ -152,7 +152,7 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
     val expenses = cyaModel.expenses
     val updatedExpenses = cyaModel.copy(expenses = expenses.copy(professionalSubscriptions = Some(amount)))
 
-    employmentSessionService.createOrUpdateExpensesUserDataWith(
+    employmentSessionService.createOrUpdateExpensesUserData(
       user,
       taxYear,
       originalExpensesUserData.isPriorSubmission,
@@ -173,7 +173,7 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
       expensesCYAModel.copy(expenses = expenses.copy(otherAndCapitalAllowancesQuestion = Some(false), otherAndCapitalAllowances = None))
     }
 
-    employmentSessionService.createOrUpdateExpensesUserDataWith(
+    employmentSessionService.createOrUpdateExpensesUserData(
       user,
       taxYear,
       originalExpensesUserData.isPriorSubmission,
@@ -190,7 +190,7 @@ class ExpensesService @Inject()(employmentSessionService: EmploymentSessionServi
     val expensesViewModel = expensesCYAModel.expenses
     val updatedExpenses = expensesCYAModel.copy(expenses = expensesViewModel.copy(otherAndCapitalAllowances = Some(amount)))
 
-    employmentSessionService.createOrUpdateExpensesUserDataWith(
+    employmentSessionService.createOrUpdateExpensesUserData(
       user,
       taxYear,
       originalExpensesUserData.isPriorSubmission,

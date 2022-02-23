@@ -50,7 +50,7 @@ class IncomeService @Inject()(employmentSessionService: EmploymentSessionService
       }
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateIncomeTaxPaidByDirectorQuestion(user: User,
@@ -70,7 +70,7 @@ class IncomeService @Inject()(employmentSessionService: EmploymentSessionService
           incomeTaxPaidByDirectorQuestion = Some(false), incomeTaxPaidByDirector = None)))))
       }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updateIncomeTaxPaidByDirector(user: User,
@@ -86,7 +86,7 @@ class IncomeService @Inject()(employmentSessionService: EmploymentSessionService
       employmentBenefits = benefits.map(_.copy(incomeTaxAndCostsModel = incomeTaxModel.map(_.copy(incomeTaxPaidByDirector = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updatePaymentsOnEmployeesBehalfQuestion(user: User,
@@ -105,7 +105,7 @@ class IncomeService @Inject()(employmentSessionService: EmploymentSessionService
         incomeTaxAndCostsModel = incomeTaxModel.map(_.copy(paymentsOnEmployeesBehalfQuestion = Some(false), paymentsOnEmployeesBehalf = None)))))
     }
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 
   def updatePaymentsOnEmployeesBehalf(user: User,
@@ -121,6 +121,6 @@ class IncomeService @Inject()(employmentSessionService: EmploymentSessionService
       employmentBenefits = benefits.map(_.copy(incomeTaxAndCostsModel = incomeTaxModel.map(_.copy(paymentsOnEmployeesBehalf = Some(amount)))))
     )
 
-    employmentSessionService.createOrUpdateEmploymentUserDataWith(taxYear, employmentId, user, originalEmploymentUserData, updatedEmployment)
+    employmentSessionService.createOrUpdateEmploymentUserData(user, taxYear, employmentId, originalEmploymentUserData, updatedEmployment)
   }
 }

@@ -140,19 +140,19 @@ class CheckEmploymentDetailsController @Inject()(implicit val cc: MessagesContro
                                              (implicit request: AuthorisationRequest[AnyContent]): Future[Result] = {
     employmentData.eoyEmploymentSourceWith(employmentId) match {
       case Some(EmploymentSourceOrigin(source, isUsingCustomerData)) => employmentSessionService.createOrUpdateSessionData(
+        request.user,
+        taxYear,
         employmentId,
         EmploymentCYAModel.apply(source, isUsingCustomerData),
-        taxYear,
         isPriorSubmission = true,
         source.hasPriorBenefits,
-        source.hasPriorStudentLoans,
-        request.user
-      )(errorHandler.internalServerError()) {
+        source.hasPriorStudentLoans
+      )(errorHandler.internalServerError())({
         val viewModel = source.toEmploymentDetailsViewModel(isUsingCustomerData)
         val isSingleEmploymentValue = checkEmploymentDetailsService.isSingleEmploymentAndAudit(request.user,
           viewModel, taxYear, isInYear = false, Some(employmentData))
         Ok(employmentDetailsView(viewModel, taxYear, isInYear = false, isSingleEmployment = isSingleEmploymentValue))
-      }
+      })
       case None =>
         logger.info(s"[CheckEmploymentDetailsController][saveCYAAndReturnEndOfYearResult] No prior employment data exists with employmentId." +
           s"Redirecting to overview page. SessionId: ${request.user.sessionId}")
